@@ -21,5 +21,6 @@ abstract class ScrapedScene with _$ScrapedScene {
     ScrapedStudio? studio,
   }) = _ScrapedScene;
 
-  factory ScrapedScene.fromJson(Map<String, dynamic> json) => _$ScrapedSceneFromJson(json);
+  factory ScrapedScene.fromJson(Map<String, dynamic> json) =>
+      _$ScrapedSceneFromJson(json);
 }

@@ -7,11 +7,13 @@ import '../providers/studio_list_provider.dart';
 import '../widgets/studio_filter_panel.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../domain/entities/studio.dart';
 import '../../domain/entities/studio_saved_filter_config.dart';
@@ -160,7 +162,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   }
 
   int _activeFilterCount(StudioFilter filter) {
-    return filter.toJson().values.where((value) => value != null).length;
+    return activeFilterCount(filter.toJson());
   }
 
   void _showSavedFilterDialog() {
@@ -176,7 +178,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(filter),
         defaultSortLabel: 'name',
-        saveSuccessMessage: 'Studio filter saved to server',
+        saveSuccessMessage: context.l10n.saved_item('Studio filter'),
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(
@@ -192,7 +194,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: StudioSavedFilterConfig.current(
+                input: StudioSavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(studioSearchQueryProvider),
@@ -255,7 +257,9 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
     final filterState = ref.watch(studioFilterStateProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
-    final scrollController = ref.watch(studioScrollControllerProvider);
+    final scrollController = ref.watch(
+      listScrollControllerProvider(ListScrollTarget.studio),
+    );
     final hasSortOverride =
         _sortOption != _StudioSortOption.name || _sortDescending;
 

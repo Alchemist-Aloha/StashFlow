@@ -1,51 +1,25 @@
 import 'dart:math';
+
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
-import '../../domain/repositories/gallery_repository.dart';
 import '../../data/repositories/graphql_gallery_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 
 part 'gallery_list_provider.g.dart';
 
-final galleryRepositoryProvider = Provider<GalleryRepository>((ref) {
+final galleryRepositoryProvider = Provider<GraphQLGalleryRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLGalleryRepository(client);
 });
 
-@Riverpod(keepAlive: true)
-class GalleryScrollController extends _$GalleryScrollController {
-  @override
-  ScrollController build() {
-    final controller = ScrollController();
-    ref.onDispose(controller.dispose);
-    return controller;
-  }
-
-  void scrollToTop() {
-    if (state.hasClients) {
-      state.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-}
-
-@Riverpod(keepAlive: true)
-class GalleryRandomSeed extends _$GalleryRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final galleryRandomSeedProvider = listRandomSeedProvider('gallery');
 
 @Riverpod(keepAlive: true)
 class GallerySort extends _$GallerySort {
@@ -134,24 +108,6 @@ class GalleryOrganizedOnly extends _$GalleryOrganizedOnly {
   Future<void> saveAsDefault() async {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString(_organizedKey, state.name);
-  }
-}
-
-@riverpod
-class GalleryGridLayout extends _$GalleryGridLayout {
-  static const _storageKey = 'gallery_grid_layout';
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
-  }
-
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
   }
 }
 

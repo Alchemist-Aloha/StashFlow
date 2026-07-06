@@ -3108,4 +3108,85 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Отсутствует поле';
+
+  @override
+  String get filter_markers_title => 'Фильтровать маркеры';
+
+  @override
+  String get marker_title => 'Маркер';
+
+  @override
+  String get duration_title => 'Продолжительность';
+
+  @override
+  String get scene_title => 'Сцена';
+
+  @override
+  String get dates_title => 'Даты';
+
+  @override
+  String get created_at_title => 'Создано в';
+
+  @override
+  String get updated_at_title => 'Обновлено в';
+
+  @override
+  String get scene_date_title => 'Дата сцены';
+
+  @override
+  String get scene_created_at_title => 'Сцена создана в';
+
+  @override
+  String get scene_updated_at_title => 'Сцена обновлена ​​в';
+
+  @override
+  String get organized_title => 'Организованный';
+
+  @override
+  String get interactive_title => 'Интерактивный';
+
+  @override
+  String get scraped_metadata_title => 'Удаленные метаданные';
+
+  @override
+  String get local_scene_title => 'Местная сцена';
+
+  @override
+  String get sort_markers_title => 'Сортировка маркеров';
+
+  @override
+  String get markers_title => 'Маркеры';
+
+  @override
+  String get sub_group_count_title => 'Количество подгрупп';
+
+  @override
+  String get groups_browsing_mode_subtitle =>
+      'Режим просмотра по умолчанию для групп';
+
+  @override
+  String get markers_browsing_mode_subtitle =>
+      'Режим просмотра по умолчанию для маркеров';
+
+  @override
+  String get entity_layouts_title => 'Макеты объектов';
+
+  @override
+  String get entity_layouts_subtitle =>
+      'Настройки макета мультимедиа и галереи по умолчанию для исполнителей, студий и тегов';
+
+  @override
+  String get stats_subtitle_0_gb => '0,00 ГБ';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 уникальных предметов';
+
+  @override
+  String get markers_search_hint => 'Маркеры поиска';
+
+  @override
+  String get tags_title => 'Теги';
+
+  @override
+  String get scenes_title => 'Сцены';
 }

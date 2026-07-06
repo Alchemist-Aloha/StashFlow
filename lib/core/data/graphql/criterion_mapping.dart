@@ -85,7 +85,8 @@ Input$MultiCriterionInput? mapMultiCriterion(MultiCriterion? criterion) {
 }
 
 Input$HierarchicalMultiCriterionInput? mapHierarchicalMultiCriterion(
-    HierarchicalMultiCriterion? criterion) {
+  HierarchicalMultiCriterion? criterion,
+) {
   if (criterion == null) return null;
   return Input$HierarchicalMultiCriterionInput(
     value: criterion.value,
@@ -96,12 +97,16 @@ Input$HierarchicalMultiCriterionInput? mapHierarchicalMultiCriterion(
 Input$GenderCriterionInput? mapGenderCriterion(MultiCriterion? criterion) {
   if (criterion == null || criterion.value.isEmpty) return null;
   return Input$GenderCriterionInput(
-    value_list: criterion.value.map((v) => fromJson$Enum$GenderEnum(v)).toList(),
+    value_list: criterion.value
+        .map((v) => fromJson$Enum$GenderEnum(v))
+        .toList(),
     modifier: mapModifier(criterion.modifier),
   );
 }
 
-Input$CircumcisionCriterionInput? mapCircumcisionCriterion(String? circumcised) {
+Input$CircumcisionCriterionInput? mapCircumcisionCriterion(
+  String? circumcised,
+) {
   if (circumcised == null) return null;
   return Input$CircumcisionCriterionInput(
     value: [fromJson$Enum$CircumcisedEnum(circumcised)],
@@ -109,7 +114,9 @@ Input$CircumcisionCriterionInput? mapCircumcisionCriterion(String? circumcised) 
   );
 }
 
-Input$ResolutionCriterionInput? mapResolutionCriterion(MultiCriterion? criterion) {
+Input$ResolutionCriterionInput? mapResolutionCriterion(
+  MultiCriterion? criterion,
+) {
   if (criterion == null || criterion.value.isEmpty) return null;
   return Input$ResolutionCriterionInput(
     value: fromJson$Enum$ResolutionEnum(criterion.value.first),

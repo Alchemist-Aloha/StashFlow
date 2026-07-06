@@ -34,8 +34,9 @@ class VideoProgressBar extends StatelessWidget {
           builder: (context, snapshot) {
             final positionMs = isScrubbing
                 ? currentScrubValue
-                : (snapshot.data?.inMilliseconds.toDouble() ?? initialPositionMs);
-            
+                : (snapshot.data?.inMilliseconds.toDouble() ??
+                      initialPositionMs);
+
             return SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 trackHeight: 3,

@@ -11,6 +11,7 @@ import '../../../../core/data/repositories/graphql_saved_filter_repository.dart'
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../providers/image_list_provider.dart';
 import '../widgets/image_card.dart';
@@ -187,7 +188,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   }
 
   int _activeFilterCount(ImageFilter filter) {
-    return filter.toJson().values.where((value) => value != null).length;
+    return activeFilterCount(filter.toJson());
   }
 
   void _showSavedFilterDialog() {
@@ -207,7 +208,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(effectiveFilter),
         defaultSortLabel: 'path',
-        saveSuccessMessage: 'Image filter saved to server',
+        saveSuccessMessage: context.l10n.saved_item('Image filter'),
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(
@@ -223,7 +224,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: ImageSavedFilterConfig.current(
+                input: ImageSavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(imageSearchQueryProvider),
@@ -268,7 +269,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   @override
   Widget build(BuildContext context) {
     final imagesAsync = ref.watch(imageListProvider);
-    final gridColumns = ref.watch(imageGridColumnsProvider);
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.image),
+    );
     final isMobile = Responsive.isMobile(context);
     final isTablet = Responsive.isTablet(context);
 
@@ -382,7 +385,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               ),
             )
           : null,
-      scrollController: ref.watch(imageScrollControllerProvider),
+      scrollController: ref.watch(
+        listScrollControllerProvider(ListScrollTarget.image),
+      ),
       padding: EdgeInsets.all(context.dimensions.spacingSmall),
     );
   }

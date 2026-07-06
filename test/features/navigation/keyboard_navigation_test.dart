@@ -25,7 +25,9 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
-  testWidgets('Keyboard shortcuts Ctrl + 1..n navigate to correct tabs', (WidgetTester tester) async {
+  testWidgets('Keyboard shortcuts Ctrl + 1..n navigate to correct tabs', (
+    WidgetTester tester,
+  ) async {
     // Set desktop mode
     tester.view.physicalSize = const Size(1200, 800);
     tester.view.devicePixelRatio = 1.0;
@@ -42,7 +44,9 @@ void main() {
       prefs: prefs,
       overrides: [
         desktopCapabilitiesProvider.overrideWithValue(true),
-        navigationTabsProvider.overrideWith(() => MockNavigationTabsNotifier(initialTabs)),
+        navigationTabsProvider.overrideWith(
+          () => MockNavigationTabsNotifier(initialTabs),
+        ),
       ],
       child: Consumer(
         builder: (context, ref, _) {

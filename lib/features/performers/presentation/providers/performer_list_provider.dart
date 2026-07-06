@@ -1,55 +1,25 @@
-import 'package:flutter/material.dart';
+import 'dart:math';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:math';
 import 'dart:convert';
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart' as domain;
-import '../../domain/repositories/performer_repository.dart';
 import '../../data/repositories/graphql_performer_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'performer_list_provider.g.dart';
 
 // Provider for Repository interface
-final performerRepositoryProvider = Provider<PerformerRepository>((ref) {
+final performerRepositoryProvider = Provider<GraphQLPerformerRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLPerformerRepository(client);
 });
 
-final performerScrollControllerProvider =
-    NotifierProvider<PerformerScrollController, ScrollController>(
-      PerformerScrollController.new,
-    );
-
-class PerformerScrollController extends Notifier<ScrollController> {
-  @override
-  ScrollController build() {
-    final controller = ScrollController();
-    ref.onDispose(controller.dispose);
-    return controller;
-  }
-
-  void scrollToTop() {
-    if (state.hasClients) {
-      state.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-}
-
-@Riverpod(keepAlive: true)
-class PerformerRandomSeed extends _$PerformerRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final performerRandomSeedProvider = listRandomSeedProvider('performer');
 
 @Riverpod(keepAlive: true)
 class PerformerSort extends _$PerformerSort {

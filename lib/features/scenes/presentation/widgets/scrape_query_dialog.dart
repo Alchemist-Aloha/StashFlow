@@ -177,8 +177,8 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
                       .toList(),
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error:
-                    (err, _) => Text(context.l10n.common_error(err.toString())),
+                error: (err, _) =>
+                    Text(context.l10n.common_error(err.toString())),
               ),
             ),
             RadioGroup<String>(
@@ -204,8 +204,8 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error:
-                    (err, _) => Text(context.l10n.common_error(err.toString())),
+                error: (err, _) =>
+                    Text(context.l10n.common_error(err.toString())),
               ),
             ),
           ],

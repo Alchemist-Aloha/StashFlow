@@ -9,11 +9,13 @@ import '../widgets/performer_filter_panel.dart';
 import '../widgets/performer_card.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../domain/entities/performer_saved_filter_config.dart';
 
@@ -233,7 +235,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   }
 
   int _activeFilterCount(PerformerFilter filter) {
-    return filter.toJson().values.where((value) => value != null).length;
+    return activeFilterCount(filter.toJson());
   }
 
   void _showSavedFilterDialog() {
@@ -249,7 +251,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(filter),
         defaultSortLabel: 'name',
-        saveSuccessMessage: 'Performer filter saved to server',
+        saveSuccessMessage: context.l10n.saved_item('Performer filter'),
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(
@@ -265,7 +267,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: PerformerSavedFilterConfig.current(
+                input: PerformerSavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(performerSearchQueryProvider),
@@ -305,10 +307,14 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   @override
   Widget build(BuildContext context) {
     final performersAsync = ref.watch(performerListProvider);
-    final gridColumns = ref.watch(performerGridColumnsProvider);
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.performer),
+    );
     final filterState = ref.watch(performerFilterStateProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
-    final scrollController = ref.watch(performerScrollControllerProvider);
+    final scrollController = ref.watch(
+      listScrollControllerProvider(ListScrollTarget.performer),
+    );
     final hasSortOverride =
         _sortOption != _PerformerSortOption.name || _sortDescending;
 

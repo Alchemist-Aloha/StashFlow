@@ -10,7 +10,6 @@ import 'package:stash_app_flutter/features/setup/presentation/providers/main_pag
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
-import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
@@ -77,7 +76,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _showRandomNavigation = ref.read(randomNavigationEnabledProvider);
     _sceneGridLayout = ref.read(sceneGridLayoutProvider);
     _sceneTiktokLayout = ref.read(sceneTiktokLayoutProvider);
-    _galleryGridLayout = ref.read(galleryGridLayoutProvider);
+    _galleryGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.gallery),
+    );
     _mainPageGravityOrientation = ref.read(mainPageGravityOrientationProvider);
     _useActualSceneVideoInMiniPlayer = PlayerSettingsStore(
       prefs,
@@ -86,14 +87,30 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _imageFullscreenVerticalSwipe =
         prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
-    _sceneGridColumns = ref.read(sceneGridColumnsProvider);
-    _galleryGridColumns = ref.read(galleryGridColumnsProvider);
-    _performerGridColumns = ref.read(performerGridColumnsProvider);
-    _imageGridColumns = ref.read(imageGridColumnsProvider);
-    _studioGridColumns = ref.read(studioGridColumnsProvider);
-    _tagGridColumns = ref.read(tagGridColumnsProvider);
-    _groupGridColumns = ref.read(groupGridColumnsProvider);
-    _markerGridColumns = ref.read(sceneMarkerGridColumnsProvider);
+    _sceneGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.scene),
+    );
+    _galleryGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.gallery),
+    );
+    _performerGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.performer),
+    );
+    _imageGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.image),
+    );
+    _studioGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.studio),
+    );
+    _tagGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.tag),
+    );
+    _groupGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.group),
+    );
+    _markerGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.sceneMarker),
+    );
 
     _cardTitleFontSize = ref.read(cardTitleFontSizeProvider);
 
@@ -101,16 +118,30 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _showPerformerAvatars = ref.read(showPerformerAvatarsProvider);
     _performerAvatarSize = ref.read(performerAvatarSizeProvider);
 
-    _performerMediaGridLayout = ref.read(performerMediaGridLayoutProvider);
-    _performerGalleriesGridLayout = ref.read(
-      performerGalleriesGridLayoutProvider,
+    _performerMediaGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.performerMedia),
     );
-    _studioMediaGridLayout = ref.read(studioMediaGridLayoutProvider);
-    _studioGalleriesGridLayout = ref.read(studioGalleriesGridLayoutProvider);
-    _tagMediaGridLayout = ref.read(tagMediaGridLayoutProvider);
-    _tagGalleriesGridLayout = ref.read(tagGalleriesGridLayoutProvider);
-    _groupMediaGridLayout = ref.read(groupMediaGridLayoutProvider);
-    _markerGridLayout = ref.read(sceneMarkerGridLayoutProvider);
+    _performerGalleriesGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.performerGalleries),
+    );
+    _studioMediaGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.studioMedia),
+    );
+    _studioGalleriesGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.studioGalleries),
+    );
+    _tagMediaGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.tagMedia),
+    );
+    _tagGalleriesGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.tagGalleries),
+    );
+    _groupMediaGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.groupMedia),
+    );
+    _markerGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.sceneMarker),
+    );
 
     setState(() => _loading = false);
   }
@@ -123,7 +154,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         .set(_showRandomNavigation);
     ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
     ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
-    ref.read(galleryGridLayoutProvider.notifier).set(_galleryGridLayout);
+    ref
+        .read(gridLayoutSettingProvider(GridLayoutSetting.gallery).notifier)
+        .set(_galleryGridLayout);
     ref
         .read(mainPageGravityOrientationProvider.notifier)
         .set(_mainPageGravityOrientation);
@@ -134,14 +167,30 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         .read(entityImageFilterMethodSettingProvider.notifier)
         .set(_entityImageFilterMethod);
 
-    ref.read(sceneGridColumnsProvider.notifier).set(_sceneGridColumns);
-    ref.read(galleryGridColumnsProvider.notifier).set(_galleryGridColumns);
-    ref.read(performerGridColumnsProvider.notifier).set(_performerGridColumns);
-    ref.read(imageGridColumnsProvider.notifier).set(_imageGridColumns);
-    ref.read(studioGridColumnsProvider.notifier).set(_studioGridColumns);
-    ref.read(tagGridColumnsProvider.notifier).set(_tagGridColumns);
-    ref.read(groupGridColumnsProvider.notifier).set(_groupGridColumns);
-    ref.read(sceneMarkerGridColumnsProvider.notifier).set(_markerGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.scene).notifier)
+        .set(_sceneGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.gallery).notifier)
+        .set(_galleryGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.performer).notifier)
+        .set(_performerGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.image).notifier)
+        .set(_imageGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.studio).notifier)
+        .set(_studioGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.tag).notifier)
+        .set(_tagGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.group).notifier)
+        .set(_groupGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.sceneMarker).notifier)
+        .set(_markerGridColumns);
 
     ref.read(cardTitleFontSizeProvider.notifier).set(_cardTitleFontSize);
 
@@ -150,23 +199,39 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref.read(performerAvatarSizeProvider.notifier).set(_performerAvatarSize);
 
     ref
-        .read(performerMediaGridLayoutProvider.notifier)
+        .read(
+          gridLayoutSettingProvider(GridLayoutSetting.performerMedia).notifier,
+        )
         .set(_performerMediaGridLayout);
     ref
-        .read(performerGalleriesGridLayoutProvider.notifier)
+        .read(
+          gridLayoutSettingProvider(
+            GridLayoutSetting.performerGalleries,
+          ).notifier,
+        )
         .set(_performerGalleriesGridLayout);
     ref
-        .read(studioMediaGridLayoutProvider.notifier)
+        .read(gridLayoutSettingProvider(GridLayoutSetting.studioMedia).notifier)
         .set(_studioMediaGridLayout);
     ref
-        .read(studioGalleriesGridLayoutProvider.notifier)
+        .read(
+          gridLayoutSettingProvider(GridLayoutSetting.studioGalleries).notifier,
+        )
         .set(_studioGalleriesGridLayout);
-    ref.read(tagMediaGridLayoutProvider.notifier).set(_tagMediaGridLayout);
     ref
-        .read(tagGalleriesGridLayoutProvider.notifier)
+        .read(gridLayoutSettingProvider(GridLayoutSetting.tagMedia).notifier)
+        .set(_tagMediaGridLayout);
+    ref
+        .read(
+          gridLayoutSettingProvider(GridLayoutSetting.tagGalleries).notifier,
+        )
         .set(_tagGalleriesGridLayout);
-    ref.read(groupMediaGridLayoutProvider.notifier).set(_groupMediaGridLayout);
-    ref.read(sceneMarkerGridLayoutProvider.notifier).set(_markerGridLayout);
+    ref
+        .read(gridLayoutSettingProvider(GridLayoutSetting.groupMedia).notifier)
+        .set(_groupMediaGridLayout);
+    ref
+        .read(gridLayoutSettingProvider(GridLayoutSetting.sceneMarker).notifier)
+        .set(_markerGridLayout);
 
     await prefs.setBool(
       _imageFullscreenVerticalSwipeKey,
@@ -568,8 +633,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SizedBox(height: context.dimensions.spacingLarge),
                   _buildSingleLayoutSection(
                     context: context,
-                    title: 'Groups',
-                    subtitle: 'Default browsing mode for groups',
+                    title: context.l10n.groups_title,
+                    subtitle: context.l10n.groups_browsing_mode_subtitle,
+                    segmentedKey: const Key('group-layout-segmented'),
                     label: context.l10n.settings_interface_media_layout,
                     description:
                         context.l10n.settings_interface_media_layout_subtitle,
@@ -587,8 +653,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SizedBox(height: context.dimensions.spacingLarge),
                   _buildSingleLayoutSection(
                     context: context,
-                    title: 'Markers',
-                    subtitle: 'Default browsing mode for markers',
+                    title: context.l10n.markers_title,
+                    subtitle: context.l10n.markers_browsing_mode_subtitle,
+                    segmentedKey: const Key('marker-layout-segmented'),
                     label: context.l10n.settings_interface_layout_default,
                     description:
                         context.l10n.settings_interface_layout_default_desc,
@@ -606,9 +673,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SizedBox(height: context.dimensions.spacingLarge),
                   // Consolidated Entity Layouts
                   SettingsSectionCard(
-                    title: 'Entity Layouts',
-                    subtitle:
-                        'Media and gallery layout defaults for performers, studios and tags',
+                    title: context.l10n.entity_layouts_title,
+                    subtitle: context.l10n.entity_layouts_subtitle,
                     child: Column(
                       children: [
                         _buildEntityTypeLayoutRow(
@@ -692,6 +758,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required BuildContext context,
     required String title,
     required String subtitle,
+    Key? segmentedKey,
     required String label,
     required String description,
     required bool gridValue,
@@ -708,6 +775,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         children: [
           _buildSegmentedSetting(
             context: context,
+            segmentedKey: segmentedKey,
             label: label,
             description: description,
             segments: [

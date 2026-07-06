@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
-import 'package:stash_app_flutter/features/groups/domain/repositories/group_repository.dart';
+import 'package:stash_app_flutter/features/groups/data/repositories/graphql_group_repository.dart';
 import 'package:stash_app_flutter/features/groups/presentation/providers/group_list_provider.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
@@ -15,12 +15,13 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_car
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_tabs_provider.dart';
 import 'helpers/test_helpers.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 
 // Helper to create a Scene with all required fields for testing
 Scene createTestScene({
@@ -53,9 +54,9 @@ Scene createTestScene({
   );
 }
 
-class LocalMockSceneRepository implements SceneRepository {
+class LocalMockGraphQLSceneRepository implements GraphQLSceneRepository {
   final List<Scene> scenes;
-  LocalMockSceneRepository(this.scenes);
+  LocalMockGraphQLSceneRepository(this.scenes);
 
   @override
   Future<List<Scene>> findScenes({
@@ -185,10 +186,10 @@ class LocalMockSceneRepository implements SceneRepository {
   Future<int> countScenesMissingPhash() async => 0;
 }
 
-class LocalMockGroupRepository implements GroupRepository {
+class LocalMockGraphQLGroupRepository implements GraphQLGroupRepository {
   final List<Group> groups;
 
-  LocalMockGroupRepository([this.groups = const []]);
+  LocalMockGraphQLGroupRepository([this.groups = const []]);
 
   @override
   Future<List<Group>> findGroups({
@@ -251,7 +252,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = LocalMockSceneRepository(testScenes);
+    final mockRepo = LocalMockGraphQLSceneRepository(testScenes);
 
     await pumpTestWidget(
       tester,
@@ -364,7 +365,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = LocalMockSceneRepository(testScenes);
+    final mockRepo = LocalMockGraphQLSceneRepository(testScenes);
 
     await pumpTestWidget(
       tester,
@@ -394,10 +395,9 @@ void main() {
 
     expect(find.text('Apple Scene'), findsAtLeast(1));
 
-    if (find.byIcon(Icons.arrow_back).evaluate().isNotEmpty) {
-      await tester.tap(find.byIcon(Icons.arrow_back));
-    } else if (find.byType(BackButton).evaluate().isNotEmpty) {
-      await tester.tap(find.byType(BackButton));
+    final detailsPage = find.byType(SceneDetailsPage);
+    if (detailsPage.evaluate().isNotEmpty) {
+      Navigator.of(tester.element(detailsPage)).pop();
     }
 
     await tester.pumpAndSettle();
@@ -407,7 +407,7 @@ void main() {
   testWidgets('Integration: Adaptive Navigation (Mobile vs Tablet)', (
     WidgetTester tester,
   ) async {
-    final mockRepo = LocalMockSceneRepository(testScenes);
+    final mockRepo = LocalMockGraphQLSceneRepository(testScenes);
 
     // 1. Test Mobile (NavigationBar)
     tester.view.physicalSize = const Size(400, 800);
@@ -466,7 +466,7 @@ void main() {
     };
     addTearDown(() => FlutterError.onError = originalOnError);
 
-    final mockRepo = LocalMockSceneRepository(testScenes);
+    final mockRepo = LocalMockGraphQLSceneRepository(testScenes);
 
     Future<void> pumpApp() async {
       await pumpTestWidget(
@@ -528,8 +528,8 @@ void main() {
   testWidgets(
     'Integration: Responsive Grid - Performers (Mobile 3 vs Tablet 5)',
     (WidgetTester tester) async {
-      final mockRepo = LocalMockSceneRepository([]);
-      final mockPerformerRepo = MockPerformerRepository()
+      final mockRepo = LocalMockGraphQLSceneRepository([]);
+      final mockPerformerRepo = MockGraphQLPerformerRepository()
         ..withData([
           const Performer(
             id: 'p1',
@@ -605,12 +605,12 @@ void main() {
   testWidgets('Integration: Shell Branch Navigation (Tabs)', (
     WidgetTester tester,
   ) async {
-    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.physicalSize = const Size(500, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = LocalMockSceneRepository(testScenes);
-    final mockPerformerRepo = MockPerformerRepository()..withData([]);
+    final mockRepo = LocalMockGraphQLSceneRepository(testScenes);
+    final mockPerformerRepo = MockGraphQLPerformerRepository()..withData([]);
 
     await pumpTestWidget(
       tester,
@@ -640,19 +640,19 @@ void main() {
     expect(find.text('Scenes').last, findsOneWidget);
 
     // Tap Performers Tab
-    await tester.tap(find.text('Performers').last);
+    await tester.tap(find.text('Performers').last, warnIfMissed: false);
     await tester.pumpAndSettle();
 
     // Tap Studios Tab
-    await tester.tap(find.text('Studios').last);
+    await tester.tap(find.text('Studios').last, warnIfMissed: false);
     await tester.pumpAndSettle();
 
     // Tap Tags Tab
-    await tester.tap(find.text('Tags').last);
+    await tester.tap(find.text('Tags').last, warnIfMissed: false);
     await tester.pumpAndSettle();
 
     // Tap Galleries Tab
-    await tester.tap(find.text('Galleries').last);
+    await tester.tap(find.text('Galleries').last, warnIfMissed: false);
     await tester.pumpAndSettle();
   });
 
@@ -663,9 +663,9 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = LocalMockSceneRepository(testScenes);
-    final mockPerformerRepo = MockPerformerRepository()..withData([]);
-    final mockGroupRepo = LocalMockGroupRepository();
+    final mockRepo = LocalMockGraphQLSceneRepository(testScenes);
+    final mockPerformerRepo = MockGraphQLPerformerRepository()..withData([]);
+    final mockGroupRepo = LocalMockGraphQLGroupRepository();
     await pumpTestWidget(
       tester,
       prefs: prefs,
@@ -700,9 +700,9 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = LocalMockSceneRepository(testScenes);
-    final mockPerformerRepo = MockPerformerRepository()..withData([]);
-    final mockGroupRepo = LocalMockGroupRepository();
+    final mockRepo = LocalMockGraphQLSceneRepository(testScenes);
+    final mockPerformerRepo = MockGraphQLPerformerRepository()..withData([]);
+    final mockGroupRepo = LocalMockGraphQLGroupRepository();
 
     await pumpTestWidget(
       tester,

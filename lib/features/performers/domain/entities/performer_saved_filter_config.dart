@@ -12,54 +12,29 @@ class PerformerSavedFilterConfig extends SavedFilterConfig<PerformerFilter> {
     super.perPage,
   }) : super(filterMode: 'PERFORMERS');
 
-  factory PerformerSavedFilterConfig.current({
-    String? id,
-    required String name,
-    required String searchQuery,
-    required String? sort,
-    required bool descending,
-    required PerformerFilter filter,
-    int? perPage,
-  }) {
-    return PerformerSavedFilterConfig(
-      id: id,
-      name: name,
-      searchQuery: searchQuery,
-      sort: sort,
-      descending: descending,
-      filter: filter,
-      perPage: perPage,
-    );
-  }
-
   factory PerformerSavedFilterConfig.fromServerPayload({
     required String id,
     required String name,
     Object? findFilter,
     Object? objectFilter,
   }) {
-    final findFilterMap = savedFilterAsMap(findFilter);
-    final objectFilterMap = savedFilterAsMap(objectFilter);
-    final direction = findFilterMap['direction'];
+    final payload = savedFilterReadPayload(
+      findFilter: findFilter,
+      objectFilter: objectFilter,
+      emptyFilter: PerformerFilter.empty(),
+      fromJson: PerformerFilter.fromJson,
+      serverToLocalKeys: _serverToLocalKeys,
+      normalizeValue: _normalizeServerValue,
+    );
 
     return PerformerSavedFilterConfig(
       id: id,
       name: name,
-      searchQuery: findFilterMap['q'] as String? ?? '',
-      sort: findFilterMap['sort'] as String?,
-      descending: direction is String
-          ? direction.toUpperCase() == 'DESC'
-          : true,
-      perPage: findFilterMap['per_page'] as int?,
-      filter: objectFilterMap.isEmpty
-          ? PerformerFilter.empty()
-          : PerformerFilter.fromJson(
-              savedFilterFromServerObjectFilter(
-                objectFilter: objectFilterMap,
-                serverToLocalKeys: _serverToLocalKeys,
-                normalizeValue: _normalizeServerValue,
-              ),
-            ),
+      searchQuery: payload.searchQuery,
+      sort: payload.sort,
+      descending: payload.descending,
+      perPage: payload.perPage,
+      filter: payload.filter,
     );
   }
 
@@ -82,7 +57,8 @@ class PerformerSavedFilterConfig extends SavedFilterConfig<PerformerFilter> {
 
   static Object? _normalizeServerValue(String localKey, Object? value) {
     if (_booleanFields.contains(localKey)) {
-      return savedFilterReadBooleanCriterionValue(value) ?? savedFilterSkipValue;
+      return savedFilterReadBooleanCriterionValue(value) ??
+          savedFilterSkipValue;
     }
     if (localKey == 'isMissing') return savedFilterSkipValue;
     return value;
@@ -116,9 +92,5 @@ class PerformerSavedFilterConfig extends SavedFilterConfig<PerformerFilter> {
     for (final entry in _localToServerKeys.entries) entry.value: entry.key,
   };
 
-  static const _booleanFields = {
-    'favorite',
-    'ignoreAutoTag',
-    'isMissing',
-  };
+  static const _booleanFields = {'favorite', 'ignoreAutoTag', 'isMissing'};
 }

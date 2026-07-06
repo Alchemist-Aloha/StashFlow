@@ -5,10 +5,10 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
 import 'package:stash_app_flutter/features/groups/domain/entities/group_filter.dart';
-import 'package:stash_app_flutter/features/groups/domain/repositories/group_repository.dart';
+import 'package:stash_app_flutter/features/groups/data/repositories/graphql_group_repository.dart';
 import 'package:stash_app_flutter/features/groups/presentation/providers/group_list_provider.dart';
 
-class RecordingGroupRepository implements GroupRepository {
+class RecordingGraphQLGroupRepository implements GraphQLGroupRepository {
   GroupFilter? lastGroupFilter;
   String? lastFilter;
   String? lastSort;
@@ -40,7 +40,7 @@ void main() {
   test('GroupList passes structured group filters to repository', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
-    final repository = RecordingGroupRepository();
+    final repository = RecordingGraphQLGroupRepository();
 
     final container = ProviderContainer(
       overrides: [

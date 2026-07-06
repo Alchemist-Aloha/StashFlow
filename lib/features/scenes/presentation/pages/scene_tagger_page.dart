@@ -12,6 +12,7 @@ import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/domain/entities/scraped/scraped_scene.dart';
 import '../../../../core/domain/entities/scraped/scraped_tag.dart';
@@ -89,7 +90,9 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   @override
   void initState() {
     super.initState();
-    _presetsFuture = ref.read(sceneSavedFilterRepositoryProvider).findAll();
+    _presetsFuture = ref
+        .read(savedFilterRepositoryProvider)
+        .findAll(mode: 'SCENES', fromRaw: SceneSavedFilterConfig.fromRaw);
     Future.microtask(_loadScenes);
   }
 
@@ -335,18 +338,12 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           );
       if (!mounted) return;
       _removeSceneFromResults(scene.id);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.saved_item(scene.title)),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.saved_item(scene.title))),
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.failed_to_save(error.toString()))),
       );
     }
@@ -790,7 +787,7 @@ class _TaggerSceneCard extends StatelessWidget {
                   sceneId: scene.id,
                   scraped: scraped,
                   error: result?.error,
-                  title: 'Scraped metadata',
+                  title: context.l10n.scraped_metadata_title,
                 ),
               ),
             ],
@@ -808,7 +805,7 @@ class _TaggerSceneCard extends StatelessWidget {
                 sceneId: scene.id,
                 scraped: scraped,
                 error: result?.error,
-                title: 'Scraped metadata',
+                title: context.l10n.scraped_metadata_title,
               ),
             ],
           );
@@ -899,7 +896,7 @@ class _LocalSceneSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _MetadataPanel(
-      title: 'Local scene',
+      title: context.l10n.local_scene_title,
       media: _ScenePreviewPlayer(
         key: ValueKey('scene_preview_player_${scene.id}'),
         scene: scene,
@@ -1351,7 +1348,10 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white24, width: 1.5),
+                            border: Border.all(
+                              color: Colors.white24,
+                              width: 1.5,
+                            ),
                           ),
                           child: const Icon(
                             Icons.play_arrow_rounded,

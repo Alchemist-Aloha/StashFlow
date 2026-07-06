@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_marker.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_marker_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_marker_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_markers_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_marker_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_marker_card.dart';
@@ -11,7 +11,7 @@ import '../../../../helpers/test_helpers.dart';
 
 void main() {
   testWidgets('renders scene marker cards from the repository', (tester) async {
-    final repository = _FakeSceneMarkerRepository([
+    final repository = _FakeGraphQLSceneMarkerRepository([
       _marker(
         title: 'Opening beat',
         seconds: 65,
@@ -30,7 +30,7 @@ void main() {
   });
 
   testWidgets('sort sheet forwards marker sort to repository', (tester) async {
-    final repository = _FakeSceneMarkerRepository([_marker()]);
+    final repository = _FakeGraphQLSceneMarkerRepository([_marker()]);
 
     await _pumpPage(tester, repository);
 
@@ -48,7 +48,7 @@ void main() {
   testWidgets('sort sheet exposes scene-style save default action', (
     tester,
   ) async {
-    final repository = _FakeSceneMarkerRepository([_marker()]);
+    final repository = _FakeGraphQLSceneMarkerRepository([_marker()]);
 
     await _pumpPage(tester, repository);
 
@@ -62,7 +62,7 @@ void main() {
   testWidgets('filter panel uses page filter design and applies criteria', (
     tester,
   ) async {
-    final repository = _FakeSceneMarkerRepository([_marker()]);
+    final repository = _FakeGraphQLSceneMarkerRepository([_marker()]);
 
     await _pumpPage(tester, repository);
 
@@ -90,7 +90,7 @@ void main() {
   testWidgets('filter panel exposes scene-style save default action', (
     tester,
   ) async {
-    final repository = _FakeSceneMarkerRepository([_marker()]);
+    final repository = _FakeGraphQLSceneMarkerRepository([_marker()]);
 
     await _pumpPage(tester, repository);
 
@@ -102,7 +102,7 @@ void main() {
   });
 
   testWidgets('marker list exposes saved presets action', (tester) async {
-    final repository = _FakeSceneMarkerRepository([_marker()]);
+    final repository = _FakeGraphQLSceneMarkerRepository([_marker()]);
 
     await _pumpPage(tester, repository);
 
@@ -110,11 +110,9 @@ void main() {
   });
 
   testWidgets('respects persisted list layout preference', (tester) async {
-    SharedPreferences.setMockInitialValues({
-      'scene_marker_grid_layout': false,
-    });
+    SharedPreferences.setMockInitialValues({'scene_marker_grid_layout': false});
     final prefs = await SharedPreferences.getInstance();
-    final repository = _FakeSceneMarkerRepository([_marker()]);
+    final repository = _FakeGraphQLSceneMarkerRepository([_marker()]);
 
     await _pumpPage(tester, repository, prefs: prefs);
 
@@ -127,9 +125,9 @@ void main() {
 
 Future<void> _pumpPage(
   WidgetTester tester,
-  _FakeSceneMarkerRepository repository,
-  {SharedPreferences? prefs,}
-) async {
+  _FakeGraphQLSceneMarkerRepository repository, {
+  SharedPreferences? prefs,
+}) async {
   await pumpTestWidget(
     tester,
     prefs: prefs,
@@ -162,8 +160,9 @@ SceneMarkerSummary _marker({
   );
 }
 
-class _FakeSceneMarkerRepository implements SceneMarkerRepository {
-  _FakeSceneMarkerRepository(this.markers);
+class _FakeGraphQLSceneMarkerRepository
+    implements GraphQLSceneMarkerRepository {
+  _FakeGraphQLSceneMarkerRepository(this.markers);
 
   final List<SceneMarkerSummary> markers;
   final List<

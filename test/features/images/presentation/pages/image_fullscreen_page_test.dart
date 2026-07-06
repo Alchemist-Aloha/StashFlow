@@ -26,11 +26,11 @@ class MockHttpOverrides extends HttpOverrides {
   MockSpec<HttpHeaders>(),
 ])
 void main() {
-  late MockImageRepository mockRepository;
+  late MockGraphQLImageRepository mockRepository;
   late MockHttpClient mockHttpClient;
 
   setUp(() {
-    mockRepository = MockImageRepository();
+    mockRepository = MockGraphQLImageRepository();
     mockHttpClient = MockHttpClient();
     final mockRequest = MockHttpClientRequest();
     final mockResponse = MockHttpClientResponse();

@@ -31,7 +31,7 @@ void main() {
   );
 
   testWidgets('GroupsPage exposes sort and filter actions', (tester) async {
-    final mockRepo = MockGroupRepository()..withData([testGroup]);
+    final mockRepo = MockGraphQLGroupRepository()..withData([testGroup]);
 
     await pumpTestWidget(
       tester,
@@ -52,7 +52,7 @@ void main() {
   testWidgets(
     'GroupsPage sort panel matches the scene-list scrollable chip layout',
     (tester) async {
-      final mockRepo = MockGroupRepository()..withData([testGroup]);
+      final mockRepo = MockGraphQLGroupRepository()..withData([testGroup]);
 
       await pumpTestWidget(
         tester,
@@ -70,7 +70,7 @@ void main() {
   );
 
   testWidgets('GroupsPage exposes saved preset dialog action', (tester) async {
-    final mockRepo = MockGroupRepository()..withData([testGroup]);
+    final mockRepo = MockGraphQLGroupRepository()..withData([testGroup]);
     final savedFilterRepository = GraphQLSavedFilterRepository(
       _FakeSavedFilterClient(),
     );
@@ -97,7 +97,7 @@ void main() {
   testWidgets('GroupsPage opens group details within the groups shell route', (
     tester,
   ) async {
-    final mockRepo = MockGroupRepository()..withData([testGroup]);
+    final mockRepo = MockGraphQLGroupRepository()..withData([testGroup]);
     final router = GoRouter(
       initialLocation: '/groups',
       routes: [

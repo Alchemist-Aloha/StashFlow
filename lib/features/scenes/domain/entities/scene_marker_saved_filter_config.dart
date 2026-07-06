@@ -13,54 +13,38 @@ class SceneMarkerSavedFilterConfig
     super.perPage,
   }) : super(filterMode: 'SCENE_MARKERS');
 
-  factory SceneMarkerSavedFilterConfig.current({
-    String? id,
-    required String name,
-    required String searchQuery,
-    required String? sort,
-    required bool descending,
-    required SceneMarkerFilter filter,
-    int? perPage,
-  }) {
-    return SceneMarkerSavedFilterConfig(
-      id: id,
-      name: name,
-      searchQuery: searchQuery,
-      sort: sort,
-      descending: descending,
-      filter: filter,
-      perPage: perPage,
-    );
-  }
-
   factory SceneMarkerSavedFilterConfig.fromServerPayload({
     required String id,
     required String name,
     Object? findFilter,
     Object? objectFilter,
   }) {
-    final findFilterMap = savedFilterAsMap(findFilter);
-    final objectFilterMap = savedFilterAsMap(objectFilter);
-    final direction = findFilterMap['direction'];
+    final payload = savedFilterReadPayload(
+      findFilter: findFilter,
+      objectFilter: objectFilter,
+      emptyFilter: const SceneMarkerFilter(),
+      fromJson: SceneMarkerFilter.fromJson,
+      serverToLocalKeys: _serverToLocalKeys,
+      normalizeValue: _normalizeServerValue,
+    );
 
     return SceneMarkerSavedFilterConfig(
       id: id,
       name: name,
-      searchQuery: findFilterMap['q'] as String? ?? '',
-      sort: findFilterMap['sort'] as String?,
-      descending: direction is String
-          ? direction.toUpperCase() == 'DESC'
-          : true,
-      perPage: findFilterMap['per_page'] as int?,
-      filter: objectFilterMap.isEmpty
-          ? const SceneMarkerFilter()
-          : SceneMarkerFilter.fromJson(
-              savedFilterFromServerObjectFilter(
-                objectFilter: objectFilterMap,
-                serverToLocalKeys: _serverToLocalKeys,
-                normalizeValue: _normalizeServerValue,
-              ),
-            ),
+      searchQuery: payload.searchQuery,
+      sort: payload.sort,
+      descending: payload.descending,
+      perPage: payload.perPage,
+      filter: payload.filter,
+    );
+  }
+
+  factory SceneMarkerSavedFilterConfig.fromRaw(Map<String, dynamic> raw) {
+    return SceneMarkerSavedFilterConfig.fromServerPayload(
+      id: raw['id'] as String,
+      name: raw['name'] as String,
+      findFilter: raw['find_filter'],
+      objectFilter: raw['object_filter'],
     );
   }
 

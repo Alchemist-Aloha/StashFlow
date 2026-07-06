@@ -7,11 +7,7 @@ void main() {
     final config = StudioSavedFilterConfig.fromServerPayload(
       id: '12',
       name: 'Organized studios',
-      findFilter: {
-        'q': 'studio',
-        'sort': 'name',
-        'direction': 'ASC',
-      },
+      findFilter: {'q': 'studio', 'sort': 'name', 'direction': 'ASC'},
       objectFilter: {
         'organized': true,
         'child_count': {'value': 2, 'modifier': 'GREATER_THAN'},

@@ -1,18 +1,15 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import 'package:stash_app_flutter/core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../domain/entities/group.dart';
 import '../../domain/entities/group_filter.dart';
-import '../../domain/repositories/group_repository.dart';
 import '../graphql/groups.graphql.dart';
 
-class GraphQLGroupRepository implements GroupRepository {
-  final GraphQLClient client;
+class GraphQLGroupRepository {
+  final GraphQLClient _client;
 
-  GraphQLGroupRepository(this.client);
-
-  @override
+  GraphQLGroupRepository(this._client);
   Future<List<Group>> findGroups({
     int? page,
     int? perPage,
@@ -21,7 +18,7 @@ class GraphQLGroupRepository implements GroupRepository {
     bool? descending,
     GroupFilter? groupFilter,
   }) async {
-    final result = await client.query$FindGroups(
+    final result = await _client.query$FindGroups(
       Options$Query$FindGroups(
         fetchPolicy: FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindGroups(
@@ -43,23 +40,22 @@ class GraphQLGroupRepository implements GroupRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     return result.parsedData!.findGroups.groups
         .map((g) => Group.fromJson(g.toJson()))
         .toList();
   }
 
-  @override
   Future<Group> getGroupById(String id, {bool refresh = false}) async {
-    final result = await client.query$FindGroup(
+    final result = await _client.query$FindGroup(
       Options$Query$FindGroup(
         fetchPolicy: refresh ? FetchPolicy.networkOnly : FetchPolicy.cacheFirst,
         variables: Variables$Query$FindGroup(id: id),
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     final data = result.parsedData!.findGroup;
     if (data == null) throw Exception('Group not found');
 

@@ -1,22 +1,19 @@
 import 'package:graphql/client.dart';
 
-import '../../../../core/data/graphql/base_repository.dart';
+import '../../../../core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../domain/entities/scene_marker.dart';
-import '../../domain/repositories/scene_marker_repository.dart';
 
-class GraphQLSceneMarkerRepository implements SceneMarkerRepository {
-  GraphQLSceneMarkerRepository(this.client);
+class GraphQLSceneMarkerRepository {
+  GraphQLSceneMarkerRepository(this._client);
 
-  final GraphQLClient client;
+  final GraphQLClient _client;
 
-  Uri get _graphqlEndpoint => client.link is HttpLink
-      ? (client.link as HttpLink).uri
+  Uri get _graphqlEndpoint => _client.link is HttpLink
+      ? (_client.link as HttpLink).uri
       : Uri.parse('https://localhost/graphql');
-
-  @override
   Future<List<SceneMarkerSummary>> findSceneMarkers({
     int? page,
     int? perPage,
@@ -25,7 +22,7 @@ class GraphQLSceneMarkerRepository implements SceneMarkerRepository {
     bool descending = true,
     SceneMarkerFilter filter = const SceneMarkerFilter(),
   }) async {
-    final result = await client.query<Map<String, dynamic>>(
+    final result = await _client.query<Map<String, dynamic>>(
       QueryOptions<Map<String, dynamic>>(
         document: gql(r'''
           query FindSceneMarkers(
@@ -85,7 +82,7 @@ class GraphQLSceneMarkerRepository implements SceneMarkerRepository {
             : FetchPolicy.cacheAndNetwork,
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final rawMarkers =
         (result.data?['findSceneMarkers']

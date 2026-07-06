@@ -12,53 +12,28 @@ class GroupSavedFilterConfig extends SavedFilterConfig<GroupFilter> {
     super.perPage,
   }) : super(filterMode: 'GROUPS');
 
-  factory GroupSavedFilterConfig.current({
-    String? id,
-    required String name,
-    required String searchQuery,
-    required String? sort,
-    required bool descending,
-    required GroupFilter filter,
-    int? perPage,
-  }) {
-    return GroupSavedFilterConfig(
-      id: id,
-      name: name,
-      searchQuery: searchQuery,
-      sort: sort,
-      descending: descending,
-      filter: filter,
-      perPage: perPage,
-    );
-  }
-
   factory GroupSavedFilterConfig.fromServerPayload({
     required String id,
     required String name,
     Object? findFilter,
     Object? objectFilter,
   }) {
-    final findFilterMap = savedFilterAsMap(findFilter);
-    final objectFilterMap = savedFilterAsMap(objectFilter);
-    final direction = findFilterMap['direction'];
+    final payload = savedFilterReadPayload(
+      findFilter: findFilter,
+      objectFilter: objectFilter,
+      emptyFilter: GroupFilter.empty(),
+      fromJson: GroupFilter.fromJson,
+      serverToLocalKeys: _serverToLocalKeys,
+    );
 
     return GroupSavedFilterConfig(
       id: id,
       name: name,
-      searchQuery: findFilterMap['q'] as String? ?? '',
-      sort: findFilterMap['sort'] as String?,
-      descending: direction is String
-          ? direction.toUpperCase() == 'DESC'
-          : true,
-      perPage: findFilterMap['per_page'] as int?,
-      filter: objectFilterMap.isEmpty
-          ? GroupFilter.empty()
-          : GroupFilter.fromJson(
-              savedFilterFromServerObjectFilter(
-                objectFilter: objectFilterMap,
-                serverToLocalKeys: _serverToLocalKeys,
-              ),
-            ),
+      searchQuery: payload.searchQuery,
+      sort: payload.sort,
+      descending: payload.descending,
+      perPage: payload.perPage,
+      filter: payload.filter,
     );
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
 
-import '../graphql/base_repository.dart';
+import '../graphql/graphql_exception.dart';
 import '../graphql/graphql_client.dart';
 
 const _findSavedFiltersDocument = r'''
@@ -72,7 +72,7 @@ class GraphQLSavedFilterRepository {
         parserFn: (data) => data,
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final filters = result.data?['findSavedFilters'] as List<dynamic>? ?? [];
     return filters
@@ -92,7 +92,7 @@ class GraphQLSavedFilterRepository {
         parserFn: (data) => data,
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final saved = result.data?['saveFilter'];
     if (saved is! Map<String, dynamic>) {
@@ -112,7 +112,7 @@ class GraphQLSavedFilterRepository {
         parserFn: (data) => data,
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final deleted = result.data?['destroySavedFilter'];
     if (deleted is! bool) {

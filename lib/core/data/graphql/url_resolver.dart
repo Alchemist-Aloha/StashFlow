@@ -44,9 +44,7 @@ String appendBasicAuth(String url, String username, String password) {
   final encodedUser = Uri.encodeComponent(username);
   final encodedPass = Uri.encodeComponent(password);
 
-  return uri.replace(
-    userInfo: '$encodedUser:$encodedPass',
-  ).toString();
+  return uri.replace(userInfo: '$encodedUser:$encodedPass').toString();
 }
 
 /// Appends an API key to the given [url] as a query parameter.

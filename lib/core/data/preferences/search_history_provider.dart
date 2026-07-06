@@ -17,16 +17,16 @@ class SearchHistoryNotifier extends _$SearchHistoryNotifier {
     if (trimmedQuery.isEmpty) return;
 
     final currentState = state.toList();
-    
+
     currentState.remove(trimmedQuery);
     currentState.insert(0, trimmedQuery);
-    
+
     if (currentState.length > 20) {
       currentState.removeRange(20, currentState.length);
     }
-    
+
     state = currentState;
-    
+
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setStringList(storageKey, currentState);
   }

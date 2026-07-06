@@ -5525,6 +5525,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Missing Field'**
   String get auto_missing_field;
+
+  /// No description provided for @filter_markers_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter markers'**
+  String get filter_markers_title;
+
+  /// No description provided for @marker_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker'**
+  String get marker_title;
+
+  /// No description provided for @duration_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration_title;
+
+  /// No description provided for @scene_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene'**
+  String get scene_title;
+
+  /// No description provided for @dates_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get dates_title;
+
+  /// No description provided for @created_at_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get created_at_title;
+
+  /// No description provided for @updated_at_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get updated_at_title;
+
+  /// No description provided for @scene_date_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Date'**
+  String get scene_date_title;
+
+  /// No description provided for @scene_created_at_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Created At'**
+  String get scene_created_at_title;
+
+  /// No description provided for @scene_updated_at_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Updated At'**
+  String get scene_updated_at_title;
+
+  /// No description provided for @organized_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Organized'**
+  String get organized_title;
+
+  /// No description provided for @interactive_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Interactive'**
+  String get interactive_title;
+
+  /// No description provided for @scraped_metadata_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scraped metadata'**
+  String get scraped_metadata_title;
+
+  /// No description provided for @local_scene_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Local scene'**
+  String get local_scene_title;
+
+  /// No description provided for @sort_markers_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort markers'**
+  String get sort_markers_title;
+
+  /// No description provided for @markers_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Markers'**
+  String get markers_title;
+
+  /// No description provided for @sub_group_count_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-group Count'**
+  String get sub_group_count_title;
+
+  /// No description provided for @groups_browsing_mode_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Default browsing mode for groups'**
+  String get groups_browsing_mode_subtitle;
+
+  /// No description provided for @markers_browsing_mode_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Default browsing mode for markers'**
+  String get markers_browsing_mode_subtitle;
+
+  /// No description provided for @entity_layouts_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Entity Layouts'**
+  String get entity_layouts_title;
+
+  /// No description provided for @entity_layouts_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Media and gallery layout defaults for performers, studios and tags'**
+  String get entity_layouts_subtitle;
+
+  /// No description provided for @stats_subtitle_0_gb.
+  ///
+  /// In en, this message translates to:
+  /// **'0.00 GB'**
+  String get stats_subtitle_0_gb;
+
+  /// No description provided for @stats_subtitle_0_unique_items.
+  ///
+  /// In en, this message translates to:
+  /// **'0 unique items'**
+  String get stats_subtitle_0_unique_items;
+
+  /// No description provided for @markers_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search markers'**
+  String get markers_search_hint;
+
+  /// No description provided for @tags_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tags_title;
+
+  /// No description provided for @scenes_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes'**
+  String get scenes_title;
 }
 
 class _AppLocalizationsDelegate

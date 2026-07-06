@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scenes_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
@@ -11,10 +11,10 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'helpers/test_helpers.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
-class FakeSceneRepository implements SceneRepository {
+class FakeGraphQLSceneRepository implements GraphQLSceneRepository {
   final List<Scene> _scenes;
 
-  FakeSceneRepository(this._scenes);
+  FakeGraphQLSceneRepository(this._scenes);
 
   @override
   Future<List<Scene>> findScenes({
@@ -132,7 +132,7 @@ void main() {
   testWidgets('ScenesPage renders and filters with mock repository', (
     tester,
   ) async {
-    final repo = FakeSceneRepository([
+    final repo = FakeGraphQLSceneRepository([
       Scene(
         id: 'scene-1',
         title: 'Alpha Scene',

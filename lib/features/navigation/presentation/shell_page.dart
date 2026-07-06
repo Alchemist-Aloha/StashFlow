@@ -14,13 +14,10 @@ import '../../../core/utils/environment.dart' as env;
 import 'package:flutter/gestures.dart';
 import '../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../core/presentation/providers/keybinds_provider.dart';
+import '../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../core/data/graphql/graphql_client.dart';
 import '../../scenes/presentation/providers/video_player_provider.dart';
 import '../../scenes/presentation/providers/scene_list_provider.dart';
-import '../../performers/presentation/providers/performer_list_provider.dart';
-import '../../studios/presentation/providers/studio_list_provider.dart';
-import '../../tags/presentation/providers/tag_list_provider.dart';
-import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
 import '../../setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../setup/presentation/providers/main_page_orientation_provider.dart';
@@ -317,20 +314,48 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           case NavigationTabType.scenes:
             final isTiktokLayout = ref.read(sceneTiktokLayoutProvider);
             if (!isTiktokLayout) {
-              ref.read(sceneScrollControllerProvider.notifier).scrollToTop();
+              ref
+                  .read(
+                    listScrollControllerProvider(
+                      ListScrollTarget.scene,
+                    ).notifier,
+                  )
+                  .scrollToTop();
             }
             break;
           case NavigationTabType.performers:
-            ref.read(performerScrollControllerProvider.notifier).scrollToTop();
+            ref
+                .read(
+                  listScrollControllerProvider(
+                    ListScrollTarget.performer,
+                  ).notifier,
+                )
+                .scrollToTop();
             break;
           case NavigationTabType.studios:
-            ref.read(studioScrollControllerProvider.notifier).scrollToTop();
+            ref
+                .read(
+                  listScrollControllerProvider(
+                    ListScrollTarget.studio,
+                  ).notifier,
+                )
+                .scrollToTop();
             break;
           case NavigationTabType.tags:
-            ref.read(tagScrollControllerProvider.notifier).scrollToTop();
+            ref
+                .read(
+                  listScrollControllerProvider(ListScrollTarget.tag).notifier,
+                )
+                .scrollToTop();
             break;
           case NavigationTabType.galleries:
-            ref.read(galleryScrollControllerProvider.notifier).scrollToTop();
+            ref
+                .read(
+                  listScrollControllerProvider(
+                    ListScrollTarget.gallery,
+                  ).notifier,
+                )
+                .scrollToTop();
             break;
           case NavigationTabType.groups:
             break;

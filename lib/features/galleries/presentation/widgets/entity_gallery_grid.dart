@@ -215,7 +215,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
   }
 
   int _activeFilterCount(GalleryFilter filter) {
-    return filter.toJson().values.where((value) => value != null).length;
+    return activeFilterCount(filter.toJson());
   }
 
   void _showSavedFilterDialog() {
@@ -241,7 +241,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(effectiveFilter),
         defaultSortLabel: 'path',
-        saveSuccessMessage: 'Gallery filter saved to server',
+        saveSuccessMessage: context.l10n.saved_item('Gallery filter'),
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(
@@ -257,7 +257,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: GallerySavedFilterConfig.current(
+                input: GallerySavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(

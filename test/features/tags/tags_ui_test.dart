@@ -27,7 +27,7 @@ void main() {
   );
 
   testWidgets('TagsPage displays list of tags', (tester) async {
-    final mockRepo = MockTagRepository()..withData([testTag]);
+    final mockRepo = MockGraphQLTagRepository()..withData([testTag]);
 
     await pumpTestWidget(
       tester,
@@ -44,7 +44,7 @@ void main() {
   testWidgets('TagsPage sort panel uses the scene-list title layout', (
     tester,
   ) async {
-    final mockRepo = MockTagRepository()..withData([testTag]);
+    final mockRepo = MockGraphQLTagRepository()..withData([testTag]);
 
     await pumpTestWidget(
       tester,

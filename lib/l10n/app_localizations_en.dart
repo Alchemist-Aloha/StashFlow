@@ -3067,4 +3067,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Missing Field';
+
+  @override
+  String get filter_markers_title => 'Filter markers';
+
+  @override
+  String get marker_title => 'Marker';
+
+  @override
+  String get duration_title => 'Duration';
+
+  @override
+  String get scene_title => 'Scene';
+
+  @override
+  String get dates_title => 'Dates';
+
+  @override
+  String get created_at_title => 'Created At';
+
+  @override
+  String get updated_at_title => 'Updated At';
+
+  @override
+  String get scene_date_title => 'Scene Date';
+
+  @override
+  String get scene_created_at_title => 'Scene Created At';
+
+  @override
+  String get scene_updated_at_title => 'Scene Updated At';
+
+  @override
+  String get organized_title => 'Organized';
+
+  @override
+  String get interactive_title => 'Interactive';
+
+  @override
+  String get scraped_metadata_title => 'Scraped metadata';
+
+  @override
+  String get local_scene_title => 'Local scene';
+
+  @override
+  String get sort_markers_title => 'Sort markers';
+
+  @override
+  String get markers_title => 'Markers';
+
+  @override
+  String get sub_group_count_title => 'Sub-group Count';
+
+  @override
+  String get groups_browsing_mode_subtitle =>
+      'Default browsing mode for groups';
+
+  @override
+  String get markers_browsing_mode_subtitle =>
+      'Default browsing mode for markers';
+
+  @override
+  String get entity_layouts_title => 'Entity Layouts';
+
+  @override
+  String get entity_layouts_subtitle =>
+      'Media and gallery layout defaults for performers, studios and tags';
+
+  @override
+  String get stats_subtitle_0_gb => '0.00 GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 unique items';
+
+  @override
+  String get markers_search_hint => 'Search markers';
+
+  @override
+  String get tags_title => 'Tags';
+
+  @override
+  String get scenes_title => 'Scenes';
 }

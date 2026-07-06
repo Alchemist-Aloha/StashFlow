@@ -1,23 +1,20 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart';
-import '../../domain/repositories/performer_repository.dart';
 import '../graphql/performers.graphql.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
 
-class GraphQLPerformerRepository implements PerformerRepository {
-  final GraphQLClient client;
-  GraphQLPerformerRepository(this.client);
+class GraphQLPerformerRepository {
+  final GraphQLClient _client;
+  GraphQLPerformerRepository(this._client);
 
-  Uri get _graphqlEndpoint => client.link is HttpLink
-      ? (client.link as HttpLink).uri
+  Uri get _graphqlEndpoint => _client.link is HttpLink
+      ? (_client.link as HttpLink).uri
       : Uri.parse('https://localhost/graphql');
-
-  @override
   Future<List<Performer>> findPerformers({
     int? page,
     int? perPage,
@@ -76,7 +73,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       );
     }
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final performers = result.parsedData!.findPerformers.performers
         .map(
@@ -198,7 +195,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       updated_at: mapTimestampCriterion(performerFilter?.updatedAt),
     );
 
-    return client.query$FindPerformers(
+    return _client.query$FindPerformers(
       Options$Query$FindPerformers(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
@@ -227,16 +224,15 @@ class GraphQLPerformerRepository implements PerformerRepository {
     );
   }
 
-  @override
   Future<Performer> getPerformerById(String id, {bool refresh = false}) async {
-    final result = await client.query$FindPerformer(
+    final result = await _client.query$FindPerformer(
       Options$Query$FindPerformer(
         fetchPolicy: refresh ? FetchPolicy.networkOnly : FetchPolicy.cacheFirst,
         variables: Variables$Query$FindPerformer(id: id),
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     final p = result.parsedData!.findPerformer;
     if (p == null) throw StateError('Performer not found');
 
@@ -279,9 +275,8 @@ class GraphQLPerformerRepository implements PerformerRepository {
     );
   }
 
-  @override
   Future<void> setPerformerFavorite(String id, bool favorite) async {
-    final result = await client.mutate$UpdatePerformerFavorite(
+    final result = await _client.mutate$UpdatePerformerFavorite(
       Options$Mutation$UpdatePerformerFavorite(
         variables: Variables$Mutation$UpdatePerformerFavorite(
           id: id,
@@ -290,17 +285,16 @@ class GraphQLPerformerRepository implements PerformerRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 
-  @override
   Future<List<ScrapedPerformer>> scrapePerformer({
     String? scraperId,
     String? stashBoxEndpoint,
     String? performerId,
     String? query,
   }) async {
-    final result = await client.query$ScrapeSinglePerformer(
+    final result = await _client.query$ScrapeSinglePerformer(
       Options$Query$ScrapeSinglePerformer(
         variables: Variables$Query$ScrapeSinglePerformer(
           source: Input$ScraperSourceInput(
@@ -315,7 +309,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final List<Query$ScrapeSinglePerformer$scrapeSinglePerformer> raw =
         result.parsedData?.scrapeSinglePerformer ?? [];
@@ -323,26 +317,24 @@ class GraphQLPerformerRepository implements PerformerRepository {
     return raw.map((e) => ScrapedPerformer.fromJson(e.toJson())).toList();
   }
 
-  @override
   Future<ScrapedPerformer?> scrapePerformerURL(String url) async {
-    final result = await client.query$ScrapePerformerURL(
+    final result = await _client.query$ScrapePerformerURL(
       Options$Query$ScrapePerformerURL(
         variables: Variables$Query$ScrapePerformerURL(url: url),
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final raw = result.parsedData?.scrapePerformerURL;
     return raw != null ? ScrapedPerformer.fromJson(raw.toJson()) : null;
   }
 
-  @override
   Future<void> updatePerformer({
     required String id,
     required Map<String, dynamic> input,
   }) async {
-    final result = await client.mutate$PerformerUpdate(
+    final result = await _client.mutate$PerformerUpdate(
       Options$Mutation$PerformerUpdate(
         variables: Variables$Mutation$PerformerUpdate(
           input: Input$PerformerUpdateInput.fromJson({...input, 'id': id}),
@@ -350,6 +342,6 @@ class GraphQLPerformerRepository implements PerformerRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 }

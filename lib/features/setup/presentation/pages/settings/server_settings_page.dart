@@ -9,8 +9,9 @@ import 'package:stash_app_flutter/features/groups/presentation/providers/group_d
 import 'package:stash_app_flutter/features/groups/presentation/providers/group_list_provider.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_details_provider.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
-import 'package:stash_app_flutter/features/performers/presentation/providers/performer_media_provider.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/entity_media_filter_scope.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_details_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
@@ -20,10 +21,8 @@ import 'package:stash_app_flutter/features/setup/presentation/widgets/server_pro
 import 'package:stash_app_flutter/features/setup/presentation/widgets/server_profile_drawer.dart';
 import 'package:stash_app_flutter/features/studios/presentation/providers/studio_details_provider.dart';
 import 'package:stash_app_flutter/features/studios/presentation/providers/studio_list_provider.dart';
-import 'package:stash_app_flutter/features/studios/presentation/providers/studio_media_provider.dart';
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_details_provider.dart';
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
-import 'package:stash_app_flutter/features/tags/presentation/providers/tag_media_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_mode.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_provider.dart';
@@ -65,18 +64,17 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
 
     ref.invalidate(performerListProvider);
     ref.invalidate(performerDetailsProvider);
-    ref.invalidate(performerMediaProvider);
-    ref.invalidate(performerMediaGridProvider);
 
     ref.invalidate(studioListProvider);
     ref.invalidate(studioDetailsProvider);
-    ref.invalidate(studioMediaProvider);
-    ref.invalidate(studioMediaGridProvider);
 
     ref.invalidate(tagListProvider);
     ref.invalidate(tagDetailsProvider);
-    ref.invalidate(tagMediaProvider);
-    ref.invalidate(tagMediaGridProvider);
+
+    ref.invalidate(entityMediaPreviewProvider);
+    ref.invalidate(entityMediaGridProvider);
+    ref.invalidate(entityGalleryPreviewProvider);
+    ref.invalidate(entityGalleryGridProvider);
 
     ref.invalidate(galleryListProvider);
     ref.invalidate(galleryDetailsProvider);
@@ -100,7 +98,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     ref.listen(activeServerProfileIdProvider, (previous, next) async {
       if (previous != next && next != null) {
         await _flushRuntimeCachesAfterServerChange();
-        
+
         final profile = ref.read(activeProfileProvider);
         if (profile != null && profile.authMode == AuthMode.password) {
           ref.read(authProvider.notifier).login();

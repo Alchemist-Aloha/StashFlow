@@ -7,7 +7,8 @@ import 'package:stash_app_flutter/features/performers/presentation/pages/perform
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/features/performers/presentation/widgets/performer_card.dart';
 
-import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart' as domain;
+import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart'
+    as domain;
 import '../../helpers/test_helpers.dart';
 
 class MockPerformerSort extends PerformerSort {
@@ -75,7 +76,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = MockPerformerRepository()
+    final mockRepo = MockGraphQLPerformerRepository()
       ..withData([testPerformer, testPerformer2]);
 
     await pumpTestWidget(
@@ -101,7 +102,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = MockPerformerRepository()
+    final mockRepo = MockGraphQLPerformerRepository()
       ..withData([testPerformer, testPerformer2]);
 
     await pumpTestWidget(
@@ -151,7 +152,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = MockPerformerRepository()
+    final mockRepo = MockGraphQLPerformerRepository()
       ..withData([testPerformer, testPerformer2]);
 
     await pumpTestWidget(
@@ -191,7 +192,6 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pump(); // One last pump to be sure
 
-
     expect(
       find.descendant(
         of: find.byType(PerformerCard),
@@ -215,7 +215,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = MockPerformerRepository()
+    final mockRepo = MockGraphQLPerformerRepository()
       ..withData([testPerformer, testPerformer2]);
 
     await pumpTestWidget(
@@ -238,7 +238,9 @@ void main() {
     expect(delegate.childAspectRatio, closeTo(0.56, 0.001));
   });
 
-  testWidgets('PerformerCard uses a rounded portrait image clip', (tester) async {
+  testWidgets('PerformerCard uses a rounded portrait image clip', (
+    tester,
+  ) async {
     await pumpTestWidget(
       tester,
       prefs: prefs,
@@ -260,10 +262,9 @@ void main() {
     final clip = tester.widget<ClipRRect>(find.byType(ClipRRect));
     final imageSize = tester.getSize(find.byType(ClipRRect));
     final sizedBox = tester.widget<SizedBox>(
-      find.ancestor(
-        of: find.byType(ClipRRect),
-        matching: find.byType(SizedBox),
-      ).first,
+      find
+          .ancestor(of: find.byType(ClipRRect), matching: find.byType(SizedBox))
+          .first,
     );
     expect(clip.borderRadius, BorderRadius.circular(12));
     expect(sizedBox.width, isNotNull);

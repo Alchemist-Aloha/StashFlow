@@ -9,8 +9,14 @@ void main() {
         'searchQuery': 'test search',
         'rating100': {'value': 80, 'modifier': 'EQUALS'},
         'organized': true,
-        'resolution': {'value': ['1080p', '4k'], 'modifier': 'INCLUDES'},
-        'orientation': {'value': ['LANDSCAPE'], 'modifier': 'INCLUDES'},
+        'resolution': {
+          'value': ['1080p', '4k'],
+          'modifier': 'INCLUDES',
+        },
+        'orientation': {
+          'value': ['LANDSCAPE'],
+          'modifier': 'INCLUDES',
+        },
       };
 
       final filter = ImageFilter.fromJson(json);
@@ -46,17 +52,21 @@ void main() {
     test('should support value equality', () {
       final filter1 = ImageFilter(
         searchQuery: 'query',
-        rating100: const IntCriterion(value: 60, modifier: CriterionModifier.equals),
+        rating100: const IntCriterion(
+          value: 60,
+          modifier: CriterionModifier.equals,
+        ),
         organized: false,
       );
       final filter2 = ImageFilter(
         searchQuery: 'query',
-        rating100: const IntCriterion(value: 60, modifier: CriterionModifier.equals),
+        rating100: const IntCriterion(
+          value: 60,
+          modifier: CriterionModifier.equals,
+        ),
         organized: false,
       );
-      final filter3 = ImageFilter(
-        searchQuery: 'different',
-      );
+      final filter3 = ImageFilter(searchQuery: 'different');
 
       expect(filter1, equals(filter2));
       expect(filter1, isNot(equals(filter3)));
@@ -66,7 +76,10 @@ void main() {
     test('should convert to JSON correctly', () {
       final filter = ImageFilter(
         searchQuery: 'test',
-        rating100: const IntCriterion(value: 100, modifier: CriterionModifier.equals),
+        rating100: const IntCriterion(
+          value: 100,
+          modifier: CriterionModifier.equals,
+        ),
         organized: true,
         resolution: const MultiCriterion(value: ['1080p']),
       );

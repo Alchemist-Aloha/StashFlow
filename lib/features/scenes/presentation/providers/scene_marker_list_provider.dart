@@ -6,23 +6,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
-import '../../data/repositories/graphql_scene_marker_saved_filter_repository.dart';
 import '../../data/repositories/graphql_scene_marker_repository.dart';
 import '../../domain/entities/scene_marker.dart';
-import '../../domain/repositories/scene_marker_repository.dart';
 
 part 'scene_marker_list_provider.g.dart';
 
-final sceneMarkerRepositoryProvider = Provider<SceneMarkerRepository>((ref) {
+final sceneMarkerRepositoryProvider = Provider<GraphQLSceneMarkerRepository>((
+  ref,
+) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLSceneMarkerRepository(client);
 });
-
-final sceneMarkerSavedFilterRepositoryProvider =
-    Provider<GraphQLSceneMarkerSavedFilterRepository>((ref) {
-      final client = ref.watch(graphqlClientProvider);
-      return GraphQLSceneMarkerSavedFilterRepository(client);
-    });
 
 @Riverpod(keepAlive: true)
 class SceneMarkerSort extends _$SceneMarkerSort {

@@ -7,7 +7,6 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:clock/clock.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../domain/entities/scene.dart';
 import 'playback_queue_provider.dart';
@@ -378,7 +377,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     _sessionController = PlaybackSessionController();
 
     _activityTracker = PlaybackActivityTracker(
-      now: () => clock.now(),
+      now: DateTime.now,
       isMounted: () => ref.mounted,
       incrementPlayCount: (sceneId) =>
           ref.read(sceneRepositoryProvider).incrementScenePlayCount(sceneId),
@@ -663,7 +662,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   Future<bool> requestEnterPip({double? aspectRatio}) async {
-    final now = clock.now();
+    final now = DateTime.now();
     final elapsedSinceLast = _lastPipRequestAt == null
         ? null
         : now.difference(_lastPipRequestAt!);
@@ -1373,7 +1372,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     final isBackgroundState =
         state == AppLifecycleState.hidden || state == AppLifecycleState.paused;
     if (!isBackgroundState) return;
-    _backgroundEnteredAt ??= clock.now();
+    _backgroundEnteredAt ??= DateTime.now();
 
     final player = this.state.player;
     if (player == null) return;
@@ -1427,7 +1426,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         inBackground &&
         state.enableBackgroundPlayback &&
         enteredAt != null &&
-        clock.now().difference(enteredAt) < _backgroundPauseGraceWindow;
+        DateTime.now().difference(enteredAt) < _backgroundPauseGraceWindow;
 
     if (inBackgroundGraceWindow) {
       AppLogStore.instance.add(

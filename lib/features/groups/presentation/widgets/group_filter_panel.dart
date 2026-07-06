@@ -71,7 +71,7 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
                 },
               ),
               IntCriterionInput(
-                label: 'Sub-group Count',
+                label: context.l10n.sub_group_count_title,
                 value: _tempFilter.subGroupCount,
                 onChanged: (value) {
                   setState(() {

@@ -1,54 +1,22 @@
-import 'dart:math';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/group.dart';
 import '../../domain/entities/group_filter.dart';
-import '../../domain/repositories/group_repository.dart';
 import '../../data/repositories/graphql_group_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'group_list_provider.g.dart';
 
-final groupRepositoryProvider = Provider<GroupRepository>((ref) {
+final groupRepositoryProvider = Provider<GraphQLGroupRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLGroupRepository(client);
 });
 
-final groupScrollControllerProvider =
-    NotifierProvider<GroupScrollController, ScrollController>(
-      GroupScrollController.new,
-    );
-
-class GroupScrollController extends Notifier<ScrollController> {
-  @override
-  ScrollController build() {
-    final controller = ScrollController();
-    ref.onDispose(controller.dispose);
-    return controller;
-  }
-
-  void scrollToTop() {
-    if (state.hasClients) {
-      state.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-}
-
-@Riverpod(keepAlive: true)
-class GroupRandomSeed extends _$GroupRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final groupRandomSeedProvider = listRandomSeedProvider('group');
 
 @Riverpod(keepAlive: true)
 class GroupSort extends _$GroupSort {

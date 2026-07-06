@@ -20,18 +20,13 @@ class StatsFloatingPanel extends ConsumerWidget {
       barrierColor: colorScheme.scrim.withValues(alpha: 0.6),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
-        return const Center(
-          child: StatsFloatingPanel(),
-        );
+        return const Center(child: StatsFloatingPanel());
       },
       transitionBuilder: (context, anim1, anim2, child) {
         final curve = Curves.easeOutBack.transform(anim1.value);
         return Transform.scale(
           scale: curve,
-          child: Opacity(
-            opacity: anim1.value,
-            child: child,
-          ),
+          child: Opacity(opacity: anim1.value, child: child),
         );
       },
     );
@@ -95,7 +90,11 @@ class StatsFloatingPanel extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AppDimensions dims, ColorScheme colorScheme) {
+  Widget _buildHeader(
+    BuildContext context,
+    AppDimensions dims,
+    ColorScheme colorScheme,
+  ) {
     return Padding(
       padding: EdgeInsets.fromLTRB(
         dims.spacingMedium * 1.5,
@@ -254,13 +253,13 @@ class StatsFloatingPanel extends ConsumerWidget {
             icon: Icons.movie_filter_rounded,
             label: l10n.stats_scenes,
             value: '000',
-            subtitle: '0.00 GB',
+            subtitle: context.l10n.stats_subtitle_0_gb,
           ),
           _StatItem(
             icon: Icons.photo_library_rounded,
             label: l10n.images_title,
             value: '000',
-            subtitle: '0.00 GB',
+            subtitle: context.l10n.stats_subtitle_0_gb,
           ),
           _StatItem(
             icon: Icons.auto_stories_rounded,
@@ -295,7 +294,7 @@ class StatsFloatingPanel extends ConsumerWidget {
             icon: Icons.play_lesson_rounded,
             label: l10n.stats_total_plays,
             value: '000',
-            subtitle: '0 unique items',
+            subtitle: context.l10n.stats_subtitle_0_unique_items,
           ),
           _StatItem(
             icon: Icons.favorite_rounded,

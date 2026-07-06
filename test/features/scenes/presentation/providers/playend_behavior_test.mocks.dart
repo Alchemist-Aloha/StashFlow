@@ -24,6 +24,8 @@ import 'package:media_kit_video/src/video_controller/video_controller.dart'
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart'
     as _i11;
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart'
+    as _i8;
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart'
     as _i2;
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart'
@@ -32,8 +34,6 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.d
     as _i9;
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart'
     as _i10;
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart'
-    as _i8;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -86,11 +86,12 @@ class _FakeValueNotifier_6<T> extends _i1.SmartFake
     : super(parent, parentInvocation);
 }
 
-/// A class which mocks [SceneRepository].
+/// A class which mocks [GraphQLSceneRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSceneRepository extends _i1.Mock implements _i8.SceneRepository {
-  MockSceneRepository() {
+class MockGraphQLSceneRepository extends _i1.Mock
+    implements _i8.GraphQLSceneRepository {
+  MockGraphQLSceneRepository() {
     _i1.throwOnMissingStub(this);
   }
 
@@ -138,6 +139,49 @@ class MockSceneRepository extends _i1.Mock implements _i8.SceneRepository {
             ),
           )
           as _i6.Future<_i2.Scene>);
+
+  @override
+  _i6.Future<_i2.SceneMarker> createSceneMarker({
+    required String? sceneId,
+    required String? title,
+    double? seconds = 0.0,
+    double? endSeconds,
+    String? primaryTagId,
+    List<String>? tagIds = const [],
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createSceneMarker, [], {
+              #sceneId: sceneId,
+              #title: title,
+              #seconds: seconds,
+              #endSeconds: endSeconds,
+              #primaryTagId: primaryTagId,
+              #tagIds: tagIds,
+            }),
+            returnValue: _i6.Future<_i2.SceneMarker>.value(
+              _FakeSceneMarker_1(
+                this,
+                Invocation.method(#createSceneMarker, [], {
+                  #sceneId: sceneId,
+                  #title: title,
+                  #seconds: seconds,
+                  #endSeconds: endSeconds,
+                  #primaryTagId: primaryTagId,
+                  #tagIds: tagIds,
+                }),
+              ),
+            ),
+          )
+          as _i6.Future<_i2.SceneMarker>);
+
+  @override
+  _i6.Future<void> deleteSceneMarker(String? markerId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteSceneMarker, [markerId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
 
   @override
   _i6.Future<List<_i10.Scraper>> listScrapers({required List<String>? types}) =>
@@ -209,10 +253,10 @@ class MockSceneRepository extends _i1.Mock implements _i8.SceneRepository {
 
   @override
   _i6.Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
-    List<String>? queries,
+    List<String>? performers,
   ) =>
       (super.noSuchMethod(
-            Invocation.method(#findPerformerCandidates, [queries]),
+            Invocation.method(#findPerformerCandidates, [performers]),
             returnValue:
                 _i6.Future<Map<String, List<Map<String, dynamic>>>>.value(
                   <String, List<Map<String, dynamic>>>{},
@@ -272,49 +316,6 @@ class MockSceneRepository extends _i1.Mock implements _i8.SceneRepository {
               [id],
               {#resumeTime: resumeTime, #playDuration: playDuration},
             ),
-            returnValue: _i6.Future<void>.value(),
-            returnValueForMissingStub: _i6.Future<void>.value(),
-          )
-          as _i6.Future<void>);
-
-  @override
-  _i6.Future<_i2.SceneMarker> createSceneMarker({
-    required String? sceneId,
-    required String? title,
-    double? seconds = 0.0,
-    double? endSeconds,
-    String? primaryTagId,
-    List<String>? tagIds = const [],
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#createSceneMarker, [], {
-              #sceneId: sceneId,
-              #title: title,
-              #seconds: seconds,
-              #endSeconds: endSeconds,
-              #primaryTagId: primaryTagId,
-              #tagIds: tagIds,
-            }),
-            returnValue: _i6.Future<_i2.SceneMarker>.value(
-              _FakeSceneMarker_1(
-                this,
-                Invocation.method(#createSceneMarker, [], {
-                  #sceneId: sceneId,
-                  #title: title,
-                  #seconds: seconds,
-                  #endSeconds: endSeconds,
-                  #primaryTagId: primaryTagId,
-                  #tagIds: tagIds,
-                }),
-              ),
-            ),
-          )
-          as _i6.Future<_i2.SceneMarker>);
-
-  @override
-  _i6.Future<void> deleteSceneMarker(String? markerId) =>
-      (super.noSuchMethod(
-            Invocation.method(#deleteSceneMarker, [markerId]),
             returnValue: _i6.Future<void>.value(),
             returnValueForMissingStub: _i6.Future<void>.value(),
           )

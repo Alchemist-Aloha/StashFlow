@@ -1,5 +1,5 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 
 class StatsResult {
   final int sceneCount;
@@ -54,7 +54,7 @@ class StatsResult {
   }
 }
 
-class StatsRepository extends BaseRepository {
+class StatsRepository {
   final GraphQLClient client;
 
   StatsRepository(this.client);
@@ -88,8 +88,8 @@ class StatsRepository extends BaseRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
-    
+    validateGraphQLResult(result);
+
     final data = result.data?['stats'];
     if (data == null) {
       throw Exception('Failed to fetch stats: data is null');

@@ -1,15 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:math';
 import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
-import '../../domain/repositories/scene_repository.dart';
 import '../../data/repositories/graphql_scene_repository.dart';
-import '../../data/repositories/graphql_scene_saved_filter_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'playback_queue_provider.dart';
@@ -18,48 +18,12 @@ import '../../../../core/domain/entities/filter_options.dart';
 part 'scene_list_provider.g.dart';
 
 // Provider for Repository interface
-final sceneRepositoryProvider = Provider<SceneRepository>((ref) {
+final sceneRepositoryProvider = Provider<GraphQLSceneRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLSceneRepository(client);
 });
 
-final sceneSavedFilterRepositoryProvider =
-    Provider<GraphQLSceneSavedFilterRepository>((ref) {
-      final client = ref.watch(graphqlClientProvider);
-      return GraphQLSceneSavedFilterRepository(client);
-    });
-
-final sceneScrollControllerProvider =
-    NotifierProvider<SceneScrollController, ScrollController>(
-      SceneScrollController.new,
-    );
-
-class SceneScrollController extends Notifier<ScrollController> {
-  @override
-  ScrollController build() {
-    final controller = ScrollController();
-    ref.onDispose(controller.dispose);
-    return controller;
-  }
-
-  void scrollToTop() {
-    if (state.hasClients) {
-      state.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-}
-
-@Riverpod(keepAlive: true)
-class SceneRandomSeed extends _$SceneRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final sceneRandomSeedProvider = listRandomSeedProvider('scene');
 
 @Riverpod(keepAlive: true)
 class SceneSort extends _$SceneSort {
@@ -192,7 +156,7 @@ class SceneGridLayout extends _$SceneGridLayout {
 /// filtering, sorting, and infinite pagination.
 ///
 /// This provider is responsible for:
-/// - Initializing and refreshing the scene list from the [SceneRepository].
+/// - Initializing and refreshing the scene list from the [GraphQLSceneRepository].
 /// - Managing the current page state and loading more scenes as the user scrolls.
 /// - Providing search and filtering capabilities.
 /// - Synchronizing the initial playback sequence with the [playbackQueueProvider].

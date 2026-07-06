@@ -1,5 +1,5 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -7,19 +7,16 @@ import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
     as domain;
 import '../../domain/entities/studio.dart';
 import '../../domain/entities/studio_filter.dart';
-import '../../domain/repositories/studio_repository.dart';
 import '../graphql/studios.graphql.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
 
-class GraphQLStudioRepository implements StudioRepository {
-  final GraphQLClient client;
-  GraphQLStudioRepository(this.client);
+class GraphQLStudioRepository {
+  final GraphQLClient _client;
+  GraphQLStudioRepository(this._client);
 
-  Uri get _graphqlEndpoint => client.link is HttpLink
-      ? (client.link as HttpLink).uri
+  Uri get _graphqlEndpoint => _client.link is HttpLink
+      ? (_client.link as HttpLink).uri
       : Uri.parse('http://localhost:9999/graphql');
-
-  @override
   Future<List<Studio>> findStudios({
     int? page,
     int? perPage,
@@ -74,7 +71,7 @@ class GraphQLStudioRepository implements StudioRepository {
       );
     }
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final studios = result.parsedData!.findStudios.studios
         .map(
@@ -144,7 +141,7 @@ class GraphQLStudioRepository implements StudioRepository {
       updated_at: mapTimestampCriterion(studioFilter?.updatedAt),
     );
 
-    return client.query$FindStudios(
+    return _client.query$FindStudios(
       Options$Query$FindStudios(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
@@ -173,16 +170,15 @@ class GraphQLStudioRepository implements StudioRepository {
     );
   }
 
-  @override
   Future<Studio> getStudioById(String id, {bool refresh = false}) async {
-    final result = await client.query$FindStudio(
+    final result = await _client.query$FindStudio(
       Options$Query$FindStudio(
         fetchPolicy: refresh ? FetchPolicy.networkOnly : FetchPolicy.cacheFirst,
         variables: Variables$Query$FindStudio(id: id),
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     final s = result.parsedData!.findStudio;
     if (s == null) throw StateError('Studio not found');
 
@@ -204,9 +200,8 @@ class GraphQLStudioRepository implements StudioRepository {
     );
   }
 
-  @override
   Future<void> setStudioFavorite(String id, bool favorite) async {
-    final result = await client.mutate$UpdateStudioFavorite(
+    final result = await _client.mutate$UpdateStudioFavorite(
       Options$Mutation$UpdateStudioFavorite(
         variables: Variables$Mutation$UpdateStudioFavorite(
           id: id,
@@ -215,17 +210,16 @@ class GraphQLStudioRepository implements StudioRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 
-  @override
   Future<List<ScrapedStudio>> scrapeStudio({
     String? scraperId,
     String? stashBoxEndpoint,
     String? studioId,
     String? query,
   }) async {
-    final result = await client.query$ScrapeSingleStudio(
+    final result = await _client.query$ScrapeSingleStudio(
       Options$Query$ScrapeSingleStudio(
         variables: Variables$Query$ScrapeSingleStudio(
           source: Input$ScraperSourceInput(
@@ -237,7 +231,7 @@ class GraphQLStudioRepository implements StudioRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final List<Query$ScrapeSingleStudio$scrapeSingleStudio> raw =
         result.parsedData?.scrapeSingleStudio ?? [];
@@ -245,18 +239,16 @@ class GraphQLStudioRepository implements StudioRepository {
     return raw.map((e) => ScrapedStudio.fromJson(e.toJson())).toList();
   }
 
-  @override
   Future<ScrapedStudio?> scrapeStudioURL(String url) async {
     final results = await scrapeStudio(query: url);
     return results.isNotEmpty ? results.first : null;
   }
 
-  @override
   Future<void> updateStudio({
     required String id,
     required Map<String, dynamic> input,
   }) async {
-    final result = await client.mutate$StudioUpdate(
+    final result = await _client.mutate$StudioUpdate(
       Options$Mutation$StudioUpdate(
         variables: Variables$Mutation$StudioUpdate(
           input: Input$StudioUpdateInput.fromJson({...input, 'id': id}),
@@ -264,6 +256,6 @@ class GraphQLStudioRepository implements StudioRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 }

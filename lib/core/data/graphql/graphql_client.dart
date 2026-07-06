@@ -14,6 +14,8 @@ import '../../utils/environment.dart' as env;
 
 part 'graphql_client.g.dart';
 
+const graphqlRequestTimeout = Duration(seconds: 60);
+
 Uri _withGraphqlPathIfMissing(Uri uri) {
   final path = uri.path.trim();
   if (path.isEmpty || path == '/') {
@@ -55,7 +57,7 @@ class ServerUrl extends _$ServerUrl {
     if (profile != null) {
       return normalizeGraphqlServerUrl(profile.baseUrl);
     }
-    
+
     final prefs = ref.watch(sharedPreferencesProvider);
     final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
     return normalizeGraphqlServerUrl(storedServerUrl);
@@ -69,7 +71,7 @@ class ServerApiKey extends _$ServerApiKey {
     ref.watch(sharedPreferencesTriggerProvider);
     final profile = ref.watch(activeProfileProvider);
     if (profile == null) return '';
-    
+
     return ref.watch(profileApiKeyProvider(profile.id)).value ?? '';
   }
 }
@@ -81,7 +83,10 @@ final proxyAuthModesEnabledProvider = Provider<bool>((ref) {
 });
 
 @riverpod
-Future<GraphQLClient> profileGraphqlClient(Ref ref, ServerProfile profile) async {
+Future<GraphQLClient> profileGraphqlClient(
+  Ref ref,
+  ServerProfile profile,
+) async {
   final url = normalizeGraphqlServerUrl(profile.baseUrl);
   if (url.isEmpty) {
     throw Exception('Invalid profile URL');
@@ -111,7 +116,9 @@ Future<GraphQLClient> profileGraphqlClient(Ref ref, ServerProfile profile) async
   final headers = getAuthHeaders(authState: authState, apiKey: apiKey);
   debugPrint('profileGraphqlClient: URL: $url');
   debugPrint('profileGraphqlClient: AuthMode: ${profile.authMode}');
-  debugPrint('profileGraphqlClient: Cookie present: ${cookieHeader.isNotEmpty}');
+  debugPrint(
+    'profileGraphqlClient: Cookie present: ${cookieHeader.isNotEmpty}',
+  );
   debugPrint('profileGraphqlClient: Headers: ${headers.keys.join(', ')}');
 
   final isPasswordMode = profile.authMode == AuthMode.password;
@@ -125,7 +132,9 @@ Future<GraphQLClient> profileGraphqlClient(Ref ref, ServerProfile profile) async
 
   return GraphQLClient(
     link: httpLink,
-    cache: GraphQLCache(), // Always use fresh cache for non-active profile checks
+    cache:
+        GraphQLCache(), // Always use fresh cache for non-active profile checks
+    queryRequestTimeout: graphqlRequestTimeout,
   );
 }
 
@@ -140,6 +149,7 @@ class GraphqlClient extends _$GraphqlClient {
         return GraphQLClient(
           link: HttpLink('http://localhost'),
           cache: GraphQLCache(),
+          queryRequestTimeout: graphqlRequestTimeout,
         );
       }
       throw Exception('Server URL not configured');
@@ -162,6 +172,7 @@ class GraphqlClient extends _$GraphqlClient {
     return GraphQLClient(
       link: httpLink,
       cache: env.isTestMode ? GraphQLCache() : GraphQLCache(store: HiveStore()),
+      queryRequestTimeout: graphqlRequestTimeout,
     );
   }
 }

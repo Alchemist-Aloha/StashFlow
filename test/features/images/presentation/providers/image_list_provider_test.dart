@@ -8,11 +8,11 @@ import 'package:stash_app_flutter/features/images/presentation/providers/image_l
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
-  late MockImageRepository mockRepository;
+  late MockGraphQLImageRepository mockRepository;
   late ProviderContainer container;
 
   setUp(() async {
-    mockRepository = MockImageRepository();
+    mockRepository = MockGraphQLImageRepository();
     SharedPreferences.setMockInitialValues({});
     final sharedPrefs = await SharedPreferences.getInstance();
 

@@ -5,7 +5,7 @@ import 'package:stash_app_flutter/features/groups/domain/entities/group_saved_fi
 
 void main() {
   test('GroupSavedFilterConfig stores group filters as server payload', () {
-    final config = GroupSavedFilterConfig.current(
+    final config = GroupSavedFilterConfig(
       name: 'Missing directors',
       searchQuery: 'group',
       sort: 'name',

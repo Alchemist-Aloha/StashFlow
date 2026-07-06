@@ -5,7 +5,7 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene_marker_s
 
 void main() {
   test('scene marker saved filter saves official mode and server keys', () {
-    final config = SceneMarkerSavedFilterConfig.current(
+    final config = SceneMarkerSavedFilterConfig(
       name: 'Markers preset',
       searchQuery: 'beat',
       sort: 'seconds',

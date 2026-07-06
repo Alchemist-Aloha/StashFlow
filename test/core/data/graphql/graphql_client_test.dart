@@ -21,18 +21,23 @@ void main() {
         overrides: [
           serverUrlProvider.overrideWithValue('http://localhost/graphql'),
           serverApiKeyProvider.overrideWithValue(''),
-          authProvider.overrideWith(() => MockAuthProvider(AuthState.initial().copyWith(
-            mode: AuthMode.basic,
-            username: 'alice',
-            password: 'secret',
-          ))),
+          authProvider.overrideWith(
+            () => MockAuthProvider(
+              AuthState.initial().copyWith(
+                mode: AuthMode.basic,
+                username: 'alice',
+                password: 'secret',
+              ),
+            ),
+          ),
         ],
       );
       addTearDown(container.dispose);
 
       final client = container.read(graphqlClientProvider);
       final link = client.link as HttpLink;
-      
+
+      expect(client.queryManager.requestTimeout, graphqlRequestTimeout);
       final expectedBase64 = base64Encode(utf8.encode('alice:secret'));
       expect(link.defaultHeaders['Authorization'], 'Basic $expectedBase64');
     });
@@ -42,16 +47,19 @@ void main() {
         overrides: [
           serverUrlProvider.overrideWithValue('http://localhost/graphql'),
           serverApiKeyProvider.overrideWithValue('some-token'),
-          authProvider.overrideWith(() => MockAuthProvider(AuthState.initial().copyWith(
-            mode: AuthMode.bearer,
-          ))),
+          authProvider.overrideWith(
+            () => MockAuthProvider(
+              AuthState.initial().copyWith(mode: AuthMode.bearer),
+            ),
+          ),
         ],
       );
       addTearDown(container.dispose);
 
       final client = container.read(graphqlClientProvider);
       final link = client.link as HttpLink;
-      
+
+      expect(client.queryManager.requestTimeout, graphqlRequestTimeout);
       expect(link.defaultHeaders['Authorization'], 'Bearer some-token');
     });
   });

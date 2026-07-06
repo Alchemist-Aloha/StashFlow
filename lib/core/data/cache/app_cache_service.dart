@@ -110,10 +110,9 @@ class AppCacheService {
   }
 
   Future<int> getDatabaseCacheSizeMb() async {
-    final hiveDir = Directory(p.join(
-      (await _temporaryDirectoryProvider()).path,
-      'stash_graphql_cache',
-    ));
+    final hiveDir = Directory(
+      p.join((await _temporaryDirectoryProvider()).path, 'stash_graphql_cache'),
+    );
 
     int bytes = await _calculateDirSize(hiveDir);
 
@@ -222,10 +221,9 @@ class AppCacheService {
 
   Future<void> clearDatabaseCache() async {
     debugPrint('AppCacheService: Clearing database cache...');
-    final hiveDir = Directory(p.join(
-      (await _temporaryDirectoryProvider()).path,
-      'stash_graphql_cache',
-    ));
+    final hiveDir = Directory(
+      p.join((await _temporaryDirectoryProvider()).path, 'stash_graphql_cache'),
+    );
 
     final errors = <Object>[];
     if (await hiveDir.exists()) {
@@ -233,9 +231,7 @@ class AppCacheService {
         await hiveDir.delete(recursive: true);
         debugPrint('AppCacheService: stash_graphql_cache deleted');
       } catch (e) {
-        debugPrint(
-          'AppCacheService: Error deleting stash_graphql_cache: $e',
-        );
+        debugPrint('AppCacheService: Error deleting stash_graphql_cache: $e');
         errors.add(e);
       }
     }
@@ -260,9 +256,7 @@ class AppCacheService {
         debugPrint('AppCacheService: legacy stash_hive deleted');
       }
     } catch (e) {
-      debugPrint(
-        'AppCacheService: Error cleaning legacy hive files: $e',
-      );
+      debugPrint('AppCacheService: Error cleaning legacy hive files: $e');
       errors.add(e);
     }
     if (errors.isNotEmpty) {

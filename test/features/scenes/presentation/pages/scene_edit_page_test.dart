@@ -3,12 +3,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_edit_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
+import 'package:stash_app_flutter/features/studios/presentation/providers/studio_list_provider.dart';
+import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
+import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
 import '../../../../helpers/test_helpers.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
-class CallTrackingMockSceneRepository extends MockSceneRepository {
+class CallTrackingMockGraphQLSceneRepository
+    extends MockGraphQLSceneRepository {
   bool saveCalled = false;
   ScrapedScene? lastScraped;
+  List<String>? lastPerformerIds;
+  List<String>? lastTagIds;
+  String? lastStudioId;
 
   @override
   Future<void> saveScrapedScene({
@@ -21,6 +29,9 @@ class CallTrackingMockSceneRepository extends MockSceneRepository {
   }) async {
     saveCalled = true;
     lastScraped = scraped;
+    lastPerformerIds = performerIds;
+    lastTagIds = tagIds;
+    lastStudioId = studioId;
   }
 }
 
@@ -36,7 +47,7 @@ void main() {
     interactive: false,
     resumeTime: null,
     playCount: 0,
-        playDuration: 0,
+    playDuration: 0,
     files: [],
     paths: const ScenePaths(screenshot: null, preview: null, stream: null),
     urls: ['http://example.com'],
@@ -55,7 +66,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = CallTrackingMockSceneRepository();
+    final mockRepo = CallTrackingMockGraphQLSceneRepository();
 
     await pumpTestWidget(
       tester,
@@ -93,12 +104,36 @@ void main() {
     expect(mockRepo.lastScraped?.details, 'New Details');
   });
 
+  testWidgets('SceneEditPage does not fail save when refresh misses', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = CallTrackingMockGraphQLSceneRepository();
+
+    await pumpTestWidget(
+      tester,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneEditPage(scene: testScene),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(mockRepo.saveCalled, isTrue);
+    expect(find.textContaining('Failed to update scene'), findsNothing);
+  });
+
   testWidgets('SceneEditPage adds and removes URLs', (tester) async {
     tester.view.physicalSize = const Size(1200, 1200);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = CallTrackingMockSceneRepository();
+    final mockRepo = CallTrackingMockGraphQLSceneRepository();
 
     await pumpTestWidget(
       tester,
@@ -127,8 +162,113 @@ void main() {
 
     // Tap Save
     await tester.tap(find.byIcon(Icons.save));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(mockRepo.lastScraped?.urls, ['http://newurl.com']);
   });
+
+  testWidgets('SceneEditPage keeps existing tags when adding a tag', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final sceneWithTag = testScene.copyWith(
+      tagIds: ['tag-old'],
+      tagNames: ['Old Tag'],
+    );
+    final mockRepo = CallTrackingMockGraphQLSceneRepository();
+    final tagRepo = MockGraphQLTagRepository()
+      ..setData([
+        const Tag(
+          id: 'tag-old',
+          name: 'Old Tag',
+          sceneCount: 1,
+          imageCount: 0,
+          galleryCount: 0,
+          performerCount: 0,
+          favorite: false,
+        ),
+        const Tag(
+          id: 'tag-new',
+          name: 'New Tag',
+          sceneCount: 0,
+          imageCount: 0,
+          galleryCount: 0,
+          performerCount: 0,
+          favorite: false,
+        ),
+      ]);
+
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+        tagRepositoryProvider.overrideWithValue(tagRepo),
+      ],
+      child: SceneEditPage(scene: sceneWithTag),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Add Tag'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('New Tag'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(mockRepo.lastTagIds, ['tag-old', 'tag-new']);
+  });
+
+  testWidgets(
+    'SceneEditPage updates studio after confirming picker selection',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = CallTrackingMockGraphQLSceneRepository();
+      final studioRepo = MockGraphQLStudioRepository()
+        ..setData([
+          const Studio(
+            id: 'studio-1',
+            name: 'Studio One',
+            sceneCount: 1,
+            imageCount: 0,
+            galleryCount: 0,
+            performerCount: 0,
+            favorite: false,
+          ),
+        ]);
+
+      await pumpTestWidget(
+        tester,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(mockRepo),
+          studioRepositoryProvider.overrideWithValue(studioRepo),
+        ],
+        child: SceneEditPage(scene: testScene),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('None'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Studio One'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.save));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(mockRepo.lastStudioId, 'studio-1');
+    },
+  );
 }

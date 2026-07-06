@@ -3008,4 +3008,82 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get auto_missing_field => '不足しているフィールド';
+
+  @override
+  String get filter_markers_title => 'フィルターマーカー';
+
+  @override
+  String get marker_title => 'マーカー';
+
+  @override
+  String get duration_title => '間隔';
+
+  @override
+  String get scene_title => 'シーン';
+
+  @override
+  String get dates_title => '日付';
+
+  @override
+  String get created_at_title => '作成日';
+
+  @override
+  String get updated_at_title => '更新日';
+
+  @override
+  String get scene_date_title => 'シーンの日付';
+
+  @override
+  String get scene_created_at_title => 'シーンの作成日';
+
+  @override
+  String get scene_updated_at_title => 'シーンの更新日時';
+
+  @override
+  String get organized_title => '整頓された';
+
+  @override
+  String get interactive_title => '相互の作用';
+
+  @override
+  String get scraped_metadata_title => 'スクレイピングされたメタデータ';
+
+  @override
+  String get local_scene_title => '現地の様子';
+
+  @override
+  String get sort_markers_title => 'ソートマーカー';
+
+  @override
+  String get markers_title => 'マーカー';
+
+  @override
+  String get sub_group_count_title => 'サブグループ数';
+
+  @override
+  String get groups_browsing_mode_subtitle => 'グループのデフォルトの閲覧モード';
+
+  @override
+  String get markers_browsing_mode_subtitle => 'マーカーのデフォルトの閲覧モード';
+
+  @override
+  String get entity_layouts_title => 'エンティティのレイアウト';
+
+  @override
+  String get entity_layouts_subtitle => 'パフォーマー、スタジオ、タグのメディアとギャラリーのデフォルトのレイアウト';
+
+  @override
+  String get stats_subtitle_0_gb => '0.00GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 個のユニークなアイテム';
+
+  @override
+  String get markers_search_hint => '検索マーカー';
+
+  @override
+  String get tags_title => 'タグ';
+
+  @override
+  String get scenes_title => 'シーン';
 }

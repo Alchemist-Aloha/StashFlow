@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../scenes/domain/entities/scene.dart';
-import '../providers/studio_media_provider.dart';
+import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/studio_details_provider.dart';
-import '../providers/studio_galleries_provider.dart';
+import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
@@ -60,8 +60,12 @@ class StudioDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final studioAsync = ref.watch(studioDetailsProvider(studioId));
-    final mediaAsync = ref.watch(studioMediaProvider(studioId));
-    final galleriesAsync = ref.watch(studioGalleriesProvider(studioId));
+    final mediaAsync = ref.watch(
+      entityMediaPreviewProvider(EntityMediaFilterKind.studio, studioId),
+    );
+    final galleriesAsync = ref.watch(
+      entityGalleryPreviewProvider(EntityGalleryFilterKind.studio, studioId),
+    );
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
@@ -93,12 +97,32 @@ class StudioDetailsPage extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(studioDetailsProvider(studioId));
-              ref.invalidate(studioMediaProvider(studioId));
-              ref.invalidate(studioGalleriesProvider(studioId));
+              ref.invalidate(
+                entityMediaPreviewProvider(
+                  EntityMediaFilterKind.studio,
+                  studioId,
+                ),
+              );
+              ref.invalidate(
+                entityGalleryPreviewProvider(
+                  EntityGalleryFilterKind.studio,
+                  studioId,
+                ),
+              );
               await Future.wait([
                 ref.read(studioDetailsProvider(studioId).future),
-                ref.read(studioMediaProvider(studioId).future),
-                ref.read(studioGalleriesProvider(studioId).future),
+                ref.read(
+                  entityMediaPreviewProvider(
+                    EntityMediaFilterKind.studio,
+                    studioId,
+                  ).future,
+                ),
+                ref.read(
+                  entityGalleryPreviewProvider(
+                    EntityGalleryFilterKind.studio,
+                    studioId,
+                  ).future,
+                ),
               ]);
             },
             child: SingleChildScrollView(

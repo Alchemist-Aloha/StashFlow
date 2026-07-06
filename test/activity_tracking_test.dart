@@ -6,11 +6,12 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 
-class MockSceneRepository extends Mock implements SceneRepository {}
+class MockGraphQLSceneRepository extends Mock
+    implements GraphQLSceneRepository {}
 
 class MockPlayer extends Mock implements Player {}
 
@@ -30,9 +31,7 @@ void main() {
     final sharedPrefs = await SharedPreferences.getInstance();
 
     container = ProviderContainer(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(sharedPrefs),
-      ],
+      overrides: [sharedPreferencesProvider.overrideWithValue(sharedPrefs)],
     );
 
     testScene = Scene(
@@ -49,7 +48,11 @@ void main() {
       playCount: 0,
       playDuration: 0,
       files: const [],
-      paths: const ScenePaths(screenshot: null, preview: null, stream: 'https://example.com'),
+      paths: const ScenePaths(
+        screenshot: null,
+        preview: null,
+        stream: 'https://example.com',
+      ),
       urls: const [],
       studioId: null,
       studioName: null,
@@ -68,7 +71,7 @@ void main() {
 
   test('GlobalPlayerState initializes with default values', () {
     final state = GlobalPlayerState();
-    
+
     expect(state.activeScene, isNull);
     expect(state.player, isNull);
     expect(state.videoController, isNull);
@@ -79,13 +82,13 @@ void main() {
 
   test('GlobalPlayerState copyWith updates fields', () {
     final state = GlobalPlayerState();
-    
+
     final newState = state.copyWith(
       isPlaying: true,
       isFullScreen: true,
       streamMimeType: 'video/mp4',
     );
-    
+
     expect(newState.isPlaying, isTrue);
     expect(newState.isFullScreen, isTrue);
     expect(newState.streamMimeType, equals('video/mp4'));
@@ -98,14 +101,15 @@ void main() {
       streamLabel: 'Direct',
       streamSource: 'source1',
       playEndBehavior: VideoEndBehavior.next,
-      );
+    );
 
-      final newState = state.copyWith(clearActive: true);
+    final newState = state.copyWith(clearActive: true);
 
-      expect(newState.activeScene, isNull);
-      expect(newState.streamMimeType, isNull);
-      expect(newState.streamLabel, isNull);
-      expect(newState.streamSource, isNull);
-      // User preferences should remain
-      expect(newState.playEndBehavior, VideoEndBehavior.next);
-      });}
+    expect(newState.activeScene, isNull);
+    expect(newState.streamMimeType, isNull);
+    expect(newState.streamLabel, isNull);
+    expect(newState.streamSource, isNull);
+    // User preferences should remain
+    expect(newState.playEndBehavior, VideoEndBehavior.next);
+  });
+}

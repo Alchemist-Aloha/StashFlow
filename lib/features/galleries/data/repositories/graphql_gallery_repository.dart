@@ -1,20 +1,17 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
     as domain;
 import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
-import '../../domain/repositories/gallery_repository.dart';
 import '../graphql/galleries.graphql.dart';
 
-class GraphQLGalleryRepository implements GalleryRepository {
-  final GraphQLClient client;
+class GraphQLGalleryRepository {
+  final GraphQLClient _client;
 
-  GraphQLGalleryRepository(this.client);
-
-  @override
+  GraphQLGalleryRepository(this._client);
   Future<List<Gallery>> findGalleries({
     int? page,
     int? perPage,
@@ -79,7 +76,7 @@ class GraphQLGalleryRepository implements GalleryRepository {
       updated_at: mapTimestampCriterion(galleryFilter?.updatedAt),
     );
 
-    final result = await client.query$FindGalleries(
+    final result = await _client.query$FindGalleries(
       Options$Query$FindGalleries(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
@@ -99,32 +96,30 @@ class GraphQLGalleryRepository implements GalleryRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     return result.parsedData!.findGalleries.galleries
         .map((g) => Gallery.fromJson(g.toJson()))
         .toList();
   }
 
-  @override
   Future<Gallery> getGalleryById(String id, {bool refresh = false}) async {
-    final result = await client.query$FindGallery(
+    final result = await _client.query$FindGallery(
       Options$Query$FindGallery(
         fetchPolicy: refresh ? FetchPolicy.networkOnly : FetchPolicy.cacheFirst,
         variables: Variables$Query$FindGallery(id: id),
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     final data = result.parsedData?.findGallery;
     if (data == null) throw Exception('Gallery not found');
 
     return Gallery.fromJson(data.toJson());
   }
 
-  @override
   Future<void> updateGalleryRating(String id, int rating100) async {
-    final result = await client.mutate$UpdateGalleryRating(
+    final result = await _client.mutate$UpdateGalleryRating(
       Options$Mutation$UpdateGalleryRating(
         variables: Variables$Mutation$UpdateGalleryRating(
           id: id,
@@ -133,6 +128,6 @@ class GraphQLGalleryRepository implements GalleryRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 }

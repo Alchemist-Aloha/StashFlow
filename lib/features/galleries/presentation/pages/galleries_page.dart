@@ -23,6 +23,7 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 
 enum _GallerySortOption {
   date,
@@ -183,7 +184,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   }
 
   int _activeFilterCount(GalleryFilter filter) {
-    return filter.toJson().values.where((value) => value != null).length;
+    return activeFilterCount(filter.toJson());
   }
 
   void _showSavedFilterDialog() {
@@ -203,7 +204,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(effectiveFilter),
         defaultSortLabel: 'path',
-        saveSuccessMessage: 'Gallery filter saved to server',
+        saveSuccessMessage: context.l10n.saved_item('Gallery filter'),
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(
@@ -219,7 +220,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: GallerySavedFilterConfig.current(
+                input: GallerySavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(gallerySearchQueryProvider),
@@ -264,8 +265,12 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   @override
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
-    final isGridView = ref.watch(galleryGridLayoutProvider);
-    final gridColumns = ref.watch(galleryGridColumnsProvider);
+    final isGridView = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.gallery),
+    );
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.gallery),
+    );
     final filterActive = ref.watch(
       galleryFilterStateProvider.select((s) => s != GalleryFilter.empty()),
     );
@@ -285,7 +290,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
 
     return ListPageScaffold<Gallery>(
       title: context.l10n.galleries_title,
-      scrollController: ref.watch(galleryScrollControllerProvider),
+      scrollController: ref.watch(
+        listScrollControllerProvider(ListScrollTarget.gallery),
+      ),
       actions: [
         Stack(
           children: [

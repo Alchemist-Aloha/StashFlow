@@ -70,7 +70,7 @@ void main() {
         contains(
           'WidgetsBinding.instance.addPostFrameCallback((_) {\n'
           '      if (!mounted) return;\n'
-          '      debugPrint',
+          '      logCastProcess(',
         ),
       );
     });

@@ -30,6 +30,51 @@ class SavedFilterSkipValue {
 
 const savedFilterSkipValue = SavedFilterSkipValue._();
 
+class SavedFilterPayload<TFilter> {
+  const SavedFilterPayload({
+    required this.searchQuery,
+    required this.sort,
+    required this.descending,
+    required this.filter,
+    this.perPage,
+  });
+
+  final String searchQuery;
+  final String? sort;
+  final bool descending;
+  final TFilter filter;
+  final int? perPage;
+}
+
+SavedFilterPayload<TFilter> savedFilterReadPayload<TFilter>({
+  required Object? findFilter,
+  required Object? objectFilter,
+  required TFilter emptyFilter,
+  required TFilter Function(Map<String, dynamic> json) fromJson,
+  Map<String, String> serverToLocalKeys = const {},
+  Object? Function(String localKey, Object? value)? normalizeValue,
+}) {
+  final findFilterMap = savedFilterAsMap(findFilter);
+  final objectFilterMap = savedFilterAsMap(objectFilter);
+  final direction = findFilterMap['direction'];
+
+  return SavedFilterPayload(
+    searchQuery: findFilterMap['q'] as String? ?? '',
+    sort: findFilterMap['sort'] as String?,
+    descending: direction is String ? direction.toUpperCase() == 'DESC' : true,
+    perPage: findFilterMap['per_page'] as int?,
+    filter: objectFilterMap.isEmpty
+        ? emptyFilter
+        : fromJson(
+            savedFilterFromServerObjectFilter(
+              objectFilter: objectFilterMap,
+              serverToLocalKeys: serverToLocalKeys,
+              normalizeValue: normalizeValue,
+            ),
+          ),
+  );
+}
+
 Map<String, dynamic> savedFilterBuildInput({
   String? id,
   required String mode,
@@ -98,7 +143,8 @@ Map<String, dynamic> savedFilterFromServerObjectFilter({
   final output = <String, dynamic>{};
   for (final entry in objectFilter.entries) {
     final localKey = serverToLocalKeys[entry.key] ?? entry.key;
-    final normalized = normalizeValue?.call(localKey, entry.value) ?? entry.value;
+    final normalized =
+        normalizeValue?.call(localKey, entry.value) ?? entry.value;
     if (identical(normalized, savedFilterSkipValue)) continue;
     output[localKey] = normalized;
   }
