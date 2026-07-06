@@ -7,7 +7,7 @@ A modern, multi-platform client for your **Stash** server. Built for fast browsi
 The app is primarily tested on Android and Windows. The web build is best treated as a demo because browser restrictions limit authentication and playback behavior. For the full experience, use a native build.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.23.0-green.svg)](pubspec.yaml)
+[![Version](https://img.shields.io/badge/version-1.24.0-green.svg)](pubspec.yaml)
 
 ## 📸 Screenshots
 
@@ -115,4 +115,10 @@ For more info, see:
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=date&legend=top-left)](https://www.star-history.com/?repos=Alchemist-Aloha%2FStashFlow&type=date&legend=top-left)
+<a href="https://www.star-history.com/?repos=Alchemist-Aloha%2FStashFlow&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=date&legend=top-left" />
+ </picture>
+</a>
