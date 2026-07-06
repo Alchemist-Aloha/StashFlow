@@ -10,7 +10,7 @@ class ImageCard extends ConsumerWidget {
   const ImageCard.skeleton({this.onTap, this.memCacheWidth, super.key})
     : image = const entity.Image(
         id: 'skeleton',
-        title: 'Loading',
+        title: 'Loading', // Ignored by skeletonizer
         rating100: null,
         date: null,
         urls: [],

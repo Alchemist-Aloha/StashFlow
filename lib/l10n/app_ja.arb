@@ -1093,5 +1093,6 @@
   "stats_subtitle_0_unique_items": "0 個のユニークなアイテム",
   "markers_search_hint": "検索マーカー",
   "tags_title": "タグ",
-  "scenes_title": "シーン"
+  "scenes_title": "シーン",
+  "mini_player_now_playing": "現在再生中: {displayTitle}。タップしてシーンの詳細を開きます。"
 }
