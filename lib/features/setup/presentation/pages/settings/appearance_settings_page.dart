@@ -87,16 +87,15 @@ class _AppearanceSettingsPageState
     return SettingsPageShell(
       title: l10n.settings_appearance_title,
       child: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(context.dimensions.spacingLarge),
+          ? const SettingsLoadingState()
+          : SettingsPageBody(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SettingsSectionCard(
                     title: l10n.settings_appearance_theme_mode,
                     subtitle: l10n.settings_appearance_theme_mode_subtitle,
-                    child: Column(
+                    child: SettingsPanelGroup(
                       children: [
                         Container(
                           width: double.infinity,
@@ -150,7 +149,6 @@ class _AppearanceSettingsPageState
                             },
                           ),
                         ),
-                        SizedBox(height: context.dimensions.spacingMedium),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(l10n.settings_appearance_true_black),
@@ -167,13 +165,11 @@ class _AppearanceSettingsPageState
                       ],
                     ),
                   ),
-                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: l10n.settings_appearance_primary_color,
                     subtitle: l10n.settings_appearance_primary_color_subtitle,
                     child: _buildColorSelector(),
                   ),
-                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: l10n.settings_appearance_font_size,
                     subtitle: l10n.settings_appearance_font_size_subtitle,

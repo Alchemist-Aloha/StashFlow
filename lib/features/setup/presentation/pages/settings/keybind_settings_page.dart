@@ -15,22 +15,18 @@ class KeybindSettingsPage extends ConsumerWidget {
 
     return SettingsPageShell(
       title: context.l10n.settings_keyboard_title,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(context.dimensions.spacingMedium),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    context.l10n.settings_keyboard_subtitle,
-                    style: context.textTheme.bodyLarge?.copyWith(
-                      fontSize: context.fontSizes.large,
-                    ),
-                  ),
-                ),
-                TextButton.icon(
+      child: SettingsPageBody(
+        scrollable: false,
+        padding: EdgeInsets.all(context.dimensions.spacingMedium),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SettingsSectionCard(
+              title: context.l10n.settings_keyboard_title,
+              subtitle: context.l10n.settings_keyboard_subtitle,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
                   onPressed: () =>
                       ref.read(keybindsProvider.notifier).resetToDefaults(),
                   icon: Icon(
@@ -44,52 +40,57 @@ class KeybindSettingsPage extends ConsumerWidget {
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-          Expanded(
-            child: ListView.separated(
-              itemCount: KeybindAction.values.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final action = KeybindAction.values[index];
-                final bind = keybinds.binds[action];
-                return ListTile(
-                  title: Text(
-                    _getActionLabel(action),
-                    style: context.textTheme.bodyMedium?.copyWith(
-                      fontSize: context.fontSizes.body,
-                    ),
-                  ),
-                  subtitle: Text(
-                    _getActionDescription(action),
-                    style: context.textTheme.bodySmall?.copyWith(
-                      fontSize: context.fontSizes.small,
-                    ),
-                  ),
-                  trailing: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: Size(
-                        80 * context.dimensions.fontSizeFactor,
-                        36 * context.dimensions.fontSizeFactor,
+            Expanded(
+              child: SettingsPanelCard(
+                child: ListView.separated(
+                  itemCount: KeybindAction.values.length,
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final action = KeybindAction.values[index];
+                    final bind = keybinds.binds[action];
+                    return ListTile(
+                      title: Text(
+                        _getActionLabel(action),
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          fontSize: context.fontSizes.body,
+                        ),
                       ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: context.dimensions.spacingMedium,
+                      subtitle: Text(
+                        _getActionDescription(action),
+                        style: context.textTheme.bodySmall?.copyWith(
+                          fontSize: context.fontSizes.small,
+                        ),
                       ),
-                    ),
-                    onPressed: () => _showCaptureDialog(context, ref, action),
-                    child: Text(
-                      bind?.label ?? context.l10n.settings_keyboard_not_bound,
-                      style: context.textTheme.labelLarge?.copyWith(
-                        fontSize: context.fontSizes.regular,
+                      trailing: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: Size(
+                            80 * context.dimensions.fontSizeFactor,
+                            36 * context.dimensions.fontSizeFactor,
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: context.dimensions.spacingMedium,
+                          ),
+                        ),
+                        onPressed: () =>
+                            _showCaptureDialog(context, ref, action),
+                        child: Text(
+                          bind?.label ??
+                              context.l10n.settings_keyboard_not_bound,
+                          style: context.textTheme.labelLarge?.copyWith(
+                            fontSize: context.fontSizes.regular,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

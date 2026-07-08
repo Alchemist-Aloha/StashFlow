@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/playback_settings_page.dart';
+import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 
 import '../../../../../helpers/test_helpers.dart';
 
@@ -27,6 +28,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byType(SettingsPanelCard), findsWidgets);
     expect(find.text('Gravity-controlled orientation'), findsOneWidget);
     expect(
       find.textContaining('Allow rotating between matching orientations'),

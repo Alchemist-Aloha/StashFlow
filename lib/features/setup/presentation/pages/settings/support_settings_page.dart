@@ -15,16 +15,18 @@ class SupportSettingsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return SettingsPageShell(
       title: l10n.settings_support_title,
-      child: ListView(
+      child: SettingsPageBody(
         padding: EdgeInsets.all(context.dimensions.spacingMedium),
-        children: [
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
           // Update check section
           ref
               .watch(appUpdateProvider)
               .when(
                 data: (updateInfo) {
                   if (updateInfo != null && updateInfo.isUpdateAvailable) {
-                    return Column(
+                  return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SettingsSectionCard(
@@ -188,7 +190,8 @@ class SupportSettingsPage extends ConsumerWidget {
               ],
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }

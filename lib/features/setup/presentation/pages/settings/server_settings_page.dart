@@ -114,39 +114,30 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
         child: const Icon(Icons.add),
       ),
       child: profiles.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.dns_rounded,
-                    size: 64 * context.dimensions.fontSizeFactor,
-                    color: Colors.grey,
-                  ),
-                  SizedBox(height: context.dimensions.spacingMedium),
-                  Text(
-                    l10n.settings_server_profile_empty,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  SizedBox(height: context.dimensions.spacingLarge),
-                  ElevatedButton.icon(
-                    onPressed: () => _showProfileDrawer(),
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n.settings_server_profile_add),
-                  ),
-                ],
+          ? SettingsPageBody(
+              child: SettingsEmptyState(
+                icon: Icons.dns_rounded,
+                title: l10n.settings_server_profile_empty,
+                action: ElevatedButton.icon(
+                  onPressed: () => _showProfileDrawer(),
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.settings_server_profile_add),
+                ),
               ),
             )
-          : ListView.builder(
+          : SettingsPageBody(
+              scrollable: false,
               padding: EdgeInsets.all(context.dimensions.spacingMedium),
-              itemCount: profiles.length,
-              itemBuilder: (context, index) {
-                final profile = profiles[index];
-                return ServerProfileCard(
-                  profile: profile,
-                  onEdit: () => _showProfileDrawer(profile),
-                );
-              },
+              child: ListView.builder(
+                itemCount: profiles.length,
+                itemBuilder: (context, index) {
+                  final profile = profiles[index];
+                  return ServerProfileCard(
+                    profile: profile,
+                    onEdit: () => _showProfileDrawer(profile),
+                  );
+                },
+              ),
             ),
     );
   }

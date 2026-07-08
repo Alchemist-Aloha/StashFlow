@@ -134,9 +134,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     return SettingsPageShell(
       title: context.l10n.settings_playback_title,
       child: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(context.dimensions.spacingLarge),
+          ? const SettingsLoadingState()
+          : SettingsPageBody(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

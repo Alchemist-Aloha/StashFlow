@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/interface_settings_page.dart';
+import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 
@@ -29,6 +30,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      expect(find.byType(SettingsPageBody), findsOneWidget);
       expect(find.text('Show Edit Button'), findsNothing);
       expect(find.text('Use actual scene video in miniplayer'), findsOneWidget);
       expect(
@@ -75,12 +77,10 @@ void main() {
         find.byKey(const Key('marker-layout-segmented')),
         200,
       );
-      await tester.tap(
-        find.descendant(
-          of: find.byKey(const Key('marker-layout-segmented')),
-          matching: find.text('List'),
-        ),
-      );
+      final markerSegmented = find.byKey(const Key('marker-layout-segmented'));
+      tester
+          .widget<SegmentedButton<String>>(markerSegmented)
+          .onSelectionChanged!({'list'});
       await tester.pumpAndSettle();
 
       expect(prefs.getBool('scene_marker_grid_layout'), isFalse);
@@ -89,12 +89,10 @@ void main() {
         find.byKey(const Key('group-layout-segmented')),
         200,
       );
-      await tester.tap(
-        find.descendant(
-          of: find.byKey(const Key('group-layout-segmented')),
-          matching: find.text('List'),
-        ),
-      );
+      final groupSegmented = find.byKey(const Key('group-layout-segmented'));
+      tester
+          .widget<SegmentedButton<String>>(groupSegmented)
+          .onSelectionChanged!({'list'});
       await tester.pumpAndSettle();
 
       expect(prefs.getBool('group_media_grid_layout'), isFalse);

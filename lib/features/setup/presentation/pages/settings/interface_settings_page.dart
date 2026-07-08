@@ -249,9 +249,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
       child: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(context.dimensions.spacingLarge),
+          ? const SettingsLoadingState()
+          : SettingsPageBody(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
