@@ -1470,5 +1470,31 @@
   "stats_subtitle_0_unique_items": "0 unique items",
   "markers_search_hint": "Search markers",
   "tags_title": "Tags",
-  "scenes_title": "Scenes"
+  "scenes_title": "Scenes",
+  "cache_label_image": "image",
+  "cache_label_video": "video",
+  "now_playing_tap_to_open": "Now playing: {title}. Tap to open scene details.",
+  "@now_playing_tap_to_open": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_size_dropdown_label": "{size}",
+  "@scene_size_dropdown_label": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_dedup_value_label": "{value}",
+  "@scene_dedup_value_label": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  }
 }

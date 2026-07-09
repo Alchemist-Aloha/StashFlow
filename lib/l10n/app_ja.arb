@@ -1093,5 +1093,10 @@
   "stats_subtitle_0_unique_items": "0 個のユニークなアイテム",
   "markers_search_hint": "検索マーカー",
   "tags_title": "タグ",
-  "scenes_title": "シーン"
+  "scenes_title": "シーン",
+  "cache_label_image": "画像",
+  "cache_label_video": "ビデオ",
+  "now_playing_tap_to_open": "現在再生中: {title}。タップしてシーンの詳細を開きます。",
+  "scene_size_dropdown_label": "{size}",
+  "scene_dedup_value_label": "{value}"
 }

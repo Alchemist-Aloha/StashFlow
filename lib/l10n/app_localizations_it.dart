@@ -3212,4 +3212,25 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get scenes_title => 'Scene';
+
+  @override
+  String get cache_label_image => 'immagine';
+
+  @override
+  String get cache_label_video => 'video';
+
+  @override
+  String now_playing_tap_to_open(String title) {
+    return 'Ora in riproduzione: $title. Tocca per aprire i dettagli della scena.';
+  }
+
+  @override
+  String scene_size_dropdown_label(String size) {
+    return '$size';
+  }
+
+  @override
+  String scene_dedup_value_label(String value) {
+    return '$value';
+  }
 }

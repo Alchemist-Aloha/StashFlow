@@ -1079,5 +1079,10 @@
   "stats_subtitle_0_unique_items": "0 件獨特物品",
   "markers_search_hint": "搜尋標記",
   "tags_title": "標籤",
-  "scenes_title": "場景"
+  "scenes_title": "場景",
+  "cache_label_image": "影像",
+  "cache_label_video": "影片",
+  "now_playing_tap_to_open": "正在播放：{title}。點擊可開啟場景詳細資訊。",
+  "scene_size_dropdown_label": "{size}",
+  "scene_dedup_value_label": "{value}"
 }

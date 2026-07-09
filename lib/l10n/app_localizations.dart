@@ -5681,6 +5681,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scenes'**
   String get scenes_title;
+
+  /// No description provided for @cache_label_image.
+  ///
+  /// In en, this message translates to:
+  /// **'image'**
+  String get cache_label_image;
+
+  /// No description provided for @cache_label_video.
+  ///
+  /// In en, this message translates to:
+  /// **'video'**
+  String get cache_label_video;
+
+  /// No description provided for @now_playing_tap_to_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {title}. Tap to open scene details.'**
+  String now_playing_tap_to_open(String title);
+
+  /// No description provided for @scene_size_dropdown_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{size}'**
+  String scene_size_dropdown_label(String size);
+
+  /// No description provided for @scene_dedup_value_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}'**
+  String scene_dedup_value_label(String value);
 }
 
 class _AppLocalizationsDelegate

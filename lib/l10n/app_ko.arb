@@ -1093,5 +1093,10 @@
   "stats_subtitle_0_unique_items": "0개의 고유 아이템",
   "markers_search_hint": "검색 마커",
   "tags_title": "태그",
-  "scenes_title": "장면"
+  "scenes_title": "장면",
+  "cache_label_image": "영상",
+  "cache_label_video": "동영상",
+  "now_playing_tap_to_open": "지금 재생 중: {title}. 장면 세부정보를 열려면 탭하세요.",
+  "scene_size_dropdown_label": "{size}",
+  "scene_dedup_value_label": "{value}"
 }

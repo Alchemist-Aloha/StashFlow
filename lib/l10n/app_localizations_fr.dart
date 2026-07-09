@@ -3213,4 +3213,25 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scenes_title => 'Scènes';
+
+  @override
+  String get cache_label_image => 'image';
+
+  @override
+  String get cache_label_video => 'vidéo';
+
+  @override
+  String now_playing_tap_to_open(String title) {
+    return 'Lecture en cours : $title. Appuyez pour ouvrir les détails de la scène.';
+  }
+
+  @override
+  String scene_size_dropdown_label(String size) {
+    return '$size';
+  }
+
+  @override
+  String scene_dedup_value_label(String value) {
+    return '$value';
+  }
 }

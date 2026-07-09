@@ -1079,5 +1079,10 @@
   "stats_subtitle_0_unique_items": "0 件独特物品",
   "markers_search_hint": "搜索标记",
   "tags_title": "标签",
-  "scenes_title": "场景"
+  "scenes_title": "场景",
+  "cache_label_image": "图像",
+  "cache_label_video": "视频",
+  "now_playing_tap_to_open": "正在播放：{title}。点击可打开场景详细信息。",
+  "scene_size_dropdown_label": "{size}",
+  "scene_dedup_value_label": "{value}"
 }

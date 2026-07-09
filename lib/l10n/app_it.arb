@@ -1098,5 +1098,10 @@
   "stats_subtitle_0_unique_items": "0 oggetti unici",
   "markers_search_hint": "Cerca marcatori",
   "tags_title": "Tag",
-  "scenes_title": "Scene"
+  "scenes_title": "Scene",
+  "cache_label_image": "immagine",
+  "cache_label_video": "video",
+  "now_playing_tap_to_open": "Ora in riproduzione: {title}. Tocca per aprire i dettagli della scena.",
+  "scene_size_dropdown_label": "{size}",
+  "scene_dedup_value_label": "{value}"
 }
