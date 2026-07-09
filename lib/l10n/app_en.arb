@@ -1364,7 +1364,7 @@
       }
     }
   },
-  "scene_tagger_checked_matches_summary": "{checked} checked • {matches} matches",
+  "scene_tagger_checked_matches_summary": "{checked} checked \u2022 {matches} matches",
   "@scene_tagger_checked_matches_summary": {
     "placeholders": {
       "checked": {
@@ -1470,5 +1470,13 @@
   "stats_subtitle_0_unique_items": "0 unique items",
   "markers_search_hint": "Search markers",
   "tags_title": "Tags",
-  "scenes_title": "Scenes"
+  "scenes_title": "Scenes",
+  "mini_player_now_playing": "Now playing: {title}. Tap to open scene details.",
+  "@mini_player_now_playing": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

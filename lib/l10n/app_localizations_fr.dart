@@ -3213,4 +3213,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scenes_title => 'Scènes';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Lecture en cours : $title. Appuyez pour ouvrir les détails de la scène.';
+  }
 }

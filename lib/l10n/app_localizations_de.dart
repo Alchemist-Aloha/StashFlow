@@ -3194,4 +3194,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scenes_title => 'Szenen';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Spielt gerade: $title. Tippen Sie hier, um Szenendetails zu öffnen.';
+  }
 }
