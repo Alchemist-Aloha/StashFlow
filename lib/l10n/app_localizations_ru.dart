@@ -3189,4 +3189,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scenes_title => 'Сцены';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Now playing: $displayTitle. Tap to open scene details.';
+  }
 }

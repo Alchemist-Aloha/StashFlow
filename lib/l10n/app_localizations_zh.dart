@@ -3029,6 +3029,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_title => '场景';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Now playing: $displayTitle. Tap to open scene details.';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).

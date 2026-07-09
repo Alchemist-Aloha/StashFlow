@@ -1079,5 +1079,6 @@
   "stats_subtitle_0_unique_items": "0 件獨特物品",
   "markers_search_hint": "搜尋標記",
   "tags_title": "標籤",
-  "scenes_title": "場景"
+  "scenes_title": "場景",
+  "mini_player_now_playing": "正在播放：{displayTitle}。點擊可開啟場景詳細資訊。"
 }

@@ -21,7 +21,7 @@ class GalleryCard extends ConsumerWidget {
     super.key,
   }) : gallery = const Gallery(
          id: 'skeleton',
-         title: 'Loading',
+         title: 'Loading', // Ignored by skeletonizer
        ), // Skeletonizer ignores
        skeletonize = true;
 

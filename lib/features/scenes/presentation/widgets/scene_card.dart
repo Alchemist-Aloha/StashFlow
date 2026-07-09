@@ -39,7 +39,7 @@ class SceneCard extends ConsumerStatefulWidget {
     super.key,
   }) : scene = Scene(
          id: 'skeleton',
-         title: 'Loading',
+         title: 'Loading', // Ignored by skeletonizer
          details: null,
          path: null,
          date: DateTime(1970),
