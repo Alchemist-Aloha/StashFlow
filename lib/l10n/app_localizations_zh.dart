@@ -3029,6 +3029,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_title => '场景';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '正在播放：$displayTitle。点击可打开场景详细信息。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6056,6 +6061,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_title => '场景';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '正在播放：$displayTitle。点击可打开场景详细信息。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9087,4 +9097,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_title => '場景';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '正在播放：$displayTitle。點擊可開啟場景詳細資訊。';
+  }
 }
