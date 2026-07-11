@@ -23,6 +23,7 @@ import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import 'playlist_floating_panel.dart';
 import 'scrubbing_preview.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/services/cast_service.dart';
@@ -257,6 +258,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     } else {
       _cancelAutoHide();
     }
+  }
+
+  void _openPlaylist() {
+    PlaylistFloatingPanel.show(context);
+    _showControlsTemporarily();
   }
 
   void _showControlsTemporarily() {
@@ -1295,7 +1301,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                       ),
                     ),
 
-                  if ((!isFullScreen && widget.onInlineBack != null) ||
+                  if (!isFullScreen ||
                       (isFullScreen && widget.onFullScreenToggle != null))
                     Positioned(
                       top: 0,
@@ -1322,6 +1328,28 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               style: _controlButtonStyle(colorScheme),
                               icon: const Icon(Icons.arrow_back_rounded),
                               onPressed: widget.onInlineBack,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  if (!isFullScreen)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: SafeArea(
+                        child: IgnorePointer(
+                          ignoring: !_controlsVisible,
+                          child: AnimatedOpacity(
+                            opacity: _controlsVisible ? 1 : 0,
+                            duration: const Duration(milliseconds: 180),
+                            child: IconButton(
+                              key: const Key('inline_video_playlist_button'),
+                              tooltip: 'Playlist',
+                              style: _controlButtonStyle(colorScheme),
+                              icon: const Icon(Icons.queue_music_rounded),
+                              onPressed: _openPlaylist,
                             ),
                           ),
                         ),
@@ -1367,6 +1395,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
+                              ),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                key: const Key('fullscreen_playlist_button'),
+                                tooltip: 'Playlist',
+                                style: _controlButtonStyle(colorScheme),
+                                icon: const Icon(Icons.queue_music_rounded),
+                                onPressed: _openPlaylist,
                               ),
                               if (widget.onRandomScene != null) ...[
                                 const SizedBox(width: 8),

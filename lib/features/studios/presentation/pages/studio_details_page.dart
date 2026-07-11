@@ -15,7 +15,7 @@ import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
-import '../providers/studio_list_provider.dart';
+import '../providers/studio_random_navigation_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
@@ -43,7 +43,7 @@ class StudioDetailsPage extends ConsumerWidget {
 
   Future<void> _openRandomStudio(BuildContext context, WidgetRef ref) async {
     final randomStudio = await ref
-        .read(studioListProvider.notifier)
+        .read(studioRandomNavigationControllerProvider)
         .getRandomStudio(excludeStudioId: studioId);
     if (!context.mounted) return;
 
