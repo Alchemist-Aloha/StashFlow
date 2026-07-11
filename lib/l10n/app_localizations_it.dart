@@ -1162,6 +1162,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Abilita o disabilita i pulsanti fluttuanti nelle pagine di elenco e dettaglio';
 
   @override
+  String get settings_interface_random_scene_filter =>
+      'Rispetta i filtri attivi per la scena casuale';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      'Quando è attivata, la navigazione casuale delle scene usa i filtri scena correnti.';
+
+  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Orientamento controllato dalla gravità (pagine principali)';
 

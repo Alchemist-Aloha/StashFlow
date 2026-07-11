@@ -147,4 +147,36 @@ void main() {
       EntityImageFilterMethod.relatedGalleries.name,
     );
   });
+
+  testWidgets('InterfaceSettingsPage saves the random filter toggle', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const InterfaceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Respect active filters for random scene'), findsOneWidget);
+
+    final toggle = find.descendant(
+      of: find.widgetWithText(
+        SwitchListTile,
+        'Respect active filters for random scene',
+      ),
+      matching: find.byType(Switch),
+    );
+
+    expect(tester.widget<Switch>(toggle).value, isTrue);
+
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+
+    expect(prefs.getBool('scene_random_respect_active_filter'), isFalse);
+  });
 }

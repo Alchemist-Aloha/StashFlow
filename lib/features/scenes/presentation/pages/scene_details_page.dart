@@ -24,6 +24,7 @@ import '../providers/entity_media_filter_scope.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import '../providers/scene_random_navigation_provider.dart';
 import '../providers/video_player_provider.dart';
 import 'scene_info_page.dart';
 import '../../data/repositories/stream_resolver.dart';
@@ -99,8 +100,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   Future<void> _openRandomScene(BuildContext context) async {
     final randomScene = await ref
-        .read(sceneListProvider.notifier)
-        .getRandomScene(useCurrentFilter: true, excludeSceneId: widget.sceneId);
+        .read(sceneRandomNavigationControllerProvider)
+        .getRandomScene(excludeSceneId: widget.sceneId);
     if (!context.mounted) return;
 
     if (randomScene == null) {

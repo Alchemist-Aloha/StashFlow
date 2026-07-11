@@ -1156,6 +1156,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Aktivieren oder deaktivieren Sie die schwebenden Casino-Schaltflächen auf Listen- und Detailseiten';
 
   @override
+  String get settings_interface_random_scene_filter =>
+      'Aktive Filter für zufällige Szenen berücksichtigen';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      'Wenn aktiviert, verwendet die zufällige Szenennavigation die aktuellen Szenenfilter.';
+
+  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Schwerkraftgesteuerte Ausrichtung (Hauptseiten)';
 

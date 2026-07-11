@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:math';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import '../providers/scene_random_navigation_provider.dart';
 import '../providers/player_view_mode.dart';
 import '../providers/video_player_provider.dart';
 import '../widgets/scene_card.dart';
@@ -253,24 +253,14 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   }
 
   /// Opens the "Casino mode" random scene view.
-  void _openRandomScene() {
-    final scenes = ref.read(sceneListProvider).value ?? [];
-    if (scenes.isEmpty) return;
+  Future<void> _openRandomScene() async {
+    final randomScene = await ref
+        .read(sceneRandomNavigationControllerProvider)
+        .getRandomScene(excludeSceneId: _lastRandomSceneId);
+    if (!mounted || randomScene == null) return;
 
-    // Choose a random scene that wasn't the last one we picked.
-    final random = Random();
-    int index;
-    do {
-      index = random.nextInt(scenes.length);
-    } while (scenes.length > 1 && scenes[index].id == _lastRandomSceneId);
-
-    _lastRandomSceneId = scenes[index].id;
-
-    // Set the queue and navigate to details.
-    ref
-        .read(playbackQueueProvider.notifier)
-        .setIndex(index, queueId: PlaybackQueueIds.main);
-    context.push('/scenes/scene/${scenes[index].id}', extra: true);
+    _lastRandomSceneId = randomScene.id;
+    context.push('/scenes/scene/${randomScene.id}', extra: true);
   }
 
   /// Formats a [_SceneSortField] enum value for display in the UI.

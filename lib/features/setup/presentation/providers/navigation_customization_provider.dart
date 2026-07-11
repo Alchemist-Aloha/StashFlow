@@ -19,3 +19,21 @@ class RandomNavigationEnabled extends _$RandomNavigationEnabled {
     prefs.setBool(_storageKey, value);
   }
 }
+
+@riverpod
+class SceneRandomRespectActiveFilter
+    extends _$SceneRandomRespectActiveFilter {
+  static const _storageKey = 'scene_random_respect_active_filter';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? true;
+  }
+
+  void set(bool value) {
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setBool(_storageKey, value);
+  }
+}

@@ -35,6 +35,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     required this.enableNativePip,
     this.onFullScreenToggle,
     this.onInlineBack,
+    this.onRandomScene,
     required this.scene,
     this.onScaleStart,
     this.onScaleUpdate,
@@ -49,6 +50,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   final bool enableNativePip;
   final VoidCallback? onFullScreenToggle;
   final VoidCallback? onInlineBack;
+  final VoidCallback? onRandomScene;
   final Scene scene;
   final GestureScaleStartCallback? onScaleStart;
   final GestureScaleUpdateCallback? onScaleUpdate;
@@ -1366,6 +1368,21 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                              if (widget.onRandomScene != null) ...[
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  key: const Key(
+                                    'fullscreen_random_scene_button',
+                                  ),
+                                  tooltip: context.l10n.random_scene,
+                                  style: _controlButtonStyle(colorScheme),
+                                  icon: const Icon(Icons.casino_outlined),
+                                  onPressed: () {
+                                    widget.onRandomScene?.call();
+                                    _showControlsTemporarily();
+                                  },
+                                ),
+                              ],
                             ],
                           ),
                         ),

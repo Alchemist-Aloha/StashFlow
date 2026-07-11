@@ -1130,6 +1130,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'リストおよび詳細ページでフローティングカジノボタンを有効または無効にします';
 
   @override
+  String get settings_interface_random_scene_filter => 'ランダムシーンで現在のフィルターを適用';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      '有効にすると、ランダムシーンのナビゲーションは現在のシーンフィルターを使用します。';
+
+  @override
   String get settings_interface_main_pages_gravity_orientation =>
       '重力制御の画面向き（メインページ）';
 

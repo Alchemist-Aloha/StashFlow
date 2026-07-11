@@ -1150,6 +1150,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Включить или отключить плавающие кнопки казино на страницах списков и деталей';
 
   @override
+  String get settings_interface_random_scene_filter =>
+      'Учитывать активные фильтры для случайной сцены';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      'Если включено, случайная навигация по сценам использует текущие фильтры сцен.';
+
+  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Ориентация, управляемая гравитацией (основные страницы)';
 

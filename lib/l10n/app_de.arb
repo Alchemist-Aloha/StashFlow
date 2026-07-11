@@ -244,6 +244,8 @@
   "settings_interface_navigation_subtitle": "Sichtbarkeit globaler Navigationskürzel",
   "settings_interface_show_random": "Zufalls-Navigationsschaltflächen anzeigen",
   "settings_interface_show_random_subtitle": "Aktivieren oder deaktivieren Sie die schwebenden Casino-Schaltflächen auf Listen- und Detailseiten",
+  "settings_interface_random_scene_filter": "Aktive Filter für zufällige Szenen berücksichtigen",
+  "settings_interface_random_scene_filter_subtitle": "Wenn aktiviert, verwendet die zufällige Szenennavigation die aktuellen Szenenfilter.",
   "settings_interface_main_pages_gravity_orientation": "Schwerkraftgesteuerte Ausrichtung (Hauptseiten)",
   "settings_interface_main_pages_gravity_orientation_subtitle": "Erlaube Hauptseiten, sich mithilfe des Gerätesensors zu drehen. Die Vollbild-Videowiedergabe verwendet eigene Ausrichtungseinstellungen.",
   "settings_interface_show_edit": "Bearbeiten-Schaltfläche anzeigen",
