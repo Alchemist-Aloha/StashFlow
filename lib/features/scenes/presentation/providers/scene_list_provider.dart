@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
@@ -332,16 +330,6 @@ class SceneList extends _$SceneList {
       if (excludeSceneId == null || candidate.id != excludeSceneId) {
         return candidate;
       }
-    }
-
-    final loadedScenes = state.asData?.value;
-    if (loadedScenes != null && loadedScenes.isNotEmpty) {
-      final candidates = excludeSceneId == null
-          ? loadedScenes
-          : loadedScenes.where((scene) => scene.id != excludeSceneId).toList();
-      if (candidates.isEmpty) return null;
-      final random = Random();
-      return candidates[random.nextInt(candidates.length)];
     }
 
     return null;

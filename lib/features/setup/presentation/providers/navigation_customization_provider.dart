@@ -1,10 +1,13 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 
-part 'navigation_customization_provider.g.dart';
+final randomNavigationEnabledProvider =
+    NotifierProvider<RandomNavigationEnabled, bool>(
+      RandomNavigationEnabled.new,
+    );
 
-@riverpod
-class RandomNavigationEnabled extends _$RandomNavigationEnabled {
+class RandomNavigationEnabled extends Notifier<bool> {
   static const _storageKey = 'show_random_navigation';
 
   @override
@@ -20,9 +23,12 @@ class RandomNavigationEnabled extends _$RandomNavigationEnabled {
   }
 }
 
-@riverpod
-class SceneRandomRespectActiveFilter
-    extends _$SceneRandomRespectActiveFilter {
+final sceneRandomRespectActiveFilterProvider =
+    NotifierProvider<SceneRandomRespectActiveFilter, bool>(
+      SceneRandomRespectActiveFilter.new,
+    );
+
+class SceneRandomRespectActiveFilter extends Notifier<bool> {
   static const _storageKey = 'scene_random_respect_active_filter';
 
   @override

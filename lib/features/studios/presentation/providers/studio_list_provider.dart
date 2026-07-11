@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'dart:convert';
@@ -219,16 +217,6 @@ class StudioList extends _$StudioList {
       if (excludeStudioId == null || candidate.id != excludeStudioId) {
         return candidate;
       }
-    }
-
-    final loaded = state.asData?.value;
-    if (loaded != null && loaded.isNotEmpty) {
-      final candidates = excludeStudioId == null
-          ? loaded
-          : loaded.where((studio) => studio.id != excludeStudioId).toList();
-      if (candidates.isEmpty) return null;
-      final random = Random();
-      return candidates[random.nextInt(candidates.length)];
     }
 
     return null;

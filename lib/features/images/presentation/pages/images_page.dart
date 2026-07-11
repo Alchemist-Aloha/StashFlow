@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +11,7 @@ import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
-import '../../../galleries/presentation/providers/gallery_list_provider.dart';
+import '../../../galleries/presentation/providers/gallery_random_navigation_provider.dart';
 import '../providers/image_list_provider.dart';
 import '../widgets/image_card.dart';
 import '../../domain/entities/image.dart' as entity;
@@ -132,19 +131,12 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   }
 
   /// Opens a random gallery's images.
-  void _openRandomGallery() {
-    final galleries = ref.read(galleryListProvider).value ?? [];
-    if (galleries.isEmpty) return;
+  Future<void> _openRandomGallery() async {
+    final gallery = await ref
+        .read(galleryRandomNavigationControllerProvider)
+        .getRandomGallery(excludeGalleryId: _lastRandomGalleryId);
+    if (!mounted || gallery == null) return;
 
-    // Choose a random gallery that wasn't the last one we picked.
-    final random = Random();
-    int index;
-    do {
-      index = random.nextInt(galleries.length);
-    } while (galleries.length > 1 &&
-        galleries[index].id == _lastRandomGalleryId);
-
-    final gallery = galleries[index];
     _lastRandomGalleryId = gallery.id;
 
     // Set the filter and refresh.

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -268,18 +266,6 @@ class GalleryList extends _$GalleryList {
       if (excludeGalleryId == null || candidate.id != excludeGalleryId) {
         return candidate;
       }
-    }
-
-    final loadedGalleries = state.asData?.value;
-    if (loadedGalleries != null && loadedGalleries.isNotEmpty) {
-      final candidates = excludeGalleryId == null
-          ? loadedGalleries
-          : loadedGalleries
-                .where((gallery) => gallery.id != excludeGalleryId)
-                .toList();
-      if (candidates.isEmpty) return null;
-      final random = Random();
-      return candidates[random.nextInt(candidates.length)];
     }
 
     return null;
