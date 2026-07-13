@@ -8,7 +8,7 @@
 
 ## Follow-up refinement
 
-Later UI refinements supersede the nested control-island and wide-screen split in Task 1: use `_buildSectionContainer` for exact Details-surface parity, then order the full-width groups as title/studio, controls, and metadata on every screen size.
+Later UI refinements supersede the nested control-island and wide-screen split in Task 1: keep title/studio outside, then use `_buildSectionContainer` for exact Details-surface parity around the full-width controls and metadata groups on every screen size.
 
 **Tech Stack:** Flutter, Material 3, flutter_test.
 

@@ -711,13 +711,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(width: double.infinity, child: identity),
+            const SizedBox(height: AppTheme.spacingMedium),
             _buildSectionContainer(
               context,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(width: double.infinity, child: identity),
-                  const SizedBox(height: AppTheme.spacingMedium),
                   SizedBox(width: double.infinity, child: controls),
                   const SizedBox(height: AppTheme.spacingMedium),
                   SizedBox(width: double.infinity, child: metadata),

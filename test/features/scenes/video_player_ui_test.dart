@@ -129,7 +129,11 @@ void main() {
     final details = find.byKey(const Key('scene_details_section'));
     expect(
       find.descendant(of: header, matching: find.text('Test Scene')),
-      findsOneWidget,
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: header, matching: find.text('Test Studio')),
+      findsNothing,
     );
     expect(
       find.descendant(
@@ -242,7 +246,7 @@ void main() {
       );
       expect(
         tester.getSize(controls).width,
-        closeTo(tester.getSize(identity).width, 0.1),
+        lessThan(tester.getSize(identity).width),
       );
       expect(tester.takeException(), isNull);
     },

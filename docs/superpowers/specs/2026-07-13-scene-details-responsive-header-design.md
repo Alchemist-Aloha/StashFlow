@@ -9,8 +9,9 @@ Refine only the scene-details region from the title through the action buttons. 
 Use a **Soft Structuralist vertical hierarchy**: strong title typography followed by controls and compact technical metadata.
 
 - Use semantic colors from the existing Material 3 theme so light, dark, and custom color schemes remain correct.
-- Wrap the full title-through-actions region in the existing section container so it is one rounded rectangle with the exact color, radius, padding, and margin used by Details.
-- Keep the control group on that shared background; do not add a nested control surface, border, or shadow.
+- Keep the title and Studio/Year identity block directly on the page background.
+- Wrap only the control group and metadata chips in the existing section container so their rectangle uses the exact color, radius, padding, and margin used by Details.
+- Do not add a nested control surface, border, or shadow.
 - Do not use gradients, backdrop blur, grain, or decorative animation in this scrolling region.
 - Keep the existing outlined icon glyphs and dependencies, but normalize the action icons to a precise visual size and consistent tonal treatment.
 
@@ -27,7 +28,7 @@ Use a full-width vertical composition:
 3. Rating/O and action controls, 16 logical pixels below the studio line.
 4. Technical metadata chips, 16 logical pixels below the controls.
 
-Inside the shared section rectangle, place rating and O-counter controls in the first wrapping row and the five scene actions in a second wrapping row. Use an 8-pixel rhythm and allow either row to wrap under text scaling. Nothing may scroll horizontally.
+Below the outside identity block, place rating and O-counter controls in the first wrapping row and the five scene actions in a second wrapping row inside the shared section rectangle. Metadata chips follow inside the same rectangle. Use an 8-pixel rhythm and allow either row to wrap under text scaling. Nothing may scroll horizontally.
 
 ### Large screen: 768 logical pixels and above
 
@@ -64,7 +65,7 @@ Add stable keys for the identity and control groups, then verify:
 
 - Mobile: identity is above the control group and both use the available width without overflow.
 - Large screen: controls remain below the identity block and above metadata.
-- Surface parity: the header and Details cards use the exact same section-container color.
+- Surface parity: the controls/metadata and Details cards use the exact same section-container color while title and Studio/Year remain outside.
 - Text scaling: the mobile layout at 1.5× produces no overflow exceptions.
 - Existing scene action, rating, O-counter, safe-area, and navigation tests continue to pass.
 
