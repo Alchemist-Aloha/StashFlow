@@ -9,118 +9,113 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_sav
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets(
-    'opens a naming dialog from the header before saving the current preset',
-    (tester) async {
-      final client = _FakeGraphQLClient(
-        queryData: {
-          '__typename': 'Query',
-          'findSavedFilters': <Map<String, dynamic>>[],
-        },
-        mutationData: {
-          '__typename': 'Mutation',
-          'saveFilter': {
-            '__typename': 'SavedFilter',
-            'id': '9',
-            'mode': 'SCENES',
-            'name': 'Favorites',
-            'find_filter': {
-              '__typename': 'SavedFindFilterType',
-              'q': 'clip',
-              'page': 1,
-              'per_page': null,
-              'sort': 'rating',
-              'direction': 'DESC',
-            },
-            'object_filter': '{}',
-            'ui_options': '{}',
+  testWidgets('opens a naming dialog before saving the current preset', (
+    tester,
+  ) async {
+    final client = _FakeGraphQLClient(
+      queryData: {
+        '__typename': 'Query',
+        'findSavedFilters': <Map<String, dynamic>>[],
+      },
+      mutationData: {
+        '__typename': 'Mutation',
+        'saveFilter': {
+          '__typename': 'SavedFilter',
+          'id': '9',
+          'mode': 'SCENES',
+          'name': 'Favorites',
+          'find_filter': {
+            '__typename': 'SavedFindFilterType',
+            'q': 'clip',
+            'page': 1,
+            'per_page': null,
+            'sort': 'rating',
+            'direction': 'DESC',
           },
+          'object_filter': '{}',
+          'ui_options': '{}',
         },
-      );
+      },
+    );
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            savedFilterRepositoryProvider.overrideWithValue(
-              GraphQLSavedFilterRepository(client),
-            ),
-          ],
-          child: MaterialApp(
-            locale: const Locale('en'),
-            theme: AppTheme.lightTheme,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: Scaffold(
-              body: Builder(
-                builder: (context) => Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      showModalBottomSheet<void>(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (_) => SceneSavedFilterDialog(
-                          searchQuery: 'clip',
-                          sort: 'rating',
-                          descending: true,
-                          filter: SceneFilter.empty(),
-                          onLoad: (_) {},
-                        ),
-                      );
-                    },
-                    child: const Text('Open'),
-                  ),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          savedFilterRepositoryProvider.overrideWithValue(
+            GraphQLSavedFilterRepository(client),
+          ),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => SceneSavedFilterDialog(
+                        searchQuery: 'clip',
+                        sort: 'rating',
+                        descending: true,
+                        filter: SceneFilter.empty(),
+                        onLoad: (_) {},
+                      ),
+                    );
+                  },
+                  child: const Text('Open'),
                 ),
               ),
             ),
           ),
         ),
-      );
-      await tester.pumpAndSettle();
+      ),
+    );
+    await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
 
-      expect(find.text('Current Settings'), findsOneWidget);
-      expect(find.text('Available Presets'), findsOneWidget);
+    expect(find.text('Current Settings'), findsOneWidget);
+    expect(find.text('Available Presets'), findsOneWidget);
 
-      final dialogSize = tester.getSize(find.byType(SceneSavedFilterDialog));
-      final screenHeight =
-          tester.view.physicalSize.height / tester.view.devicePixelRatio;
-      expect(dialogSize.height, lessThan(screenHeight * 0.8));
+    final dialogSize = tester.getSize(find.byType(SceneSavedFilterDialog));
+    final screenHeight =
+        tester.view.physicalSize.height / tester.view.devicePixelRatio;
+    expect(dialogSize.height, lessThan(screenHeight * 0.8));
 
-      expect(find.text('Enter preset name'), findsNothing);
+    expect(find.text('Enter preset name'), findsNothing);
 
-      await tester.tap(
-        find.ancestor(
-          of: find.byIcon(Icons.save_outlined).first,
-          matching: find.byType(TextButton),
-        ),
-      );
-      await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save Preset'));
+    await tester.pumpAndSettle();
 
-      expect(find.text('Save Preset'), findsOneWidget);
-      expect(find.byType(AlertDialog), findsOneWidget);
-      expect(
-        find.widgetWithText(TextField, 'Enter preset name'),
-        findsOneWidget,
-      );
+    final saveDialog = find.byType(AlertDialog);
+    expect(saveDialog, findsOneWidget);
+    expect(
+      find.descendant(of: saveDialog, matching: find.text('Save Preset')),
+      findsOneWidget,
+    );
+    expect(find.widgetWithText(TextField, 'Enter preset name'), findsOneWidget);
 
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Enter preset name'),
-        'Favorites',
-      );
-      await tester.tap(find.widgetWithText(FilledButton, 'Save'));
-      await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Enter preset name'),
+      'Favorites',
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Save'));
+    await tester.pumpAndSettle();
 
-      final input =
-          client.lastMutationVariables!['input'] as Map<String, dynamic>;
-      expect(input['name'], 'Favorites');
-      expect(input['find_filter']['q'], 'clip');
-      expect(input['find_filter']['sort'], 'rating');
-      expect(input['find_filter']['direction'], 'DESC');
-      expect(find.text('Saved Scene filter'), findsOneWidget);
-    },
-  );
+    final input =
+        client.lastMutationVariables!['input'] as Map<String, dynamic>;
+    expect(input['name'], 'Favorites');
+    expect(input['find_filter']['q'], 'clip');
+    expect(input['find_filter']['sort'], 'rating');
+    expect(input['find_filter']['direction'], 'DESC');
+    expect(find.text('Saved Scene filter'), findsOneWidget);
+  });
 
   testWidgets(
     'confirms before deleting a saved preset and removes it after confirmation',
@@ -199,7 +194,10 @@ void main() {
 
       expect(find.text('Favorites'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      final deleteButton = find.byIcon(Icons.delete_outline);
+      await tester.ensureVisible(deleteButton);
+      await tester.pumpAndSettle();
+      await tester.tap(deleteButton);
       await tester.pumpAndSettle();
 
       expect(find.text('Delete Preset'), findsOneWidget);
@@ -214,7 +212,9 @@ void main() {
       expect(client.lastDeleteVariables, isNull);
       expect(find.text('Favorites'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.ensureVisible(deleteButton);
+      await tester.pumpAndSettle();
+      await tester.tap(deleteButton);
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
       await tester.pumpAndSettle();
@@ -298,12 +298,7 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.ancestor(
-        of: find.byIcon(Icons.save_outlined).first,
-        matching: find.byType(TextButton),
-      ),
-    );
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save Preset'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Favorites');
     await tester.tap(find.byType(FilledButton).last);
@@ -311,7 +306,10 @@ void main() {
 
     expect(find.textContaining('save boom'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.delete_outline));
+    final deleteButton = find.byIcon(Icons.delete_outline);
+    await tester.ensureVisible(deleteButton);
+    await tester.pumpAndSettle();
+    await tester.tap(deleteButton);
     await tester.pumpAndSettle();
     await tester.tap(find.byType(FilledButton).last);
     await tester.pumpAndSettle();

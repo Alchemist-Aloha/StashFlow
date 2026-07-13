@@ -149,78 +149,82 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
   Widget build(BuildContext context) {
     return SafeArea(
       top: false,
-      child: FrostedPanel(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppTheme.radiusExtraLarge),
-        ),
-        child: FutureBuilder<List<T>>(
-          future: _savedFiltersFuture,
-          builder: (context, snapshot) {
-            final savedFilters = snapshot.data ?? const [];
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BottomSheetPanelHeader(title: context.l10n.saved_presets),
-                const Divider(height: 1),
-                Flexible(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(context.dimensions.spacingLarge),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          context.l10n.current_settings,
-                          style: context.textTheme.labelLarge,
-                        ),
-                        SizedBox(height: context.dimensions.spacingSmall),
-                        _ActiveSettingsSummary(
-                          searchQuery: widget.searchQuery,
-                          sort: widget.sort,
-                          descending: widget.descending,
-                          activeFilterCount: widget.activeFilterCount,
-                          defaultSortLabel: widget.defaultSortLabel,
-                        ),
-                        SizedBox(height: context.dimensions.spacingSmall),
-                        Text(
-                          context.l10n.available_presets,
-                          style: context.textTheme.labelLarge,
-                        ),
-                        SizedBox(height: context.dimensions.spacingSmall),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight: MediaQuery.sizeOf(context).height * 0.22,
+      child: FractionallySizedBox(
+        heightFactor: 0.75,
+        child: FrostedPanel(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppTheme.radiusExtraLarge),
+          ),
+          child: FutureBuilder<List<T>>(
+            future: _savedFiltersFuture,
+            builder: (context, snapshot) {
+              final savedFilters = snapshot.data ?? const [];
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BottomSheetPanelHeader(title: context.l10n.saved_presets),
+                  const Divider(height: 1),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(context.dimensions.spacingLarge),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.current_settings,
+                            style: context.textTheme.labelLarge,
                           ),
-                          child: _SavedFilterList<T>(
-                            snapshot: snapshot,
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          _ActiveSettingsSummary(
+                            searchQuery: widget.searchQuery,
+                            sort: widget.sort,
+                            descending: widget.descending,
+                            activeFilterCount: widget.activeFilterCount,
                             defaultSortLabel: widget.defaultSortLabel,
-                            busy: _saving || _deleting,
-                            deletingId: _deletingId,
-                            onRetry: () {
-                              setState(() {
-                                _savedFiltersFuture = widget.loadPresets();
-                              });
-                            },
-                            onDelete: _promptDelete,
-                            onLoad: _load,
                           ),
-                        ),
-                      ],
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          Text(
+                            context.l10n.available_presets,
+                            style: context.textTheme.labelLarge,
+                          ),
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.sizeOf(context).height * 0.22,
+                            ),
+                            child: _SavedFilterList<T>(
+                              snapshot: snapshot,
+                              defaultSortLabel: widget.defaultSortLabel,
+                              busy: _saving || _deleting,
+                              deletingId: _deletingId,
+                              onRetry: () {
+                                setState(() {
+                                  _savedFiltersFuture = widget.loadPresets();
+                                });
+                              },
+                              onDelete: _promptDelete,
+                              onLoad: _load,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const Divider(height: 1),
-                BottomSheetPanelActions(
-                  primaryLabel: context.l10n.save_preset,
-                  secondaryLabel: context.l10n.common_close,
-                  onPrimary: _saving || _deleting
-                      ? null
-                      : () => _promptSave(savedFilters),
-                  onSecondary: () => Navigator.of(context).pop(),
-                ),
-              ],
-            );
-          },
+                  const Divider(height: 1),
+                  BottomSheetPanelActions(
+                    primaryLabel: context.l10n.save_preset,
+                    secondaryLabel: context.l10n.common_close,
+                    onPrimary: _saving || _deleting
+                        ? null
+                        : () => _promptSave(savedFilters),
+                    onSecondary: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

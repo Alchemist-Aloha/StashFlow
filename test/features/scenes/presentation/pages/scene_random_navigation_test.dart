@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
-import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scenes_page.dart';
@@ -72,7 +71,7 @@ void main() {
 
       final router = GoRouter(
         routes: [
-          GoRoute(path: '/', builder: (_, __) => const ScenesPage()),
+          GoRoute(path: '/', builder: (_, _) => const ScenesPage()),
           GoRoute(
             path: '/scenes/scene/:id',
             builder: (context, state) =>
@@ -104,9 +103,10 @@ void main() {
       final container = ProviderScope.containerOf(
         tester.element(find.byType(ScenesPage)),
       );
-      container
-          .read(playbackQueueProvider.notifier)
-          .setSequence([queuedA, queuedB], 1);
+      container.read(playbackQueueProvider.notifier).setSequence([
+        queuedA,
+        queuedB,
+      ], 1);
       final before = container.read(playbackQueueProvider);
 
       await tester.tap(find.byTooltip('Random scene'));
@@ -114,7 +114,10 @@ void main() {
 
       final after = container.read(playbackQueueProvider);
       expect(find.text('route:backend-random'), findsOneWidget);
-      expect(after.sequence.map((scene) => scene.id).toList(), ['queue-a', 'queue-b']);
+      expect(after.sequence.map((scene) => scene.id).toList(), [
+        'queue-a',
+        'queue-b',
+      ]);
       expect(after.currentIndex, before.currentIndex);
     },
   );
@@ -132,7 +135,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/',
-          builder: (_, __) => const SceneDetailsPage(sceneId: 'current'),
+          builder: (_, _) => const SceneDetailsPage(sceneId: 'current'),
         ),
         GoRoute(
           path: '/scenes/scene/:id',
