@@ -7,7 +7,7 @@ A modern, multi-platform client for your **Stash** server. Built for fast browsi
 The app is primarily tested on Android and Windows. The web build is best treated as a demo because browser restrictions limit authentication and playback behavior. For the full experience, use a native build.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.24.0-green.svg)](pubspec.yaml)
+[![Version](https://img.shields.io/badge/version-1.25.0-green.svg)](pubspec.yaml)
 
 ## 📸 Screenshots
 
