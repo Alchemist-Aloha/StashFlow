@@ -4,6 +4,7 @@
 **/Generated*.*
 **/*.freezed.dart
 **/*.mocks.dart
+**/*.graphql.dart
 .hermes/
 *.class
 *.log
@@ -61,4 +62,3 @@ android/upload-keystore.jks
 .worktrees/
 Caddyfile
 perf/
-

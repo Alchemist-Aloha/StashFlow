@@ -1126,6 +1126,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_show_random_subtitle => '在列表和详情页启用或禁用悬浮随机按钮';
 
   @override
+  String get settings_interface_random_scene_filter => '随机场景遵循当前筛选条件';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      '启用后，随机场景导航会使用当前场景筛选条件。';
+
+  @override
   String get settings_interface_main_pages_gravity_orientation =>
       '重力控制的方向（主页面）';
 
@@ -4151,6 +4158,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_interface_show_random_subtitle => '在列表和详情页启用或禁用悬浮随机按钮';
+
+  @override
+  String get settings_interface_random_scene_filter => '随机场景遵循当前筛选条件';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      '启用后，随机场景导航会使用当前场景筛选条件。';
 
   @override
   String get settings_interface_main_pages_gravity_orientation =>
@@ -7180,6 +7194,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_interface_show_random_subtitle => '在列表和詳情頁面啟用或停用浮動隨機按鈕';
+
+  @override
+  String get settings_interface_random_scene_filter => '隨機場景遵循目前篩選條件';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      '啟用後，隨機場景導覽會使用目前的場景篩選條件。';
 
   @override
   String get settings_interface_main_pages_gravity_orientation =>

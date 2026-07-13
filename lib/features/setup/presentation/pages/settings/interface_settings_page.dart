@@ -28,6 +28,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
       'image_fullscreen_vertical_swipe';
 
   bool _showRandomNavigation = true;
+  bool _sceneRandomRespectActiveFilter = true;
   bool _sceneGridLayout = false;
   bool _sceneTiktokLayout = false;
   bool _galleryGridLayout = true;
@@ -74,6 +75,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     final prefs = ref.read(sharedPreferencesProvider);
 
     _showRandomNavigation = ref.read(randomNavigationEnabledProvider);
+    _sceneRandomRespectActiveFilter = ref.read(
+      sceneRandomRespectActiveFilterProvider,
+    );
     _sceneGridLayout = ref.read(sceneGridLayoutProvider);
     _sceneTiktokLayout = ref.read(sceneTiktokLayoutProvider);
     _galleryGridLayout = ref.read(
@@ -152,6 +156,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref
         .read(randomNavigationEnabledProvider.notifier)
         .set(_showRandomNavigation);
+    ref
+        .read(sceneRandomRespectActiveFilterProvider.notifier)
+        .set(_sceneRandomRespectActiveFilter);
     ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
     ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
     ref
@@ -249,9 +256,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
       child: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(context.dimensions.spacingLarge),
+          ? const SettingsLoadingState()
+          : SettingsPageBody(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -287,6 +293,27 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           value: _showRandomNavigation,
                           onChanged: (value) async {
                             setState(() => _showRandomNavigation = value);
+                            await _saveSettings();
+                          },
+                        ),
+                        Divider(height: context.dimensions.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context
+                                .l10n
+                                .settings_interface_random_scene_filter,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_random_scene_filter_subtitle,
+                          ),
+                          value: _sceneRandomRespectActiveFilter,
+                          onChanged: (value) async {
+                            setState(
+                              () => _sceneRandomRespectActiveFilter = value,
+                            );
                             await _saveSettings();
                           },
                         ),

@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../providers/tag_list_provider.dart';
+import '../providers/tag_random_navigation_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../widgets/tag_filter_panel.dart';
 
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
@@ -125,9 +127,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_TagSortOption>(
         title: context.l10n.tags_sort_title,
         options: _TagSortOption.values,
@@ -150,10 +151,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const TagFilterPanel(),
     );
   }
@@ -162,9 +161,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     final sortConfig = ref.read(tagSortProvider);
     final favoritesOnly = ref.read(tagFavoritesOnlyProvider);
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<TagSavedFilterConfig>(
         searchQuery: ref.read(tagSearchQueryProvider),
         sort: sortConfig.sort,
@@ -226,8 +224,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
 
   Future<void> _openRandomTag() async {
     final randomTag = await ref
-        .read(tagListProvider.notifier)
-        .getRandomTag(useCurrentFilter: true, excludeTagId: _lastRandomTagId);
+        .read(tagRandomNavigationControllerProvider)
+        .getRandomTag(excludeTagId: _lastRandomTagId);
     if (!mounted) return;
 
     if (randomTag == null) {

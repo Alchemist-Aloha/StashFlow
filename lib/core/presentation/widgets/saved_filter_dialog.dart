@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/saved_filter_config.dart';
 import '../../utils/l10n_extensions.dart';
 import '../theme/app_theme.dart';
+import 'bottom_sheet_panel_chrome.dart';
 
 class SavedFilterDialog<T extends SavedFilterConfig<dynamic>>
     extends StatefulWidget {
@@ -146,95 +147,84 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
 
   @override
   Widget build(BuildContext context) {
-    final safeBottom = MediaQuery.paddingOf(context).bottom;
-
     return SafeArea(
       top: false,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          context.dimensions.spacingLarge,
-          context.dimensions.spacingLarge,
-          context.dimensions.spacingLarge,
-          context.dimensions.spacingLarge + safeBottom,
-        ),
-        child: FutureBuilder<List<T>>(
-          future: _savedFiltersFuture,
-          builder: (context, snapshot) {
-            final savedFilters = snapshot.data ?? const [];
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        context.l10n.saved_presets,
-                        style: context.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+      child: FractionallySizedBox(
+        heightFactor: 0.75,
+        child: FrostedPanel(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppTheme.radiusExtraLarge),
+          ),
+          child: FutureBuilder<List<T>>(
+            future: _savedFiltersFuture,
+            builder: (context, snapshot) {
+              final savedFilters = snapshot.data ?? const [];
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BottomSheetPanelHeader(title: context.l10n.saved_presets),
+                  const Divider(height: 1),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(context.dimensions.spacingLarge),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.current_settings,
+                            style: context.textTheme.labelLarge,
+                          ),
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          _ActiveSettingsSummary(
+                            searchQuery: widget.searchQuery,
+                            sort: widget.sort,
+                            descending: widget.descending,
+                            activeFilterCount: widget.activeFilterCount,
+                            defaultSortLabel: widget.defaultSortLabel,
+                          ),
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          Text(
+                            context.l10n.available_presets,
+                            style: context.textTheme.labelLarge,
+                          ),
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.sizeOf(context).height * 0.22,
+                            ),
+                            child: _SavedFilterList<T>(
+                              snapshot: snapshot,
+                              defaultSortLabel: widget.defaultSortLabel,
+                              busy: _saving || _deleting,
+                              deletingId: _deletingId,
+                              onRetry: () {
+                                setState(() {
+                                  _savedFiltersFuture = widget.loadPresets();
+                                });
+                              },
+                              onDelete: _promptDelete,
+                              onLoad: _load,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    TextButton.icon(
-                      onPressed: _saving || _deleting
-                          ? null
-                          : () => _promptSave(savedFilters),
-                      icon: _saving
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.save_outlined),
-                      label: Text(context.l10n.common_save),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.close),
-                      tooltip: context.l10n.common_close,
-                    ),
-                  ],
-                ),
-                SizedBox(height: context.dimensions.spacingMedium),
-                Text(
-                  context.l10n.current_settings,
-                  style: context.textTheme.labelLarge,
-                ),
-                SizedBox(height: context.dimensions.spacingSmall),
-                _ActiveSettingsSummary(
-                  searchQuery: widget.searchQuery,
-                  sort: widget.sort,
-                  descending: widget.descending,
-                  activeFilterCount: widget.activeFilterCount,
-                  defaultSortLabel: widget.defaultSortLabel,
-                ),
-                SizedBox(height: context.dimensions.spacingSmall),
-                Text(
-                  context.l10n.available_presets,
-                  style: context.textTheme.labelLarge,
-                ),
-                SizedBox(height: context.dimensions.spacingSmall),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.sizeOf(context).height * 0.22,
                   ),
-                  child: _SavedFilterList<T>(
-                    snapshot: snapshot,
-                    defaultSortLabel: widget.defaultSortLabel,
-                    busy: _saving || _deleting,
-                    deletingId: _deletingId,
-                    onRetry: () {
-                      setState(() {
-                        _savedFiltersFuture = widget.loadPresets();
-                      });
-                    },
-                    onDelete: _promptDelete,
-                    onLoad: _load,
+                  const Divider(height: 1),
+                  BottomSheetPanelActions(
+                    primaryLabel: context.l10n.save_preset,
+                    secondaryLabel: context.l10n.common_close,
+                    onPrimary: _saving || _deleting
+                        ? null
+                        : () => _promptSave(savedFilters),
+                    onSecondary: () => Navigator.of(context).pop(),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

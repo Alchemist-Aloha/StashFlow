@@ -57,9 +57,11 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     return SettingsPageShell(
       title: l10n.settings_develop_title,
-      child: ListView(
+      child: SettingsPageBody(
         padding: EdgeInsets.all(context.dimensions.spacingMedium),
-        children: [
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
           SettingsSectionCard(
             title: l10n.settings_develop_diagnostics,
             subtitle: l10n.settings_develop_diagnostics_subtitle,
@@ -112,7 +114,6 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
             ),
           ),
           if (kIsWeb) ...[
-            SizedBox(height: context.dimensions.spacingLarge),
             SettingsSectionCard(
               title: l10n.settings_develop_web_overrides,
               subtitle: l10n.settings_develop_web_overrides_subtitle,
@@ -127,7 +128,8 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
               ),
             ),
           ],
-        ],
+          ],
+        ),
       ),
     );
   }

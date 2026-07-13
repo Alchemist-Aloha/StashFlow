@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
+import '../providers/scene_random_navigation_provider.dart';
 import '../providers/player_view_mode.dart';
 import '../providers/video_player_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
@@ -89,11 +90,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       if (!mounted) return;
       _startPlaybackIfNeeded(force: widget.autoPlayOnMount);
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -397,6 +393,16 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
   }
 
+  Future<void> _openRandomScene() async {
+    final randomScene = await ref
+        .read(sceneRandomNavigationControllerProvider)
+        .getRandomScene(excludeSceneId: widget.scene.id);
+    if (!mounted || randomScene == null) return;
+
+    final router = GoRouter.of(context);
+    router.push('/scenes/scene/${randomScene.id}', extra: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
@@ -465,6 +471,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
               scene: widget.scene,
               controller: controller,
               onFullScreenToggle: _toggleFullScreen,
+              onRandomScene: _openRandomScene,
               onInlineBack: () {
                 final router = GoRouter.of(context);
                 if (router.canPop()) {

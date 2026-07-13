@@ -7,7 +7,7 @@ import '../../../scenes/presentation/widgets/scrape_query_dialog.dart';
 import '../../../scenes/presentation/widgets/enhanced_scrape_dialog.dart';
 import '../../domain/entities/performer.dart';
 import '../providers/performer_details_provider.dart';
-import '../providers/performer_scrape_provider.dart';
+import '../providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
 
 class PerformerEditPage extends ConsumerStatefulWidget {
@@ -148,12 +148,12 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
       List<ScrapedPerformer> results = [];
       if (scrapeRequest.url != null) {
         final res = await ref
-            .read(performerScrapeProvider)
+            .read(performerRepositoryProvider)
             .scrapePerformerURL(scrapeRequest.url!);
         if (res != null) results = [res];
       } else {
         results = await ref
-            .read(performerScrapeProvider)
+            .read(performerRepositoryProvider)
             .scrapePerformer(
               scraperId: scrapeRequest.scraperId,
               stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
@@ -357,7 +357,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
       }
 
       await ref
-          .read(performerScrapeProvider)
+          .read(performerRepositoryProvider)
           .updatePerformer(id: widget.performer.id, input: input);
 
       if (mounted) {

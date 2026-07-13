@@ -17,9 +17,10 @@ class SecuritySettingsPage extends ConsumerWidget {
 
     return SettingsPageShell(
       title: context.l10n.settings_security_title,
-      child: ListView(
-        padding: EdgeInsets.all(context.dimensions.spacingLarge),
-        children: [
+      child: SettingsPageBody(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
           SettingsSectionCard(
             title: context.l10n.settings_security_app_lock,
             subtitle: context.l10n.settings_security_app_lock_subtitle,
@@ -142,7 +143,8 @@ class SecuritySettingsPage extends ConsumerWidget {
               ],
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }

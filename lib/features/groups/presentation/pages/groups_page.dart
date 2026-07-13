@@ -7,6 +7,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/group_saved_filter_config.dart';
@@ -107,9 +108,8 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_GroupSortOption>(
         title: context.l10n.common_sort,
         options: _GroupSortOption.values,
@@ -132,10 +132,8 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const GroupFilterPanel(),
     );
   }
@@ -144,9 +142,8 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
     final sortConfig = ref.read(groupSortProvider);
     final currentFilter = ref.read(groupListFilterProvider);
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<GroupSavedFilterConfig>(
         searchQuery: ref.read(groupSearchQueryProvider),
         sort: sortConfig.sort,

@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../pages/scene_info_page.dart';
@@ -185,16 +186,11 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
   /// Displays a custom scene info sheet for navigation actions.
   void _showMenu(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
       useRootNavigator: true,
-      isScrollControlled: true,
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-      ),
-      backgroundColor: context.colors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => SceneInfoPage(scene: widget.scene),
     );

@@ -18,7 +18,7 @@ targets:
           clients:
             - graphql
           schema_mapping:
-            - schema: graphql/combined_schema.graphql
+            - schema: graphql/schema.graphql
               queries_glob: lib/features/**/*.graphql
               output_directory: lib/core/data/graphql/__generated__
           scalars:
@@ -34,4 +34,3 @@ targets:
               type: String
             Int64:
               type: int
-

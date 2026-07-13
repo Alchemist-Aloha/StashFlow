@@ -14,30 +14,49 @@ class NavigationCustomizationPage extends ConsumerWidget {
 
     return SettingsPageShell(
       title: context.l10n.settings_interface_customize_tabs,
-      child: ReorderableListView(
+      child: SettingsPageBody(
+        scrollable: false,
         padding: EdgeInsets.all(context.dimensions.spacingMedium),
-        onReorderItem: (oldIndex, newIndex) {
-          ref.read(navigationTabsProvider.notifier).reorder(oldIndex, newIndex);
-        },
-        children: [
-          for (final tab in tabs)
-            ListTile(
-              key: ValueKey(tab.type.id),
-              leading: Icon(
-                Icons.drag_handle,
-                size: 24 * context.dimensions.fontSizeFactor,
-              ),
-              title: Text(tab.type.label),
-              trailing: Switch.adaptive(
-                value: tab.visible,
-                onChanged: (value) {
-                  ref
-                      .read(navigationTabsProvider.notifier)
-                      .toggleTab(tab.type, value);
-                },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SettingsSectionCard(
+              title: context.l10n.settings_interface_customize_tabs,
+              subtitle: context.l10n.settings_interface_customize_tabs_subtitle,
+              child: const SizedBox.shrink(),
+            ),
+            Expanded(
+              child: SettingsPanelCard(
+                child: ReorderableListView(
+                  onReorderItem: (oldIndex, newIndex) {
+                    ref
+                        .read(navigationTabsProvider.notifier)
+                        .reorder(oldIndex, newIndex);
+                  },
+                  children: [
+                    for (final tab in tabs)
+                      ListTile(
+                        key: ValueKey(tab.type.id),
+                        leading: Icon(
+                          Icons.drag_handle,
+                          size: 24 * context.dimensions.fontSizeFactor,
+                        ),
+                        title: Text(tab.type.label),
+                        trailing: Switch.adaptive(
+                          value: tab.visible,
+                          onChanged: (value) {
+                            ref
+                                .read(navigationTabsProvider.notifier)
+                                .toggleTab(tab.type, value);
+                          },
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }

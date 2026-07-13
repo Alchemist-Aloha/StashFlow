@@ -1160,6 +1160,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Activer ou désactiver les boutons flottants de casino sur les pages de liste et de détails';
 
   @override
+  String get settings_interface_random_scene_filter =>
+      'Respecter les filtres actifs pour la scène aléatoire';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      'Lorsqu\'elle est activée, la navigation aléatoire des scènes utilise les filtres de scène actuels.';
+
+  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Orientation contrôlée par la gravité (pages principales)';
 

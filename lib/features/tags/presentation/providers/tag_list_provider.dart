@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/tag.dart';
@@ -203,16 +201,6 @@ class TagList extends _$TagList {
       if (excludeTagId == null || candidate.id != excludeTagId) {
         return candidate;
       }
-    }
-
-    final loaded = state.asData?.value;
-    if (loaded != null && loaded.isNotEmpty) {
-      final candidates = excludeTagId == null
-          ? loaded
-          : loaded.where((tag) => tag.id != excludeTagId).toList();
-      if (candidates.isEmpty) return null;
-      final random = Random();
-      return candidates[random.nextInt(candidates.length)];
     }
 
     return null;

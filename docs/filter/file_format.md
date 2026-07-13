@@ -44,5 +44,6 @@ final result = await client.query(QueryOptions(
 ```
 
 Implementation notes
+
 - Backend: use joinedStringCriterionHandler to add joins to images_files -> image_files (or files table) and filter on format column.
 - Frontend TS reference: see ui/v2.5/src/models/list-filter/criteria for how web UI exposes similar filters; follow that UI pattern for Flutter (multi-select or dropdown for formats).

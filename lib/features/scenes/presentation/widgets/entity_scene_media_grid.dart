@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
@@ -131,9 +132,8 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<EntitySceneMediaSortField>(
         title: context.l10n.sort_scenes,
         options: EntitySceneMediaSortField.values,
@@ -158,10 +158,8 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => SceneFilterPanel(
         initialFilter: ref.read(
           entityMediaFilterStateProvider(widget.filterKind),
@@ -216,9 +214,8 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
       filter.copyWith(organized: organizedFilter.toBool() ?? filter.organized),
     );
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SceneSavedFilterDialog(
         searchQuery: ref.read(
           entityMediaSearchQueryProvider(widget.filterKind),

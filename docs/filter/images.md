@@ -6,6 +6,7 @@
 - TypeScript UI reference: ui/v2.5/src/models/list-filter/* (criteria and filter-options)
 
 Available Image filters (server-side names / input types):
+
 - title, details: StringCriterionInput
 - id: IntCriterionInput
 - checksum, oshash: StringCriterionInput
@@ -75,5 +76,6 @@ final result = await client.query(QueryOptions(document: gql(query), variables: 
 ```
 
 Notes:
+
 - Image file-specific filters (format, resolution, orientation) exist under ImageFileFilterInput (see filters.graphql lines near ImageFileFilterInput).
 - Use joined handlers server-side to filter by file attributes (pkg/sqlite/criterion_handlers.go and image.go addFilesJoin/addFolderJoin helpers).

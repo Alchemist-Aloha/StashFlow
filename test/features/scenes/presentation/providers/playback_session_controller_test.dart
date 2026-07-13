@@ -99,6 +99,31 @@ void main() {
       expect(completed, 1);
     });
 
+    test('completed callback fires once per false-to-true edge', () async {
+      final sessionController = PlaybackSessionController(
+        createPlayer: () => player1,
+        createVideoController: (_) => controller1,
+      );
+      var completed = 0;
+
+      await sessionController.bindPlayerStreams(
+        player1,
+        onTick: () {},
+        onCompleted: () => completed++,
+        onError: (_) {},
+      );
+
+      completed1.add(true);
+      completed1.add(true);
+      await Future<void>.delayed(Duration.zero);
+      expect(completed, 1);
+
+      completed1.add(false);
+      completed1.add(true);
+      await Future<void>.delayed(Duration.zero);
+      expect(completed, 2);
+    });
+
     test('rebinding cancels previous subscriptions', () async {
       final sessionController = PlaybackSessionController(
         createPlayer: () => player1,

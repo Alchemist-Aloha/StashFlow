@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart';
 import '../providers/performer_list_provider.dart';
+import '../providers/performer_random_navigation_provider.dart';
 import '../widgets/performer_filter_panel.dart';
 import '../widgets/performer_card.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
@@ -13,6 +14,7 @@ import '../../../../core/presentation/providers/list_scroll_controller_provider.
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/domain/entities/filter_options.dart';
@@ -184,7 +186,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
 
   Future<void> _openRandomPerformer() async {
     final random = await ref
-        .read(performerListProvider.notifier)
+        .read(performerRandomNavigationControllerProvider)
         .getRandomPerformer(excludePerformerId: _lastRandomPerformerId);
     if (!mounted) return;
 
@@ -200,9 +202,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_PerformerSortOption>(
         title: context.l10n.performers_sort_title,
         options: _PerformerSortOption.values,
@@ -226,10 +227,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const PerformerFilterPanel(),
     );
   }
@@ -242,9 +241,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     final sortConfig = ref.read(performerSortProvider);
     final filter = ref.read(performerFilterStateProvider);
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<PerformerSavedFilterConfig>(
         searchQuery: ref.read(performerSearchQueryProvider),
         sort: sortConfig.sort,

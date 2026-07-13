@@ -18,9 +18,10 @@ class StorageSettingsPage extends ConsumerWidget {
 
     return SettingsPageShell(
       title: context.l10n.settings_storage,
-      child: ListView(
-        padding: EdgeInsets.all(context.dimensions.spacingLarge),
-        children: [
+      child: SettingsPageBody(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
           SettingsSectionCard(
             title: context.l10n.settings_storage_usage,
             subtitle: context.l10n.settings_storage_usage_subtitle,
@@ -176,9 +177,8 @@ class StorageSettingsPage extends ConsumerWidget {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, stack) =>
                   Text(context.l10n.settings_storage_error_loading),
-            ),
+              ),
           ),
-          SizedBox(height: context.dimensions.spacingMedium),
           SettingsSectionCard(
             title: context.l10n.settings_storage_limits,
             subtitle: context.l10n.settings_storage_limits_subtitle,
@@ -254,7 +254,8 @@ class StorageSettingsPage extends ConsumerWidget {
               ],
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }

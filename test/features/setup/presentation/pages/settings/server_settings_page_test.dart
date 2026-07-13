@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/server_settings_page.dart';
+import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 
 import '../../../../../helpers/test_helpers.dart';
 
@@ -34,5 +35,6 @@ void main() {
     expect(widget.tooltip, isNotNull);
     // The tooltip string comes from l10n.settings_server_profile_add, which should be 'Add Profile' in english
     expect(widget.tooltip, 'Add Profile');
+    expect(find.byType(SettingsEmptyState), findsOneWidget);
   });
 }

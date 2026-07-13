@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
@@ -228,18 +226,6 @@ class PerformerList extends _$PerformerList {
       if (excludePerformerId == null || candidate.id != excludePerformerId) {
         return candidate;
       }
-    }
-
-    final loaded = state.asData?.value;
-    if (loaded != null && loaded.isNotEmpty) {
-      final candidates = excludePerformerId == null
-          ? loaded
-          : loaded
-                .where((performer) => performer.id != excludePerformerId)
-                .toList();
-      if (candidates.isEmpty) return null;
-      final random = Random();
-      return candidates[random.nextInt(candidates.length)];
     }
 
     return null;

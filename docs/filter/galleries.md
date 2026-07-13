@@ -6,6 +6,7 @@
 - TypeScript UI reference: ui/v2.5/src/models/list-filter/galleries.ts
 
 Available Gallery filters (server-side names / input types):
+
 - title: StringCriterionInput
 - id: IntCriterionInput
 - date: DateCriterionInput
@@ -50,5 +51,6 @@ final result = await client.query(QueryOptions(document: gql(query), variables: 
 ```
 
 Notes:
+
 - Path-based filters may require additional joins to folders/files; see gallery.go addFileTable/addFolderTable helpers.
 - Aggregated counts use getCountSort helper where needed.

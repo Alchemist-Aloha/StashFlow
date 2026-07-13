@@ -17,6 +17,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/performer_list_provider.dart';
+import '../providers/performer_random_navigation_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
@@ -44,11 +45,8 @@ class PerformerDetailsPage extends ConsumerWidget {
 
   Future<void> _openRandomPerformer(BuildContext context, WidgetRef ref) async {
     final randomPerformer = await ref
-        .read(performerListProvider.notifier)
-        .getRandomPerformer(
-          useCurrentFilter: true,
-          excludePerformerId: performerId,
-        );
+        .read(performerRandomNavigationControllerProvider)
+        .getRandomPerformer(excludePerformerId: performerId);
     if (!context.mounted) return;
 
     if (randomPerformer == null) {

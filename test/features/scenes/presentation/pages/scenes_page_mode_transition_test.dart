@@ -146,7 +146,7 @@ class _TestPlayerState extends PlayerState {
   }
 
   @override
-  void stop() {
+  void stop({bool dismissNotification = true}) {
     stopCalls++;
     state = GlobalPlayerState(
       playEndBehavior: state.playEndBehavior,

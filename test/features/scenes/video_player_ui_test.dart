@@ -107,10 +107,51 @@ void main() {
     expect(find.text('Test Studio'), findsOneWidget);
   });
 
+  testWidgets('SceneDetailsPage matches header and details section surfaces', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final scene = testScene.copyWith(details: 'Scene details');
+    final mockRepo = MockGraphQLSceneRepository()..withData([scene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: scene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final header = find.byKey(const Key('scene_header_section'));
+    final details = find.byKey(const Key('scene_details_section'));
+    expect(
+      find.descendant(of: header, matching: find.text('Test Scene')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: header, matching: find.text('Test Studio')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: header,
+        matching: find.byKey(const Key('scene_action_delete')),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      tester.widget<Card>(header).color,
+      tester.widget<Card>(details).color,
+    );
+  });
+
   testWidgets(
-    'SceneDetailsPage renders scene actions below rating and O counter',
+    'SceneDetailsPage aligns tablet rating and action groups on one line',
     (tester) async {
-      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.physicalSize = const Size(1100, 1600);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
@@ -131,12 +172,96 @@ void main() {
       expect(find.byKey(const Key('scene_action_edit')), findsOneWidget);
       expect(find.byKey(const Key('scene_action_delete')), findsOneWidget);
 
+      final rating = find.byKey(const Key('scene_rating_controls'));
+      final actions = find.byKey(const Key('scene_action_buttons'));
       expect(
-        tester.getTopLeft(find.byKey(const Key('scene_action_edit'))).dy,
-        greaterThan(
-          tester.getTopLeft(find.byIcon(Icons.water_drop_outlined)).dy,
+        tester.getCenter(actions).dy,
+        closeTo(tester.getCenter(rating).dy, 0.1),
+      );
+      expect(
+        tester.getTopRight(actions).dx,
+        closeTo(
+          tester.getTopRight(find.byKey(const Key('scene_header_controls'))).dx,
+          0.1,
         ),
       );
+    },
+  );
+
+  testWidgets('SceneDetailsPage orders header controls before metadata', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final identity = find.byKey(const Key('scene_header_identity'));
+    final controls = find.byKey(const Key('scene_header_controls'));
+    final metadata = find.byKey(const Key('scene_header_metadata'));
+
+    expect(
+      tester.getBottomLeft(identity).dy,
+      lessThan(tester.getTopLeft(controls).dy),
+    );
+    expect(
+      tester.getBottomLeft(controls).dy,
+      lessThan(tester.getTopLeft(metadata).dy),
+    );
+  });
+
+  testWidgets(
+    'SceneDetailsPage stacks its header without scaled-text overflow',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(1.5)),
+          child: SceneDetailsPage(sceneId: testScene.id),
+        ),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      final identity = find.byKey(const Key('scene_header_identity'));
+      final controls = find.byKey(const Key('scene_header_controls'));
+      final metadata = find.byKey(const Key('scene_header_metadata'));
+      final rating = find.byKey(const Key('scene_rating_controls'));
+      final actions = find.byKey(const Key('scene_action_buttons'));
+
+      expect(
+        tester.getBottomLeft(identity).dy,
+        lessThan(tester.getTopLeft(controls).dy),
+      );
+      expect(
+        tester.getBottomLeft(controls).dy,
+        lessThan(tester.getTopLeft(metadata).dy),
+      );
+      expect(
+        tester.getSize(controls).width,
+        lessThan(tester.getSize(identity).width),
+      );
+      expect(
+        tester.getTopLeft(actions).dy,
+        greaterThan(tester.getTopLeft(rating).dy),
+      );
+      expect(tester.takeException(), isNull);
     },
   );
 
@@ -180,13 +305,13 @@ void main() {
 
     final starIcons = find.byWidgetPredicate(
       (widget) =>
-          widget is Icon && widget.icon == Icons.star && widget.size == 28,
+          widget is Icon && widget.icon == Icons.star && widget.size == 24,
     );
     final borderIcons = find.byWidgetPredicate(
       (widget) =>
           widget is Icon &&
           widget.icon == Icons.star_border &&
-          widget.size == 28,
+          widget.size == 24,
     );
 
     expect(starIcons, findsNWidgets(2));

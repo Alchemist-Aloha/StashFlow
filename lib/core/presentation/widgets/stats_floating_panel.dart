@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
@@ -7,6 +6,7 @@ import '../providers/stats_provider.dart';
 import '../../data/graphql/stats_repository.dart';
 import '../theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
+import 'bottom_sheet_panel_chrome.dart';
 
 class StatsFloatingPanel extends ConsumerWidget {
   const StatsFloatingPanel({super.key});
@@ -39,53 +39,30 @@ class StatsFloatingPanel extends ConsumerWidget {
     final dims = context.dimensions;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-      child: Container(
-        width: 340 * dims.fontSizeFactor,
-        margin: EdgeInsets.all(dims.spacingLarge),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withValues(alpha: 0.4),
-              blurRadius: 24,
-              offset: const Offset(0, 8),
-            ),
-          ],
-          border: Border.all(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-            width: 1,
-          ),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildHeader(context, dims, colorScheme),
-              Flexible(
-                child: statsAsync.when(
-                  data: (stats) => _buildStatsList(context, stats, dims, l10n),
-                  loading: () => _buildLoadingStatsList(context, dims, l10n),
-                  error: (err, stack) => Padding(
-                    padding: EdgeInsets.all(dims.spacingLarge),
-                    child: Text(
-                      context.l10n.common_error(err.toString()),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: colorScheme.error),
-                    ),
-                  ),
+    return FrostedPanel(
+      width: 340 * dims.fontSizeFactor,
+      margin: EdgeInsets.all(dims.spacingLarge),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildHeader(context, dims, colorScheme),
+          Flexible(
+            child: statsAsync.when(
+              data: (stats) => _buildStatsList(context, stats, dims, l10n),
+              loading: () => _buildLoadingStatsList(context, dims, l10n),
+              error: (err, stack) => Padding(
+                padding: EdgeInsets.all(dims.spacingLarge),
+                child: Text(
+                  context.l10n.common_error(err.toString()),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorScheme.error),
                 ),
               ),
-              _buildFooter(context, dims, ref),
-            ],
+            ),
           ),
-        ),
+          _buildFooter(context, dims, ref),
+        ],
       ),
     );
   }

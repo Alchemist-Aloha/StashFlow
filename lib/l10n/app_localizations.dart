@@ -2232,6 +2232,18 @@ abstract class AppLocalizations {
   /// **'Enable or disable the floating casino buttons across list and details pages'**
   String get settings_interface_show_random_subtitle;
 
+  /// No description provided for @settings_interface_random_scene_filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Respect active filters for random scene'**
+  String get settings_interface_random_scene_filter;
+
+  /// No description provided for @settings_interface_random_scene_filter_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When enabled, random scene navigation uses the current scene filters.'**
+  String get settings_interface_random_scene_filter_subtitle;
+
   /// No description provided for @settings_interface_main_pages_gravity_orientation.
   ///
   /// In en, this message translates to:

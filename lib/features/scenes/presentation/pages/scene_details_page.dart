@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
@@ -24,6 +25,7 @@ import '../providers/entity_media_filter_scope.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import '../providers/scene_random_navigation_provider.dart';
 import '../providers/video_player_provider.dart';
 import 'scene_info_page.dart';
 import '../../data/repositories/stream_resolver.dart';
@@ -99,8 +101,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   Future<void> _openRandomScene(BuildContext context) async {
     final randomScene = await ref
-        .read(sceneListProvider.notifier)
-        .getRandomScene(useCurrentFilter: true, excludeSceneId: widget.sceneId);
+        .read(sceneRandomNavigationControllerProvider)
+        .getRandomScene(excludeSceneId: widget.sceneId);
     if (!context.mounted) return;
 
     if (randomScene == null) {
@@ -114,16 +116,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   void _showSceneDetailsSheet(Scene scene) {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
       useRootNavigator: true,
-      isScrollControlled: true,
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-      ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => SceneInfoPage(scene: scene),
     );
@@ -521,11 +518,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
@@ -671,8 +663,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildSectionContainer(BuildContext context, Widget child) {
+  Widget _buildSectionContainer(
+    BuildContext context,
+    Widget child, {
+    Key? key,
+  }) {
     return Card(
+      key: key,
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
       color: Theme.of(
@@ -689,32 +686,65 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildMainInfo(BuildContext context, Scene scene) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildTitle(context, scene),
-        const SizedBox(height: AppTheme.spacingSmall),
-        _buildStudioAndDate(context, scene),
-        const SizedBox(height: AppTheme.spacingSmall),
-        Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 768;
+
+        final identity = Column(
+          key: const Key('scene_header_identity'),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTechnicalMetadata(context, scene),
-            const SizedBox(height: AppTheme.spacingSmall),
-            _buildActions(context, scene),
-            const SizedBox(height: AppTheme.spacingMedium),
+            _buildTitle(context, scene, isWide: isWide),
+            const SizedBox(height: 6),
+            _buildStudioAndDate(context, scene),
           ],
-        ),
-        _buildDetails(context, scene),
-      ],
+        );
+        final controls = SizedBox(
+          key: const Key('scene_header_controls'),
+          child: _buildActions(context, scene),
+        );
+        final metadata = SizedBox(
+          key: const Key('scene_header_metadata'),
+          child: _buildTechnicalMetadata(context, scene),
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: double.infinity, child: identity),
+            const SizedBox(height: AppTheme.spacingMedium),
+            _buildSectionContainer(
+              context,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(width: double.infinity, child: controls),
+                  const SizedBox(height: AppTheme.spacingMedium),
+                  SizedBox(width: double.infinity, child: metadata),
+                ],
+              ),
+              key: const Key('scene_header_section'),
+            ),
+            _buildDetails(context, scene),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildTitle(BuildContext context, Scene scene) {
+  Widget _buildTitle(
+    BuildContext context,
+    Scene scene, {
+    required bool isWide,
+  }) {
+    final style = isWide
+        ? context.textTheme.headlineMedium
+        : context.textTheme.headlineSmall;
     return Text(
       scene.displayTitle,
-      style: context.textTheme.headlineSmall?.copyWith(
-        fontWeight: FontWeight.bold,
+      style: style?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: isWide ? -0.5 : -0.3,
         color: context.colors.onSurface,
       ),
     );
@@ -727,31 +757,33 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return Row(
       children: [
         if (scene.studioName != null)
-          Semantics(
-            button: canOpenStudio,
-            label: canOpenStudio ? 'Open ${scene.studioName} details' : null,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: canOpenStudio
-                    ? () => context.push('/studios/studio/${scene.studioId}')
-                    : null,
-                borderRadius: BorderRadius.circular(4),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 2,
-                    vertical: 1,
-                  ),
-                  child: Text(
-                    scene.studioName!,
-                    style: context.textTheme.titleMedium?.copyWith(
-                      color: canOpenStudio
-                          ? context.colors.primary
-                          : context.colors.onSurface,
-                      fontWeight: FontWeight.w500,
-                      decoration: canOpenStudio
-                          ? TextDecoration.underline
-                          : TextDecoration.none,
+          Flexible(
+            child: Semantics(
+              button: canOpenStudio,
+              label: canOpenStudio ? 'Open ${scene.studioName} details' : null,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: canOpenStudio
+                      ? () => context.push('/studios/studio/${scene.studioId}')
+                      : null,
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 2,
+                      vertical: 1,
+                    ),
+                    child: Text(
+                      scene.studioName!,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        color: canOpenStudio
+                            ? context.colors.primary
+                            : context.colors.onSurface,
+                        fontWeight: FontWeight.w500,
+                        decoration: canOpenStudio
+                            ? TextDecoration.underline
+                            : TextDecoration.none,
+                      ),
                     ),
                   ),
                 ),
@@ -822,18 +854,17 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildActions(BuildContext context, Scene scene) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final ratingControls = Wrap(
+      key: const Key('scene_rating_controls'),
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 0,
           children: [
             for (var i = 1; i <= 5; i++)
               IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
                 tooltip: context.l10n.scene_rating_stars(i),
                 onPressed: () async {
                   final currentRating = scene.rating100 ?? 0;
@@ -867,95 +898,101 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       ? Icons.star
                       : Icons.star_border,
                   color: context.colors.ratingColor,
-                  size: 28,
+                  size: 24,
                 ),
               ),
-            FilledButton.tonalIcon(
-              onPressed: () async {
-                try {
-                  await ref
-                      .read(sceneRepositoryProvider)
-                      .incrementSceneOCounter(scene.id);
-                  await ref
-                      .read(sceneRepositoryProvider)
-                      .getSceneById(scene.id, refresh: true);
-                  ref.invalidate(sceneDetailsProvider(scene.id));
-                  _invalidateSceneListUnlessRandom();
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(context.l10n.details_o_count_incremented),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.l10n.details_failed_increment_o_count(
-                            e.toString(),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                }
-              },
-              style: FilledButton.styleFrom(
-                visualDensity: VisualDensity.compact,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                minimumSize: const Size(0, 32),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              ),
-              icon: const Icon(Icons.water_drop_outlined),
-              label: Text('${scene.oCounter}'),
-            ),
           ],
         ),
-        const SizedBox(height: AppTheme.spacingSmall),
-        Wrap(
-          spacing: 4,
-          runSpacing: 4,
-          children: [
-            IconButton(
-              key: const Key('scene_action_add_marker'),
-              tooltip: context.l10n.scene_details_add_marker,
-              icon: const Icon(Icons.bookmark_add_outlined),
-              onPressed: () => _showAddMarkerDialog(
-                scene,
-                markerSeconds: _currentMarkerSeconds(scene),
-              ),
-            ),
-            IconButton(
-              key: const Key('scene_action_info'),
-              tooltip: context.l10n.common_more,
-              icon: const Icon(Icons.info_outline_rounded),
-              onPressed: () => _showSceneDetailsSheet(scene),
-            ),
-            if (!kIsWeb)
-              IconButton(
-                key: const Key('scene_action_download'),
-                tooltip: context.l10n.common_download,
-                icon: const Icon(Icons.download_outlined),
-                onPressed: () => _saveVideoToGallery(scene),
-              ),
-            IconButton(
-              key: const Key('scene_action_edit'),
-              tooltip: context.l10n.common_edit,
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: () =>
-                  context.push('/scenes/scene/${scene.id}/edit', extra: scene),
-            ),
-            IconButton(
-              key: const Key('scene_action_delete'),
-              tooltip: context.l10n.delete_scene,
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () => _showDeleteSceneDialog(scene),
-            ),
-          ],
+        FilledButton.tonalIcon(
+          onPressed: () async {
+            try {
+              await ref
+                  .read(sceneRepositoryProvider)
+                  .incrementSceneOCounter(scene.id);
+              await ref
+                  .read(sceneRepositoryProvider)
+                  .getSceneById(scene.id, refresh: true);
+              ref.invalidate(sceneDetailsProvider(scene.id));
+              _invalidateSceneListUnlessRandom();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(context.l10n.details_o_count_incremented),
+                  ),
+                );
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      context.l10n.details_failed_increment_o_count(
+                        e.toString(),
+                      ),
+                    ),
+                  ),
+                );
+              }
+            }
+          },
+          style: FilledButton.styleFrom(
+            visualDensity: VisualDensity.compact,
+            minimumSize: const Size(0, 48),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+          ),
+          icon: const Icon(Icons.water_drop_outlined),
+          label: Text('${scene.oCounter}'),
         ),
       ],
+    );
+    final actionButtons = Wrap(
+      key: const Key('scene_action_buttons'),
+      spacing: 4,
+      runSpacing: 4,
+      children: [
+        IconButton(
+          key: const Key('scene_action_add_marker'),
+          tooltip: context.l10n.scene_details_add_marker,
+          icon: const Icon(Icons.bookmark_add_outlined),
+          onPressed: () => _showAddMarkerDialog(
+            scene,
+            markerSeconds: _currentMarkerSeconds(scene),
+          ),
+        ),
+        IconButton(
+          key: const Key('scene_action_info'),
+          tooltip: context.l10n.common_more,
+          icon: const Icon(Icons.info_outline_rounded),
+          onPressed: () => _showSceneDetailsSheet(scene),
+        ),
+        if (!kIsWeb)
+          IconButton(
+            key: const Key('scene_action_download'),
+            tooltip: context.l10n.common_download,
+            icon: const Icon(Icons.download_outlined),
+            onPressed: () => _saveVideoToGallery(scene),
+          ),
+        IconButton(
+          key: const Key('scene_action_edit'),
+          tooltip: context.l10n.common_edit,
+          icon: const Icon(Icons.edit_outlined),
+          onPressed: () =>
+              context.push('/scenes/scene/${scene.id}/edit', extra: scene),
+        ),
+        IconButton(
+          key: const Key('scene_action_delete'),
+          tooltip: context.l10n.delete_scene,
+          icon: const Icon(Icons.delete_outline),
+          onPressed: () => _showDeleteSceneDialog(scene),
+        ),
+      ],
+    );
+
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      runSpacing: AppTheme.spacingSmall,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [ratingControls, actionButtons],
     );
   }
 
@@ -1004,6 +1041,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           ),
         ],
       ),
+      key: const Key('scene_details_section'),
     );
   }
 

@@ -435,17 +435,11 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressContext()),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, st) =>
           Center(child: Text(context.l10n.common_error(e.toString()))),
     );
   }
-}
-
-class CircularProgressContext extends StatelessWidget {
-  const CircularProgressContext({super.key});
-  @override
-  Widget build(BuildContext context) => const CircularProgressIndicator();
 }
 
 class TiktokSceneItem extends ConsumerStatefulWidget {

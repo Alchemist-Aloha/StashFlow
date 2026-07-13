@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:math';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../providers/gallery_list_provider.dart';
+import '../providers/gallery_random_navigation_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../domain/entities/gallery.dart';
 
@@ -111,19 +112,12 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   }
 
   /// Opens a random gallery image view.
-  void _openRandomGallery() {
-    final galleries = ref.read(galleryListProvider).value ?? [];
-    if (galleries.isEmpty) return;
+  Future<void> _openRandomGallery() async {
+    final gallery = await ref
+        .read(galleryRandomNavigationControllerProvider)
+        .getRandomGallery(excludeGalleryId: _lastRandomGalleryId);
+    if (!mounted || gallery == null) return;
 
-    // Choose a random gallery that wasn't the last one we picked.
-    final random = Random();
-    int index;
-    do {
-      index = random.nextInt(galleries.length);
-    } while (galleries.length > 1 &&
-        galleries[index].id == _lastRandomGalleryId);
-
-    final gallery = galleries[index];
     _lastRandomGalleryId = gallery.id;
 
     // Set the filter and navigate.
@@ -149,9 +143,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_GallerySortOption>(
         title: context.l10n.galleries_sort_title,
         options: _GallerySortOption.values,
@@ -175,10 +168,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const GalleryFilterPanel(),
     );
   }
@@ -195,9 +186,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       organized: organizedFilter.toBool() ?? filter.organized,
     );
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<GallerySavedFilterConfig>(
         searchQuery: ref.read(gallerySearchQueryProvider),
         sort: sortConfig.sort,

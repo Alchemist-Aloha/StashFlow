@@ -1143,6 +1143,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable or disable the floating casino buttons across list and details pages';
 
   @override
+  String get settings_interface_random_scene_filter =>
+      'Respect active filters for random scene';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      'When enabled, random scene navigation uses the current scene filters.';
+
+  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Gravity-controlled orientation (main pages)';
 

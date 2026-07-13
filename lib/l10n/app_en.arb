@@ -380,6 +380,8 @@
   "settings_interface_navigation_subtitle": "Visibility of global navigation shortcuts",
   "settings_interface_show_random": "Show Random Navigation Buttons",
   "settings_interface_show_random_subtitle": "Enable or disable the floating casino buttons across list and details pages",
+  "settings_interface_random_scene_filter": "Respect active filters for random scene",
+  "settings_interface_random_scene_filter_subtitle": "When enabled, random scene navigation uses the current scene filters.",
   "settings_interface_main_pages_gravity_orientation": "Gravity-controlled orientation (main pages)",
   "settings_interface_main_pages_gravity_orientation_subtitle": "Allow main pages to rotate using the device sensor. Fullscreen video playback follows its own orientation settings.",
   "settings_interface_show_edit": "Show Edit Button",

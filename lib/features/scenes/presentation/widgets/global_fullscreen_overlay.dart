@@ -3,11 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../providers/video_player_provider.dart';
 import '../providers/fullscreen_controller.dart';
+import '../providers/scene_random_navigation_provider.dart';
 import 'player_surface.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/web_helpers.dart';
@@ -265,6 +267,22 @@ class _GlobalFullscreenOverlayState
     notifier.requestExitFullscreen();
   }
 
+  Future<void> _openRandomScene(String currentSceneId) async {
+    final randomScene = await ref
+        .read(sceneRandomNavigationControllerProvider)
+        .getRandomScene(excludeSceneId: currentSceneId);
+    if (!mounted) return;
+
+    if (randomScene == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_random)));
+      return;
+    }
+
+    GoRouter.of(context).push('/scenes/scene/${randomScene.id}', extra: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<FullscreenPhase>(
@@ -334,6 +352,7 @@ class _GlobalFullscreenOverlayState
         scene: scene,
         controller: controller,
         onFullScreenToggle: _toggleFullScreen,
+        onRandomScene: () => _openRandomScene(scene.id),
         fit: BoxFit.contain,
         squareFit: BoxFit.fill,
       );

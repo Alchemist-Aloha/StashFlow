@@ -334,16 +334,6 @@ class SceneList extends _$SceneList {
       }
     }
 
-    final loadedScenes = state.asData?.value;
-    if (loadedScenes != null && loadedScenes.isNotEmpty) {
-      final candidates = excludeSceneId == null
-          ? loadedScenes
-          : loadedScenes.where((scene) => scene.id != excludeSceneId).toList();
-      if (candidates.isEmpty) return null;
-      final random = Random();
-      return candidates[random.nextInt(candidates.length)];
-    }
-
     return null;
   }
 }
