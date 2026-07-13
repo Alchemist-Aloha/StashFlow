@@ -2,21 +2,73 @@
 
 ## Goal
 
-Improve only the scene-details region from the title through the action buttons so it has clear hierarchy on narrow and wide layouts. Preserve every control, callback, tooltip, and the content below the actions.
+Refine only the scene-details region from the title through the action buttons. The result should feel deliberate and premium on mobile and large screens without changing any control, callback, tooltip, platform guard, or content below the actions.
 
-## Layout
+## Visual Direction
 
-Use `LayoutBuilder` at `_buildMainInfo` so the decision follows the width allocated to this region.
+Use a **Soft Structuralist Editorial Split**: generous negative space and strong type on the left, with a compact tactile control island on the right. The header should feel quiet and architectural rather than card-heavy.
 
-- Below 720 logical pixels, keep a single column: title, studio/year, metadata chips, rating/O controls, then action icons.
-- At 720 logical pixels and above, use a split header: title, studio/year, and metadata on the left; rating/O controls and action icons in a compact right-aligned column.
-- Keep the details section below both layouts with the existing spacing.
-- Use existing theme spacing and existing button widgets. Do not add a new shared abstraction or visual surface.
+- Use semantic colors from the existing Material 3 theme so light, dark, and custom color schemes remain correct.
+- Keep the identity block visually open; do not wrap the entire header in a card.
+- Give the controls a restrained nested surface: a faint tonal outer shell around a distinct inner core, with concentric 24/20 logical-pixel radii and no visible gray border.
+- Use one soft ambient shadow at most. Do not use gradients, backdrop blur, grain, or decorative animation in this scrolling region.
+- Keep the existing outlined icon glyphs and dependencies, but normalize the action icons to a precise visual size and consistent tonal treatment.
 
-## Behavior and Accessibility
+## Responsive Composition
 
-All rating, O-counter, marker, info, download, edit, and delete behavior remains unchanged. Existing tooltips, keys, and platform guards remain in place. Wrapping must prevent overflow at narrow widths and under larger text scaling.
+Use `LayoutBuilder` at `_buildMainInfo`; the breakpoint follows the width allocated to the content, not the device type or orientation.
+
+### Mobile: below 768 logical pixels
+
+Use a full-width vertical composition:
+
+1. Title.
+2. Studio and year, 6 logical pixels below the title.
+3. Technical metadata chips, 16 logical pixels below the studio line.
+4. Control island, 20 logical pixels below the metadata.
+
+Inside the control island, place rating and O-counter controls in the first wrapping row and the five scene actions in a second wrapping row. Use an 8-pixel rhythm within the island and allow either row to wrap under text scaling. Nothing may scroll horizontally.
+
+### Large screen: 768 logical pixels and above
+
+Use an editorial split aligned at the top:
+
+- Left: an `Expanded` identity block containing title, studio/year, and technical metadata.
+- Gap: 32 logical pixels.
+- Right: a 304–344 logical-pixel control island containing the same two control rows, right-aligned.
+
+The title must retain the dominant width. Long titles wrap naturally instead of compressing or pushing controls off-screen. The details section remains full-width below the split with 24 logical pixels of separation.
+
+## Typography and Rhythm
+
+- Mobile title: existing `headlineSmall`, weight 700, slightly tightened letter spacing.
+- Large title: existing `headlineMedium`, weight 700, slightly tightened letter spacing.
+- Studio/year: existing theme typography with studio as the primary link and year at reduced emphasis.
+- Metadata: retain the existing compact chips, using 6-pixel spacing and run spacing.
+- Outer shell padding: 4 logical pixels. Inner core padding: 8 logical pixels on mobile and 10 logical pixels on large screens.
+- Maintain a 48×48 logical-pixel minimum hit area for every icon action, including rating stars. Visual icons may remain smaller inside those targets.
+
+Do not introduce a font package or modify the global theme for this isolated region.
+
+## Interaction and Accessibility
+
+All rating, O-counter, marker, info, download, edit, and delete behavior remains unchanged. Preserve existing keys, tooltips, semantics, focus behavior, ordering, and the non-web download guard.
+
+Use native Material state layers for hover, focus, press, and disabled feedback. Do not add entrance or breakpoint animations: this header lives inside a scrolling page, and layout motion would add noise without clarifying state.
+
+The layout must remain overflow-free at narrow widths and at 1.5× text scaling. Touch targets must not overlap when either control row wraps.
+
+## Scope
+
+Modify only `scene_details_page.dart` and its focused scene-details widget test. Reuse existing theme values and button widgets. Add no dependency, shared abstraction, global theme change, player change, or details-section redesign.
 
 ## Verification
 
-Add focused widget assertions for narrow and wide viewports, including relative positions of the title and action groups. Run the focused scene-details widget tests and static analysis for the changed files.
+Add stable keys for the identity and control groups, then verify:
+
+- Mobile: identity is above the control island and both use the available width without overflow.
+- Large screen: identity and control island share a top row, with controls positioned to the right.
+- Text scaling: the mobile layout at 1.5× produces no overflow exceptions.
+- Existing scene action, rating, O-counter, safe-area, and navigation tests continue to pass.
+
+Run the focused scene-details widget tests and static analysis for the two changed Dart files.
