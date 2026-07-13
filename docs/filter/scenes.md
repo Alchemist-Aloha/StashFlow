@@ -6,6 +6,7 @@
 - TypeScript UI reference: ui/v2.5/src/models/list-filter/ (criteria files and filter-options.ts)
 
 Available Scene filters (server-side names / input types):
+
 - id: IntCriterionInput
 - title: StringCriterionInput
 - code: StringCriterionInput
@@ -72,6 +73,7 @@ final result = await client.query(QueryOptions(document: gql(query), variables: 
 ```
 
 Notes:
+
 - Use the CriterionModifier enum (EQUALS, INCLUDES, BETWEEN, GREATER_THAN, etc.) when constructing criterion inputs.
 - For filters that reference related entities (performers, tags, galleries), the GraphQL inputs accept nested filter types (e.g., performers_filter).
 - Server-side handlers live in pkg/sqlite/criterion_handlers.go — they map criterion inputs into SQL WHERE clauses.

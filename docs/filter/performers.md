@@ -6,6 +6,7 @@
 - TypeScript UI reference: ui/v2.5/src/models/list-filter/performers.ts
 
 Available Performer filters (server-side names / input types):
+
 - name, disambiguation, details: StringCriterionInput
 - filter_favorites: Boolean
 - birth_year, age: IntCriterionInput
@@ -69,5 +70,6 @@ final result = await client.query(QueryOptions(document: gql(query), variables: 
 ```
 
 Notes:
+
 - Many performer filters map to columns on performers table or require joins to performers_scenes, performers_images tables for counts.
 - Complex aggregations like scenes_duration use SQL subqueries in performer.go (selectPerformerScenesDurationSQL).

@@ -6,6 +6,7 @@
 - TypeScript UI reference: ui/v2.5/src/models/list-filter/tags.ts
 
 Available Tag filters (server-side names / input types):
+
 - name: StringCriterionInput
 - favorite: Boolean
 - ignore_auto_tag: Boolean
@@ -54,5 +55,6 @@ final result = await client.query(QueryOptions(document: gql(query), variables: 
 ```
 
 Notes:
+
 - Aggregation-related filters (scenes_duration/scenes_size) use subqueries in tag.go to compute sums across related scenes/files.
 - Tag repository manages joins to scenes/images/galleries via joinRepository helpers in tag.go.

@@ -6,6 +6,7 @@
 - TypeScript UI reference: ui/v2.5/src/models/list-filter/studios.ts
 
 Available Studio filters (server-side names / input types):
+
 - name: StringCriterionInput
 - sort_name: StringCriterionInput
 - favorite: Boolean
@@ -49,5 +50,6 @@ final result = await client.query(QueryOptions(document: gql(query), variables: 
 ```
 
 Notes:
+
 - Studio filters generally map to columns on the studios table or aggregated counts via joins.
 - See pkg/sqlite/studio.go for how joins and sorting are managed for related counts.
