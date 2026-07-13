@@ -115,4 +115,4 @@ For more info, see:
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=date&legend=top-left)](https://www.star-history.com/?repos=Alchemist-Aloha%2FStashFlow&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=date&legend=top-left&sealed_token=-dM9LAAxJfmmhjKbl6dn9cJ3ez3GPvSQDOpcgDH7o2hb6TfhoVlEW-h9rPlJAkdrEI9-kWn9c-Z-fZ-5BtvxHJRvyti_DNHquqvrLqRAB4MI2MM4jpw3bQ)](https://www.star-history.com/?repos=Alchemist-Aloha%2FStashFlow&type=date&legend=top-left)
