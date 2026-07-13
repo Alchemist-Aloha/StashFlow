@@ -160,11 +160,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   int _getGridColumnCount(BuildContext context) {
     return Responsive.isMobile(context) ? 2 : 3;
   }

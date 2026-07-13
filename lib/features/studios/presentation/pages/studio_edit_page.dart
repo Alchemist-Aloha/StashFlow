@@ -7,7 +7,7 @@ import '../../../scenes/presentation/widgets/scrape_query_dialog.dart';
 import '../../../scenes/presentation/widgets/enhanced_scrape_dialog.dart';
 import '../../domain/entities/studio.dart';
 import '../providers/studio_details_provider.dart';
-import '../providers/studio_scrape_provider.dart';
+import '../providers/studio_list_provider.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
 
 class StudioEditPage extends ConsumerStatefulWidget {
@@ -59,12 +59,12 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
       List<ScrapedStudio> results = [];
       if (scrapeRequest.url != null) {
         final res = await ref
-            .read(studioScrapeProvider)
+            .read(studioRepositoryProvider)
             .scrapeStudioURL(scrapeRequest.url!);
         if (res != null) results = [res];
       } else {
         results = await ref
-            .read(studioScrapeProvider)
+            .read(studioRepositoryProvider)
             .scrapeStudio(
               scraperId: scrapeRequest.scraperId,
               stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
@@ -160,7 +160,7 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
       }
 
       await ref
-          .read(studioScrapeProvider)
+          .read(studioRepositoryProvider)
           .updateStudio(id: widget.studio.id, input: input);
 
       if (mounted) {

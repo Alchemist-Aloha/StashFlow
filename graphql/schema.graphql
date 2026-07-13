@@ -1,10 +1,3 @@
-
-schema {
-  query: Query
-  mutation: Mutation
-  subscription: Subscription
-}
-
 "The query root for this schema"
 type Query {
   # Filters
@@ -380,6 +373,7 @@ type Mutation {
   performerDestroy(input: PerformerDestroyInput!): Boolean!
   performersDestroy(ids: [ID!]!): Boolean!
   bulkPerformerUpdate(input: BulkPerformerUpdateInput!): [Performer!]
+  performerMerge(input: PerformerMergeInput!): Performer!
 
   studioCreate(input: StudioCreateInput!): Studio
   studioUpdate(input: StudioUpdateInput!): Studio
@@ -428,8 +422,14 @@ type Mutation {
   """
   moveFiles(input: MoveFilesInput!): Boolean!
   deleteFiles(ids: [ID!]!): Boolean!
+  "Deletes file entries from the database without deleting the files from the filesystem"
+  destroyFiles(ids: [ID!]!): Boolean!
 
   fileSetFingerprints(input: FileSetFingerprintsInput!): Boolean!
+  "Reveal the file in the system file manager"
+  revealFileInFileManager(id: ID!): Boolean!
+  "Reveal the folder in the system file manager"
+  revealFolderInFileManager(id: ID!): Boolean!
 
   # Saved filters
   saveFilter(input: SaveFilterInput!): SavedFilter!
@@ -583,6 +583,8 @@ type Mutation {
   stashBoxBatchPerformerTag(input: StashBoxBatchTagInput!): String!
   "Run batch studio tag task. Returns the job ID."
   stashBoxBatchStudioTag(input: StashBoxBatchTagInput!): String!
+  "Run batch tag tag task. Returns the job ID."
+  stashBoxBatchTagTag(input: StashBoxBatchTagInput!): String!
 
   "Enables DLNA for an optional duration. Has no effect if DLNA is enabled by default"
   enableDLNA(input: EnableDLNAInput!): Boolean!
@@ -608,7 +610,6 @@ schema {
   mutation: Mutation
   subscription: Subscription
 }
-
 input SetupInput {
   "Empty to indicate $HOME/.stash/config.yml default"
   configLocation: String!
@@ -795,6 +796,18 @@ input ConfigGeneralInput {
   scraperPackageSources: [PackageSourceInput!]
   "Source of plugin packages"
   pluginPackageSources: [PackageSourceInput!]
+
+  "Size of the longest dimension for each sprite in pixels"
+  spriteScreenshotSize: Int
+
+  "True if sprite generation should use the sprite interval and min/max sprites settings instead of the default"
+  useCustomSpriteInterval: Boolean
+  "Time between two different scrubber sprites in seconds - only used if useCustomSpriteInterval is true"
+  spriteInterval: Float
+  "Minimum number of sprites to be generated - only used if useCustomSpriteInterval is true"
+  minimumSprites: Int
+  "Minimum number of sprites to be generated - only used if useCustomSpriteInterval is true"
+  maximumSprites: Int
 }
 
 type ConfigGeneralResult {
@@ -898,6 +911,16 @@ type ConfigGeneralResult {
   logAccess: Boolean!
   "Maximum log size"
   logFileMaxSize: Int!
+  "True if sprite generation should use the sprite interval and min/max sprites settings instead of the default"
+  useCustomSpriteInterval: Boolean!
+  "Time between two different scrubber sprites in seconds - only used if useCustomSpriteInterval is true"
+  spriteInterval: Float!
+  "Minimum number of sprites to be generated - only used if useCustomSpriteInterval is true"
+  minimumSprites: Int!
+  "Maximum number of sprites to be generated - only used if useCustomSpriteInterval is true"
+  maximumSprites: Int!
+  "Size of the longest dimension for each sprite in pixels"
+  spriteScreenshotSize: Int!
   "Array of video file extensions"
   videoExtensions: [String!]!
   "Array of image file extensions"
@@ -1006,6 +1029,9 @@ input ConfigInterfaceInput {
   customLocales: String
   customLocalesEnabled: Boolean
 
+  "When true, disables all customizations (plugins, CSS, JavaScript, locales) for troubleshooting"
+  disableCustomizations: Boolean
+
   "Interface language"
   language: String
 
@@ -1079,6 +1105,9 @@ type ConfigInterfaceResult {
   "Custom Locales"
   customLocales: String
   customLocalesEnabled: Boolean
+
+  "When true, disables all customizations (plugins, CSS, JavaScript, locales) for troubleshooting"
+  disableCustomizations: Boolean
 
   "Interface language"
   language: String
@@ -1209,7 +1238,6 @@ type StashBoxValidationResult {
   valid: Boolean!
   status: String!
 }
-
 type DLNAIP {
   ipAddress: String!
   "Time until IP will be no longer allowed/disallowed"
@@ -1243,7 +1271,6 @@ input AddTempDLNAIPInput {
 input RemoveTempDLNAIPInput {
   address: String!
 }
-
 type Fingerprint {
   type: String!
   value: String!
@@ -1252,11 +1279,14 @@ type Fingerprint {
 type Folder {
   id: ID!
   path: String!
+  basename: String!
 
   parent_folder_id: ID @deprecated(reason: "Use parent_folder instead")
   zip_file_id: ID @deprecated(reason: "Use zip_file instead")
 
   parent_folder: Folder
+  "Returns all parent folders in order from immediate parent to top-level"
+  parent_folders: [Folder!]!
   zip_file: BasicFile
 
   mod_time: Time!
@@ -1399,7 +1429,7 @@ input MoveFilesInput {
 
 input SetFingerprintsInput {
   type: String!
-  "an null value will remove the fingerprint"
+  "a null value will remove the fingerprint"
   value: String
 }
 
@@ -1427,7 +1457,6 @@ type FindFoldersResultType {
   count: Int!
   folders: [Folder!]!
 }
-
 enum SortDirectionEnum {
   ASC
   DESC
@@ -1505,19 +1534,45 @@ input OrientationCriterionInput {
   value: [OrientationEnum!]!
 }
 
-input PHashDuplicationCriterionInput {
-  duplicated: Boolean
-  "Currently unimplemented"
+input DuplicationCriterionInput {
+  duplicated: Boolean @deprecated(reason: "Use phash field instead")
+  "Currently unimplemented. Intended for phash distance matching."
   distance: Int
+  "Filter by phash duplication"
+  phash: Boolean
+  "Filter by URL duplication"
+  url: Boolean
+  "Filter by Stash ID duplication"
+  stash_id: Boolean
+  "Filter by title duplication"
+  title: Boolean
+}
+
+input FileDuplicationCriterionInput {
+  duplicated: Boolean @deprecated(reason: "Use phash field instead")
+  "Currently unimplemented. Intended for phash distance matching."
+  distance: Int
+  "Filter by phash duplication"
+  phash: Boolean
 }
 
 input StashIDCriterionInput {
   """
   If present, this value is treated as a predicate.
-  That is, it will filter based on stash_ids with the matching endpoint
+  That is, it will filter based on stash_id with the matching endpoint
   """
   endpoint: String
   stash_id: String
+  modifier: CriterionModifier!
+}
+
+input StashIDsCriterionInput {
+  """
+  If present, this value is treated as a predicate.
+  That is, it will filter based on stash_ids with the matching endpoint
+  """
+  endpoint: String
+  stash_ids: [String]
   modifier: CriterionModifier!
 }
 
@@ -1556,10 +1611,15 @@ input PerformerFilterType {
   fake_tits: StringCriterionInput
   "Filter by penis length value"
   penis_length: FloatCriterionInput
-  "Filter by ciricumcision"
+  "Filter by circumcision"
   circumcised: CircumcisionCriterionInput
-  "Filter by career length"
+  "Deprecated: use career_start and career_end. This filter is non-functional."
   career_length: StringCriterionInput
+    @deprecated(reason: "Use career_start and career_end")
+  "Filter by career start"
+  career_start: DateCriterionInput
+  "Filter by career end"
+  career_end: DateCriterionInput
   "Filter by tattoos"
   tattoos: StringCriterionInput
   "Filter by piercings"
@@ -1576,6 +1636,8 @@ input PerformerFilterType {
   tag_count: IntCriterionInput
   "Filter by scene count"
   scene_count: IntCriterionInput
+  "Filter by marker count (via scene)"
+  marker_count: IntCriterionInput
   "Filter by image count"
   image_count: IntCriterionInput
   "Filter by gallery count"
@@ -1586,6 +1648,9 @@ input PerformerFilterType {
   o_counter: IntCriterionInput
   "Filter by StashID"
   stash_id_endpoint: StashIDCriterionInput
+    @deprecated(reason: "use stash_ids_endpoint instead")
+  "Filter by StashIDs"
+  stash_ids_endpoint: StashIDsCriterionInput
   # rating expressed as 1-100
   rating100: IntCriterionInput
   "Filter by url"
@@ -1616,6 +1681,8 @@ input PerformerFilterType {
   galleries_filter: GalleryFilterType
   "Filter by related tags that meet this criteria"
   tags_filter: TagFilterType
+  "Filter by related scene markers (via scene) that meet this criteria"
+  markers_filter: SceneMarkerFilterType
   "Filter by creation time"
   created_at: TimestampCriterionInput
   "Filter by last update time"
@@ -1641,9 +1708,9 @@ input SceneMarkerFilterType {
   updated_at: TimestampCriterionInput
   "Filter by scene date"
   scene_date: DateCriterionInput
-  "Filter by cscene reation time"
+  "Filter by scene creation time"
   scene_created_at: TimestampCriterionInput
-  "Filter by lscene ast update time"
+  "Filter by scene last update time"
   scene_updated_at: TimestampCriterionInput
   "Filter by related scenes that meet this criteria"
   scene_filter: SceneFilterType
@@ -1678,8 +1745,8 @@ input SceneFilterType {
   organized: Boolean
   "Filter by o-counter"
   o_counter: IntCriterionInput
-  "Filter Scenes that have an exact phash match available"
-  duplicated: PHashDuplicationCriterionInput
+  "Filter Scenes by duplication criteria"
+  duplicated: DuplicationCriterionInput
   "Filter by resolution"
   resolution: ResolutionCriterionInput
   "Filter by orientation"
@@ -1722,6 +1789,11 @@ input SceneFilterType {
   performer_count: IntCriterionInput
   "Filter by StashID"
   stash_id_endpoint: StashIDCriterionInput
+    @deprecated(reason: "use stash_ids_endpoint instead")
+  "Filter by StashIDs"
+  stash_ids_endpoint: StashIDsCriterionInput
+  "Filter by StashID count"
+  stash_id_count: IntCriterionInput
   "Filter by url"
   url: StringCriterionInput
   "Filter by interactive"
@@ -1762,6 +1834,8 @@ input SceneFilterType {
   markers_filter: SceneMarkerFilterType
   "Filter by related files that meet this criteria"
   files_filter: FileFilterType
+
+  custom_fields: [CustomFieldCriterionInput!]
 }
 
 input MovieFilterType {
@@ -1844,11 +1918,16 @@ input GroupFilterType {
   containing_group_count: IntCriterionInput
   "Filter by number of sub-groups the group has"
   sub_group_count: IntCriterionInput
+  "Filter by number of scenes the group has"
+  scene_count: IntCriterionInput
 
   "Filter by related scenes that meet this criteria"
   scenes_filter: SceneFilterType
   "Filter by related studios that meet this criteria"
   studios_filter: StudioFilterType
+
+  "Filter by custom fields"
+  custom_fields: [CustomFieldCriterionInput!]
 }
 
 input StudioFilterType {
@@ -1862,6 +1941,9 @@ input StudioFilterType {
   parents: MultiCriterionInput
   "Filter by StashID"
   stash_id_endpoint: StashIDCriterionInput
+    @deprecated(reason: "use stash_ids_endpoint instead")
+  "Filter by StashIDs"
+  stash_ids_endpoint: StashIDsCriterionInput
   "Filter to only include studios with these tags"
   tags: HierarchicalMultiCriterionInput
   "Filter to only include studios missing this property"
@@ -1876,6 +1958,8 @@ input StudioFilterType {
   image_count: IntCriterionInput
   "Filter by gallery count"
   gallery_count: IntCriterionInput
+  "Filter by group count"
+  group_count: IntCriterionInput
   "Filter by tag count"
   tag_count: IntCriterionInput
   "Filter by url"
@@ -1886,16 +1970,22 @@ input StudioFilterType {
   child_count: IntCriterionInput
   "Filter by autotag ignore value"
   ignore_auto_tag: Boolean
+  "Filter by organized"
+  organized: Boolean
   "Filter by related scenes that meet this criteria"
   scenes_filter: SceneFilterType
   "Filter by related images that meet this criteria"
   images_filter: ImageFilterType
   "Filter by related galleries that meet this criteria"
   galleries_filter: GalleryFilterType
+  "Filter by related groups that meet this criteria"
+  groups_filter: GroupFilterType
   "Filter by creation time"
   created_at: TimestampCriterionInput
   "Filter by last update time"
   updated_at: TimestampCriterionInput
+
+  custom_fields: [CustomFieldCriterionInput!]
 }
 
 input GalleryFilterType {
@@ -1972,6 +2062,10 @@ input GalleryFilterType {
   files_filter: FileFilterType
   "Filter by related folders that meet this criteria"
   folders_filter: FolderFilterType
+  "Filter by parent folder of the zip or folder the gallery is in"
+  parent_folder: HierarchicalMultiCriterionInput
+
+  custom_fields: [CustomFieldCriterionInput!]
 }
 
 input TagFilterType {
@@ -2030,7 +2124,7 @@ input TagFilterType {
   "Filter by number of parent tags the tag has"
   parent_count: IntCriterionInput
 
-  "Filter by number f child tags the tag has"
+  "Filter by number of child tags the tag has"
   child_count: IntCriterionInput
 
   "Filter by autotag ignore value"
@@ -2038,6 +2132,10 @@ input TagFilterType {
 
   "Filter by StashID"
   stash_id_endpoint: StashIDCriterionInput
+    @deprecated(reason: "use stash_ids_endpoint instead")
+
+  "Filter by StashID"
+  stash_ids_endpoint: StashIDsCriterionInput
 
   "Filter by related scenes that meet this criteria"
   scenes_filter: SceneFilterType
@@ -2045,12 +2143,22 @@ input TagFilterType {
   images_filter: ImageFilterType
   "Filter by related galleries that meet this criteria"
   galleries_filter: GalleryFilterType
+  "Filter by related groups that meet this criteria"
+  groups_filter: GroupFilterType
+  "Filter by related performers that meet this criteria"
+  performers_filter: PerformerFilterType
+  "Filter by related studios that meet this criteria"
+  studios_filter: StudioFilterType
+  "Filter by related scene markers that meet this criteria"
+  markers_filter: SceneMarkerFilterType
 
   "Filter by creation time"
   created_at: TimestampCriterionInput
 
   "Filter by last update time"
   updated_at: TimestampCriterionInput
+
+  custom_fields: [CustomFieldCriterionInput!]
 }
 
 input ImageFilterType {
@@ -2065,6 +2173,8 @@ input ImageFilterType {
   id: IntCriterionInput
   "Filter by file checksum"
   checksum: StringCriterionInput
+  "Filter by file phash distance"
+  phash_distance: PhashDistanceCriterionInput
   "Filter by path"
   path: StringCriterionInput
   "Filter by file count"
@@ -2122,6 +2232,8 @@ input ImageFilterType {
   tags_filter: TagFilterType
   "Filter by related files that meet this criteria"
   files_filter: FileFilterType
+  "Filter by custom fields"
+  custom_fields: [CustomFieldCriterionInput!]
 }
 
 input FileFilterType {
@@ -2139,8 +2251,8 @@ input FileFilterType {
   "Filter by modification time"
   mod_time: TimestampCriterionInput
 
-  "Filter files that have an exact match available"
-  duplicated: PHashDuplicationCriterionInput
+  "Filter files by duplication criteria (only phash applies to files)"
+  duplicated: FileDuplicationCriterionInput
 
   "find files based on hash"
   hashes: [FingerprintFilterInput!]
@@ -2171,6 +2283,7 @@ input FolderFilterType {
   NOT: FolderFilterType
 
   path: StringCriterionInput
+  basename: StringCriterionInput
 
   parent_folder: HierarchicalMultiCriterionInput
   zip_file: MultiCriterionInput
@@ -2279,7 +2392,7 @@ input GenderCriterionInput {
 }
 
 input CircumcisionCriterionInput {
-  value: [CircumisedEnum!]
+  value: [CircumcisedEnum!]
   modifier: CriterionModifier!
 }
 
@@ -2358,7 +2471,6 @@ input SetDefaultFilterInput {
   # generic map for ui options
   ui_options: Map
 }
-
 type GalleryChapter {
   id: ID!
   gallery: Gallery!
@@ -2385,7 +2497,6 @@ type FindGalleryChaptersResultType {
   count: Int!
   chapters: [GalleryChapter!]!
 }
-
 type GalleryPathsType {
   cover: String!
   preview: String! # Resolver
@@ -2420,6 +2531,7 @@ type Gallery {
   cover: Image
 
   paths: GalleryPathsType! # Resolver
+  custom_fields: Map!
   image(index: Int!): Image!
 }
 
@@ -2438,6 +2550,8 @@ input GalleryCreateInput {
   studio_id: ID
   tag_ids: [ID!]
   performer_ids: [ID!]
+
+  custom_fields: Map
 }
 
 input GalleryUpdateInput {
@@ -2459,6 +2573,8 @@ input GalleryUpdateInput {
   performer_ids: [ID!]
 
   primary_file_id: ID
+
+  custom_fields: CustomFieldsInput
 }
 
 input BulkGalleryUpdateInput {
@@ -2477,6 +2593,8 @@ input BulkGalleryUpdateInput {
   studio_id: ID
   tag_ids: BulkUpdateIds
   performer_ids: BulkUpdateIds
+
+  custom_fields: CustomFieldsInput
 }
 
 input GalleryDestroyInput {
@@ -2488,6 +2606,8 @@ input GalleryDestroyInput {
   """
   delete_file: Boolean
   delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
 }
 
 type FindGalleriesResultType {
@@ -2513,7 +2633,6 @@ input GallerySetCoverInput {
 input GalleryResetCoverInput {
   gallery_id: ID!
 }
-
 "GroupDescription represents a relationship to a group with a description of the relationship"
 type GroupDescription {
   group: Group!
@@ -2547,6 +2666,7 @@ type Group {
   sub_group_count(depth: Int): Int! # Resolver
   scenes: [Scene!]!
   o_counter: Int # Resolver
+  custom_fields: Map!
 }
 
 input GroupDescriptionInput {
@@ -2575,6 +2695,8 @@ input GroupCreateInput {
   front_image: String
   "This should be a URL or a base64 encoded data URL"
   back_image: String
+
+  custom_fields: Map
 }
 
 input GroupUpdateInput {
@@ -2598,6 +2720,8 @@ input GroupUpdateInput {
   front_image: String
   "This should be a URL or a base64 encoded data URL"
   back_image: String
+
+  custom_fields: CustomFieldsInput
 }
 
 input BulkUpdateGroupDescriptionsInput {
@@ -2610,6 +2734,8 @@ input BulkGroupUpdateInput {
   ids: [ID!]
   # rating expressed as 1-100
   rating100: Int
+  date: String
+  synopsis: String
   studio_id: ID
   director: String
   urls: BulkUpdateStrings
@@ -2617,6 +2743,8 @@ input BulkGroupUpdateInput {
 
   containing_groups: BulkUpdateGroupDescriptionsInput
   sub_groups: BulkUpdateGroupDescriptionsInput
+
+  custom_fields: CustomFieldsInput
 }
 
 input GroupDestroyInput {
@@ -2653,7 +2781,6 @@ input GroupSubGroupRemoveInput {
   containing_group_id: ID!
   sub_group_ids: [ID!]!
 }
-
 type Image {
   id: ID!
   title: String
@@ -2677,6 +2804,7 @@ type Image {
   studio: Studio
   tags: [Tag!]!
   performers: [Performer!]!
+  custom_fields: Map!
 }
 
 type ImageFileType {
@@ -2712,6 +2840,7 @@ input ImageUpdateInput {
   gallery_ids: [ID!]
 
   primary_file_id: ID
+  custom_fields: CustomFieldsInput
 }
 
 input BulkImageUpdateInput {
@@ -2732,18 +2861,23 @@ input BulkImageUpdateInput {
   performer_ids: BulkUpdateIds
   tag_ids: BulkUpdateIds
   gallery_ids: BulkUpdateIds
+  custom_fields: CustomFieldsInput
 }
 
 input ImageDestroyInput {
   id: ID!
   delete_file: Boolean
   delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
 }
 
 input ImagesDestroyInput {
   ids: [ID!]!
   delete_file: Boolean
   delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
 }
 
 type FindImagesResultType {
@@ -2754,7 +2888,6 @@ type FindImagesResultType {
   filesize: Float!
   images: [Image!]!
 }
-
 enum JobStatus {
   READY
   RUNNING
@@ -2790,7 +2923,6 @@ type JobStatusUpdate {
   type: JobStatusUpdateType!
   job: Job!
 }
-
 enum LogLevel {
   Trace
   Debug
@@ -2805,7 +2937,6 @@ type LogEntry {
   level: LogLevel!
   message: String!
 }
-
 input GenerateMetadataInput {
   covers: Boolean
   sprites: Boolean
@@ -2818,8 +2949,11 @@ input GenerateMetadataInput {
   transcodes: Boolean
   "Generate transcodes even if not required"
   forceTranscodes: Boolean
+  "Generate video phashes during scan"
   phashes: Boolean
   interactiveHeatmapsSpeeds: Boolean
+  "Generate image phashes during scan"
+  imagePhashes: Boolean
   imageThumbnails: Boolean
   clipPreviews: Boolean
 
@@ -2827,6 +2961,12 @@ input GenerateMetadataInput {
   sceneIDs: [ID!]
   "marker ids to generate for"
   markerIDs: [ID!]
+  "image ids to generate for"
+  imageIDs: [ID!]
+  "gallery ids to generate for"
+  galleryIDs: [ID!]
+  "paths to run generate on, in addition to the other ID lists"
+  paths: [String!]
 
   "overwrite existing media"
   overwrite: Boolean
@@ -2893,8 +3033,10 @@ input ScanMetadataInput {
   scanGenerateImagePreviews: Boolean
   "Generate sprites during scan"
   scanGenerateSprites: Boolean
-  "Generate phashes during scan"
+  "Generate video phashes during scan"
   scanGeneratePhashes: Boolean
+  "Generate image phashes during scan"
+  scanGenerateImagePhashes: Boolean
   "Generate image thumbnails during scan"
   scanGenerateThumbnails: Boolean
   "Generate image clip previews during scan"
@@ -2915,8 +3057,10 @@ type ScanMetadataOptions {
   scanGenerateImagePreviews: Boolean!
   "Generate sprites during scan"
   scanGenerateSprites: Boolean!
-  "Generate phashes during scan"
+  "Generate video phashes during scan"
   scanGeneratePhashes: Boolean!
+  "Generate image phashes during scan"
+  scanGenerateImagePhashes: Boolean
   "Generate image thumbnails during scan"
   scanGenerateThumbnails: Boolean!
   "Generate image clip previews during scan"
@@ -2925,6 +3069,14 @@ type ScanMetadataOptions {
 
 input CleanMetadataInput {
   paths: [String!]
+
+  """
+  Don't check zip file contents when determining whether to clean a file.
+  This can significantly speed up the clean process, but will potentially miss removed files within zip files.
+  Where users do not modify zip files contents directly, this should be safe to use.
+  Defaults to false.
+  """
+  ignoreZipFileContents: Boolean
 
   "Do a dry run. Don't delete any files"
   dryRun: Boolean!
@@ -3012,7 +3164,9 @@ input IdentifyMetadataOptionsInput {
   setCoverImage: Boolean
   setOrganized: Boolean
   "defaults to true if not provided"
-  includeMalePerformers: Boolean
+  includeMalePerformers: Boolean @deprecated(reason: "Use performerGenders")
+  "Filter to only include performers with these genders. If not provided, all genders are included."
+  performerGenders: [GenderEnum!]
   "defaults to true if not provided"
   skipMultipleMatches: Boolean
   "tag to tag skipped multiple matches with"
@@ -3057,7 +3211,9 @@ type IdentifyMetadataOptions {
   setCoverImage: Boolean
   setOrganized: Boolean
   "defaults to true if not provided"
-  includeMalePerformers: Boolean
+  includeMalePerformers: Boolean @deprecated(reason: "Use performerGenders")
+  "Filter to only include performers with these genders. If not provided, all genders are included."
+  performerGenders: [GenderEnum!]
   "defaults to true if not provided"
   skipMultipleMatches: Boolean
   "tag to tag skipped multiple matches with"
@@ -3118,6 +3274,8 @@ input ImportObjectsInput {
 
 input BackupDatabaseInput {
   download: Boolean
+  "If true, blob files will be included in the backup. This can significantly increase the size of the backup and the time it takes to create it, but allows for a complete backup of the system that can be restored without needing access to the original media files."
+  includeBlobs: Boolean
 }
 
 input AnonymiseDatabaseInput {
@@ -3155,7 +3313,6 @@ input CustomFieldsInput {
   "Remove any keys in this list"
   remove: [String!]
 }
-
 input MigrateSceneScreenshotsInput {
   # if true, delete screenshot files after migrating
   deleteFiles: Boolean
@@ -3167,7 +3324,6 @@ input MigrateBlobsInput {
   # if true, delete blob data from old storage system
   deleteOld: Boolean
 }
-
 type Movie {
   id: ID!
   name: String!
@@ -3251,7 +3407,6 @@ type FindMoviesResultType {
   count: Int!
   movies: [Movie!]!
 }
-
 enum PackageType {
   Scraper
   Plugin
@@ -3288,7 +3443,6 @@ input PackageSourceInput {
   url: String!
   local_path: String
 }
-
 enum GenderEnum {
   MALE
   FEMALE
@@ -3298,7 +3452,7 @@ enum GenderEnum {
   NON_BINARY
 }
 
-enum CircumisedEnum {
+enum CircumcisedEnum {
   CUT
   UNCUT
 }
@@ -3320,8 +3474,10 @@ type Performer {
   measurements: String
   fake_tits: String
   penis_length: Float
-  circumcised: CircumisedEnum
-  career_length: String
+  circumcised: CircumcisedEnum
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
   tattoos: String
   piercings: String
   alias_list: [String!]!
@@ -3367,10 +3523,13 @@ input PerformerCreateInput {
   measurements: String
   fake_tits: String
   penis_length: Float
-  circumcised: CircumisedEnum
-  career_length: String
+  circumcised: CircumcisedEnum
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
   tattoos: String
   piercings: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
   alias_list: [String!]
   twitter: String @deprecated(reason: "Use urls")
   instagram: String @deprecated(reason: "Use urls")
@@ -3405,10 +3564,13 @@ input PerformerUpdateInput {
   measurements: String
   fake_tits: String
   penis_length: Float
-  circumcised: CircumisedEnum
-  career_length: String
+  circumcised: CircumcisedEnum
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
   tattoos: String
   piercings: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
   alias_list: [String!]
   twitter: String @deprecated(reason: "Use urls")
   instagram: String @deprecated(reason: "Use urls")
@@ -3448,10 +3610,13 @@ input BulkPerformerUpdateInput {
   measurements: String
   fake_tits: String
   penis_length: Float
-  circumcised: CircumisedEnum
-  career_length: String
+  circumcised: CircumcisedEnum
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
   tattoos: String
   piercings: String
+  "Duplicate aliases and those equal to name will result in an error (case-insensitive)"
   alias_list: BulkUpdateStrings
   twitter: String @deprecated(reason: "Use urls")
   instagram: String @deprecated(reason: "Use urls")
@@ -3477,6 +3642,12 @@ type FindPerformersResultType {
   performers: [Performer!]!
 }
 
+input PerformerMergeInput {
+  source: [ID!]!
+  destination: ID!
+  # values defined here will override values in the destination
+  values: PerformerUpdateInput
+}
 type PluginPaths {
   # path to javascript files
   javascript: [String!]
@@ -3550,7 +3721,6 @@ type PluginSetting {
   description: String
   type: PluginSettingTypeEnum!
 }
-
 "An RFC3339 timestamp"
 scalar Time
 
@@ -3576,74 +3746,6 @@ scalar Int64
 
 "A multipart file upload"
 scalar Upload
-
-type SceneMarkerTag {
-  tag: Tag!
-  scene_markers: [SceneMarker!]!
-}
-
-type SceneMarker {
-  id: ID!
-  scene: Scene!
-  title: String!
-  "The required start time of the marker (in seconds). Supports decimals."
-  seconds: Float!
-  "The optional end time of the marker (in seconds). Supports decimals."
-  end_seconds: Float
-  primary_tag: Tag!
-  tags: [Tag!]!
-  created_at: Time!
-  updated_at: Time!
-
-  "The path to stream this marker"
-  stream: String! # Resolver
-  "The path to the preview image for this marker"
-  preview: String! # Resolver
-  "The path to the screenshot image for this marker"
-  screenshot: String! # Resolver
-}
-
-input SceneMarkerCreateInput {
-  title: String!
-  "The required start time of the marker (in seconds). Supports decimals."
-  seconds: Float!
-  "The optional end time of the marker (in seconds). Supports decimals."
-  end_seconds: Float
-  scene_id: ID!
-  primary_tag_id: ID!
-  tag_ids: [ID!]
-}
-
-input SceneMarkerUpdateInput {
-  id: ID!
-  title: String
-  "The start time of the marker (in seconds). Supports decimals."
-  seconds: Float
-  "The end time of the marker (in seconds). Supports decimals."
-  end_seconds: Float
-  scene_id: ID
-  primary_tag_id: ID
-  tag_ids: [ID!]
-}
-
-input BulkSceneMarkerUpdateInput {
-  ids: [ID!]
-  title: String
-  primary_tag_id: ID
-  tag_ids: BulkUpdateIds
-}
-
-type FindSceneMarkersResultType {
-  count: Int!
-  scene_markers: [SceneMarker!]!
-}
-
-type MarkerStringsResultType {
-  count: Int!
-  id: ID!
-  title: String!
-}
-
 type SceneFileType {
   size: String
   duration: Float
@@ -3725,6 +3827,8 @@ type Scene {
   performers: [Performer!]!
   stash_ids: [StashID!]!
 
+  custom_fields: Map!
+
   "Return valid stream paths"
   sceneStreams: [SceneStreamEndpoint!]!
 }
@@ -3766,6 +3870,8 @@ input SceneCreateInput {
   Files must not already be primary for another scene.
   """
   file_ids: [ID!]
+
+  custom_fields: Map
 }
 
 input SceneUpdateInput {
@@ -3804,6 +3910,8 @@ input SceneUpdateInput {
     )
 
   primary_file_id: ID
+
+  custom_fields: CustomFieldsInput
 }
 
 enum BulkUpdateIdMode {
@@ -3836,18 +3944,24 @@ input BulkSceneUpdateInput {
   tag_ids: BulkUpdateIds
   group_ids: BulkUpdateIds
   movie_ids: BulkUpdateIds @deprecated(reason: "Use group_ids")
+
+  custom_fields: CustomFieldsInput
 }
 
 input SceneDestroyInput {
   id: ID!
   delete_file: Boolean
   delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
 }
 
 input ScenesDestroyInput {
   ids: [ID!]!
   delete_file: Boolean
   delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
 }
 
 type FindScenesResultType {
@@ -3930,7 +4044,71 @@ type HistoryMutationResult {
   count: Int!
   history: [Time!]!
 }
+type SceneMarker {
+  id: ID!
+  scene: Scene!
+  title: String!
+  "The required start time of the marker (in seconds). Supports decimals."
+  seconds: Float!
+  "The optional end time of the marker (in seconds). Supports decimals."
+  end_seconds: Float
+  primary_tag: Tag!
+  tags: [Tag!]!
+  created_at: Time!
+  updated_at: Time!
 
+  "The path to stream this marker"
+  stream: String! # Resolver
+  "The path to the preview image for this marker"
+  preview: String! # Resolver
+  "The path to the screenshot image for this marker"
+  screenshot: String! # Resolver
+}
+
+input SceneMarkerCreateInput {
+  title: String!
+  "The required start time of the marker (in seconds). Supports decimals."
+  seconds: Float!
+  "The optional end time of the marker (in seconds). Supports decimals."
+  end_seconds: Float
+  scene_id: ID!
+  primary_tag_id: ID!
+  tag_ids: [ID!]
+}
+
+input SceneMarkerUpdateInput {
+  id: ID!
+  title: String
+  "The start time of the marker (in seconds). Supports decimals."
+  seconds: Float
+  "The end time of the marker (in seconds). Supports decimals."
+  end_seconds: Float
+  scene_id: ID
+  primary_tag_id: ID
+  tag_ids: [ID!]
+}
+
+input BulkSceneMarkerUpdateInput {
+  ids: [ID!]
+  title: String
+  primary_tag_id: ID
+  tag_ids: BulkUpdateIds
+}
+
+type FindSceneMarkersResultType {
+  count: Int!
+  scene_markers: [SceneMarker!]!
+}
+
+type MarkerStringsResultType {
+  count: Int!
+  id: ID!
+  title: String!
+}
+type SceneMarkerTag {
+  tag: Tag!
+  scene_markers: [SceneMarker!]!
+}
 "A movie from a scraping operation..."
 type ScrapedMovie {
   stored_id: ID
@@ -3996,7 +4174,6 @@ input ScrapedGroupInput {
   synopsis: String
   # not including tags for the input
 }
-
 "A performer from a scraping operation..."
 type ScrapedPerformer {
   "Set if performer matched"
@@ -4017,7 +4194,9 @@ type ScrapedPerformer {
   fake_tits: String
   penis_length: String
   circumcised: String
-  career_length: String
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
   tattoos: String
   piercings: String
   # aliases must be comma-delimited to be parsed correctly
@@ -4053,7 +4232,9 @@ input ScrapedPerformerInput {
   fake_tits: String
   penis_length: String
   circumcised: String
-  career_length: String
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
   tattoos: String
   piercings: String
   aliases: String
@@ -4066,7 +4247,6 @@ input ScrapedPerformerInput {
   weight: String
   remote_site_id: String
 }
-
 enum ScrapeType {
   "From text query"
   NAME
@@ -4140,6 +4320,9 @@ type ScrapedTag {
   "Set if tag matched"
   stored_id: ID
   name: String!
+  description: String
+  alias_list: [String!]
+  parent: ScrapedTag
   "Remote site ID, if applicable"
   remote_site_id: String
 }
@@ -4386,7 +4569,6 @@ input StashBoxBatchTagInput {
   "Names of the performers in the stash-box instance to search for and create"
   performer_names: [String!] @deprecated(reason: "use names")
 }
-
 type SQLQueryResult {
   "The column names, in the order they appear in the result set."
   columns: [String!]!
@@ -4407,7 +4589,6 @@ type SQLExecResult {
   """
   last_insert_id: Int64
 }
-
 type StashBox {
   endpoint: String!
   api_key: String!
@@ -4446,7 +4627,6 @@ input StashBoxDraftSubmissionInput {
   stash_box_index: Int @deprecated(reason: "use stash_box_endpoint")
   stash_box_endpoint: String
 }
-
 type StatsResultType {
   scene_count: Int!
   scenes_size: Float!
@@ -4464,7 +4644,6 @@ type StatsResultType {
   total_play_count: Int!
   scenes_played: Int!
 }
-
 type Studio {
   id: ID!
   name: String!
@@ -4475,6 +4654,7 @@ type Studio {
   aliases: [String!]!
   tags: [Tag!]!
   ignore_auto_tag: Boolean!
+  organized: Boolean!
 
   image_path: String # Resolver
   scene_count(depth: Int): Int! # Resolver
@@ -4493,6 +4673,8 @@ type Studio {
   groups: [Group!]!
   movies: [Movie!]! @deprecated(reason: "use groups instead")
   o_counter: Int
+
+  custom_fields: Map!
 }
 
 input StudioCreateInput {
@@ -4507,9 +4689,13 @@ input StudioCreateInput {
   rating100: Int
   favorite: Boolean
   details: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
   aliases: [String!]
   tag_ids: [ID!]
   ignore_auto_tag: Boolean
+  organized: Boolean
+
+  custom_fields: Map
 }
 
 input StudioUpdateInput {
@@ -4525,9 +4711,13 @@ input StudioUpdateInput {
   rating100: Int
   favorite: Boolean
   details: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
   aliases: [String!]
   tag_ids: [ID!]
   ignore_auto_tag: Boolean
+  organized: Boolean
+
+  custom_fields: CustomFieldsInput
 }
 
 input BulkStudioUpdateInput {
@@ -4541,6 +4731,7 @@ input BulkStudioUpdateInput {
   details: String
   tag_ids: BulkUpdateIds
   ignore_auto_tag: Boolean
+  organized: Boolean
 }
 
 input StudioDestroyInput {
@@ -4551,7 +4742,6 @@ type FindStudiosResultType {
   count: Int!
   studios: [Studio!]!
 }
-
 type Tag {
   id: ID!
   name: String!
@@ -4578,6 +4768,7 @@ type Tag {
 
   parent_count: Int! # Resolver
   child_count: Int! # Resolver
+  custom_fields: Map!
 }
 
 input TagCreateInput {
@@ -4585,6 +4776,7 @@ input TagCreateInput {
   "Value that does not appear in the UI but overrides name for sorting"
   sort_name: String
   description: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
   aliases: [String!]
   ignore_auto_tag: Boolean
   favorite: Boolean
@@ -4594,6 +4786,8 @@ input TagCreateInput {
 
   parent_ids: [ID!]
   child_ids: [ID!]
+
+  custom_fields: Map
 }
 
 input TagUpdateInput {
@@ -4602,6 +4796,7 @@ input TagUpdateInput {
   "Value that does not appear in the UI but overrides name for sorting"
   sort_name: String
   description: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
   aliases: [String!]
   ignore_auto_tag: Boolean
   favorite: Boolean
@@ -4611,6 +4806,8 @@ input TagUpdateInput {
 
   parent_ids: [ID!]
   child_ids: [ID!]
+
+  custom_fields: CustomFieldsInput
 }
 
 input TagDestroyInput {
@@ -4625,11 +4822,14 @@ type FindTagsResultType {
 input TagsMergeInput {
   source: [ID!]!
   destination: ID!
+  # values defined here will override values in the destination
+  values: TagUpdateInput
 }
 
 input BulkTagUpdateInput {
   ids: [ID!]
   description: String
+  "Duplicate aliases and those equal to name will result in an error (case-insensitive)"
   aliases: BulkUpdateStrings
   ignore_auto_tag: Boolean
   favorite: Boolean
@@ -4637,7 +4837,6 @@ input BulkTagUpdateInput {
   parent_ids: BulkUpdateIds
   child_ids: BulkUpdateIds
 }
-
 type Version {
   version: String
   hash: String!

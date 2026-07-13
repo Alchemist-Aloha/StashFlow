@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/models/scraper.dart';
-import '../providers/scene_scrape_provider.dart';
+import '../providers/scene_list_provider.dart';
 import '../../../setup/presentation/providers/stashbox_provider.dart';
 import 'enhanced_scrape_dialog.dart';
+
+final availableScrapersProvider = FutureProvider.family<List<Scraper>, String>((
+  ref,
+  type,
+) {
+  return ref.read(sceneRepositoryProvider).listScrapers(types: [type]);
+});
 
 class ScrapeRequest {
   final String? scraperId;

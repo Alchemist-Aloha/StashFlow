@@ -36,11 +36,6 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _showConnectingDialog(String deviceName) {
     if (mounted) {
       final message = context.l10n.cast_connecting_to(deviceName);

@@ -4,7 +4,6 @@ import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
-import '../providers/scene_scrape_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -189,13 +188,13 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       List<ScrapedScene> results = [];
       if (scrapeRequest.url != null) {
         final res = await ref
-            .read(sceneScrapeProvider)
+            .read(sceneRepositoryProvider)
             .scrapeSceneURL(scrapeRequest.url!);
         if (res != null) results = [res];
       } else {
         results = await ref
-            .read(sceneScrapeProvider)
-            .scrapeScene(
+            .read(sceneRepositoryProvider)
+            .scrapeSingleScene(
               scraperId: scrapeRequest.scraperId,
               stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
               sceneId: scrapeRequest.useFingerprints ? widget.scene.id : null,
@@ -336,7 +335,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
   Future<void> _generatePhash() async {
     setState(() => _isScraping = true);
     try {
-      await ref.read(sceneScrapeProvider).generatePhash(widget.scene.id);
+      await ref.read(sceneRepositoryProvider).generatePhash(widget.scene.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.scenes_phash_started)),
@@ -373,12 +372,13 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       );
 
       await ref
-          .read(sceneScrapeProvider)
-          .saveScraped(
+          .read(sceneRepositoryProvider)
+          .saveScrapedScene(
             sceneId: widget.scene.id,
             scraped: scraped,
             tagIds: _selectedTagIds,
             performerIds: _selectedPerformerIds,
+            studioId: scraped.studioId,
           );
 
       if (mounted) {

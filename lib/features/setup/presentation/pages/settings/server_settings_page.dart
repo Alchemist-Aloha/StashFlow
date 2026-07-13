@@ -38,11 +38,6 @@ class ServerSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<void> _flushRuntimeCachesAfterServerChange() async {
     final currentClient = ref.read(graphqlClientProvider);
     currentClient.cache.store.reset();

@@ -518,11 +518,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);

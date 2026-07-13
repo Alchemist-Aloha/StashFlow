@@ -93,11 +93,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   void didUpdateWidget(covariant SceneVideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
 
