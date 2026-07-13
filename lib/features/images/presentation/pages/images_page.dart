@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
@@ -145,9 +146,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_ImageSortOption>(
         title: context.l10n.images_sort_title,
         options: _ImageSortOption.values,
@@ -171,10 +171,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const ImageFilterPanel(),
     );
   }
@@ -191,9 +189,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       organized: organizedFilter.toBool() ?? filterState.filter.organized,
     );
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<ImageSavedFilterConfig>(
         searchQuery: ref.read(imageSearchQueryProvider),
         sort: sortConfig.sort,

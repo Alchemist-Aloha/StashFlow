@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
@@ -133,9 +134,8 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<EntityGallerySortOption>(
         title: context.l10n.galleries_sort_title,
         options: EntityGallerySortOption.values,
@@ -160,10 +160,8 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => GalleryFilterPanel(
         initialFilter: ref.read(
           entityGalleryFilterStateProvider(widget.filterKind),
@@ -230,9 +228,8 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
       filter.copyWith(organized: organizedFilter.toBool() ?? filter.organized),
     );
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<GallerySavedFilterConfig>(
         searchQuery: ref.read(
           entityGallerySearchQueryProvider(widget.filterKind),

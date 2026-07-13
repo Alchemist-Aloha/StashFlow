@@ -10,6 +10,7 @@ import '../widgets/tag_filter_panel.dart';
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
@@ -126,9 +127,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_TagSortOption>(
         title: context.l10n.tags_sort_title,
         options: _TagSortOption.values,
@@ -151,10 +151,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const TagFilterPanel(),
     );
   }
@@ -163,9 +161,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     final sortConfig = ref.read(tagSortProvider);
     final favoritesOnly = ref.read(tagFavoritesOnlyProvider);
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<TagSavedFilterConfig>(
         searchQuery: ref.read(tagSearchQueryProvider),
         sort: sortConfig.sort,

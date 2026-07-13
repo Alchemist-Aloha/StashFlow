@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
@@ -115,16 +116,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   void _showSceneDetailsSheet(Scene scene) {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
       useRootNavigator: true,
-      isScrollControlled: true,
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-      ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => SceneInfoPage(scene: scene),
     );

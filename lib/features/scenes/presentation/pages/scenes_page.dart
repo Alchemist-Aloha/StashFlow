@@ -19,6 +19,7 @@ import '../../../../core/presentation/providers/list_scroll_controller_provider.
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -304,9 +305,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   /// Displays the sort selection bottom sheet.
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_SceneSortField>(
         title: context.l10n.sort_scenes,
         options: _SceneSortField.values,
@@ -331,10 +331,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   /// Displays the filter configuration bottom sheet.
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const SceneFilterPanel(),
     );
   }
@@ -347,9 +345,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       organized: organizedFilter.toBool() ?? filter.organized,
     );
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SceneSavedFilterDialog(
         searchQuery: ref.read(sceneSearchQueryProvider),
         sort: sortConfig.sort,

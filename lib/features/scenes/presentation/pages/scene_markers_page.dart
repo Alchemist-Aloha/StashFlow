@@ -8,6 +8,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene_marker.dart';
@@ -78,9 +79,8 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_MarkerSortField>(
         title: context.l10n.sort_markers_title,
         options: _MarkerSortField.values,
@@ -104,10 +104,8 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const SceneMarkerFilterPanel(),
     );
   }
@@ -116,9 +114,8 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
     final sortConfig = ref.read(sceneMarkerSortProvider);
     final filter = ref.read(sceneMarkerFilterStateProvider);
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<SceneMarkerSavedFilterConfig>(
         searchQuery: ref.read(sceneMarkerSearchQueryProvider),
         sort: sortConfig.sort,

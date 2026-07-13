@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
@@ -142,9 +143,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_GallerySortOption>(
         title: context.l10n.galleries_sort_title,
         options: _GallerySortOption.values,
@@ -168,10 +168,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const GalleryFilterPanel(),
     );
   }
@@ -188,9 +186,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       organized: organizedFilter.toBool() ?? filter.organized,
     );
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<GallerySavedFilterConfig>(
         searchQuery: ref.read(gallerySearchQueryProvider),
         sort: sortConfig.sort,

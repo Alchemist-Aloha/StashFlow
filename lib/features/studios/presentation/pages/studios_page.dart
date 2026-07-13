@@ -11,6 +11,7 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
@@ -128,9 +129,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_StudioSortOption>(
         title: context.l10n.studios_sort_title,
         options: _StudioSortOption.values,
@@ -154,10 +154,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const StudioFilterPanel(),
     );
   }
@@ -170,9 +168,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
     final sortConfig = ref.read(studioSortProvider);
     final filter = ref.read(studioFilterStateProvider);
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<StudioSavedFilterConfig>(
         searchQuery: ref.read(studioSearchQueryProvider),
         sort: sortConfig.sort,

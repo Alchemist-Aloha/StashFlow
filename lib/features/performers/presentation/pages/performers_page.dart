@@ -14,6 +14,7 @@ import '../../../../core/presentation/providers/list_scroll_controller_provider.
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/domain/entities/filter_options.dart';
@@ -201,9 +202,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   }
 
   void _showSortPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_PerformerSortOption>(
         title: context.l10n.performers_sort_title,
         options: _PerformerSortOption.values,
@@ -227,10 +227,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   }
 
   void _showFilterPanel() {
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const PerformerFilterPanel(),
     );
   }
@@ -243,9 +241,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     final sortConfig = ref.read(performerSortProvider);
     final filter = ref.read(performerFilterStateProvider);
 
-    showModalBottomSheet(
+    showFrostedPanelBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (context) => SavedFilterDialog<PerformerSavedFilterConfig>(
         searchQuery: ref.read(performerSearchQueryProvider),
         sort: sortConfig.sort,

@@ -31,14 +31,10 @@ class FilterBottomSheetScaffold extends StatelessWidget {
       top: false,
       child: FractionallySizedBox(
         heightFactor: 0.9,
-        child: Material(
-          color: context.colors.surface,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(AppTheme.radiusExtraLarge),
-            ),
+        child: FrostedPanel(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppTheme.radiusExtraLarge),
           ),
-          clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
               BottomSheetPanelHeader(title: title, onReset: onReset),
