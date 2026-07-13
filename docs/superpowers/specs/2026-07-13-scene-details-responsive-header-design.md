@@ -28,11 +28,13 @@ Use a full-width vertical composition:
 3. Rating/O and action controls, 16 logical pixels below the studio line.
 4. Technical metadata chips, 16 logical pixels below the controls.
 
-Below the outside identity block, place rating and O-counter controls in the first wrapping row and the five scene actions in a second wrapping row inside the shared section rectangle. Metadata chips follow inside the same rectangle. Use an 8-pixel rhythm and allow either row to wrap under text scaling. Nothing may scroll horizontally.
+Below the outside identity block, stack rating/O and the five scene actions as two wrapping rows inside the shared section rectangle. Metadata chips follow inside the same rectangle. Use an 8-pixel rhythm and allow either row to wrap under text scaling. Nothing may scroll horizontally.
+
+On tablet and desktop widths where both groups fit, place rating/O and all scene actions on one line. Rating/O stays left; the action group is pinned to the right edge. Use one responsive `Wrap` so the actions fall back below only when required to preserve 48-pixel touch targets.
 
 ### Large screen: 768 logical pixels and above
 
-Use the same full-width vertical order as mobile. Keep the larger title typography, and allow both control rows and metadata chips to wrap naturally.
+Use the same identity → controls → metadata order as mobile. Keep the larger title typography and the single-line control composition whenever both control groups fit.
 
 The title must retain the dominant width. Long titles wrap naturally instead of compressing or pushing controls off-screen. The Details card remains full-width below the header card using the shared section margin.
 
@@ -65,6 +67,7 @@ Add stable keys for the identity and control groups, then verify:
 
 - Mobile: identity is above the control group and both use the available width without overflow.
 - Large screen: controls remain below the identity block and above metadata.
+- Tablet/desktop controls: rating/O and actions share a line, with actions aligned right.
 - Surface parity: the controls/metadata and Details cards use the exact same section-container color while title and Studio/Year remain outside.
 - Text scaling: the mobile layout at 1.5× produces no overflow exceptions.
 - Existing scene action, rating, O-counter, safe-area, and navigation tests continue to pass.

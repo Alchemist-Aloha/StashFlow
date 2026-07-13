@@ -854,142 +854,145 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildActions(BuildContext context, Scene scene) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final ratingControls = Wrap(
+      key: const Key('scene_rating_controls'),
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 0,
           children: [
-            Wrap(
-              spacing: 0,
-              children: [
-                for (var i = 1; i <= 5; i++)
-                  IconButton(
-                    tooltip: context.l10n.scene_rating_stars(i),
-                    onPressed: () async {
-                      final currentRating = scene.rating100 ?? 0;
-                      final newRating = (currentRating == i * 20) ? 0 : i * 20;
+            for (var i = 1; i <= 5; i++)
+              IconButton(
+                tooltip: context.l10n.scene_rating_stars(i),
+                onPressed: () async {
+                  final currentRating = scene.rating100 ?? 0;
+                  final newRating = (currentRating == i * 20) ? 0 : i * 20;
 
-                      try {
-                        await ref
-                            .read(sceneRepositoryProvider)
-                            .updateSceneRating(scene.id, newRating);
-                        await ref
-                            .read(sceneRepositoryProvider)
-                            .getSceneById(scene.id, refresh: true);
-                        ref.invalidate(sceneDetailsProvider(scene.id));
-                        _invalidateSceneListUnlessRandom();
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                context.l10n.details_failed_update_rating(
-                                  e.toString(),
-                                ),
-                              ),
+                  try {
+                    await ref
+                        .read(sceneRepositoryProvider)
+                        .updateSceneRating(scene.id, newRating);
+                    await ref
+                        .read(sceneRepositoryProvider)
+                        .getSceneById(scene.id, refresh: true);
+                    ref.invalidate(sceneDetailsProvider(scene.id));
+                    _invalidateSceneListUnlessRandom();
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            context.l10n.details_failed_update_rating(
+                              e.toString(),
                             ),
-                          );
-                        }
-                      }
-                    },
-                    icon: Icon(
-                      (scene.rating100 ?? 0) >= i * 20
-                          ? Icons.star
-                          : Icons.star_border,
-                      color: context.colors.ratingColor,
-                      size: 24,
-                    ),
-                  ),
-              ],
-            ),
-            FilledButton.tonalIcon(
-              onPressed: () async {
-                try {
-                  await ref
-                      .read(sceneRepositoryProvider)
-                      .incrementSceneOCounter(scene.id);
-                  await ref
-                      .read(sceneRepositoryProvider)
-                      .getSceneById(scene.id, refresh: true);
-                  ref.invalidate(sceneDetailsProvider(scene.id));
-                  _invalidateSceneListUnlessRandom();
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(context.l10n.details_o_count_incremented),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.l10n.details_failed_increment_o_count(
-                            e.toString(),
                           ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   }
-                }
-              },
-              style: FilledButton.styleFrom(
-                visualDensity: VisualDensity.compact,
-                minimumSize: const Size(0, 48),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                },
+                icon: Icon(
+                  (scene.rating100 ?? 0) >= i * 20
+                      ? Icons.star
+                      : Icons.star_border,
+                  color: context.colors.ratingColor,
+                  size: 24,
+                ),
               ),
-              icon: const Icon(Icons.water_drop_outlined),
-              label: Text('${scene.oCounter}'),
-            ),
           ],
         ),
-        const SizedBox(height: AppTheme.spacingSmall),
-        Wrap(
-          spacing: 4,
-          runSpacing: 4,
-          children: [
-            IconButton(
-              key: const Key('scene_action_add_marker'),
-              tooltip: context.l10n.scene_details_add_marker,
-              icon: const Icon(Icons.bookmark_add_outlined),
-              onPressed: () => _showAddMarkerDialog(
-                scene,
-                markerSeconds: _currentMarkerSeconds(scene),
-              ),
-            ),
-            IconButton(
-              key: const Key('scene_action_info'),
-              tooltip: context.l10n.common_more,
-              icon: const Icon(Icons.info_outline_rounded),
-              onPressed: () => _showSceneDetailsSheet(scene),
-            ),
-            if (!kIsWeb)
-              IconButton(
-                key: const Key('scene_action_download'),
-                tooltip: context.l10n.common_download,
-                icon: const Icon(Icons.download_outlined),
-                onPressed: () => _saveVideoToGallery(scene),
-              ),
-            IconButton(
-              key: const Key('scene_action_edit'),
-              tooltip: context.l10n.common_edit,
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: () =>
-                  context.push('/scenes/scene/${scene.id}/edit', extra: scene),
-            ),
-            IconButton(
-              key: const Key('scene_action_delete'),
-              tooltip: context.l10n.delete_scene,
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () => _showDeleteSceneDialog(scene),
-            ),
-          ],
+        FilledButton.tonalIcon(
+          onPressed: () async {
+            try {
+              await ref
+                  .read(sceneRepositoryProvider)
+                  .incrementSceneOCounter(scene.id);
+              await ref
+                  .read(sceneRepositoryProvider)
+                  .getSceneById(scene.id, refresh: true);
+              ref.invalidate(sceneDetailsProvider(scene.id));
+              _invalidateSceneListUnlessRandom();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(context.l10n.details_o_count_incremented),
+                  ),
+                );
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      context.l10n.details_failed_increment_o_count(
+                        e.toString(),
+                      ),
+                    ),
+                  ),
+                );
+              }
+            }
+          },
+          style: FilledButton.styleFrom(
+            visualDensity: VisualDensity.compact,
+            minimumSize: const Size(0, 48),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+          ),
+          icon: const Icon(Icons.water_drop_outlined),
+          label: Text('${scene.oCounter}'),
         ),
       ],
+    );
+    final actionButtons = Wrap(
+      key: const Key('scene_action_buttons'),
+      spacing: 4,
+      runSpacing: 4,
+      children: [
+        IconButton(
+          key: const Key('scene_action_add_marker'),
+          tooltip: context.l10n.scene_details_add_marker,
+          icon: const Icon(Icons.bookmark_add_outlined),
+          onPressed: () => _showAddMarkerDialog(
+            scene,
+            markerSeconds: _currentMarkerSeconds(scene),
+          ),
+        ),
+        IconButton(
+          key: const Key('scene_action_info'),
+          tooltip: context.l10n.common_more,
+          icon: const Icon(Icons.info_outline_rounded),
+          onPressed: () => _showSceneDetailsSheet(scene),
+        ),
+        if (!kIsWeb)
+          IconButton(
+            key: const Key('scene_action_download'),
+            tooltip: context.l10n.common_download,
+            icon: const Icon(Icons.download_outlined),
+            onPressed: () => _saveVideoToGallery(scene),
+          ),
+        IconButton(
+          key: const Key('scene_action_edit'),
+          tooltip: context.l10n.common_edit,
+          icon: const Icon(Icons.edit_outlined),
+          onPressed: () =>
+              context.push('/scenes/scene/${scene.id}/edit', extra: scene),
+        ),
+        IconButton(
+          key: const Key('scene_action_delete'),
+          tooltip: context.l10n.delete_scene,
+          icon: const Icon(Icons.delete_outline),
+          onPressed: () => _showDeleteSceneDialog(scene),
+        ),
+      ],
+    );
+
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      runSpacing: AppTheme.spacingSmall,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [ratingControls, actionButtons],
     );
   }
 

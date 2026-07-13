@@ -149,9 +149,9 @@ void main() {
   });
 
   testWidgets(
-    'SceneDetailsPage renders scene actions below rating and O counter',
+    'SceneDetailsPage aligns tablet rating and action groups on one line',
     (tester) async {
-      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.physicalSize = const Size(1100, 1600);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
@@ -172,10 +172,17 @@ void main() {
       expect(find.byKey(const Key('scene_action_edit')), findsOneWidget);
       expect(find.byKey(const Key('scene_action_delete')), findsOneWidget);
 
+      final rating = find.byKey(const Key('scene_rating_controls'));
+      final actions = find.byKey(const Key('scene_action_buttons'));
       expect(
-        tester.getTopLeft(find.byKey(const Key('scene_action_edit'))).dy,
-        greaterThan(
-          tester.getTopLeft(find.byIcon(Icons.water_drop_outlined)).dy,
+        tester.getCenter(actions).dy,
+        closeTo(tester.getCenter(rating).dy, 0.1),
+      );
+      expect(
+        tester.getTopRight(actions).dx,
+        closeTo(
+          tester.getTopRight(find.byKey(const Key('scene_header_controls'))).dx,
+          0.1,
         ),
       );
     },
@@ -235,6 +242,8 @@ void main() {
       final identity = find.byKey(const Key('scene_header_identity'));
       final controls = find.byKey(const Key('scene_header_controls'));
       final metadata = find.byKey(const Key('scene_header_metadata'));
+      final rating = find.byKey(const Key('scene_rating_controls'));
+      final actions = find.byKey(const Key('scene_action_buttons'));
 
       expect(
         tester.getBottomLeft(identity).dy,
@@ -247,6 +256,10 @@ void main() {
       expect(
         tester.getSize(controls).width,
         lessThan(tester.getSize(identity).width),
+      );
+      expect(
+        tester.getTopLeft(actions).dy,
+        greaterThan(tester.getTopLeft(rating).dy),
       );
       expect(tester.takeException(), isNull);
     },

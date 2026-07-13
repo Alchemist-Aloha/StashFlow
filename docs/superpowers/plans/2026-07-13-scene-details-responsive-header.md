@@ -8,7 +8,7 @@
 
 ## Follow-up refinement
 
-Later UI refinements supersede the nested control-island and wide-screen split in Task 1: keep title/studio outside, then use `_buildSectionContainer` for exact Details-surface parity around the full-width controls and metadata groups on every screen size.
+Later UI refinements supersede the nested control-island and wide-screen split in Task 1: keep title/studio outside, use `_buildSectionContainer` around controls and metadata, and use one `Wrap` with `spaceBetween` so rating/O stays left, actions align right, and narrow layouts stack naturally.
 
 **Tech Stack:** Flutter, Material 3, flutter_test.
 
