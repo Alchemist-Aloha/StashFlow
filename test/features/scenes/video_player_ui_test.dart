@@ -140,6 +140,71 @@ void main() {
     },
   );
 
+  testWidgets('SceneDetailsPage splits header controls on large screens', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final identity = find.byKey(const Key('scene_header_identity'));
+    final controls = find.byKey(const Key('scene_header_controls'));
+
+    expect(
+      tester.getTopLeft(controls).dx,
+      greaterThan(tester.getTopLeft(identity).dx),
+    );
+    expect(
+      tester.getTopLeft(controls).dy,
+      closeTo(tester.getTopLeft(identity).dy, 0.1),
+    );
+  });
+
+  testWidgets(
+    'SceneDetailsPage stacks its header without scaled-text overflow',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(1.5)),
+          child: SceneDetailsPage(sceneId: testScene.id),
+        ),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      final identity = find.byKey(const Key('scene_header_identity'));
+      final controls = find.byKey(const Key('scene_header_controls'));
+
+      expect(
+        tester.getBottomLeft(identity).dy,
+        lessThan(tester.getTopLeft(controls).dy),
+      );
+      expect(
+        tester.getSize(controls).width,
+        closeTo(tester.getSize(identity).width, 0.1),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('SceneDetailsPage offsets video below top safe area on mobile', (
     tester,
   ) async {
@@ -180,13 +245,13 @@ void main() {
 
     final starIcons = find.byWidgetPredicate(
       (widget) =>
-          widget is Icon && widget.icon == Icons.star && widget.size == 28,
+          widget is Icon && widget.icon == Icons.star && widget.size == 24,
     );
     final borderIcons = find.byWidgetPredicate(
       (widget) =>
           widget is Icon &&
           widget.icon == Icons.star_border &&
-          widget.size == 28,
+          widget.size == 24,
     );
 
     expect(starIcons, findsNWidgets(2));

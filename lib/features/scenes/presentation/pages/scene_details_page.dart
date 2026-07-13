@@ -681,32 +681,85 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildMainInfo(BuildContext context, Scene scene) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildTitle(context, scene),
-        const SizedBox(height: AppTheme.spacingSmall),
-        _buildStudioAndDate(context, scene),
-        const SizedBox(height: AppTheme.spacingSmall),
-        Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 768;
+        final colorScheme = Theme.of(context).colorScheme;
+        final alignment = isWide ? WrapAlignment.end : WrapAlignment.start;
+
+        final identity = Column(
+          key: const Key('scene_header_identity'),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTechnicalMetadata(context, scene),
-            const SizedBox(height: AppTheme.spacingSmall),
-            _buildActions(context, scene),
+            _buildTitle(context, scene, isWide: isWide),
+            const SizedBox(height: 6),
+            _buildStudioAndDate(context, scene),
             const SizedBox(height: AppTheme.spacingMedium),
+            _buildTechnicalMetadata(context, scene),
           ],
-        ),
-        _buildDetails(context, scene),
-      ],
+        );
+        final controls = Container(
+          key: const Key('scene_header_controls'),
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Container(
+            padding: EdgeInsets.all(isWide ? 10 : 8),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: _buildActions(context, scene, alignment: alignment),
+          ),
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (isWide)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: identity),
+                  const SizedBox(width: 32),
+                  SizedBox(width: 344, child: controls),
+                ],
+              )
+            else ...[
+              SizedBox(width: double.infinity, child: identity),
+              const SizedBox(height: 20),
+              SizedBox(width: double.infinity, child: controls),
+            ],
+            const SizedBox(height: AppTheme.spacingLarge),
+            _buildDetails(context, scene),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildTitle(BuildContext context, Scene scene) {
+  Widget _buildTitle(
+    BuildContext context,
+    Scene scene, {
+    required bool isWide,
+  }) {
+    final style = isWide
+        ? context.textTheme.headlineMedium
+        : context.textTheme.headlineSmall;
     return Text(
       scene.displayTitle,
-      style: context.textTheme.headlineSmall?.copyWith(
-        fontWeight: FontWeight.bold,
+      style: style?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: isWide ? -0.5 : -0.3,
         color: context.colors.onSurface,
       ),
     );
@@ -719,31 +772,33 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return Row(
       children: [
         if (scene.studioName != null)
-          Semantics(
-            button: canOpenStudio,
-            label: canOpenStudio ? 'Open ${scene.studioName} details' : null,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: canOpenStudio
-                    ? () => context.push('/studios/studio/${scene.studioId}')
-                    : null,
-                borderRadius: BorderRadius.circular(4),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 2,
-                    vertical: 1,
-                  ),
-                  child: Text(
-                    scene.studioName!,
-                    style: context.textTheme.titleMedium?.copyWith(
-                      color: canOpenStudio
-                          ? context.colors.primary
-                          : context.colors.onSurface,
-                      fontWeight: FontWeight.w500,
-                      decoration: canOpenStudio
-                          ? TextDecoration.underline
-                          : TextDecoration.none,
+          Flexible(
+            child: Semantics(
+              button: canOpenStudio,
+              label: canOpenStudio ? 'Open ${scene.studioName} details' : null,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: canOpenStudio
+                      ? () => context.push('/studios/studio/${scene.studioId}')
+                      : null,
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 2,
+                      vertical: 1,
+                    ),
+                    child: Text(
+                      scene.studioName!,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        color: canOpenStudio
+                            ? context.colors.primary
+                            : context.colors.onSurface,
+                        fontWeight: FontWeight.w500,
+                        decoration: canOpenStudio
+                            ? TextDecoration.underline
+                            : TextDecoration.none,
+                      ),
                     ),
                   ),
                 ),
@@ -813,55 +868,66 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildActions(BuildContext context, Scene scene) {
+  Widget _buildActions(
+    BuildContext context,
+    Scene scene, {
+    WrapAlignment alignment = WrapAlignment.start,
+  }) {
+    final crossAxisAlignment = alignment == WrapAlignment.end
+        ? CrossAxisAlignment.end
+        : CrossAxisAlignment.start;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: crossAxisAlignment,
       children: [
         Wrap(
+          alignment: alignment,
           spacing: 8,
           runSpacing: 8,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            for (var i = 1; i <= 5; i++)
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                tooltip: context.l10n.scene_rating_stars(i),
-                onPressed: () async {
-                  final currentRating = scene.rating100 ?? 0;
-                  final newRating = (currentRating == i * 20) ? 0 : i * 20;
+            Wrap(
+              spacing: 0,
+              children: [
+                for (var i = 1; i <= 5; i++)
+                  IconButton(
+                    tooltip: context.l10n.scene_rating_stars(i),
+                    onPressed: () async {
+                      final currentRating = scene.rating100 ?? 0;
+                      final newRating = (currentRating == i * 20) ? 0 : i * 20;
 
-                  try {
-                    await ref
-                        .read(sceneRepositoryProvider)
-                        .updateSceneRating(scene.id, newRating);
-                    await ref
-                        .read(sceneRepositoryProvider)
-                        .getSceneById(scene.id, refresh: true);
-                    ref.invalidate(sceneDetailsProvider(scene.id));
-                    _invalidateSceneListUnlessRandom();
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            context.l10n.details_failed_update_rating(
-                              e.toString(),
+                      try {
+                        await ref
+                            .read(sceneRepositoryProvider)
+                            .updateSceneRating(scene.id, newRating);
+                        await ref
+                            .read(sceneRepositoryProvider)
+                            .getSceneById(scene.id, refresh: true);
+                        ref.invalidate(sceneDetailsProvider(scene.id));
+                        _invalidateSceneListUnlessRandom();
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                context.l10n.details_failed_update_rating(
+                                  e.toString(),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    }
-                  }
-                },
-                icon: Icon(
-                  (scene.rating100 ?? 0) >= i * 20
-                      ? Icons.star
-                      : Icons.star_border,
-                  color: context.colors.ratingColor,
-                  size: 28,
-                ),
-              ),
+                          );
+                        }
+                      }
+                    },
+                    icon: Icon(
+                      (scene.rating100 ?? 0) >= i * 20
+                          ? Icons.star
+                          : Icons.star_border,
+                      color: context.colors.ratingColor,
+                      size: 24,
+                    ),
+                  ),
+              ],
+            ),
             FilledButton.tonalIcon(
               onPressed: () async {
                 try {
@@ -896,9 +962,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               },
               style: FilledButton.styleFrom(
                 visualDensity: VisualDensity.compact,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                minimumSize: const Size(0, 32),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                minimumSize: const Size(0, 48),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
               ),
               icon: const Icon(Icons.water_drop_outlined),
               label: Text('${scene.oCounter}'),
@@ -907,6 +972,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         ),
         const SizedBox(height: AppTheme.spacingSmall),
         Wrap(
+          alignment: alignment,
           spacing: 4,
           runSpacing: 4,
           children: [
