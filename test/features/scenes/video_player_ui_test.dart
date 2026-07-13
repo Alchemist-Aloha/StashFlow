@@ -107,6 +107,43 @@ void main() {
     expect(find.text('Test Studio'), findsOneWidget);
   });
 
+  testWidgets('SceneDetailsPage matches header and details section surfaces', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final scene = testScene.copyWith(details: 'Scene details');
+    final mockRepo = MockGraphQLSceneRepository()..withData([scene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: scene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final header = find.byKey(const Key('scene_header_section'));
+    final details = find.byKey(const Key('scene_details_section'));
+    expect(
+      find.descendant(of: header, matching: find.text('Test Scene')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: header,
+        matching: find.byKey(const Key('scene_action_delete')),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      tester.widget<Card>(header).color,
+      tester.widget<Card>(details).color,
+    );
+  });
+
   testWidgets(
     'SceneDetailsPage renders scene actions below rating and O counter',
     (tester) async {

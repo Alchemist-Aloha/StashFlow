@@ -6,12 +6,12 @@ Refine only the scene-details region from the title through the action buttons. 
 
 ## Visual Direction
 
-Use a **Soft Structuralist Editorial Split**: generous negative space and strong type on the left, with a compact tactile control island on the right. The header should feel quiet and architectural rather than card-heavy.
+Use a **Soft Structuralist Editorial Split**: generous negative space and strong type on the left, with a compact control group on the right.
 
 - Use semantic colors from the existing Material 3 theme so light, dark, and custom color schemes remain correct.
-- Keep the identity block visually open; do not wrap the entire header in a card.
-- Give the controls a restrained nested surface: a faint tonal outer shell around a distinct inner core, with concentric 24/20 logical-pixel radii and no visible gray border.
-- Use one soft ambient shadow at most. Do not use gradients, backdrop blur, grain, or decorative animation in this scrolling region.
+- Wrap the full title-through-actions region in the existing section container so it is one rounded rectangle with the exact color, radius, padding, and margin used by Details.
+- Keep the control group on that shared background; do not add a nested control surface, border, or shadow.
+- Do not use gradients, backdrop blur, grain, or decorative animation in this scrolling region.
 - Keep the existing outlined icon glyphs and dependencies, but normalize the action icons to a precise visual size and consistent tonal treatment.
 
 ## Responsive Composition
@@ -25,9 +25,9 @@ Use a full-width vertical composition:
 1. Title.
 2. Studio and year, 6 logical pixels below the title.
 3. Technical metadata chips, 16 logical pixels below the studio line.
-4. Control island, 20 logical pixels below the metadata.
+4. Control group, 20 logical pixels below the metadata.
 
-Inside the control island, place rating and O-counter controls in the first wrapping row and the five scene actions in a second wrapping row. Use an 8-pixel rhythm within the island and allow either row to wrap under text scaling. Nothing may scroll horizontally.
+Inside the shared section rectangle, place rating and O-counter controls in the first wrapping row and the five scene actions in a second wrapping row. Use an 8-pixel rhythm and allow either row to wrap under text scaling. Nothing may scroll horizontally.
 
 ### Large screen: 768 logical pixels and above
 
@@ -35,9 +35,9 @@ Use an editorial split aligned at the top:
 
 - Left: an `Expanded` identity block containing title, studio/year, and technical metadata.
 - Gap: 32 logical pixels.
-- Right: a 304–344 logical-pixel control island containing the same two control rows, right-aligned.
+- Right: a 304–344 logical-pixel control group containing the same two control rows, right-aligned.
 
-The title must retain the dominant width. Long titles wrap naturally instead of compressing or pushing controls off-screen. The details section remains full-width below the split with 24 logical pixels of separation.
+The title must retain the dominant width. Long titles wrap naturally instead of compressing or pushing controls off-screen. The Details card remains full-width below the header card using the shared section margin.
 
 ## Typography and Rhythm
 
@@ -45,7 +45,7 @@ The title must retain the dominant width. Long titles wrap naturally instead of 
 - Large title: existing `headlineMedium`, weight 700, slightly tightened letter spacing.
 - Studio/year: existing theme typography with studio as the primary link and year at reduced emphasis.
 - Metadata: retain the existing compact chips, using 6-pixel spacing and run spacing.
-- Outer shell padding: 4 logical pixels. Inner core padding: 8 logical pixels on mobile and 10 logical pixels on large screens.
+- Shared section padding: use the existing `AppTheme.spacingMedium` value without another control wrapper.
 - Maintain a 48×48 logical-pixel minimum hit area for every icon action, including rating stars. Visual icons may remain smaller inside those targets.
 
 Do not introduce a font package or modify the global theme for this isolated region.
@@ -66,8 +66,9 @@ Modify only `scene_details_page.dart` and its focused scene-details widget test.
 
 Add stable keys for the identity and control groups, then verify:
 
-- Mobile: identity is above the control island and both use the available width without overflow.
-- Large screen: identity and control island share a top row, with controls positioned to the right.
+- Mobile: identity is above the control group and both use the available width without overflow.
+- Large screen: identity and control group share a top row, with controls positioned to the right.
+- Surface parity: the header and Details cards use the exact same section-container color.
 - Text scaling: the mobile layout at 1.5× produces no overflow exceptions.
 - Existing scene action, rating, O-counter, safe-area, and navigation tests continue to pass.
 

@@ -663,8 +663,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildSectionContainer(BuildContext context, Widget child) {
+  Widget _buildSectionContainer(
+    BuildContext context,
+    Widget child, {
+    Key? key,
+  }) {
     return Card(
+      key: key,
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
       color: Theme.of(
@@ -684,7 +689,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 768;
-        final colorScheme = Theme.of(context).colorScheme;
         final alignment = isWide ? WrapAlignment.end : WrapAlignment.start;
 
         final identity = Column(
@@ -698,48 +702,35 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             _buildTechnicalMetadata(context, scene),
           ],
         );
-        final controls = Container(
+        final controls = SizedBox(
           key: const Key('scene_header_controls'),
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.shadow.withValues(alpha: 0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Container(
-            padding: EdgeInsets.all(isWide ? 10 : 8),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: _buildActions(context, scene, alignment: alignment),
-          ),
+          child: _buildActions(context, scene, alignment: alignment),
         );
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isWide)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: identity),
-                  const SizedBox(width: 32),
-                  SizedBox(width: 344, child: controls),
-                ],
-              )
-            else ...[
-              SizedBox(width: double.infinity, child: identity),
-              const SizedBox(height: 20),
-              SizedBox(width: double.infinity, child: controls),
-            ],
-            const SizedBox(height: AppTheme.spacingLarge),
+            _buildSectionContainer(
+              context,
+              isWide
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: identity),
+                        const SizedBox(width: 32),
+                        SizedBox(width: 344, child: controls),
+                      ],
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(width: double.infinity, child: identity),
+                        const SizedBox(height: 20),
+                        SizedBox(width: double.infinity, child: controls),
+                      ],
+                    ),
+              key: const Key('scene_header_section'),
+            ),
             _buildDetails(context, scene),
           ],
         );
@@ -1062,6 +1053,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           ),
         ],
       ),
+      key: const Key('scene_details_section'),
     );
   }
 

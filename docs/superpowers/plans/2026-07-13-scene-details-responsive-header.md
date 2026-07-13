@@ -4,7 +4,11 @@
 
 **Goal:** Turn the scene-details title/action region into a premium stacked mobile header and editorial split large-screen header.
 
-**Architecture:** Keep the change inside `SceneDetailsPage`. A `LayoutBuilder` composes one identity block and one nested control island differently at 768 logical pixels; `_buildActions` gains only an alignment parameter so the same controls serve both layouts.
+**Architecture:** Keep the change inside `SceneDetailsPage`. A `LayoutBuilder` composes one identity block and one control group differently at 768 logical pixels, and the existing section container gives the whole title-through-actions region the same surface as Details.
+
+## Follow-up refinement
+
+A later UI refinement supersedes the nested control-island treatment in Task 1: wrap the complete responsive identity/control composition in the existing `_buildSectionContainer`, remove the inner control background and shadow, and key the header and Details cards so a widget test verifies exact color parity.
 
 **Tech Stack:** Flutter, Material 3, flutter_test.
 
