@@ -2,13 +2,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Turn the scene-details title/action region into a premium stacked mobile header and editorial split large-screen header.
+**Goal:** Turn the scene-details title/action region into a premium responsive header with one clear vertical hierarchy.
 
-**Architecture:** Keep the change inside `SceneDetailsPage`. A `LayoutBuilder` composes one identity block and one control group differently at 768 logical pixels, and the existing section container gives the whole title-through-actions region the same surface as Details.
+**Architecture:** Keep the change inside `SceneDetailsPage`. A `LayoutBuilder` preserves responsive title typography while the identity, control, and metadata groups share one vertical order and the existing Details section surface.
 
 ## Follow-up refinement
 
-A later UI refinement supersedes the nested control-island treatment in Task 1: wrap the complete responsive identity/control composition in the existing `_buildSectionContainer`, remove the inner control background and shadow, and key the header and Details cards so a widget test verifies exact color parity.
+Later UI refinements supersede the nested control-island and wide-screen split in Task 1: use `_buildSectionContainer` for exact Details-surface parity, then order the full-width groups as title/studio, controls, and metadata on every screen size.
 
 **Tech Stack:** Flutter, Material 3, flutter_test.
 

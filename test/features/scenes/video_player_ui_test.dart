@@ -177,7 +177,7 @@ void main() {
     },
   );
 
-  testWidgets('SceneDetailsPage splits header controls on large screens', (
+  testWidgets('SceneDetailsPage orders header controls before metadata', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1600, 1600);
@@ -196,14 +196,15 @@ void main() {
 
     final identity = find.byKey(const Key('scene_header_identity'));
     final controls = find.byKey(const Key('scene_header_controls'));
+    final metadata = find.byKey(const Key('scene_header_metadata'));
 
     expect(
-      tester.getTopLeft(controls).dx,
-      greaterThan(tester.getTopLeft(identity).dx),
+      tester.getBottomLeft(identity).dy,
+      lessThan(tester.getTopLeft(controls).dy),
     );
     expect(
-      tester.getTopLeft(controls).dy,
-      closeTo(tester.getTopLeft(identity).dy, 0.1),
+      tester.getBottomLeft(controls).dy,
+      lessThan(tester.getTopLeft(metadata).dy),
     );
   });
 
@@ -229,10 +230,15 @@ void main() {
 
       final identity = find.byKey(const Key('scene_header_identity'));
       final controls = find.byKey(const Key('scene_header_controls'));
+      final metadata = find.byKey(const Key('scene_header_metadata'));
 
       expect(
         tester.getBottomLeft(identity).dy,
         lessThan(tester.getTopLeft(controls).dy),
+      );
+      expect(
+        tester.getBottomLeft(controls).dy,
+        lessThan(tester.getTopLeft(metadata).dy),
       );
       expect(
         tester.getSize(controls).width,

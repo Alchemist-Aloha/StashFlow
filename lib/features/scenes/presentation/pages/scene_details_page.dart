@@ -689,7 +689,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 768;
-        final alignment = isWide ? WrapAlignment.end : WrapAlignment.start;
 
         final identity = Column(
           key: const Key('scene_header_identity'),
@@ -698,13 +697,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             _buildTitle(context, scene, isWide: isWide),
             const SizedBox(height: 6),
             _buildStudioAndDate(context, scene),
-            const SizedBox(height: AppTheme.spacingMedium),
-            _buildTechnicalMetadata(context, scene),
           ],
         );
         final controls = SizedBox(
           key: const Key('scene_header_controls'),
-          child: _buildActions(context, scene, alignment: alignment),
+          child: _buildActions(context, scene),
+        );
+        final metadata = SizedBox(
+          key: const Key('scene_header_metadata'),
+          child: _buildTechnicalMetadata(context, scene),
         );
 
         return Column(
@@ -712,23 +713,16 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           children: [
             _buildSectionContainer(
               context,
-              isWide
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: identity),
-                        const SizedBox(width: 32),
-                        SizedBox(width: 344, child: controls),
-                      ],
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(width: double.infinity, child: identity),
-                        const SizedBox(height: 20),
-                        SizedBox(width: double.infinity, child: controls),
-                      ],
-                    ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(width: double.infinity, child: identity),
+                  const SizedBox(height: AppTheme.spacingMedium),
+                  SizedBox(width: double.infinity, child: controls),
+                  const SizedBox(height: AppTheme.spacingMedium),
+                  SizedBox(width: double.infinity, child: metadata),
+                ],
+              ),
               key: const Key('scene_header_section'),
             ),
             _buildDetails(context, scene),
@@ -859,19 +853,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildActions(
-    BuildContext context,
-    Scene scene, {
-    WrapAlignment alignment = WrapAlignment.start,
-  }) {
-    final crossAxisAlignment = alignment == WrapAlignment.end
-        ? CrossAxisAlignment.end
-        : CrossAxisAlignment.start;
+  Widget _buildActions(BuildContext context, Scene scene) {
     return Column(
-      crossAxisAlignment: crossAxisAlignment,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Wrap(
-          alignment: alignment,
           spacing: 8,
           runSpacing: 8,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -963,7 +949,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         ),
         const SizedBox(height: AppTheme.spacingSmall),
         Wrap(
-          alignment: alignment,
           spacing: 4,
           runSpacing: 4,
           children: [
