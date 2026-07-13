@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -14,6 +15,8 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/playbac
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
+import 'package:stash_app_flutter/core/utils/media_handler.dart';
+import 'package:stash_app_flutter/main.dart' as app;
 
 import 'playend_behavior_test.mocks.dart';
 
@@ -29,6 +32,8 @@ void main() {
   late StreamController<Duration> positionStream;
   late StreamController<Duration> durationStream;
   late StreamController<bool> completedStream;
+  StreamChoice? resolvedChoice;
+  Completer<StreamChoice?>? pendingResolution;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -42,6 +47,9 @@ void main() {
     positionStream = StreamController<Duration>.broadcast();
     durationStream = StreamController<Duration>.broadcast();
     completedStream = StreamController<bool>.broadcast();
+    resolvedChoice = null;
+    pendingResolution = null;
+    app.mediaHandler = StashMediaHandler();
 
     final playerStream = CustomPlayerStream(
       playingStream.stream,
@@ -58,7 +66,11 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPrefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
-        streamResolverProvider.overrideWith(NullStreamResolver.new),
+        streamResolverProvider.overrideWith(
+          () => TestStreamResolver(
+            () => pendingResolution?.future ?? Future.value(resolvedChoice),
+          ),
+        ),
       ],
     );
   });
@@ -69,6 +81,7 @@ void main() {
     durationStream.close();
     completedStream.close();
     container.dispose();
+    app.mediaHandler = null;
   });
 
   // Helper to create a Scene
@@ -98,30 +111,6 @@ void main() {
     );
   }
 
-  test('playNext should NOT exit full screen', () async {
-    final notifier = container.read(playerStateProvider.notifier);
-    final scene1 = createTestScene('1');
-
-    // Attach initial controller
-    await notifier.attachController(scene1, mockPlayer, mockVideoController);
-
-    // Set full screen
-    notifier.setFullScreen(true);
-    expect(container.read(playerStateProvider).isFullScreen, isTrue);
-
-    // Mock playEndBehavior to next
-    notifier.setPlayEndBehavior(VideoEndBehavior.next);
-
-    // Trigger video finish by emitting to completedStream
-    completedStream.add(true);
-
-    // Wait for async operations
-    await Future.delayed(Duration.zero);
-
-    // Verify it DID NOT exit full screen
-    expect(container.read(playerStateProvider).isFullScreen, isTrue);
-  });
-
   test('playEndBehavior.stop SHOULD exit full screen', () async {
     final notifier = container.read(playerStateProvider.notifier);
     final scene1 = createTestScene('1');
@@ -134,6 +123,108 @@ void main() {
     await Future.delayed(Duration.zero);
 
     expect(container.read(playerStateProvider).isFullScreen, isFalse);
+    expect(container.read(playerStateProvider).activeScene, isNull);
+    expect(
+      app.mediaHandler!.playbackState.value.processingState,
+      AudioProcessingState.idle,
+    );
+    expect(app.mediaHandler!.mediaItem.value, isNull);
+  });
+
+  test('loop seeks to zero and resumes without stopping', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final scene = createTestScene('1');
+    await notifier.attachController(scene, mockPlayer, mockVideoController);
+    notifier.setPlayEndBehavior(VideoEndBehavior.loop);
+
+    completedStream.add(true);
+    await Future<void>.delayed(Duration.zero);
+
+    verify(mockPlayer.seek(Duration.zero)).called(1);
+    verify(mockPlayer.play()).called(1);
+    expect(container.read(playerStateProvider).activeScene?.id, '1');
+  });
+
+  test('next advances transactionally and preserves full screen', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final queue = container.read(playbackQueueProvider.notifier);
+    final scene1 = createTestScene('1');
+    final scene2 = createTestScene('2');
+    resolvedChoice = const StreamChoice(
+      url: 'https://example.test/2.mp4',
+      mimeType: 'video/mp4',
+    );
+
+    queue.setSequence([scene1, scene2], 0);
+    await notifier.attachController(scene1, mockPlayer, mockVideoController);
+    notifier.setFullScreen(true);
+    notifier.setPlayEndBehavior(VideoEndBehavior.next);
+
+    completedStream.add(true);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+
+    expect(container.read(playbackQueueProvider).currentIndex, 1);
+    expect(container.read(playerStateProvider).activeScene?.id, '2');
+    expect(container.read(playerStateProvider).isFullScreen, isTrue);
+  });
+
+  test('next stops when the next stream cannot be resolved', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final queue = container.read(playbackQueueProvider.notifier);
+    final scene1 = createTestScene('1');
+    final scene2 = createTestScene('2');
+
+    queue.setSequence([scene1, scene2], 0);
+    await notifier.attachController(scene1, mockPlayer, mockVideoController);
+    notifier.setPlayEndBehavior(VideoEndBehavior.next);
+
+    completedStream.add(true);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+
+    expect(container.read(playbackQueueProvider).currentIndex, 0);
+    expect(container.read(playerStateProvider).activeScene, isNull);
+    expect(app.mediaHandler!.mediaItem.value, isNull);
+  });
+
+  test('completion does not stop an in-flight queue transition', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final queue = container.read(playbackQueueProvider.notifier);
+    final scene1 = createTestScene('1');
+    final scene2 = createTestScene('2');
+    pendingResolution = Completer<StreamChoice?>();
+
+    queue.setSequence([scene1, scene2], 0);
+    await notifier.attachController(scene1, mockPlayer, mockVideoController);
+    notifier.setPlayEndBehavior(VideoEndBehavior.next);
+
+    final transition = notifier.playNext();
+    completedStream.add(true);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(container.read(playerStateProvider).activeScene?.id, '1');
+
+    pendingResolution!.complete(null);
+    await transition;
+    expect(container.read(playerStateProvider).activeScene?.id, '1');
+  });
+
+  test('notification previous command routes to queue playback', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final queue = container.read(playbackQueueProvider.notifier);
+    final scene1 = createTestScene('1');
+    final scene2 = createTestScene('2');
+    resolvedChoice = const StreamChoice(
+      url: 'https://example.test/1.mp4',
+      mimeType: 'video/mp4',
+    );
+
+    queue.setSequence([scene1, scene2], 1);
+    await notifier.attachController(scene2, mockPlayer, mockVideoController);
+
+    await app.mediaHandler!.skipToPrevious();
+
+    expect(container.read(playbackQueueProvider).currentIndex, 0);
+    expect(container.read(playerStateProvider).activeScene?.id, '1');
   });
 
   test(
@@ -233,10 +324,14 @@ class CustomPlayerStream extends Mock implements mk.PlayerStream {
   );
 }
 
-class NullStreamResolver extends StreamResolver {
+class TestStreamResolver extends StreamResolver {
+  TestStreamResolver(this.resolve);
+
+  final Future<StreamChoice?> Function() resolve;
+
   @override
   void build() {}
 
   @override
-  Future<StreamChoice?> resolvePreferredStream(Scene scene) async => null;
+  Future<StreamChoice?> resolvePreferredStream(Scene scene) => resolve();
 }

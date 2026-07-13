@@ -1,5 +1,4 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/utils/media_handler.dart';
 
@@ -82,6 +81,44 @@ void main() {
       expect(state.controls.contains(MediaControl.play), isTrue);
       expect(state.controls.contains(MediaControl.pause), isFalse);
     });
+
+    test('publishes the supplied processing state', () {
+      handler.updatePlaybackState(
+        isPlaying: false,
+        processingState: AudioProcessingState.buffering,
+      );
+
+      expect(
+        handler.playbackState.value.processingState,
+        AudioProcessingState.buffering,
+      );
+    });
+  });
+
+  group('notification lifecycle', () {
+    test('ignores artwork for an inactive media item', () {
+      handler.updateMetadata(id: 'current', title: 'Current');
+
+      handler.updateArtwork(id: 'stale', thumbnailUri: 'file:///tmp/stale.jpg');
+
+      expect(handler.mediaItem.value?.id, 'current');
+      expect(handler.mediaItem.value?.artUri, isNull);
+    });
+
+    test('dismiss publishes idle state and clears metadata', () {
+      handler.updateMetadata(id: '1', title: 'Scene');
+      handler.updatePlaybackState(isPlaying: true);
+
+      handler.dismiss();
+
+      expect(handler.playbackState.value.playing, isFalse);
+      expect(
+        handler.playbackState.value.processingState,
+        AudioProcessingState.idle,
+      );
+      expect(handler.playbackState.value.controls, isEmpty);
+      expect(handler.mediaItem.value, isNull);
+    });
   });
 
   group('callbacks', () {
@@ -154,29 +191,15 @@ void main() {
   });
 
   group('onTaskRemoved', () {
-    test('calls stop and SystemNavigator.pop', () async {
+    test('calls stop', () async {
       bool stopCalled = false;
       handler.onStopCallback = () async {
         stopCalled = true;
       };
 
-      bool popCalled = false;
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, (message) async {
-            if (message.method == 'SystemNavigator.pop') {
-              popCalled = true;
-            }
-            return null;
-          });
-
       await handler.onTaskRemoved();
 
       expect(stopCalled, isTrue);
-      expect(popCalled, isTrue);
-
-      // Clean up mock handler
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, null);
     });
   });
 }

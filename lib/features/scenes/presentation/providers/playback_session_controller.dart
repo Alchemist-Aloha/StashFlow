@@ -54,9 +54,13 @@ class PlaybackSessionController {
     _subscriptions.add(player.stream.playing.listen((_) => onTick()));
     _subscriptions.add(player.stream.position.listen((_) => onTick()));
     _subscriptions.add(player.stream.duration.listen((_) => onTick()));
+    var completionHandled = false;
     _subscriptions.add(
       player.stream.completed.listen((completed) {
-        if (completed) {
+        if (!completed) {
+          completionHandled = false;
+        } else if (!completionHandled) {
+          completionHandled = true;
           onCompleted();
         }
       }),

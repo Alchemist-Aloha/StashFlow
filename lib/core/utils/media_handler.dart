@@ -1,5 +1,4 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/services.dart';
 
 /// A bridge between the application's video players and the system media session.
 ///
@@ -35,6 +34,7 @@ class StashMediaHandler extends BaseAudioHandler {
     Duration? position,
     Duration? bufferedPosition,
     double speed = 1.0,
+    AudioProcessingState processingState = AudioProcessingState.ready,
   }) {
     playbackState.add(
       PlaybackState(
@@ -50,13 +50,34 @@ class StashMediaHandler extends BaseAudioHandler {
           MediaAction.seekBackward,
         },
         androidCompactActionIndices: const [0, 1, 3],
-        processingState: AudioProcessingState.ready,
+        processingState: processingState,
         playing: isPlaying,
         updatePosition: position ?? Duration.zero,
         bufferedPosition: bufferedPosition ?? Duration.zero,
         speed: speed,
       ),
     );
+  }
+
+  /// Updates artwork only when [id] is still the active media item.
+  void updateArtwork({required String id, required String thumbnailUri}) {
+    final current = mediaItem.value;
+    if (current?.id != id) return;
+    mediaItem.add(current!.copyWith(artUri: Uri.parse(thumbnailUri)));
+  }
+
+  /// Ends the media session so Android removes its playback notification.
+  void dismiss() {
+    playbackState.add(
+      playbackState.value.copyWith(
+        controls: const [],
+        systemActions: const {},
+        androidCompactActionIndices: const [],
+        playing: false,
+        processingState: AudioProcessingState.idle,
+      ),
+    );
+    mediaItem.add(null);
   }
 
   /// Callback for toggling play state. Linked to the active player provider.
@@ -86,12 +107,7 @@ class StashMediaHandler extends BaseAudioHandler {
   @override
   Future<void> stop() async {
     await onStopCallback?.call();
-    playbackState.add(
-      playbackState.value.copyWith(
-        playing: false,
-        processingState: AudioProcessingState.idle,
-      ),
-    );
+    dismiss();
   }
 
   @override
@@ -104,9 +120,5 @@ class StashMediaHandler extends BaseAudioHandler {
   Future<void> skipToPrevious() async => onSkipToPreviousCallback?.call();
 
   @override
-  Future<void> onTaskRemoved() async {
-    await stop();
-    // Signal the OS that the task is finished
-    await SystemNavigator.pop();
-  }
+  Future<void> onTaskRemoved() => stop();
 }

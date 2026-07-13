@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -415,14 +416,21 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     // Link system media controls to our provider
     mediaHandler?.onPlayCallback = () async => play();
     mediaHandler?.onPauseCallback = () async => _handleMediaPauseCommand();
-    mediaHandler?.onStopCallback = () async => stop();
+    mediaHandler?.onStopCallback = () async => stop(dismissNotification: false);
     mediaHandler?.onSeekCallback = (pos) async => state.player?.seek(pos);
     mediaHandler?.onSkipToNextCallback = () async {
       AppLogStore.instance.add(
         'PlayerState mediaHandler.onSkipToNextCallback',
         source: 'player_provider',
       );
-      return playNext();
+      await playNext();
+    };
+    mediaHandler?.onSkipToPreviousCallback = () async {
+      AppLogStore.instance.add(
+        'PlayerState mediaHandler.onSkipToPreviousCallback',
+        source: 'player_provider',
+      );
+      await playPrevious();
     };
 
     final loadedSettings = _settingsStore.load();
@@ -492,31 +500,24 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   /// both limitations by fetching the image in-app (with auth headers),
   /// writing it to a temp file, and passing a `file://` URI to audio_service.
   void _updateMediaNotification(Scene scene, Duration? duration) {
+    mediaHandler?.updateMetadata(
+      id: scene.id,
+      title: scene.title,
+      studio: scene.studioName,
+      duration: duration,
+    );
+
     final screenshotUrl = scene.paths.screenshot?.trim();
     if (screenshotUrl == null || screenshotUrl.isEmpty) {
       _cleanupNotificationArt();
-      mediaHandler?.updateMetadata(
-        id: scene.id,
-        title: scene.title,
-        studio: scene.studioName,
-        duration: duration,
-      );
       return;
     }
 
-    if (isTestMode) {
-      mediaHandler?.updateMetadata(
-        id: scene.id,
-        title: scene.title,
-        studio: scene.studioName,
-        duration: duration,
-      );
-      return;
-    }
+    if (isTestMode) return;
 
     // Fire-and-forget: fetch the image in the background so it doesn't
     // block playback startup.
-    unawaited(_fetchAndUpdateArt(scene, screenshotUrl, duration));
+    unawaited(_fetchAndUpdateArt(scene, screenshotUrl));
   }
 
   /// Deletes the old temp notification art file if it exists.
@@ -532,11 +533,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _fetchAndUpdateArt(
-    Scene scene,
-    String url,
-    Duration? duration,
-  ) async {
+  Future<void> _fetchAndUpdateArt(Scene scene, String url) async {
+    File? tempFile;
     try {
       final headers = ref.read(mediaHeadersProvider);
       final apiKey = ref.read(serverApiKeyProvider);
@@ -555,41 +553,41 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       final response = await dio.getUri(Uri.parse(effectiveUrl));
       if (response.statusCode == 200 && response.data is List<int>) {
         final tempDir = await getTemporaryDirectory();
-        final tempFile = File(
-          '${tempDir.path}/stash_notification_art_${scene.id}.jpg',
+        final downloadedFile = File(
+          '${tempDir.path}/stash_notification_art_${scene.id}_'
+          '${DateTime.now().microsecondsSinceEpoch}.jpg',
         );
+        tempFile = downloadedFile;
 
-        await tempFile.writeAsBytes(response.data as List<int>);
-        if (!ref.mounted) return;
+        await downloadedFile.writeAsBytes(response.data as List<int>);
+        if (!ref.mounted || state.activeScene?.id != scene.id) {
+          await downloadedFile.delete();
+          return;
+        }
 
         // Clean up previous temp file before recording the new one.
         _cleanupNotificationArt();
-        _notificationArtTempPath = tempFile.path;
+        _notificationArtTempPath = downloadedFile.path;
 
-        mediaHandler?.updateMetadata(
+        mediaHandler?.updateArtwork(
           id: scene.id,
-          title: scene.title,
-          studio: scene.studioName,
-          thumbnailUri: Uri.file(tempFile.path).toString(),
-          duration: duration,
+          thumbnailUri: Uri.file(downloadedFile.path).toString(),
         );
         return;
       }
     } catch (e) {
+      if (tempFile != null) {
+        try {
+          await tempFile.delete();
+        } catch (_) {
+          // Best-effort cleanup; ignore failures.
+        }
+      }
       AppLogStore.instance.add(
         'Failed to fetch scene cover for notification: $e',
         source: 'player_provider',
       );
     }
-
-    // Fallback: no art available.
-    if (!ref.mounted) return;
-    mediaHandler?.updateMetadata(
-      id: scene.id,
-      title: scene.title,
-      studio: scene.studioName,
-      duration: duration,
-    );
   }
 
   void setAutoplayNext(bool value) {
@@ -1452,7 +1450,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     player.seek(target);
   }
 
-  void stop() {
+  void stop({bool dismissNotification = true}) {
     if (ref.mounted) {
       final castState = ref.read(castServiceProvider);
       if (castState.isCasting) {
@@ -1466,6 +1464,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
     _activeSceneRef = null;
     _lastIsPlaying = null;
+    _cleanupNotificationArt();
     if (!ref.mounted) return;
 
     state = GlobalPlayerState(
@@ -1480,8 +1479,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       subtitleFontSize: state.subtitleFontSize,
       subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
       subtitleTextAlignment: state.subtitleTextAlignment,
-      fullscreenPhase: state.fullscreenPhase,
     );
+    if (dismissNotification) mediaHandler?.dismiss();
   }
 
   Future<void> _disposeControllers({
@@ -1611,27 +1610,38 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           position: currentPosition,
           bufferedPosition: currentBuffered,
           speed: currentSpeed,
+          processingState: isBufferingNow
+              ? AudioProcessingState.buffering
+              : AudioProcessingState.ready,
         );
       }
     }
   }
 
   void _handleVideoFinished() {
+    final completedSceneId = state.activeScene?.id;
     AppLogStore.instance.add(
-      'PlayerState _handleVideoFinished: active=${state.activeScene?.id} behavior=${state.playEndBehavior}',
+      'PlayerState _handleVideoFinished: active=$completedSceneId behavior=${state.playEndBehavior}',
       source: 'player_provider',
     );
 
+    if (completedSceneId != null) {
+      unawaited(_applyVideoEndBehavior(completedSceneId));
+    }
+  }
+
+  Future<void> _applyVideoEndBehavior(String completedSceneId) async {
+    if (state.activeScene?.id != completedSceneId) return;
+
     switch (state.playEndBehavior) {
       case VideoEndBehavior.stop:
-        if (state.isFullScreen) {
-          requestExitFullscreen();
-        }
-        break;
+        stop();
+        return;
       case VideoEndBehavior.loop:
-        state.player?.seek(Duration.zero);
-        state.player?.play();
-        break;
+        final completedPlayer = state.player;
+        await completedPlayer?.seek(Duration.zero);
+        if (state.player == completedPlayer) await completedPlayer?.play();
+        return;
       case VideoEndBehavior.next:
         if (state.streamSource == 'tiktok-promotion') {
           // TikTok view handles its own "next" behavior by scrolling the PageView.
@@ -1640,17 +1650,19 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
             'PlayerState _handleVideoFinished: TikTok promotion detected, skipping playNext()',
             source: 'player_provider',
           );
-          break;
+          return;
         }
 
         // Do NOT exit full screen when moving to the next video,
         // so the next video also starts in full screen.
-        playNext();
-        break;
+        if (_isTransitioning) return;
+        if (!await playNext() && state.activeScene?.id == completedSceneId) {
+          stop();
+        }
     }
   }
 
-  Future<void> playNext() async {
+  Future<bool> playNext() async {
     AppLogStore.instance.add(
       'PlayerState playNext: CALLED, _isTransitioning=$_isTransitioning, activeScene=${state.activeScene?.id}',
       source: 'player_provider',
@@ -1660,14 +1672,14 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         'PlayerState playNext: ref not mounted, returning',
         source: 'player_provider',
       );
-      return;
+      return false;
     }
     if (_isTransitioning) {
       AppLogStore.instance.add(
         'PlayerState playNext: already transitioning, skipping',
         source: 'player_provider',
       );
-      return;
+      return false;
     }
 
     _isTransitioning = true;
@@ -1678,11 +1690,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         direction: QueueAdvanceDirection.next,
         activeSceneId: state.activeScene?.id,
       );
-      if (target == null) return;
+      if (target == null) return false;
 
       final resolver = ref.read(streamResolverProvider.notifier);
       final choice = await resolver.resolvePreferredStream(target.scene);
-      if (choice == null) return;
+      if (choice == null) return false;
 
       final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
       await playScene(
@@ -1706,7 +1718,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
             ),
           ]);
         }
+        return true;
       }
+      return false;
     } finally {
       _isTransitioning = false;
     }
