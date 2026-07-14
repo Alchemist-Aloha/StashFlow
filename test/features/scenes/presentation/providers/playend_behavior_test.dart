@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -110,6 +111,20 @@ void main() {
       tagNames: [],
     );
   }
+
+  test('background playback off pauses an active player', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final scene = createTestScene('background-off');
+
+    when(mockPlayer.state).thenReturn(PlayerStateData(playing: true));
+    await notifier.attachController(scene, mockPlayer, mockVideoController);
+    notifier.setEnableBackgroundPlayback(false);
+
+    notifier.didChangeAppLifecycleState(AppLifecycleState.hidden);
+
+    verify(mockPlayer.pause()).called(1);
+    expect(container.read(playerStateProvider).isPlaying, isFalse);
+  });
 
   test('playEndBehavior.stop SHOULD exit full screen', () async {
     final notifier = container.read(playerStateProvider.notifier);

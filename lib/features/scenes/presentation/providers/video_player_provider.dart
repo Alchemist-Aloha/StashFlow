@@ -1410,17 +1410,24 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
 
     final isBackgroundState =
-        state == AppLifecycleState.hidden || state == AppLifecycleState.paused;
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached;
     if (!isBackgroundState) return;
     _backgroundEnteredAt ??= DateTime.now();
 
     final player = this.state.player;
-    if (player == null) return;
+    if (player == null || !player.state.playing) return;
 
-    // Only try to keep playback alive if it was playing as we entered background.
-    if (!this.state.enableBackgroundPlayback || !player.state.playing) return;
+    final canEnterPip = _canEnterBackgroundPip(player);
+    if (canEnterPip &&
+        (state == AppLifecycleState.hidden ||
+            state == AppLifecycleState.paused)) {
+      _requestBackgroundPipOrApplyPolicy(player);
+      return;
+    }
 
-    _scheduleBackgroundPlaybackRecovery();
+    _applyBackgroundPlaybackPolicy(player);
   }
 
   void _scheduleBackgroundPlaybackRecovery() {
@@ -1457,6 +1464,55 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     } finally {
       _backgroundRecoveryInFlight = false;
     }
+  }
+
+  bool _canEnterBackgroundPip(Player player) {
+    return !kIsWeb &&
+        Platform.isAndroid &&
+        state.enableNativePip &&
+        state.isFullScreen &&
+        !state.isInPipMode &&
+        !PipMode.isInPipMode.value &&
+        player.state.playing;
+  }
+
+  void _applyBackgroundPlaybackPolicy(Player player) {
+    if (!ref.mounted || state.player != player || !player.state.playing) return;
+    if (state.isInPipMode || PipMode.isInPipMode.value) return;
+
+    if (state.enableBackgroundPlayback) {
+      _scheduleBackgroundPlaybackRecovery();
+    } else {
+      pause(suppressBackgroundRecovery: true);
+    }
+  }
+
+  void _requestBackgroundPipOrApplyPolicy(Player player) {
+    if (_pipRequestInFlight || state.isInPipMode || PipMode.isInPipMode.value) {
+      return;
+    }
+
+    final elapsedSinceLast = _lastPipRequestAt == null
+        ? null
+        : DateTime.now().difference(_lastPipRequestAt!);
+    if (elapsedSinceLast != null && elapsedSinceLast < _pipRequestCooldown) {
+      return;
+    }
+
+    final width = player.state.width;
+    final height = player.state.height;
+    final aspect = (width != null && height != null && height > 0)
+        ? width / height
+        : 16 / 9;
+
+    unawaited(() async {
+      final enteredPip = await requestEnterPip(aspectRatio: aspect);
+      if (!ref.mounted || state.player != player || !player.state.playing) {
+        return;
+      }
+      if (enteredPip || state.isInPipMode || PipMode.isInPipMode.value) return;
+      _applyBackgroundPlaybackPolicy(player);
+    }());
   }
 
   Future<void> _handleMediaPauseCommand() async {
