@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -117,6 +118,21 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('1 / 2'), findsOneWidget);
+
+      final keyboardFocus = tester.widget<Focus>(
+        find.byKey(const Key('image_keyboard_shortcuts')),
+      );
+      keyboardFocus.focusNode!.requestFocus();
+      await tester.pump();
+      expect(keyboardFocus.focusNode!.hasFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.end);
+      await tester.pump();
+      expect(find.text('Image 2'), findsOneWidget);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.home);
+      await tester.pump();
+      expect(find.text('Image 1'), findsOneWidget);
 
       await tester.drag(
         find.byType(ExtendedImageGesturePageView),

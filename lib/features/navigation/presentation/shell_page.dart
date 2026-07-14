@@ -42,12 +42,24 @@ class _ShellPageState extends ConsumerState<ShellPage> {
   bool _wasVideoFullscreen = false;
   bool _enableDeferredStartupChecks = false;
   Timer? _deferredStartupTimer;
+  Map<ShortcutActivator, VoidCallback> _globalKeyBindings = const {};
 
   bool get _isDesktopPlatform =>
       !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.windows ||
           defaultTargetPlatform == TargetPlatform.linux ||
           defaultTargetPlatform == TargetPlatform.macOS);
+
+  bool get _isEditingText {
+    final focusContext = FocusManager.instance.primaryFocus?.context;
+    return focusContext?.widget is EditableText ||
+        focusContext?.findAncestorWidgetOfExactType<EditableText>() != null;
+  }
+
+  KeyEventResult _handleGlobalKeyEvent(KeyEvent event) {
+    if (_isEditingText) return KeyEventResult.ignored;
+    return dispatchKeybindEvent(event, _globalKeyBindings);
+  }
 
   List<DeviceOrientation> _mainPageOrientations(bool allowGravity) {
     if (allowGravity) {
@@ -93,6 +105,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
   @override
   void initState() {
     super.initState();
+    FocusManager.instance.addEarlyKeyEventHandler(_handleGlobalKeyEvent);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _checkServerConfiguration();
@@ -108,6 +121,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
 
   @override
   void dispose() {
+    FocusManager.instance.removeEarlyKeyEventHandler(_handleGlobalKeyEvent);
     _deferredStartupTimer?.cancel();
     super.dispose();
   }
@@ -421,37 +435,61 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       final Map<ShortcutActivator, VoidCallback> bindings = {};
       final keybinds = ref.watch(keybindsProvider);
 
-      final digitKeys = [
-        LogicalKeyboardKey.digit1,
-        LogicalKeyboardKey.digit2,
-        LogicalKeyboardKey.digit3,
-        LogicalKeyboardKey.digit4,
-        LogicalKeyboardKey.digit5,
-        LogicalKeyboardKey.digit6,
-        LogicalKeyboardKey.digit7,
-        LogicalKeyboardKey.digit8,
-        LogicalKeyboardKey.digit9,
-      ];
-      for (int i = 0; i < visibleTabs.length && i < digitKeys.length; i++) {
-        final index = i;
-        bindings[SingleActivator(digitKeys[i], control: true)] = () =>
-            onDestinationSelected(index);
-      }
+      const tabIndexes = {
+        KeybindAction.tab1: 0,
+        KeybindAction.tab2: 1,
+        KeybindAction.tab3: 2,
+        KeybindAction.tab4: 3,
+        KeybindAction.tab5: 4,
+        KeybindAction.tab6: 5,
+        KeybindAction.tab7: 6,
+        KeybindAction.tab8: 7,
+        KeybindAction.tab9: 8,
+      };
 
-      // Add back bind
-      final backBind = keybinds.binds[KeybindAction.back];
-      if (backBind != null) {
-        bindings[backBind.toActivator()] = () {
-          if (context.canPop()) {
-            context.pop();
+      for (final entry in keybinds.binds.entries) {
+        if (entry.key.context != KeybindContext.global) continue;
+
+        VoidCallback? callback;
+        final tabIndex = tabIndexes[entry.key];
+        if (tabIndex != null) {
+          if (tabIndex < visibleTabs.length) {
+            callback = () => onDestinationSelected(tabIndex);
           }
-        };
+        } else {
+          switch (entry.key) {
+            case KeybindAction.back:
+              callback = () {
+                if (context.canPop()) context.pop();
+              };
+              break;
+            case KeybindAction.nextTab:
+              if (visibleTabs.isNotEmpty) {
+                callback = () => onDestinationSelected(
+                  (currentUiIndex + 1) % visibleTabs.length,
+                );
+              }
+              break;
+            case KeybindAction.previousTab:
+              if (visibleTabs.isNotEmpty) {
+                callback = () => onDestinationSelected(
+                  (currentUiIndex - 1 + visibleTabs.length) %
+                      visibleTabs.length,
+                );
+              }
+              break;
+            default:
+              break;
+          }
+        }
+
+        if (callback != null) {
+          bindings[entry.value.toActivator()] = callback;
+        }
       }
 
-      bodyContent = CallbackShortcuts(
-        bindings: bindings,
-        child: Focus(autofocus: true, child: bodyContent),
-      );
+      _globalKeyBindings = bindings;
+      bodyContent = Focus(autofocus: true, child: bodyContent);
     }
 
     final isDesktop = ref.watch(desktopCapabilitiesProvider);

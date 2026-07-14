@@ -64,7 +64,7 @@ First/last navigation is a no-op when already at the corresponding endpoint or w
 
 The existing `desktop_keybinds` preference remains the storage format: a JSON object keyed by stable enum names. Newly introduced actions receive their defaults when absent from saved data. Existing user choices remain unchanged until reset.
 
-Assignment is atomic. Before saving a new binding, the provider removes the same combination from any action whose context overlaps the target context, then assigns it to the target action and persists once. Unbinding removes the action from saved state. Reset removes the preference and restores all current defaults.
+Assignment is atomic. Before saving a new binding, the provider removes the same combination from any action whose context overlaps the target context, then assigns it to the target action and persists once. Unbinding stores an explicit null marker so it remains distinct from a newly introduced action that needs its default. Reset removes the preference and restores all current defaults.
 
 Malformed individual entries fall back to that action's default without discarding other valid saved bindings. Unknown action names are ignored, allowing forward and backward preference compatibility.
 

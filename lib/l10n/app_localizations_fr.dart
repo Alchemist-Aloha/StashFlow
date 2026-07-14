@@ -1052,6 +1052,59 @@ class AppLocalizationsFr extends AppLocalizations {
       'Reculer de 10 secondes';
 
   @override
+  String get settings_keyboard_global_section => 'Global Navigation';
+
+  @override
+  String get settings_keyboard_video_section => 'Video Player';
+
+  @override
+  String get settings_keyboard_image_section => 'Image Viewer';
+
+  @override
+  String get settings_keyboard_next_tab => 'Next Tab';
+
+  @override
+  String get settings_keyboard_previous_tab => 'Previous Tab';
+
+  @override
+  String settings_keyboard_tab_number(int number) {
+    return 'Tab $number';
+  }
+
+  @override
+  String get settings_keyboard_first_image => 'First Image';
+
+  @override
+  String get settings_keyboard_last_image => 'Last Image';
+
+  @override
+  String get settings_keyboard_close_image => 'Close Image Viewer';
+
+  @override
+  String get settings_keyboard_unbind => 'Unbind shortcut';
+
+  @override
+  String get settings_keyboard_reset_confirm_title =>
+      'Reset keyboard shortcuts?';
+
+  @override
+  String get settings_keyboard_reset_confirm_body =>
+      'All custom keyboard shortcuts will be replaced with the defaults.';
+
+  @override
+  String get settings_keyboard_reserved =>
+      'This shortcut is reserved by the browser or operating system.';
+
+  @override
+  String get settings_keyboard_tab_reserved =>
+      'Tab is reserved for keyboard focus navigation.';
+
+  @override
+  String settings_keyboard_conflict_moved(String action) {
+    return 'Shortcut moved from $action.';
+  }
+
+  @override
   String get settings_appearance => 'Apparence';
 
   @override

@@ -348,6 +348,35 @@
   "settings_keyboard_seek_backward_5_desc": "Jump backward by 5 seconds",
   "settings_keyboard_seek_forward_10_desc": "Jump forward by 10 seconds",
   "settings_keyboard_seek_backward_10_desc": "Jump backward by 10 seconds",
+  "settings_keyboard_global_section": "Global Navigation",
+  "settings_keyboard_video_section": "Video Player",
+  "settings_keyboard_image_section": "Image Viewer",
+  "settings_keyboard_next_tab": "Next Tab",
+  "settings_keyboard_previous_tab": "Previous Tab",
+  "settings_keyboard_tab_number": "Tab {number}",
+  "@settings_keyboard_tab_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_keyboard_first_image": "First Image",
+  "settings_keyboard_last_image": "Last Image",
+  "settings_keyboard_close_image": "Close Image Viewer",
+  "settings_keyboard_unbind": "Unbind shortcut",
+  "settings_keyboard_reset_confirm_title": "Reset keyboard shortcuts?",
+  "settings_keyboard_reset_confirm_body": "All custom keyboard shortcuts will be replaced with the defaults.",
+  "settings_keyboard_reserved": "This shortcut is reserved by the browser or operating system.",
+  "settings_keyboard_tab_reserved": "Tab is reserved for keyboard focus navigation.",
+  "settings_keyboard_conflict_moved": "Shortcut moved from {action}.",
+  "@settings_keyboard_conflict_moved": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
   "settings_appearance": "Appearance",
   "settings_appearance_subtitle": "Theme and colors",
   "settings_interface": "Interface",

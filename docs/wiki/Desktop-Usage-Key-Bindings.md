@@ -1,112 +1,70 @@
 # Desktop Usage & Key Bindings
 
-This page documents keyboard shortcuts and desktop-specific behaviour in StashFlow on Windows, macOS, and Linux.
+StashFlow supports configurable keyboard shortcuts on Windows, macOS, Linux, and the web. Mobile hardware keyboards are not currently supported.
 
----
+## Global Navigation
+
+Global shortcuts work throughout the app, except while a text field is being edited.
+
+| Default | Action |
+| --- | --- |
+| `Alt+Left` | Go back |
+| `Ctrl+Tab` | Select the next visible navigation tab, wrapping at the end |
+| `Ctrl+Shift+Tab` | Select the previous visible navigation tab, wrapping at the beginning |
+| `Ctrl+1` … `Ctrl+9` | Select visible navigation tab 1–9 |
+
+Numbered shortcuts follow the tab order configured in **Settings → Interface → Customize Tabs**. A numbered shortcut does nothing when that visible tab does not exist.
 
 ## Video Player
 
-These shortcuts are active whenever the video player has keyboard focus (click the player area to ensure it does).
+Video shortcuts work while the player has keyboard focus. Click the player once if another control currently has focus.
 
-| Key | Action |
-|-----|--------|
-| `Space` | Play / Pause |
-| `←` Arrow Left | Seek backward 10 seconds |
-| `→` Arrow Right | Seek forward 10 seconds |
+| Default | Action |
+| --- | --- |
+| `Space` | Play or pause |
+| `Left` | Seek backward 5 seconds |
+| `Right` | Seek forward 5 seconds |
+| `J` | Seek backward 10 seconds |
+| `L` | Seek forward 10 seconds |
+| `Up` | Increase volume 5% |
+| `Down` | Decrease volume 5% |
+| `M` | Mute or restore audio |
+| `F` | Toggle fullscreen |
+| `Shift+N` | Play the next queued scene |
+| `Shift+P` | Play the previous queued scene |
+| `[` | Decrease playback speed by 0.25× |
+| `]` | Increase playback speed by 0.25× |
+| `Backspace` | Reset playback speed to 1× |
+| `Esc` | Stop and close the player |
 
-### Fullscreen
+Desktop fullscreen uses the operating system window through `window_manager`. `Esc` also exits the viewer through the configured player action.
 
-| Action | How |
-|--------|-----|
-| Enter fullscreen | Click the **⛶ fullscreen** button in the player controls |
-| Exit fullscreen | Press `Esc`, click the **⛶ fullscreen** button again, or use the window manager's fullscreen toggle |
+## Image Viewer
 
-> On Desktop, entering fullscreen via the player uses the OS-level fullscreen window (via `window_manager`), giving you a true immersive experience without the title bar.
+| Default | Action |
+| --- | --- |
+| `Left` | Previous image |
+| `Right` | Next image |
+| `Home` | First image |
+| `End` | Last image |
+| `Esc` | Close the image viewer |
 
----
+Mouse and trackpad controls remain available: click to show or hide the overlay, scroll or double-click to zoom, and drag to pan a zoomed image.
 
-## Image Fullscreen Viewer
+## Customizing Shortcuts
 
-These shortcuts are active when the fullscreen image viewer is open.
+Open **Settings → Keyboard Shortcuts** to:
 
-| Key | Action |
-|-----|--------|
-| `←` Arrow Left | Previous image |
-| `→` Arrow Right | Next image |
-| `Esc` | Close the fullscreen viewer |
+- edit any global, video, or image shortcut;
+- unbind an action;
+- restore all current defaults after confirmation.
 
-### Mouse interactions
+Press `Esc` to cancel shortcut capture. Bare `Tab` remains reserved for moving keyboard focus. Browser and operating-system shortcuts such as refresh, address bar, new/close tab, and `Alt+F4` cannot be assigned because StashFlow cannot receive them reliably.
 
-| Action | How |
-|--------|-----|
-| Show / hide overlay | Click anywhere on the image |
-| Zoom in / out | Scroll wheel, or double-click to toggle 1× ↔ 3× |
-| Pan (when zoomed) | Click and drag |
-| Previous / next image | Click the **‹** / **›** overlay buttons |
+If a new shortcut overlaps an existing shortcut, it moves to the new action and the old action becomes unbound. Video and image shortcuts may reuse the same keys because those viewers cannot be active together. Global shortcuts cannot overlap viewer shortcuts because their contexts are active at the same time.
 
----
+Existing saved shortcuts are preserved when StashFlow adds new actions. Use **Reset to Defaults** to adopt every current default.
 
-## Navigation
+## Standard Window Shortcuts
 
-StashFlow uses a persistent **Navigation Rail** on the left side on desktop, giving you one-click access to all library sections:
-
-- Scenes
-- Images
-- Galleries
-- Performers
-- Studios
-- Tags
-- Groups
-
-### Keyboard Shortcuts
-
-| Key | Action |
-|-----|--------|
-| `Ctrl + 1` | Go to first tab (usually Scenes) |
-| `Ctrl + 2` | Go to second tab (usually Performers) |
-| `Ctrl + 3` | Go to third tab (usually Studios) |
-| `...` | Up to `Ctrl + 9` |
-
-These shortcuts follow the order of your tabs as configured in **Settings → Interface → Navigation Tabs**.
-
-
----
-
-## Window Management
-
-StashFlow uses [`window_manager`](https://pub.dev/packages/window_manager) on desktop, so standard OS keyboard shortcuts for window management all work normally:
-
-| OS | Shortcut | Action |
-|----|----------|--------|
-| Windows | `Alt + F4` | Close window |
-| Windows | `Win + ↑` / `Win + ↓` | Maximise / restore |
-| macOS | `Cmd + Q` | Quit application |
-| macOS | `Cmd + M` | Minimise |
-| macOS | `Cmd + Ctrl + F` | Toggle OS fullscreen |
-| Linux | Varies by window manager | — |
-
----
-
-## Settings Quick Reference
-
-| Setting | Location | Description |
-|---------|----------|-------------|
-| Autoplay Next | Settings → Playback | Advance to the next scene automatically when playback ends |
-| Prefer sceneStreams | Settings → Playback | Use the Stash `sceneStreams` endpoint (recommended) vs. direct file paths |
-| Show Video Debug Info | Settings → Playback | Overlay showing stream source and startup timing |
-| Default Subtitle Language | Settings → Playback | Auto-load subtitles in the selected language |
-| Subtitle Font Size | Settings → Playback | 12–32 px |
-| Subtitle Vertical Position | Settings → Playback | % distance from bottom of screen |
-| Subtitle Text Alignment | Settings → Playback | Left / Center / Right |
-| Scene Layout | Settings → Interface | List, Grid, or TikTok |
-| Show Random Navigation | Settings → Interface | Floating random/dice buttons on list and detail pages |
-| Fullscreen Image Swipe | Settings → Interface | Swipe direction in the image viewer (not applicable on desktop mouse) |
-
----
-
-## Tips for Desktop Use
-
-- **Grid density** scales automatically with window width — the wider the window, the more columns are shown (up to 5+).
-- The **Navigation Rail** collapses to icon-only when the window is narrow.
-- Use **Settings → Interface → Show Random Navigation** to toggle the floating dice/random buttons that are visible throughout the app.
-- The **Metadata editor** (scene title, date, details, URLs, studio, performers, tags) is accessible via the edit icon on the Scene Details page — fully usable with mouse and keyboard.
+The operating system and browser continue to own their normal window-management shortcuts, including `Alt+F4` on Windows, `Cmd+Q` and `Cmd+M` on macOS, and window-manager-specific Linux combinations.

@@ -2040,6 +2040,96 @@ abstract class AppLocalizations {
   /// **'Jump backward by 10 seconds'**
   String get settings_keyboard_seek_backward_10_desc;
 
+  /// No description provided for @settings_keyboard_global_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Global Navigation'**
+  String get settings_keyboard_global_section;
+
+  /// No description provided for @settings_keyboard_video_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Player'**
+  String get settings_keyboard_video_section;
+
+  /// No description provided for @settings_keyboard_image_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Viewer'**
+  String get settings_keyboard_image_section;
+
+  /// No description provided for @settings_keyboard_next_tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Tab'**
+  String get settings_keyboard_next_tab;
+
+  /// No description provided for @settings_keyboard_previous_tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Tab'**
+  String get settings_keyboard_previous_tab;
+
+  /// No description provided for @settings_keyboard_tab_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Tab {number}'**
+  String settings_keyboard_tab_number(int number);
+
+  /// No description provided for @settings_keyboard_first_image.
+  ///
+  /// In en, this message translates to:
+  /// **'First Image'**
+  String get settings_keyboard_first_image;
+
+  /// No description provided for @settings_keyboard_last_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Image'**
+  String get settings_keyboard_last_image;
+
+  /// No description provided for @settings_keyboard_close_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Image Viewer'**
+  String get settings_keyboard_close_image;
+
+  /// No description provided for @settings_keyboard_unbind.
+  ///
+  /// In en, this message translates to:
+  /// **'Unbind shortcut'**
+  String get settings_keyboard_unbind;
+
+  /// No description provided for @settings_keyboard_reset_confirm_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset keyboard shortcuts?'**
+  String get settings_keyboard_reset_confirm_title;
+
+  /// No description provided for @settings_keyboard_reset_confirm_body.
+  ///
+  /// In en, this message translates to:
+  /// **'All custom keyboard shortcuts will be replaced with the defaults.'**
+  String get settings_keyboard_reset_confirm_body;
+
+  /// No description provided for @settings_keyboard_reserved.
+  ///
+  /// In en, this message translates to:
+  /// **'This shortcut is reserved by the browser or operating system.'**
+  String get settings_keyboard_reserved;
+
+  /// No description provided for @settings_keyboard_tab_reserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Tab is reserved for keyboard focus navigation.'**
+  String get settings_keyboard_tab_reserved;
+
+  /// No description provided for @settings_keyboard_conflict_moved.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortcut moved from {action}.'**
+  String settings_keyboard_conflict_moved(String action);
+
   /// No description provided for @settings_appearance.
   ///
   /// In en, this message translates to:
