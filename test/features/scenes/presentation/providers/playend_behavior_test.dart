@@ -228,6 +228,79 @@ void main() {
   });
 
   test(
+    'notification duration refreshes when the player discovers it',
+    () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      final scene = createTestScene('duration');
+
+      when(
+        mockPlayer.state,
+      ).thenReturn(PlayerStateData(duration: Duration.zero));
+      await notifier.attachController(scene, mockPlayer, mockVideoController);
+      expect(app.mediaHandler!.mediaItem.value?.duration, Duration.zero);
+
+      const duration = Duration(minutes: 2);
+      when(mockPlayer.state).thenReturn(PlayerStateData(duration: duration));
+      durationStream.add(duration);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(app.mediaHandler!.mediaItem.value?.duration, duration);
+    },
+  );
+
+  test(
+    'notification seek clamps to duration and publishes the target',
+    () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      final scene = createTestScene('seek');
+      const duration = Duration(seconds: 60);
+
+      when(mockPlayer.state).thenReturn(
+        PlayerStateData(
+          position: const Duration(seconds: 10),
+          duration: duration,
+        ),
+      );
+      await notifier.attachController(scene, mockPlayer, mockVideoController);
+
+      await app.mediaHandler!.seek(const Duration(seconds: 120));
+
+      verify(mockPlayer.seek(duration)).called(1);
+      verifyNever(mockPlayer.play());
+      verifyNever(mockPlayer.pause());
+      expect(app.mediaHandler!.playbackState.value.updatePosition, duration);
+    },
+  );
+
+  test(
+    'notification seek restores playback when a playing player pauses',
+    () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      final scene = createTestScene('playing-seek');
+      var isPlaying = false;
+      const duration = Duration(seconds: 60);
+
+      when(mockPlayer.state).thenAnswer(
+        (_) => PlayerStateData(
+          playing: isPlaying,
+          position: const Duration(seconds: 10),
+          duration: duration,
+        ),
+      );
+      when(mockPlayer.seek(any)).thenAnswer((_) async => isPlaying = false);
+      when(mockPlayer.play()).thenAnswer((_) async => isPlaying = true);
+      await notifier.attachController(scene, mockPlayer, mockVideoController);
+      isPlaying = true;
+
+      await app.mediaHandler!.seek(const Duration(seconds: 30));
+
+      verify(mockPlayer.seek(const Duration(seconds: 30))).called(1);
+      verify(mockPlayer.play()).called(1);
+      verifyNever(mockPlayer.pause());
+    },
+  );
+
+  test(
     'playNext keeps queue index unchanged when stream resolution fails',
     () async {
       final notifier = container.read(playerStateProvider.notifier);
@@ -273,12 +346,18 @@ class PlayerStateData extends Mock implements mk.PlayerState {
   @override
   final Duration duration;
   @override
+  final Duration buffer;
+  @override
+  final double rate;
+  @override
   final bool buffering;
 
   PlayerStateData({
     this.playing = false,
     this.position = Duration.zero,
     this.duration = Duration.zero,
+    this.buffer = Duration.zero,
+    this.rate = 1.0,
     this.buffering = false,
   });
 }

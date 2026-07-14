@@ -417,7 +417,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     mediaHandler?.onPlayCallback = () async => play();
     mediaHandler?.onPauseCallback = () async => _handleMediaPauseCommand();
     mediaHandler?.onStopCallback = () async => stop(dismissNotification: false);
-    mediaHandler?.onSeekCallback = (pos) async => state.player?.seek(pos);
+    mediaHandler?.onSeekCallback = _seekFromMediaNotification;
     mediaHandler?.onSkipToNextCallback = () async {
       AppLogStore.instance.add(
         'PlayerState mediaHandler.onSkipToNextCallback',
@@ -1438,6 +1438,41 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     pause(suppressBackgroundRecovery: true);
   }
 
+  Future<void> _seekFromMediaNotification(Duration position) async {
+    final player = state.player;
+    if (player == null) return;
+
+    final beforeSeek = player.state;
+    final duration = beforeSeek.duration;
+    var target = position < Duration.zero ? Duration.zero : position;
+    if (duration > Duration.zero && target > duration) {
+      target = duration;
+    }
+
+    await player.seek(target);
+    if (!ref.mounted || state.player != player) return;
+
+    if (beforeSeek.playing != player.state.playing) {
+      if (beforeSeek.playing) {
+        await player.play();
+      } else {
+        await player.pause();
+      }
+    }
+
+    final afterSeek = player.state;
+    _lastMediaHandlerPosition = target;
+    mediaHandler?.updatePlaybackState(
+      isPlaying: afterSeek.playing,
+      position: target,
+      bufferedPosition: afterSeek.buffer,
+      speed: afterSeek.rate,
+      processingState: afterSeek.buffering
+          ? AudioProcessingState.buffering
+          : AudioProcessingState.ready,
+    );
+  }
+
   void seekRelative(Duration delta) {
     final player = state.player;
     if (player == null) return;
@@ -1538,8 +1573,22 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       final currentWidth = player.state.width;
       final currentHeight = player.state.height;
       final currentPosition = player.state.position;
+      final currentDuration = player.state.duration;
       final currentSpeed = player.state.rate;
       final currentBuffered = player.state.buffer;
+
+      final activeScene = state.activeScene;
+      final currentMediaItem = mediaHandler?.mediaItem.value;
+      if (activeScene != null &&
+          currentMediaItem?.id == activeScene.id &&
+          currentMediaItem?.duration != currentDuration) {
+        mediaHandler?.updateMetadata(
+          id: activeScene.id,
+          title: activeScene.title,
+          studio: activeScene.studioName,
+          duration: currentDuration,
+        );
+      }
 
       final playingChanged = isPlayingNow != _lastIsPlaying;
       final bufferingChanged = isBufferingNow != state.isBuffering;
