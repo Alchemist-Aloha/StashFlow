@@ -22,6 +22,7 @@ class SettingsHubPage extends ConsumerWidget {
           subtitle: l10n.settings_core_subtitle,
           wrapInPanel: false,
           child: SettingsPanelGroup(
+            showDividers: false,
             children: [
               SettingsActionCard(
                 icon: Icons.dns_rounded,

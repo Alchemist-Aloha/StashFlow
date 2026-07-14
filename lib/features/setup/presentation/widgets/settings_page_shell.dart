@@ -81,11 +81,7 @@ class SettingsPageBody extends StatelessWidget {
 }
 
 class SettingsSectionHeader extends StatelessWidget {
-  const SettingsSectionHeader({
-    super.key,
-    this.title,
-    this.subtitle,
-  });
+  const SettingsSectionHeader({super.key, this.title, this.subtitle});
 
   final String? title;
   final String? subtitle;
@@ -152,9 +148,14 @@ class SettingsPanelCard extends StatelessWidget {
 }
 
 class SettingsPanelGroup extends StatelessWidget {
-  const SettingsPanelGroup({super.key, required this.children});
+  const SettingsPanelGroup({
+    super.key,
+    required this.children,
+    this.showDividers = true,
+  });
 
   final List<Widget> children;
+  final bool showDividers;
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +164,7 @@ class SettingsPanelGroup extends StatelessWidget {
       children: [
         for (var index = 0; index < children.length; index++) ...[
           children[index],
-          if (index != children.length - 1)
+          if (showDividers && index != children.length - 1)
             Divider(height: context.dimensions.spacingLarge),
         ],
       ],
