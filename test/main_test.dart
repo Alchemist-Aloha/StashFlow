@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +30,15 @@ void main() {
     SharedPreferences.setMockInitialValues({
       'server_base_url': 'http://localhost:9999',
     });
+  });
+
+  test('desktop startup maximizes instead of sizing to the display bounds', () {
+    final source = File('lib/main.dart').readAsStringSync();
+
+    expect(source, contains('await windowManager.maximize()'));
+    expect(source, isNot(contains('windowManager.setSize(')));
+    expect(source, isNot(contains('windowManager.setPosition(')));
+    expect(source, isNot(contains('screenRetriever.getPrimaryDisplay()')));
   });
 
   testWidgets('MyApp builds correctly', (WidgetTester tester) async {
