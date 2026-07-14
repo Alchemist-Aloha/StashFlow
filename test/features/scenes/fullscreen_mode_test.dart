@@ -59,14 +59,8 @@ void main() {
       'lib/core/utils/desktop_fullscreen.dart',
     ).readAsStringSync();
 
-    expect(
-      overlaySource,
-      contains('await DesktopFullscreen.instance.enter()'),
-    );
-    expect(
-      overlaySource,
-      contains('await DesktopFullscreen.instance.exit()'),
-    );
+    expect(overlaySource, contains('await DesktopFullscreen.instance.enter()'));
+    expect(overlaySource, contains('await DesktopFullscreen.instance.exit()'));
     expect(imageSource, contains('await DesktopFullscreen.instance.enter()'));
     expect(imageSource, contains('DesktopFullscreen.instance.exit()'));
     expect(
