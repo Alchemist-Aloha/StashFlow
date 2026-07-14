@@ -15,7 +15,6 @@ class PlaybackSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
-  static const _preferSceneStreamsKey = 'prefer_scene_streams';
   static const _playEndBehaviorKey = 'video_play_end_behavior';
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
@@ -29,7 +28,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _feedStartRandomKey = 'feed_start_random';
   static const _resumePlayPositionKey = 'video_resume_play_position';
 
-  bool _preferSceneStreams = true;
   VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
   bool _useDoubleTapSeek = false;
   bool _enableBackgroundPlayback = false;
@@ -53,8 +51,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   Future<void> _load() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    _preferSceneStreams = prefs.getBool(_preferSceneStreamsKey) ?? true;
-
     final endBehaviorStr = prefs.getString(_playEndBehaviorKey);
     if (endBehaviorStr != null) {
       _playEndBehavior = VideoEndBehavior.values.firstWhere(
@@ -91,7 +87,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   Future<void> _saveToggleSettings() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_preferSceneStreamsKey, _preferSceneStreams);
     await prefs.setString(_playEndBehaviorKey, _playEndBehavior.name);
     await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);
     await prefs.setBool(
@@ -144,23 +139,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                     subtitle: context.l10n.settings_playback_behavior_subtitle,
                     child: Column(
                       children: [
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            context.l10n.settings_playback_prefer_streams,
-                          ),
-                          subtitle: Text(
-                            context
-                                .l10n
-                                .settings_playback_prefer_streams_subtitle,
-                          ),
-                          value: _preferSceneStreams,
-                          onChanged: (value) async {
-                            setState(() => _preferSceneStreams = value);
-                            await _saveToggleSettings();
-                          },
-                        ),
-                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(

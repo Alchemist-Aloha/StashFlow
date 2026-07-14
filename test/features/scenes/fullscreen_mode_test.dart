@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +16,7 @@ void main() {
   late SharedPreferences prefs;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({'prefer_scene_streams': false});
+    SharedPreferences.setMockInitialValues({});
     prefs = await SharedPreferences.getInstance();
   });
 
@@ -45,6 +47,17 @@ void main() {
     tagIds: [],
     tagNames: [],
   );
+
+  test('delegates desktop fullscreen state restoration to window_manager', () {
+    final source = File(
+      'lib/features/scenes/presentation/widgets/global_fullscreen_overlay.dart',
+    ).readAsStringSync();
+
+    expect(source, contains('await windowManager.setFullScreen(true)'));
+    expect(source, contains('await windowManager.setFullScreen(false)'));
+    expect(source, isNot(contains('windowManager.unmaximize()')));
+    expect(source, isNot(contains('windowManager.maximize()')));
+  });
 
   testWidgets('GlobalFullscreenOverlay visibility toggles with player state', (
     tester,

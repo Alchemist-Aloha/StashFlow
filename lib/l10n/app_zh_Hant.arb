@@ -421,8 +421,6 @@
   "settings_playback_title": "播放設定",
   "settings_playback_behavior": "播放行為",
   "settings_playback_behavior_subtitle": "預設播放和背景處理",
-  "settings_playback_prefer_streams": "優先使用 sceneStreams",
-  "settings_playback_prefer_streams_subtitle": "關閉時，播放將直接使用 paths.stream",
   "settings_playback_feed_random": "從隨機位置開始播放Feed",
   "settings_playback_feed_random_subtitle": "在Feed模式下播放場景時，從影片長度的0%到90%之間的隨機位置開始播放",
   "settings_playback_autoplay": "自動播放下一個場景",

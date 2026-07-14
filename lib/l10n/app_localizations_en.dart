@@ -1459,13 +1459,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Default playback and background handling';
 
   @override
-  String get settings_playback_prefer_streams => 'Prefer sceneStreams first';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'When off, playback directly uses paths.stream';
-
-  @override
   String get settings_playback_feed_random => 'Start Feed from random position';
 
   @override

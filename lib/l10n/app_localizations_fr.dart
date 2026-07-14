@@ -1479,14 +1479,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Gestion par défaut de la lecture et de l\'arrière-plan';
 
   @override
-  String get settings_playback_prefer_streams =>
-      'Préférer sceneStreams en premier';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'Si désactivé, la lecture utilise directement paths.stream';
-
-  @override
   String get settings_playback_feed_random =>
       'Démarrer le flux à partir d\'une position aléatoire';
 

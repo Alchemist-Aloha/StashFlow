@@ -1424,13 +1424,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_playback_behavior_subtitle => 'デフォルトの再生とバックグラウンド処理';
 
   @override
-  String get settings_playback_prefer_streams => 'sceneStreamsを優先';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'オフの場合、再生は直接paths.streamを使用します';
-
-  @override
   String get settings_playback_feed_random => 'フィードをランダムな位置から開始';
 
   @override

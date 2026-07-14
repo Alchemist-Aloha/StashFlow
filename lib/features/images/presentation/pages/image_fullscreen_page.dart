@@ -62,7 +62,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   void initState() {
     super.initState();
     _pageController = ExtendedPageController();
-    _enterFullScreen();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_enterFullScreen());
+    });
   }
 
   @override

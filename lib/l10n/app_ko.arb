@@ -378,8 +378,6 @@
   "settings_playback_title": "재생 설정",
   "settings_playback_behavior": "재생 동작",
   "settings_playback_behavior_subtitle": "기본 재생 및 백그라운드 처리",
-  "settings_playback_prefer_streams": "sceneStreams 우선",
-  "settings_playback_prefer_streams_subtitle": "꺼져 있으면 재생 시 paths.stream을 직접 사용합니다",
   "settings_playback_feed_random": "피드를 임의의 위치에서 시작",
   "settings_playback_feed_random_subtitle": "피드 모드에서 장면을 재생할 때 비디오 길이의 0%에서 90% 사이의 임의의 위치에서 시작합니다",
   "settings_playback_autoplay": "다음 장면 자동 재생",

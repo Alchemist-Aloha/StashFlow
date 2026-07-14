@@ -2772,18 +2772,6 @@ abstract class AppLocalizations {
   /// **'Default playback and background handling'**
   String get settings_playback_behavior_subtitle;
 
-  /// No description provided for @settings_playback_prefer_streams.
-  ///
-  /// In en, this message translates to:
-  /// **'Prefer sceneStreams first'**
-  String get settings_playback_prefer_streams;
-
-  /// No description provided for @settings_playback_prefer_streams_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'When off, playback directly uses paths.stream'**
-  String get settings_playback_prefer_streams_subtitle;
-
   /// No description provided for @settings_playback_feed_random.
   ///
   /// In en, this message translates to:

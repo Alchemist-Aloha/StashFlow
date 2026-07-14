@@ -1481,14 +1481,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Gestione riproduzione predefinita e background';
 
   @override
-  String get settings_playback_prefer_streams =>
-      'Preferisci sceneStreams prima';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'Quando disattivato, la riproduzione utilizza direttamente paths.stream';
-
-  @override
   String get settings_playback_feed_random =>
       'Avvia Feed da una posizione casuale';
 

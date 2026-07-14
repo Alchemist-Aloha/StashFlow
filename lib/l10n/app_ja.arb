@@ -365,8 +365,6 @@
   "settings_playback_title": "再生設定",
   "settings_playback_behavior": "再生動作",
   "settings_playback_behavior_subtitle": "デフォルトの再生とバックグラウンド処理",
-  "settings_playback_prefer_streams": "sceneStreamsを優先",
-  "settings_playback_prefer_streams_subtitle": "オフの場合、再生は直接paths.streamを使用します",
   "settings_playback_feed_random": "フィードをランダムな位置から開始",
   "settings_playback_feed_random_subtitle": "フィードモードでシーンを再生するとき、動画の長さの0%から90%の間のランダムな位置から開始します",
   "settings_playback_autoplay": "次のシーンを自動再生",

@@ -1,35 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 
 void main() {
   test('uses the scene direct stream without querying sceneStreams', () async {
-    final client = GraphQLClient(
-      link: Link.function(
-        (request, [forward]) => Stream.value(
-          const Response(
-            data: {
-              'sceneStreams': [
-                {
-                  'url': 'https://stash.test/transcoded.m3u8',
-                  'mime_type': 'application/vnd.apple.mpegurl',
-                  'label': 'HLS',
-                },
-              ],
-              'findScene': {'sceneStreams': []},
-            },
-            response: {},
-          ),
-        ),
-      ),
-      cache: GraphQLCache(),
-    );
-    final container = ProviderContainer(
-      overrides: [graphqlClientProvider.overrideWithValue(client)],
-    );
+    final container = ProviderContainer();
     addTearDown(container.dispose);
 
     final choice = await container

@@ -32,7 +32,6 @@ class _GlobalFullscreenOverlayState
   bool _isVisible = false;
   bool _isAnimating = false;
 
-  bool _wasMaximizedBeforeFullscreen = false;
   bool _wasPlayingBeforeExit = false;
   VideoController? _currentListenedController;
   final List<StreamSubscription> _subscriptions = [];
@@ -136,17 +135,7 @@ class _GlobalFullscreenOverlayState
           (defaultTargetPlatform == TargetPlatform.windows ||
               defaultTargetPlatform == TargetPlatform.linux ||
               defaultTargetPlatform == TargetPlatform.macOS)) {
-        _wasMaximizedBeforeFullscreen = await windowManager.isMaximized();
-
-        if (_wasMaximizedBeforeFullscreen) {
-          await windowManager.unmaximize();
-        }
-
         await windowManager.setFullScreen(true);
-
-        if (!await windowManager.isFullScreen()) {
-          await windowManager.setFullScreen(true);
-        }
 
         if (wasPlaying && defaultTargetPlatform == TargetPlatform.windows) {
           if (controller != null && !controller.player.state.playing) {
@@ -211,11 +200,6 @@ class _GlobalFullscreenOverlayState
             defaultTargetPlatform == TargetPlatform.macOS)) {
       unawaited(() async {
         await windowManager.setFullScreen(false);
-
-        if (_wasMaximizedBeforeFullscreen) {
-          await windowManager.maximize();
-          _wasMaximizedBeforeFullscreen = false;
-        }
 
         if (wasPlaying &&
             (kIsWeb || defaultTargetPlatform == TargetPlatform.windows)) {

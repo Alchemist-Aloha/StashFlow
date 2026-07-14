@@ -1486,14 +1486,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Manejo predeterminado de la reproducción y el segundo plano';
 
   @override
-  String get settings_playback_prefer_streams =>
-      'Preferir sceneStreams primero';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'Cuando está desactivado, la reproducción usa directamente paths.stream';
-
-  @override
   String get settings_playback_feed_random =>
       'Iniciar Feed desde posición aleatoria';
 

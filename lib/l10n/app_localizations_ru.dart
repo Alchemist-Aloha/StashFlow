@@ -1467,13 +1467,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Настройки воспроизведения и фонового режима по умолчанию';
 
   @override
-  String get settings_playback_prefer_streams => 'Предпочитать sceneStreams';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'Если отключено, воспроизведение использует paths.stream напрямую';
-
-  @override
   String get settings_playback_feed_random =>
       'Начать Ленту со случайного места';
 

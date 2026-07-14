@@ -147,7 +147,6 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     SharedPreferences.setMockInitialValues({
-      'prefer_scene_streams': false,
       'server_base_url': 'http://localhost:9999',
     });
     final prefs = await SharedPreferences.getInstance();

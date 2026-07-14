@@ -1410,13 +1410,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_behavior_subtitle => '默认播放和后台处理';
 
   @override
-  String get settings_playback_prefer_streams => '优先使用 sceneStreams';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      '关闭时，播放将直接使用 paths.stream';
-
-  @override
   String get settings_playback_feed_random => '从随机位置开始播放Feed';
 
   @override
@@ -4452,13 +4445,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_playback_behavior_subtitle => '默认播放和后台处理';
-
-  @override
-  String get settings_playback_prefer_streams => '优先使用 sceneStreams';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      '关闭时，播放将直接使用 paths.stream';
 
   @override
   String get settings_playback_feed_random => '从随机位置开始播放Feed';
@@ -7499,13 +7485,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_playback_behavior_subtitle => '預設播放和背景處理';
-
-  @override
-  String get settings_playback_prefer_streams => '優先使用 sceneStreams';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      '關閉時，播放將直接使用 paths.stream';
 
   @override
   String get settings_playback_feed_random => '從隨機位置開始播放Feed';

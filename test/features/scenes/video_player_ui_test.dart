@@ -24,7 +24,6 @@ void main() {
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({
-      'prefer_scene_streams': false,
       'server_base_url': 'http://localhost:9999',
     });
     prefs = await SharedPreferences.getInstance();

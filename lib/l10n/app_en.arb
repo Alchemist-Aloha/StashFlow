@@ -470,8 +470,6 @@
   "settings_playback_title": "Playback Settings",
   "settings_playback_behavior": "Playback behavior",
   "settings_playback_behavior_subtitle": "Default playback and background handling",
-  "settings_playback_prefer_streams": "Prefer sceneStreams first",
-  "settings_playback_prefer_streams_subtitle": "When off, playback directly uses paths.stream",
   "settings_playback_feed_random": "Start Feed from random position",
   "settings_playback_feed_random_subtitle": "When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length",
   "settings_playback_resume_position": "Resume from last playing position",

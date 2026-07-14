@@ -1422,13 +1422,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_behavior_subtitle => '기본 재생 및 백그라운드 처리';
 
   @override
-  String get settings_playback_prefer_streams => 'sceneStreams 우선';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
-
-  @override
   String get settings_playback_feed_random => '피드를 임의의 위치에서 시작';
 
   @override

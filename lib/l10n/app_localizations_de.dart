@@ -1473,13 +1473,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Standard-Wiedergabe- und Hintergrund-Handling';
 
   @override
-  String get settings_playback_prefer_streams => 'sceneStreams bevorzugen';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'Wenn deaktiviert, wird die Wiedergabe direkt über paths.stream ausgeführt';
-
-  @override
   String get settings_playback_feed_random =>
       'Feed an zufälliger Position starten';
 

@@ -73,6 +73,21 @@ void main() {
       );
     });
 
+    test(
+      'delegates desktop fullscreen state restoration to window_manager',
+      () {
+        final source = File(
+          'lib/features/images/presentation/pages/image_fullscreen_page.dart',
+        ).readAsStringSync();
+
+        expect(source, contains('if (mounted) unawaited(_enterFullScreen())'));
+        expect(source, contains('await windowManager.setFullScreen(true)'));
+        expect(source, contains('windowManager.setFullScreen(false)'));
+        expect(source, isNot(contains('windowManager.unmaximize()')));
+        expect(source, isNot(contains('windowManager.maximize()')));
+      },
+    );
+
     testWidgets('displays images and allows vertical navigation', (
       tester,
     ) async {
