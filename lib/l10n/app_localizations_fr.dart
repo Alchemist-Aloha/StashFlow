@@ -1161,11 +1161,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_interface_hide_scene_metadata =>
-      'Hide scene metadata by default';
+      'Masquer les métadonnées de scène par défaut';
 
   @override
   String get settings_interface_hide_scene_metadata_subtitle =>
-      'Show technical scene metadata only after tapping Show metadata.';
+      'Afficher les métadonnées techniques de la scène après avoir appuyé sur Afficher les métadonnées.';
 
   @override
   String get settings_interface_random_scene_filter =>
@@ -1199,7 +1199,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Affiche la surface vidéo en direct au lieu de la capture de la scène quand la lecture est active.';
 
   @override
-  String get details_show_metadata => 'Show metadata';
+  String get details_show_metadata => 'Afficher les métadonnées';
 
   @override
   String get settings_interface_entity_image_filtering =>

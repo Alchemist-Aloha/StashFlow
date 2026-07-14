@@ -108,7 +108,32 @@ void main() {
     expect(find.byKey(const Key('scene_header_metadata')), findsNothing);
     expect(find.byKey(const Key('scene_show_metadata')), findsOneWidget);
     expect(
+      tester
+          .widget<TextButton>(find.byKey(const Key('scene_show_metadata')))
+          .style
+          ?.foregroundColor
+          ?.resolve({}),
+      Theme.of(
+        tester.element(find.byKey(const Key('scene_show_metadata'))),
+      ).colorScheme.onSurfaceVariant,
+    );
+    expect(
+      tester.getTopRight(find.byKey(const Key('scene_show_metadata'))).dx,
+      closeTo(
+        tester.getTopRight(find.byKey(const Key('scene_header_identity'))).dx,
+        0.1,
+      ),
+    );
+    expect(
+      tester.widget<Text>(find.text('Test Studio')).style?.decoration,
+      TextDecoration.none,
+    );
+    expect(
       tester.getCenter(find.byKey(const Key('scene_show_metadata'))).dx,
+      greaterThan(tester.getCenter(find.text('Test Studio')).dx),
+    );
+    expect(
+      tester.getCenter(find.text('2024')).dx,
       greaterThan(tester.getCenter(find.text('Test Studio')).dx),
     );
   });

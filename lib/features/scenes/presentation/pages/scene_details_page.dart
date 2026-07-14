@@ -763,7 +763,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       children: [
         Expanded(
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             children: [
               if (scene.studioName != null)
                 Flexible(
@@ -795,9 +795,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                   ? context.colors.primary
                                   : context.colors.onSurface,
                               fontWeight: FontWeight.w500,
-                              decoration: canOpenStudio
-                                  ? TextDecoration.underline
-                                  : TextDecoration.none,
+                              decoration: TextDecoration.none,
                             ),
                           ),
                         ),
@@ -823,13 +821,19 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         ),
         if (!_showTechnicalMetadata)
           Flexible(
-            child: TextButton(
-              key: const Key('scene_show_metadata'),
-              onPressed: () => setState(() => _showTechnicalMetadata = true),
-              child: Text(
-                context.l10n.details_show_metadata,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                key: const Key('scene_show_metadata'),
+                onPressed: () => setState(() => _showTechnicalMetadata = true),
+                style: TextButton.styleFrom(
+                  foregroundColor: context.colors.onSurfaceVariant,
+                ),
+                child: Text(
+                  context.l10n.details_show_metadata,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
           ),

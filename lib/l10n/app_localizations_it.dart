@@ -1163,11 +1163,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settings_interface_hide_scene_metadata =>
-      'Hide scene metadata by default';
+      'Nascondi i metadati della scena per impostazione predefinita';
 
   @override
   String get settings_interface_hide_scene_metadata_subtitle =>
-      'Show technical scene metadata only after tapping Show metadata.';
+      'Mostra i metadati tecnici della scena solo dopo aver toccato Mostra metadati.';
 
   @override
   String get settings_interface_random_scene_filter =>
@@ -1201,7 +1201,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Mostra la superficie video live invece dello screenshot della scena quando la riproduzione è attiva.';
 
   @override
-  String get details_show_metadata => 'Show metadata';
+  String get details_show_metadata => 'Mostra metadati';
 
   @override
   String get settings_interface_entity_image_filtering =>

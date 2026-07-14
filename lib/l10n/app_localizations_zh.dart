@@ -1126,12 +1126,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_show_random_subtitle => '在列表和详情页启用或禁用悬浮随机按钮';
 
   @override
-  String get settings_interface_hide_scene_metadata =>
-      'Hide scene metadata by default';
+  String get settings_interface_hide_scene_metadata => '默认隐藏场景元数据';
 
   @override
   String get settings_interface_hide_scene_metadata_subtitle =>
-      'Show technical scene metadata only after tapping Show metadata.';
+      '点击“显示元数据”后才显示场景技术元数据。';
 
   @override
   String get settings_interface_random_scene_filter => '随机场景遵循当前筛选条件';
@@ -1163,7 +1162,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '播放时显示实时场景视频画面，而不是场景截图。';
 
   @override
-  String get details_show_metadata => 'Show metadata';
+  String get details_show_metadata => '显示元数据';
 
   @override
   String get settings_interface_entity_image_filtering => '实体图像过滤';
@@ -4171,6 +4170,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_show_random_subtitle => '在列表和详情页启用或禁用悬浮随机按钮';
 
   @override
+  String get settings_interface_hide_scene_metadata => '默认隐藏场景元数据';
+
+  @override
+  String get settings_interface_hide_scene_metadata_subtitle =>
+      '点击“显示元数据”后才显示场景技术元数据。';
+
+  @override
   String get settings_interface_random_scene_filter => '随机场景遵循当前筛选条件';
 
   @override
@@ -4198,6 +4204,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
       '播放时显示实时场景视频画面，而不是场景截图。';
+
+  @override
+  String get details_show_metadata => '显示元数据';
 
   @override
   String get settings_interface_entity_image_filtering => '实体图像过滤';
@@ -7207,6 +7216,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_show_random_subtitle => '在列表和詳情頁面啟用或停用浮動隨機按鈕';
 
   @override
+  String get settings_interface_hide_scene_metadata => '預設隱藏場景中繼資料';
+
+  @override
+  String get settings_interface_hide_scene_metadata_subtitle =>
+      '點選「顯示中繼資料」後才顯示場景技術中繼資料。';
+
+  @override
   String get settings_interface_random_scene_filter => '隨機場景遵循目前篩選條件';
 
   @override
@@ -7234,6 +7250,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
       '播放時顯示即時場景影片畫面，而不是場景截圖。';
+
+  @override
+  String get details_show_metadata => '顯示中繼資料';
 
   @override
   String get settings_interface_entity_image_filtering => '實體圖像過濾';

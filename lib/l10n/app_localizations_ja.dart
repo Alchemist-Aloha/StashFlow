@@ -1130,12 +1130,11 @@ class AppLocalizationsJa extends AppLocalizations {
       'リストおよび詳細ページでフローティングカジノボタンを有効または無効にします';
 
   @override
-  String get settings_interface_hide_scene_metadata =>
-      'Hide scene metadata by default';
+  String get settings_interface_hide_scene_metadata => 'シーンのメタデータをデフォルトで非表示';
 
   @override
   String get settings_interface_hide_scene_metadata_subtitle =>
-      'Show technical scene metadata only after tapping Show metadata.';
+      '「メタデータを表示」をタップした後にのみ、シーンの技術メタデータを表示します。';
 
   @override
   String get settings_interface_random_scene_filter => 'ランダムシーンで現在のフィルターを適用';
@@ -1168,7 +1167,7 @@ class AppLocalizationsJa extends AppLocalizations {
       '再生中はシーンのスクリーンショットの代わりにライブ動画サーフェスを表示します。';
 
   @override
-  String get details_show_metadata => 'Show metadata';
+  String get details_show_metadata => 'メタデータを表示';
 
   @override
   String get settings_interface_entity_image_filtering => 'エンティティ画像フィルタリング';
