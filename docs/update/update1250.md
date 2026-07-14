@@ -18,6 +18,9 @@
 - Settings hub and detail pages now share consistent spacing, section headers, panel surfaces, loading states, and empty states.
 - Bottom sheets, saved-filter dialogs, sort sheets, stats panels, and related overlays now use the shared frosted-panel presentation.
 - Scene details now use a responsive header that keeps identity, metadata, and actions readable across wide and narrow layouts.
+- Scene technical metadata now appears below Studio and Year, is hidden by default, and can be revealed with a muted trailing `Show metadata` action.
+- Added an Interface setting to show scene metadata by default; the scene header now keeps Studio, Year, and the reveal action aligned without an underline on the Studio link.
+- Tightened the hidden-metadata header spacing to match the Title-to-identity rhythm and preserved narrow-screen overflow handling.
 - Updated scene header controls and fullscreen playback controls, including random navigation access.
 
 ## 🛡️ Playback & Stability
@@ -30,6 +33,7 @@
 ## 🌍 Localization
 
 - Added translations for the scene-random filter preference across supported locales.
+- Added translations for the scene metadata visibility setting and reveal action across supported locales.
 - Regenerated localization output for the new settings labels.
 
 ## 🔧 Technical Updates
@@ -41,5 +45,5 @@
 
 ## 🧪 Testing
 
-- Added coverage for random navigation providers and page flows, playlist paging, settings primitives, media notification lifecycle, playback completion, and responsive scene headers.
+- Added coverage for random navigation providers and page flows, playlist paging, settings primitives, media notification lifecycle, playback completion, responsive scene headers, and scene metadata visibility/alignment.
 - Updated affected settings, player, saved-filter, and media-handler tests.
