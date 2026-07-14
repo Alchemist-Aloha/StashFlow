@@ -48,22 +48,35 @@ void main() {
     tagNames: [],
   );
 
-  test('leaves desktop window restoration to window_manager', () {
-    final source = File(
+  test('synchronizes maximized Windows before shared desktop fullscreen', () {
+    final overlaySource = File(
       'lib/features/scenes/presentation/widgets/global_fullscreen_overlay.dart',
+    ).readAsStringSync();
+    final imageSource = File(
+      'lib/features/images/presentation/pages/image_fullscreen_page.dart',
     ).readAsStringSync();
     final desktopSource = File(
       'lib/core/utils/desktop_fullscreen.dart',
     ).readAsStringSync();
 
-    expect(source, contains('await DesktopFullscreen.instance.enter()'));
-    expect(source, contains('await DesktopFullscreen.instance.exit()'));
-    expect(source, isNot(contains('windowManager.unmaximize()')));
-    expect(source, isNot(contains('windowManager.maximize()')));
-    expect(desktopSource, isNot(contains('windowManager.unmaximize()')));
-    expect(desktopSource, isNot(contains('windowManager.maximize()')));
-    expect(desktopSource, contains('windowManager.setFullScreen(true)'));
-    expect(desktopSource, contains('windowManager.setFullScreen(false)'));
+    expect(
+      overlaySource,
+      contains('await DesktopFullscreen.instance.enter()'),
+    );
+    expect(
+      overlaySource,
+      contains('await DesktopFullscreen.instance.exit()'),
+    );
+    expect(imageSource, contains('await DesktopFullscreen.instance.enter()'));
+    expect(imageSource, contains('DesktopFullscreen.instance.exit()'));
+    expect(
+      desktopSource,
+      contains('defaultTargetPlatform == TargetPlatform.windows'),
+    );
+    expect(desktopSource, contains('await windowManager.isMaximized()'));
+    expect(desktopSource, contains('await windowManager.unmaximize()'));
+    expect(desktopSource, contains('void onWindowUnmaximize()'));
+    expect(desktopSource, contains('await windowManager.maximize()'));
   });
 
   testWidgets('GlobalFullscreenOverlay visibility toggles with player state', (
