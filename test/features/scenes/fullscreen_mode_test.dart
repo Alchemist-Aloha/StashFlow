@@ -48,7 +48,7 @@ void main() {
     tagNames: [],
   );
 
-  test('delegates desktop fullscreen state restoration to window_manager', () {
+  test('leaves desktop window restoration to window_manager', () {
     final source = File(
       'lib/features/scenes/presentation/widgets/global_fullscreen_overlay.dart',
     ).readAsStringSync();
@@ -60,9 +60,10 @@ void main() {
     expect(source, contains('await DesktopFullscreen.instance.exit()'));
     expect(source, isNot(contains('windowManager.unmaximize()')));
     expect(source, isNot(contains('windowManager.maximize()')));
-    expect(desktopSource, contains('void onWindowUnmaximize()'));
-    expect(desktopSource, contains('await _unmaximized!.future.timeout'));
-    expect(desktopSource, contains('await windowManager.maximize()'));
+    expect(desktopSource, isNot(contains('windowManager.unmaximize()')));
+    expect(desktopSource, isNot(contains('windowManager.maximize()')));
+    expect(desktopSource, contains('windowManager.setFullScreen(true)'));
+    expect(desktopSource, contains('windowManager.setFullScreen(false)'));
   });
 
   testWidgets('GlobalFullscreenOverlay visibility toggles with player state', (
