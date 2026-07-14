@@ -1162,6 +1162,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Abilita o disabilita i pulsanti fluttuanti nelle pagine di elenco e dettaglio';
 
   @override
+  String get settings_interface_hide_scene_metadata =>
+      'Hide scene metadata by default';
+
+  @override
+  String get settings_interface_hide_scene_metadata_subtitle =>
+      'Show technical scene metadata only after tapping Show metadata.';
+
+  @override
   String get settings_interface_random_scene_filter =>
       'Rispetta i filtri attivi per la scena casuale';
 
@@ -1191,6 +1199,9 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
       'Mostra la superficie video live invece dello screenshot della scena quando la riproduzione è attiva.';
+
+  @override
+  String get details_show_metadata => 'Show metadata';
 
   @override
   String get settings_interface_entity_image_filtering =>

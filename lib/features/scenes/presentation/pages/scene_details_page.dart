@@ -30,6 +30,7 @@ import '../providers/video_player_provider.dart';
 import 'scene_info_page.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../widgets/scene_video_player.dart';
 import '../widgets/scene_strip.dart';
@@ -81,6 +82,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   bool _detailsExpanded = false;
   bool _tagsExpanded = false;
   bool _performersExpanded = false;
+  late bool _showTechnicalMetadata;
 
   final GlobalKey _playerKey = GlobalKey();
 
@@ -518,6 +520,12 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _showTechnicalMetadata = !ref.read(hideSceneTechnicalMetadataProvider);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
@@ -697,17 +705,18 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             _buildTitle(context, scene, isWide: isWide),
             const SizedBox(height: 6),
             _buildStudioAndDate(context, scene),
+            const SizedBox(height: 8),
+            if (_showTechnicalMetadata)
+              SizedBox(
+                key: const Key('scene_header_metadata'),
+                child: _buildTechnicalMetadata(context, scene),
+              ),
           ],
         );
         final controls = SizedBox(
           key: const Key('scene_header_controls'),
           child: _buildActions(context, scene),
         );
-        final metadata = SizedBox(
-          key: const Key('scene_header_metadata'),
-          child: _buildTechnicalMetadata(context, scene),
-        );
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -717,11 +726,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               context,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(width: double.infinity, child: controls),
-                  const SizedBox(height: AppTheme.spacingMedium),
-                  SizedBox(width: double.infinity, child: metadata),
-                ],
+                children: [SizedBox(width: double.infinity, child: controls)],
               ),
               key: const Key('scene_header_section'),
             ),
@@ -756,53 +761,78 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     return Row(
       children: [
-        if (scene.studioName != null)
-          Flexible(
-            child: Semantics(
-              button: canOpenStudio,
-              label: canOpenStudio ? 'Open ${scene.studioName} details' : null,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: canOpenStudio
-                      ? () => context.push('/studios/studio/${scene.studioId}')
-                      : null,
-                  borderRadius: BorderRadius.circular(4),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 2,
-                      vertical: 1,
-                    ),
-                    child: Text(
-                      scene.studioName!,
-                      style: context.textTheme.titleMedium?.copyWith(
-                        color: canOpenStudio
-                            ? context.colors.primary
-                            : context.colors.onSurface,
-                        fontWeight: FontWeight.w500,
-                        decoration: canOpenStudio
-                            ? TextDecoration.underline
-                            : TextDecoration.none,
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (scene.studioName != null)
+                Flexible(
+                  child: Semantics(
+                    button: canOpenStudio,
+                    label: canOpenStudio
+                        ? 'Open ${scene.studioName} details'
+                        : null,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: canOpenStudio
+                            ? () => context.push(
+                                '/studios/studio/${scene.studioId}',
+                              )
+                            : null,
+                        borderRadius: BorderRadius.circular(4),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 2,
+                            vertical: 1,
+                          ),
+                          child: Text(
+                            scene.studioName!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.textTheme.titleMedium?.copyWith(
+                              color: canOpenStudio
+                                  ? context.colors.primary
+                                  : context.colors.onSurface,
+                              fontWeight: FontWeight.w500,
+                              decoration: canOpenStudio
+                                  ? TextDecoration.underline
+                                  : TextDecoration.none,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
+              if (scene.studioName != null)
+                Text(
+                  ' • ',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    color: context.colors.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+              Text(
+                scene.date.year.toString(),
+                style: context.textTheme.titleMedium?.copyWith(
+                  color: context.colors.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (!_showTechnicalMetadata)
+          Flexible(
+            child: TextButton(
+              key: const Key('scene_show_metadata'),
+              onPressed: () => setState(() => _showTechnicalMetadata = true),
+              child: Text(
+                context.l10n.details_show_metadata,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),
-        if (scene.studioName != null)
-          Text(
-            ' • ',
-            style: context.textTheme.titleMedium?.copyWith(
-              color: context.colors.onSurface.withValues(alpha: 0.5),
-            ),
-          ),
-        Text(
-          scene.date.year.toString(),
-          style: context.textTheme.titleMedium?.copyWith(
-            color: context.colors.onSurface.withValues(alpha: 0.6),
-          ),
-        ),
       ],
     );
   }

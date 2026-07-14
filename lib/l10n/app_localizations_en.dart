@@ -1143,6 +1143,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable or disable the floating casino buttons across list and details pages';
 
   @override
+  String get settings_interface_hide_scene_metadata =>
+      'Hide scene metadata by default';
+
+  @override
+  String get settings_interface_hide_scene_metadata_subtitle =>
+      'Show technical scene metadata only after tapping Show metadata.';
+
+  @override
   String get settings_interface_random_scene_filter =>
       'Respect active filters for random scene';
 
@@ -1172,6 +1180,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
       'Show the live scene video surface instead of the scene screenshot when playback is active.';
+
+  @override
+  String get details_show_metadata => 'Show metadata';
 
   @override
   String get settings_interface_entity_image_filtering =>

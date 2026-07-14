@@ -2232,6 +2232,18 @@ abstract class AppLocalizations {
   /// **'Enable or disable the floating casino buttons across list and details pages'**
   String get settings_interface_show_random_subtitle;
 
+  /// No description provided for @settings_interface_hide_scene_metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide scene metadata by default'**
+  String get settings_interface_hide_scene_metadata;
+
+  /// No description provided for @settings_interface_hide_scene_metadata_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show technical scene metadata only after tapping Show metadata.'**
+  String get settings_interface_hide_scene_metadata_subtitle;
+
   /// No description provided for @settings_interface_random_scene_filter.
   ///
   /// In en, this message translates to:
@@ -2279,6 +2291,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show the live scene video surface instead of the scene screenshot when playback is active.'**
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle;
+
+  /// No description provided for @details_show_metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Show metadata'**
+  String get details_show_metadata;
 
   /// No description provided for @settings_interface_entity_image_filtering.
   ///

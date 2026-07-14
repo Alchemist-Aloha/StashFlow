@@ -1129,6 +1129,14 @@ class AppLocalizationsKo extends AppLocalizations {
       '목록 및 상세 페이지에서 부동 카지노 버튼 활성화 또는 비활성화';
 
   @override
+  String get settings_interface_hide_scene_metadata =>
+      'Hide scene metadata by default';
+
+  @override
+  String get settings_interface_hide_scene_metadata_subtitle =>
+      'Show technical scene metadata only after tapping Show metadata.';
+
+  @override
   String get settings_interface_random_scene_filter => '랜덤 장면에 현재 필터 적용';
 
   @override
@@ -1157,6 +1165,9 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
       '재생 중일 때 장면 스크린샷 대신 실시간 비디오 화면을 표시합니다.';
+
+  @override
+  String get details_show_metadata => 'Show metadata';
 
   @override
   String get settings_interface_entity_image_filtering => '엔티티 이미지 필터링';

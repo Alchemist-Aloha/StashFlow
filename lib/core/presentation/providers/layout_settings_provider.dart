@@ -122,6 +122,23 @@ class ShowPerformerAvatars extends _$ShowPerformerAvatars {
 }
 
 @riverpod
+class HideSceneTechnicalMetadata extends _$HideSceneTechnicalMetadata {
+  static const _storageKey = 'hide_scene_technical_metadata';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? true;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    await ref.read(sharedPreferencesProvider).setBool(_storageKey, value);
+  }
+}
+
+@riverpod
 class PerformerAvatarSize extends _$PerformerAvatarSize {
   static const _storageKey = 'performer_avatar_size';
 

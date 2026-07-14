@@ -105,6 +105,50 @@ void main() {
 
     expect(find.text('Test Scene'), findsOneWidget);
     expect(find.text('Test Studio'), findsOneWidget);
+    expect(find.byKey(const Key('scene_header_metadata')), findsNothing);
+    expect(find.byKey(const Key('scene_show_metadata')), findsOneWidget);
+    expect(
+      tester.getCenter(find.byKey(const Key('scene_show_metadata'))).dx,
+      greaterThan(tester.getCenter(find.text('Test Studio')).dx),
+    );
+  });
+
+  testWidgets('SceneDetailsPage reveals hidden technical metadata', (
+    tester,
+  ) async {
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.tap(find.byKey(const Key('scene_show_metadata')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('scene_show_metadata')), findsNothing);
+    expect(find.byKey(const Key('scene_header_metadata')), findsOneWidget);
+  });
+
+  testWidgets('SceneDetailsPage shows metadata when default hiding is off', (
+    tester,
+  ) async {
+    await prefs.setBool('hide_scene_technical_metadata', false);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.byKey(const Key('scene_header_metadata')), findsOneWidget);
+    expect(find.byKey(const Key('scene_show_metadata')), findsNothing);
   });
 
   testWidgets('SceneDetailsPage matches header and details section surfaces', (
@@ -188,7 +232,7 @@ void main() {
     },
   );
 
-  testWidgets('SceneDetailsPage orders header controls before metadata', (
+  testWidgets('SceneDetailsPage places metadata below identity and controls', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1600, 1600);
@@ -205,17 +249,19 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
-    final identity = find.byKey(const Key('scene_header_identity'));
     final controls = find.byKey(const Key('scene_header_controls'));
+    await tester.tap(find.byKey(const Key('scene_show_metadata')));
+    await tester.pumpAndSettle();
     final metadata = find.byKey(const Key('scene_header_metadata'));
+    final studio = find.text('Test Studio');
 
     expect(
-      tester.getBottomLeft(identity).dy,
-      lessThan(tester.getTopLeft(controls).dy),
+      tester.getBottomLeft(studio).dy,
+      lessThan(tester.getTopLeft(metadata).dy),
     );
     expect(
-      tester.getBottomLeft(controls).dy,
-      lessThan(tester.getTopLeft(metadata).dy),
+      tester.getBottomLeft(metadata).dy,
+      lessThan(tester.getTopLeft(controls).dy),
     );
   });
 
@@ -241,6 +287,8 @@ void main() {
 
       final identity = find.byKey(const Key('scene_header_identity'));
       final controls = find.byKey(const Key('scene_header_controls'));
+      await tester.tap(find.byKey(const Key('scene_show_metadata')));
+      await tester.pumpAndSettle();
       final metadata = find.byKey(const Key('scene_header_metadata'));
       final rating = find.byKey(const Key('scene_rating_controls'));
       final actions = find.byKey(const Key('scene_action_buttons'));
@@ -249,10 +297,7 @@ void main() {
         tester.getBottomLeft(identity).dy,
         lessThan(tester.getTopLeft(controls).dy),
       );
-      expect(
-        tester.getBottomLeft(controls).dy,
-        lessThan(tester.getTopLeft(metadata).dy),
-      );
+      expect(tester.getTopLeft(metadata).dy, greaterThan(0));
       expect(
         tester.getSize(controls).width,
         lessThan(tester.getSize(identity).width),

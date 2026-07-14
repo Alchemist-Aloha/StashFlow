@@ -1126,6 +1126,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_show_random_subtitle => '在列表和详情页启用或禁用悬浮随机按钮';
 
   @override
+  String get settings_interface_hide_scene_metadata =>
+      'Hide scene metadata by default';
+
+  @override
+  String get settings_interface_hide_scene_metadata_subtitle =>
+      'Show technical scene metadata only after tapping Show metadata.';
+
+  @override
   String get settings_interface_random_scene_filter => '随机场景遵循当前筛选条件';
 
   @override
@@ -1153,6 +1161,9 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
       '播放时显示实时场景视频画面，而不是场景截图。';
+
+  @override
+  String get details_show_metadata => 'Show metadata';
 
   @override
   String get settings_interface_entity_image_filtering => '实体图像过滤';
