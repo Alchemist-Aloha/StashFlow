@@ -8,6 +8,7 @@ Short, action-oriented guidance for agents working in this repository.
 - **Docs:** Add docstrings for new providers, widgets, and public APIs.
 - **Verify:** Run `flutter build apk --split-per-abi` or project tests after UI/logic changes.
 - **Design:** Follow Material 3 expressive patterns (consistent spacing, soft shapes, readable type).
+- **branch** Work in dev branch, not main or worktree branches.
 
 ## Release Notes
 
