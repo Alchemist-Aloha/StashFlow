@@ -82,6 +82,20 @@ void main() {
       expect(state.controls.contains(MediaControl.pause), isFalse);
     });
 
+    test('does not publish a stop control', () {
+      handler.updatePlaybackState(isPlaying: true);
+
+      expect(handler.playbackState.value.controls, [
+        MediaControl.skipToPrevious,
+        MediaControl.pause,
+        MediaControl.skipToNext,
+      ]);
+      expect(
+        handler.playbackState.value.androidCompactActionIndices,
+        [0, 1, 2],
+      );
+    });
+
     test('publishes the supplied processing state', () {
       handler.updatePlaybackState(
         isPlaying: false,
