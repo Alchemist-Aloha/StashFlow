@@ -32,13 +32,15 @@ void main() {
     });
   });
 
-  test('desktop startup maximizes instead of sizing to the display bounds', () {
+  test('Windows startup waits until the configured window is ready', () {
     final source = File('lib/main.dart').readAsStringSync();
 
+    expect(source, contains('const windowOptions = WindowOptions('));
+    expect(source, contains('minimumSize: Size(800, 600)'));
+    expect(source, contains('windowManager.waitUntilReadyToShow('));
     expect(source, contains('await windowManager.maximize()'));
-    expect(source, isNot(contains('windowManager.setSize(')));
-    expect(source, isNot(contains('windowManager.setPosition(')));
-    expect(source, isNot(contains('screenRetriever.getPrimaryDisplay()')));
+    expect(source, contains('await windowManager.show()'));
+    expect(source, contains('await windowManager.focus()'));
   });
 
   testWidgets('MyApp builds correctly', (WidgetTester tester) async {

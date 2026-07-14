@@ -46,9 +46,21 @@ Future<void> main() async {
             defaultTargetPlatform == TargetPlatform.macOS)) {
       await windowManager.ensureInitialized();
       try {
-        await windowManager.setMinimumSize(const Size(800, 600));
-        await windowManager.setSize(const Size(800, 600));
-        await windowManager.maximize();
+        if (defaultTargetPlatform == TargetPlatform.windows) {
+          const windowOptions = WindowOptions(
+            size: Size(800, 600),
+            minimumSize: Size(800, 600),
+          );
+          await windowManager.waitUntilReadyToShow(windowOptions, () async {
+            await windowManager.maximize();
+            await windowManager.show();
+            await windowManager.focus();
+          });
+        } else {
+          await windowManager.setMinimumSize(const Size(800, 600));
+          await windowManager.setSize(const Size(800, 600));
+          await windowManager.maximize();
+        }
       } catch (e) {
         debugPrint('Failed to set initial window size: $e');
       }
