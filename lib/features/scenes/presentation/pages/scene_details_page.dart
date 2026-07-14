@@ -675,6 +675,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     BuildContext context,
     Widget child, {
     Key? key,
+    EdgeInsetsGeometry? padding,
   }) {
     return Card(
       key: key,
@@ -687,7 +688,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        padding: padding ?? const EdgeInsets.all(AppTheme.spacingMedium),
         child: child,
       ),
     );
@@ -705,7 +706,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             _buildTitle(context, scene, isWide: isWide),
             const SizedBox(height: 6),
             _buildStudioAndDate(context, scene),
-            const SizedBox(height: 8),
+            if (_showTechnicalMetadata) const SizedBox(height: 8),
             if (_showTechnicalMetadata)
               SizedBox(
                 key: const Key('scene_header_metadata'),
@@ -721,7 +722,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(width: double.infinity, child: identity),
-            const SizedBox(height: AppTheme.spacingMedium),
+            SizedBox(
+              height: _showTechnicalMetadata ? AppTheme.spacingMedium : 6,
+            ),
             _buildSectionContainer(
               context,
               Column(
@@ -729,6 +732,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 children: [SizedBox(width: double.infinity, child: controls)],
               ),
               key: const Key('scene_header_section'),
+              padding: _showTechnicalMetadata
+                  ? null
+                  : const EdgeInsets.fromLTRB(
+                      AppTheme.spacingMedium,
+                      0,
+                      AppTheme.spacingMedium,
+                      AppTheme.spacingMedium,
+                    ),
             ),
             _buildDetails(context, scene),
           ],

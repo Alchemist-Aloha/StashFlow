@@ -136,6 +136,13 @@ void main() {
       tester.getCenter(find.text('2024')).dx,
       greaterThan(tester.getCenter(find.text('Test Studio')).dx),
     );
+    expect(
+      tester.getTopLeft(find.byKey(const Key('scene_header_controls'))).dy -
+          tester
+              .getBottomLeft(find.byKey(const Key('scene_header_identity')))
+              .dy,
+      closeTo(6, 0.1),
+    );
   });
 
   testWidgets('SceneDetailsPage reveals hidden technical metadata', (
