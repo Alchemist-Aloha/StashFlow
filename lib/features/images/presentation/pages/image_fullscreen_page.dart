@@ -12,12 +12,12 @@ import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:window_manager/window_manager.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/utils/desktop_fullscreen.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../galleries/presentation/providers/gallery_details_provider.dart';
@@ -82,7 +82,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           (defaultTargetPlatform == TargetPlatform.windows ||
               defaultTargetPlatform == TargetPlatform.linux ||
               defaultTargetPlatform == TargetPlatform.macOS)) {
-        await windowManager.setFullScreen(true);
+        await DesktopFullscreen.instance.enter();
       }
     } catch (_) {}
   }
@@ -93,7 +93,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         (defaultTargetPlatform == TargetPlatform.windows ||
             defaultTargetPlatform == TargetPlatform.linux ||
             defaultTargetPlatform == TargetPlatform.macOS)) {
-      unawaited(windowManager.setFullScreen(false));
+      unawaited(DesktopFullscreen.instance.exit());
     }
   }
 

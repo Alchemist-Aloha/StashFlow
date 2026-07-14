@@ -81,8 +81,8 @@ void main() {
         ).readAsStringSync();
 
         expect(source, contains('if (mounted) unawaited(_enterFullScreen())'));
-        expect(source, contains('await windowManager.setFullScreen(true)'));
-        expect(source, contains('windowManager.setFullScreen(false)'));
+        expect(source, contains('await DesktopFullscreen.instance.enter()'));
+        expect(source, contains('DesktopFullscreen.instance.exit()'));
         expect(source, isNot(contains('windowManager.unmaximize()')));
         expect(source, isNot(contains('windowManager.maximize()')));
       },

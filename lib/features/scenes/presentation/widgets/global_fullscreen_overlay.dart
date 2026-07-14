@@ -5,13 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:window_manager/window_manager.dart';
 
 import '../providers/video_player_provider.dart';
 import '../providers/fullscreen_controller.dart';
 import '../providers/scene_random_navigation_provider.dart';
 import 'player_surface.dart';
 import '../../../../core/utils/app_log_store.dart';
+import '../../../../core/utils/desktop_fullscreen.dart';
 import '../../../../core/utils/web_helpers.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -135,7 +135,7 @@ class _GlobalFullscreenOverlayState
           (defaultTargetPlatform == TargetPlatform.windows ||
               defaultTargetPlatform == TargetPlatform.linux ||
               defaultTargetPlatform == TargetPlatform.macOS)) {
-        await windowManager.setFullScreen(true);
+        await DesktopFullscreen.instance.enter();
 
         if (wasPlaying && defaultTargetPlatform == TargetPlatform.windows) {
           if (controller != null && !controller.player.state.playing) {
@@ -199,7 +199,7 @@ class _GlobalFullscreenOverlayState
             defaultTargetPlatform == TargetPlatform.linux ||
             defaultTargetPlatform == TargetPlatform.macOS)) {
       unawaited(() async {
-        await windowManager.setFullScreen(false);
+        await DesktopFullscreen.instance.exit();
 
         if (wasPlaying &&
             (kIsWeb || defaultTargetPlatform == TargetPlatform.windows)) {
