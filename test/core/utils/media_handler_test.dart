@@ -46,6 +46,26 @@ void main() {
       expect(mediaItem?.duration, const Duration(minutes: 5));
       expect(mediaItem?.artUri, Uri.parse('https://example.com/thumb.jpg'));
     });
+
+    test('preserves artwork when refreshing metadata for the same item', () {
+      handler.updateMetadata(
+        id: '3',
+        title: 'Scene',
+        thumbnailUri: 'file:///tmp/scene.jpg',
+      );
+
+      handler.updateMetadata(
+        id: '3',
+        title: 'Scene',
+        duration: const Duration(minutes: 2),
+      );
+
+      expect(
+        handler.mediaItem.value?.artUri,
+        Uri.parse('file:///tmp/scene.jpg'),
+      );
+      expect(handler.mediaItem.value?.duration, const Duration(minutes: 2));
+    });
   });
 
   group('updatePlaybackState', () {

@@ -16,6 +16,12 @@ class StashMediaHandler extends BaseAudioHandler {
     String? thumbnailUri,
     Duration? duration,
   }) {
+    final current = mediaItem.value;
+    final artUri = thumbnailUri != null
+        ? Uri.parse(thumbnailUri)
+        : current?.id == id
+        ? current?.artUri
+        : null;
     mediaItem.add(
       MediaItem(
         id: id,
@@ -23,7 +29,7 @@ class StashMediaHandler extends BaseAudioHandler {
         title: title,
         artist: studio ?? 'Stash',
         duration: duration,
-        artUri: thumbnailUri != null ? Uri.parse(thumbnailUri) : null,
+        artUri: artUri,
       ),
     );
   }

@@ -342,8 +342,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   /// Internal flag to track the last speed reported to the media handler.
   double? _lastSpeed;
 
-  /// Path to temporary notification cover art file, cleaned up on scene change.
-  String? _notificationArtTempPath;
+  /// Published cover files stay available until the media session ends.
+  ///
+  /// audio_service does not expose an artwork-load acknowledgement, so
+  /// deleting a previous file during a scene transition can race the native
+  /// read.
+  // ponytail: session-scoped temp retention; use a native load acknowledgement
+  // if long sessions make temporary storage measurable.
+  final Set<String> _notificationArtTempPaths = <String>{};
+  int _notificationArtGeneration = 0;
 
   late final PlaybackActivityTracker _activityTracker;
   late final PlaybackSessionController _sessionController;
@@ -500,40 +507,63 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   /// both limitations by fetching the image in-app (with auth headers),
   /// writing it to a temp file, and passing a `file://` URI to audio_service.
   void _updateMediaNotification(Scene scene, Duration? duration) {
+    final generation = ++_notificationArtGeneration;
+    final screenshotUrl = scene.paths.screenshot?.trim();
+    if (screenshotUrl == null || screenshotUrl.isEmpty || isTestMode) {
+      mediaHandler?.updateMetadata(
+        id: scene.id,
+        title: scene.title,
+        studio: scene.studioName,
+        duration: duration,
+      );
+      return;
+    }
+
+    // Publish one complete item after the image is ready. This avoids sending
+    // a metadata-only item that can race and clear native artwork.
+    unawaited(_fetchAndUpdateArt(scene, screenshotUrl, duration, generation));
+  }
+
+  /// Deletes published temp notification art files when the session ends.
+  void _cleanupNotificationArt() {
+    for (final path in _notificationArtTempPaths) {
+      try {
+        File(path).deleteSync();
+      } catch (_) {
+        // Best-effort cleanup; ignore failures.
+      }
+    }
+    _notificationArtTempPaths.clear();
+  }
+
+  bool _isCurrentNotificationRequest(Scene scene, int generation) {
+    return ref.mounted &&
+        generation == _notificationArtGeneration &&
+        state.activeScene?.id == scene.id;
+  }
+
+  void _publishNotificationMetadata(
+    Scene scene,
+    Duration? duration,
+    int generation, {
+    String? thumbnailUri,
+  }) {
+    if (!_isCurrentNotificationRequest(scene, generation)) return;
     mediaHandler?.updateMetadata(
       id: scene.id,
       title: scene.title,
       studio: scene.studioName,
       duration: duration,
+      thumbnailUri: thumbnailUri,
     );
-
-    final screenshotUrl = scene.paths.screenshot?.trim();
-    if (screenshotUrl == null || screenshotUrl.isEmpty) {
-      _cleanupNotificationArt();
-      return;
-    }
-
-    if (isTestMode) return;
-
-    // Fire-and-forget: fetch the image in the background so it doesn't
-    // block playback startup.
-    unawaited(_fetchAndUpdateArt(scene, screenshotUrl));
   }
 
-  /// Deletes the old temp notification art file if it exists.
-  void _cleanupNotificationArt() {
-    final oldPath = _notificationArtTempPath;
-    _notificationArtTempPath = null;
-    if (oldPath != null) {
-      try {
-        File(oldPath).deleteSync();
-      } catch (_) {
-        // Best-effort cleanup; ignore failures.
-      }
-    }
-  }
-
-  Future<void> _fetchAndUpdateArt(Scene scene, String url) async {
+  Future<void> _fetchAndUpdateArt(
+    Scene scene,
+    String url,
+    Duration? duration,
+    int generation,
+  ) async {
     File? tempFile;
     try {
       final headers = ref.read(mediaHeadersProvider);
@@ -551,30 +581,41 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
 
       final response = await dio.getUri(Uri.parse(effectiveUrl));
-      if (response.statusCode == 200 && response.data is List<int>) {
-        final tempDir = await getTemporaryDirectory();
-        final downloadedFile = File(
-          '${tempDir.path}/stash_notification_art_${scene.id}_'
-          '${DateTime.now().microsecondsSinceEpoch}.jpg',
+      if (response.statusCode != 200 || response.data is! List<int>) {
+        AppLogStore.instance.add(
+          'Failed to fetch scene cover for notification: '
+          'status=${response.statusCode}',
+          source: 'player_provider',
         );
-        tempFile = downloadedFile;
-
-        await downloadedFile.writeAsBytes(response.data as List<int>);
-        if (!ref.mounted || state.activeScene?.id != scene.id) {
-          await downloadedFile.delete();
-          return;
-        }
-
-        // Clean up previous temp file before recording the new one.
-        _cleanupNotificationArt();
-        _notificationArtTempPath = downloadedFile.path;
-
-        mediaHandler?.updateArtwork(
-          id: scene.id,
-          thumbnailUri: Uri.file(downloadedFile.path).toString(),
-        );
+        _publishNotificationMetadata(scene, duration, generation);
         return;
       }
+
+      final tempDir = await getTemporaryDirectory();
+      final downloadedFile = File(
+        '${tempDir.path}/stash_notification_art_${scene.id}_'
+        '${DateTime.now().microsecondsSinceEpoch}.jpg',
+      );
+      tempFile = downloadedFile;
+
+      await downloadedFile.writeAsBytes(response.data as List<int>);
+      if (!_isCurrentNotificationRequest(scene, generation)) {
+        try {
+          await downloadedFile.delete();
+        } catch (_) {
+          // Best-effort cleanup for stale downloads.
+        }
+        return;
+      }
+
+      _notificationArtTempPaths.add(downloadedFile.path);
+      _publishNotificationMetadata(
+        scene,
+        duration,
+        generation,
+        thumbnailUri: Uri.file(downloadedFile.path).toString(),
+      );
+      return;
     } catch (e) {
       if (tempFile != null) {
         try {
@@ -587,6 +628,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         'Failed to fetch scene cover for notification: $e',
         source: 'player_provider',
       );
+      _publishNotificationMetadata(scene, duration, generation);
     }
   }
 
@@ -1499,6 +1541,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
     _activeSceneRef = null;
     _lastIsPlaying = null;
+    _notificationArtGeneration++;
     _cleanupNotificationArt();
     if (!ref.mounted) return;
 
