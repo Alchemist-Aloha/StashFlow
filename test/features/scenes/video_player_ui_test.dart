@@ -182,11 +182,16 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
+    final studioTop = tester.getTopLeft(find.text('Test Studio')).dy;
     await tester.tap(find.byKey(const Key('scene_show_metadata')));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('scene_show_metadata')), findsNothing);
     expect(find.byKey(const Key('scene_header_metadata')), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Test Studio')).dy,
+      closeTo(studioTop, 0.1),
+    );
   });
 
   testWidgets('SceneDetailsPage shows metadata when default hiding is off', (

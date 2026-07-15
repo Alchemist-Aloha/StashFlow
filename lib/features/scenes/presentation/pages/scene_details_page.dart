@@ -763,6 +763,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     return Row(
       children: [
+        const SizedBox(height: 48),
         Expanded(
           child: Row(
             mainAxisSize: MainAxisSize.max,
