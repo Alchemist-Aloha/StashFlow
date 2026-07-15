@@ -822,22 +822,12 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           ),
         ),
         if (!_showTechnicalMetadata)
-          Flexible(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                key: const Key('scene_show_metadata'),
-                onPressed: () => setState(() => _showTechnicalMetadata = true),
-                style: TextButton.styleFrom(
-                  foregroundColor: context.colors.onSurfaceVariant,
-                ),
-                child: Text(
-                  context.l10n.details_show_metadata,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
+          IconButton(
+            key: const Key('scene_show_metadata'),
+            tooltip: context.l10n.details_show_metadata,
+            onPressed: () => setState(() => _showTechnicalMetadata = true),
+            color: context.colors.onSurfaceVariant,
+            icon: const Icon(Icons.keyboard_arrow_down),
           ),
       ],
     );

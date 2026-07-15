@@ -108,13 +108,22 @@ void main() {
     expect(find.byKey(const Key('scene_show_metadata')), findsOneWidget);
     expect(
       tester
-          .widget<TextButton>(find.byKey(const Key('scene_show_metadata')))
-          .style
-          ?.foregroundColor
-          ?.resolve({}),
+          .widget<IconButton>(find.byKey(const Key('scene_show_metadata')))
+          .color,
       Theme.of(
         tester.element(find.byKey(const Key('scene_show_metadata'))),
       ).colorScheme.onSurfaceVariant,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('scene_show_metadata')),
+        matching: find.byIcon(Icons.keyboard_arrow_down),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('scene_show_metadata'))).width,
+      closeTo(48, 0.1),
     );
     expect(
       tester.getTopRight(find.byKey(const Key('scene_show_metadata'))).dx,
