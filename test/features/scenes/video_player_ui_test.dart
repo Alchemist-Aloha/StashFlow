@@ -136,11 +136,27 @@ void main() {
       greaterThan(tester.getCenter(find.text('Test Studio')).dx),
     );
     expect(
-      tester.getTopLeft(find.byKey(const Key('scene_header_controls'))).dy -
+      tester.getTopLeft(find.byKey(const Key('scene_header_section'))).dy -
           tester
               .getBottomLeft(find.byKey(const Key('scene_header_identity')))
               .dy,
       closeTo(6, 0.1),
+    );
+    final section = find.byKey(const Key('scene_header_section'));
+    final sectionPadding = tester
+        .widget<Padding>(
+          find.descendant(
+            of: section,
+            matching: find.byWidgetPredicate(
+              (widget) => widget is Padding && widget.child is Column,
+            ),
+          ),
+        )
+        .padding
+        .resolve(TextDirection.ltr);
+    expect(
+      sectionPadding.top,
+      sectionPadding.bottom,
     );
   });
 

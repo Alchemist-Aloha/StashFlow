@@ -675,7 +675,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     BuildContext context,
     Widget child, {
     Key? key,
-    EdgeInsetsGeometry? padding,
   }) {
     return Card(
       key: key,
@@ -688,7 +687,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
       child: Padding(
-        padding: padding ?? const EdgeInsets.all(AppTheme.spacingMedium),
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
         child: child,
       ),
     );
@@ -732,14 +731,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 children: [SizedBox(width: double.infinity, child: controls)],
               ),
               key: const Key('scene_header_section'),
-              padding: _showTechnicalMetadata
-                  ? null
-                  : const EdgeInsets.fromLTRB(
-                      AppTheme.spacingMedium,
-                      0,
-                      AppTheme.spacingMedium,
-                      AppTheme.spacingMedium,
-                    ),
             ),
             _buildDetails(context, scene),
           ],
