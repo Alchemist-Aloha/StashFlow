@@ -69,6 +69,8 @@ dependencies:
   screen_brightness: ^2.1.11
   dart_cast: ^0.6.0
   gal: ^2.3.2
+  file_selector: ^1.1.0
+  share_plus: ^13.0.0
 
 dev_dependencies:
   flutter_test:
@@ -93,8 +95,6 @@ dev_dependencies:
 
 
 dependency_overrides:
-  # 2.1.6 misdetects AGP 8 as AGP 9 and omits its Kotlin plugin class.
-  screen_brightness_android: 2.1.5
   package_info_plus: 10.1.0
 
 

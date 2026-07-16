@@ -5789,6 +5789,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scenes'**
   String get scenes_title;
+
+  /// No description provided for @settings_config_backup_title.
+  ///
+  /// In en, this message translates to:
+  /// **'App configuration'**
+  String get settings_config_backup_title;
+
+  /// No description provided for @settings_config_backup_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save or replace user-facing settings and server profiles'**
+  String get settings_config_backup_subtitle;
+
+  /// No description provided for @settings_config_export.
+  ///
+  /// In en, this message translates to:
+  /// **'Save configuration'**
+  String get settings_config_export;
+
+  /// No description provided for @settings_config_import.
+  ///
+  /// In en, this message translates to:
+  /// **'Import configuration'**
+  String get settings_config_import;
+
+  /// No description provided for @settings_config_include_credentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Include credentials unencrypted'**
+  String get settings_config_include_credentials;
+
+  /// No description provided for @settings_config_credentials_warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone with this file can read your server credentials and app lock passcode.'**
+  String get settings_config_credentials_warning;
+
+  /// No description provided for @settings_config_exported.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration saved'**
+  String get settings_config_exported;
+
+  /// No description provided for @settings_config_import_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace app configuration?'**
+  String get settings_config_import_title;
+
+  /// No description provided for @settings_config_import_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'This file contains {profileCount} server profiles. Importing replaces all current user-facing settings and profiles.'**
+  String settings_config_import_summary(int profileCount);
+
+  /// No description provided for @settings_config_import_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace configuration'**
+  String get settings_config_import_confirm;
+
+  /// No description provided for @settings_config_imported.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration imported. Restart the app to apply every setting.'**
+  String get settings_config_imported;
+
+  /// No description provided for @settings_config_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The configuration file is invalid or unsupported.'**
+  String get settings_config_invalid;
+
+  /// No description provided for @settings_config_plaintext_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Credentials are stored as readable text in the exported file.'**
+  String get settings_config_plaintext_label;
 }
 
 class _AppLocalizationsDelegate

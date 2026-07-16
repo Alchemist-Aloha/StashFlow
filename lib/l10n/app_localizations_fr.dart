@@ -3277,4 +3277,51 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scenes_title => 'Scènes';
+
+  @override
+  String get settings_config_backup_title => 'App configuration';
+
+  @override
+  String get settings_config_backup_subtitle =>
+      'Save or replace user-facing settings and server profiles';
+
+  @override
+  String get settings_config_export => 'Save configuration';
+
+  @override
+  String get settings_config_import => 'Import configuration';
+
+  @override
+  String get settings_config_include_credentials =>
+      'Include credentials unencrypted';
+
+  @override
+  String get settings_config_credentials_warning =>
+      'Anyone with this file can read your server credentials and app lock passcode.';
+
+  @override
+  String get settings_config_exported => 'Configuration saved';
+
+  @override
+  String get settings_config_import_title => 'Replace app configuration?';
+
+  @override
+  String settings_config_import_summary(int profileCount) {
+    return 'This file contains $profileCount server profiles. Importing replaces all current user-facing settings and profiles.';
+  }
+
+  @override
+  String get settings_config_import_confirm => 'Replace configuration';
+
+  @override
+  String get settings_config_imported =>
+      'Configuration imported. Restart the app to apply every setting.';
+
+  @override
+  String get settings_config_invalid =>
+      'The configuration file is invalid or unsupported.';
+
+  @override
+  String get settings_config_plaintext_label =>
+      'Credentials are stored as readable text in the exported file.';
 }

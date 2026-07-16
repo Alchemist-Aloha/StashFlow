@@ -14,7 +14,20 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ],
 
   "es": [
@@ -32,7 +45,20 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ],
 
   "fr": [
@@ -50,7 +76,20 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ],
 
   "it": [
@@ -68,7 +107,20 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ],
 
   "ja": [
@@ -86,7 +138,20 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ],
 
   "ko": [
@@ -104,7 +169,20 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ],
 
   "ru": [
@@ -122,7 +200,20 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ],
 
   "zh": [
@@ -140,7 +231,20 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ],
 
   "zh_Hans": [
@@ -158,7 +262,20 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ],
 
   "zh_Hant": [
@@ -176,6 +293,19 @@
     "settings_keyboard_reset_confirm_body",
     "settings_keyboard_reserved",
     "settings_keyboard_tab_reserved",
-    "settings_keyboard_conflict_moved"
+    "settings_keyboard_conflict_moved",
+    "settings_config_backup_title",
+    "settings_config_backup_subtitle",
+    "settings_config_export",
+    "settings_config_import",
+    "settings_config_include_credentials",
+    "settings_config_credentials_warning",
+    "settings_config_exported",
+    "settings_config_import_title",
+    "settings_config_import_summary",
+    "settings_config_import_confirm",
+    "settings_config_imported",
+    "settings_config_invalid",
+    "settings_config_plaintext_label"
   ]
 }
