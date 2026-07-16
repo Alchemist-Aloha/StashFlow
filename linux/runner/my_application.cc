@@ -6,6 +6,7 @@
 #endif
 
 #include "flutter/generated_plugin_registrant.h"
+#include "icon_path.h"
 
 struct _MyApplication {
   GtkApplication parent_instance;
@@ -54,11 +55,20 @@ static void my_application_activate(GApplication* application) {
 
   // Load the app icon.
   g_autoptr(GError) error = nullptr;
-  g_autoptr(GdkPixbuf) icon = gdk_pixbuf_new_from_file("data/app_icon.png", &error);
-  if (icon != nullptr) {
-    gtk_window_set_icon(window, icon);
+  g_autofree gchar* executable_path =
+      g_file_read_link("/proc/self/exe", &error);
+  if (executable_path == nullptr) {
+    g_warning("Failed to resolve executable path: %s", error->message);
   } else {
-    g_warning("Failed to load icon: %s", error->message);
+    const std::string icon_path =
+        app_icon_path_for_executable(executable_path);
+    g_autoptr(GdkPixbuf) icon =
+        gdk_pixbuf_new_from_file(icon_path.c_str(), &error);
+    if (icon != nullptr) {
+      gtk_window_set_icon(window, icon);
+    } else {
+      g_warning("Failed to load icon: %s", error->message);
+    }
   }
 
   gtk_window_set_default_size(window, 1280, 720);
