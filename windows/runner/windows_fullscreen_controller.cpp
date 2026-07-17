@@ -61,10 +61,12 @@ WindowsFullscreenController::WindowsFullscreenController(HWND window)
     : window_(window) {}
 
 bool WindowsFullscreenController::Enter(std::string* error) {
-  if (is_fullscreen_) {
+  const WindowsFullscreenEnterAction enter_action =
+      WindowsFullscreenEnterActionFor(state_);
+  if (enter_action == WindowsFullscreenEnterAction::kAlreadyFullscreen) {
     return true;
   }
-  if (has_saved_state_) {
+  if (enter_action == WindowsFullscreenEnterAction::kBlockedByRestore) {
     if (error != nullptr) {
       *error = "Cannot enter fullscreen while restoration is pending";
     }
@@ -131,12 +133,12 @@ bool WindowsFullscreenController::Enter(std::string* error) {
     return FailEntry(Win32Error("SetWindowPos", ::GetLastError()), error);
   }
 
-  is_fullscreen_ = true;
+  state_ = WindowsFullscreenState::kFullscreen;
   return true;
 }
 
 bool WindowsFullscreenController::Exit(std::string* error) {
-  if (!has_saved_state_) {
+  if (!WindowsFullscreenNeedsRestore(state_)) {
     return true;
   }
   return RestoreSavedState(error);
@@ -157,6 +159,7 @@ bool WindowsFullscreenController::FailEntry(const std::string& entry_error,
 
 bool WindowsFullscreenController::RestoreSavedState(std::string* error) {
   if (!has_saved_state_) {
+    state_ = WindowsFullscreenState::kWindowed;
     return true;
   }
 
@@ -186,9 +189,9 @@ bool WindowsFullscreenController::RestoreSavedState(std::string* error) {
     record_failure(Win32Error("SetWindowPos", ::GetLastError()));
   }
 
+  state_ = WindowsFullscreenStateAfterRestore(restored);
   if (restored) {
     has_saved_state_ = false;
-    is_fullscreen_ = false;
   } else if (error != nullptr) {
     *error = first_error;
   }

@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "windows_fullscreen_state.h"
+
 class WindowsFullscreenController {
  public:
   explicit WindowsFullscreenController(HWND window);
@@ -21,7 +23,7 @@ class WindowsFullscreenController {
   LONG_PTR saved_style_ = 0;
   LONG_PTR saved_ex_style_ = 0;
   bool has_saved_state_ = false;
-  bool is_fullscreen_ = false;
+  WindowsFullscreenState state_ = WindowsFullscreenState::kWindowed;
 };
 
 #endif  // RUNNER_WINDOWS_FULLSCREEN_CONTROLLER_H_
