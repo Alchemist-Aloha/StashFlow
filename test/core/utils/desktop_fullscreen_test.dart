@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,71 +22,50 @@ void main() {
         .setMockMethodCallHandler(appWindowChannel, null);
   });
 
-  test('retries restoring a maximized window after fullscreen exit', () async {
-    var isMaximized = true;
-    var maximizeCalls = 0;
+  test(
+    'delegates maximized Windows fullscreen state to window_manager',
+    () async {
+      final windowManagerCalls = <MethodCall>[];
+      final appWindowCalls = <MethodCall>[];
+      var isMaximized = true;
 
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(appWindowChannel, (_) async => null);
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(windowManagerChannel, (call) async {
-          switch (call.method) {
-            case 'isMaximized':
-              return isMaximized;
-            case 'unmaximize':
-              isMaximized = false;
-              scheduleMicrotask(DesktopFullscreen.instance.onWindowUnmaximize);
-              return true;
-            case 'setFullScreen':
-              return true;
-            case 'maximize':
-              maximizeCalls++;
-              if (maximizeCalls > 1) {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(appWindowChannel, (call) async {
+            appWindowCalls.add(call);
+            return null;
+          });
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(windowManagerChannel, (call) async {
+            windowManagerCalls.add(call);
+            switch (call.method) {
+              case 'isMaximized':
+                return isMaximized;
+              case 'unmaximize':
+                isMaximized = false;
+                return true;
+              case 'maximize':
                 isMaximized = true;
-                scheduleMicrotask(DesktopFullscreen.instance.onWindowMaximize);
-              }
-              return true;
-          }
-          fail('Unexpected window_manager call: ${call.method}');
-        });
+                return true;
+              case 'setFullScreen':
+                return true;
+            }
+            fail('Unexpected window_manager call: ${call.method}');
+          });
 
-    await DesktopFullscreen.instance.enter();
-    await DesktopFullscreen.instance.exit();
+      await DesktopFullscreen.instance.enter();
+      await DesktopFullscreen.instance.exit();
 
-    expect(maximizeCalls, 2);
-    expect(isMaximized, isTrue);
-  });
-
-  test('does not retry when the maximized window is restored', () async {
-    var isMaximized = true;
-    var maximizeCalls = 0;
-
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(appWindowChannel, (_) async => null);
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(windowManagerChannel, (call) async {
-          switch (call.method) {
-            case 'isMaximized':
-              return isMaximized;
-            case 'unmaximize':
-              isMaximized = false;
-              scheduleMicrotask(DesktopFullscreen.instance.onWindowUnmaximize);
-              return true;
-            case 'setFullScreen':
-              return true;
-            case 'maximize':
-              maximizeCalls++;
-              isMaximized = true;
-              scheduleMicrotask(DesktopFullscreen.instance.onWindowMaximize);
-              return true;
-          }
-          fail('Unexpected window_manager call: ${call.method}');
-        });
-
-    await DesktopFullscreen.instance.enter();
-    await DesktopFullscreen.instance.exit();
-
-    expect(maximizeCalls, 1);
-    expect(isMaximized, isTrue);
-  });
+      expect(windowManagerCalls.map((call) => call.method), [
+        'setFullScreen',
+        'setFullScreen',
+      ]);
+      expect(
+        windowManagerCalls.map(
+          (call) => (call.arguments as Map<Object?, Object?>)['isFullScreen'],
+        ),
+        [true, false],
+      );
+      expect(appWindowCalls, isEmpty);
+    },
+  );
 }

@@ -2,16 +2,18 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Correction (2026-07-16):** The original app-managed unmaximize/restore workaround was superseded after Windows testing showed that it prevented `window_manager` from recording the maximized pre-fullscreen state. The corrected Task 2 below delegates the entire runtime transition to `window_manager`.
+
 **Goal:** Initialize the Windows window through `window_manager`'s ready-to-show lifecycle and make image and video viewers enter true OS fullscreen from a maximized window.
 
-**Architecture:** Keep startup configuration in `main.dart` and all runtime desktop fullscreen state transitions in the existing shared `DesktopFullscreen` singleton. Both viewers already use that singleton, so one Windows-specific maximized-state workaround fixes both paths while other platforms remain direct pass-throughs.
+**Architecture:** Keep startup configuration in `main.dart` and route runtime desktop fullscreen requests through the existing shared `DesktopFullscreen` singleton. The singleton delegates directly to `window_manager`, whose Windows implementation records and restores the native maximized state, frame, and style.
 
 **Tech Stack:** Flutter, Dart, `window_manager` 0.5.2, Flutter test
 
 ## Global Constraints
 
 - Preserve the existing 800×600 initial and minimum window sizes.
-- Apply the maximized-state workaround only on Windows.
+- Do not unmaximize or maximize around fullscreen; preserve `window_manager` ownership of the native transition.
 - Both image and video fullscreen viewers must continue using `DesktopFullscreen`.
 - Add no dependency, plugin fork, abstraction, or unrelated window behavior.
 
@@ -90,132 +92,74 @@ rtk git add test/main_test.dart lib/main.dart
 rtk git commit -m "fix: initialize Windows window when ready"
 ```
 
-### Task 2: Shared fullscreen transition from maximized Windows state
+### Task 2: Delegate fullscreen state restoration to `window_manager`
 
 **Files:**
+- Modify: `test/core/utils/desktop_fullscreen_test.dart`
 - Modify: `test/features/scenes/fullscreen_mode_test.dart`
 - Modify: `lib/core/utils/desktop_fullscreen.dart`
+- Modify: `windows/runner/flutter_window.cpp`
+- Modify: `windows/runner/flutter_window.h`
 - Verify: `test/features/images/presentation/pages/image_fullscreen_page_test.dart`
 
 **Interfaces:**
 - Consumes: `DesktopFullscreen.instance.enter()` and `.exit()` calls already made by both fullscreen viewers.
-- Produces: `Future<void> DesktopFullscreen.enter()` and `Future<void> DesktopFullscreen.exit()` with Windows maximized-state preservation.
+- Produces: direct `windowManager.setFullScreen(true)` and `windowManager.setFullScreen(false)` calls, allowing the plugin to preserve Windows native state.
 
-- [ ] **Step 1: Write the failing shared-helper test**
+- [ ] **Step 1: Write the failing plugin-delegation test**
 
-Replace the existing `leaves desktop window restoration to window_manager` test with:
+Add a method-channel test that starts from a simulated maximized Windows state, calls `enter()` and `exit()`, and requires the complete `window_manager` call sequence to be only:
 
 ```dart
-test('synchronizes maximized Windows before shared desktop fullscreen', () {
-  final overlaySource = File(
-    'lib/features/scenes/presentation/widgets/global_fullscreen_overlay.dart',
-  ).readAsStringSync();
-  final imageSource = File(
-    'lib/features/images/presentation/pages/image_fullscreen_page.dart',
-  ).readAsStringSync();
-  final desktopSource = File(
-    'lib/core/utils/desktop_fullscreen.dart',
-  ).readAsStringSync();
-
-  expect(overlaySource, contains('await DesktopFullscreen.instance.enter()'));
-  expect(overlaySource, contains('await DesktopFullscreen.instance.exit()'));
-  expect(imageSource, contains('await DesktopFullscreen.instance.enter()'));
-  expect(imageSource, contains('DesktopFullscreen.instance.exit()'));
-  expect(desktopSource, contains('defaultTargetPlatform == TargetPlatform.windows'));
-  expect(desktopSource, contains('await windowManager.isMaximized()'));
-  expect(desktopSource, contains('await windowManager.unmaximize()'));
-  expect(desktopSource, contains('void onWindowUnmaximize()'));
-  expect(desktopSource, contains('await windowManager.maximize()'));
-});
+['setFullScreen', 'setFullScreen']
+// isFullScreen arguments: [true, false]
 ```
+
+Also require that the app-specific Windows method channel receives no calls.
 
 - [ ] **Step 2: Run the focused test and verify RED**
 
-Run: `rtk flutter test test/features/scenes/fullscreen_mode_test.dart --plain-name "synchronizes maximized Windows before shared desktop fullscreen"`
+Run: `rtk flutter test test/core/utils/desktop_fullscreen_test.dart`
 
-Expected: FAIL because `DesktopFullscreen` does not detect, unmaximize, synchronize, or restore the Windows window.
+Expected: FAIL because the old helper also calls `isMaximized`, `unmaximize`, `maximize`, and the custom runner channel.
 
-- [ ] **Step 3: Restore the minimal synchronized shared helper**
+- [ ] **Step 3: Restore direct plugin ownership**
 
 Replace `lib/core/utils/desktop_fullscreen.dart` with:
 
 ```dart
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
 import 'package:window_manager/window_manager.dart';
 
-class DesktopFullscreen with WindowListener {
-  DesktopFullscreen._() {
-    windowManager.addListener(this);
-  }
+class DesktopFullscreen {
+  DesktopFullscreen._();
 
   static final instance = DesktopFullscreen._();
 
-  bool _restoreMaximized = false;
-  Completer<void>? _unmaximized;
+  Future<void> enter() => windowManager.setFullScreen(true);
 
-  Future<void> enter() async {
-    try {
-      _restoreMaximized =
-          defaultTargetPlatform == TargetPlatform.windows &&
-          await windowManager.isMaximized();
-      if (_restoreMaximized) {
-        _unmaximized = Completer<void>();
-        await windowManager.unmaximize();
-        await _unmaximized!.future.timeout(
-          const Duration(milliseconds: 300),
-          onTimeout: () {},
-        );
-        _unmaximized = null;
-      }
-
-      await windowManager.setFullScreen(true);
-    } catch (_) {
-      _unmaximized = null;
-      await _restoreWindow();
-      rethrow;
-    }
-  }
-
-  Future<void> exit() async {
-    await windowManager.setFullScreen(false);
-    await _restoreWindow();
-  }
-
-  @override
-  void onWindowUnmaximize() {
-    final unmaximized = _unmaximized;
-    if (unmaximized != null && !unmaximized.isCompleted) {
-      unmaximized.complete();
-    }
-  }
-
-  Future<void> _restoreWindow() async {
-    if (!_restoreMaximized) return;
-    _restoreMaximized = false;
-    await windowManager.maximize();
-  }
+  Future<void> exit() => windowManager.setFullScreen(false);
 }
 ```
 
+Remove the `stash_app_flutter/window` transition channel and its DWM transition toggling from the Windows runner. `window_manager` remains the sole native fullscreen owner.
+
 - [ ] **Step 4: Run image and video fullscreen tests and verify GREEN**
 
-Run: `rtk flutter test test/features/scenes/fullscreen_mode_test.dart test/features/images/presentation/pages/image_fullscreen_page_test.dart`
+Run: `rtk flutter test test/core/utils/desktop_fullscreen_test.dart test/features/scenes/fullscreen_mode_test.dart test/features/images/presentation/pages/image_fullscreen_page_test.dart`
 
 Expected: PASS.
 
 - [ ] **Step 5: Run static analysis**
 
-Run: `rtk flutter analyze lib/main.dart lib/core/utils/desktop_fullscreen.dart`
+Run: `rtk flutter analyze`
 
 Expected: No issues found.
 
 - [ ] **Step 6: Commit Task 2**
 
 ```bash
-rtk git add test/features/scenes/fullscreen_mode_test.dart lib/core/utils/desktop_fullscreen.dart
-rtk git commit -m "fix: enter fullscreen from maximized Windows"
+rtk git add lib/core/utils/desktop_fullscreen.dart windows/runner/flutter_window.cpp windows/runner/flutter_window.h test/core/utils/desktop_fullscreen_test.dart test/features/scenes/fullscreen_mode_test.dart
+rtk git commit -m "fix: delegate Windows fullscreen restoration"
 ```
 
 ### Task 3: Final regression verification
@@ -223,7 +167,10 @@ rtk git commit -m "fix: enter fullscreen from maximized Windows"
 **Files:**
 - Verify only: `lib/main.dart`
 - Verify only: `lib/core/utils/desktop_fullscreen.dart`
+- Verify only: `windows/runner/flutter_window.cpp`
+- Verify only: `windows/runner/flutter_window.h`
 - Verify only: `test/main_test.dart`
+- Verify only: `test/core/utils/desktop_fullscreen_test.dart`
 - Verify only: `test/features/scenes/fullscreen_mode_test.dart`
 - Verify only: `test/features/images/presentation/pages/image_fullscreen_page_test.dart`
 
@@ -233,13 +180,13 @@ rtk git commit -m "fix: enter fullscreen from maximized Windows"
 
 - [ ] **Step 1: Format changed Dart files**
 
-Run: `rtk dart format lib/main.dart lib/core/utils/desktop_fullscreen.dart test/main_test.dart test/features/scenes/fullscreen_mode_test.dart`
+Run: `rtk dart format lib/main.dart lib/core/utils/desktop_fullscreen.dart test/main_test.dart test/core/utils/desktop_fullscreen_test.dart test/features/scenes/fullscreen_mode_test.dart`
 
-Expected: all four files formatted successfully.
+Expected: all Dart files formatted successfully.
 
 - [ ] **Step 2: Run focused regression suite**
 
-Run: `rtk flutter test test/main_test.dart test/features/scenes/fullscreen_mode_test.dart test/features/images/presentation/pages/image_fullscreen_page_test.dart`
+Run: `rtk flutter test test/main_test.dart test/core/utils/desktop_fullscreen_test.dart test/features/scenes/fullscreen_mode_test.dart test/features/images/presentation/pages/image_fullscreen_page_test.dart`
 
 Expected: PASS.
 

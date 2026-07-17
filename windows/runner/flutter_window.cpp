@@ -1,7 +1,5 @@
 #include "flutter_window.h"
 
-#include <dwmapi.h>
-#include <flutter/standard_method_codec.h>
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
@@ -27,27 +25,6 @@ bool FlutterWindow::OnCreate() {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
-  window_channel_ =
-      std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          flutter_controller_->engine()->messenger(),
-          "stash_app_flutter/window",
-          &flutter::StandardMethodCodec::GetInstance());
-  window_channel_->SetMethodCallHandler(
-      [this](const auto& call, auto result) {
-        if (call.method_name() != "setTransitionsEnabled") {
-          result->NotImplemented();
-          return;
-        }
-        const auto* enabled = std::get_if<bool>(call.arguments());
-        if (enabled == nullptr) {
-          result->Error("invalid_argument", "Expected a boolean");
-          return;
-        }
-        BOOL disabled = !*enabled;
-        DwmSetWindowAttribute(GetHandle(), DWMWA_TRANSITIONS_FORCEDISABLED,
-                              &disabled, sizeof(disabled));
-        result->Success();
-      });
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {

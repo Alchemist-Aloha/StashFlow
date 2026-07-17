@@ -48,7 +48,7 @@ void main() {
     tagNames: [],
   );
 
-  test('synchronizes maximized Windows before shared desktop fullscreen', () {
+  test('delegates desktop fullscreen restoration to window_manager', () {
     final overlaySource = File(
       'lib/features/scenes/presentation/widgets/global_fullscreen_overlay.dart',
     ).readAsStringSync();
@@ -68,16 +68,17 @@ void main() {
     expect(imageSource, contains('DesktopFullscreen.instance.exit()'));
     expect(
       desktopSource,
-      contains('defaultTargetPlatform == TargetPlatform.windows'),
+      contains('Future<void> enter() => windowManager.setFullScreen(true);'),
     );
-    expect(desktopSource, contains('await windowManager.isMaximized()'));
-    expect(desktopSource, contains('await windowManager.unmaximize()'));
-    expect(desktopSource, contains('void onWindowUnmaximize()'));
-    expect(desktopSource, contains("invokeMethod('setTransitionsEnabled'"));
-    expect(desktopSource, contains('void onWindowMaximize()'));
-    expect(desktopSource, contains('await windowManager.maximize()'));
-    expect(windowsSource, contains('DWMWA_TRANSITIONS_FORCEDISABLED'));
-    expect(windowsSource, contains('"stash_app_flutter/window"'));
+    expect(
+      desktopSource,
+      contains('Future<void> exit() => windowManager.setFullScreen(false);'),
+    );
+    expect(desktopSource, isNot(contains('windowManager.unmaximize()')));
+    expect(desktopSource, isNot(contains('windowManager.maximize()')));
+    expect(desktopSource, isNot(contains('setTransitionsEnabled')));
+    expect(windowsSource, isNot(contains('DWMWA_TRANSITIONS_FORCEDISABLED')));
+    expect(windowsSource, isNot(contains('"stash_app_flutter/window"')));
   });
 
   testWidgets('GlobalFullscreenOverlay visibility toggles with player state', (
