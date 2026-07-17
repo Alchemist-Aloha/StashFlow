@@ -77,14 +77,24 @@ class DesktopFullscreen with WindowListener {
 
   Future<void> _restoreWindow() async {
     if (!_restoreMaximized) return;
-    _restoreMaximized = false;
+    try {
+      await _maximizeAndWait();
+      if (!await windowManager.isMaximized()) {
+        await _maximizeAndWait();
+      }
+    } finally {
+      _restoreMaximized = false;
+      _maximized = null;
+    }
+  }
+
+  Future<void> _maximizeAndWait() async {
     _maximized = Completer<void>();
     await windowManager.maximize();
     await _maximized!.future.timeout(
       const Duration(milliseconds: 300),
       onTimeout: () {},
     );
-    _maximized = null;
   }
 
   Future<void> _setTransitionsEnabled(bool enabled) =>
