@@ -48,7 +48,7 @@ void main() {
     tagNames: [],
   );
 
-  test('delegates desktop fullscreen restoration to window_manager', () {
+  test('uses an app-owned Windows borderless fullscreen transition', () {
     final overlaySource = File(
       'lib/features/scenes/presentation/widgets/global_fullscreen_overlay.dart',
     ).readAsStringSync();
@@ -58,27 +58,35 @@ void main() {
     final desktopSource = File(
       'lib/core/utils/desktop_fullscreen.dart',
     ).readAsStringSync();
-    final windowsSource = File(
+    final runnerSource = File(
       'windows/runner/flutter_window.cpp',
+    ).readAsStringSync();
+    final controllerFile = File(
+      'windows/runner/windows_fullscreen_controller.cpp',
+    );
+    final cmakeSource = File(
+      'windows/runner/CMakeLists.txt',
     ).readAsStringSync();
 
     expect(overlaySource, contains('await DesktopFullscreen.instance.enter()'));
     expect(overlaySource, contains('await DesktopFullscreen.instance.exit()'));
     expect(imageSource, contains('await DesktopFullscreen.instance.enter()'));
     expect(imageSource, contains('DesktopFullscreen.instance.exit()'));
-    expect(
-      desktopSource,
-      contains('Future<void> enter() => windowManager.setFullScreen(true);'),
-    );
-    expect(
-      desktopSource,
-      contains('Future<void> exit() => windowManager.setFullScreen(false);'),
-    );
-    expect(desktopSource, isNot(contains('windowManager.unmaximize()')));
-    expect(desktopSource, isNot(contains('windowManager.maximize()')));
-    expect(desktopSource, isNot(contains('setTransitionsEnabled')));
-    expect(windowsSource, isNot(contains('DWMWA_TRANSITIONS_FORCEDISABLED')));
-    expect(windowsSource, isNot(contains('"stash_app_flutter/window"')));
+    expect(desktopSource, contains("invokeMethod<void>('enter')"));
+    expect(desktopSource, contains("invokeMethod<void>('exit')"));
+    expect(runnerSource, contains('stash_app_flutter/window_fullscreen'));
+    expect(controllerFile.existsSync(), isTrue);
+
+    final controllerSource = controllerFile.readAsStringSync();
+    expect(controllerSource, contains('GetWindowPlacement'));
+    expect(controllerSource, contains('GWL_STYLE'));
+    expect(controllerSource, contains('GWL_EXSTYLE'));
+    expect(controllerSource, contains('WS_OVERLAPPEDWINDOW'));
+    expect(controllerSource, contains('WS_CAPTION'));
+    expect(controllerSource, contains('monitor.rcMonitor'));
+    expect(controllerSource, contains('SetWindowPlacement'));
+    expect(controllerSource, isNot(contains('HWND_TOPMOST')));
+    expect(cmakeSource, contains('windows_fullscreen_controller.cpp'));
   });
 
   testWidgets('GlobalFullscreenOverlay visibility toggles with player state', (

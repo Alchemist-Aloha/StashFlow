@@ -25,6 +25,34 @@ bool FlutterWindow::OnCreate() {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
+  fullscreen_controller_ =
+      std::make_unique<WindowsFullscreenController>(GetHandle());
+  fullscreen_channel_ =
+      std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+          flutter_controller_->engine()->messenger(),
+          "stash_app_flutter/window_fullscreen",
+          &flutter::StandardMethodCodec::GetInstance());
+  fullscreen_channel_->SetMethodCallHandler(
+      [this](const flutter::MethodCall<flutter::EncodableValue>& call,
+             std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>>
+                 result) {
+        std::string error;
+        bool succeeded = false;
+        if (call.method_name() == "enter") {
+          succeeded = fullscreen_controller_->Enter(&error);
+        } else if (call.method_name() == "exit") {
+          succeeded = fullscreen_controller_->Exit(&error);
+        } else {
+          result->NotImplemented();
+          return;
+        }
+
+        if (succeeded) {
+          result->Success();
+        } else {
+          result->Error("fullscreen_error", error);
+        }
+      });
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
@@ -40,6 +68,12 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  if (fullscreen_channel_) {
+    fullscreen_channel_->SetMethodCallHandler(nullptr);
+    fullscreen_channel_.reset();
+  }
+  fullscreen_controller_.reset();
+
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
   }
