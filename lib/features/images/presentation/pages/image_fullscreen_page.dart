@@ -103,18 +103,27 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   Future<void> _performExitFullScreen() async {
     try {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      if (!kIsWeb &&
-          (defaultTargetPlatform == TargetPlatform.windows ||
-              defaultTargetPlatform == TargetPlatform.linux ||
-              defaultTargetPlatform == TargetPlatform.macOS)) {
-        await DesktopFullscreen.instance.exit();
-      }
     } catch (error, stackTrace) {
       AppLogStore.instance.add(
-        'ImageFullscreenPage: error exiting fullscreen: '
+        'ImageFullscreenPage: error restoring system UI: '
         '$error\n$stackTrace',
         source: 'ImageFullscreenPage',
       );
+    }
+
+    if (!kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.windows ||
+            defaultTargetPlatform == TargetPlatform.linux ||
+            defaultTargetPlatform == TargetPlatform.macOS)) {
+      try {
+        await DesktopFullscreen.instance.exit();
+      } catch (error, stackTrace) {
+        AppLogStore.instance.add(
+          'ImageFullscreenPage: error exiting fullscreen: '
+          '$error\n$stackTrace',
+          source: 'ImageFullscreenPage',
+        );
+      }
     }
   }
 

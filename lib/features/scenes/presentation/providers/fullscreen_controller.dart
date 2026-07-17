@@ -57,8 +57,8 @@ class FullscreenController {
 
   FullscreenRuntimeState requestExitFullscreen() {
     return const FullscreenRuntimeState(
-      isFullScreen: false,
-      viewModeName: 'inline',
+      isFullScreen: true,
+      viewModeName: 'fullscreen',
       fullscreenPhase: FullscreenPhase.exiting,
     );
   }

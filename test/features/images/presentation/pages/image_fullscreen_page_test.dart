@@ -155,6 +155,77 @@ void main() {
       }
     });
 
+    testWidgets('attempts native exit when system UI restoration fails', (
+      tester,
+    ) async {
+      const windowsFullscreenChannel = MethodChannel(
+        'stash_app_flutter/window_fullscreen',
+      );
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      var nativeExitInvoked = false;
+      AppLogStore.instance
+        ..isEnabled = true
+        ..clear();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(windowsFullscreenChannel, (call) async {
+            if (call.method == 'exit') {
+              nativeExitInvoked = true;
+            }
+            return null;
+          });
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+            if (call.method == 'SystemChrome.setEnabledSystemUIMode') {
+              throw PlatformException(
+                code: 'system_ui_error',
+                message: 'system UI restore failed',
+              );
+            }
+            return null;
+          });
+
+      try {
+        final image = entity.Image(
+          id: 'system-ui-exit-test',
+          title: 'System UI Exit Test',
+          files: [],
+          paths: const entity.ImagePaths(image: 'http://test.com/image.jpg'),
+        );
+        mockRepository.withData([image]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: 'system-ui-exit-test'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+        );
+        await tester.pump();
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+        await tester.pump();
+
+        expect(nativeExitInvoked, isTrue);
+        expect(
+          AppLogStore.instance.entries.any(
+            (entry) => entry.message.contains(
+              'ImageFullscreenPage: error restoring system UI',
+            ),
+          ),
+          isTrue,
+        );
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+        AppLogStore.instance
+          ..clear()
+          ..isEnabled = false;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(windowsFullscreenChannel, null);
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, null);
+      }
+    });
+
     testWidgets('displays images and allows vertical navigation', (
       tester,
     ) async {

@@ -826,7 +826,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     final runtime = _fullscreenController.requestExitFullscreen();
     state = state.copyWith(
       isFullScreen: runtime.isFullScreen,
-      viewMode: PlayerViewMode.inline,
+      viewMode: PlayerViewMode.values.firstWhere(
+        (mode) => mode.name == runtime.viewModeName,
+        orElse: () => PlayerViewMode.fullscreen,
+      ),
       fullscreenPhase: runtime.fullscreenPhase,
     );
   }

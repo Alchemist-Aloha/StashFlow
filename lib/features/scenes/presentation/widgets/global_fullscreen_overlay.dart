@@ -196,15 +196,15 @@ class _GlobalFullscreenOverlayState
       if (!mounted) return;
       setState(() => _isAnimating = false);
       ref.read(playerStateProvider.notifier).markFullscreenExitFailed();
+      return;
     }
+
+    await _resumePlaybackAfterExit();
   }
 
   Future<void> _exitFullScreen() async {
-    final controller = ref.read(playerStateProvider).videoController;
-    final wasPlaying = _wasPlayingBeforeExit;
-
     AppLogStore.instance.add(
-      'GlobalFullscreenOverlay: _exitFullScreen: wasPlayingBeforeExit=$wasPlaying',
+      'GlobalFullscreenOverlay: _exitFullScreen',
       source: 'GlobalFullscreenOverlay',
     );
 
@@ -215,13 +215,6 @@ class _GlobalFullscreenOverlayState
             defaultTargetPlatform == TargetPlatform.linux ||
             defaultTargetPlatform == TargetPlatform.macOS)) {
       await DesktopFullscreen.instance.exit();
-
-      if (wasPlaying &&
-          (kIsWeb || defaultTargetPlatform == TargetPlatform.windows)) {
-        if (controller != null && !controller.player.state.playing) {
-          await controller.player.play();
-        }
-      }
     } else {
       final allowMainPageGravityOrientation = ref.read(
         mainPageGravityOrientationProvider,
@@ -236,14 +229,41 @@ class _GlobalFullscreenOverlayState
               ]
             : [DeviceOrientation.portraitUp],
       );
+    }
+  }
 
-      if (wasPlaying && kIsWeb) {
+  Future<void> _resumePlaybackAfterExit() async {
+    final controller = ref.read(playerStateProvider).videoController;
+    if (!_wasPlayingBeforeExit || controller == null) return;
+
+    try {
+      if (kIsWeb) {
         Future.delayed(const Duration(milliseconds: 350), () {
-          if (controller != null && !controller.player.state.playing) {
-            unawaited(controller.player.play());
+          if (!controller.player.state.playing) {
+            unawaited(
+              controller.player.play().catchError((
+                Object error,
+                StackTrace stack,
+              ) {
+                AppLogStore.instance.add(
+                  'GlobalFullscreenOverlay: error resuming playback after '
+                  'fullscreen exit: $error\n$stack',
+                  source: 'GlobalFullscreenOverlay',
+                );
+              }),
+            );
           }
         });
+      } else if (defaultTargetPlatform == TargetPlatform.windows &&
+          !controller.player.state.playing) {
+        await controller.player.play();
       }
+    } catch (error, stackTrace) {
+      AppLogStore.instance.add(
+        'GlobalFullscreenOverlay: error resuming playback after fullscreen '
+        'exit: $error\n$stackTrace',
+        source: 'GlobalFullscreenOverlay',
+      );
     }
   }
 

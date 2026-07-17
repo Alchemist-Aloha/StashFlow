@@ -4,12 +4,16 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:media_kit/media_kit.dart' as mk;
+import 'package:media_kit_video/media_kit_video.dart';
+import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/fullscreen_controller.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/player_view_mode.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/global_fullscreen_overlay.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
@@ -19,6 +23,67 @@ import '../../helpers/test_helpers.dart';
 Future<void> _pumpUntil(WidgetTester tester, bool Function() condition) async {
   for (var attempt = 0; attempt < 20 && !condition(); attempt++) {
     await tester.pump(const Duration(milliseconds: 50));
+  }
+}
+
+class _ExitPlayerStream extends Mock implements mk.PlayerStream {
+  _ExitPlayerStream(this.playingEvents);
+
+  final Stream<bool> playingEvents;
+
+  @override
+  Stream<bool> get playing => playingEvents;
+}
+
+class _ResumeFailingPlayer extends Mock implements mk.Player {
+  _ResumeFailingPlayer()
+    : _playingController = StreamController<bool>.broadcast() {
+    _stream = _ExitPlayerStream(_playingController.stream);
+  }
+
+  final StreamController<bool> _playingController;
+  late final mk.PlayerStream _stream;
+  bool isPlaying = true;
+  int playAttempts = 0;
+
+  @override
+  mk.PlayerState get state => mk.PlayerState(playing: isPlaying);
+
+  @override
+  mk.PlayerStream get stream => _stream;
+
+  @override
+  Future<void> play() async {
+    playAttempts += 1;
+    throw StateError('resume failed');
+  }
+
+  void emitPlaying() => _playingController.add(isPlaying);
+
+  Future<void> close() => _playingController.close();
+}
+
+class _ExitVideoController extends Mock implements VideoController {
+  _ExitVideoController(this.testPlayer);
+
+  final mk.Player testPlayer;
+
+  @override
+  mk.Player get player => testPlayer;
+}
+
+class _ExitTestPlayerState extends PlayerState {
+  _ExitTestPlayerState(this.testPlayer, this.testController);
+
+  final mk.Player testPlayer;
+  final VideoController testController;
+
+  @override
+  GlobalPlayerState build() {
+    return GlobalPlayerState(
+      player: testPlayer,
+      videoController: testController,
+    );
   }
 }
 
@@ -181,6 +246,11 @@ void main() {
         containerRef.read(playerStateProvider).fullscreenPhase,
         FullscreenPhase.exiting,
       );
+      expect(containerRef.read(playerStateProvider).isFullScreen, isTrue);
+      expect(
+        containerRef.read(playerStateProvider).viewMode,
+        PlayerViewMode.fullscreen,
+      );
       expect(
         find.byKey(const ValueKey('global_fullscreen_overlay_slide')),
         findsOneWidget,
@@ -204,6 +274,68 @@ void main() {
         findsNothing,
       );
     } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('playback resume failure does not roll back a successful exit', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+    final player = _ResumeFailingPlayer();
+    try {
+      var exitInvoked = false;
+      windowsFullscreenHandler = (call) async {
+        if (call.method == 'exit') {
+          exitInvoked = true;
+        }
+        return null;
+      };
+      final controller = _ExitVideoController(player);
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(mockRepo),
+          playerStateProvider.overrideWith(
+            () => _ExitTestPlayerState(player, controller),
+          ),
+        ],
+        child: const GlobalFullscreenOverlay(),
+      );
+
+      final container = tester.element(find.byType(GlobalFullscreenOverlay));
+      final containerRef = ProviderScope.containerOf(container);
+      containerRef.read(playerStateProvider.notifier).setFullScreen(true);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      player.emitPlaying();
+      await tester.pump();
+
+      player.isPlaying = false;
+      containerRef.read(playerStateProvider.notifier).requestExitFullscreen();
+      await _pumpUntil(
+        tester,
+        () =>
+            containerRef.read(playerStateProvider).fullscreenPhase !=
+            FullscreenPhase.exiting,
+      );
+
+      expect(exitInvoked, isTrue);
+      expect(player.playAttempts, 1);
+      expect(
+        containerRef.read(playerStateProvider).fullscreenPhase,
+        FullscreenPhase.inline,
+      );
+      expect(containerRef.read(playerStateProvider).isFullScreen, isFalse);
+      expect(
+        find.byKey(const ValueKey('global_fullscreen_overlay_slide')),
+        findsNothing,
+      );
+    } finally {
+      await player.close();
       debugDefaultTargetPlatformOverride = null;
     }
   });
