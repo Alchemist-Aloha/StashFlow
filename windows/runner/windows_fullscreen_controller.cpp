@@ -1,5 +1,8 @@
 #include "windows_fullscreen_controller.h"
 
+#include <dwmapi.h>
+
+#include <iomanip>
 #include <sstream>
 #include <string>
 
@@ -23,6 +26,13 @@ static_assert((BorderlessStyle(static_cast<LONG_PTR>(WS_OVERLAPPEDWINDOW)) &
 std::string Win32Error(const char* operation, DWORD error_code) {
   std::ostringstream message;
   message << operation << " failed with Win32 error " << error_code;
+  return message.str();
+}
+
+std::string HResultError(const char* operation, HRESULT result) {
+  std::ostringstream message;
+  message << operation << " failed with HRESULT 0x" << std::hex
+          << std::uppercase << static_cast<unsigned long>(result);
   return message.str();
 }
 
@@ -203,6 +213,17 @@ bool WindowsFullscreenController::RestoreSavedState(std::string* error) {
                       SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
                           SWP_NOOWNERZORDER | SWP_FRAMECHANGED)) {
     record_failure(Win32Error("SetWindowPos", ::GetLastError()));
+  }
+
+  if (!::RedrawWindow(window_, nullptr, nullptr,
+                      RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW |
+                          RDW_NOCHILDREN)) {
+    record_failure("RedrawWindow failed while restoring the non-client frame");
+  }
+
+  const HRESULT flush_result = ::DwmFlush();
+  if (FAILED(flush_result)) {
+    record_failure(HResultError("DwmFlush", flush_result));
   }
 
   LONG_PTR restored_style = 0;

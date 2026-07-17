@@ -204,6 +204,33 @@ void main() {
       controllerSource,
       contains('Restored maximized state does not match saved state'),
     );
+    expect(controllerSource, contains('::RedrawWindow(window_'));
+    expect(
+      controllerSource,
+      contains('RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW'),
+    );
+    expect(controllerSource, contains('::DwmFlush()'));
+    expect(controllerSource, contains('RedrawWindow failed'));
+    expect(
+      controllerSource,
+      contains('HResultError("DwmFlush", flush_result)'),
+    );
+    expect(controllerSource, contains('failed with HRESULT'));
+
+    final restoreFrameChange = controllerSource.lastIndexOf(
+      '::SetWindowPos(window_, nullptr',
+    );
+    final nonClientRedraw = controllerSource.indexOf(
+      '::RedrawWindow(window_',
+      restoreFrameChange,
+    );
+    final compositorFlush = controllerSource.indexOf(
+      '::DwmFlush()',
+      nonClientRedraw,
+    );
+    expect(restoreFrameChange, greaterThanOrEqualTo(0));
+    expect(nonClientRedraw, greaterThan(restoreFrameChange));
+    expect(compositorFlush, greaterThan(nonClientRedraw));
     expect(controllerSource, isNot(contains('HWND_TOPMOST')));
     expect(cmakeSource, contains('windows_fullscreen_controller.cpp'));
   });
