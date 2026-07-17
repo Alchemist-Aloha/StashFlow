@@ -17,6 +17,7 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/desktop_fullscreen.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/responsive.dart';
@@ -96,12 +97,24 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   }
 
   void _exitFullScreen() {
-    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
-    if (!kIsWeb &&
-        (defaultTargetPlatform == TargetPlatform.windows ||
-            defaultTargetPlatform == TargetPlatform.linux ||
-            defaultTargetPlatform == TargetPlatform.macOS)) {
-      unawaited(DesktopFullscreen.instance.exit());
+    unawaited(_performExitFullScreen());
+  }
+
+  Future<void> _performExitFullScreen() async {
+    try {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      if (!kIsWeb &&
+          (defaultTargetPlatform == TargetPlatform.windows ||
+              defaultTargetPlatform == TargetPlatform.linux ||
+              defaultTargetPlatform == TargetPlatform.macOS)) {
+        await DesktopFullscreen.instance.exit();
+      }
+    } catch (error, stackTrace) {
+      AppLogStore.instance.add(
+        'ImageFullscreenPage: error exiting fullscreen: '
+        '$error\n$stackTrace',
+        source: 'ImageFullscreenPage',
+      );
     }
   }
 

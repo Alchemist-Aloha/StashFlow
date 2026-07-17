@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
     as entity;
 import 'package:stash_app_flutter/features/images/presentation/pages/image_fullscreen_page.dart';
@@ -84,6 +86,73 @@ void main() {
       expect(source, contains('DesktopFullscreen.instance.exit()'));
       expect(source, isNot(contains('windowManager.unmaximize()')));
       expect(source, isNot(contains('windowManager.maximize()')));
+    });
+
+    testWidgets('logs native fullscreen exit failures during disposal', (
+      tester,
+    ) async {
+      const windowsFullscreenChannel = MethodChannel(
+        'stash_app_flutter/window_fullscreen',
+      );
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      AppLogStore.instance
+        ..isEnabled = true
+        ..clear();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(windowsFullscreenChannel, (call) async {
+            if (call.method == 'exit') {
+              throw PlatformException(
+                code: 'fullscreen_error',
+                message: 'restore failed',
+              );
+            }
+            return null;
+          });
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            SystemChannels.platform,
+            (call) async => null,
+          );
+
+      try {
+        final image = entity.Image(
+          id: 'fullscreen-exit-test',
+          title: 'Fullscreen Exit Test',
+          files: [],
+          paths: const entity.ImagePaths(image: 'http://test.com/image.jpg'),
+        );
+        mockRepository.withData([image]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: 'fullscreen-exit-test'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+        );
+        await tester.pump();
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+        await tester.pump();
+
+        expect(
+          AppLogStore.instance.entries.any(
+            (entry) => entry.message.contains(
+              'ImageFullscreenPage: error exiting fullscreen',
+            ),
+          ),
+          isTrue,
+        );
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+        AppLogStore.instance
+          ..clear()
+          ..isEnabled = false;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(windowsFullscreenChannel, null);
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, null);
+      }
     });
 
     testWidgets('displays images and allows vertical navigation', (
