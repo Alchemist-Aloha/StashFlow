@@ -18,8 +18,18 @@ int Check(bool condition, const char* message) {
 int main() {
   using State = WindowsFullscreenState;
   using EnterAction = WindowsFullscreenEnterAction;
+  using RestoreAction = WindowsFullscreenRestoreAction;
 
   int failures = 0;
+  failures += Check(
+      WindowsFullscreenRestoreActionFor(false) ==
+          RestoreAction::kRestorePlacement,
+      "A normal source window must restore its saved placement directly");
+  failures += Check(
+      WindowsFullscreenRestoreActionFor(true) ==
+          RestoreAction::kNormalizeThenMaximize,
+      "A maximized source window must normalize before maximizing again");
+
   failures += Check(
       WindowsFullscreenEnterActionFor(State::kWindowed) == EnterAction::kBegin,
       "Windowed state must begin entry");

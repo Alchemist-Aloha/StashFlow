@@ -22,6 +22,7 @@ class WindowsFullscreenController {
   WINDOWPLACEMENT saved_placement_ = {};
   LONG_PTR saved_style_ = 0;
   LONG_PTR saved_ex_style_ = 0;
+  bool saved_was_maximized_ = false;
   bool has_saved_state_ = false;
   WindowsFullscreenState state_ = WindowsFullscreenState::kWindowed;
 };

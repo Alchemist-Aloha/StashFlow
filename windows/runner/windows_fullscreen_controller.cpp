@@ -79,6 +79,8 @@ bool WindowsFullscreenController::Enter(std::string* error) {
     return false;
   }
 
+  const bool was_maximized = ::IsZoomed(window_) != FALSE;
+
   WINDOWPLACEMENT placement = {};
   placement.length = sizeof(WINDOWPLACEMENT);
   if (!::GetWindowPlacement(window_, &placement)) {
@@ -110,6 +112,7 @@ bool WindowsFullscreenController::Enter(std::string* error) {
   saved_placement_ = placement;
   saved_style_ = style;
   saved_ex_style_ = ex_style;
+  saved_was_maximized_ = was_maximized;
   has_saved_state_ = true;
 
   std::string operation_error;
@@ -180,13 +183,46 @@ bool WindowsFullscreenController::RestoreSavedState(std::string* error) {
                        &operation_error)) {
     record_failure(operation_error);
   }
+  const WindowsFullscreenRestoreAction restore_action =
+      WindowsFullscreenRestoreActionFor(saved_was_maximized_);
+  if (restore_action ==
+      WindowsFullscreenRestoreAction::kNormalizeThenMaximize) {
+    ::ShowWindow(window_, SW_RESTORE);
+  }
+
   if (!::SetWindowPlacement(window_, &saved_placement_)) {
     record_failure(Win32Error("SetWindowPlacement", ::GetLastError()));
   }
+
+  if (restore_action ==
+      WindowsFullscreenRestoreAction::kNormalizeThenMaximize) {
+    ::ShowWindow(window_, SW_MAXIMIZE);
+  }
+
   if (!::SetWindowPos(window_, nullptr, 0, 0, 0, 0,
                       SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
                           SWP_NOOWNERZORDER | SWP_FRAMECHANGED)) {
     record_failure(Win32Error("SetWindowPos", ::GetLastError()));
+  }
+
+  LONG_PTR restored_style = 0;
+  if (!ReadWindowLong(window_, GWL_STYLE, &restored_style, &operation_error)) {
+    record_failure(operation_error);
+  } else if (restored_style != saved_style_) {
+    record_failure("Restored GWL_STYLE does not match saved style");
+  }
+
+  LONG_PTR restored_ex_style = 0;
+  if (!ReadWindowLong(window_, GWL_EXSTYLE, &restored_ex_style,
+                      &operation_error)) {
+    record_failure(operation_error);
+  } else if (restored_ex_style != saved_ex_style_) {
+    record_failure("Restored GWL_EXSTYLE does not match saved style");
+  }
+
+  const bool restored_is_maximized = ::IsZoomed(window_) != FALSE;
+  if (restored_is_maximized != saved_was_maximized_) {
+    record_failure("Restored maximized state does not match saved state");
   }
 
   state_ = WindowsFullscreenStateAfterRestore(restored);

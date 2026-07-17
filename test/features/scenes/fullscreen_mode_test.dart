@@ -85,6 +85,22 @@ void main() {
     expect(controllerSource, contains('WS_CAPTION'));
     expect(controllerSource, contains('monitor.rcMonitor'));
     expect(controllerSource, contains('SetWindowPlacement'));
+    expect(controllerSource, contains('saved_was_maximized_'));
+    expect(controllerSource, contains('::IsZoomed(window_)'));
+    expect(controllerSource, contains('::ShowWindow(window_, SW_RESTORE)'));
+    expect(controllerSource, contains('::ShowWindow(window_, SW_MAXIMIZE)'));
+    expect(
+      controllerSource,
+      contains('Restored GWL_STYLE does not match saved style'),
+    );
+    expect(
+      controllerSource,
+      contains('Restored GWL_EXSTYLE does not match saved style'),
+    );
+    expect(
+      controllerSource,
+      contains('Restored maximized state does not match saved state'),
+    );
     expect(controllerSource, isNot(contains('HWND_TOPMOST')));
     expect(cmakeSource, contains('windows_fullscreen_controller.cpp'));
   });

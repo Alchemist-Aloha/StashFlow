@@ -13,6 +13,18 @@ enum class WindowsFullscreenEnterAction {
   kBlockedByRestore,
 };
 
+enum class WindowsFullscreenRestoreAction {
+  kRestorePlacement,
+  kNormalizeThenMaximize,
+};
+
+constexpr WindowsFullscreenRestoreAction WindowsFullscreenRestoreActionFor(
+    bool was_maximized) {
+  return was_maximized
+             ? WindowsFullscreenRestoreAction::kNormalizeThenMaximize
+             : WindowsFullscreenRestoreAction::kRestorePlacement;
+}
+
 constexpr WindowsFullscreenEnterAction WindowsFullscreenEnterActionFor(
     WindowsFullscreenState state) {
   switch (state) {
