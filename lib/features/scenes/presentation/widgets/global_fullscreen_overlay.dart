@@ -105,16 +105,7 @@ class _GlobalFullscreenOverlayState
         source: 'GlobalFullscreenOverlay',
       );
       setState(() => _isAnimating = true);
-      _animationController.reverse().then((_) {
-        if (mounted) {
-          setState(() {
-            _isVisible = false;
-            _isAnimating = false;
-          });
-        }
-      });
-      _exitFullScreen();
-      ref.read(playerStateProvider.notifier).markFullscreenExited();
+      unawaited(_completeExitFullScreen());
     }
   }
 
@@ -183,7 +174,32 @@ class _GlobalFullscreenOverlayState
     }
   }
 
-  void _exitFullScreen() {
+  Future<void> _completeExitFullScreen() async {
+    try {
+      await _exitFullScreen();
+      if (!mounted) return;
+
+      await _animationController.reverse();
+      if (!mounted) return;
+
+      setState(() {
+        _isVisible = false;
+        _isAnimating = false;
+      });
+      ref.read(playerStateProvider.notifier).markFullscreenExited();
+    } catch (error, stackTrace) {
+      AppLogStore.instance.add(
+        'GlobalFullscreenOverlay: error exiting fullscreen: '
+        '$error\n$stackTrace',
+        source: 'GlobalFullscreenOverlay',
+      );
+      if (!mounted) return;
+      setState(() => _isAnimating = false);
+      ref.read(playerStateProvider.notifier).markFullscreenExitFailed();
+    }
+  }
+
+  Future<void> _exitFullScreen() async {
     final controller = ref.read(playerStateProvider).videoController;
     final wasPlaying = _wasPlayingBeforeExit;
 
@@ -192,46 +208,42 @@ class _GlobalFullscreenOverlayState
       source: 'GlobalFullscreenOverlay',
     );
 
-    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     if (!kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.windows ||
             defaultTargetPlatform == TargetPlatform.linux ||
             defaultTargetPlatform == TargetPlatform.macOS)) {
-      unawaited(() async {
-        await DesktopFullscreen.instance.exit();
+      await DesktopFullscreen.instance.exit();
 
-        if (wasPlaying &&
-            (kIsWeb || defaultTargetPlatform == TargetPlatform.windows)) {
-          if (controller != null && !controller.player.state.playing) {
-            await controller.player.play();
-          }
+      if (wasPlaying &&
+          (kIsWeb || defaultTargetPlatform == TargetPlatform.windows)) {
+        if (controller != null && !controller.player.state.playing) {
+          await controller.player.play();
         }
-      }());
+      }
     } else {
       final allowMainPageGravityOrientation = ref.read(
         mainPageGravityOrientationProvider,
       );
-      unawaited(() async {
-        await SystemChrome.setPreferredOrientations(
-          allowMainPageGravityOrientation
-              ? [
-                  DeviceOrientation.portraitUp,
-                  DeviceOrientation.portraitDown,
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight,
-                ]
-              : [DeviceOrientation.portraitUp],
-        );
+      await SystemChrome.setPreferredOrientations(
+        allowMainPageGravityOrientation
+            ? [
+                DeviceOrientation.portraitUp,
+                DeviceOrientation.portraitDown,
+                DeviceOrientation.landscapeLeft,
+                DeviceOrientation.landscapeRight,
+              ]
+            : [DeviceOrientation.portraitUp],
+      );
 
-        if (wasPlaying && kIsWeb) {
-          Future.delayed(const Duration(milliseconds: 350), () {
-            if (controller != null && !controller.player.state.playing) {
-              unawaited(controller.player.play());
-            }
-          });
-        }
-      }());
+      if (wasPlaying && kIsWeb) {
+        Future.delayed(const Duration(milliseconds: 350), () {
+          if (controller != null && !controller.player.state.playing) {
+            unawaited(controller.player.play());
+          }
+        });
+      }
     }
   }
 

@@ -850,6 +850,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     );
   }
 
+  void markFullscreenExitFailed() {
+    final runtime = _fullscreenController.restoreAfterFailedExit();
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      viewMode: PlayerViewMode.fullscreen,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
   /// Synchronizes the background navigation to match the currently active scene.
   /// This is called when exiting fullscreen to ensure the user lands on the
   /// correct details page.
