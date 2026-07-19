@@ -32,6 +32,7 @@ import '../../data/repositories/stream_resolver.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../domain/entities/scene.dart';
+import '../widgets/scene_performer_title.dart';
 import '../widgets/scene_video_player.dart';
 import '../widgets/scene_strip.dart';
 
@@ -1330,6 +1331,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   performerIndex < scene.performerImagePaths.length
                   ? scene.performerImagePaths[performerIndex]
                   : null;
+              final performerBirthdate =
+                  performerIndex < scene.performerBirthdates.length
+                  ? scene.performerBirthdates[performerIndex]
+                  : null;
               final hasImage =
                   performerImagePath != null &&
                   performerImagePath.trim().isNotEmpty &&
@@ -1348,7 +1353,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         child: const Icon(Icons.person),
                       )
                     : const CircleAvatar(child: Icon(Icons.person)),
-                title: Text(performerName, style: context.textTheme.bodyLarge),
+                title: ScenePerformerTitle(
+                  performerName: performerName,
+                  sceneDate: scene.date,
+                  birthdate: performerBirthdate,
+                ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   if (performerIndex < scene.performerIds.length) {

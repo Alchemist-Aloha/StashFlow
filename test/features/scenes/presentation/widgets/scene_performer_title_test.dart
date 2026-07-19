@@ -19,7 +19,10 @@ void main() {
       final sceneDate = DateTime(2020, 6, 1);
       expect(ageAtSceneYear(sceneDate: sceneDate, birthdate: null), isNull);
       expect(ageAtSceneYear(sceneDate: sceneDate, birthdate: ''), isNull);
-      expect(ageAtSceneYear(sceneDate: sceneDate, birthdate: 'unknown'), isNull);
+      expect(
+        ageAtSceneYear(sceneDate: sceneDate, birthdate: 'unknown'),
+        isNull,
+      );
       expect(
         ageAtSceneYear(sceneDate: sceneDate, birthdate: '2021-01-01'),
         isNull,

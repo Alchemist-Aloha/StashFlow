@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Returns the performer's age in the scene's calendar year.
+///
+/// This intentionally uses year-only subtraction and omits invalid or future
+/// birthdates.
 int? ageAtSceneYear({required DateTime sceneDate, String? birthdate}) {
   final parsedBirthdate = DateTime.tryParse(birthdate?.trim() ?? '');
   if (parsedBirthdate == null) return null;
@@ -8,6 +12,7 @@ int? ageAtSceneYear({required DateTime sceneDate, String? birthdate}) {
   return age < 0 ? null : age;
 }
 
+/// Displays a performer name followed by their muted age in the scene year.
 class ScenePerformerTitle extends StatelessWidget {
   const ScenePerformerTitle({
     required this.performerName,
