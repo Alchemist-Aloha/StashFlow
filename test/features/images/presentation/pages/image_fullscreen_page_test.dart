@@ -98,6 +98,7 @@ void main() {
         ..clear();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(windowManagerChannel, (call) async {
+            if (call.method == 'isMaximized') return false;
             if (call.method == 'setFullScreen' &&
                 (call.arguments
                     as Map<Object?, Object?>)['isFullScreen'] == false) {
@@ -166,6 +167,7 @@ void main() {
         ..clear();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(windowManagerChannel, (call) async {
+            if (call.method == 'isMaximized') return false;
             if (call.method == 'setFullScreen' &&
                 (call.arguments
                     as Map<Object?, Object?>)['isFullScreen'] == false) {
@@ -334,4 +336,3 @@ void main() {
     });
   });
 }
-

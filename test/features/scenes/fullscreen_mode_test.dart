@@ -98,7 +98,10 @@ void main() {
     AppLogStore.instance
       ..isEnabled = true
       ..clear();
-    windowManagerHandler = (call) async => null;
+    windowManagerHandler = (call) async {
+      if (call.method == 'isMaximized') return false;
+      return null;
+    };
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
           windowManagerChannel,
@@ -172,6 +175,9 @@ void main() {
     expect(imageSource, contains('DesktopFullscreen.instance.exit()'));
     expect(desktopSource, contains('windowManager.setFullScreen(true)'));
     expect(desktopSource, contains('windowManager.setFullScreen(false)'));
+    expect(desktopSource, contains('await windowManager.unmaximize()'));
+    expect(desktopSource, contains('await windowManager.setBounds('));
+    expect(desktopSource, contains('await windowManager.maximize()'));
     expect(desktopSource, isNot(contains('MethodChannel')));
     expect(controllerFile.existsSync(), isFalse);
     expect(cmakeSource, isNot(contains('windows_fullscreen_controller')));
@@ -186,6 +192,9 @@ void main() {
       var blockExit = false;
       var exitInvoked = false;
       windowManagerHandler = (call) {
+        if (call.method == 'isMaximized') {
+          return Future<Object?>.value(false);
+        }
         final isExiting = call.method == 'setFullScreen' &&
             (call.arguments as Map<Object?, Object?>)['isFullScreen'] == false;
         if (isExiting && blockExit) {
@@ -257,6 +266,7 @@ void main() {
     try {
       var exitInvoked = false;
       windowManagerHandler = (call) async {
+        if (call.method == 'isMaximized') return false;
         if (call.method == 'setFullScreen' &&
             (call.arguments as Map<Object?, Object?>)['isFullScreen'] == false) {
           exitInvoked = true;
@@ -319,6 +329,7 @@ void main() {
     try {
       var exitInvoked = false;
       windowManagerHandler = (call) async {
+        if (call.method == 'isMaximized') return false;
         if (call.method == 'setFullScreen' &&
             (call.arguments as Map<Object?, Object?>)['isFullScreen'] == false) {
           exitInvoked = true;
@@ -373,4 +384,3 @@ void main() {
     }
   });
 }
-
