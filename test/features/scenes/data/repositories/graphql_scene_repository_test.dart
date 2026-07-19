@@ -5,6 +5,62 @@ import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scen
 
 void main() {
   group('GraphQLSceneRepository', () {
+    test('findScenes maps performer birthdates', () async {
+      final client = _FakeGraphQLClient(
+        queryData: {
+          '__typename': 'Query',
+          'findScenes': {
+            '__typename': 'FindScenesResultType',
+            'count': 1,
+            'scenes': [
+              {
+                '__typename': 'Scene',
+                'id': 'scene-1',
+                'title': 'Scene',
+                'date': '2020-01-01',
+                'rating100': null,
+                'o_counter': 0,
+                'organized': false,
+                'interactive': false,
+                'resume_time': null,
+                'play_count': 0,
+                'play_duration': null,
+                'files': const [],
+                'paths': {
+                  '__typename': 'ScenePathsType',
+                  'screenshot': null,
+                  'preview': null,
+                  'stream': null,
+                  'caption': null,
+                  'vtt': null,
+                  'sprite': null,
+                },
+                'captions': const [],
+                'urls': const [],
+                'studio': null,
+                'performers': [
+                  {
+                    '__typename': 'Performer',
+                    'id': 'performer-1',
+                    'name': 'Alice',
+                    'image_path': null,
+                    'birthdate': '2000-12-31',
+                  },
+                ],
+                'tags': const [],
+                'scene_markers': const [],
+              },
+            ],
+          },
+        },
+        mutationData: const {'__typename': 'Mutation'},
+      );
+
+      final scenes = await GraphQLSceneRepository(client).findScenes();
+
+      expect(scenes.single.performerBirthdates, ['2000-12-31']);
+    });
+
     test(
       'createSceneMarker resolves primary tag and sends marker input',
       () async {

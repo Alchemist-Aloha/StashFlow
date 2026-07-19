@@ -41,6 +41,7 @@ fragment SlimSceneData on Scene {
     id
     name
     image_path
+    birthdate
   }
   tags {
     id

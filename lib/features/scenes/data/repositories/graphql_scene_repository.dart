@@ -148,6 +148,9 @@ class GraphQLSceneRepository {
             ),
             performerIds: s.performers.map((p) => p.id).toList(),
             performerNames: s.performers.map((p) => p.name).toList(),
+            performerBirthdates: s.performers
+                .map((p) => p.birthdate)
+                .toList(),
             performerImagePaths: s.performers
                 .map(
                   (p) => resolveGraphqlMediaUrl(
@@ -378,6 +381,7 @@ class GraphQLSceneRepository {
       ),
       performerIds: s.performers.map((p) => p.id).toList(),
       performerNames: s.performers.map((p) => p.name).toList(),
+      performerBirthdates: s.performers.map((p) => p.birthdate).toList(),
       performerImagePaths: s.performers
           .map(
             (p) => resolveGraphqlMediaUrl(
