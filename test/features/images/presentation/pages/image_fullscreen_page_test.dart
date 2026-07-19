@@ -88,19 +88,19 @@ void main() {
       expect(source, isNot(contains('windowManager.maximize()')));
     });
 
-    testWidgets('logs native fullscreen exit failures during disposal', (
+    testWidgets('logs window_manager exit failures during disposal', (
       tester,
     ) async {
-      const windowsFullscreenChannel = MethodChannel(
-        'stash_app_flutter/window_fullscreen',
-      );
+      const windowManagerChannel = MethodChannel('window_manager');
       debugDefaultTargetPlatformOverride = TargetPlatform.windows;
       AppLogStore.instance
         ..isEnabled = true
         ..clear();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(windowsFullscreenChannel, (call) async {
-            if (call.method == 'exit') {
+          .setMockMethodCallHandler(windowManagerChannel, (call) async {
+            if (call.method == 'setFullScreen' &&
+                (call.arguments
+                    as Map<Object?, Object?>)['isFullScreen'] == false) {
               throw PlatformException(
                 code: 'fullscreen_error',
                 message: 'restore failed',
@@ -149,27 +149,27 @@ void main() {
           ..clear()
           ..isEnabled = false;
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-            .setMockMethodCallHandler(windowsFullscreenChannel, null);
+            .setMockMethodCallHandler(windowManagerChannel, null);
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(SystemChannels.platform, null);
       }
     });
 
-    testWidgets('attempts native exit when system UI restoration fails', (
+    testWidgets('attempts window_manager exit when system UI restoration fails', (
       tester,
     ) async {
-      const windowsFullscreenChannel = MethodChannel(
-        'stash_app_flutter/window_fullscreen',
-      );
+      const windowManagerChannel = MethodChannel('window_manager');
       debugDefaultTargetPlatformOverride = TargetPlatform.windows;
-      var nativeExitInvoked = false;
+      var windowManagerExitInvoked = false;
       AppLogStore.instance
         ..isEnabled = true
         ..clear();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(windowsFullscreenChannel, (call) async {
-            if (call.method == 'exit') {
-              nativeExitInvoked = true;
+          .setMockMethodCallHandler(windowManagerChannel, (call) async {
+            if (call.method == 'setFullScreen' &&
+                (call.arguments
+                    as Map<Object?, Object?>)['isFullScreen'] == false) {
+              windowManagerExitInvoked = true;
             }
             return null;
           });
@@ -205,7 +205,7 @@ void main() {
         await tester.pump();
         await tester.pump();
 
-        expect(nativeExitInvoked, isTrue);
+        expect(windowManagerExitInvoked, isTrue);
         expect(
           AppLogStore.instance.entries.any(
             (entry) => entry.message.contains(
@@ -220,7 +220,7 @@ void main() {
           ..clear()
           ..isEnabled = false;
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-            .setMockMethodCallHandler(windowsFullscreenChannel, null);
+            .setMockMethodCallHandler(windowManagerChannel, null);
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(SystemChannels.platform, null);
       }
@@ -334,3 +334,4 @@ void main() {
     });
   });
 }
+

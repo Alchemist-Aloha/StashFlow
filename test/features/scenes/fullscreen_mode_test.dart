@@ -88,11 +88,9 @@ class _ExitTestPlayerState extends PlayerState {
 }
 
 void main() {
-  const windowsFullscreenChannel = MethodChannel(
-    'stash_app_flutter/window_fullscreen',
-  );
+  const windowManagerChannel = MethodChannel('window_manager');
   late SharedPreferences prefs;
-  late Future<Object?> Function(MethodCall call) windowsFullscreenHandler;
+  late Future<Object?> Function(MethodCall call) windowManagerHandler;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -100,11 +98,11 @@ void main() {
     AppLogStore.instance
       ..isEnabled = true
       ..clear();
-    windowsFullscreenHandler = (call) async => null;
+    windowManagerHandler = (call) async => null;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-          windowsFullscreenChannel,
-          (call) => windowsFullscreenHandler(call),
+          windowManagerChannel,
+          (call) => windowManagerHandler(call),
         );
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
@@ -118,7 +116,7 @@ void main() {
       ..clear()
       ..isEnabled = false;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(windowsFullscreenChannel, null);
+        .setMockMethodCallHandler(windowManagerChannel, null);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(SystemChannels.platform, null);
   });
@@ -151,7 +149,7 @@ void main() {
     tagNames: [],
   );
 
-  test('uses an app-owned Windows borderless fullscreen transition', () {
+  test('uses window_manager for Windows fullscreen transitions', () {
     final overlaySource = File(
       'lib/features/scenes/presentation/widgets/global_fullscreen_overlay.dart',
     ).readAsStringSync();
@@ -160,9 +158,6 @@ void main() {
     ).readAsStringSync();
     final desktopSource = File(
       'lib/core/utils/desktop_fullscreen.dart',
-    ).readAsStringSync();
-    final runnerSource = File(
-      'windows/runner/flutter_window.cpp',
     ).readAsStringSync();
     final controllerFile = File(
       'windows/runner/windows_fullscreen_controller.cpp',
@@ -175,67 +170,14 @@ void main() {
     expect(overlaySource, contains('await DesktopFullscreen.instance.exit()'));
     expect(imageSource, contains('await DesktopFullscreen.instance.enter()'));
     expect(imageSource, contains('DesktopFullscreen.instance.exit()'));
-    expect(desktopSource, contains("invokeMethod<void>('enter')"));
-    expect(desktopSource, contains("invokeMethod<void>('exit')"));
-    expect(runnerSource, contains('stash_app_flutter/window_fullscreen'));
-    expect(controllerFile.existsSync(), isTrue);
-
-    final controllerSource = controllerFile.readAsStringSync();
-    expect(controllerSource, contains('GetWindowPlacement'));
-    expect(controllerSource, contains('GWL_STYLE'));
-    expect(controllerSource, contains('GWL_EXSTYLE'));
-    expect(controllerSource, contains('WS_OVERLAPPEDWINDOW'));
-    expect(controllerSource, contains('WS_CAPTION'));
-    expect(controllerSource, contains('monitor.rcMonitor'));
-    expect(controllerSource, contains('SetWindowPlacement'));
-    expect(controllerSource, contains('saved_was_maximized_'));
-    expect(controllerSource, contains('::IsZoomed(window_)'));
-    expect(controllerSource, contains('::ShowWindow(window_, SW_RESTORE)'));
-    expect(controllerSource, contains('::ShowWindow(window_, SW_MAXIMIZE)'));
-    expect(
-      controllerSource,
-      contains('Restored GWL_STYLE does not match saved style'),
-    );
-    expect(
-      controllerSource,
-      contains('Restored GWL_EXSTYLE does not match saved style'),
-    );
-    expect(
-      controllerSource,
-      contains('Restored maximized state does not match saved state'),
-    );
-    expect(controllerSource, contains('::RedrawWindow(window_'));
-    expect(
-      controllerSource,
-      contains('RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW'),
-    );
-    expect(controllerSource, contains('::DwmFlush()'));
-    expect(controllerSource, contains('RedrawWindow failed'));
-    expect(
-      controllerSource,
-      contains('HResultError("DwmFlush", flush_result)'),
-    );
-    expect(controllerSource, contains('failed with HRESULT'));
-
-    final restoreFrameChange = controllerSource.lastIndexOf(
-      '::SetWindowPos(window_, nullptr',
-    );
-    final nonClientRedraw = controllerSource.indexOf(
-      '::RedrawWindow(window_',
-      restoreFrameChange,
-    );
-    final compositorFlush = controllerSource.indexOf(
-      '::DwmFlush()',
-      nonClientRedraw,
-    );
-    expect(restoreFrameChange, greaterThanOrEqualTo(0));
-    expect(nonClientRedraw, greaterThan(restoreFrameChange));
-    expect(compositorFlush, greaterThan(nonClientRedraw));
-    expect(controllerSource, isNot(contains('HWND_TOPMOST')));
-    expect(cmakeSource, contains('windows_fullscreen_controller.cpp'));
+    expect(desktopSource, contains('windowManager.setFullScreen(true)'));
+    expect(desktopSource, contains('windowManager.setFullScreen(false)'));
+    expect(desktopSource, isNot(contains('MethodChannel')));
+    expect(controllerFile.existsSync(), isFalse);
+    expect(cmakeSource, isNot(contains('windows_fullscreen_controller')));
   });
 
-  testWidgets('waits for native exit before hiding fullscreen overlay', (
+  testWidgets('waits for window_manager exit before hiding fullscreen overlay', (
     tester,
   ) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.windows;
@@ -243,8 +185,10 @@ void main() {
       final exitCompleter = Completer<Object?>();
       var blockExit = false;
       var exitInvoked = false;
-      windowsFullscreenHandler = (call) {
-        if (call.method == 'exit' && blockExit) {
+      windowManagerHandler = (call) {
+        final isExiting = call.method == 'setFullScreen' &&
+            (call.arguments as Map<Object?, Object?>)['isFullScreen'] == false;
+        if (isExiting && blockExit) {
           exitInvoked = true;
           return exitCompleter.future;
         }
@@ -312,8 +256,9 @@ void main() {
     final player = _ResumeFailingPlayer();
     try {
       var exitInvoked = false;
-      windowsFullscreenHandler = (call) async {
-        if (call.method == 'exit') {
+      windowManagerHandler = (call) async {
+        if (call.method == 'setFullScreen' &&
+            (call.arguments as Map<Object?, Object?>)['isFullScreen'] == false) {
           exitInvoked = true;
         }
         return null;
@@ -367,14 +312,15 @@ void main() {
     }
   });
 
-  testWidgets('native exit failure restores retryable fullscreen UI', (
+  testWidgets('window_manager exit failure restores retryable fullscreen UI', (
     tester,
   ) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     try {
       var exitInvoked = false;
-      windowsFullscreenHandler = (call) async {
-        if (call.method == 'exit') {
+      windowManagerHandler = (call) async {
+        if (call.method == 'setFullScreen' &&
+            (call.arguments as Map<Object?, Object?>)['isFullScreen'] == false) {
           exitInvoked = true;
           throw PlatformException(
             code: 'fullscreen_error',
@@ -427,3 +373,4 @@ void main() {
     }
   });
 }
+
