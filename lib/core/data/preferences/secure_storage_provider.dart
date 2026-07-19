@@ -3,7 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AppSecureStorage {
+abstract interface class AppSecureStorageStore {
+  Future<String?> read({required String key});
+
+  Future<void> write({required String key, required String? value});
+
+  Future<void> delete({required String key});
+}
+
+class AppSecureStorage implements AppSecureStorageStore {
   AppSecureStorage({
     FlutterSecureStorage? secureStorage,
     SharedPreferences? sharedPreferences,
@@ -16,6 +24,7 @@ class AppSecureStorage {
   final SharedPreferences? _sharedPreferences;
   SharedPreferences? _lazyPrefs;
 
+  @override
   Future<String?> read({required String key}) async {
     try {
       return await _secureStorage.read(key: key);
@@ -26,6 +35,7 @@ class AppSecureStorage {
     }
   }
 
+  @override
   Future<void> write({required String key, required String? value}) async {
     if (value == null) {
       return delete(key: key);
@@ -40,6 +50,7 @@ class AppSecureStorage {
     }
   }
 
+  @override
   Future<void> delete({required String key}) async {
     try {
       await _secureStorage.delete(key: key);

@@ -62,3 +62,5 @@ android/upload-keystore.jks
 .worktrees/
 Caddyfile
 perf/
+
+docs/superpowers/plans/

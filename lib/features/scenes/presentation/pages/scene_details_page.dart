@@ -32,6 +32,7 @@ import '../../data/repositories/stream_resolver.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../domain/entities/scene.dart';
+import '../widgets/scene_performer_title.dart';
 import '../widgets/scene_video_player.dart';
 import '../widgets/scene_strip.dart';
 
@@ -675,7 +676,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     BuildContext context,
     Widget child, {
     Key? key,
-    EdgeInsetsGeometry? padding,
   }) {
     return Card(
       key: key,
@@ -688,7 +688,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
       child: Padding(
-        padding: padding ?? const EdgeInsets.all(AppTheme.spacingMedium),
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
         child: child,
       ),
     );
@@ -732,14 +732,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 children: [SizedBox(width: double.infinity, child: controls)],
               ),
               key: const Key('scene_header_section'),
-              padding: _showTechnicalMetadata
-                  ? null
-                  : const EdgeInsets.fromLTRB(
-                      AppTheme.spacingMedium,
-                      0,
-                      AppTheme.spacingMedium,
-                      AppTheme.spacingMedium,
-                    ),
             ),
             _buildDetails(context, scene),
           ],
@@ -772,6 +764,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     return Row(
       children: [
+        const SizedBox(height: 48),
         Expanded(
           child: Row(
             mainAxisSize: MainAxisSize.max,
@@ -831,22 +824,12 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           ),
         ),
         if (!_showTechnicalMetadata)
-          Flexible(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                key: const Key('scene_show_metadata'),
-                onPressed: () => setState(() => _showTechnicalMetadata = true),
-                style: TextButton.styleFrom(
-                  foregroundColor: context.colors.onSurfaceVariant,
-                ),
-                child: Text(
-                  context.l10n.details_show_metadata,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
+          IconButton(
+            key: const Key('scene_show_metadata'),
+            tooltip: context.l10n.details_show_metadata,
+            onPressed: () => setState(() => _showTechnicalMetadata = true),
+            color: context.colors.onSurfaceVariant,
+            icon: const Icon(Icons.keyboard_arrow_down),
           ),
       ],
     );
@@ -1348,6 +1331,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   performerIndex < scene.performerImagePaths.length
                   ? scene.performerImagePaths[performerIndex]
                   : null;
+              final performerBirthdate =
+                  performerIndex < scene.performerBirthdates.length
+                  ? scene.performerBirthdates[performerIndex]
+                  : null;
               final hasImage =
                   performerImagePath != null &&
                   performerImagePath.trim().isNotEmpty &&
@@ -1366,7 +1353,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         child: const Icon(Icons.person),
                       )
                     : const CircleAvatar(child: Icon(Icons.person)),
-                title: Text(performerName, style: context.textTheme.bodyLarge),
+                title: ScenePerformerTitle(
+                  performerName: performerName,
+                  sceneDate: scene.date,
+                  birthdate: performerBirthdate,
+                ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   if (performerIndex < scene.performerIds.length) {

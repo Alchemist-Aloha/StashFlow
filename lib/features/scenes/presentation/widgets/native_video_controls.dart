@@ -66,8 +66,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
 
 enum _DragMode { none, determining, horizontal, vertical }
 
-class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
-    with WidgetsBindingObserver {
+class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
   static const _controlsAutoHideDelay = Duration(milliseconds: 1000);
   static const _gestureSeekSeconds = 10;
   static const _dragSeekSensitivity = 0.30;
@@ -113,8 +112,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       'NativeVideoControls init scene=${widget.scene.id}',
       source: 'NativeVideoControls',
     );
-    WidgetsBinding.instance.addObserver(this);
-
     _subscriptions.add(
       widget.controller.player.stream.playing.listen((_) => _onVideoTick()),
     );
@@ -173,7 +170,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       'NativeVideoControls dispose scene=${widget.scene.id}',
       source: 'NativeVideoControls',
     );
-    WidgetsBinding.instance.removeObserver(this);
     _cancelAutoHide();
     _seekFeedbackTimer?.cancel();
     _feedbackTimer?.cancel();
@@ -182,29 +178,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       sub.cancel();
     }
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!widget.enableNativePip || kIsWeb || !Platform.isAndroid) return;
-    if (state != AppLifecycleState.paused) return;
-
-    final controller = widget.controller;
-    if (!controller.player.state.playing) return;
-
-    final isFullScreen = ref.read(playerStateProvider).isFullScreen;
-    if (!isFullScreen) return;
-
-    final width = controller.player.state.width;
-    final height = controller.player.state.height;
-    final aspect = (width != null && height != null && height > 0)
-        ? width / height
-        : 16 / 9;
-    unawaited(
-      ref
-          .read(playerStateProvider.notifier)
-          .requestEnterPip(aspectRatio: aspect),
-    );
   }
 
   void _onVideoTick() {

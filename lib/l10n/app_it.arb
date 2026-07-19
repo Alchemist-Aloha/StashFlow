@@ -354,8 +354,6 @@
   "settings_playback_title": "Impostazioni Riproduzione",
   "settings_playback_behavior": "Comportamento riproduzione",
   "settings_playback_behavior_subtitle": "Gestione riproduzione predefinita e background",
-  "settings_playback_prefer_streams": "Preferisci sceneStreams prima",
-  "settings_playback_prefer_streams_subtitle": "Quando disattivato, la riproduzione utilizza direttamente paths.stream",
   "settings_playback_feed_random": "Avvia Feed da una posizione casuale",
   "settings_playback_feed_random_subtitle": "Durante la riproduzione di scene in modalità Feed, avvia da una posizione casuale tra lo 0% e il 90% della durata del video",
   "settings_playback_autoplay": "Riproduzione Automatica Prossima Scena",

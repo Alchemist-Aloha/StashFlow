@@ -1,9 +1,12 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
     as entity;
 import 'package:stash_app_flutter/features/images/presentation/pages/image_fullscreen_page.dart';
@@ -73,6 +76,156 @@ void main() {
       );
     });
 
+    test('delegates desktop fullscreen transitions to DesktopFullscreen', () {
+      final source = File(
+        'lib/features/images/presentation/pages/image_fullscreen_page.dart',
+      ).readAsStringSync();
+
+      expect(source, contains('if (mounted) unawaited(_enterFullScreen())'));
+      expect(source, contains('await DesktopFullscreen.instance.enter()'));
+      expect(source, contains('DesktopFullscreen.instance.exit()'));
+      expect(source, isNot(contains('windowManager.unmaximize()')));
+      expect(source, isNot(contains('windowManager.maximize()')));
+    });
+
+    testWidgets('logs native fullscreen exit failures during disposal', (
+      tester,
+    ) async {
+      const windowsFullscreenChannel = MethodChannel(
+        'stash_app_flutter/window_fullscreen',
+      );
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      AppLogStore.instance
+        ..isEnabled = true
+        ..clear();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(windowsFullscreenChannel, (call) async {
+            if (call.method == 'exit') {
+              throw PlatformException(
+                code: 'fullscreen_error',
+                message: 'restore failed',
+              );
+            }
+            return null;
+          });
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            SystemChannels.platform,
+            (call) async => null,
+          );
+
+      try {
+        final image = entity.Image(
+          id: 'fullscreen-exit-test',
+          title: 'Fullscreen Exit Test',
+          files: [],
+          paths: const entity.ImagePaths(image: 'http://test.com/image.jpg'),
+        );
+        mockRepository.withData([image]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: 'fullscreen-exit-test'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+        );
+        await tester.pump();
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+        await tester.pump();
+
+        expect(
+          AppLogStore.instance.entries.any(
+            (entry) => entry.message.contains(
+              'ImageFullscreenPage: error exiting fullscreen',
+            ),
+          ),
+          isTrue,
+        );
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+        AppLogStore.instance
+          ..clear()
+          ..isEnabled = false;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(windowsFullscreenChannel, null);
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, null);
+      }
+    });
+
+    testWidgets('attempts native exit when system UI restoration fails', (
+      tester,
+    ) async {
+      const windowsFullscreenChannel = MethodChannel(
+        'stash_app_flutter/window_fullscreen',
+      );
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      var nativeExitInvoked = false;
+      AppLogStore.instance
+        ..isEnabled = true
+        ..clear();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(windowsFullscreenChannel, (call) async {
+            if (call.method == 'exit') {
+              nativeExitInvoked = true;
+            }
+            return null;
+          });
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+            if (call.method == 'SystemChrome.setEnabledSystemUIMode') {
+              throw PlatformException(
+                code: 'system_ui_error',
+                message: 'system UI restore failed',
+              );
+            }
+            return null;
+          });
+
+      try {
+        final image = entity.Image(
+          id: 'system-ui-exit-test',
+          title: 'System UI Exit Test',
+          files: [],
+          paths: const entity.ImagePaths(image: 'http://test.com/image.jpg'),
+        );
+        mockRepository.withData([image]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: 'system-ui-exit-test'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+        );
+        await tester.pump();
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+        await tester.pump();
+
+        expect(nativeExitInvoked, isTrue);
+        expect(
+          AppLogStore.instance.entries.any(
+            (entry) => entry.message.contains(
+              'ImageFullscreenPage: error restoring system UI',
+            ),
+          ),
+          isTrue,
+        );
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+        AppLogStore.instance
+          ..clear()
+          ..isEnabled = false;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(windowsFullscreenChannel, null);
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, null);
+      }
+    });
+
     testWidgets('displays images and allows vertical navigation', (
       tester,
     ) async {
@@ -102,6 +255,21 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('1 / 2'), findsOneWidget);
+
+      final keyboardFocus = tester.widget<Focus>(
+        find.byKey(const Key('image_keyboard_shortcuts')),
+      );
+      keyboardFocus.focusNode!.requestFocus();
+      await tester.pump();
+      expect(keyboardFocus.focusNode!.hasFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.end);
+      await tester.pump();
+      expect(find.text('Image 2'), findsOneWidget);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.home);
+      await tester.pump();
+      expect(find.text('Image 1'), findsOneWidget);
 
       await tester.drag(
         find.byType(ExtendedImageGesturePageView),

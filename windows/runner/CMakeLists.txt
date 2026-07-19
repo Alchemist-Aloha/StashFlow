@@ -11,6 +11,8 @@ add_executable(${BINARY_NAME} WIN32
   "main.cpp"
   "utils.cpp"
   "win32_window.cpp"
+  "windows_fullscreen_controller.cpp"
+  "windows_fullscreen_controller.h"
   "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
   "Runner.rc"
   "runner.exe.manifest"
@@ -38,3 +40,19 @@ target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
+
+option(STASHFLOW_BUILD_WINDOWS_TESTS "Build StashFlow Windows runner tests" OFF)
+if(STASHFLOW_BUILD_WINDOWS_TESTS)
+  enable_testing()
+  add_executable(stashflow_windows_fullscreen_state_test
+    "tests/windows_fullscreen_state_test.cpp"
+  )
+  target_include_directories(stashflow_windows_fullscreen_state_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+  )
+  apply_standard_settings(stashflow_windows_fullscreen_state_test)
+  add_test(
+    NAME stashflow_windows_fullscreen_state_test
+    COMMAND stashflow_windows_fullscreen_state_test
+  )
+endif()

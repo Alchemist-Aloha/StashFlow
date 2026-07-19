@@ -377,8 +377,6 @@
   "settings_playback_title": "Wiedergabe-Einstellungen",
   "settings_playback_behavior": "Wiedergabeverhalten",
   "settings_playback_behavior_subtitle": "Standard-Wiedergabe- und Hintergrund-Handling",
-  "settings_playback_prefer_streams": "sceneStreams bevorzugen",
-  "settings_playback_prefer_streams_subtitle": "Wenn deaktiviert, wird die Wiedergabe direkt über paths.stream ausgeführt",
   "settings_playback_feed_random": "Feed an zufälliger Position starten",
   "settings_playback_feed_random_subtitle": "Beim Abspielen von Szenen im Feed-Modus an einer zufälligen Position zwischen 0% und 90% der Videolänge starten",
   "settings_playback_autoplay": "Nächste Szene automatisch abspielen",

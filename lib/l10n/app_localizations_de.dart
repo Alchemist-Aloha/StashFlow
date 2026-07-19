@@ -1050,6 +1050,59 @@ class AppLocalizationsDe extends AppLocalizations {
       '10 Sekunden rückwärts springen';
 
   @override
+  String get settings_keyboard_global_section => 'Global Navigation';
+
+  @override
+  String get settings_keyboard_video_section => 'Video Player';
+
+  @override
+  String get settings_keyboard_image_section => 'Image Viewer';
+
+  @override
+  String get settings_keyboard_next_tab => 'Next Tab';
+
+  @override
+  String get settings_keyboard_previous_tab => 'Previous Tab';
+
+  @override
+  String settings_keyboard_tab_number(int number) {
+    return 'Tab $number';
+  }
+
+  @override
+  String get settings_keyboard_first_image => 'First Image';
+
+  @override
+  String get settings_keyboard_last_image => 'Last Image';
+
+  @override
+  String get settings_keyboard_close_image => 'Close Image Viewer';
+
+  @override
+  String get settings_keyboard_unbind => 'Unbind shortcut';
+
+  @override
+  String get settings_keyboard_reset_confirm_title =>
+      'Reset keyboard shortcuts?';
+
+  @override
+  String get settings_keyboard_reset_confirm_body =>
+      'All custom keyboard shortcuts will be replaced with the defaults.';
+
+  @override
+  String get settings_keyboard_reserved =>
+      'This shortcut is reserved by the browser or operating system.';
+
+  @override
+  String get settings_keyboard_tab_reserved =>
+      'Tab is reserved for keyboard focus navigation.';
+
+  @override
+  String settings_keyboard_conflict_moved(String action) {
+    return 'Shortcut moved from $action.';
+  }
+
+  @override
   String get settings_appearance => 'Erscheinungsbild';
 
   @override
@@ -1471,13 +1524,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settings_playback_behavior_subtitle =>
       'Standard-Wiedergabe- und Hintergrund-Handling';
-
-  @override
-  String get settings_playback_prefer_streams => 'sceneStreams bevorzugen';
-
-  @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'Wenn deaktiviert, wird die Wiedergabe direkt über paths.stream ausgeführt';
 
   @override
   String get settings_playback_feed_random =>
@@ -3213,4 +3259,51 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scenes_title => 'Szenen';
+
+  @override
+  String get settings_config_backup_title => 'App configuration';
+
+  @override
+  String get settings_config_backup_subtitle =>
+      'Save or replace user-facing settings and server profiles';
+
+  @override
+  String get settings_config_export => 'Save configuration';
+
+  @override
+  String get settings_config_import => 'Import configuration';
+
+  @override
+  String get settings_config_include_credentials =>
+      'Include credentials unencrypted';
+
+  @override
+  String get settings_config_credentials_warning =>
+      'Anyone with this file can read your server credentials and app lock passcode.';
+
+  @override
+  String get settings_config_exported => 'Configuration saved';
+
+  @override
+  String get settings_config_import_title => 'Replace app configuration?';
+
+  @override
+  String settings_config_import_summary(int profileCount) {
+    return 'This file contains $profileCount server profiles. Importing replaces all current user-facing settings and profiles.';
+  }
+
+  @override
+  String get settings_config_import_confirm => 'Replace configuration';
+
+  @override
+  String get settings_config_imported =>
+      'Configuration imported. Restart the app to apply every setting.';
+
+  @override
+  String get settings_config_invalid =>
+      'The configuration file is invalid or unsupported.';
+
+  @override
+  String get settings_config_plaintext_label =>
+      'Credentials are stored as readable text in the exported file.';
 }

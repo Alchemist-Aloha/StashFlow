@@ -86,7 +86,6 @@ After connecting, you can configure the following in **Settings**:
 |---------|-------------|
 | `server_base_url` | Full URL to your Stash server |
 | `server_api_key` | API key for authentication |
-| `prefer_scene_streams` | Use `sceneStreams` endpoint (on) or direct file path (off) |
 | `scene_layout_mode` | Scene list view: **List**, **Grid**, or **TikTok** |
 | `autoplay_next` | Automatically play the next scene when playback ends |
 | `video_background_playback` | Continue audio when the app is minimised (Android) |

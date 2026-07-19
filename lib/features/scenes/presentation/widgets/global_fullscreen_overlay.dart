@@ -5,13 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:window_manager/window_manager.dart';
 
 import '../providers/video_player_provider.dart';
 import '../providers/fullscreen_controller.dart';
 import '../providers/scene_random_navigation_provider.dart';
 import 'player_surface.dart';
 import '../../../../core/utils/app_log_store.dart';
+import '../../../../core/utils/desktop_fullscreen.dart';
 import '../../../../core/utils/web_helpers.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -32,7 +32,6 @@ class _GlobalFullscreenOverlayState
   bool _isVisible = false;
   bool _isAnimating = false;
 
-  bool _wasMaximizedBeforeFullscreen = false;
   bool _wasPlayingBeforeExit = false;
   VideoController? _currentListenedController;
   final List<StreamSubscription> _subscriptions = [];
@@ -106,16 +105,7 @@ class _GlobalFullscreenOverlayState
         source: 'GlobalFullscreenOverlay',
       );
       setState(() => _isAnimating = true);
-      _animationController.reverse().then((_) {
-        if (mounted) {
-          setState(() {
-            _isVisible = false;
-            _isAnimating = false;
-          });
-        }
-      });
-      _exitFullScreen();
-      ref.read(playerStateProvider.notifier).markFullscreenExited();
+      unawaited(_completeExitFullScreen());
     }
   }
 
@@ -136,17 +126,7 @@ class _GlobalFullscreenOverlayState
           (defaultTargetPlatform == TargetPlatform.windows ||
               defaultTargetPlatform == TargetPlatform.linux ||
               defaultTargetPlatform == TargetPlatform.macOS)) {
-        _wasMaximizedBeforeFullscreen = await windowManager.isMaximized();
-
-        if (_wasMaximizedBeforeFullscreen) {
-          await windowManager.unmaximize();
-        }
-
-        await windowManager.setFullScreen(true);
-
-        if (!await windowManager.isFullScreen()) {
-          await windowManager.setFullScreen(true);
-        }
+        await DesktopFullscreen.instance.enter();
 
         if (wasPlaying && defaultTargetPlatform == TargetPlatform.windows) {
           if (controller != null && !controller.player.state.playing) {
@@ -194,60 +174,96 @@ class _GlobalFullscreenOverlayState
     }
   }
 
-  void _exitFullScreen() {
-    final controller = ref.read(playerStateProvider).videoController;
-    final wasPlaying = _wasPlayingBeforeExit;
+  Future<void> _completeExitFullScreen() async {
+    try {
+      await _exitFullScreen();
+      if (!mounted) return;
 
+      await _animationController.reverse();
+      if (!mounted) return;
+
+      setState(() {
+        _isVisible = false;
+        _isAnimating = false;
+      });
+      ref.read(playerStateProvider.notifier).markFullscreenExited();
+    } catch (error, stackTrace) {
+      AppLogStore.instance.add(
+        'GlobalFullscreenOverlay: error exiting fullscreen: '
+        '$error\n$stackTrace',
+        source: 'GlobalFullscreenOverlay',
+      );
+      if (!mounted) return;
+      setState(() => _isAnimating = false);
+      ref.read(playerStateProvider.notifier).markFullscreenExitFailed();
+      return;
+    }
+
+    await _resumePlaybackAfterExit();
+  }
+
+  Future<void> _exitFullScreen() async {
     AppLogStore.instance.add(
-      'GlobalFullscreenOverlay: _exitFullScreen: wasPlayingBeforeExit=$wasPlaying',
+      'GlobalFullscreenOverlay: _exitFullScreen',
       source: 'GlobalFullscreenOverlay',
     );
 
-    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     if (!kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.windows ||
             defaultTargetPlatform == TargetPlatform.linux ||
             defaultTargetPlatform == TargetPlatform.macOS)) {
-      unawaited(() async {
-        await windowManager.setFullScreen(false);
-
-        if (_wasMaximizedBeforeFullscreen) {
-          await windowManager.maximize();
-          _wasMaximizedBeforeFullscreen = false;
-        }
-
-        if (wasPlaying &&
-            (kIsWeb || defaultTargetPlatform == TargetPlatform.windows)) {
-          if (controller != null && !controller.player.state.playing) {
-            await controller.player.play();
-          }
-        }
-      }());
+      await DesktopFullscreen.instance.exit();
     } else {
       final allowMainPageGravityOrientation = ref.read(
         mainPageGravityOrientationProvider,
       );
-      unawaited(() async {
-        await SystemChrome.setPreferredOrientations(
-          allowMainPageGravityOrientation
-              ? [
-                  DeviceOrientation.portraitUp,
-                  DeviceOrientation.portraitDown,
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight,
-                ]
-              : [DeviceOrientation.portraitUp],
-        );
+      await SystemChrome.setPreferredOrientations(
+        allowMainPageGravityOrientation
+            ? [
+                DeviceOrientation.portraitUp,
+                DeviceOrientation.portraitDown,
+                DeviceOrientation.landscapeLeft,
+                DeviceOrientation.landscapeRight,
+              ]
+            : [DeviceOrientation.portraitUp],
+      );
+    }
+  }
 
-        if (wasPlaying && kIsWeb) {
-          Future.delayed(const Duration(milliseconds: 350), () {
-            if (controller != null && !controller.player.state.playing) {
-              unawaited(controller.player.play());
-            }
-          });
-        }
-      }());
+  Future<void> _resumePlaybackAfterExit() async {
+    final controller = ref.read(playerStateProvider).videoController;
+    if (!_wasPlayingBeforeExit || controller == null) return;
+
+    try {
+      if (kIsWeb) {
+        Future.delayed(const Duration(milliseconds: 350), () {
+          if (!controller.player.state.playing) {
+            unawaited(
+              controller.player.play().catchError((
+                Object error,
+                StackTrace stack,
+              ) {
+                AppLogStore.instance.add(
+                  'GlobalFullscreenOverlay: error resuming playback after '
+                  'fullscreen exit: $error\n$stack',
+                  source: 'GlobalFullscreenOverlay',
+                );
+              }),
+            );
+          }
+        });
+      } else if (defaultTargetPlatform == TargetPlatform.windows &&
+          !controller.player.state.playing) {
+        await controller.player.play();
+      }
+    } catch (error, stackTrace) {
+      AppLogStore.instance.add(
+        'GlobalFullscreenOverlay: error resuming playback after fullscreen '
+        'exit: $error\n$stackTrace',
+        source: 'GlobalFullscreenOverlay',
+      );
     }
   }
 

@@ -16,6 +16,12 @@ class StashMediaHandler extends BaseAudioHandler {
     String? thumbnailUri,
     Duration? duration,
   }) {
+    final current = mediaItem.value;
+    final artUri = thumbnailUri != null
+        ? Uri.parse(thumbnailUri)
+        : current?.id == id
+        ? current?.artUri
+        : null;
     mediaItem.add(
       MediaItem(
         id: id,
@@ -23,7 +29,7 @@ class StashMediaHandler extends BaseAudioHandler {
         title: title,
         artist: studio ?? 'Stash',
         duration: duration,
-        artUri: thumbnailUri != null ? Uri.parse(thumbnailUri) : null,
+        artUri: artUri,
       ),
     );
   }
@@ -41,7 +47,6 @@ class StashMediaHandler extends BaseAudioHandler {
         controls: [
           MediaControl.skipToPrevious,
           if (isPlaying) MediaControl.pause else MediaControl.play,
-          MediaControl.stop,
           MediaControl.skipToNext,
         ],
         systemActions: const {
@@ -49,7 +54,7 @@ class StashMediaHandler extends BaseAudioHandler {
           MediaAction.seekForward,
           MediaAction.seekBackward,
         },
-        androidCompactActionIndices: const [0, 1, 3],
+        androidCompactActionIndices: const [0, 1, 2],
         processingState: processingState,
         playing: isPlaying,
         updatePosition: position ?? Duration.zero,

@@ -54,6 +54,19 @@ void main() {
     expect(prefs.getBool('video_gravity_orientation'), isFalse);
   });
 
+  testWidgets('PlaybackSettingsPage omits the obsolete sceneStreams toggle', (
+    tester,
+  ) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const PlaybackSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Prefer sceneStreams first'), findsNothing);
+  });
+
   testWidgets(
     'PlaybackSettingsPage defaults direct-play-on-navigation to enabled',
     (tester) async {

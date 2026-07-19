@@ -24,7 +24,6 @@ void main() {
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({
-      'prefer_scene_streams': false,
       'server_base_url': 'http://localhost:9999',
     });
     prefs = await SharedPreferences.getInstance();
@@ -109,13 +108,22 @@ void main() {
     expect(find.byKey(const Key('scene_show_metadata')), findsOneWidget);
     expect(
       tester
-          .widget<TextButton>(find.byKey(const Key('scene_show_metadata')))
-          .style
-          ?.foregroundColor
-          ?.resolve({}),
+          .widget<IconButton>(find.byKey(const Key('scene_show_metadata')))
+          .color,
       Theme.of(
         tester.element(find.byKey(const Key('scene_show_metadata'))),
       ).colorScheme.onSurfaceVariant,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('scene_show_metadata')),
+        matching: find.byIcon(Icons.keyboard_arrow_down),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('scene_show_metadata'))).width,
+      closeTo(48, 0.1),
     );
     expect(
       tester.getTopRight(find.byKey(const Key('scene_show_metadata'))).dx,
@@ -137,11 +145,27 @@ void main() {
       greaterThan(tester.getCenter(find.text('Test Studio')).dx),
     );
     expect(
-      tester.getTopLeft(find.byKey(const Key('scene_header_controls'))).dy -
+      tester.getTopLeft(find.byKey(const Key('scene_header_section'))).dy -
           tester
               .getBottomLeft(find.byKey(const Key('scene_header_identity')))
               .dy,
       closeTo(6, 0.1),
+    );
+    final section = find.byKey(const Key('scene_header_section'));
+    final sectionPadding = tester
+        .widget<Padding>(
+          find.descendant(
+            of: section,
+            matching: find.byWidgetPredicate(
+              (widget) => widget is Padding && widget.child is Column,
+            ),
+          ),
+        )
+        .padding
+        .resolve(TextDirection.ltr);
+    expect(
+      sectionPadding.top,
+      sectionPadding.bottom,
     );
   });
 
@@ -158,11 +182,16 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
+    final studioTop = tester.getTopLeft(find.text('Test Studio')).dy;
     await tester.tap(find.byKey(const Key('scene_show_metadata')));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('scene_show_metadata')), findsNothing);
     expect(find.byKey(const Key('scene_header_metadata')), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Test Studio')).dy,
+      closeTo(studioTop, 0.1),
+    );
   });
 
   testWidgets('SceneDetailsPage shows metadata when default hiding is off', (

@@ -147,7 +147,6 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     SharedPreferences.setMockInitialValues({
-      'prefer_scene_streams': false,
       'server_base_url': 'http://localhost:9999',
     });
     final prefs = await SharedPreferences.getInstance();
@@ -204,7 +203,7 @@ void main() {
     expect(find.byKey(const Key('scene_action_edit')), findsOneWidget);
 
     // Find the play button in the video player overlay if not auto-started
-    if (find.byIcon(Icons.play_arrow).first.evaluate().isNotEmpty) {
+    if (find.byIcon(Icons.play_arrow).evaluate().isNotEmpty) {
       await tester.tap(find.byIcon(Icons.play_arrow).first, warnIfMissed: false);
       await tester.pump();
     }

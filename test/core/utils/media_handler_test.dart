@@ -46,6 +46,26 @@ void main() {
       expect(mediaItem?.duration, const Duration(minutes: 5));
       expect(mediaItem?.artUri, Uri.parse('https://example.com/thumb.jpg'));
     });
+
+    test('preserves artwork when refreshing metadata for the same item', () {
+      handler.updateMetadata(
+        id: '3',
+        title: 'Scene',
+        thumbnailUri: 'file:///tmp/scene.jpg',
+      );
+
+      handler.updateMetadata(
+        id: '3',
+        title: 'Scene',
+        duration: const Duration(minutes: 2),
+      );
+
+      expect(
+        handler.mediaItem.value?.artUri,
+        Uri.parse('file:///tmp/scene.jpg'),
+      );
+      expect(handler.mediaItem.value?.duration, const Duration(minutes: 2));
+    });
   });
 
   group('updatePlaybackState', () {
@@ -80,6 +100,20 @@ void main() {
       expect(state.speed, 1.0);
       expect(state.controls.contains(MediaControl.play), isTrue);
       expect(state.controls.contains(MediaControl.pause), isFalse);
+    });
+
+    test('does not publish a stop control', () {
+      handler.updatePlaybackState(isPlaying: true);
+
+      expect(handler.playbackState.value.controls, [
+        MediaControl.skipToPrevious,
+        MediaControl.pause,
+        MediaControl.skipToNext,
+      ]);
+      expect(
+        handler.playbackState.value.androidCompactActionIndices,
+        [0, 1, 2],
+      );
     });
 
     test('publishes the supplied processing state', () {

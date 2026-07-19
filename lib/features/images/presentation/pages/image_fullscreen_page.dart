@@ -12,12 +12,13 @@ import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:window_manager/window_manager.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/utils/app_log_store.dart';
+import '../../../../core/utils/desktop_fullscreen.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../galleries/presentation/providers/gallery_details_provider.dart';
@@ -46,6 +47,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
   late ExtendedPageController _pageController;
   Timer? _slideshowTimer;
+  final _keyboardFocusNode = FocusNode(debugLabel: 'image_keyboard_shortcuts');
+  Map<ShortcutActivator, VoidCallback> _keyBindings = const {};
   int _currentIndex = 0;
   bool _initialPageSet = false;
   bool _showOverlays = true;
@@ -61,17 +64,25 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   @override
   void initState() {
     super.initState();
+    FocusManager.instance.addEarlyKeyEventHandler(_handleKeyEvent);
     _pageController = ExtendedPageController();
-    _enterFullScreen();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_enterFullScreen());
+    });
   }
 
   @override
   void dispose() {
+    FocusManager.instance.removeEarlyKeyEventHandler(_handleKeyEvent);
     _stopSlideshow();
+    _keyboardFocusNode.dispose();
     _pageController.dispose();
     _exitFullScreen();
     super.dispose();
   }
+
+  KeyEventResult _handleKeyEvent(KeyEvent event) =>
+      dispatchKeybindEvent(event, _keyBindings);
 
   Future<void> _enterFullScreen() async {
     try {
@@ -80,18 +91,39 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           (defaultTargetPlatform == TargetPlatform.windows ||
               defaultTargetPlatform == TargetPlatform.linux ||
               defaultTargetPlatform == TargetPlatform.macOS)) {
-        await windowManager.setFullScreen(true);
+        await DesktopFullscreen.instance.enter();
       }
     } catch (_) {}
   }
 
   void _exitFullScreen() {
-    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
+    unawaited(_performExitFullScreen());
+  }
+
+  Future<void> _performExitFullScreen() async {
+    try {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    } catch (error, stackTrace) {
+      AppLogStore.instance.add(
+        'ImageFullscreenPage: error restoring system UI: '
+        '$error\n$stackTrace',
+        source: 'ImageFullscreenPage',
+      );
+    }
+
     if (!kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.windows ||
             defaultTargetPlatform == TargetPlatform.linux ||
             defaultTargetPlatform == TargetPlatform.macOS)) {
-      unawaited(windowManager.setFullScreen(false));
+      try {
+        await DesktopFullscreen.instance.exit();
+      } catch (error, stackTrace) {
+        AppLogStore.instance.add(
+          'ImageFullscreenPage: error exiting fullscreen: '
+          '$error\n$stackTrace',
+          source: 'ImageFullscreenPage',
+        );
+      }
     }
   }
 
@@ -100,6 +132,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   }
 
   void _onPointerDown(PointerDownEvent event) {
+    _keyboardFocusNode.requestFocus();
     _pointerDownPosition = event.position;
     _pointerDownTime = DateTime.now();
   }
@@ -212,6 +245,18 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       duration: _slideshowTransition,
       curve: Curves.easeInOutCubic,
     );
+  }
+
+  void _goToFirstImage() {
+    if (!_pageController.hasClients || _currentIndex <= 0) return;
+    _pageController.jumpToPage(0);
+  }
+
+  void _goToLastImage(int itemCount) {
+    if (!_pageController.hasClients || itemCount <= 0) return;
+    final lastIndex = itemCount - 1;
+    if (_currentIndex >= lastIndex) return;
+    _pageController.jumpToPage(lastIndex);
   }
 
   Future<void> _saveImageToGallery(entity.Image? image) async {
@@ -962,7 +1007,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
             case KeybindAction.nextImage:
               callback = () => _goToNextImage(items.length);
               break;
-            case KeybindAction.closePlayer:
+            case KeybindAction.firstImage:
+              callback = _goToFirstImage;
+              break;
+            case KeybindAction.lastImage:
+              callback = () => _goToLastImage(items.length);
+              break;
+            case KeybindAction.closeImage:
               callback = () => context.pop();
               break;
             default:
@@ -988,6 +1039,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           });
         }
 
+        _keyBindings = bindings;
+
         final currentImage = items.isNotEmpty ? items[_currentIndex] : null;
         final displayTitle = _getDisplayTitle(currentImage);
         final totalItemCount =
@@ -999,179 +1052,171 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
         return Scaffold(
           backgroundColor: Colors.black,
-          body: CallbackShortcuts(
-            bindings: bindings,
-            child: Focus(
-              autofocus: true,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final isWideLayout =
-                      constraints.maxWidth >= Responsive.tabletBreakpoint;
-                  final scrollDirection = useVerticalSwipe
-                      ? Axis.vertical
-                      : Axis.horizontal;
-                  final maxOverlayWidth = isWideLayout
-                      ? 720.0
-                      : constraints.maxWidth;
-                  final horizontalPadding = isWideLayout
-                      ? context.dimensions.spacingLarge
-                      : context.dimensions.spacingSmall;
+          body: Focus(
+            key: const Key('image_keyboard_shortcuts'),
+            focusNode: _keyboardFocusNode,
+            autofocus: true,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isWideLayout =
+                    constraints.maxWidth >= Responsive.tabletBreakpoint;
+                final scrollDirection = useVerticalSwipe
+                    ? Axis.vertical
+                    : Axis.horizontal;
+                final maxOverlayWidth = isWideLayout
+                    ? 720.0
+                    : constraints.maxWidth;
+                final horizontalPadding = isWideLayout
+                    ? context.dimensions.spacingLarge
+                    : context.dimensions.spacingSmall;
 
-                  return Listener(
-                    behavior: HitTestBehavior.translucent,
-                    onPointerDown: _onPointerDown,
-                    onPointerUp: _onPointerUp,
-                    child: Stack(
-                      children: [
-                        ExtendedImageGesturePageView.builder(
-                          controller: _pageController,
-                          scrollDirection: scrollDirection,
-                          itemCount: items.length,
-                          physics: const BouncingScrollPhysics(),
-                          onPageChanged: (index) {
-                            _handlePageChanged(index, items, headers);
-                          },
-                          itemBuilder: (context, index) {
-                            final image = items[index];
-                            final imageUrl =
-                                image.paths.image ?? image.paths.preview;
+                return Listener(
+                  behavior: HitTestBehavior.translucent,
+                  onPointerDown: _onPointerDown,
+                  onPointerUp: _onPointerUp,
+                  child: Stack(
+                    children: [
+                      ExtendedImageGesturePageView.builder(
+                        controller: _pageController,
+                        scrollDirection: scrollDirection,
+                        itemCount: items.length,
+                        physics: const BouncingScrollPhysics(),
+                        onPageChanged: (index) {
+                          _handlePageChanged(index, items, headers);
+                        },
+                        itemBuilder: (context, index) {
+                          final image = items[index];
+                          final imageUrl =
+                              image.paths.image ?? image.paths.preview;
 
-                            if (imageUrl == null || imageUrl.isEmpty) {
-                              return const Center(
-                                child: Icon(
-                                  Icons.broken_image,
-                                  color: Colors.white54,
-                                  size: 64,
-                                ),
-                              );
-                            }
+                          if (imageUrl == null || imageUrl.isEmpty) {
+                            return const Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                color: Colors.white54,
+                                size: 64,
+                              ),
+                            );
+                          }
 
-                            return RepaintBoundary(
-                              child: ExtendedImage.network(
-                                imageUrl,
-                                excludeFromSemantics: true,
-                                headers: headers,
-                                fit: BoxFit.contain,
-                                mode: ExtendedImageMode.gesture,
-                                cache: true,
-                                initGestureConfigHandler: (state) {
-                                  return GestureConfig(
-                                    minScale: 0.9,
-                                    animationMinScale: 0.7,
-                                    maxScale: 5.0,
-                                    animationMaxScale: 6.0,
-                                    speed: 1.0,
-                                    inertialSpeed: 100.0,
-                                    initialScale: 1.0,
-                                    inPageView: true,
-                                    initialAlignment: InitialAlignment.center,
-                                  );
-                                },
-                                onDoubleTap: (ExtendedImageGestureState state) {
-                                  final pointerDownPosition =
-                                      state.pointerDownPosition;
-                                  final begin =
-                                      state.gestureDetails!.totalScale;
-                                  final end = begin == 1.0 ? 3.0 : 1.0;
+                          return RepaintBoundary(
+                            child: ExtendedImage.network(
+                              imageUrl,
+                              excludeFromSemantics: true,
+                              headers: headers,
+                              fit: BoxFit.contain,
+                              mode: ExtendedImageMode.gesture,
+                              cache: true,
+                              initGestureConfigHandler: (state) {
+                                return GestureConfig(
+                                  minScale: 0.9,
+                                  animationMinScale: 0.7,
+                                  maxScale: 5.0,
+                                  animationMaxScale: 6.0,
+                                  speed: 1.0,
+                                  inertialSpeed: 100.0,
+                                  initialScale: 1.0,
+                                  inPageView: true,
+                                  initialAlignment: InitialAlignment.center,
+                                );
+                              },
+                              onDoubleTap: (ExtendedImageGestureState state) {
+                                final pointerDownPosition =
+                                    state.pointerDownPosition;
+                                final begin = state.gestureDetails!.totalScale;
+                                final end = begin == 1.0 ? 3.0 : 1.0;
 
-                                  state.handleDoubleTap(
-                                    scale: end,
-                                    doubleTapPosition: pointerDownPosition,
-                                  );
-                                },
-                                loadStateChanged: (ExtendedImageState state) {
-                                  switch (state.extendedImageLoadState) {
-                                    case LoadState.loading:
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    case LoadState.completed:
-                                      return state.completedWidget;
-                                    case LoadState.failed:
-                                      return Center(
-                                        child: Semantics(
-                                          button: true,
-                                          label: context
-                                              .l10n
-                                              .failed_to_load_tap_to_retry,
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              onTap: () => state.reLoadImage(),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    context
+                                state.handleDoubleTap(
+                                  scale: end,
+                                  doubleTapPosition: pointerDownPosition,
+                                );
+                              },
+                              loadStateChanged: (ExtendedImageState state) {
+                                switch (state.extendedImageLoadState) {
+                                  case LoadState.loading:
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  case LoadState.completed:
+                                    return state.completedWidget;
+                                  case LoadState.failed:
+                                    return Center(
+                                      child: Semantics(
+                                        button: true,
+                                        label: context
+                                            .l10n
+                                            .failed_to_load_tap_to_retry,
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            onTap: () => state.reLoadImage(),
+                                            borderRadius: BorderRadius.circular(
+                                              context.dimensions.spacingMedium,
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(
+                                                context.dimensions.spacingLarge,
+                                              ),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.broken_image,
+                                                    color: Colors.white54,
+                                                    size:
+                                                        64 *
+                                                        context
+                                                            .dimensions
+                                                            .fontSizeFactor,
+                                                  ),
+                                                  SizedBox(
+                                                    height: context
                                                         .dimensions
                                                         .spacingMedium,
                                                   ),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(
-                                                  context
-                                                      .dimensions
-                                                      .spacingLarge,
-                                                ),
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.broken_image,
-                                                      color: Colors.white54,
-                                                      size:
-                                                          64 *
-                                                          context
-                                                              .dimensions
-                                                              .fontSizeFactor,
+                                                  Text(
+                                                    context
+                                                        .l10n
+                                                        .failed_to_load_tap_to_retry,
+                                                    style: const TextStyle(
+                                                      color: Colors.white70,
                                                     ),
-                                                    SizedBox(
-                                                      height: context
-                                                          .dimensions
-                                                          .spacingMedium,
-                                                    ),
-                                                    Text(
-                                                      context
-                                                          .l10n
-                                                          .failed_to_load_tap_to_retry,
-                                                      style: const TextStyle(
-                                                        color: Colors.white70,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ),
                                         ),
-                                      );
-                                  }
-                                },
-                              ),
-                            );
-                          },
+                                      ),
+                                    );
+                                }
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      if (_showOverlays) ...[
+                        _buildOverlayHeader(
+                          context,
+                          currentImage,
+                          displayTitle,
+                          items.length,
+                          totalItemCount,
+                          maxOverlayWidth,
+                          horizontalPadding,
                         ),
-                        if (_showOverlays) ...[
-                          _buildOverlayHeader(
-                            context,
-                            currentImage,
-                            displayTitle,
-                            items.length,
-                            totalItemCount,
-                            maxOverlayWidth,
-                            horizontalPadding,
-                          ),
-                          _buildOverlayFooter(
-                            context,
-                            items.length,
-                            totalItemCount,
-                            maxOverlayWidth,
-                            horizontalPadding,
-                          ),
-                        ],
+                        _buildOverlayFooter(
+                          context,
+                          items.length,
+                          totalItemCount,
+                          maxOverlayWidth,
+                          horizontalPadding,
+                        ),
                       ],
-                    ),
-                  );
-                },
-              ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         );

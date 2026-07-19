@@ -106,3 +106,30 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
+
+# =============================================================================
+# C++ Compiler Caching Configuration (ccache)
+# =============================================================================
+# This block searches for ccache on the system path and, if found, registers it
+# as the compiler launcher for both C and C++ sources. This dramatically 
+# speeds up builds after running "flutter clean" or switching git branches.
+# =============================================================================
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    message(STATUS "ccache found and enabled for native builds: ${CCACHE_PROGRAM}")
+    
+    # Critical adjustment for MSVC: 
+    # By default, MSVC uses /Zi for debug info, which puts debug symbols in a shared 
+    # '.pdb' file. This locks the file and breaks ccache's ability to cache objects.
+    # Changing this to /Z7 embeds the debug symbols directly into the '.obj' files.
+    if(MSVC)
+        string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+        string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+        string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+        string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+    endif()
+else()
+    message(STATUS "ccache not found. Falling back to standard MSVC compilation.")
+endif()

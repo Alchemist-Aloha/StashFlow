@@ -342,8 +342,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   /// Internal flag to track the last speed reported to the media handler.
   double? _lastSpeed;
 
-  /// Path to temporary notification cover art file, cleaned up on scene change.
-  String? _notificationArtTempPath;
+  /// Published cover files stay available until the media session ends.
+  ///
+  /// audio_service does not expose an artwork-load acknowledgement, so
+  /// deleting a previous file during a scene transition can race the native
+  /// read.
+  // ponytail: session-scoped temp retention; use a native load acknowledgement
+  // if long sessions make temporary storage measurable.
+  final Set<String> _notificationArtTempPaths = <String>{};
+  int _notificationArtGeneration = 0;
 
   late final PlaybackActivityTracker _activityTracker;
   late final PlaybackSessionController _sessionController;
@@ -417,7 +424,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     mediaHandler?.onPlayCallback = () async => play();
     mediaHandler?.onPauseCallback = () async => _handleMediaPauseCommand();
     mediaHandler?.onStopCallback = () async => stop(dismissNotification: false);
-    mediaHandler?.onSeekCallback = (pos) async => state.player?.seek(pos);
+    mediaHandler?.onSeekCallback = _seekFromMediaNotification;
     mediaHandler?.onSkipToNextCallback = () async {
       AppLogStore.instance.add(
         'PlayerState mediaHandler.onSkipToNextCallback',
@@ -500,40 +507,63 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   /// both limitations by fetching the image in-app (with auth headers),
   /// writing it to a temp file, and passing a `file://` URI to audio_service.
   void _updateMediaNotification(Scene scene, Duration? duration) {
+    final generation = ++_notificationArtGeneration;
+    final screenshotUrl = scene.paths.screenshot?.trim();
+    if (screenshotUrl == null || screenshotUrl.isEmpty || isTestMode) {
+      mediaHandler?.updateMetadata(
+        id: scene.id,
+        title: scene.title,
+        studio: scene.studioName,
+        duration: duration,
+      );
+      return;
+    }
+
+    // Publish one complete item after the image is ready. This avoids sending
+    // a metadata-only item that can race and clear native artwork.
+    unawaited(_fetchAndUpdateArt(scene, screenshotUrl, duration, generation));
+  }
+
+  /// Deletes published temp notification art files when the session ends.
+  void _cleanupNotificationArt() {
+    for (final path in _notificationArtTempPaths) {
+      try {
+        File(path).deleteSync();
+      } catch (_) {
+        // Best-effort cleanup; ignore failures.
+      }
+    }
+    _notificationArtTempPaths.clear();
+  }
+
+  bool _isCurrentNotificationRequest(Scene scene, int generation) {
+    return ref.mounted &&
+        generation == _notificationArtGeneration &&
+        state.activeScene?.id == scene.id;
+  }
+
+  void _publishNotificationMetadata(
+    Scene scene,
+    Duration? duration,
+    int generation, {
+    String? thumbnailUri,
+  }) {
+    if (!_isCurrentNotificationRequest(scene, generation)) return;
     mediaHandler?.updateMetadata(
       id: scene.id,
       title: scene.title,
       studio: scene.studioName,
       duration: duration,
+      thumbnailUri: thumbnailUri,
     );
-
-    final screenshotUrl = scene.paths.screenshot?.trim();
-    if (screenshotUrl == null || screenshotUrl.isEmpty) {
-      _cleanupNotificationArt();
-      return;
-    }
-
-    if (isTestMode) return;
-
-    // Fire-and-forget: fetch the image in the background so it doesn't
-    // block playback startup.
-    unawaited(_fetchAndUpdateArt(scene, screenshotUrl));
   }
 
-  /// Deletes the old temp notification art file if it exists.
-  void _cleanupNotificationArt() {
-    final oldPath = _notificationArtTempPath;
-    _notificationArtTempPath = null;
-    if (oldPath != null) {
-      try {
-        File(oldPath).deleteSync();
-      } catch (_) {
-        // Best-effort cleanup; ignore failures.
-      }
-    }
-  }
-
-  Future<void> _fetchAndUpdateArt(Scene scene, String url) async {
+  Future<void> _fetchAndUpdateArt(
+    Scene scene,
+    String url,
+    Duration? duration,
+    int generation,
+  ) async {
     File? tempFile;
     try {
       final headers = ref.read(mediaHeadersProvider);
@@ -551,30 +581,41 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
 
       final response = await dio.getUri(Uri.parse(effectiveUrl));
-      if (response.statusCode == 200 && response.data is List<int>) {
-        final tempDir = await getTemporaryDirectory();
-        final downloadedFile = File(
-          '${tempDir.path}/stash_notification_art_${scene.id}_'
-          '${DateTime.now().microsecondsSinceEpoch}.jpg',
+      if (response.statusCode != 200 || response.data is! List<int>) {
+        AppLogStore.instance.add(
+          'Failed to fetch scene cover for notification: '
+          'status=${response.statusCode}',
+          source: 'player_provider',
         );
-        tempFile = downloadedFile;
-
-        await downloadedFile.writeAsBytes(response.data as List<int>);
-        if (!ref.mounted || state.activeScene?.id != scene.id) {
-          await downloadedFile.delete();
-          return;
-        }
-
-        // Clean up previous temp file before recording the new one.
-        _cleanupNotificationArt();
-        _notificationArtTempPath = downloadedFile.path;
-
-        mediaHandler?.updateArtwork(
-          id: scene.id,
-          thumbnailUri: Uri.file(downloadedFile.path).toString(),
-        );
+        _publishNotificationMetadata(scene, duration, generation);
         return;
       }
+
+      final tempDir = await getTemporaryDirectory();
+      final downloadedFile = File(
+        '${tempDir.path}/stash_notification_art_${scene.id}_'
+        '${DateTime.now().microsecondsSinceEpoch}.jpg',
+      );
+      tempFile = downloadedFile;
+
+      await downloadedFile.writeAsBytes(response.data as List<int>);
+      if (!_isCurrentNotificationRequest(scene, generation)) {
+        try {
+          await downloadedFile.delete();
+        } catch (_) {
+          // Best-effort cleanup for stale downloads.
+        }
+        return;
+      }
+
+      _notificationArtTempPaths.add(downloadedFile.path);
+      _publishNotificationMetadata(
+        scene,
+        duration,
+        generation,
+        thumbnailUri: Uri.file(downloadedFile.path).toString(),
+      );
+      return;
     } catch (e) {
       if (tempFile != null) {
         try {
@@ -587,6 +628,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         'Failed to fetch scene cover for notification: $e',
         source: 'player_provider',
       );
+      _publishNotificationMetadata(scene, duration, generation);
     }
   }
 
@@ -784,7 +826,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     final runtime = _fullscreenController.requestExitFullscreen();
     state = state.copyWith(
       isFullScreen: runtime.isFullScreen,
-      viewMode: PlayerViewMode.inline,
+      viewMode: PlayerViewMode.values.firstWhere(
+        (mode) => mode.name == runtime.viewModeName,
+        orElse: () => PlayerViewMode.fullscreen,
+      ),
       fullscreenPhase: runtime.fullscreenPhase,
     );
   }
@@ -804,6 +849,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     state = state.copyWith(
       isFullScreen: runtime.isFullScreen,
       viewMode: PlayerViewMode.inline,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
+  void markFullscreenExitFailed() {
+    final runtime = _fullscreenController.restoreAfterFailedExit();
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      viewMode: PlayerViewMode.fullscreen,
       fullscreenPhase: runtime.fullscreenPhase,
     );
   }
@@ -1368,17 +1422,24 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
 
     final isBackgroundState =
-        state == AppLifecycleState.hidden || state == AppLifecycleState.paused;
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached;
     if (!isBackgroundState) return;
     _backgroundEnteredAt ??= DateTime.now();
 
     final player = this.state.player;
-    if (player == null) return;
+    if (player == null || !player.state.playing) return;
 
-    // Only try to keep playback alive if it was playing as we entered background.
-    if (!this.state.enableBackgroundPlayback || !player.state.playing) return;
+    final canEnterPip = _canEnterBackgroundPip(player);
+    if (canEnterPip &&
+        (state == AppLifecycleState.hidden ||
+            state == AppLifecycleState.paused)) {
+      _requestBackgroundPipOrApplyPolicy(player);
+      return;
+    }
 
-    _scheduleBackgroundPlaybackRecovery();
+    _applyBackgroundPlaybackPolicy(player);
   }
 
   void _scheduleBackgroundPlaybackRecovery() {
@@ -1417,6 +1478,55 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
   }
 
+  bool _canEnterBackgroundPip(Player player) {
+    return !kIsWeb &&
+        Platform.isAndroid &&
+        state.enableNativePip &&
+        state.isFullScreen &&
+        !state.isInPipMode &&
+        !PipMode.isInPipMode.value &&
+        player.state.playing;
+  }
+
+  void _applyBackgroundPlaybackPolicy(Player player) {
+    if (!ref.mounted || state.player != player || !player.state.playing) return;
+    if (state.isInPipMode || PipMode.isInPipMode.value) return;
+
+    if (state.enableBackgroundPlayback) {
+      _scheduleBackgroundPlaybackRecovery();
+    } else {
+      pause(suppressBackgroundRecovery: true);
+    }
+  }
+
+  void _requestBackgroundPipOrApplyPolicy(Player player) {
+    if (_pipRequestInFlight || state.isInPipMode || PipMode.isInPipMode.value) {
+      return;
+    }
+
+    final elapsedSinceLast = _lastPipRequestAt == null
+        ? null
+        : DateTime.now().difference(_lastPipRequestAt!);
+    if (elapsedSinceLast != null && elapsedSinceLast < _pipRequestCooldown) {
+      return;
+    }
+
+    final width = player.state.width;
+    final height = player.state.height;
+    final aspect = (width != null && height != null && height > 0)
+        ? width / height
+        : 16 / 9;
+
+    unawaited(() async {
+      final enteredPip = await requestEnterPip(aspectRatio: aspect);
+      if (!ref.mounted || state.player != player || !player.state.playing) {
+        return;
+      }
+      if (enteredPip || state.isInPipMode || PipMode.isInPipMode.value) return;
+      _applyBackgroundPlaybackPolicy(player);
+    }());
+  }
+
   Future<void> _handleMediaPauseCommand() async {
     final inBackground = _appLifecycleState != AppLifecycleState.resumed;
     final enteredAt = _backgroundEnteredAt;
@@ -1436,6 +1546,41 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
 
     pause(suppressBackgroundRecovery: true);
+  }
+
+  Future<void> _seekFromMediaNotification(Duration position) async {
+    final player = state.player;
+    if (player == null) return;
+
+    final beforeSeek = player.state;
+    final duration = beforeSeek.duration;
+    var target = position < Duration.zero ? Duration.zero : position;
+    if (duration > Duration.zero && target > duration) {
+      target = duration;
+    }
+
+    await player.seek(target);
+    if (!ref.mounted || state.player != player) return;
+
+    if (beforeSeek.playing != player.state.playing) {
+      if (beforeSeek.playing) {
+        await player.play();
+      } else {
+        await player.pause();
+      }
+    }
+
+    final afterSeek = player.state;
+    _lastMediaHandlerPosition = target;
+    mediaHandler?.updatePlaybackState(
+      isPlaying: afterSeek.playing,
+      position: target,
+      bufferedPosition: afterSeek.buffer,
+      speed: afterSeek.rate,
+      processingState: afterSeek.buffering
+          ? AudioProcessingState.buffering
+          : AudioProcessingState.ready,
+    );
   }
 
   void seekRelative(Duration delta) {
@@ -1464,6 +1609,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
     _activeSceneRef = null;
     _lastIsPlaying = null;
+    _notificationArtGeneration++;
     _cleanupNotificationArt();
     if (!ref.mounted) return;
 
@@ -1538,8 +1684,22 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       final currentWidth = player.state.width;
       final currentHeight = player.state.height;
       final currentPosition = player.state.position;
+      final currentDuration = player.state.duration;
       final currentSpeed = player.state.rate;
       final currentBuffered = player.state.buffer;
+
+      final activeScene = state.activeScene;
+      final currentMediaItem = mediaHandler?.mediaItem.value;
+      if (activeScene != null &&
+          currentMediaItem?.id == activeScene.id &&
+          currentMediaItem?.duration != currentDuration) {
+        mediaHandler?.updateMetadata(
+          id: activeScene.id,
+          title: activeScene.title,
+          studio: activeScene.studioName,
+          duration: currentDuration,
+        );
+      }
 
       final playingChanged = isPlayingNow != _lastIsPlaying;
       final bufferingChanged = isBufferingNow != state.isBuffering;

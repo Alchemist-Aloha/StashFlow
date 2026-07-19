@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../helpers/test_helpers.dart';
@@ -17,6 +18,11 @@ class MockNavigationTabsNotifier extends NavigationTabsNotifier {
   List<NavigationTab> build() => _initialTabs;
 }
 
+class MockPlayerState extends PlayerState {
+  @override
+  GlobalPlayerState build() => GlobalPlayerState();
+}
+
 void main() {
   late SharedPreferences prefs;
 
@@ -25,7 +31,7 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
-  testWidgets('Keyboard shortcuts Ctrl + 1..n navigate to correct tabs', (
+  testWidgets('keyboard shortcuts navigate directly and wrap between tabs', (
     WidgetTester tester,
   ) async {
     // Set desktop mode
@@ -44,6 +50,7 @@ void main() {
       prefs: prefs,
       overrides: [
         desktopCapabilitiesProvider.overrideWithValue(true),
+        playerStateProvider.overrideWith(MockPlayerState.new),
         navigationTabsProvider.overrideWith(
           () => MockNavigationTabsNotifier(initialTabs),
         ),
@@ -94,5 +101,42 @@ void main() {
 
     final rail4 = tester.widget<NavigationRail>(find.byType(NavigationRail));
     expect(rail4.selectedIndex, 0);
+
+    // Ctrl+Shift+Tab wraps backward from the first tab.
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.shift);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.shift);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<NavigationRail>(find.byType(NavigationRail)).selectedIndex,
+      2,
+    );
+
+    // Ctrl+Tab wraps forward from the last tab.
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<NavigationRail>(find.byType(NavigationRail)).selectedIndex,
+      0,
+    );
+
+    showDialog<void>(
+      context: tester.element(find.byType(NavigationRail)),
+      builder: (context) =>
+          const AlertDialog(content: TextField(autofocus: true)),
+    );
+    await tester.pumpAndSettle();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
+    await tester.sendKeyEvent(LogicalKeyboardKey.digit2);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<NavigationRail>(find.byType(NavigationRail)).selectedIndex,
+      0,
+    );
   });
 }

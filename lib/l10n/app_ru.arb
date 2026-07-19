@@ -421,8 +421,6 @@
   "settings_playback_title": "Настройки воспроизведения",
   "settings_playback_behavior": "Поведение воспроизведения",
   "settings_playback_behavior_subtitle": "Настройки воспроизведения и фонового режима по умолчанию",
-  "settings_playback_prefer_streams": "Предпочитать sceneStreams",
-  "settings_playback_prefer_streams_subtitle": "Если отключено, воспроизведение использует paths.stream напрямую",
   "settings_playback_feed_random": "Начать Ленту со случайного места",
   "settings_playback_feed_random_subtitle": "При воспроизведении сцен в режиме Ленты начинать со случайного места между 0% и 90% длины видео",
   "settings_playback_autoplay": "Автовоспроизведение следующей сцены",
