@@ -17,6 +17,19 @@ void main() {
     expect(source, isNot(contains('_prefetched')));
   });
 
+  test('image retries reset for new input and do not overlap', () {
+    final source = File(
+      'lib/core/presentation/widgets/stash_image.dart',
+    ).readAsStringSync();
+
+    expect(
+      source,
+      contains('void didUpdateWidget(_RetryingCachedImage oldWidget)'),
+    );
+    expect(source, contains('if (_retrying ||'));
+    expect(source, contains('generation == _retryGeneration'));
+  });
+
   testWidgets('StashImage builds successfully with imageUrl', (
     WidgetTester tester,
   ) async {

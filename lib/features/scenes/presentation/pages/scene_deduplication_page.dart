@@ -114,11 +114,12 @@ class _SceneDeduplicationPageState
 
   Future<void> _confirmDelete(Set<String> ids) async {
     if (ids.isEmpty || _deleting) return;
+    final requestedIds = Set<String>.of(ids);
 
     final deleteFile = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(context.l10n.delete_n_scenes_question(ids.length)),
+        title: Text(context.l10n.delete_n_scenes_question(requestedIds.length)),
         content: Text(context.l10n.delete_scenes_help),
         actions: [
           TextButton(
@@ -142,26 +143,27 @@ class _SceneDeduplicationPageState
     setState(() {
       _deleting = true;
     });
+    final deletedIds = <String>{};
     try {
       final repository = ref.read(sceneRepositoryProvider);
-      for (final id in ids) {
+      for (final id in requestedIds) {
         await repository.deleteScene(
           id,
           deleteFile: deleteFile,
           deleteGenerated: true,
         );
+        deletedIds.add(id);
       }
-      ref.invalidate(sceneListProvider);
       if (!mounted) return;
-      setState(() {
-        _selectedSceneIds.clear();
-        _future = _load();
-      });
+      _reconcileDeletedScenes(deletedIds);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.deleted_n_scenes(ids.length))),
+        SnackBar(
+          content: Text(context.l10n.deleted_n_scenes(requestedIds.length)),
+        ),
       );
     } catch (error) {
       if (!mounted) return;
+      if (deletedIds.isNotEmpty) _reconcileDeletedScenes(deletedIds);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(context.l10n.delete_failed_error(error.toString())),
@@ -174,6 +176,14 @@ class _SceneDeduplicationPageState
         });
       }
     }
+  }
+
+  void _reconcileDeletedScenes(Set<String> deletedIds) {
+    ref.invalidate(sceneListProvider);
+    setState(() {
+      _selectedSceneIds.removeAll(deletedIds);
+      _future = _load();
+    });
   }
 
   @override

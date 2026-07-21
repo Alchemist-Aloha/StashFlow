@@ -91,9 +91,11 @@ class GroupList extends _$GroupList {
   int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Group>> build() async {
+    _requestGeneration++;
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -157,6 +159,7 @@ class GroupList extends _$GroupList {
   Future<void> fetchNextPage() async {
     if (_isLoadingMore || !_hasMore || state.isLoading) return;
 
+    final generation = _requestGeneration;
     _isLoadingMore = true;
     final repository = ref.read(groupRepositoryProvider);
     final query = ref.read(groupSearchQueryProvider);
@@ -179,6 +182,8 @@ class GroupList extends _$GroupList {
         groupFilter: groupFilter.isEmpty ? null : groupFilter,
       );
 
+      if (generation != _requestGeneration) return;
+
       if (nextGroups.isEmpty) {
         _hasMore = false;
       } else {
@@ -186,7 +191,7 @@ class GroupList extends _$GroupList {
         state = AsyncData([...state.value ?? [], ...nextGroups]);
       }
     } finally {
-      _isLoadingMore = false;
+      if (generation == _requestGeneration) _isLoadingMore = false;
     }
   }
 

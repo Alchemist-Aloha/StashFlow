@@ -86,9 +86,11 @@ class SceneMarkerList extends _$SceneMarkerList {
   int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  int _requestGeneration = 0;
 
   @override
   FutureOr<List<SceneMarkerSummary>> build() async {
+    _requestGeneration++;
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -119,6 +121,7 @@ class SceneMarkerList extends _$SceneMarkerList {
   Future<void> fetchNextPage() async {
     if (_isLoadingMore || !_hasMore) return;
 
+    final generation = _requestGeneration;
     final currentMarkers = state.value ?? [];
     _isLoadingMore = true;
     _currentPage++;
@@ -136,16 +139,18 @@ class SceneMarkerList extends _$SceneMarkerList {
         descending: sortConfig.descending,
         filter: filter,
       );
+      if (generation != _requestGeneration) return;
 
       if (nextMarkers.length < _perPage) {
         _hasMore = false;
       }
       state = AsyncData([...currentMarkers, ...nextMarkers]);
     } catch (error, stackTrace) {
+      if (generation != _requestGeneration) return;
       _currentPage--;
       state = AsyncError(error, stackTrace);
     } finally {
-      _isLoadingMore = false;
+      if (generation == _requestGeneration) _isLoadingMore = false;
     }
   }
 

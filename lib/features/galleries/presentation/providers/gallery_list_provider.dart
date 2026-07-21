@@ -115,9 +115,11 @@ class GalleryList extends _$GalleryList {
   int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Gallery>> build() async {
+    _requestGeneration++;
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -176,6 +178,7 @@ class GalleryList extends _$GalleryList {
   Future<void> fetchNextPage() async {
     if (_isLoadingMore || !_hasMore || state.isLoading) return;
 
+    final generation = _requestGeneration;
     _isLoadingMore = true;
     final repository = ref.read(galleryRepositoryProvider);
     final query = ref.read(gallerySearchQueryProvider);
@@ -201,6 +204,8 @@ class GalleryList extends _$GalleryList {
         ),
       );
 
+      if (generation != _requestGeneration) return;
+
       if (nextGalleries.isEmpty) {
         _hasMore = false;
       } else {
@@ -208,7 +213,7 @@ class GalleryList extends _$GalleryList {
         state = AsyncData([...state.value ?? [], ...nextGalleries]);
       }
     } finally {
-      _isLoadingMore = false;
+      if (generation == _requestGeneration) _isLoadingMore = false;
     }
   }
 

@@ -87,9 +87,11 @@ class StudioList extends _$StudioList {
   int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Studio>> build() async {
+    _requestGeneration++;
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -156,6 +158,7 @@ class StudioList extends _$StudioList {
   Future<void> fetchNextPage() async {
     if (_isLoadingMore || !_hasMore || state.isLoading) return;
 
+    final generation = _requestGeneration;
     _isLoadingMore = true;
     final repository = ref.read(studioRepositoryProvider);
     final query = ref.read(studioSearchQueryProvider);
@@ -178,6 +181,8 @@ class StudioList extends _$StudioList {
         studioFilter: filterState,
       );
 
+      if (generation != _requestGeneration) return;
+
       if (nextStudios.isEmpty) {
         _hasMore = false;
       } else {
@@ -185,7 +190,7 @@ class StudioList extends _$StudioList {
         state = AsyncData([...state.value ?? [], ...nextStudios]);
       }
     } finally {
-      _isLoadingMore = false;
+      if (generation == _requestGeneration) _isLoadingMore = false;
     }
   }
 

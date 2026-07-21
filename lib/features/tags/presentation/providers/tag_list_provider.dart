@@ -74,9 +74,11 @@ class TagList extends _$TagList {
   int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Tag>> build() async {
+    _requestGeneration++;
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -140,6 +142,7 @@ class TagList extends _$TagList {
   Future<void> fetchNextPage() async {
     if (_isLoadingMore || !_hasMore || state.isLoading) return;
 
+    final generation = _requestGeneration;
     _isLoadingMore = true;
     final repository = ref.read(tagRepositoryProvider);
     final query = ref.read(tagSearchQueryProvider);
@@ -162,6 +165,8 @@ class TagList extends _$TagList {
         favoritesOnly: favoritesOnly,
       );
 
+      if (generation != _requestGeneration) return;
+
       if (nextTags.isEmpty) {
         _hasMore = false;
       } else {
@@ -169,7 +174,7 @@ class TagList extends _$TagList {
         state = AsyncData([...state.value ?? [], ...nextTags]);
       }
     } finally {
-      _isLoadingMore = false;
+      if (generation == _requestGeneration) _isLoadingMore = false;
     }
   }
 

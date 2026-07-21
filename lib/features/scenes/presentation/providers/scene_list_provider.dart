@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
@@ -165,9 +164,11 @@ class SceneList extends _$SceneList {
   int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Scene>> build() async {
+    _requestGeneration++;
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -246,6 +247,7 @@ class SceneList extends _$SceneList {
   Future<void> fetchNextPage() async {
     if (_isLoadingMore || !_hasMore || state.isLoading) return;
 
+    final generation = _requestGeneration;
     _isLoadingMore = true;
     final repository = ref.read(sceneRepositoryProvider);
     final query = ref.read(sceneSearchQueryProvider);
@@ -269,6 +271,7 @@ class SceneList extends _$SceneList {
         organized: organizedFilter.toBool() ?? filter.organized,
         sceneFilter: filter,
       );
+      if (generation != _requestGeneration) return;
 
       if (nextScenes.isEmpty) {
         _hasMore = false;
@@ -287,7 +290,7 @@ class SceneList extends _$SceneList {
     } catch (e) {
       // In a real app, you might want to show a snackbar for error during pagination
     } finally {
-      _isLoadingMore = false;
+      if (generation == _requestGeneration) _isLoadingMore = false;
     }
   }
 

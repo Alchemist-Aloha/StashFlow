@@ -43,21 +43,40 @@ class _RetryingCachedImage extends StatefulWidget {
 
 class _RetryingCachedImageState extends State<_RetryingCachedImage> {
   int _attempt = 0;
+  int _retryGeneration = 0;
+  bool _retrying = false;
+
+  @override
+  void didUpdateWidget(_RetryingCachedImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.imageUrl != widget.imageUrl ||
+        !mapEquals(oldWidget.headers, widget.headers) ||
+        oldWidget.cacheManager != widget.cacheManager) {
+      _attempt = 0;
+      _retryGeneration++;
+      _retrying = false;
+    }
+  }
 
   Future<void> _handleError() async {
-    if (_attempt >= _RetryingCachedImage.maxRetries) return;
+    if (_retrying || _attempt >= _RetryingCachedImage.maxRetries) return;
+    final generation = _retryGeneration;
+    final imageUrl = widget.imageUrl;
+    final cacheManager = widget.cacheManager;
+    _retrying = true;
     _attempt++;
 
     try {
       // Remove possibly-corrupted cached file and force re-download.
-      if (widget.cacheManager != null) {
-        await widget.cacheManager!.removeFile(widget.imageUrl);
+      if (cacheManager != null) {
+        await cacheManager.removeFile(imageUrl);
       }
     } catch (_) {}
 
     // Small delay to avoid tight retry loops and allow cache manager state to settle.
     await Future.delayed(const Duration(milliseconds: 150));
-    if (mounted) setState(() {});
+    if (mounted && generation == _retryGeneration) setState(() {});
+    if (generation == _retryGeneration) _retrying = false;
   }
 
   @override

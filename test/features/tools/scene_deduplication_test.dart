@@ -13,6 +13,37 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 import '../../helpers/test_helpers.dart';
 
+class _PartialDeleteRepository extends MockGraphQLSceneRepository {
+  final deletedIds = <String>[];
+  int duplicateLoads = 0;
+
+  @override
+  Future<void> deleteScene(
+    String id, {
+    required bool deleteFile,
+    bool deleteGenerated = true,
+  }) async {
+    if (id == 'c') throw Exception('delete failed');
+    deletedIds.add(id);
+  }
+
+  @override
+  Future<List<SceneDuplicateGroup>> findDuplicateScenes({
+    int distance = 0,
+    double durationDiff = 1,
+  }) async {
+    duplicateLoads++;
+    return [
+      for (final group in duplicateGroups)
+        SceneDuplicateGroup(
+          scenes: group.scenes
+              .where((scene) => !deletedIds.contains(scene.id))
+              .toList(),
+        ),
+    ];
+  }
+}
+
 void main() {
   late SharedPreferences prefs;
 
@@ -215,6 +246,52 @@ void main() {
     expect(find.byKey(const ValueKey('duplicate_group_1')), findsOneWidget);
     expect(find.text('Scene a'), findsOneWidget);
     expect(find.text('Scene b'), findsOneWidget);
+  });
+
+  testWidgets('reloads results after a partially successful batch deletion', (
+    tester,
+  ) async {
+    final repo = _PartialDeleteRepository()
+      ..duplicateGroups = [
+        SceneDuplicateGroup(
+          scenes: [
+            duplicateScene(id: 'a', fileSize: 300, videoCodec: 'h264'),
+            duplicateScene(id: 'b', fileSize: 200, videoCodec: 'h264'),
+            duplicateScene(id: 'c', fileSize: 100, videoCodec: 'h264'),
+          ],
+        ),
+      ];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          sceneRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          home: const SceneDeduplicationPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Select'));
+    await tester.tap(find.text('Select'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('All but largest file'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete selected (2)'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete metadata'));
+    await tester.pumpAndSettle();
+
+    expect(repo.deletedIds, ['b']);
+    expect(repo.duplicateLoads, 2);
+    expect(find.text('Scene b'), findsNothing);
+    expect(find.text('Scene c'), findsOneWidget);
   });
 
   testWidgets(

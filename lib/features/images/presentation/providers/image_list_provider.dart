@@ -123,9 +123,11 @@ class ImageList extends _$ImageList {
   int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  int _requestGeneration = 0;
 
   @override
   FutureOr<List<entity.Image>> build() async {
+    _requestGeneration++;
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -186,6 +188,7 @@ class ImageList extends _$ImageList {
   Future<void> fetchNextPage() async {
     if (_isLoadingMore || !_hasMore || state.isLoading) return;
 
+    final generation = _requestGeneration;
     _isLoadingMore = true;
     final repository = ref.read(imageRepositoryProvider);
     final query = ref.read(imageSearchQueryProvider);
@@ -212,6 +215,8 @@ class ImageList extends _$ImageList {
         ),
       );
 
+      if (generation != _requestGeneration) return;
+
       if (nextImages.isEmpty) {
         _hasMore = false;
       } else {
@@ -219,7 +224,7 @@ class ImageList extends _$ImageList {
         state = AsyncData([...state.value ?? [], ...nextImages]);
       }
     } finally {
-      _isLoadingMore = false;
+      if (generation == _requestGeneration) _isLoadingMore = false;
     }
   }
 
