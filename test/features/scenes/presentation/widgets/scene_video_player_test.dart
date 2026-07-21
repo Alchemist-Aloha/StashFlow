@@ -4,6 +4,7 @@ import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
@@ -18,9 +19,11 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 class MockPlayerState extends PlayerState {
   static String? lastPlayedSceneId;
+  static Scene? initialActiveScene;
 
   @override
-  GlobalPlayerState build() => GlobalPlayerState();
+  GlobalPlayerState build() =>
+      GlobalPlayerState(activeScene: initialActiveScene);
 
   @override
   Future<void> playScene(
@@ -89,6 +92,7 @@ void main() {
       'server_base_url': 'http://localhost:9999',
     });
     prefs = await SharedPreferences.getInstance();
+    MockPlayerState.initialActiveScene = null;
   });
 
   final testScene = Scene(
@@ -209,6 +213,88 @@ void main() {
 
     expect(MockPlayerState.lastPlayedSceneId, autoplayScene.id);
   });
+
+  testWidgets(
+    'top-level scene alias honors direct-play on navigation setting',
+    (tester) async {
+      MockPlayerState.lastPlayedSceneId = null;
+      MockPlayerState.initialActiveScene = testScene;
+      await prefs.setBool('video_direct_play_on_navigation', true);
+      final targetScene = testScene.copyWith(id: 's2', title: 'Target Scene');
+      final router = GoRouter(
+        initialLocation: '/scene/s2',
+        routes: [
+          GoRoute(
+            path: '/scene/:id',
+            builder: (context, state) =>
+                Scaffold(body: SceneVideoPlayer(scene: targetScene)),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            playerStateProvider.overrideWith(MockPlayerState.new),
+            streamResolverProvider.overrideWith(MockStreamResolverChoice.new),
+            streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
+            mediaHeadersProvider.overrideWithValue(const {}),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.darkTheme,
+            routerConfig: router,
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(MockPlayerState.lastPlayedSceneId, targetScene.id);
+    },
+  );
+
+  testWidgets(
+    'top-level scene alias keeps active scene when direct-play is disabled',
+    (tester) async {
+      MockPlayerState.lastPlayedSceneId = null;
+      MockPlayerState.initialActiveScene = testScene;
+      await prefs.setBool('video_direct_play_on_navigation', false);
+      final targetScene = testScene.copyWith(id: 's2', title: 'Target Scene');
+      final router = GoRouter(
+        initialLocation: '/scene/s2',
+        routes: [
+          GoRoute(
+            path: '/scene/:id',
+            builder: (context, state) =>
+                Scaffold(body: SceneVideoPlayer(scene: targetScene)),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            playerStateProvider.overrideWith(MockPlayerState.new),
+            streamResolverProvider.overrideWith(MockStreamResolverChoice.new),
+            streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
+            mediaHeadersProvider.overrideWithValue(const {}),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.darkTheme,
+            routerConfig: router,
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(MockPlayerState.lastPlayedSceneId, isNull);
+    },
+  );
 
   testWidgets('forced scene switch restarts active cast on the same session', (
     tester,

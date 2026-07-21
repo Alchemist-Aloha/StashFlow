@@ -261,6 +261,50 @@ void main() {
     },
   );
 
+  testWidgets(
+    'SceneDeduplicationPage places duplicate scene actions inline on desktop',
+    (tester) async {
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1280, 900);
+
+      final repo = MockGraphQLSceneRepository()
+        ..duplicateGroups = [
+          SceneDuplicateGroup(
+            scenes: [
+              duplicateScene(id: 'a', fileSize: 200),
+              duplicateScene(id: 'b', fileSize: 100),
+            ],
+          ),
+        ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            sceneRepositoryProvider.overrideWithValue(repo),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: AppTheme.lightTheme,
+            home: const SceneDeduplicationPage(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final openScene = find.byTooltip('Open scene').first;
+      final deleteScene = find.byTooltip('Delete').first;
+      final openTopLeft = tester.getTopLeft(openScene);
+      final deleteTopLeft = tester.getTopLeft(deleteScene);
+
+      expect(deleteTopLeft.dy, openTopLeft.dy);
+      expect(deleteTopLeft.dx, greaterThan(openTopLeft.dx));
+    },
+  );
+
   testWidgets('opens scene details from the duplicate scene action', (
     tester,
   ) async {

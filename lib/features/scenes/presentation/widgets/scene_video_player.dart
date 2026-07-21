@@ -33,9 +33,18 @@ bool _isSceneFullscreenPath(String path, {String? sceneId}) {
 
 bool _isSceneDetailsPath(String path, {String? sceneId}) {
   final segments = Uri.parse(path).pathSegments;
-  if (segments.length < 3) return false;
-  if (segments[0] != 'scenes' || segments[1] != 'scene') return false;
-  if (sceneId != null && segments[2] != sceneId) return false;
+  final String? pathSceneId;
+  if (segments.length >= 3 &&
+      segments[0] == 'scenes' &&
+      segments[1] == 'scene') {
+    pathSceneId = segments[2];
+  } else if (segments.length >= 2 && segments[0] == 'scene') {
+    // Backward-compatible top-level alias used by standalone tools and links.
+    pathSceneId = segments[1];
+  } else {
+    return false;
+  }
+  if (sceneId != null && pathSceneId != sceneId) return false;
   return true;
 }
 
@@ -172,7 +181,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     // details page to start playback even when another scene is already active.
     final prefs = ref.read(sharedPreferencesProvider);
     final directPlayOnNavigation =
-        prefs.getBool('video_direct_play_on_navigation') ?? false;
+        prefs.getBool('video_direct_play_on_navigation') ?? true;
     if (!force && playerState.activeScene != null && !directPlayOnNavigation) {
       AppLogStore.instance.add(
         'SceneVideoPlayer: Skipping playback - another scene active=${playerState.activeScene?.id}, directPlayOnNavigation=$directPlayOnNavigation',
