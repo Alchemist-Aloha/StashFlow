@@ -1,0 +1,3304 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Russian (`ru`).
+class AppLocalizationsRu extends AppLocalizations {
+  AppLocalizationsRu([String locale = 'ru']) : super(locale);
+
+  @override
+  String get appTitle => 'StashFlow';
+
+  @override
+  String get common_token => 'Токен';
+
+  @override
+  String get filter_value => 'Значение';
+
+  @override
+  String get common_yes => 'Да';
+
+  @override
+  String get common_no => 'Нет';
+
+  @override
+  String get common_clear_history => 'Очистить историю';
+
+  @override
+  String get nav_scenes => 'Сцены';
+
+  @override
+  String get nav_performers => 'Исполнители';
+
+  @override
+  String get nav_studios => 'Студии';
+
+  @override
+  String get nav_tags => 'Теги';
+
+  @override
+  String get nav_galleries => 'Галереи';
+
+  @override
+  String nScenes(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString сцен',
+      few: '$countString сцены',
+      one: '$countString сцена',
+      zero: 'нет сцен',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nPerformers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString исполнителей',
+      few: '$countString исполнителя',
+      one: '$countString исполнитель',
+      zero: 'нет исполнителей',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nPlays(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString plays',
+      one: '1 play',
+      zero: 'no plays',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get common_reset => 'Сбросить';
+
+  @override
+  String get common_apply => 'Применить';
+
+  @override
+  String get common_save_default => 'Сохранить по умолчанию';
+
+  @override
+  String get common_sort_method => 'Способ сортировки';
+
+  @override
+  String get common_direction => 'Направление';
+
+  @override
+  String get common_ascending => 'По возрастанию';
+
+  @override
+  String get common_descending => 'По убыванию';
+
+  @override
+  String get common_favorites_only => 'Только избранное';
+
+  @override
+  String get common_apply_sort => 'Применить сортировку';
+
+  @override
+  String get common_apply_filters => 'Применить фильтры';
+
+  @override
+  String get common_view_all => 'Посмотреть все';
+
+  @override
+  String get common_default => 'По умолчанию';
+
+  @override
+  String get common_later => 'Позже';
+
+  @override
+  String get common_update_now => 'Сведения о релизе';
+
+  @override
+  String get common_configure_now => 'Настроить сейчас';
+
+  @override
+  String get common_clear_rating => 'очистить рейтинг';
+
+  @override
+  String get common_no_media => 'Медиафайлы отсутствуют';
+
+  @override
+  String get common_show => 'показать';
+
+  @override
+  String get common_hide => 'скрыть';
+
+  @override
+  String get galleries_filter_saved =>
+      'Настройки фильтра сохранены по умолчанию';
+
+  @override
+  String get common_setup_required => 'Требуется настройка';
+
+  @override
+  String get common_update_available => 'Доступно обновление';
+
+  @override
+  String get details_studio => 'Подробности о студии';
+
+  @override
+  String get details_performer => 'Подробности об исполнителе';
+
+  @override
+  String get details_tag => 'Подробности о теге';
+
+  @override
+  String get details_scene => 'Подробности о сцене';
+
+  @override
+  String get details_gallery => 'Подробности о галерее';
+
+  @override
+  String get studios_filter_title => 'Фильтр студий';
+
+  @override
+  String get studios_filter_saved => 'Настройки фильтра сохранены по умолчанию';
+
+  @override
+  String get sort_name => 'Имя';
+
+  @override
+  String get sort_scene_count => 'Количество сцен';
+
+  @override
+  String get sort_rating => 'Рейтинг';
+
+  @override
+  String get sort_updated_at => 'Обновлено';
+
+  @override
+  String get sort_created_at => 'Создано';
+
+  @override
+  String get sort_random => 'Случайно';
+
+  @override
+  String get sort_file_mod_time => 'Время изменения файла';
+
+  @override
+  String get sort_filesize => 'Размер файла';
+
+  @override
+  String get sort_o_count => 'Счётчик O';
+
+  @override
+  String get sort_height => 'Рост';
+
+  @override
+  String get sort_birthdate => 'Дата рождения';
+
+  @override
+  String get sort_tag_count => 'Количество тегов';
+
+  @override
+  String get sort_play_count => 'Количество воспроизведений';
+
+  @override
+  String get sort_o_counter => 'Счётчик O';
+
+  @override
+  String get sort_zip_file_count => 'Количество ZIP-файлов';
+
+  @override
+  String get sort_last_o_at => 'Последний O';
+
+  @override
+  String get sort_latest_scene => 'Последняя сцена';
+
+  @override
+  String get sort_career_start => 'Начало карьеры';
+
+  @override
+  String get sort_career_end => 'Окончание карьеры';
+
+  @override
+  String get sort_weight => 'Вес';
+
+  @override
+  String get sort_measurements => 'Размеры';
+
+  @override
+  String get sort_scenes_duration => 'Длительность сцен';
+
+  @override
+  String get sort_scenes_size => 'Размер сцен';
+
+  @override
+  String get sort_images_count => 'Количество изображений';
+
+  @override
+  String get sort_galleries_count => 'Количество галерей';
+
+  @override
+  String get sort_child_count => 'Количество суб-студий';
+
+  @override
+  String get sort_performers_count => 'Количество исполнителей';
+
+  @override
+  String get sort_groups_count => 'Количество групп';
+
+  @override
+  String get sort_marker_count => 'Количество меток';
+
+  @override
+  String get sort_studios_count => 'Количество студий';
+
+  @override
+  String get sort_penis_length => 'Длина пениса';
+
+  @override
+  String get sort_last_played_at => 'Последнее воспроизведение';
+
+  @override
+  String get studios_sort_saved =>
+      'Настройки сортировки сохранены по умолчанию';
+
+  @override
+  String get studios_no_random => 'Нет доступных студий для случайного выбора';
+
+  @override
+  String get tags_filter_title => 'Фильтр тегов';
+
+  @override
+  String get tags_filter_saved => 'Настройки фильтра сохранены по умолчанию';
+
+  @override
+  String get tags_sort_title => 'Сортировать теги';
+
+  @override
+  String get tags_sort_saved => 'Настройки сортировки сохранены по умолчанию';
+
+  @override
+  String get tags_no_random => 'Нет доступных тегов для случайного выбора';
+
+  @override
+  String get scenes_no_random => 'Нет доступных сцен для случайного выбора';
+
+  @override
+  String get performers_no_random =>
+      'Нет доступных исполнителей для случайного выбора';
+
+  @override
+  String get galleries_no_random =>
+      'Нет доступных галерей для случайного выбора';
+
+  @override
+  String common_error(String message) {
+    return 'Ошибка: $message';
+  }
+
+  @override
+  String get common_no_media_available => 'нет доступных медиа';
+
+  @override
+  String common_id(Object id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get common_search_placeholder => 'Поиск...';
+
+  @override
+  String get common_pause => 'пауза';
+
+  @override
+  String get common_play => 'играть';
+
+  @override
+  String get common_refresh => 'Обновить';
+
+  @override
+  String get common_close => 'закрыть';
+
+  @override
+  String get common_save => 'сохранить';
+
+  @override
+  String get common_unmute => 'включить звук';
+
+  @override
+  String get common_mute => 'без звука';
+
+  @override
+  String get common_back => 'назад';
+
+  @override
+  String get common_rate => 'оценить';
+
+  @override
+  String get common_previous => 'предыд.';
+
+  @override
+  String get common_next => 'след.';
+
+  @override
+  String get common_favorite => 'избранное';
+
+  @override
+  String get common_unfavorite => 'убрать из избр.';
+
+  @override
+  String get common_version => 'версия';
+
+  @override
+  String get common_loading => 'Загрузка';
+
+  @override
+  String get common_unavailable => 'недоступно';
+
+  @override
+  String get common_details => 'детали';
+
+  @override
+  String get common_title => 'название';
+
+  @override
+  String get common_release_date => 'дата выхода';
+
+  @override
+  String get common_url => 'Ссылка';
+
+  @override
+  String get common_no_url => 'нет URL';
+
+  @override
+  String get common_sort => 'сорт.';
+
+  @override
+  String get common_filter => 'фильтр';
+
+  @override
+  String get common_search => 'поиск';
+
+  @override
+  String get common_settings => 'настройки';
+
+  @override
+  String get common_reset_to_1x => 'сброс до 1x';
+
+  @override
+  String get common_skip_next => 'пропустить';
+
+  @override
+  String get common_skip_previous => 'Пропустить назад';
+
+  @override
+  String get common_select_subtitle => 'выбрать субтитры';
+
+  @override
+  String get common_playback_speed => 'скор. воспр.';
+
+  @override
+  String get common_pip => 'картинка в карт.';
+
+  @override
+  String get common_toggle_fullscreen => 'весь экран';
+
+  @override
+  String get common_exit_fullscreen => 'выйти из полноэкр.';
+
+  @override
+  String get common_copy_logs => 'коп. логи';
+
+  @override
+  String get common_clear_logs => 'очистить логи';
+
+  @override
+  String get common_enable_autoscroll => 'автопрокрутка вкл';
+
+  @override
+  String get common_disable_autoscroll => 'автопрокрутка выкл';
+
+  @override
+  String get common_retry => 'Повторить';
+
+  @override
+  String get common_no_items => 'Элементы не найдены';
+
+  @override
+  String get common_none => 'Нет';
+
+  @override
+  String get common_any => 'Любой';
+
+  @override
+  String get common_name => 'Имя';
+
+  @override
+  String get common_date => 'Дата';
+
+  @override
+  String get common_rating => 'Рейтинг';
+
+  @override
+  String get common_image_count => 'Количество изображений';
+
+  @override
+  String get common_filepath => 'Путь к файлу';
+
+  @override
+  String get common_random => 'Случайно';
+
+  @override
+  String get common_no_media_found => 'Медиа не найдены';
+
+  @override
+  String common_not_found(String item) {
+    return '$item не найден';
+  }
+
+  @override
+  String get common_add_favorite => 'Добавить в избранное';
+
+  @override
+  String get common_remove_favorite => 'Удалить из избранного';
+
+  @override
+  String get details_group => 'детали группы';
+
+  @override
+  String get details_synopsis => 'Синопсис';
+
+  @override
+  String get details_media => 'Медиа';
+
+  @override
+  String get details_galleries => 'Галереи';
+
+  @override
+  String get details_tags => 'Теги';
+
+  @override
+  String get details_links => 'Ссылки';
+
+  @override
+  String get details_scene_scrape => 'собрать метаданные';
+
+  @override
+  String get details_show_more => 'Показать больше';
+
+  @override
+  String get common_more => 'Ещё';
+
+  @override
+  String get details_show_less => 'Показать меньше';
+
+  @override
+  String get details_more_from_studio => 'Еще от студии';
+
+  @override
+  String get details_o_count_incremented => 'Счет O увеличен';
+
+  @override
+  String details_failed_update_rating(String error) {
+    return 'Не удалось обновить рейтинг: $error';
+  }
+
+  @override
+  String details_failed_update_performer(Object error) {
+    return 'Не удалось обновить исполнителя: $error';
+  }
+
+  @override
+  String details_failed_increment_o_count(String error) {
+    return 'Не удалось увеличить счет O: $error';
+  }
+
+  @override
+  String get details_scene_add_performer => 'добавить исполнителя';
+
+  @override
+  String get details_scene_add_tag => 'добавить тег';
+
+  @override
+  String get details_scene_add_url => 'добавить URL';
+
+  @override
+  String get details_scene_remove_url => 'удалить URL';
+
+  @override
+  String get groups_title => 'Группы';
+
+  @override
+  String get groups_unnamed => 'Группа без имени';
+
+  @override
+  String get groups_untitled => 'Группа без названия';
+
+  @override
+  String get studios_title => 'Студии';
+
+  @override
+  String get studios_galleries_title => 'Галереи студии';
+
+  @override
+  String get studios_media_title => 'Медиа студии';
+
+  @override
+  String get studios_sort_title => 'Сортировать студии';
+
+  @override
+  String get galleries_title => 'Галереи';
+
+  @override
+  String get galleries_sort_title => 'Сортировать галереи';
+
+  @override
+  String get galleries_all_images => 'Все изображения';
+
+  @override
+  String get galleries_filter_title => 'Фильтр галерей';
+
+  @override
+  String get galleries_min_rating => 'Минимальный рейтинг';
+
+  @override
+  String get galleries_image_count => 'Количество изображений';
+
+  @override
+  String get galleries_organization => 'Организация';
+
+  @override
+  String get galleries_organized_only => 'Только организованные';
+
+  @override
+  String get scenes_filter_title => 'Фильтровать сцены';
+
+  @override
+  String get scenes_filter_saved => 'Настройки фильтра сохранены по умолчанию';
+
+  @override
+  String get scenes_watched => 'Просмотрено';
+
+  @override
+  String get scenes_unwatched => 'Не просмотрено';
+
+  @override
+  String get scenes_search_hint => 'Поиск сцен...';
+
+  @override
+  String get scenes_sort_header => 'Сортировать сцены';
+
+  @override
+  String get scenes_sort_duration => 'Длительность';
+
+  @override
+  String get scenes_sort_bitrate => 'Битрейт';
+
+  @override
+  String get scenes_sort_framerate => 'Частота кадров';
+
+  @override
+  String get scenes_sort_file_count => 'Количество файлов';
+
+  @override
+  String get scenes_sort_filesize => 'Размер файла';
+
+  @override
+  String get scenes_sort_resolution => 'Разрешение';
+
+  @override
+  String get scenes_sort_last_played_at => 'Последний просмотр';
+
+  @override
+  String get scenes_sort_resume_time => 'Время возобновления';
+
+  @override
+  String get scenes_sort_play_duration => 'Время воспроизведения';
+
+  @override
+  String get scenes_sort_interactive => 'Интерактивный';
+
+  @override
+  String get scenes_sort_interactive_speed => 'Интерактивная скорость';
+
+  @override
+  String get scenes_sort_perceptual_similarity => 'Перцептивное сходство';
+
+  @override
+  String get scenes_sort_performer_age => 'Возраст исполнителя';
+
+  @override
+  String get scenes_sort_studio => 'Студия';
+
+  @override
+  String get scenes_sort_path => 'Путь';
+
+  @override
+  String get scenes_sort_file_mod_time => 'Время изменения файла';
+
+  @override
+  String get scenes_sort_tag_count => 'Количество тегов';
+
+  @override
+  String get scenes_sort_performer_count => 'Количество исполнителей';
+
+  @override
+  String get scenes_sort_o_counter => 'Счетчик O';
+
+  @override
+  String get scenes_sort_last_o_at => 'Последний O';
+
+  @override
+  String get scenes_sort_group_scene_number => 'Номер сцены в группе/фильме';
+
+  @override
+  String get scenes_sort_code => 'Код';
+
+  @override
+  String get scenes_sort_saved_default =>
+      'Настройки сортировки сохранены по умолчанию';
+
+  @override
+  String get scenes_sort_tooltip => 'Параметры сортировки';
+
+  @override
+  String get tags_search_hint => 'Поиск тегов...';
+
+  @override
+  String get tags_sort_tooltip => 'Параметры сортировки';
+
+  @override
+  String get tags_filter_tooltip => 'Параметры фильтрации';
+
+  @override
+  String get performers_title => 'Исполнители';
+
+  @override
+  String get performers_sort_title => 'Сортировать исполнителей';
+
+  @override
+  String get performers_filter_title => 'Фильтр исполнителей';
+
+  @override
+  String get performers_galleries_title => 'Все галереи исполнителя';
+
+  @override
+  String get performers_media_title => 'Все медиа исполнителя';
+
+  @override
+  String get performers_gender => 'Пол';
+
+  @override
+  String get performers_gender_any => 'Любой';
+
+  @override
+  String get performers_gender_female => 'Женский';
+
+  @override
+  String get performers_gender_male => 'Мужской';
+
+  @override
+  String get performers_gender_trans_female => 'Транс-женщина';
+
+  @override
+  String get performers_gender_trans_male => 'Транс-мужчина';
+
+  @override
+  String get performers_gender_intersex => 'Интерсекс';
+
+  @override
+  String get performers_gender_non_binary => 'Небинарный';
+
+  @override
+  String get performers_circumcised => 'Обрезан';
+
+  @override
+  String get performers_circumcised_cut => 'Обрезан';
+
+  @override
+  String get performers_circumcised_uncut => 'Необрезан';
+
+  @override
+  String get performers_play_count => 'Количество воспроизведений';
+
+  @override
+  String get performers_field_disambiguation => 'Разрешение неоднозначности';
+
+  @override
+  String get performers_field_birthdate => 'Дата рождения';
+
+  @override
+  String get performers_field_deathdate => 'Дата смерти';
+
+  @override
+  String get performers_field_height_cm => 'Рост (см)';
+
+  @override
+  String get performers_field_weight_kg => 'Вес (кг)';
+
+  @override
+  String get performers_field_measurements => 'Замеры';
+
+  @override
+  String get performers_field_fake_tits => 'Искусственная грудь';
+
+  @override
+  String get performers_field_penis_length => 'Длина пениса';
+
+  @override
+  String get performers_field_ethnicity => 'Этничность';
+
+  @override
+  String get performers_field_country => 'Страна';
+
+  @override
+  String get performers_field_eye_color => 'Цвет глаз';
+
+  @override
+  String get performers_field_hair_color => 'Цвет волос';
+
+  @override
+  String get performers_field_career_start => 'Начало карьеры';
+
+  @override
+  String get performers_field_career_end => 'Конец карьеры';
+
+  @override
+  String get performers_field_tattoos => 'Татуировки';
+
+  @override
+  String get performers_field_piercings => 'Пирсинг';
+
+  @override
+  String get performers_field_aliases => 'Псевдонимы';
+
+  @override
+  String get common_organized => 'Организовано';
+
+  @override
+  String get scenes_duplicated => 'Дублировано';
+
+  @override
+  String get random_studio => 'случайная студия';
+
+  @override
+  String get random_gallery => 'случайная галерея';
+
+  @override
+  String get random_tag => 'случайный тег';
+
+  @override
+  String get random_scene => 'случайная сцена';
+
+  @override
+  String get random_performer => 'случайный исполнитель';
+
+  @override
+  String get filter_modifier => 'Модификатор';
+
+  @override
+  String get filter_group_general => 'Общие';
+
+  @override
+  String get filter_group_performer => 'Исполнитель';
+
+  @override
+  String get filter_group_library => 'Библиотека';
+
+  @override
+  String get filter_group_metadata => 'Метаданные';
+
+  @override
+  String get filter_group_media_info => 'Инфо о медиа';
+
+  @override
+  String get filter_group_usage => 'Использование';
+
+  @override
+  String get filter_group_system => 'Система';
+
+  @override
+  String get filter_group_physical => 'Физический';
+
+  @override
+  String get filter_equals => 'Равно';
+
+  @override
+  String get filter_not_equals => 'Не равно';
+
+  @override
+  String get filter_greater_than => 'Больше чем';
+
+  @override
+  String get filter_less_than => 'Меньше чем';
+
+  @override
+  String get filter_includes => 'Включает';
+
+  @override
+  String get filter_excludes => 'Исключает';
+
+  @override
+  String get filter_includes_all => 'Включает все';
+
+  @override
+  String get filter_is_null => 'Null';
+
+  @override
+  String get filter_not_null => 'Не null';
+
+  @override
+  String get filter_matches_regex => 'Соответствует регулярному выражению';
+
+  @override
+  String get filter_not_matches_regex =>
+      'Не соответствует регулярному выражению';
+
+  @override
+  String get filter_between => 'Между';
+
+  @override
+  String get filter_not_between => 'Не между';
+
+  @override
+  String get filter_value_secondary => 'Второе значение';
+
+  @override
+  String get images_resolution_title => 'Разрешение';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => 'Ориентация';
+
+  @override
+  String get common_or => 'ИЛИ';
+
+  @override
+  String get scrape_from_url => 'Собрать с URL';
+
+  @override
+  String get scenes_phash_started => 'Генерация phash начата';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Не удалось сгенерировать phash: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return 'Не удалось обновить студию: $error';
+  }
+
+  @override
+  String get settings_title => 'Настройки';
+
+  @override
+  String get settings_customize => 'Настройка StashFlow';
+
+  @override
+  String get settings_customize_subtitle =>
+      'Настройте воспроизведение, внешний вид, макет и инструменты поддержки в одном месте.';
+
+  @override
+  String get settings_core_section => 'Основные настройки';
+
+  @override
+  String get settings_core_subtitle =>
+      'Самые используемые страницы конфигурации';
+
+  @override
+  String get settings_server => 'Сервер';
+
+  @override
+  String get settings_server_subtitle => 'Конфигурация подключения и API';
+
+  @override
+  String get settings_playback => 'Воспроизведение';
+
+  @override
+  String get settings_playback_subtitle => 'Поведение плеера и взаимодействия';
+
+  @override
+  String get settings_keyboard => 'Клавиатура';
+
+  @override
+  String get settings_keyboard_subtitle => 'Настраиваемые сочетания клавиш';
+
+  @override
+  String get settings_keyboard_title => 'Горячие клавиши';
+
+  @override
+  String get settings_keyboard_reset_defaults => 'Сбросить настройки';
+
+  @override
+  String get settings_keyboard_not_bound => 'Не назначено';
+
+  @override
+  String get settings_keyboard_volume_up => 'Увеличить громкость';
+
+  @override
+  String get settings_keyboard_volume_down => 'Уменьшить громкость';
+
+  @override
+  String get settings_keyboard_toggle_mute => 'Вкл/выкл звук';
+
+  @override
+  String get settings_keyboard_toggle_fullscreen => 'Полноэкранный режим';
+
+  @override
+  String get settings_keyboard_next_scene => 'Следующая сцена';
+
+  @override
+  String get settings_keyboard_prev_scene => 'Предыдущая сцена';
+
+  @override
+  String get settings_keyboard_increase_speed => 'Увеличить скорость';
+
+  @override
+  String get settings_keyboard_decrease_speed => 'Уменьшить скорость';
+
+  @override
+  String get settings_keyboard_reset_speed => 'Сбросить скорость';
+
+  @override
+  String get settings_keyboard_close_player => 'Закрыть плеер';
+
+  @override
+  String get settings_keyboard_next_image => 'Следующее изображение';
+
+  @override
+  String get settings_keyboard_prev_image => 'Предыдущее изображение';
+
+  @override
+  String get settings_keyboard_go_back => 'Назад';
+
+  @override
+  String get settings_keyboard_play_pause_desc =>
+      'Переключение между воспроизведением и паузой';
+
+  @override
+  String get settings_keyboard_seek_forward_5_desc => 'Вперед на 5 секунд';
+
+  @override
+  String get settings_keyboard_seek_backward_5_desc => 'Назад на 5 секунд';
+
+  @override
+  String get settings_keyboard_seek_forward_10_desc => 'Вперед на 10 секунд';
+
+  @override
+  String get settings_keyboard_seek_backward_10_desc => 'Назад на 10 секунд';
+
+  @override
+  String get settings_keyboard_global_section => 'Global Navigation';
+
+  @override
+  String get settings_keyboard_video_section => 'Video Player';
+
+  @override
+  String get settings_keyboard_image_section => 'Image Viewer';
+
+  @override
+  String get settings_keyboard_next_tab => 'Next Tab';
+
+  @override
+  String get settings_keyboard_previous_tab => 'Previous Tab';
+
+  @override
+  String settings_keyboard_tab_number(int number) {
+    return 'Tab $number';
+  }
+
+  @override
+  String get settings_keyboard_first_image => 'First Image';
+
+  @override
+  String get settings_keyboard_last_image => 'Last Image';
+
+  @override
+  String get settings_keyboard_close_image => 'Close Image Viewer';
+
+  @override
+  String get settings_keyboard_unbind => 'Unbind shortcut';
+
+  @override
+  String get settings_keyboard_reset_confirm_title =>
+      'Reset keyboard shortcuts?';
+
+  @override
+  String get settings_keyboard_reset_confirm_body =>
+      'All custom keyboard shortcuts will be replaced with the defaults.';
+
+  @override
+  String get settings_keyboard_reserved =>
+      'This shortcut is reserved by the browser or operating system.';
+
+  @override
+  String get settings_keyboard_tab_reserved =>
+      'Tab is reserved for keyboard focus navigation.';
+
+  @override
+  String settings_keyboard_conflict_moved(String action) {
+    return 'Shortcut moved from $action.';
+  }
+
+  @override
+  String get settings_appearance => 'Внешний вид';
+
+  @override
+  String get settings_appearance_subtitle => 'Тема и цвета';
+
+  @override
+  String get settings_interface => 'Интерфейс';
+
+  @override
+  String get settings_interface_subtitle =>
+      'Навигация и настройки макета по умолчанию';
+
+  @override
+  String get settings_support => 'Поддержка';
+
+  @override
+  String get settings_support_subtitle => 'Диагностика и информация';
+
+  @override
+  String get settings_develop => 'Разработка';
+
+  @override
+  String get settings_develop_subtitle =>
+      'Расширенные инструменты и переопределения';
+
+  @override
+  String get settings_appearance_title => 'Настройки внешнего вида';
+
+  @override
+  String get settings_appearance_theme_mode => 'Режим темы';
+
+  @override
+  String get settings_appearance_theme_mode_subtitle =>
+      'Выберите, как приложение следует за изменениями яркости';
+
+  @override
+  String get settings_appearance_theme_system => 'Системная';
+
+  @override
+  String get settings_appearance_theme_light => 'Светлая';
+
+  @override
+  String get settings_appearance_theme_dark => 'Темная';
+
+  @override
+  String get settings_appearance_primary_color => 'Основной цвет';
+
+  @override
+  String get settings_appearance_primary_color_subtitle =>
+      'Выберите базовый цвет для палитры Material 3';
+
+  @override
+  String get settings_appearance_advanced_theming => 'Расширенная темизация';
+
+  @override
+  String get settings_appearance_advanced_theming_subtitle =>
+      'Оптимизация для конкретных типов экранов';
+
+  @override
+  String get settings_appearance_true_black => 'Истинный черный (AMOLED)';
+
+  @override
+  String get settings_appearance_true_black_subtitle =>
+      'Использовать чисто черный фон в темном режиме для экономии заряда батареи на OLED-экранах';
+
+  @override
+  String get settings_appearance_custom_hex => 'Пользовательский Hex-цвет';
+
+  @override
+  String get settings_appearance_custom_hex_helper =>
+      'Введите 8-значный ARGB hex-код';
+
+  @override
+  String get settings_appearance_font_size =>
+      'Глобальный масштаб пользовательского интерфейса';
+
+  @override
+  String get settings_appearance_font_size_subtitle =>
+      'Пропорционально масштабируйте типографику и интервалы.';
+
+  @override
+  String get settings_interface_title => 'Настройки интерфейса';
+
+  @override
+  String get settings_interface_language => 'Язык';
+
+  @override
+  String get settings_interface_language_subtitle =>
+      'Переопределить язык системы по умолчанию';
+
+  @override
+  String get settings_interface_app_language => 'Язык приложения';
+
+  @override
+  String get settings_interface_navigation => 'Навигация';
+
+  @override
+  String get settings_interface_navigation_subtitle =>
+      'Видимость глобальных ярлыков навигации';
+
+  @override
+  String get settings_interface_show_random =>
+      'Показывать кнопки случайной навигации';
+
+  @override
+  String get settings_interface_show_random_subtitle =>
+      'Включить или отключить плавающие кнопки казино на страницах списков и деталей';
+
+  @override
+  String get settings_interface_hide_scene_metadata =>
+      'Скрывать метаданные сцены по умолчанию';
+
+  @override
+  String get settings_interface_hide_scene_metadata_subtitle =>
+      'Показывать технические метаданные сцены только после нажатия «Показать метаданные».';
+
+  @override
+  String get settings_interface_random_scene_filter =>
+      'Учитывать активные фильтры для случайной сцены';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      'Если включено, случайная навигация по сценам использует текущие фильтры сцен.';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      'Ориентация, управляемая гравитацией (основные страницы)';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'Разрешить основным страницам поворачиваться с помощью датчика устройства. Полноэкранное воспроизведение видео использует собственные настройки ориентации.';
+
+  @override
+  String get settings_interface_show_edit => 'Показывать кнопку редактирования';
+
+  @override
+  String get settings_interface_show_edit_subtitle =>
+      'Включить или отключить кнопку редактирования на странице деталей сцены';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'Использовать настоящее видео сцены в мини-плеере';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      'Показывать живую видеоповерхность вместо скриншота сцены, когда воспроизведение активно.';
+
+  @override
+  String get details_show_metadata => 'Показать метаданные';
+
+  @override
+  String get settings_interface_entity_image_filtering =>
+      'Фильтрация изображений сущностей';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      'Выберите, должны ли страницы изображений сущностей соответствовать метаданным изображений или связанным галереям.';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct =>
+      'Прямая сущность';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries =>
+      'Связанные галереи';
+
+  @override
+  String get settings_interface_customize_tabs => 'Настройка вкладок';
+
+  @override
+  String get settings_interface_customize_tabs_subtitle =>
+      'Изменить порядок или скрыть элементы меню навигации';
+
+  @override
+  String get settings_interface_scenes_layout => 'Макет сцен';
+
+  @override
+  String get settings_interface_scenes_layout_subtitle =>
+      'Режим просмотра по умолчанию для сцен';
+
+  @override
+  String get settings_interface_galleries_layout => 'Макет галерей';
+
+  @override
+  String get settings_interface_galleries_layout_subtitle =>
+      'Режим просмотра по умолчанию для галерей';
+
+  @override
+  String get settings_interface_max_performer_avatars =>
+      'Максимальное количество аватаров исполнителей';
+
+  @override
+  String get settings_interface_max_performer_avatars_subtitle =>
+      'Максимальное количество аватаров исполнителей, отображаемых в карточке сцены.';
+
+  @override
+  String get settings_interface_show_performer_avatars =>
+      'Показывать аватары исполнителей';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Отображать иконки исполнителей на карточках сцен на всех платформах.';
+
+  @override
+  String get settings_interface_performer_avatar_size =>
+      'Размер аватара исполнителя';
+
+  @override
+  String get settings_interface_layout_default => 'Макет по умолчанию';
+
+  @override
+  String get settings_interface_layout_default_desc =>
+      'Выберите макет по умолчанию для страницы';
+
+  @override
+  String get settings_interface_layout_list => 'Список';
+
+  @override
+  String get settings_interface_layout_grid => 'Сетка';
+
+  @override
+  String get settings_interface_layout_tiktok => 'Бесконечная прокрутка';
+
+  @override
+  String get settings_interface_grid_columns => 'Колонки сетки';
+
+  @override
+  String get settings_interface_image_viewer => 'Просмотр изображений';
+
+  @override
+  String get settings_interface_image_viewer_subtitle =>
+      'Настроить поведение полноэкранного просмотра изображений';
+
+  @override
+  String get settings_interface_swipe_direction =>
+      'Направление свайпа в полноэкранном режиме';
+
+  @override
+  String get settings_interface_swipe_direction_desc =>
+      'Выберите способ перелистывания изображений в полноэкранном режиме';
+
+  @override
+  String get settings_interface_swipe_vertical => 'Вертикально';
+
+  @override
+  String get settings_interface_swipe_horizontal => 'Горизонтально';
+
+  @override
+  String get settings_interface_waterfall_columns => 'Колонки сетки «Водопад»';
+
+  @override
+  String get settings_interface_performer_layouts => 'Макеты исполнителей';
+
+  @override
+  String get settings_interface_performer_layouts_subtitle =>
+      'Настройки медиа и галерей для исполнителей по умолчанию';
+
+  @override
+  String get settings_interface_studio_layouts => 'Макеты студий';
+
+  @override
+  String get settings_interface_studio_layouts_subtitle =>
+      'Настройки медиа и галерей для студий по умолчанию';
+
+  @override
+  String get settings_interface_tag_layouts => 'Макеты тегов';
+
+  @override
+  String get settings_interface_tag_layouts_subtitle =>
+      'Настройки медиа и галерей для тегов по умолчанию';
+
+  @override
+  String get settings_interface_media_layout => 'Макет медиа';
+
+  @override
+  String get settings_interface_media_layout_subtitle =>
+      'Макет для страницы Медиа';
+
+  @override
+  String get settings_interface_galleries_layout_item => 'Макет галерей';
+
+  @override
+  String get settings_interface_galleries_layout_subtitle_item =>
+      'Макет для страницы Галереи';
+
+  @override
+  String get settings_server_title => 'Настройки сервера';
+
+  @override
+  String get settings_server_status => 'Статус подключения';
+
+  @override
+  String get settings_server_status_subtitle =>
+      'Текущее состояние подключения к настроенному серверу';
+
+  @override
+  String get settings_server_details => 'Детали сервера';
+
+  @override
+  String get settings_server_details_subtitle =>
+      'Настройте адрес и метод аутентификации';
+
+  @override
+  String get settings_server_url => 'URL-адрес Stash';
+
+  @override
+  String get settings_server_url_helper =>
+      'Введите URL-адрес вашего сервера Stash. Если настроен пользовательский путь, укажите его здесь.';
+
+  @override
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
+
+  @override
+  String get settings_server_login_failed => 'Ошибка входа';
+
+  @override
+  String get settings_server_auth_method => 'Метод аутентификации';
+
+  @override
+  String get settings_server_auth_apikey => 'API-ключ';
+
+  @override
+  String get settings_server_auth_password => 'Имя пользователя + Пароль';
+
+  @override
+  String get settings_server_auth_password_desc =>
+      'Рекомендуется: используйте имя пользователя и пароль Stash.';
+
+  @override
+  String get settings_server_auth_apikey_desc =>
+      'Используйте API-ключ для аутентификации по статическому токену.';
+
+  @override
+  String get settings_server_username => 'Имя пользователя';
+
+  @override
+  String get settings_server_password => 'Пароль';
+
+  @override
+  String get settings_server_login_test => 'Войти и проверить';
+
+  @override
+  String get settings_server_test => 'Проверить подключение';
+
+  @override
+  String get settings_server_logout => 'Выйти';
+
+  @override
+  String get settings_server_clear => 'Очистить настройки';
+
+  @override
+  String settings_server_connected(String version) {
+    return 'Подключено (Stash $version)';
+  }
+
+  @override
+  String get settings_server_checking => 'Проверка подключения...';
+
+  @override
+  String settings_server_failed(String error) {
+    return 'Ошибка: $error';
+  }
+
+  @override
+  String get settings_server_invalid_url => 'Недопустимый URL сервера';
+
+  @override
+  String get settings_server_resolve_error =>
+      'Не удалось разрешить URL сервера. Проверьте хост, порт и учетные данные.';
+
+  @override
+  String get settings_server_logout_confirm =>
+      'Выход выполнен, файлы cookie очищены.';
+
+  @override
+  String get settings_server_profile_add => 'Добавить профиль';
+
+  @override
+  String get settings_server_profile_edit => 'Изменить профиль';
+
+  @override
+  String get settings_server_profile_name => 'Имя профиля';
+
+  @override
+  String get settings_server_profile_delete => 'Удалить профиль';
+
+  @override
+  String get settings_server_profile_delete_confirm =>
+      'Вы уверены, что хотите удалить этот профиль? Это действие нельзя отменить.';
+
+  @override
+  String get settings_server_profile_active => 'Активен';
+
+  @override
+  String get settings_server_profile_empty => 'Серверные профили не настроены';
+
+  @override
+  String get settings_server_profiles => 'Профили сервера';
+
+  @override
+  String get settings_server_profiles_subtitle =>
+      'Управление несколькими подключениями к серверу Stash';
+
+  @override
+  String get settings_server_auth_status_logging_in =>
+      'Статус аутентификации: выполняется вход...';
+
+  @override
+  String get settings_server_auth_status_logged_in =>
+      'Статус аутентификации: вход выполнен';
+
+  @override
+  String get settings_server_auth_status_logged_out =>
+      'Статус аутентификации: выход выполнен';
+
+  @override
+  String get settings_playback_title => 'Настройки воспроизведения';
+
+  @override
+  String get settings_playback_behavior => 'Поведение воспроизведения';
+
+  @override
+  String get settings_playback_behavior_subtitle =>
+      'Настройки воспроизведения и фонового режима по умолчанию';
+
+  @override
+  String get settings_playback_feed_random =>
+      'Начать Ленту со случайного места';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      'При воспроизведении сцен в режиме Ленты начинать со случайного места между 0% и 90% длины видео';
+
+  @override
+  String get settings_playback_resume_position =>
+      'Возобновить с последней игровой позиции';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'При открытии видео автоматически возобновляется с того места, на котором вы остановились.';
+
+  @override
+  String get settings_playback_end_behavior => 'Поведение в конце игры';
+
+  @override
+  String get settings_playback_end_behavior_subtitle =>
+      'Что делать, когда текущее воспроизведение заканчивается';
+
+  @override
+  String get settings_playback_end_behavior_stop => 'Останавливаться';
+
+  @override
+  String get settings_playback_end_behavior_loop => 'Зациклить текущую сцену';
+
+  @override
+  String get settings_playback_end_behavior_next =>
+      'Воспроизвести следующую сцену';
+
+  @override
+  String get settings_playback_autoplay =>
+      'Автовоспроизведение следующей сцены';
+
+  @override
+  String get settings_playback_autoplay_subtitle =>
+      'Автоматически воспроизводить следующую сцену по завершении текущей';
+
+  @override
+  String get settings_playback_background => 'Фоновое воспроизведение';
+
+  @override
+  String get settings_playback_background_subtitle =>
+      'Продолжать воспроизведение звука видео при сворачивании приложения';
+
+  @override
+  String get settings_playback_pip => 'Нативная «Картинка в картинке»';
+
+  @override
+  String get settings_playback_pip_subtitle =>
+      'Включить кнопку PiP на Android и автоматический переход при сворачивании';
+
+  @override
+  String get settings_playback_subtitles => 'Настройки субтитров';
+
+  @override
+  String get settings_playback_subtitles_subtitle =>
+      'Автоматическая загрузка и внешний вид';
+
+  @override
+  String get settings_playback_subtitle_lang => 'Язык субтитров по умолчанию';
+
+  @override
+  String get settings_playback_subtitle_lang_subtitle =>
+      'Автозагрузка при наличии';
+
+  @override
+  String get settings_playback_subtitle_size => 'Размер шрифта субтитров';
+
+  @override
+  String get settings_playback_subtitle_pos =>
+      'Вертикальное положение субтитров';
+
+  @override
+  String settings_playback_subtitle_pos_desc(String percent) {
+    return '$percent% снизу';
+  }
+
+  @override
+  String get settings_playback_subtitle_align =>
+      'Выравнивание текста субтитров';
+
+  @override
+  String get settings_playback_subtitle_align_subtitle =>
+      'Выравнивание для многострочных субтитров';
+
+  @override
+  String get settings_playback_seek => 'Взаимодействие при перемотке';
+
+  @override
+  String get settings_playback_seek_subtitle =>
+      'Выберите способ перемотки во время воспроизведения';
+
+  @override
+  String get settings_playback_seek_double_tap =>
+      'Двойное нажатие влево/вправо для перемотки на 10с';
+
+  @override
+  String get settings_playback_seek_drag =>
+      'Перетаскивание временной шкалы для перемотки';
+
+  @override
+  String get settings_playback_seek_drag_label => 'Перетаскивание';
+
+  @override
+  String get settings_playback_seek_double_tap_label => 'Двойное нажатие';
+
+  @override
+  String get settings_playback_gravity_orientation =>
+      'Ориентация, управляемая гравитацией';
+
+  @override
+  String get settings_playback_direct_play =>
+      'Прямое воспроизведение при навигации по сценам';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      'При переходе из другой воспроизводящейся сцены, сразу включать новую сцену';
+
+  @override
+  String get settings_playback_gravity_orientation_subtitle =>
+      'Разрешить поворот между совпадающими ориентациями с помощью датчика устройства (например, переворачивать альбомную ориентацию влево/вправо).';
+
+  @override
+  String get settings_playback_subtitle_lang_none_disabled => 'Нет (Отключено)';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one =>
+      'Авто (если только один)';
+
+  @override
+  String get settings_playback_subtitle_lang_english => 'Английский';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => 'Китайский';
+
+  @override
+  String get settings_playback_subtitle_lang_german => 'Немецкий';
+
+  @override
+  String get settings_playback_subtitle_lang_french => 'Французский';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => 'Испанский';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => 'Итальянский';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => 'Японский';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => 'Корейский';
+
+  @override
+  String get settings_playback_subtitle_align_left => 'Слева';
+
+  @override
+  String get settings_playback_subtitle_align_center => 'По центру';
+
+  @override
+  String get settings_playback_subtitle_align_right => 'Справа';
+
+  @override
+  String get settings_support_title => 'Поддержка';
+
+  @override
+  String get settings_support_diagnostics =>
+      'Диагностика и информация о проекте';
+
+  @override
+  String get settings_support_diagnostics_subtitle =>
+      'Открыть журналы работы или перейти в репозиторий за помощью.';
+
+  @override
+  String get settings_support_update_available => 'Доступно обновление';
+
+  @override
+  String get settings_support_update_available_subtitle =>
+      'На GitHub доступна более новая версия';
+
+  @override
+  String settings_support_update_to(String version) {
+    return 'Обновить до $version';
+  }
+
+  @override
+  String get settings_support_update_to_subtitle =>
+      'Вас ждут новые функции и улучшения.';
+
+  @override
+  String get settings_support_about => 'О программе';
+
+  @override
+  String get settings_support_about_subtitle =>
+      'Информация о проекте и исходном коде';
+
+  @override
+  String get settings_support_version => 'Версия';
+
+  @override
+  String get settings_support_version_loading =>
+      'Загрузка информации о версии...';
+
+  @override
+  String get settings_support_version_unavailable =>
+      'Информация о версии недоступна';
+
+  @override
+  String get settings_support_github => 'Репозиторий GitHub';
+
+  @override
+  String get settings_support_github_subtitle =>
+      'Просмотр исходного кода и сообщение об ошибках';
+
+  @override
+  String get settings_support_github_error =>
+      'Не удалось открыть ссылку на GitHub';
+
+  @override
+  String get settings_support_issues => 'Сообщить о проблеме';
+
+  @override
+  String get settings_support_issues_subtitle =>
+      'Помогите улучшить StashFlow, сообщая об ошибках.';
+
+  @override
+  String get settings_develop_title => 'Разработка';
+
+  @override
+  String get settings_develop_enable_logging =>
+      'Включить отладочное логирование';
+
+  @override
+  String get settings_develop_enable_logging_subtitle =>
+      'Записывать логи приложения для устранения неполадок';
+
+  @override
+  String get settings_develop_diagnostics => 'Инструменты диагностики';
+
+  @override
+  String get settings_develop_diagnostics_subtitle =>
+      'Устранение неполадок и производительность';
+
+  @override
+  String get settings_develop_video_debug =>
+      'Показывать отладочную информацию видео';
+
+  @override
+  String get settings_develop_video_debug_subtitle =>
+      'Отображать технические детали воспроизведения поверх видеоплеера.';
+
+  @override
+  String get settings_develop_log_viewer => 'Просмотр журнала отладки';
+
+  @override
+  String get settings_develop_log_viewer_subtitle =>
+      'Открыть просмотр журналов приложения в реальном времени.';
+
+  @override
+  String get settings_develop_logs_copied => 'Логи скопированы в буфер обмена';
+
+  @override
+  String get settings_develop_no_logs =>
+      'Журналы отсутствуют. Взаимодействуйте с приложением, чтобы собрать логи.';
+
+  @override
+  String get settings_develop_web_overrides => 'Переопределения для Web';
+
+  @override
+  String get settings_develop_web_overrides_subtitle =>
+      'Расширенные флаги для веб-платформы';
+
+  @override
+  String get settings_develop_web_auth => 'Разрешить вход по паролю в Web';
+
+  @override
+  String get settings_develop_web_auth_subtitle =>
+      'Переопределяет ограничение «только для нативных приложений» и делает видимым метод аутентификации по имени пользователя и паролю во Flutter Web.';
+
+  @override
+  String get settings_develop_proxy_auth =>
+      'Включить режимы аутентификации через прокси';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      'Включите расширенные методы Basic Auth и Bearer Token для использования с бэкендами без аутентификации за прокси-серверами, такими как Authentik.';
+
+  @override
+  String get settings_server_auth_basic => 'Базовая аутентификация';
+
+  @override
+  String get settings_server_auth_bearer => 'Токен носителя';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      'Отправляет заголовок \'Authorization: Basic <base64(user:pass)>\'.';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      'Отправляет заголовок \'Authorization: Bearer <token>\'.';
+
+  @override
+  String get common_edit => 'Редактировать';
+
+  @override
+  String get common_resolution => 'Разрешение';
+
+  @override
+  String get common_orientation => 'Ориентация';
+
+  @override
+  String get common_landscape => 'Альбомная';
+
+  @override
+  String get common_portrait => 'Портретная';
+
+  @override
+  String get common_square => 'Квадрат';
+
+  @override
+  String get performers_filter_saved =>
+      'Параметры фильтра сохранены как по умолчанию';
+
+  @override
+  String get images_title => 'Изображения';
+
+  @override
+  String get images_filter_title => 'Фильтровать изображения';
+
+  @override
+  String get images_filter_saved => 'Настройки фильтра сохранены по умолчанию';
+
+  @override
+  String get images_sort_title => 'Сортировать изображения';
+
+  @override
+  String get images_sort_saved =>
+      'Параметры сортировки сохранены как по умолчанию';
+
+  @override
+  String get image_rating_updated => 'Рейтинг изображения обновлен.';
+
+  @override
+  String get gallery_rating_updated => 'Рейтинг галереи обновлен.';
+
+  @override
+  String get common_image => 'Изображение';
+
+  @override
+  String get common_gallery => 'Галерея';
+
+  @override
+  String get images_gallery_rating_unavailable =>
+      'Рейтинг галереи доступен только при просмотре галереи.';
+
+  @override
+  String images_rating(String rating) {
+    return 'Рейтинг: $rating / 5';
+  }
+
+  @override
+  String get images_filtered_by_gallery => 'Отфильтровано по галерее';
+
+  @override
+  String get images_slideshow_need_two =>
+      'Требуется как минимум 2 изображения для слайд-шоу.';
+
+  @override
+  String get images_slideshow_start_title => 'Запустить слайд-шоу';
+
+  @override
+  String images_slideshow_interval(num seconds) {
+    return 'Интервал: $secondsс';
+  }
+
+  @override
+  String images_slideshow_transition_ms(num ms) {
+    return 'Переход: $msмс';
+  }
+
+  @override
+  String get common_forward => 'Вперед';
+
+  @override
+  String get common_backward => 'Назад';
+
+  @override
+  String get images_slideshow_loop_title => 'Зациклить слайд-шоу';
+
+  @override
+  String get common_cancel => 'Отмена';
+
+  @override
+  String get common_start => 'Начать';
+
+  @override
+  String get common_done => 'Готово';
+
+  @override
+  String get settings_keybind_assign_shortcut => 'Назначить сочетание клавиш';
+
+  @override
+  String get settings_keybind_press_any => 'Нажмите любую комбинацию клавиш...';
+
+  @override
+  String get scenes_select_tags => 'Выбрать теги';
+
+  @override
+  String get scenes_no_scrapers => 'Нет доступных скрейперов';
+
+  @override
+  String get scenes_select_scraper => 'Выбрать скрейпер';
+
+  @override
+  String get scenes_no_results_found => 'Результаты не найдены';
+
+  @override
+  String get scenes_select_result => 'Выбрать результат';
+
+  @override
+  String scenes_scrape_failed(String error) {
+    return 'Сбор данных не удался: $error';
+  }
+
+  @override
+  String get scenes_updated_successfully => 'Сцена успешно обновлена';
+
+  @override
+  String scenes_update_failed(String error) {
+    return 'Не удалось обновить сцену: $error';
+  }
+
+  @override
+  String get scenes_edit_title => 'Редактировать сцену';
+
+  @override
+  String get scenes_field_studio => 'Студия';
+
+  @override
+  String get scenes_field_tags => 'Теги';
+
+  @override
+  String get scenes_field_urls => 'Ссылки';
+
+  @override
+  String get scenes_edit_performer => 'Редактировать исполнителя';
+
+  @override
+  String get scenes_edit_studio => 'Редактировать студию';
+
+  @override
+  String get common_no_title => 'Без названия';
+
+  @override
+  String get scenes_select_studio => 'Выбрать студию';
+
+  @override
+  String get scenes_select_performers => 'Выбрать исполнителей';
+
+  @override
+  String get scenes_unmatched_scraped_tags =>
+      'Несопоставленные полученные теги';
+
+  @override
+  String get scenes_unmatched_scraped_performers =>
+      'Несопоставленные полученные исполнители';
+
+  @override
+  String get scenes_no_matching_performer_found =>
+      'Не найден подходящий исполнитель в библиотеке';
+
+  @override
+  String get common_unknown => 'Неизвестно';
+
+  @override
+  String scenes_studio_id_prefix(String id) {
+    return 'ID студии: $id';
+  }
+
+  @override
+  String get tags_search_placeholder => 'Поиск тегов...';
+
+  @override
+  String get scenes_duration_short => '< 5 мин.';
+
+  @override
+  String get scenes_duration_medium => '5-20 мин.';
+
+  @override
+  String get scenes_duration_long => '> 20 мин.';
+
+  @override
+  String get details_scene_fingerprint_query => 'Запрос отпечатка сцены';
+
+  @override
+  String get scenes_available_scrapers => 'Доступные скрейперы';
+
+  @override
+  String get scrape_results_existing => 'Существующие результаты';
+
+  @override
+  String get scrape_results_scraped => 'Полученные результаты';
+
+  @override
+  String get stats_refresh_statistics => 'Обновить статистику';
+
+  @override
+  String get stats_library_stats => 'Статистика библиотеки';
+
+  @override
+  String get stats_stash_glance => 'Ваш тайник с первого взгляда';
+
+  @override
+  String get stats_content => 'Содержание';
+
+  @override
+  String get stats_organization => 'Организация';
+
+  @override
+  String get stats_activity => 'Активность';
+
+  @override
+  String get stats_scenes => 'Сцены';
+
+  @override
+  String get stats_galleries => 'Галереи';
+
+  @override
+  String get stats_performers => 'Исполнители';
+
+  @override
+  String get stats_studios => 'Студии';
+
+  @override
+  String get stats_groups => 'Группы';
+
+  @override
+  String get stats_tags => 'Теги';
+
+  @override
+  String get stats_total_plays => 'Всего игр';
+
+  @override
+  String stats_unique_items(int count) {
+    return '$count уникальных элементов';
+  }
+
+  @override
+  String get stats_total_o_count => 'Общее количество O';
+
+  @override
+  String get cast_airplay_pairing => 'Сопряжение AirPlay';
+
+  @override
+  String get cast_enter_pin =>
+      'Введите 4-значный PIN-код, показанный на вашем телевизоре.';
+
+  @override
+  String get cast_pair => 'Пара';
+
+  @override
+  String cast_connecting_to(String deviceName) {
+    return 'Подключение к $deviceName...';
+  }
+
+  @override
+  String cast_casting_to(String deviceName) {
+    return 'Трансляция на $deviceName';
+  }
+
+  @override
+  String cast_pairing_failed(String error) {
+    return 'Сбой сопряжения: $error';
+  }
+
+  @override
+  String cast_failed_to_cast(String error) {
+    return 'Не удалось начать трансляцию: $error';
+  }
+
+  @override
+  String get cast_searching => 'Ищем устройства...';
+
+  @override
+  String get cast_cast_to_device => 'Трансляция на устройство';
+
+  @override
+  String get settings_storage_images => 'Изображения';
+
+  @override
+  String get settings_storage_videos => 'Видео';
+
+  @override
+  String get settings_storage_database => 'База данных';
+
+  @override
+  String get settings_storage_clearing_image => 'Очистка кэша изображений...';
+
+  @override
+  String get settings_storage_clearing_video => 'Очистка видеокеша...';
+
+  @override
+  String get settings_storage_clearing_database =>
+      'Очистка кэша базы данных...';
+
+  @override
+  String get settings_storage_cleared_image => 'Кэш изображений очищен.';
+
+  @override
+  String get settings_storage_cleared_video => 'Кэш видео очищен.';
+
+  @override
+  String get settings_storage_cleared_database => 'Кэш базы данных очищен';
+
+  @override
+  String get settings_storage_clear => 'Прозрачный';
+
+  @override
+  String get settings_storage_error_loading => 'Ошибка загрузки размеров.';
+
+  @override
+  String settings_storage_mb(num value) {
+    return '$value MB';
+  }
+
+  @override
+  String settings_storage_gb(num value) {
+    return '$value GB';
+  }
+
+  @override
+  String get settings_storage_100_mb => '100 МБ';
+
+  @override
+  String get settings_storage_500_mb => '500 МБ';
+
+  @override
+  String get settings_storage_1_gb => '1 ГБ';
+
+  @override
+  String get settings_storage_2_gb => '2 ГБ';
+
+  @override
+  String get settings_storage_unlimited => 'Безлимитный';
+
+  @override
+  String get settings_storage_limits => 'Пределы';
+
+  @override
+  String get settings_storage_limits_subtitle =>
+      'Установить максимальные размеры кэша';
+
+  @override
+  String get settings_storage_max_image_cache =>
+      'Максимальный кэш изображений (МБ)';
+
+  @override
+  String get settings_storage_max_video_cache => 'Макс. видеокэш (МБ)';
+
+  @override
+  String get settings_storage => 'Хранилище и кэш';
+
+  @override
+  String get settings_storage_usage => 'Использование диска';
+
+  @override
+  String get settings_storage_usage_subtitle => 'Место, занятое кэшем';
+
+  @override
+  String get settings_storage_subtitle =>
+      'Управление кэшем и лимитами хранилища';
+
+  @override
+  String get performers_field_name => 'Имя';
+
+  @override
+  String get performers_field_url => 'URL';
+
+  @override
+  String get performers_field_details => 'Подробности';
+
+  @override
+  String get performers_field_birth_year => 'Год рождения';
+
+  @override
+  String get performers_field_age => 'Возраст';
+
+  @override
+  String get performers_field_death_year => 'Год смерти';
+
+  @override
+  String get performers_field_scene_count => 'Количество сцен';
+
+  @override
+  String get performers_field_image_count => 'Количество изображений';
+
+  @override
+  String get performers_field_gallery_count => 'Количество галерей';
+
+  @override
+  String get performers_field_play_count => 'Количество воспроизведений';
+
+  @override
+  String get performers_field_o_counter => 'О-счетчик';
+
+  @override
+  String get performers_field_tag_count => 'Количество тегов';
+
+  @override
+  String get performers_field_created_at => 'Создано';
+
+  @override
+  String get performers_field_updated_at => 'Обновлено';
+
+  @override
+  String get galleries_field_title => 'Название';
+
+  @override
+  String get galleries_field_details => 'Подробности';
+
+  @override
+  String get galleries_field_date => 'Дата';
+
+  @override
+  String get galleries_field_performer_age => 'Возраст исполнителя';
+
+  @override
+  String get galleries_field_performer_count => 'Количество исполнителей';
+
+  @override
+  String get galleries_field_tag_count => 'Количество тегов';
+
+  @override
+  String get galleries_field_url => 'URL';
+
+  @override
+  String get galleries_field_id => 'ID';
+
+  @override
+  String get galleries_field_path => 'Путь';
+
+  @override
+  String get galleries_field_checksum => 'Контрольная сумма';
+
+  @override
+  String get galleries_field_image_count => 'Количество изображений';
+
+  @override
+  String get galleries_field_file_count => 'Количество файлов';
+
+  @override
+  String get galleries_field_created_at => 'Создано';
+
+  @override
+  String get galleries_field_updated_at => 'Обновлено';
+
+  @override
+  String get images_field_title => 'Название';
+
+  @override
+  String get images_field_details => 'Подробности';
+
+  @override
+  String get images_field_path => 'Путь';
+
+  @override
+  String get images_field_url => 'URL';
+
+  @override
+  String get images_field_file_count => 'Количество файлов';
+
+  @override
+  String get images_field_o_counter => 'О-счетчик';
+
+  @override
+  String get studios_field_name => 'Название';
+
+  @override
+  String get studios_field_details => 'Подробности';
+
+  @override
+  String get studios_field_aliases => 'Псевдонимы';
+
+  @override
+  String get studios_field_url => 'URL';
+
+  @override
+  String get studios_field_tag_count => 'Количество тегов';
+
+  @override
+  String get studios_field_scene_count => 'Количество сцен';
+
+  @override
+  String get studios_field_image_count => 'Количество изображений';
+
+  @override
+  String get studios_field_gallery_count => 'Количество галерей';
+
+  @override
+  String get studios_field_sub_studio_count => 'Количество подстудий';
+
+  @override
+  String get studios_field_created_at => 'Создано';
+
+  @override
+  String get studios_field_updated_at => 'Обновлено';
+
+  @override
+  String get scenes_field_performer_age => 'Возраст исполнителя';
+
+  @override
+  String get scenes_field_performer_count => 'Количество исполнителей';
+
+  @override
+  String get scenes_field_tag_count => 'Количество тегов';
+
+  @override
+  String get scenes_field_code => 'Код';
+
+  @override
+  String get scenes_field_details => 'Подробности';
+
+  @override
+  String get scenes_field_director => 'Режиссер';
+
+  @override
+  String get scenes_field_url => 'URL';
+
+  @override
+  String get scenes_field_date => 'Дата';
+
+  @override
+  String get scenes_field_path => 'Путь';
+
+  @override
+  String get scenes_field_captions => 'Субтитры';
+
+  @override
+  String get scenes_field_duration => 'Продолжительность (секунды)';
+
+  @override
+  String get scenes_field_bitrate => 'Битрейт';
+
+  @override
+  String get scenes_field_video_codec => 'Видео кодек';
+
+  @override
+  String get scenes_field_audio_codec => 'Аудио кодек';
+
+  @override
+  String get scenes_field_framerate => 'Частота кадров';
+
+  @override
+  String get scenes_field_file_count => 'Количество файлов';
+
+  @override
+  String get scenes_field_play_count => 'Количество воспроизведений';
+
+  @override
+  String get scenes_field_play_duration => 'Длительность воспроизведения';
+
+  @override
+  String get scenes_field_o_counter => 'О-счетчик';
+
+  @override
+  String get scenes_field_last_played_at => 'Последнее воспроизведение';
+
+  @override
+  String get scenes_field_resume_time => 'Время возобновления';
+
+  @override
+  String get scenes_field_interactive_speed => 'Интерактивная скорость';
+
+  @override
+  String get scenes_field_id => 'ID';
+
+  @override
+  String get scenes_field_stash_id_count => 'Количество ID Stash';
+
+  @override
+  String get scenes_field_oshash => 'Oshash';
+
+  @override
+  String get scenes_field_checksum => 'Контрольная сумма';
+
+  @override
+  String get scenes_field_phash => 'Phash';
+
+  @override
+  String get scenes_field_created_at => 'Создано';
+
+  @override
+  String get scenes_field_updated_at => 'Обновлено';
+
+  @override
+  String get cast_stopped_resuming_locally =>
+      'Трансляция остановлена, возобновление локально';
+
+  @override
+  String get cast_stop_casting => 'Остановить трансляцию';
+
+  @override
+  String get cast_cast => 'Транслировать';
+
+  @override
+  String get common_add => 'Добавить';
+
+  @override
+  String get common_remove => 'Удалить';
+
+  @override
+  String get common_clear => 'Очистить';
+
+  @override
+  String get common_download => 'Скачать';
+
+  @override
+  String get common_star => 'Звезда';
+
+  @override
+  String get settings_interface_card_title_font_size =>
+      'Размер шрифта заголовка карточки';
+
+  @override
+  String get common_hint_date => 'ГГГГ-ММ-ДД';
+
+  @override
+  String get common_hint_url => 'https://...';
+
+  @override
+  String get common_hint_hex => 'FF0F766E';
+
+  @override
+  String common_px(int value) {
+    return '$value пкс';
+  }
+
+  @override
+  String common_pt(int value) {
+    return '$value пт';
+  }
+
+  @override
+  String common_percent(int value) {
+    return '$value%';
+  }
+
+  @override
+  String get saving_video => 'Сохранение в галерею...';
+
+  @override
+  String get saved_to_album => 'Сохранено в альбом StashFlow';
+
+  @override
+  String gallery_error(String message) {
+    return 'Ошибка галереи: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return 'Не удалось сохранить: $error';
+  }
+
+  @override
+  String get saving_image => 'Сохранение изображения...';
+
+  @override
+  String common_select(String label) {
+    return 'Выберите $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return 'Сохранено в $path';
+  }
+
+  @override
+  String get recent_searches => 'Недавние поиски';
+
+  @override
+  String get initializing_player => 'Инициализация плеера...';
+
+  @override
+  String get sort_scenes => 'Сортировать сцены';
+
+  @override
+  String get failed_to_load_tap_to_retry =>
+      'Не удалось загрузить. Нажмите, чтобы повторить.';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      'Хотите посетить страницу релиза, чтобы скачать его?';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      'Для начала вам необходимо настроить данные подключения к серверу Stash.';
+
+  @override
+  String get loading => 'Загрузка';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => 'Фильтры исполнителей';
+
+  @override
+  String update_available(String version) {
+    return 'Доступна новая версия StashFlow ($version).';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return 'Не удалось обновить избранное: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return 'Не удалось загрузить галереи: $error';
+  }
+
+  @override
+  String get scene_info_id => 'Идентификатор сцены';
+
+  @override
+  String get scene_info_original_file_path => 'Исходный путь к файлу';
+
+  @override
+  String get scene_info_resume_time => 'Время возобновления';
+
+  @override
+  String get scene_info_play_duration => 'Продолжительность воспроизведения';
+
+  @override
+  String get scene_info_urls => 'URL-адреса';
+
+  @override
+  String get scene_info_resolution => 'Разрешение';
+
+  @override
+  String get scene_info_bitrate => 'Битрейт';
+
+  @override
+  String get scene_info_frame_rate => 'Частота кадров';
+
+  @override
+  String get scene_info_format => 'Формат';
+
+  @override
+  String get scene_info_video_codec => 'Видеокодек';
+
+  @override
+  String get scene_info_audio_codec => 'Аудиокодек';
+
+  @override
+  String get scene_info_stream => 'Транслировать';
+
+  @override
+  String get scene_info_preview => 'Предварительный просмотр';
+
+  @override
+  String get scene_info_screenshot => 'Скриншот';
+
+  @override
+  String get scene_info_cover => 'Обложка';
+
+  @override
+  String get scene_info_caption => 'Подпись';
+
+  @override
+  String get scene_info_vtt => 'ВТТ';
+
+  @override
+  String get scene_info_sprite => 'Спрайт';
+
+  @override
+  String get scene_info_technical => 'Технический';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'Идентификатор: $id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Звезды',
+      one: '1 звезда',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get main_startup_failed => 'StashFlow не удалось запустить';
+
+  @override
+  String get main_startup_failed_desc =>
+      'Служба запуска завершилась сбоем до того, как приложение смогло завершить инициализацию.Перезапустите приложение после проверки диагностики.';
+
+  @override
+  String common_searching_for(String query) {
+    return 'Поиск: \"$query\"';
+  }
+
+  @override
+  String get cast_device => 'Устройство';
+
+  @override
+  String get auth_enter_passcode => 'Введите свой пароль, чтобы продолжить.';
+
+  @override
+  String get auth_unlock => 'Разблокировать';
+
+  @override
+  String get auth_incorrect_passcode => 'Неправильный пароль';
+
+  @override
+  String get auth_app_locked => 'Приложение заблокировано';
+
+  @override
+  String get settings_security_passcode => 'Код доступа';
+
+  @override
+  String get settings_security_passcode_configured => 'Настроено';
+
+  @override
+  String get settings_security_passcode_not_configured => 'Не настроено';
+
+  @override
+  String get settings_security_passcode_saved => 'Код доступа сохранен.';
+
+  @override
+  String get settings_security_passcode_removed => 'Код доступа удален.';
+
+  @override
+  String get settings_security_enable_app_lock =>
+      'Включить блокировку приложения';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      'Требовать пароль при возобновлении/запуске приложения.';
+
+  @override
+  String get settings_security_lock_on_launch =>
+      'Блокировка запуска приложения';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Запросите пароль сразу после открытия приложения.';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Таймер блокировки фона';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      'Как долго приложение может оставаться в фоновом режиме перед блокировкой.';
+
+  @override
+  String get settings_security_set_passcode => 'Установить пароль';
+
+  @override
+  String get settings_security_passcode_prompt => 'Код доступа (4–8 цифр)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Подтверждать';
+
+  @override
+  String get settings_security_error_numeric =>
+      'Используйте только цифры длиной 4–8.';
+
+  @override
+  String get settings_security_error_mismatch => 'Пароли не совпадают.';
+
+  @override
+  String get common_change => 'Изменять';
+
+  @override
+  String get common_set => 'Набор';
+
+  @override
+  String get common_immediately => 'Немедленно';
+
+  @override
+  String common_sec(int value) {
+    return '$value сек.';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value мин.';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => 'Безопасность';
+
+  @override
+  String get settings_security_subtitle =>
+      'Настройки блокировки приложения и пароля';
+
+  @override
+  String get settings_security_app_lock => 'Блокировка приложения';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Защитите доступ с помощью пароля после фонового режима.';
+
+  @override
+  String get common_saved_filters => 'Сохраненные фильтры';
+
+  @override
+  String get tools => 'Инструменты';
+
+  @override
+  String get tools_section_subtitle =>
+      'Рабочие процессы обслуживания и метаданных для сцен.';
+
+  @override
+  String get tools_scene_deduplication_subtitle =>
+      'Поиск и управление дубликатами сцен.';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Скрапинг страниц текущих сцен с помощью Stash-box.';
+
+  @override
+  String get preset_deleted => 'Предустановка удалена.';
+
+  @override
+  String get delete_preset => 'Удалить предустановку';
+
+  @override
+  String get common_delete => 'Удалить';
+
+  @override
+  String get save_preset => 'Сохранить предустановку';
+
+  @override
+  String get no_saved_presets => 'Нет сохраненных пресетов';
+
+  @override
+  String get scene_tagger => 'Теги сцен';
+
+  @override
+  String get page_size => 'Размер страницы';
+
+  @override
+  String get mode => 'Режим';
+
+  @override
+  String get sort => 'Сортировка';
+
+  @override
+  String get desc => 'Убыв.';
+
+  @override
+  String get asc => 'По возрастанию';
+
+  @override
+  String get filter => 'Фильтр';
+
+  @override
+  String get load_preset => 'Загрузить пресет';
+
+  @override
+  String get preset => 'Предустановка';
+
+  @override
+  String get stash_box_scraper => 'Скребок для тайника';
+
+  @override
+  String get start_tagging => 'Начать отмечать';
+
+  @override
+  String get stop => 'Остановить';
+
+  @override
+  String get open_scene => 'Открыть сцену';
+
+  @override
+  String get skip => 'Пропускать';
+
+  @override
+  String get apply => 'Применить';
+
+  @override
+  String get selected => 'Выбрано';
+
+  @override
+  String get select => 'Выбрать';
+
+  @override
+  String get preview => 'Предварительный просмотр';
+
+  @override
+  String get delete_scene => 'Удалить сцену';
+
+  @override
+  String get metadata_only => 'Только метаданные';
+
+  @override
+  String get files => 'Файлы';
+
+  @override
+  String get scene_deleted => 'Сцена удалена';
+
+  @override
+  String get delete_metadata => 'Удалить метаданные';
+
+  @override
+  String get delete_files => 'Удалить файлы';
+
+  @override
+  String get scene_deduplication => 'Дедупликация сцены';
+
+  @override
+  String get no_duplicates_found => 'Дубликатов не обнаружено.';
+
+  @override
+  String get search_accuracy => 'Точность поиска';
+
+  @override
+  String get duration_difference => 'Разница в продолжительности';
+
+  @override
+  String get only_select_matching_codecs =>
+      'Выбирайте только соответствующие кодеки';
+
+  @override
+  String get select_scenes => 'Выберите сцены';
+
+  @override
+  String get all_but_largest_resolution =>
+      'Все, кроме самого большого разрешения';
+
+  @override
+  String get all_but_largest_file => 'Все, кроме самого большого файла';
+
+  @override
+  String get all_but_oldest => 'Все, кроме самого старого';
+
+  @override
+  String get all_but_youngest => 'Все, кроме самого нового';
+
+  @override
+  String get select_none => 'Ничего не выбирать';
+
+  @override
+  String get merge => 'Объединить';
+
+  @override
+  String get previous_page => 'Предыдущая страница';
+
+  @override
+  String get next_page => 'Следующая страница';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return 'Страница $page из $totalPages';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return 'Результат $index из $total';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return 'Удалить \"$name\"? Это действие невозможно отменить.';
+  }
+
+  @override
+  String get enter_preset_name => 'Введите имя пресета';
+
+  @override
+  String get delete_scene_confirm =>
+      'Вы уверены, что хотите удалить эту сцену?';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return 'Удалить выбранное ($selectedCount)';
+  }
+
+  @override
+  String get saved_presets => 'Сохранённые пресеты';
+
+  @override
+  String get current_settings => 'Текущие настройки';
+
+  @override
+  String get available_presets => 'Доступные пресеты';
+
+  @override
+  String get existing_names_are_overwritten =>
+      'Существующие имена будут перезаписаны';
+
+  @override
+  String get active_settings_saved_server =>
+      'Текущие активные настройки будут сохранены на сервере.';
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Не удалось сохранить фильтр: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Не удалось удалить пресет: $error';
+  }
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Сортировка: $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return 'Фильтры: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return 'Поиск: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Не удалось загрузить пресеты: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return 'Сохранено: $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Не удалось загрузить Stash Boxes: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return 'Удалить $count сцен?';
+  }
+
+  @override
+  String get delete_scenes_help =>
+      'Выберите, удалить только метаданные Stash или также удалить файлы сцен и созданные вспомогательные файлы.';
+
+  @override
+  String deleted_n_scenes(int count) {
+    return 'Удалено сцен: $count';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return 'Ошибка удаления: $error';
+  }
+
+  @override
+  String get configuration => 'Конфигурация';
+
+  @override
+  String missing_phashes_for_scenes(int count) {
+    return 'Отсутствуют phash для $count сцен. Пожалуйста, запустите задачу генерации phash.';
+  }
+
+  @override
+  String get merge_editing_not_wired =>
+      'Редактирование слияния в StashFlow пока не подключено.';
+
+  @override
+  String duplicate_sets_count(int count) {
+    return '$count наборов дубликатов';
+  }
+
+  @override
+  String duplicate_set_number(int number) {
+    return 'Набор дубликатов $number';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '$secondsс';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate бит/с';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString тегов',
+      one: '1 тег',
+      zero: 'нет тегов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString групп',
+      one: '1 группа',
+      zero: 'нет групп',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString маркеров',
+      one: '1 маркер',
+      zero: 'нет маркеров',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString галерей',
+      one: '1 галерея',
+      zero: 'нет галерей',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scene_tagger_checked_matches_summary(int checked, int matches) {
+    return 'Проверено: $checked • совпадений: $matches';
+  }
+
+  @override
+  String scene_tagger_page_summary(int count) {
+    return 'Сцен на этой странице: $count';
+  }
+
+  @override
+  String get no_matched_scenes_yet => 'Пока нет совпавших сцен.';
+
+  @override
+  String get no_scenes_match_configuration =>
+      'Нет сцен, соответствующих этой конфигурации.';
+
+  @override
+  String scene_tagger_checked_count(int count) {
+    return 'Проверено: $count';
+  }
+
+  @override
+  String scene_tagger_progress(int checked, int total) {
+    return '$checked / $total';
+  }
+
+  @override
+  String get stats_library_stats_tooltip =>
+      'Удерживайте для статистики библиотеки';
+
+  @override
+  String get scene_details_marker_created => 'Маркер создан';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return 'Не удалось создать маркер: $error.';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => 'Удалить маркеры';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return 'Удалить маркер \"$title\"?';
+  }
+
+  @override
+  String get scene_details_marker_deleted => 'Маркер удален.';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return 'Не удалось удалить маркер: $error.';
+  }
+
+  @override
+  String get scene_details_add_marker => 'Добавить маркер';
+
+  @override
+  String get scene_details_create_marker => 'Создавать';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return 'Удалить маркер $title';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => 'Маркеры';
+
+  @override
+  String get auto_marker_name => 'Имя маркера';
+
+  @override
+  String get auto_missing_field => 'Отсутствует поле';
+
+  @override
+  String get filter_markers_title => 'Фильтровать маркеры';
+
+  @override
+  String get marker_title => 'Маркер';
+
+  @override
+  String get duration_title => 'Продолжительность';
+
+  @override
+  String get scene_title => 'Сцена';
+
+  @override
+  String get dates_title => 'Даты';
+
+  @override
+  String get created_at_title => 'Создано в';
+
+  @override
+  String get updated_at_title => 'Обновлено в';
+
+  @override
+  String get scene_date_title => 'Дата сцены';
+
+  @override
+  String get scene_created_at_title => 'Сцена создана в';
+
+  @override
+  String get scene_updated_at_title => 'Сцена обновлена ​​в';
+
+  @override
+  String get organized_title => 'Организованный';
+
+  @override
+  String get interactive_title => 'Интерактивный';
+
+  @override
+  String get scraped_metadata_title => 'Удаленные метаданные';
+
+  @override
+  String get local_scene_title => 'Местная сцена';
+
+  @override
+  String get sort_markers_title => 'Сортировка маркеров';
+
+  @override
+  String get markers_title => 'Маркеры';
+
+  @override
+  String get sub_group_count_title => 'Количество подгрупп';
+
+  @override
+  String get groups_browsing_mode_subtitle =>
+      'Режим просмотра по умолчанию для групп';
+
+  @override
+  String get markers_browsing_mode_subtitle =>
+      'Режим просмотра по умолчанию для маркеров';
+
+  @override
+  String get entity_layouts_title => 'Макеты объектов';
+
+  @override
+  String get entity_layouts_subtitle =>
+      'Настройки макета мультимедиа и галереи по умолчанию для исполнителей, студий и тегов';
+
+  @override
+  String get stats_subtitle_0_gb => '0,00 ГБ';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 уникальных предметов';
+
+  @override
+  String get markers_search_hint => 'Маркеры поиска';
+
+  @override
+  String get tags_title => 'Теги';
+
+  @override
+  String get scenes_title => 'Сцены';
+
+  @override
+  String get settings_config_backup_title => 'App configuration';
+
+  @override
+  String get settings_config_backup_subtitle =>
+      'Save or replace user-facing settings and server profiles';
+
+  @override
+  String get settings_config_export => 'Save configuration';
+
+  @override
+  String get settings_config_import => 'Import configuration';
+
+  @override
+  String get settings_config_include_credentials =>
+      'Include credentials unencrypted';
+
+  @override
+  String get settings_config_credentials_warning =>
+      'Anyone with this file can read your server credentials and app lock passcode.';
+
+  @override
+  String get settings_config_exported => 'Configuration saved';
+
+  @override
+  String get settings_config_import_title => 'Replace app configuration?';
+
+  @override
+  String settings_config_import_summary(int profileCount) {
+    return 'This file contains $profileCount server profiles. Importing replaces all current user-facing settings and profiles.';
+  }
+
+  @override
+  String get settings_config_import_confirm => 'Replace configuration';
+
+  @override
+  String get settings_config_imported =>
+      'Configuration imported. Restart the app to apply every setting.';
+
+  @override
+  String get settings_config_invalid =>
+      'The configuration file is invalid or unsupported.';
+
+  @override
+  String get settings_config_plaintext_label =>
+      'Credentials are stored as readable text in the exported file.';
+}

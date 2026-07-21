@@ -30,6 +30,53 @@ Scene mockScene({required String id, required String title}) {
 }
 
 void main() {
+  group('resolveSceneSubtitleUrl', () {
+    test('builds the selected authenticated caption URL', () {
+      final result = resolveSceneSubtitleUrl(
+        paths: const ScenePaths(
+          screenshot: null,
+          preview: null,
+          stream: null,
+          caption: 'https://stash.test/caption?token=keep',
+        ),
+        languageCode: 'en',
+        captionType: 'srt',
+        apiKey: 'secret',
+      );
+
+      expect(Uri.parse(result!).queryParameters, {
+        'token': 'keep',
+        'lang': 'en',
+        'type': 'srt',
+        'apikey': 'secret',
+      });
+    });
+
+    test('falls back to the scene VTT path', () {
+      expect(
+        resolveSceneSubtitleUrl(
+          paths: const ScenePaths(
+            screenshot: null,
+            preview: null,
+            stream: null,
+            vtt: 'https://stash.test/subtitles.vtt',
+          ),
+          languageCode: 'en',
+        ),
+        'https://stash.test/subtitles.vtt',
+      );
+    });
+
+    test('returns null when subtitles are disabled or unavailable', () {
+      const paths = ScenePaths(screenshot: null, preview: null, stream: null);
+      expect(
+        resolveSceneSubtitleUrl(paths: paths, languageCode: 'none'),
+        isNull,
+      );
+      expect(resolveSceneSubtitleUrl(paths: paths, languageCode: 'en'), isNull);
+    });
+  });
+
   group('GlobalPlayerState', () {
     test('initializes with default values', () {
       final state = GlobalPlayerState();

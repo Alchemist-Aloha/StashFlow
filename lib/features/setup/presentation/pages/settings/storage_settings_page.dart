@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import '../../../../../core/data/cache/app_cache_service.dart';
 import '../../../../../core/data/cache/cache_state_provider.dart';
+import '../../../../../core/data/app_config/app_config_document_service.dart';
 import '../../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../../core/data/app_config/app_config_providers.dart';
 import '../../widgets/settings_page_shell.dart';
@@ -351,24 +352,20 @@ class _AppConfigBackupSectionState
       if (!mounted) return;
       final date = DateTime.now().toIso8601String().split('T').first;
       final box = context.findRenderObject() as RenderBox?;
-      final exported = await ref
-          .read(appConfigDocumentServiceProvider)
-          .export(
-            bytes,
-            fileName: 'stashflow-config-$date.json',
-            sharePositionOrigin: box == null
-                ? null
-                : box.localToGlobal(Offset.zero) & box.size,
-          );
+      final exported = await const AppConfigDocumentService().export(
+        bytes,
+        fileName: 'stashflow-config-$date.json',
+        sharePositionOrigin: box == null
+            ? null
+            : box.localToGlobal(Offset.zero) & box.size,
+      );
       if (exported && mounted) _message(context.l10n.settings_config_exported);
     });
   }
 
   Future<void> _import() async {
     await _run(() async {
-      final bytes = await ref
-          .read(appConfigDocumentServiceProvider)
-          .pickForImport();
+      final bytes = await const AppConfigDocumentService().pickForImport();
       if (bytes == null || !mounted) return;
       final service = await ref.read(appConfigServiceProvider.future);
       final backup = service.preview(bytes);

@@ -1,0 +1,3199 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Japanese (`ja`).
+class AppLocalizationsJa extends AppLocalizations {
+  AppLocalizationsJa([String locale = 'ja']) : super(locale);
+
+  @override
+  String get appTitle => 'StashFlow';
+
+  @override
+  String get common_token => 'トークン';
+
+  @override
+  String get filter_value => '値';
+
+  @override
+  String get common_yes => 'はい';
+
+  @override
+  String get common_no => 'いいえ';
+
+  @override
+  String get common_clear_history => '履歴をクリアする';
+
+  @override
+  String get nav_scenes => 'シーン';
+
+  @override
+  String get nav_performers => 'パフォーマー';
+
+  @override
+  String get nav_studios => 'スタジオ';
+
+  @override
+  String get nav_tags => 'タグ';
+
+  @override
+  String get nav_galleries => 'ギャラリー';
+
+  @override
+  String nScenes(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString シーン',
+      one: '1 シーン',
+      zero: 'シーンなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nPerformers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString パフォーマー',
+      one: '1 パフォーマー',
+      zero: 'パフォーマーなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nPlays(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString plays',
+      one: '1 play',
+      zero: 'no plays',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get common_reset => 'リセット';
+
+  @override
+  String get common_apply => '適用';
+
+  @override
+  String get common_save_default => 'デフォルトとして保存';
+
+  @override
+  String get common_sort_method => '並べ替え方法';
+
+  @override
+  String get common_direction => '方向';
+
+  @override
+  String get common_ascending => '昇順';
+
+  @override
+  String get common_descending => '降順';
+
+  @override
+  String get common_favorites_only => 'お気に入りのみ';
+
+  @override
+  String get common_apply_sort => '並べ替えを適用';
+
+  @override
+  String get common_apply_filters => 'フィルターを適用';
+
+  @override
+  String get common_view_all => 'すべて表示';
+
+  @override
+  String get common_default => 'デフォルト';
+
+  @override
+  String get common_later => '後で';
+
+  @override
+  String get common_update_now => 'リリース詳細';
+
+  @override
+  String get common_configure_now => '今すぐ設定';
+
+  @override
+  String get common_clear_rating => '評価をクリア';
+
+  @override
+  String get common_no_media => 'メディアがありません';
+
+  @override
+  String get common_show => '表示';
+
+  @override
+  String get common_hide => '非表示';
+
+  @override
+  String get galleries_filter_saved => 'ギャラリーフィルターの設定がデフォルトとして保存されました';
+
+  @override
+  String get common_setup_required => '設定が必要です';
+
+  @override
+  String get common_update_available => 'アップデートがあります';
+
+  @override
+  String get details_studio => 'スタジオ詳細';
+
+  @override
+  String get details_performer => 'パフォーマー詳細';
+
+  @override
+  String get details_tag => 'タグ詳細';
+
+  @override
+  String get details_scene => 'シーン詳細';
+
+  @override
+  String get details_gallery => 'ギャラリー詳細';
+
+  @override
+  String get studios_filter_title => 'スタジオをフィルター';
+
+  @override
+  String get studios_filter_saved => 'フィルター設定をデフォルトとして保存しました';
+
+  @override
+  String get sort_name => '名前';
+
+  @override
+  String get sort_scene_count => 'シーン数';
+
+  @override
+  String get sort_rating => '評価';
+
+  @override
+  String get sort_updated_at => '更新日';
+
+  @override
+  String get sort_created_at => '作成日';
+
+  @override
+  String get sort_random => 'ランダム';
+
+  @override
+  String get sort_file_mod_time => 'ファイル更新日時';
+
+  @override
+  String get sort_filesize => 'ファイルサイズ';
+
+  @override
+  String get sort_o_count => 'Oカウンター';
+
+  @override
+  String get sort_height => '身長';
+
+  @override
+  String get sort_birthdate => '生年月日';
+
+  @override
+  String get sort_tag_count => 'タグ数';
+
+  @override
+  String get sort_play_count => '再生回数';
+
+  @override
+  String get sort_o_counter => 'Oカウンター';
+
+  @override
+  String get sort_zip_file_count => 'ZIPファイル数';
+
+  @override
+  String get sort_last_o_at => '最終O日時';
+
+  @override
+  String get sort_latest_scene => '最新シーン';
+
+  @override
+  String get sort_career_start => 'キャリア開始';
+
+  @override
+  String get sort_career_end => 'キャリア終了';
+
+  @override
+  String get sort_weight => '体重';
+
+  @override
+  String get sort_measurements => 'スリーサイズ';
+
+  @override
+  String get sort_scenes_duration => 'シーンの合計時間';
+
+  @override
+  String get sort_scenes_size => 'シーンのサイズ';
+
+  @override
+  String get sort_images_count => '画像数';
+
+  @override
+  String get sort_galleries_count => 'ギャラリー数';
+
+  @override
+  String get sort_child_count => 'サブスタジオ数';
+
+  @override
+  String get sort_performers_count => '出演者数';
+
+  @override
+  String get sort_groups_count => 'グループ数';
+
+  @override
+  String get sort_marker_count => 'マーカー数';
+
+  @override
+  String get sort_studios_count => 'スタジオ数';
+
+  @override
+  String get sort_penis_length => 'ペニスの長さ';
+
+  @override
+  String get sort_last_played_at => '最終再生日時';
+
+  @override
+  String get studios_sort_saved => '並べ替え設定をデフォルトとして保存しました';
+
+  @override
+  String get studios_no_random => 'ランダムナビゲーションに使用できるスタジオがありません';
+
+  @override
+  String get tags_filter_title => 'タグをフィルター';
+
+  @override
+  String get tags_filter_saved => 'フィルター設定をデフォルトとして保存しました';
+
+  @override
+  String get tags_sort_title => 'タグを並べ替え';
+
+  @override
+  String get tags_sort_saved => '並べ替え設定をデフォルトとして保存しました';
+
+  @override
+  String get tags_no_random => 'ランダムナビゲーションに使用できるタグがありません';
+
+  @override
+  String get scenes_no_random => 'ランダムナビゲーションに使用できるシーンがありません';
+
+  @override
+  String get performers_no_random => 'ランダムナビゲーションに使用できるパフォーマーがありません';
+
+  @override
+  String get galleries_no_random => 'ランダムナビゲーションに使用できるギャラリーがありません';
+
+  @override
+  String common_error(String message) {
+    return 'エラー: $message';
+  }
+
+  @override
+  String get common_no_media_available => 'メディアなし';
+
+  @override
+  String common_id(Object id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get common_search_placeholder => '検索...';
+
+  @override
+  String get common_pause => '一時停止';
+
+  @override
+  String get common_play => '再生';
+
+  @override
+  String get common_refresh => 'リフレッシュ';
+
+  @override
+  String get common_close => '閉じる';
+
+  @override
+  String get common_save => '保存';
+
+  @override
+  String get common_unmute => 'ミュート解除';
+
+  @override
+  String get common_mute => 'ミュート';
+
+  @override
+  String get common_back => '戻る';
+
+  @override
+  String get common_rate => '評価する';
+
+  @override
+  String get common_previous => '前へ';
+
+  @override
+  String get common_next => '次へ';
+
+  @override
+  String get common_favorite => 'お気に入り';
+
+  @override
+  String get common_unfavorite => 'お気に入り解除';
+
+  @override
+  String get common_version => 'バージョン';
+
+  @override
+  String get common_loading => '読み込み中';
+
+  @override
+  String get common_unavailable => '利用不可';
+
+  @override
+  String get common_details => '詳細';
+
+  @override
+  String get common_title => 'タイトル';
+
+  @override
+  String get common_release_date => '公開日';
+
+  @override
+  String get common_url => 'リンク';
+
+  @override
+  String get common_no_url => 'URLなし';
+
+  @override
+  String get common_sort => '並べ替え';
+
+  @override
+  String get common_filter => 'フィルター';
+
+  @override
+  String get common_search => '検索';
+
+  @override
+  String get common_settings => '設定';
+
+  @override
+  String get common_reset_to_1x => '1倍にリセット';
+
+  @override
+  String get common_skip_next => '次をスキップ';
+
+  @override
+  String get common_skip_previous => '前へスキップ';
+
+  @override
+  String get common_select_subtitle => '字幕を選択';
+
+  @override
+  String get common_playback_speed => '再生速度';
+
+  @override
+  String get common_pip => 'ピクチャーインピクチャー';
+
+  @override
+  String get common_toggle_fullscreen => '全画面切替';
+
+  @override
+  String get common_exit_fullscreen => '全画面終了';
+
+  @override
+  String get common_copy_logs => 'ログをコピー';
+
+  @override
+  String get common_clear_logs => 'ログをクリア';
+
+  @override
+  String get common_enable_autoscroll => '自動スクロール有効';
+
+  @override
+  String get common_disable_autoscroll => '自動スクロール無効';
+
+  @override
+  String get common_retry => '再試行';
+
+  @override
+  String get common_no_items => '項目が見つかりませんでした';
+
+  @override
+  String get common_none => 'なし';
+
+  @override
+  String get common_any => '任意';
+
+  @override
+  String get common_name => '名前';
+
+  @override
+  String get common_date => '日付';
+
+  @override
+  String get common_rating => '評価';
+
+  @override
+  String get common_image_count => '画像数';
+
+  @override
+  String get common_filepath => 'ファイルパス';
+
+  @override
+  String get common_random => 'ランダム';
+
+  @override
+  String get common_no_media_found => 'メディアが見つかりませんでした';
+
+  @override
+  String common_not_found(String item) {
+    return '$item が見つかりません';
+  }
+
+  @override
+  String get common_add_favorite => 'お気に入りに追加';
+
+  @override
+  String get common_remove_favorite => 'お気に入りから削除';
+
+  @override
+  String get details_group => 'グループ詳細';
+
+  @override
+  String get details_synopsis => 'あらすじ';
+
+  @override
+  String get details_media => 'メディア';
+
+  @override
+  String get details_galleries => 'ギャラリー';
+
+  @override
+  String get details_tags => 'タグ';
+
+  @override
+  String get details_links => 'リンク';
+
+  @override
+  String get details_scene_scrape => 'メタデータ取得';
+
+  @override
+  String get details_show_more => 'もっと見る';
+
+  @override
+  String get common_more => 'もっと見る';
+
+  @override
+  String get details_show_less => '簡易表示';
+
+  @override
+  String get details_more_from_studio => 'スタジオのその他';
+
+  @override
+  String get details_o_count_incremented => 'Oカウントが増えました';
+
+  @override
+  String details_failed_update_rating(String error) {
+    return '評価の更新に失敗しました: $error';
+  }
+
+  @override
+  String details_failed_update_performer(Object error) {
+    return '出演者の更新に失敗しました: $error';
+  }
+
+  @override
+  String details_failed_increment_o_count(String error) {
+    return 'Oカウントの増加に失敗しました: $error';
+  }
+
+  @override
+  String get details_scene_add_performer => '出演者を追加';
+
+  @override
+  String get details_scene_add_tag => 'タグを追加';
+
+  @override
+  String get details_scene_add_url => 'URLを追加';
+
+  @override
+  String get details_scene_remove_url => 'URLを削除';
+
+  @override
+  String get groups_title => 'グループ';
+
+  @override
+  String get groups_unnamed => '名前なしグループ';
+
+  @override
+  String get groups_untitled => '無題のグループ';
+
+  @override
+  String get studios_title => 'スタジオ';
+
+  @override
+  String get studios_galleries_title => 'スタジオギャラリー';
+
+  @override
+  String get studios_media_title => 'スタジオメディア';
+
+  @override
+  String get studios_sort_title => 'スタジオを並べ替え';
+
+  @override
+  String get galleries_title => 'ギャラリー';
+
+  @override
+  String get galleries_sort_title => 'ギャラリーを並べ替え';
+
+  @override
+  String get galleries_all_images => 'すべての画像';
+
+  @override
+  String get galleries_filter_title => 'ギャラリーをフィルター';
+
+  @override
+  String get galleries_min_rating => '最小評価';
+
+  @override
+  String get galleries_image_count => '画像数';
+
+  @override
+  String get galleries_organization => '整理状態';
+
+  @override
+  String get galleries_organized_only => '整理済みのみ';
+
+  @override
+  String get scenes_filter_title => 'シーンをフィルター';
+
+  @override
+  String get scenes_filter_saved => 'フィルター設定をデフォルトとして保存しました';
+
+  @override
+  String get scenes_watched => '視聴済み';
+
+  @override
+  String get scenes_unwatched => '未視聴';
+
+  @override
+  String get scenes_search_hint => 'シーンを検索...';
+
+  @override
+  String get scenes_sort_header => 'シーンを並べ替え';
+
+  @override
+  String get scenes_sort_duration => '長さ';
+
+  @override
+  String get scenes_sort_bitrate => 'ビットレート';
+
+  @override
+  String get scenes_sort_framerate => 'フレームレート';
+
+  @override
+  String get scenes_sort_file_count => 'ファイル数';
+
+  @override
+  String get scenes_sort_filesize => 'ファイルサイズ';
+
+  @override
+  String get scenes_sort_resolution => '解像度';
+
+  @override
+  String get scenes_sort_last_played_at => '最終再生日時';
+
+  @override
+  String get scenes_sort_resume_time => 'レジューム時間';
+
+  @override
+  String get scenes_sort_play_duration => '再生時間';
+
+  @override
+  String get scenes_sort_interactive => 'インタラクティブ';
+
+  @override
+  String get scenes_sort_interactive_speed => 'インタラクティブスピード';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '知覚的類似性';
+
+  @override
+  String get scenes_sort_performer_age => '出演者年齢';
+
+  @override
+  String get scenes_sort_studio => 'スタジオ';
+
+  @override
+  String get scenes_sort_path => 'パス';
+
+  @override
+  String get scenes_sort_file_mod_time => 'ファイル更新日時';
+
+  @override
+  String get scenes_sort_tag_count => 'タグ数';
+
+  @override
+  String get scenes_sort_performer_count => '出演者数';
+
+  @override
+  String get scenes_sort_o_counter => 'Oカウンター';
+
+  @override
+  String get scenes_sort_last_o_at => '最終O日時';
+
+  @override
+  String get scenes_sort_group_scene_number => 'グループ/映画シーン番号';
+
+  @override
+  String get scenes_sort_code => 'コード';
+
+  @override
+  String get scenes_sort_saved_default => '並べ替えの設定がデフォルトとして保存されました';
+
+  @override
+  String get scenes_sort_tooltip => 'ソートオプション';
+
+  @override
+  String get tags_search_hint => 'タグを検索...';
+
+  @override
+  String get tags_sort_tooltip => 'ソートオプション';
+
+  @override
+  String get tags_filter_tooltip => 'フィルターオプション';
+
+  @override
+  String get performers_title => 'パフォーマー';
+
+  @override
+  String get performers_sort_title => 'パフォーマーを並べ替え';
+
+  @override
+  String get performers_filter_title => 'パフォーマーをフィルター';
+
+  @override
+  String get performers_galleries_title => 'すべてのパフォーマーギャラリー';
+
+  @override
+  String get performers_media_title => 'すべてのパフォーマーメディア';
+
+  @override
+  String get performers_gender => '性別';
+
+  @override
+  String get performers_gender_any => '任意';
+
+  @override
+  String get performers_gender_female => '女性';
+
+  @override
+  String get performers_gender_male => '男性';
+
+  @override
+  String get performers_gender_trans_female => 'トランス女性';
+
+  @override
+  String get performers_gender_trans_male => 'トランス男性';
+
+  @override
+  String get performers_gender_intersex => 'インターセックス';
+
+  @override
+  String get performers_gender_non_binary => 'ノンバイナリー';
+
+  @override
+  String get performers_circumcised => '包茎';
+
+  @override
+  String get performers_circumcised_cut => '切除';
+
+  @override
+  String get performers_circumcised_uncut => '非切除';
+
+  @override
+  String get performers_play_count => '再生回数';
+
+  @override
+  String get performers_field_disambiguation => '識別';
+
+  @override
+  String get performers_field_birthdate => '生年月日';
+
+  @override
+  String get performers_field_deathdate => '死亡日';
+
+  @override
+  String get performers_field_height_cm => '身長 (cm)';
+
+  @override
+  String get performers_field_weight_kg => '体重 (kg)';
+
+  @override
+  String get performers_field_measurements => 'サイズ';
+
+  @override
+  String get performers_field_fake_tits => '豊胸';
+
+  @override
+  String get performers_field_penis_length => 'ペニスの長さ';
+
+  @override
+  String get performers_field_ethnicity => '人種';
+
+  @override
+  String get performers_field_country => '国';
+
+  @override
+  String get performers_field_eye_color => '目の色';
+
+  @override
+  String get performers_field_hair_color => '髪の色';
+
+  @override
+  String get performers_field_career_start => 'キャリア開始';
+
+  @override
+  String get performers_field_career_end => 'キャリア終了';
+
+  @override
+  String get performers_field_tattoos => 'タトゥー';
+
+  @override
+  String get performers_field_piercings => 'ピアス';
+
+  @override
+  String get performers_field_aliases => '別名';
+
+  @override
+  String get common_organized => '整理済み';
+
+  @override
+  String get scenes_duplicated => '重複';
+
+  @override
+  String get random_studio => 'ランダムなスタジオ';
+
+  @override
+  String get random_gallery => 'ランダムなギャラリー';
+
+  @override
+  String get random_tag => 'ランダムなタグ';
+
+  @override
+  String get random_scene => 'ランダムなシーン';
+
+  @override
+  String get random_performer => 'ランダムな出演者';
+
+  @override
+  String get filter_modifier => '修飾子';
+
+  @override
+  String get filter_group_general => '全般';
+
+  @override
+  String get filter_group_performer => '出演者';
+
+  @override
+  String get filter_group_library => 'ライブラリ';
+
+  @override
+  String get filter_group_metadata => 'メタデータ';
+
+  @override
+  String get filter_group_media_info => 'メディア情報';
+
+  @override
+  String get filter_group_usage => '使用状況';
+
+  @override
+  String get filter_group_system => 'システム';
+
+  @override
+  String get filter_group_physical => '物理';
+
+  @override
+  String get filter_equals => '等しい';
+
+  @override
+  String get filter_not_equals => '等しくない';
+
+  @override
+  String get filter_greater_than => 'より大きい';
+
+  @override
+  String get filter_less_than => 'より小さい';
+
+  @override
+  String get filter_includes => '含まれるもの';
+
+  @override
+  String get filter_excludes => '除く';
+
+  @override
+  String get filter_includes_all => 'すべてを含む';
+
+  @override
+  String get filter_is_null => 'ヌルです';
+
+  @override
+  String get filter_not_null => 'ヌルではありません';
+
+  @override
+  String get filter_matches_regex => '正規表現と一致します';
+
+  @override
+  String get filter_not_matches_regex => '正規表現と一致しません';
+
+  @override
+  String get filter_between => '間';
+
+  @override
+  String get filter_not_between => '間にはありません';
+
+  @override
+  String get filter_value_secondary => '2 番目の値';
+
+  @override
+  String get images_resolution_title => '解像度';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '画像の向き';
+
+  @override
+  String get common_or => 'または';
+
+  @override
+  String get scrape_from_url => 'URLからスクレイプ';
+
+  @override
+  String get scenes_phash_started => 'Phash生成を開始しました';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Phashの生成に失敗しました: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return 'スタジオの更新に失敗しました: $error';
+  }
+
+  @override
+  String get settings_title => '設定';
+
+  @override
+  String get settings_customize => 'StashFlowをカスタマイズ';
+
+  @override
+  String get settings_customize_subtitle => '再生、外観、レイアウト、サポートツールを1か所で調整します。';
+
+  @override
+  String get settings_core_section => '基本設定';
+
+  @override
+  String get settings_core_subtitle => 'よく使われる設定ページ';
+
+  @override
+  String get settings_server => 'サーバー';
+
+  @override
+  String get settings_server_subtitle => '接続とAPIの設定';
+
+  @override
+  String get settings_playback => '再生';
+
+  @override
+  String get settings_playback_subtitle => 'プレーヤーの動作と操作';
+
+  @override
+  String get settings_keyboard => 'キーボード';
+
+  @override
+  String get settings_keyboard_subtitle => 'カスタマイズ可能なショートカットとホットキー';
+
+  @override
+  String get settings_keyboard_title => 'キーボードショートカット';
+
+  @override
+  String get settings_keyboard_reset_defaults => 'デフォルトに戻す';
+
+  @override
+  String get settings_keyboard_not_bound => '未割り当て';
+
+  @override
+  String get settings_keyboard_volume_up => '音量を上げる';
+
+  @override
+  String get settings_keyboard_volume_down => '音量を下げる';
+
+  @override
+  String get settings_keyboard_toggle_mute => 'ミュート切替';
+
+  @override
+  String get settings_keyboard_toggle_fullscreen => '全画面切替';
+
+  @override
+  String get settings_keyboard_next_scene => '次のシーン';
+
+  @override
+  String get settings_keyboard_prev_scene => '前のシーン';
+
+  @override
+  String get settings_keyboard_increase_speed => '再生速度を上げる';
+
+  @override
+  String get settings_keyboard_decrease_speed => '再生速度を下げる';
+
+  @override
+  String get settings_keyboard_reset_speed => '再生速度をリセット';
+
+  @override
+  String get settings_keyboard_close_player => 'プレーヤーを閉じる';
+
+  @override
+  String get settings_keyboard_next_image => '次の画像';
+
+  @override
+  String get settings_keyboard_prev_image => '前の画像';
+
+  @override
+  String get settings_keyboard_go_back => '戻る';
+
+  @override
+  String get settings_keyboard_play_pause_desc => '動画の再生と一時停止を切り替えます';
+
+  @override
+  String get settings_keyboard_seek_forward_5_desc => '5秒進む';
+
+  @override
+  String get settings_keyboard_seek_backward_5_desc => '5秒戻る';
+
+  @override
+  String get settings_keyboard_seek_forward_10_desc => '10秒進む';
+
+  @override
+  String get settings_keyboard_seek_backward_10_desc => '10秒戻る';
+
+  @override
+  String get settings_keyboard_global_section => 'Global Navigation';
+
+  @override
+  String get settings_keyboard_video_section => 'Video Player';
+
+  @override
+  String get settings_keyboard_image_section => 'Image Viewer';
+
+  @override
+  String get settings_keyboard_next_tab => 'Next Tab';
+
+  @override
+  String get settings_keyboard_previous_tab => 'Previous Tab';
+
+  @override
+  String settings_keyboard_tab_number(int number) {
+    return 'Tab $number';
+  }
+
+  @override
+  String get settings_keyboard_first_image => 'First Image';
+
+  @override
+  String get settings_keyboard_last_image => 'Last Image';
+
+  @override
+  String get settings_keyboard_close_image => 'Close Image Viewer';
+
+  @override
+  String get settings_keyboard_unbind => 'Unbind shortcut';
+
+  @override
+  String get settings_keyboard_reset_confirm_title =>
+      'Reset keyboard shortcuts?';
+
+  @override
+  String get settings_keyboard_reset_confirm_body =>
+      'All custom keyboard shortcuts will be replaced with the defaults.';
+
+  @override
+  String get settings_keyboard_reserved =>
+      'This shortcut is reserved by the browser or operating system.';
+
+  @override
+  String get settings_keyboard_tab_reserved =>
+      'Tab is reserved for keyboard focus navigation.';
+
+  @override
+  String settings_keyboard_conflict_moved(String action) {
+    return 'Shortcut moved from $action.';
+  }
+
+  @override
+  String get settings_appearance => '外観';
+
+  @override
+  String get settings_appearance_subtitle => 'テーマと色';
+
+  @override
+  String get settings_interface => 'インターフェース';
+
+  @override
+  String get settings_interface_subtitle => 'ナビゲーションとレイアウトのデフォルト';
+
+  @override
+  String get settings_support => 'サポート';
+
+  @override
+  String get settings_support_subtitle => '診断と情報';
+
+  @override
+  String get settings_develop => '開発';
+
+  @override
+  String get settings_develop_subtitle => '高度なツールとオーバーライド';
+
+  @override
+  String get settings_appearance_title => '外観設定';
+
+  @override
+  String get settings_appearance_theme_mode => 'テーマモード';
+
+  @override
+  String get settings_appearance_theme_mode_subtitle => 'アプリが明るさの変化に従う方法を選択します';
+
+  @override
+  String get settings_appearance_theme_system => 'システム';
+
+  @override
+  String get settings_appearance_theme_light => 'ライト';
+
+  @override
+  String get settings_appearance_theme_dark => 'ダーク';
+
+  @override
+  String get settings_appearance_primary_color => 'プライマリーカラー';
+
+  @override
+  String get settings_appearance_primary_color_subtitle =>
+      'Material 3パレットのシードカラーを選択します';
+
+  @override
+  String get settings_appearance_advanced_theming => '高度なテーマ設定';
+
+  @override
+  String get settings_appearance_advanced_theming_subtitle => '特定の画面タイプ向けの最適化';
+
+  @override
+  String get settings_appearance_true_black => 'トゥルーブラック (AMOLED)';
+
+  @override
+  String get settings_appearance_true_black_subtitle =>
+      'ダークモードで純粋な黒の背景を使用し、OLED画面のバッテリーを節約します';
+
+  @override
+  String get settings_appearance_custom_hex => 'カスタム16進数カラー';
+
+  @override
+  String get settings_appearance_custom_hex_helper => '8桁のARGB 16進コードを入力してください';
+
+  @override
+  String get settings_appearance_font_size => 'グローバルUIスケール';
+
+  @override
+  String get settings_appearance_font_size_subtitle => 'タイポグラフィと間隔を比例的に拡大縮小する';
+
+  @override
+  String get settings_interface_title => 'インターフェース設定';
+
+  @override
+  String get settings_interface_language => '言語';
+
+  @override
+  String get settings_interface_language_subtitle => 'デフォルトのシステム言語を上書きします';
+
+  @override
+  String get settings_interface_app_language => 'アプリの言語';
+
+  @override
+  String get settings_interface_navigation => 'ナビゲーション';
+
+  @override
+  String get settings_interface_navigation_subtitle =>
+      'グローバルナビゲーションショートカットの表示設定';
+
+  @override
+  String get settings_interface_show_random => 'ランダムナビゲーションボタンを表示';
+
+  @override
+  String get settings_interface_show_random_subtitle =>
+      'リストおよび詳細ページでフローティングカジノボタンを有効または無効にします';
+
+  @override
+  String get settings_interface_hide_scene_metadata => 'シーンのメタデータをデフォルトで非表示';
+
+  @override
+  String get settings_interface_hide_scene_metadata_subtitle =>
+      '「メタデータを表示」をタップした後にのみ、シーンの技術メタデータを表示します。';
+
+  @override
+  String get settings_interface_random_scene_filter => 'ランダムシーンで現在のフィルターを適用';
+
+  @override
+  String get settings_interface_random_scene_filter_subtitle =>
+      '有効にすると、ランダムシーンのナビゲーションは現在のシーンフィルターを使用します。';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      '重力制御の画面向き（メインページ）';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'デバイスセンサーを使ってメインページの向きを回転できるようにします。全画面動画再生は専用の画面向き設定に従います。';
+
+  @override
+  String get settings_interface_show_edit => '編集ボタンを表示';
+
+  @override
+  String get settings_interface_show_edit_subtitle =>
+      'シーン詳細ページの編集ボタンを有効または無効にします';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'ミニプレーヤーで実際のシーン動画を使用';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      '再生中はシーンのスクリーンショットの代わりにライブ動画サーフェスを表示します。';
+
+  @override
+  String get details_show_metadata => 'メタデータを表示';
+
+  @override
+  String get settings_interface_entity_image_filtering => 'エンティティ画像フィルタリング';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      'エンティティ画像ページが画像メタデータと一致するか、関連ギャラリーと一致するかを選択します。';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct => '直接エンティティ';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries => '関連ギャラリー';
+
+  @override
+  String get settings_interface_customize_tabs => 'タブをカスタマイズ';
+
+  @override
+  String get settings_interface_customize_tabs_subtitle =>
+      'ナビゲーションメニュー項目の並べ替えや非表示を行います';
+
+  @override
+  String get settings_interface_scenes_layout => 'シーンのレイアウト';
+
+  @override
+  String get settings_interface_scenes_layout_subtitle => 'シーンのデフォルト閲覧モード';
+
+  @override
+  String get settings_interface_galleries_layout => 'ギャラリーのレイアウト';
+
+  @override
+  String get settings_interface_galleries_layout_subtitle => 'ギャラリーのデフォルト閲覧モード';
+
+  @override
+  String get settings_interface_max_performer_avatars => 'パフォーマーの最大アバター数';
+
+  @override
+  String get settings_interface_max_performer_avatars_subtitle =>
+      'シーンカードに表示するパフォーマーのアバターの最大数。';
+
+  @override
+  String get settings_interface_show_performer_avatars => 'パフォーマーのアバターを表示';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'すべてのプラットフォームでシーンカードにパフォーマーのアイコンを表示します。';
+
+  @override
+  String get settings_interface_performer_avatar_size => 'パフォーマーのアバターのサイズ';
+
+  @override
+  String get settings_interface_layout_default => 'デフォルトレイアウト';
+
+  @override
+  String get settings_interface_layout_default_desc => 'ページのデフォルトレイアウトを選択します';
+
+  @override
+  String get settings_interface_layout_list => 'リスト';
+
+  @override
+  String get settings_interface_layout_grid => 'グリッド';
+
+  @override
+  String get settings_interface_layout_tiktok => '無限スクロール';
+
+  @override
+  String get settings_interface_grid_columns => 'グリッドの列数';
+
+  @override
+  String get settings_interface_image_viewer => '画像ビューアー';
+
+  @override
+  String get settings_interface_image_viewer_subtitle => 'フルスクリーン画像閲覧の動作を設定します';
+
+  @override
+  String get settings_interface_swipe_direction => 'フルスクリーンスワイプ方向';
+
+  @override
+  String get settings_interface_swipe_direction_desc =>
+      'フルスクリーンモードで画像を切り替える方法を選択します';
+
+  @override
+  String get settings_interface_swipe_vertical => '垂直';
+
+  @override
+  String get settings_interface_swipe_horizontal => '水平';
+
+  @override
+  String get settings_interface_waterfall_columns => 'ウォーターフォールグリッドの列数';
+
+  @override
+  String get settings_interface_performer_layouts => 'パフォーマーのレイアウト';
+
+  @override
+  String get settings_interface_performer_layouts_subtitle =>
+      'パフォーマーのメディアおよびギャラリーのデフォルト設定';
+
+  @override
+  String get settings_interface_studio_layouts => 'スタジオのレイアウト';
+
+  @override
+  String get settings_interface_studio_layouts_subtitle =>
+      'スタジオのメディアおよびギャラリーのデフォルト設定';
+
+  @override
+  String get settings_interface_tag_layouts => 'タグのレイアウト';
+
+  @override
+  String get settings_interface_tag_layouts_subtitle =>
+      'タグのメディアおよびギャラリーのデフォルト設定';
+
+  @override
+  String get settings_interface_media_layout => 'メディアのレイアウト';
+
+  @override
+  String get settings_interface_media_layout_subtitle => 'メディアページのレイアウト';
+
+  @override
+  String get settings_interface_galleries_layout_item => 'ギャラリーのレイアウト';
+
+  @override
+  String get settings_interface_galleries_layout_subtitle_item =>
+      'ギャラリーページのレイアウト';
+
+  @override
+  String get settings_server_title => 'サーバー設定';
+
+  @override
+  String get settings_server_status => '接続ステータス';
+
+  @override
+  String get settings_server_status_subtitle => '設定されたサーバーへのライブ接続確認';
+
+  @override
+  String get settings_server_details => 'サーバー詳細';
+
+  @override
+  String get settings_server_details_subtitle => 'エンドポイントと認証方法を設定します';
+
+  @override
+  String get settings_server_url => 'StashのURL';
+
+  @override
+  String get settings_server_url_helper =>
+      'StashサーバーのURLを入力してください。カスタムパスが設定されている場合は、それを含めてください。';
+
+  @override
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
+
+  @override
+  String get settings_server_login_failed => 'ログインに失敗しました';
+
+  @override
+  String get settings_server_auth_method => '認証方法';
+
+  @override
+  String get settings_server_auth_apikey => 'APIキー';
+
+  @override
+  String get settings_server_auth_password => 'ユーザー名 + パスワード';
+
+  @override
+  String get settings_server_auth_password_desc =>
+      '推奨: Stashのユーザー名/パスワードセッションを使用します。';
+
+  @override
+  String get settings_server_auth_apikey_desc => '静的トークン認証にAPIキーを使用します。';
+
+  @override
+  String get settings_server_username => 'ユーザー名';
+
+  @override
+  String get settings_server_password => 'パスワード';
+
+  @override
+  String get settings_server_login_test => 'ログインとテスト';
+
+  @override
+  String get settings_server_test => '接続テスト';
+
+  @override
+  String get settings_server_logout => 'ログアウト';
+
+  @override
+  String get settings_server_clear => '設定をクリア';
+
+  @override
+  String settings_server_connected(String version) {
+    return '接続済み (Stash $version)';
+  }
+
+  @override
+  String get settings_server_checking => '接続を確認中...';
+
+  @override
+  String settings_server_failed(String error) {
+    return '失敗: $error';
+  }
+
+  @override
+  String get settings_server_invalid_url => '無効なサーバーURL';
+
+  @override
+  String get settings_server_resolve_error =>
+      'サーバーURLを解決できませんでした。ホスト、ポート、認証情報を確認してください。';
+
+  @override
+  String get settings_server_logout_confirm => 'ログアウトし、クッキーをクリアしました。';
+
+  @override
+  String get settings_server_profile_add => 'プロファイルを追加';
+
+  @override
+  String get settings_server_profile_edit => 'プロファイルを編集';
+
+  @override
+  String get settings_server_profile_name => 'プロファイル名';
+
+  @override
+  String get settings_server_profile_delete => 'プロファイルを削除';
+
+  @override
+  String get settings_server_profile_delete_confirm =>
+      'このプロファイルを削除してもよろしいですか？この操作は取り消せません。';
+
+  @override
+  String get settings_server_profile_active => '有効';
+
+  @override
+  String get settings_server_profile_empty => 'サーバープロファイルが設定されていません';
+
+  @override
+  String get settings_server_profiles => 'サーバープロファイル';
+
+  @override
+  String get settings_server_profiles_subtitle => '複数のStashサーバー接続を管理します';
+
+  @override
+  String get settings_server_auth_status_logging_in => '認証状態: ログイン中...';
+
+  @override
+  String get settings_server_auth_status_logged_in => '認証状態: ログイン済み';
+
+  @override
+  String get settings_server_auth_status_logged_out => '認証状態: ログアウト';
+
+  @override
+  String get settings_playback_title => '再生設定';
+
+  @override
+  String get settings_playback_behavior => '再生動作';
+
+  @override
+  String get settings_playback_behavior_subtitle => 'デフォルトの再生とバックグラウンド処理';
+
+  @override
+  String get settings_playback_feed_random => 'フィードをランダムな位置から開始';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      'フィードモードでシーンを再生するとき、動画の長さの0%から90%の間のランダムな位置から開始します';
+
+  @override
+  String get settings_playback_resume_position => '最後に再生した位置から再開';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'ビデオを開くと、中断したところから自動的に再開します';
+
+  @override
+  String get settings_playback_end_behavior => '再生終了時の動作';
+
+  @override
+  String get settings_playback_end_behavior_subtitle => '現在の再生が終了したらどうするか';
+
+  @override
+  String get settings_playback_end_behavior_stop => '停止';
+
+  @override
+  String get settings_playback_end_behavior_loop => '現在のシーンをループする';
+
+  @override
+  String get settings_playback_end_behavior_next => '次のシーンを再生する';
+
+  @override
+  String get settings_playback_autoplay => '次のシーンを自動再生';
+
+  @override
+  String get settings_playback_autoplay_subtitle =>
+      '現在の再生が終了したときに次のシーンを自動的に再生します';
+
+  @override
+  String get settings_playback_background => 'バックグラウンド再生';
+
+  @override
+  String get settings_playback_background_subtitle =>
+      'アプリがバックグラウンドに移動しても動画の音声を再生し続けます';
+
+  @override
+  String get settings_playback_pip => 'ネイティブ ピクチャー・イン・ピクチャー';
+
+  @override
+  String get settings_playback_pip_subtitle =>
+      'Android PiPボタンを有効にし、バックグラウンド時に自動移行します';
+
+  @override
+  String get settings_playback_subtitles => '字幕設定';
+
+  @override
+  String get settings_playback_subtitles_subtitle => '自動読み込みと外観';
+
+  @override
+  String get settings_playback_subtitle_lang => 'デフォルトの字幕言語';
+
+  @override
+  String get settings_playback_subtitle_lang_subtitle => '利用可能な場合に自動読み込み';
+
+  @override
+  String get settings_playback_subtitle_size => '字幕フォントサイズ';
+
+  @override
+  String get settings_playback_subtitle_pos => '字幕の垂直位置';
+
+  @override
+  String settings_playback_subtitle_pos_desc(String percent) {
+    return '下から $percent%';
+  }
+
+  @override
+  String get settings_playback_subtitle_align => '字幕テキストの配置';
+
+  @override
+  String get settings_playback_subtitle_align_subtitle => '複数行字幕の配置設定';
+
+  @override
+  String get settings_playback_seek => 'シーク操作';
+
+  @override
+  String get settings_playback_seek_subtitle => '再生中のスクラブ動作を選択します';
+
+  @override
+  String get settings_playback_seek_double_tap => '左右をダブルタップして10秒シーク';
+
+  @override
+  String get settings_playback_seek_drag => 'タイムラインをドラッグしてシーク';
+
+  @override
+  String get settings_playback_seek_drag_label => 'ドラッグ';
+
+  @override
+  String get settings_playback_seek_double_tap_label => 'ダブルタップ';
+
+  @override
+  String get settings_playback_gravity_orientation => '重力制御の画面向き';
+
+  @override
+  String get settings_playback_direct_play => 'シーン移動時に直接再生';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '他の再生中シーンから移動した際、新しいシーンを直接再生します';
+
+  @override
+  String get settings_playback_gravity_orientation_subtitle =>
+      'デバイスのセンサーを使って一致する向きに回転できるようにします（例：左右の横向きに反転）。';
+
+  @override
+  String get settings_playback_subtitle_lang_none_disabled => 'なし（無効）';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one => '自動（1つのみの場合）';
+
+  @override
+  String get settings_playback_subtitle_lang_english => '英語';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => '中国語';
+
+  @override
+  String get settings_playback_subtitle_lang_german => 'ドイツ語';
+
+  @override
+  String get settings_playback_subtitle_lang_french => 'フランス語';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => 'スペイン語';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => 'イタリア語';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => '日本語';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => '韓国語';
+
+  @override
+  String get settings_playback_subtitle_align_left => '左';
+
+  @override
+  String get settings_playback_subtitle_align_center => '中央';
+
+  @override
+  String get settings_playback_subtitle_align_right => '右';
+
+  @override
+  String get settings_support_title => 'サポート';
+
+  @override
+  String get settings_support_diagnostics => '診断とプロジェクト情報';
+
+  @override
+  String get settings_support_diagnostics_subtitle =>
+      'ヘルプが必要なときに実行ログを開いたり、リポジトリに移動したりします。';
+
+  @override
+  String get settings_support_update_available => 'アップデートがあります';
+
+  @override
+  String get settings_support_update_available_subtitle =>
+      'GitHubで新しいバージョンが利用可能です';
+
+  @override
+  String settings_support_update_to(String version) {
+    return '$version に更新';
+  }
+
+  @override
+  String get settings_support_update_to_subtitle => '新しい機能と改善が用意されています。';
+
+  @override
+  String get settings_support_about => 'アプリについて';
+
+  @override
+  String get settings_support_about_subtitle => 'プロジェクトとソース情報';
+
+  @override
+  String get settings_support_version => 'バージョン';
+
+  @override
+  String get settings_support_version_loading => 'バージョン情報を読み込み中...';
+
+  @override
+  String get settings_support_version_unavailable => 'バージョン情報が利用できません';
+
+  @override
+  String get settings_support_github => 'GitHub リポジトリ';
+
+  @override
+  String get settings_support_github_subtitle => 'ソースコードの表示と問題の報告';
+
+  @override
+  String get settings_support_github_error => 'GitHubリンクを開けませんでした';
+
+  @override
+  String get settings_support_issues => '問題を報告する';
+
+  @override
+  String get settings_support_issues_subtitle =>
+      'バグを報告して StashFlow の改善にご協力ください';
+
+  @override
+  String get settings_develop_title => '開発';
+
+  @override
+  String get settings_develop_enable_logging => 'デバッグログを有効にする';
+
+  @override
+  String get settings_develop_enable_logging_subtitle =>
+      'トラブルシューティング用にアプリのログを記録します';
+
+  @override
+  String get settings_develop_diagnostics => '診断ツール';
+
+  @override
+  String get settings_develop_diagnostics_subtitle => 'トラブルシューティングとパフォーマンス';
+
+  @override
+  String get settings_develop_video_debug => 'ビデオデバッグ情報を表示';
+
+  @override
+  String get settings_develop_video_debug_subtitle =>
+      '技術的な再生詳細を動画プレーヤー上にオーバーレイ表示します。';
+
+  @override
+  String get settings_develop_log_viewer => 'デバッグログビューアー';
+
+  @override
+  String get settings_develop_log_viewer_subtitle => 'アプリ内ログをリアルタイムで表示します。';
+
+  @override
+  String get settings_develop_logs_copied => 'ログをクリップボードにコピーしました';
+
+  @override
+  String get settings_develop_no_logs => 'まだログはありません。アプリを操作してログを取得してください。';
+
+  @override
+  String get settings_develop_web_overrides => 'Webオーバーライド';
+
+  @override
+  String get settings_develop_web_overrides_subtitle => 'Webプラットフォーム向けの高度なフラグ';
+
+  @override
+  String get settings_develop_web_auth => 'Webでのパスワードログインを許可';
+
+  @override
+  String get settings_develop_web_auth_subtitle =>
+      'ネイティブ限定の制限を上書きし、Flutter Webでユーザー名 + パスワード認証を強制表示します。';
+
+  @override
+  String get settings_develop_proxy_auth => 'プロキシ認証モードを有効にする';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      'Authentikなどのプロキシの背後にある認証不要のバックエンドで使用するために、高度なBasic認証およびBearerトークン方式を有効にします。';
+
+  @override
+  String get settings_server_auth_basic => 'Basic認証';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearerトークン';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '\'Authorization: Basic <base64(user:pass)>\' ヘッダーを送信します。';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '\'Authorization: Bearer <token>\' ヘッダーを送信します。';
+
+  @override
+  String get common_edit => '編集';
+
+  @override
+  String get common_resolution => '解像度';
+
+  @override
+  String get common_orientation => '方向';
+
+  @override
+  String get common_landscape => '横向き';
+
+  @override
+  String get common_portrait => '縦向き';
+
+  @override
+  String get common_square => '正方形';
+
+  @override
+  String get performers_filter_saved => 'フィルタ設定をデフォルトとして保存しました';
+
+  @override
+  String get images_title => '画像';
+
+  @override
+  String get images_filter_title => '画像をフィルター';
+
+  @override
+  String get images_filter_saved => 'フィルター設定をデフォルトとして保存しました';
+
+  @override
+  String get images_sort_title => '画像を並べ替え';
+
+  @override
+  String get images_sort_saved => '並べ替えの設定を既定として保存しました';
+
+  @override
+  String get image_rating_updated => '画像の評価が更新されました。';
+
+  @override
+  String get gallery_rating_updated => 'ギャラリーの評価が更新されました。';
+
+  @override
+  String get common_image => '画像';
+
+  @override
+  String get common_gallery => 'ギャラリー';
+
+  @override
+  String get images_gallery_rating_unavailable =>
+      'ギャラリーの評価は、ギャラリーを閲覧しているときにのみ利用できます。';
+
+  @override
+  String images_rating(String rating) {
+    return '評価：$rating / 5';
+  }
+
+  @override
+  String get images_filtered_by_gallery => 'ギャラリーでフィルタ済み';
+
+  @override
+  String get images_slideshow_need_two => 'スライドショーには少なくとも画像が2枚必要です。';
+
+  @override
+  String get images_slideshow_start_title => 'スライドショーを開始';
+
+  @override
+  String images_slideshow_interval(num seconds) {
+    return '間隔: ${seconds}s';
+  }
+
+  @override
+  String images_slideshow_transition_ms(num ms) {
+    return 'トランジション: ${ms}ms';
+  }
+
+  @override
+  String get common_forward => '進む';
+
+  @override
+  String get common_backward => '戻る';
+
+  @override
+  String get images_slideshow_loop_title => 'スライドショーをループ';
+
+  @override
+  String get common_cancel => 'キャンセル';
+
+  @override
+  String get common_start => '開始';
+
+  @override
+  String get common_done => '完了';
+
+  @override
+  String get settings_keybind_assign_shortcut => 'ショートカットを割り当て';
+
+  @override
+  String get settings_keybind_press_any => '任意のキーの組み合わせを押してください...';
+
+  @override
+  String get scenes_select_tags => 'タグを選択';
+
+  @override
+  String get scenes_no_scrapers => '使用可能なスクレイパーがありません';
+
+  @override
+  String get scenes_select_scraper => 'スクレイパーを選択';
+
+  @override
+  String get scenes_no_results_found => '結果が見つかりませんでした';
+
+  @override
+  String get scenes_select_result => '結果を選択';
+
+  @override
+  String scenes_scrape_failed(String error) {
+    return 'スクレイプに失敗しました: $error';
+  }
+
+  @override
+  String get scenes_updated_successfully => 'シーンが正常に更新されました';
+
+  @override
+  String scenes_update_failed(String error) {
+    return 'シーンの更新に失敗しました: $error';
+  }
+
+  @override
+  String get scenes_edit_title => 'シーンを編集';
+
+  @override
+  String get scenes_field_studio => 'スタジオ';
+
+  @override
+  String get scenes_field_tags => 'タグ';
+
+  @override
+  String get scenes_field_urls => 'リンク';
+
+  @override
+  String get scenes_edit_performer => '出演者を編集';
+
+  @override
+  String get scenes_edit_studio => 'スタジオを編集';
+
+  @override
+  String get common_no_title => 'タイトルなし';
+
+  @override
+  String get scenes_select_studio => 'スタジオを選択';
+
+  @override
+  String get scenes_select_performers => '出演者を選択';
+
+  @override
+  String get scenes_unmatched_scraped_tags => '一致しないスクレイプ済みタグ';
+
+  @override
+  String get scenes_unmatched_scraped_performers => '一致しないスクレイプ済み出演者';
+
+  @override
+  String get scenes_no_matching_performer_found => 'ライブラリに一致する出演者が見つかりません';
+
+  @override
+  String get common_unknown => '不明';
+
+  @override
+  String scenes_studio_id_prefix(String id) {
+    return 'スタジオID: $id';
+  }
+
+  @override
+  String get tags_search_placeholder => 'タグを検索...';
+
+  @override
+  String get scenes_duration_short => '< 5分';
+
+  @override
+  String get scenes_duration_medium => '5-20分';
+
+  @override
+  String get scenes_duration_long => '> 20分';
+
+  @override
+  String get details_scene_fingerprint_query => 'シーンのフィンガープリントクエリ';
+
+  @override
+  String get scenes_available_scrapers => '使用可能なスクレイパー';
+
+  @override
+  String get scrape_results_existing => '既存の結果';
+
+  @override
+  String get scrape_results_scraped => '取得済み結果';
+
+  @override
+  String get stats_refresh_statistics => '統計を更新する';
+
+  @override
+  String get stats_library_stats => '図書館統計';
+
+  @override
+  String get stats_stash_glance => 'スタッシュの概要';
+
+  @override
+  String get stats_content => 'コンテンツ';
+
+  @override
+  String get stats_organization => '組織';
+
+  @override
+  String get stats_activity => '活動';
+
+  @override
+  String get stats_scenes => 'シーン';
+
+  @override
+  String get stats_galleries => 'ギャラリー';
+
+  @override
+  String get stats_performers => '出演者';
+
+  @override
+  String get stats_studios => 'スタジオ';
+
+  @override
+  String get stats_groups => 'グループ';
+
+  @override
+  String get stats_tags => 'タグ';
+
+  @override
+  String get stats_total_plays => '総再生数';
+
+  @override
+  String stats_unique_items(int count) {
+    return '固有アイテム数 $count';
+  }
+
+  @override
+  String get stats_total_o_count => '合計 O カウント';
+
+  @override
+  String get cast_airplay_pairing => 'AirPlay ペアリング';
+
+  @override
+  String get cast_enter_pin => 'テレビに表示されている4桁のPINを入力してください';
+
+  @override
+  String get cast_pair => 'ペア';
+
+  @override
+  String cast_connecting_to(String deviceName) {
+    return '$deviceName に接続中...';
+  }
+
+  @override
+  String cast_casting_to(String deviceName) {
+    return '$deviceName で再生中';
+  }
+
+  @override
+  String cast_pairing_failed(String error) {
+    return 'ペアリングに失敗しました: $error';
+  }
+
+  @override
+  String cast_failed_to_cast(String error) {
+    return 'キャストに失敗しました: $error';
+  }
+
+  @override
+  String get cast_searching => 'デバイスを検索しています...';
+
+  @override
+  String get cast_cast_to_device => 'デバイスへのキャスト';
+
+  @override
+  String get settings_storage_images => '画像';
+
+  @override
+  String get settings_storage_videos => '動画';
+
+  @override
+  String get settings_storage_database => 'データベース';
+
+  @override
+  String get settings_storage_clearing_image => '画像キャッシュをクリアしています...';
+
+  @override
+  String get settings_storage_clearing_video => 'ビデオキャッシュをクリアしています...';
+
+  @override
+  String get settings_storage_clearing_database => 'データベースキャッシュをクリアしています...';
+
+  @override
+  String get settings_storage_cleared_image => '画像キャッシュがクリアされました';
+
+  @override
+  String get settings_storage_cleared_video => 'ビデオキャッシュがクリアされました';
+
+  @override
+  String get settings_storage_cleared_database => 'データベースキャッシュがクリアされました';
+
+  @override
+  String get settings_storage_clear => 'クリア';
+
+  @override
+  String get settings_storage_error_loading => 'サイズの読み込みエラー';
+
+  @override
+  String settings_storage_mb(num value) {
+    return '$value MB';
+  }
+
+  @override
+  String settings_storage_gb(num value) {
+    return '$value GB';
+  }
+
+  @override
+  String get settings_storage_100_mb => '100MB';
+
+  @override
+  String get settings_storage_500_mb => '500MB';
+
+  @override
+  String get settings_storage_1_gb => '1GB';
+
+  @override
+  String get settings_storage_2_gb => '2GB';
+
+  @override
+  String get settings_storage_unlimited => '無制限';
+
+  @override
+  String get settings_storage_limits => '限界';
+
+  @override
+  String get settings_storage_limits_subtitle => '最大キャッシュ サイズを設定する';
+
+  @override
+  String get settings_storage_max_image_cache => '最大画像キャッシュ (MB)';
+
+  @override
+  String get settings_storage_max_video_cache => '最大ビデオ キャッシュ (MB)';
+
+  @override
+  String get settings_storage => 'ストレージとキャッシュ';
+
+  @override
+  String get settings_storage_usage => 'ストレージ使用量';
+
+  @override
+  String get settings_storage_usage_subtitle => 'キャッシュの使用容量';
+
+  @override
+  String get settings_storage_subtitle => 'ローカルキャッシュとストレージ制限の管理';
+
+  @override
+  String get performers_field_name => '名前';
+
+  @override
+  String get performers_field_url => 'URL';
+
+  @override
+  String get performers_field_details => '詳細';
+
+  @override
+  String get performers_field_birth_year => '誕生年';
+
+  @override
+  String get performers_field_age => '年齢';
+
+  @override
+  String get performers_field_death_year => '没年';
+
+  @override
+  String get performers_field_scene_count => 'シーン数';
+
+  @override
+  String get performers_field_image_count => '画像数';
+
+  @override
+  String get performers_field_gallery_count => 'ギャラリー数';
+
+  @override
+  String get performers_field_play_count => '再生回数';
+
+  @override
+  String get performers_field_o_counter => 'Oカウンター';
+
+  @override
+  String get performers_field_tag_count => 'タグ数';
+
+  @override
+  String get performers_field_created_at => '作成日時';
+
+  @override
+  String get performers_field_updated_at => '更新日時';
+
+  @override
+  String get galleries_field_title => 'タイトル';
+
+  @override
+  String get galleries_field_details => '詳細';
+
+  @override
+  String get galleries_field_date => '日付';
+
+  @override
+  String get galleries_field_performer_age => '出演者年齢';
+
+  @override
+  String get galleries_field_performer_count => '出演者数';
+
+  @override
+  String get galleries_field_tag_count => 'タグ数';
+
+  @override
+  String get galleries_field_url => 'URL';
+
+  @override
+  String get galleries_field_id => 'ID';
+
+  @override
+  String get galleries_field_path => 'パス';
+
+  @override
+  String get galleries_field_checksum => 'チェックサム';
+
+  @override
+  String get galleries_field_image_count => '画像数';
+
+  @override
+  String get galleries_field_file_count => 'ファイル数';
+
+  @override
+  String get galleries_field_created_at => '作成日時';
+
+  @override
+  String get galleries_field_updated_at => '更新日時';
+
+  @override
+  String get images_field_title => 'タイトル';
+
+  @override
+  String get images_field_details => '詳細';
+
+  @override
+  String get images_field_path => 'パス';
+
+  @override
+  String get images_field_url => 'URL';
+
+  @override
+  String get images_field_file_count => 'ファイル数';
+
+  @override
+  String get images_field_o_counter => 'Oカウンター';
+
+  @override
+  String get studios_field_name => '名前';
+
+  @override
+  String get studios_field_details => '詳細';
+
+  @override
+  String get studios_field_aliases => '別名';
+
+  @override
+  String get studios_field_url => 'URL';
+
+  @override
+  String get studios_field_tag_count => 'タグ数';
+
+  @override
+  String get studios_field_scene_count => 'シーン数';
+
+  @override
+  String get studios_field_image_count => '画像数';
+
+  @override
+  String get studios_field_gallery_count => 'ギャラリー数';
+
+  @override
+  String get studios_field_sub_studio_count => 'サブスタジオ数';
+
+  @override
+  String get studios_field_created_at => '作成日時';
+
+  @override
+  String get studios_field_updated_at => '更新日時';
+
+  @override
+  String get scenes_field_performer_age => '出演者年齢';
+
+  @override
+  String get scenes_field_performer_count => '出演者数';
+
+  @override
+  String get scenes_field_tag_count => 'タグ数';
+
+  @override
+  String get scenes_field_code => 'コード';
+
+  @override
+  String get scenes_field_details => '詳細';
+
+  @override
+  String get scenes_field_director => '監督';
+
+  @override
+  String get scenes_field_url => 'URL';
+
+  @override
+  String get scenes_field_date => '日付';
+
+  @override
+  String get scenes_field_path => 'パス';
+
+  @override
+  String get scenes_field_captions => '字幕';
+
+  @override
+  String get scenes_field_duration => '時間（秒）';
+
+  @override
+  String get scenes_field_bitrate => 'ビットレート';
+
+  @override
+  String get scenes_field_video_codec => 'ビデオコーデック';
+
+  @override
+  String get scenes_field_audio_codec => 'オーディオコーデック';
+
+  @override
+  String get scenes_field_framerate => 'フレームレート';
+
+  @override
+  String get scenes_field_file_count => 'ファイル数';
+
+  @override
+  String get scenes_field_play_count => '再生回数';
+
+  @override
+  String get scenes_field_play_duration => '再生時間';
+
+  @override
+  String get scenes_field_o_counter => 'Oカウンター';
+
+  @override
+  String get scenes_field_last_played_at => '最終再生日時';
+
+  @override
+  String get scenes_field_resume_time => 'レジューム時間';
+
+  @override
+  String get scenes_field_interactive_speed => 'インタラクティブスピード';
+
+  @override
+  String get scenes_field_id => 'ID';
+
+  @override
+  String get scenes_field_stash_id_count => 'Stash ID数';
+
+  @override
+  String get scenes_field_oshash => 'Oshash';
+
+  @override
+  String get scenes_field_checksum => 'チェックサム';
+
+  @override
+  String get scenes_field_phash => 'Phash';
+
+  @override
+  String get scenes_field_created_at => '作成日時';
+
+  @override
+  String get scenes_field_updated_at => '更新日時';
+
+  @override
+  String get cast_stopped_resuming_locally => 'キャストが停止しました。ローカルで再生を再開します';
+
+  @override
+  String get cast_stop_casting => 'キャストを停止';
+
+  @override
+  String get cast_cast => 'キャスト';
+
+  @override
+  String get common_add => '追加';
+
+  @override
+  String get common_remove => '削除';
+
+  @override
+  String get common_clear => 'クリア';
+
+  @override
+  String get common_download => 'ダウンロード';
+
+  @override
+  String get common_star => 'スター';
+
+  @override
+  String get settings_interface_card_title_font_size => 'カードタイトルのフォントサイズ';
+
+  @override
+  String get common_hint_date => 'YYYY-MM-DD';
+
+  @override
+  String get common_hint_url => 'https://...';
+
+  @override
+  String get common_hint_hex => 'FF0F766E';
+
+  @override
+  String common_px(int value) {
+    return '$value px';
+  }
+
+  @override
+  String common_pt(int value) {
+    return '$value pt';
+  }
+
+  @override
+  String common_percent(int value) {
+    return '$value%';
+  }
+
+  @override
+  String get saving_video => 'ギャラリーに保存中...';
+
+  @override
+  String get saved_to_album => 'StashFlowアルバムに保存しました';
+
+  @override
+  String gallery_error(String message) {
+    return 'ギャラリーエラー: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '保存に失敗しました: $error';
+  }
+
+  @override
+  String get saving_image => '画像を保存中...';
+
+  @override
+  String common_select(String label) {
+    return '$labelを選択';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '$path に保存されました';
+  }
+
+  @override
+  String get recent_searches => '最近の検索';
+
+  @override
+  String get initializing_player => 'プレーヤーを初期化しています...';
+
+  @override
+  String get sort_scenes => 'シーンを並べ替え';
+
+  @override
+  String get failed_to_load_tap_to_retry => '読み込みに失敗しました。タップして再試行してください。';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      'リリース ページにアクセスしてダウンロードしますか？';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      '開始するには、Stash サーバーの接続設定を行う必要があります。';
+
+  @override
+  String get loading => '読み込み中';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => '出演者フィルター';
+
+  @override
+  String update_available(String version) {
+    return 'StashFlowの新しいバージョン ($version) が利用可能です。';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return 'お気に入りの更新に失敗しました: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return 'ギャラリーの読み込みに失敗しました: $error';
+  }
+
+  @override
+  String get scene_info_id => 'シーンID';
+
+  @override
+  String get scene_info_original_file_path => '元のファイルパス';
+
+  @override
+  String get scene_info_resume_time => '再開時間';
+
+  @override
+  String get scene_info_play_duration => '再生時間';
+
+  @override
+  String get scene_info_urls => 'URL';
+
+  @override
+  String get scene_info_resolution => '解決';
+
+  @override
+  String get scene_info_bitrate => 'ビットレート';
+
+  @override
+  String get scene_info_frame_rate => 'フレームレート';
+
+  @override
+  String get scene_info_format => '形式';
+
+  @override
+  String get scene_info_video_codec => 'ビデオコーデック';
+
+  @override
+  String get scene_info_audio_codec => 'オーディオコーデック';
+
+  @override
+  String get scene_info_stream => 'ストリーム';
+
+  @override
+  String get scene_info_preview => 'プレビュー';
+
+  @override
+  String get scene_info_screenshot => 'スクリーンショット';
+
+  @override
+  String get scene_info_cover => 'カバー';
+
+  @override
+  String get scene_info_caption => 'キャプション';
+
+  @override
+  String get scene_info_vtt => 'VTT';
+
+  @override
+  String get scene_info_sprite => 'スプライト';
+
+  @override
+  String get scene_info_technical => 'テクニカル';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count スター',
+      one: '1 つ星',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get main_startup_failed => 'StashFlow の開始に失敗しました';
+
+  @override
+  String get main_startup_failed_desc =>
+      'アプリの初期化が完了する前に、スタートアップ サービスが失敗しました。診断を確認した後、アプリを再起動します。';
+
+  @override
+  String common_searching_for(String query) {
+    return '検索中:「$query」';
+  }
+
+  @override
+  String get cast_device => 'デバイス';
+
+  @override
+  String get auth_enter_passcode => '続行するにはパスコードを入力してください。';
+
+  @override
+  String get auth_unlock => 'ロックを解除する';
+
+  @override
+  String get auth_incorrect_passcode => '間違ったパスコード';
+
+  @override
+  String get auth_app_locked => 'アプリがロックされました';
+
+  @override
+  String get settings_security_passcode => 'パスコード';
+
+  @override
+  String get settings_security_passcode_configured => '設定済み';
+
+  @override
+  String get settings_security_passcode_not_configured => '未設定';
+
+  @override
+  String get settings_security_passcode_saved => 'パスコードが保存されました';
+
+  @override
+  String get settings_security_passcode_removed => 'パスコードが削除されました';
+
+  @override
+  String get settings_security_enable_app_lock => 'アプリロックを有効にする';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      'アプリの再開/起動時にパスコードを要求します。';
+
+  @override
+  String get settings_security_lock_on_launch => 'アプリ起動時にロックする';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'アプリを開いたらすぐにパスコードを要求します。';
+
+  @override
+  String get settings_security_background_lock_timer => 'バックグラウンドロックタイマー';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      'アプリがロックされるまでにバックグラウンドに留まることができる時間。';
+
+  @override
+  String get settings_security_set_passcode => 'パスコードを設定する';
+
+  @override
+  String get settings_security_passcode_prompt => 'パスコード（4～8桁）';
+
+  @override
+  String get settings_security_confirm_passcode => '確認する';
+
+  @override
+  String get settings_security_error_numeric => '長さ 4 ～ 8 の数字のみを使用してください。';
+
+  @override
+  String get settings_security_error_mismatch => 'パスコードが一致しません。';
+
+  @override
+  String get common_change => '変化';
+
+  @override
+  String get common_set => 'セット';
+
+  @override
+  String get common_immediately => 'すぐに';
+
+  @override
+  String common_sec(int value) {
+    return '$value 秒';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value分';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => '安全';
+
+  @override
+  String get settings_security_subtitle => 'アプリロックとパスコードの設定';
+
+  @override
+  String get settings_security_app_lock => 'アプリロック';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'バックグラウンド化後はパスコードでアクセスを保護します。';
+
+  @override
+  String get common_saved_filters => '保存されたフィルター';
+
+  @override
+  String get tools => 'ツール';
+
+  @override
+  String get tools_section_subtitle => 'シーンのメンテナンスとメタデータのワークフロー。';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '重複するシーンを見つけて管理します。';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Stash-boxを使用して現在のシーンページをスクレイピングします。';
+
+  @override
+  String get preset_deleted => 'プリセットが削除されました';
+
+  @override
+  String get delete_preset => 'プリセットの削除';
+
+  @override
+  String get common_delete => '消去';
+
+  @override
+  String get save_preset => 'プリセットの保存';
+
+  @override
+  String get no_saved_presets => '保存されたプリセットはありません';
+
+  @override
+  String get scene_tagger => 'シーンタグ付け';
+
+  @override
+  String get page_size => 'ページサイズ';
+
+  @override
+  String get mode => 'モード';
+
+  @override
+  String get sort => '並び替え';
+
+  @override
+  String get desc => '降順';
+
+  @override
+  String get asc => '昇順';
+
+  @override
+  String get filter => 'フィルター';
+
+  @override
+  String get load_preset => 'プリセットをロードする';
+
+  @override
+  String get preset => 'プリセット';
+
+  @override
+  String get stash_box_scraper => 'スタッシュボックススクレーパー';
+
+  @override
+  String get start_tagging => 'タグ付けを開始する';
+
+  @override
+  String get stop => '停止';
+
+  @override
+  String get open_scene => 'シーンを開く';
+
+  @override
+  String get skip => 'スキップ';
+
+  @override
+  String get apply => '適用する';
+
+  @override
+  String get selected => '選択済み';
+
+  @override
+  String get select => '選択';
+
+  @override
+  String get preview => 'プレビュー';
+
+  @override
+  String get delete_scene => 'シーンの削除';
+
+  @override
+  String get metadata_only => 'メタデータのみ';
+
+  @override
+  String get files => 'ファイル';
+
+  @override
+  String get scene_deleted => 'シーンが削除されました';
+
+  @override
+  String get delete_metadata => 'メタデータの削除';
+
+  @override
+  String get delete_files => 'ファイルの削除';
+
+  @override
+  String get scene_deduplication => 'シーンの重複排除';
+
+  @override
+  String get no_duplicates_found => '重複は見つかりませんでした。';
+
+  @override
+  String get search_accuracy => '検索精度';
+
+  @override
+  String get duration_difference => '期間の違い';
+
+  @override
+  String get only_select_matching_codecs => '一致するコーデックのみを選択する';
+
+  @override
+  String get select_scenes => 'シーンを選択する';
+
+  @override
+  String get all_but_largest_resolution => '最大解像度以外のすべて';
+
+  @override
+  String get all_but_largest_file => '最大のファイルを除くすべてのファイル';
+
+  @override
+  String get all_but_oldest => '最古以外はすべて';
+
+  @override
+  String get all_but_youngest => '最年少以外全員';
+
+  @override
+  String get select_none => '何も選択しない';
+
+  @override
+  String get merge => 'マージ';
+
+  @override
+  String get previous_page => '前のページへ';
+
+  @override
+  String get next_page => '次のページ';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return 'ページ $page / $totalPages';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return '結果 $index / $total';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return '「$name」を削除しますか?この操作は元に戻すことができません。';
+  }
+
+  @override
+  String get enter_preset_name => 'プリセット名を入力してください';
+
+  @override
+  String get delete_scene_confirm => 'このシーンを削除してもよろしいですか?';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return '選択したものを削除 ($selectedCount)';
+  }
+
+  @override
+  String get saved_presets => '保存済みプリセット';
+
+  @override
+  String get current_settings => '現在の設定';
+
+  @override
+  String get available_presets => '利用可能なプリセット';
+
+  @override
+  String get existing_names_are_overwritten => '既存の名前は上書きされます';
+
+  @override
+  String get active_settings_saved_server => '現在有効な設定がサーバーに保存されます。';
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'フィルターの保存に失敗しました: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'プリセットの削除に失敗しました: $error';
+  }
+
+  @override
+  String sort_label(String sortLabel) {
+    return '並び順: $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return 'フィルター: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return '検索: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'プリセットの読み込みに失敗しました: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '$item を保存しました';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Stash Box を読み込めません: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '$count 件のシーンを削除しますか？';
+  }
+
+  @override
+  String get delete_scenes_help =>
+      'Stash のメタデータのみを削除するか、シーンファイルと生成された補助ファイルも削除するかを選択してください。';
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '$count 件のシーンを削除しました';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return '削除に失敗しました: $error';
+  }
+
+  @override
+  String get configuration => '設定';
+
+  @override
+  String missing_phashes_for_scenes(int count) {
+    return '$count 件のシーンで phash が不足しています。phash 生成タスクを実行してください。';
+  }
+
+  @override
+  String get merge_editing_not_wired => 'マージ編集はまだ StashFlow に実装されていません。';
+
+  @override
+  String duplicate_sets_count(int count) {
+    return '$count 件の重複セット';
+  }
+
+  @override
+  String duplicate_set_number(int number) {
+    return '重複セット $number';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 件のタグ',
+      one: '1 件のタグ',
+      zero: 'タグなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 件のグループ',
+      one: '1 件のグループ',
+      zero: 'グループなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 件のマーカー',
+      one: '1 件のマーカー',
+      zero: 'マーカーなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 件のギャラリー',
+      one: '1 件のギャラリー',
+      zero: 'ギャラリーなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scene_tagger_checked_matches_summary(int checked, int matches) {
+    return '$checked 件確認 • $matches 件一致';
+  }
+
+  @override
+  String scene_tagger_page_summary(int count) {
+    return 'このページのシーン数: $count';
+  }
+
+  @override
+  String get no_matched_scenes_yet => '一致したシーンはまだありません。';
+
+  @override
+  String get no_scenes_match_configuration => 'この設定に一致するシーンはありません。';
+
+  @override
+  String scene_tagger_checked_count(int count) {
+    return '$count 件確認済み';
+  }
+
+  @override
+  String scene_tagger_progress(int checked, int total) {
+    return '$checked / $total';
+  }
+
+  @override
+  String get stats_library_stats_tooltip => '長押しでライブラリ統計を表示';
+
+  @override
+  String get scene_details_marker_created => 'マーカーが作成されました';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return 'マーカーの作成に失敗しました: $error';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => 'マーカーの削除';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return 'マーカー「$title」を削除しますか?';
+  }
+
+  @override
+  String get scene_details_marker_deleted => 'マーカーが削除されました';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return 'マーカーの削除に失敗しました: $error';
+  }
+
+  @override
+  String get scene_details_add_marker => 'マーカーを追加する';
+
+  @override
+  String get scene_details_create_marker => '作成する';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return 'マーカー $title を削除';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => 'マーカー';
+
+  @override
+  String get auto_marker_name => 'マーカー名';
+
+  @override
+  String get auto_missing_field => '不足しているフィールド';
+
+  @override
+  String get filter_markers_title => 'フィルターマーカー';
+
+  @override
+  String get marker_title => 'マーカー';
+
+  @override
+  String get duration_title => '間隔';
+
+  @override
+  String get scene_title => 'シーン';
+
+  @override
+  String get dates_title => '日付';
+
+  @override
+  String get created_at_title => '作成日';
+
+  @override
+  String get updated_at_title => '更新日';
+
+  @override
+  String get scene_date_title => 'シーンの日付';
+
+  @override
+  String get scene_created_at_title => 'シーンの作成日';
+
+  @override
+  String get scene_updated_at_title => 'シーンの更新日時';
+
+  @override
+  String get organized_title => '整頓された';
+
+  @override
+  String get interactive_title => '相互の作用';
+
+  @override
+  String get scraped_metadata_title => 'スクレイピングされたメタデータ';
+
+  @override
+  String get local_scene_title => '現地の様子';
+
+  @override
+  String get sort_markers_title => 'ソートマーカー';
+
+  @override
+  String get markers_title => 'マーカー';
+
+  @override
+  String get sub_group_count_title => 'サブグループ数';
+
+  @override
+  String get groups_browsing_mode_subtitle => 'グループのデフォルトの閲覧モード';
+
+  @override
+  String get markers_browsing_mode_subtitle => 'マーカーのデフォルトの閲覧モード';
+
+  @override
+  String get entity_layouts_title => 'エンティティのレイアウト';
+
+  @override
+  String get entity_layouts_subtitle => 'パフォーマー、スタジオ、タグのメディアとギャラリーのデフォルトのレイアウト';
+
+  @override
+  String get stats_subtitle_0_gb => '0.00GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 個のユニークなアイテム';
+
+  @override
+  String get markers_search_hint => '検索マーカー';
+
+  @override
+  String get tags_title => 'タグ';
+
+  @override
+  String get scenes_title => 'シーン';
+
+  @override
+  String get settings_config_backup_title => 'App configuration';
+
+  @override
+  String get settings_config_backup_subtitle =>
+      'Save or replace user-facing settings and server profiles';
+
+  @override
+  String get settings_config_export => 'Save configuration';
+
+  @override
+  String get settings_config_import => 'Import configuration';
+
+  @override
+  String get settings_config_include_credentials =>
+      'Include credentials unencrypted';
+
+  @override
+  String get settings_config_credentials_warning =>
+      'Anyone with this file can read your server credentials and app lock passcode.';
+
+  @override
+  String get settings_config_exported => 'Configuration saved';
+
+  @override
+  String get settings_config_import_title => 'Replace app configuration?';
+
+  @override
+  String settings_config_import_summary(int profileCount) {
+    return 'This file contains $profileCount server profiles. Importing replaces all current user-facing settings and profiles.';
+  }
+
+  @override
+  String get settings_config_import_confirm => 'Replace configuration';
+
+  @override
+  String get settings_config_imported =>
+      'Configuration imported. Restart the app to apply every setting.';
+
+  @override
+  String get settings_config_invalid =>
+      'The configuration file is invalid or unsupported.';
+
+  @override
+  String get settings_config_plaintext_label =>
+      'Credentials are stored as readable text in the exported file.';
+}

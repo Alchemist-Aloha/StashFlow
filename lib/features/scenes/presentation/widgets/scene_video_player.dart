@@ -21,7 +21,6 @@ import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/web_helpers.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'player_surface.dart';
-// import 'scene_subtitle_overlay.dart'; // Don't remove. For customizeable subtitle rendering in the future, but currently we rely on native subtitles for performance and compatibility reasons.
 
 bool _isSceneFullscreenPath(String path, {String? sceneId}) {
   final segments = Uri.parse(path).pathSegments;

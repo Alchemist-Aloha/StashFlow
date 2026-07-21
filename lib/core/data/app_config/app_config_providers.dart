@@ -3,12 +3,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../preferences/secure_storage_provider.dart';
 import '../preferences/shared_preferences_provider.dart';
-import 'app_config_document_service.dart';
 import 'app_config_service.dart';
-
-final appConfigDocumentServiceProvider = Provider(
-  (ref) => const AppConfigDocumentService(),
-);
 
 final appConfigServiceProvider = FutureProvider<AppConfigService>((ref) async {
   final info = await PackageInfo.fromPlatform();

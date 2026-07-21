@@ -38,6 +38,28 @@ part 'video_player_provider.g.dart';
 
 enum VideoEndBehavior { stop, loop, next }
 
+/// Builds the authenticated external subtitle URL for a scene caption.
+String? resolveSceneSubtitleUrl({
+  required ScenePaths paths,
+  required String languageCode,
+  String? captionType,
+  String apiKey = '',
+}) {
+  if (languageCode == 'none') return null;
+
+  final captionPath = paths.caption?.trim() ?? '';
+  final vttPath = paths.vtt?.trim() ?? '';
+  if (captionPath.isEmpty) {
+    return vttPath.isEmpty ? null : appendApiKey(vttPath, apiKey);
+  }
+
+  final uri = Uri.parse(captionPath);
+  final query = Map<String, String>.from(uri.queryParameters);
+  if (languageCode.isNotEmpty) query['lang'] = languageCode;
+  if (captionType?.isNotEmpty ?? false) query['type'] = captionType!;
+  return appendApiKey(uri.replace(queryParameters: query).toString(), apiKey);
+}
+
 class NavigationAction {
   final String path;
   final bool isReplacement;
@@ -749,17 +771,23 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       // Disable subtitles
       await player.setSubtitleTrack(SubtitleTrack.no());
     } else {
-      // Find the track that matches your languageCode
-      // Note: You might need to map languageCode to the actual Track ID
-      // available in player.state.tracks.subtitle
       try {
-        final availableTracks = player.state.tracks.subtitle;
-        final targetTrack = availableTracks.firstWhere(
-          (t) => t.language == languageCode || t.title == languageCode,
-          orElse: () => SubtitleTrack.auto(),
+        final subtitleUrl = resolveSceneSubtitleUrl(
+          paths: scene.paths,
+          languageCode: languageCode,
+          captionType: captionType,
+          apiKey: ref.read(serverApiKeyProvider),
         );
-
-        await player.setSubtitleTrack(targetTrack);
+        if (subtitleUrl != null) {
+          await player.setSubtitleTrack(SubtitleTrack.uri(subtitleUrl));
+        } else {
+          final targetTrack = player.state.tracks.subtitle.firstWhere(
+            (track) =>
+                track.language == languageCode || track.title == languageCode,
+            orElse: SubtitleTrack.auto,
+          );
+          await player.setSubtitleTrack(targetTrack);
+        }
       } catch (e) {
         AppLogStore.instance.add('Failed to switch track: $e');
       }
@@ -971,9 +999,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     );
 
     // Automatic caption loading logic
-    final hasCaptionPath = scene.paths.caption?.trim().isNotEmpty ?? false;
-    final hasVttPath = scene.paths.vtt?.trim().isNotEmpty ?? false;
-    final hasSubtitleSource = hasCaptionPath || hasVttPath;
     String? autoLang;
     String? autoType;
 
@@ -1023,34 +1048,17 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
     // ...
     // Later in playScene, when creating the controller:
-    String? subtitleUrl;
-    if (effectiveSubtitleLanguage != null &&
-        effectiveSubtitleLanguage != 'none' &&
-        hasSubtitleSource) {
-      final lang = effectiveSubtitleLanguage;
-      final type = effectiveSubtitleType;
-      late final String captionUrl;
-      if (hasCaptionPath) {
-        final baseCaptionUrl = scene.paths.caption!.trim();
-        final uri = Uri.parse(baseCaptionUrl);
-        final queryParams = Map<String, dynamic>.from(uri.queryParameters);
-        if (lang.isNotEmpty) {
-          queryParams['lang'] = lang;
-        }
-        if (type != null && type.isNotEmpty) {
-          queryParams['type'] = type;
-        }
-        captionUrl = uri.replace(queryParameters: queryParams).toString();
-      } else {
-        // For unnamed subtitle sources, use vtt path directly.
-        captionUrl = scene.paths.vtt!.trim();
-      }
-
-      final apiKey = ref.read(serverApiKeyProvider);
-      subtitleUrl = appendApiKey(captionUrl, apiKey);
-
+    final subtitleUrl = effectiveSubtitleLanguage == null
+        ? null
+        : resolveSceneSubtitleUrl(
+            paths: scene.paths,
+            languageCode: effectiveSubtitleLanguage,
+            captionType: effectiveSubtitleType,
+            apiKey: ref.read(serverApiKeyProvider),
+          );
+    if (subtitleUrl != null) {
       AppLogStore.instance.add(
-        'provider playScene: subtitle url=$subtitleUrl lang=$lang type=$type',
+        'provider playScene: subtitle url=$subtitleUrl lang=$effectiveSubtitleLanguage type=$effectiveSubtitleType',
         source: 'player_provider',
       );
     } else if (effectiveSubtitleLanguage != null) {
