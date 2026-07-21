@@ -5,6 +5,7 @@
 **/*.freezed.dart
 **/*.mocks.dart
 **/*.graphql.dart
+lib/l10n/app_localizations*.dart
 .hermes/
 *.class
 *.log

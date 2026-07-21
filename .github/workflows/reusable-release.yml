@@ -205,12 +205,16 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag -f "${{ inputs.rolling_tag }}" "${{ github.sha }}"
           git push --force origin "refs/tags/${{ inputs.rolling_tag }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         if: inputs.rolling_tag == ''
         uses: softprops/action-gh-release@v3
         with:
           files: artifacts/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Rolling Release
         if: inputs.rolling_tag != ''
@@ -222,3 +226,5 @@ jobs:
           prerelease: ${{ inputs.prerelease }}
           make_latest: ${{ inputs.make_latest }}
           files: artifacts/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
