@@ -7,7 +7,7 @@ A modern, multi-platform client for your **Stash** server. Built for fast browsi
 The app is primarily tested on Android and Windows. The web build is best treated as a demo because browser restrictions limit authentication and playback behavior. For the full experience, use a native build.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.25.0-green.svg)](pubspec.yaml)
+[![Version](https://img.shields.io/badge/version-1.26.0-green.svg)](pubspec.yaml)
 
 ## 📸 Screenshots
 
@@ -41,12 +41,12 @@ The app is primarily tested on Android and Windows. The web build is best treate
 ### 📱 Android
 
 1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
-2. **Connect:** Open the app ➔ Settings ➔ Enter your **Server URL** and **API Key**.
+2. **Connect:** Open the app ➔ Settings ➔ Enter your credentials.
 
 ### 💻 Desktop (Windows, macOS, Linux)
 
 1. **Download:** Download the appropriate installer for your OS from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
-2. **Setup:** Install and launch ➔ Enter your **Server URL** and **API Key** in Settings.
+2. **Setup:** Install and launch ➔ Enter your credentials in Settings.
 
 ### 🌐 Web
 
@@ -60,37 +60,15 @@ The app is primarily tested on Android and Windows. The web build is best treate
 
 ## 🤓 For Developers
 
-### Tech Stack
-
-- **Flutter** & **GoRouter**
-- **Riverpod** & **Hooks** (State Management)
-- **GraphQL** (`graphql_flutter` + `codegen`)
-- **MediaKit** (High-performance video engine)
-- **Audio Service** (Background playback & system controls)
-
-### Project Structure
-
-- `lib/core` shared infrastructure (theme, logs, providers)
-- `lib/features/*` feature modules (domain/data/presentation)
-- `graphql/` schema and GraphQL documents for code generation
-
 ### Build
 
 Use the provided build script to check dependencies, generate code, and build for all available platforms:
 
 ```bash
-chmod +x build.sh
 ./build.sh
 # or on windows run:
 ./build.ps1
 ```
-
-The script will:
-
-1. **Check Dependencies:** Verify that `flutter`, `dart`, `cmake`, `ninja`, and the **Android SDK** are correctly installed.
-2. **Fetch Packages:** Run `flutter pub get`.
-3. **Generate Code:** Run `build_runner` for GraphQL and Riverpod.
-4. **Multi-Platform Build:** Attempt to build for **Android (APK)**, **Web**, **Linux**, **Windows**, and **macOS**, providing a summary of successes and failures at the end.
 
 Or you can build the project manually for a specific platform:
 
@@ -99,12 +77,12 @@ Or you can build the project manually for a specific platform:
 flutter pub get
 
 # Regenerate code (GraphQL & Notifiers)
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 
 # Build flutter app
-flutter build apk --release --split-per-abi
-flutter build windows --release
-flutter build linux --release
+flutter build apk --debug --split-per-abi
+flutter build windows --debug
+flutter build linux --debug
 ```
 
 ## 📚 Internal Docs
