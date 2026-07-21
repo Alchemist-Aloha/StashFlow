@@ -143,18 +143,16 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
             ),
             if (widget.entityType == ScrapeEntityType.scene) ...[
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _useFingerprints,
-                    onChanged: (val) {
-                      setState(() {
-                        _useFingerprints = val ?? false;
-                      });
-                    },
-                  ),
-                  Text(context.l10n.details_scene_fingerprint_query),
-                ],
+              CheckboxListTile(
+                value: _useFingerprints,
+                onChanged: (val) {
+                  setState(() {
+                    _useFingerprints = val ?? false;
+                  });
+                },
+                title: Text(context.l10n.details_scene_fingerprint_query),
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
               ),
             ],
             const SizedBox(height: 16),
