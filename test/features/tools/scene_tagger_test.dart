@@ -533,7 +533,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Local A'), findsNothing);
-    expect(find.text('Page 1 of 1'), findsNWidgets(2));
+    expect(find.text('Page 1 of 1'), findsOneWidget);
     expect(repo.savedScrapedScenes, isEmpty);
   });
 
@@ -565,17 +565,46 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Page 1 of 2'), findsNWidgets(2));
+    final resultsList = find.byKey(
+      const ValueKey('scene_tagger_results_currentPage'),
+    );
+    final bottomPagination = find.byKey(
+      const ValueKey('scene_tagger_pagination_bottom'),
+    );
+    expect(find.text('Page 1 of 2'), findsOneWidget);
+    expect(bottomPagination, findsNothing);
+
+    final resultsScrollable = find.descendant(
+      of: resultsList,
+      matching: find.byType(Scrollable),
+    );
+    final scrollPosition = tester
+        .state<ScrollableState>(resultsScrollable.first)
+        .position;
+    scrollPosition.jumpTo(scrollPosition.maxScrollExtent);
+    await tester.pumpAndSettle();
+
+    expect(bottomPagination, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('scene_tagger_pagination_top')),
+      findsNothing,
+    );
+
+    scrollPosition.jumpTo(scrollPosition.minScrollExtent);
+    await tester.pumpAndSettle();
+
     final topPagination = find.byKey(
       const ValueKey('scene_tagger_pagination_top'),
     );
+    expect(topPagination, findsOneWidget);
+    expect(bottomPagination, findsNothing);
     await tester.tap(
       find.descendant(of: topPagination, matching: find.byTooltip('Next page')),
     );
     await tester.pumpAndSettle();
 
     expect(repo.lastFindScenesPage, 2);
-    expect(find.text('Page 2 of 2'), findsNWidgets(2));
+    expect(find.text('Page 2 of 2'), findsWidgets);
     expect(find.text('Local Scene 25'), findsWidgets);
   });
 

@@ -483,59 +483,69 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
         _mode == _TaggerMode.currentPage &&
         !_loadingScenes &&
         _loadError == null;
-    final pagination = _TaggerPaginationBar(
+    return CustomScrollView(
+      key: ValueKey('scene_tagger_results_${_mode.name}'),
+      slivers: [
+        if (showPagination)
+          SliverPadding(
+            padding: const EdgeInsets.only(bottom: 8),
+            sliver: SliverToBoxAdapter(
+              child: KeyedSubtree(
+                key: const ValueKey('scene_tagger_pagination_top'),
+                child: _buildPaginationBar(),
+              ),
+            ),
+          ),
+        _buildResultSliver(context),
+        if (showPagination)
+          SliverPadding(
+            padding: const EdgeInsets.only(top: 4, bottom: 24),
+            sliver: SliverToBoxAdapter(
+              child: KeyedSubtree(
+                key: const ValueKey('scene_tagger_pagination_bottom'),
+                child: _buildPaginationBar(),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildPaginationBar() {
+    return _TaggerPaginationBar(
       page: _page,
       totalPages: _totalPages,
       onPrevious: _page > 1 ? () => _goToPage(_page - 1) : null,
       onNext: _page < _totalPages ? () => _goToPage(_page + 1) : null,
     );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (showPagination) ...[
-          KeyedSubtree(
-            key: const ValueKey('scene_tagger_pagination_top'),
-            child: pagination,
-          ),
-          const SizedBox(height: 8),
-        ],
-        Expanded(child: _buildResultList(context)),
-        if (showPagination) ...[
-          const SizedBox(height: 4),
-          KeyedSubtree(
-            key: const ValueKey('scene_tagger_pagination_bottom'),
-            child: _TaggerPaginationBar(
-              page: _page,
-              totalPages: _totalPages,
-              onPrevious: _page > 1 ? () => _goToPage(_page - 1) : null,
-              onNext: _page < _totalPages ? () => _goToPage(_page + 1) : null,
-            ),
-          ),
-        ],
-      ],
-    );
   }
 
-  Widget _buildResultList(BuildContext context) {
+  Widget _buildResultSliver(BuildContext context) {
     if (_loadError != null) {
-      return _ErrorBanner(message: _loadError!, onRetry: _loadScenes);
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: _ErrorBanner(message: _loadError!, onRetry: _loadScenes),
+      );
     }
     if (_loadingScenes) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_scenes.isEmpty) {
-      return _TaggerEmptyResults(
-        message: _mode == _TaggerMode.randomUnorganized
-            ? context.l10n.no_matched_scenes_yet
-            : context.l10n.no_scenes_match_configuration,
+      return const SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(child: CircularProgressIndicator()),
       );
     }
 
-    return ListView.builder(
-      key: ValueKey('scene_tagger_results_${_mode.name}'),
-      padding: const EdgeInsets.only(bottom: 24),
+    if (_scenes.isEmpty) {
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: _TaggerEmptyResults(
+          message: _mode == _TaggerMode.randomUnorganized
+              ? context.l10n.no_matched_scenes_yet
+              : context.l10n.no_scenes_match_configuration,
+        ),
+      );
+    }
+
+    return SliverList.builder(
       itemCount: _scenes.length,
       itemBuilder: (context, index) {
         final scene = _scenes[index];
