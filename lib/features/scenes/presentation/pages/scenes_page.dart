@@ -506,10 +506,11 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       ],
       gridDelegate: isGridView
           ? GridUtils.createDelegate(
+              context,
               crossAxisCount: gridColumns ?? _getGridColumnCount(context),
             )
           : null,
-      padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
+      padding: isGridView ? GridUtils.defaultPadding(context) : EdgeInsets.zero,
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
         final index = sceneIndexMap[scene.id] ?? -1;
 

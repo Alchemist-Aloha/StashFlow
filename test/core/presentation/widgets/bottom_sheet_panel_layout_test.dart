@@ -51,6 +51,13 @@ void main() {
     );
 
     expect(find.byType(BackdropFilter), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byType(BackdropFilter),
+        matching: find.byType(ClipRRect),
+      ),
+      findsOneWidget,
+    );
 
     final material = tester
         .widgetList<Material>(

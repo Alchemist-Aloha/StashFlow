@@ -263,12 +263,13 @@ class AppTheme {
       );
     }
 
-    final baseTextTheme =
-        Typography.material2021(platform: defaultTargetPlatform).black.apply(
-          bodyColor: colorScheme.onSurface,
-          displayColor: colorScheme.onSurface,
-          fontSizeFactor: fontSizeFactor,
-        );
+    final baseTextTheme = _scaleTextTheme(
+      Typography.material2021(platform: defaultTargetPlatform).black.apply(
+        bodyColor: colorScheme.onSurface,
+        displayColor: colorScheme.onSurface,
+      ),
+      fontSizeFactor,
+    );
 
     return ThemeData(
       useMaterial3: true,
@@ -344,9 +345,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: spacingMedium,
-          vertical: spacingSmall,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: dims.spacingMedium,
+          vertical: dims.spacingSmall,
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -358,33 +359,33 @@ class AppTheme {
           selectedBackgroundColor: colorScheme.primaryContainer,
           selectedForegroundColor: colorScheme.onPrimaryContainer,
           padding: EdgeInsets.symmetric(
-            horizontal: spacingSmall,
-            vertical: spacingSmall / 2,
+            horizontal: dims.spacingSmall,
+            vertical: dims.spacingSmall / 2,
           ),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(48),
+          minimumSize: Size.fromHeight(dims.buttonHeight),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacingLarge,
-            vertical: spacingMedium,
+          padding: EdgeInsets.symmetric(
+            horizontal: dims.spacingLarge,
+            vertical: dims.spacingMedium,
           ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(48),
+          minimumSize: Size.fromHeight(dims.buttonHeight),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
           side: BorderSide(color: colorScheme.outline),
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacingLarge,
-            vertical: spacingMedium,
+          padding: EdgeInsets.symmetric(
+            horizontal: dims.spacingLarge,
+            vertical: dims.spacingMedium,
           ),
         ),
       ),
@@ -393,9 +394,9 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacingMedium,
-            vertical: spacingSmall,
+          padding: EdgeInsets.symmetric(
+            horizontal: dims.spacingMedium,
+            vertical: dims.spacingSmall,
           ),
         ),
       ),
@@ -429,6 +430,30 @@ class AppTheme {
         ),
         dims,
       ],
+    );
+  }
+
+  static TextTheme _scaleTextTheme(TextTheme theme, double factor) {
+    TextStyle? scale(TextStyle? style) => style?.fontSize == null
+        ? style
+        : style!.copyWith(fontSize: style.fontSize! * factor);
+
+    return theme.copyWith(
+      displayLarge: scale(theme.displayLarge),
+      displayMedium: scale(theme.displayMedium),
+      displaySmall: scale(theme.displaySmall),
+      headlineLarge: scale(theme.headlineLarge),
+      headlineMedium: scale(theme.headlineMedium),
+      headlineSmall: scale(theme.headlineSmall),
+      titleLarge: scale(theme.titleLarge),
+      titleMedium: scale(theme.titleMedium),
+      titleSmall: scale(theme.titleSmall),
+      bodyLarge: scale(theme.bodyLarge),
+      bodyMedium: scale(theme.bodyMedium),
+      bodySmall: scale(theme.bodySmall),
+      labelLarge: scale(theme.labelLarge),
+      labelMedium: scale(theme.labelMedium),
+      labelSmall: scale(theme.labelSmall),
     );
   }
 

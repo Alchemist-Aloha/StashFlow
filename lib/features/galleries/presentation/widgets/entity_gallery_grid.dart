@@ -340,10 +340,15 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
       loadingItemBuilder: (context, isGrid, index) =>
           GalleryCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       gridDelegate: widget.isGridView
-          ? GridUtils.createDelegate(crossAxisCount: widget.gridColumns ?? 2)
+          ? GridUtils.createDelegate(
+              context,
+              crossAxisCount: widget.gridColumns ?? 2,
+            )
           : null,
       useMasonry: widget.isGridView,
-      padding: widget.isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
+      padding: widget.isGridView
+          ? GridUtils.defaultPadding(context)
+          : EdgeInsets.zero,
       actions: [
         Stack(
           children: [

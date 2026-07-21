@@ -188,7 +188,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 
   SliverGridDelegate _getResponsiveGridDelegate(BuildContext context) {
     final delegate =
-        widget.gridDelegate ?? GridUtils.createDelegate(crossAxisCount: 1);
+        widget.gridDelegate ??
+        GridUtils.createDelegate(context, crossAxisCount: 1);
     if (delegate is! SliverGridDelegateWithFixedCrossAxisCount) {
       return delegate;
     }

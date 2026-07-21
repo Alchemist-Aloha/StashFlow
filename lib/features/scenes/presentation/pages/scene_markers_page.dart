@@ -193,9 +193,9 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
           ref.read(sceneMarkerListProvider.notifier).setPerPage(pageSize),
       useMasonry: isGridLayout,
       gridDelegate: isGridLayout
-          ? GridUtils.createDelegate(crossAxisCount: gridColumns)
+          ? GridUtils.createDelegate(context, crossAxisCount: gridColumns)
           : null,
-      padding: GridUtils.defaultPadding,
+      padding: GridUtils.defaultPadding(context),
       actions: [
         Stack(
           children: [

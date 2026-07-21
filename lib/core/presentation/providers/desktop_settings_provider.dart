@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../data/preferences/shared_preferences_provider.dart';
 
 class DesktopSettings {
   final double volume;
@@ -18,13 +19,8 @@ class DesktopSettings {
 class DesktopSettingsNotifier extends Notifier<DesktopSettings> {
   @override
   DesktopSettings build() {
-    _loadSettings();
-    return DesktopSettings();
-  }
-
-  Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    state = state.copyWith(
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return DesktopSettings(
       volume: prefs.getDouble('desktop_volume') ?? 1.0,
       isMuted: prefs.getBool('desktop_is_muted') ?? false,
     );
@@ -33,15 +29,17 @@ class DesktopSettingsNotifier extends Notifier<DesktopSettings> {
   Future<void> setVolume(double volume) async {
     final clampedVolume = volume.clamp(0.0, 1.0);
     state = state.copyWith(volume: clampedVolume);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('desktop_volume', clampedVolume);
+    await ref
+        .read(sharedPreferencesProvider)
+        .setDouble('desktop_volume', clampedVolume);
   }
 
   Future<void> toggleMute() async {
     final newMute = !state.isMuted;
     state = state.copyWith(isMuted: newMute);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('desktop_is_muted', newMute);
+    await ref
+        .read(sharedPreferencesProvider)
+        .setBool('desktop_is_muted', newMute);
   }
 }
 

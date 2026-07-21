@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 
 /// Utilities for maintaining a consistent grid layout across the application.
 class GridUtils {
   /// The standard padding for grid containers.
-  static const EdgeInsets defaultPadding = EdgeInsets.all(
-    AppTheme.spacingSmall,
-  );
+  static EdgeInsets defaultPadding(BuildContext context) =>
+      EdgeInsets.all(context.dimensions.spacingSmall);
 
   /// The standard aspect ratio for grid items that include title and subtitle.
   static const double defaultChildAspectRatio = 1.15;
@@ -15,14 +15,15 @@ class GridUtils {
   ///
   /// Defaults to 2 columns, which is typically adapted by [ListPageScaffold]
   /// for larger screens if not overridden.
-  static SliverGridDelegateWithFixedCrossAxisCount createDelegate({
+  static SliverGridDelegateWithFixedCrossAxisCount createDelegate(
+    BuildContext context, {
     int crossAxisCount = 2,
     double childAspectRatio = defaultChildAspectRatio,
   }) {
     return SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: crossAxisCount,
-      crossAxisSpacing: AppTheme.spacingSmall,
-      mainAxisSpacing: AppTheme.spacingMedium,
+      crossAxisSpacing: context.dimensions.spacingSmall,
+      mainAxisSpacing: context.dimensions.spacingMedium,
       childAspectRatio: childAspectRatio,
     );
   }

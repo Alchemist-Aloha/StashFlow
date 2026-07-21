@@ -363,10 +363,10 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       loadingItemBuilder: (context, isGrid, index) =>
           GalleryCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       gridDelegate: isGridView
-          ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
+          ? GridUtils.createDelegate(context, crossAxisCount: gridColumns ?? 2)
           : null,
       useMasonry: isGridView,
-      padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
+      padding: isGridView ? GridUtils.defaultPadding(context) : EdgeInsets.zero,
       itemBuilder: (context, gallery, memCacheWidth, memCacheHeight) =>
           GalleryCard(
             gallery: gallery,
