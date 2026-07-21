@@ -35,12 +35,11 @@ worktree unless the user explicitly requests one for a task.
 - Preserve placeholders (e.g., {count}, {error}) exactly.
 - Use `scripts/apply_translations.py` and `scripts/check_translations.py` to help validation.
 
-## Recent Design Briefs (high priority)
+## Design Specifications
 
-- Settings UI (Material 3 Expressive): replace `DropdownButton` with bottom sheets, sliders, and `MenuAnchor` status-pills; increase radii and spacing; add subtle press animation. See: [lib/features/setup/presentation/widgets/settings_page_shell.dart](lib/features/setup/presentation/widgets/settings_page_shell.dart#L1).
-- Simplify server URL input: prefer base URL (no `/graphql`) — update ARB keys and `server_profile_drawer.dart` hint text. See: [lib/features/setup/presentation/widgets/server_profile_drawer.dart](lib/features/setup/presentation/widgets/server_profile_drawer.dart#L1).
-- SceneCard enhancements: add thumbnail metadata overlay, desktop hover scrubbing, and configurable performer-avatar row (`maxPerformerAvatars`). See: [lib/features/scenes/presentation/widgets/scene_card.dart](lib/features/scenes/presentation/widgets/scene_card.dart#L1).
-- Global Persistent Video Player: Decoupled fullscreen playback from navigation. The `GlobalFullscreenOverlay` stays active during background navigation. `PlayerState` synchronizes the background route (Details page) via `NavigationIntent`. Avoid using `/fullscreen` routes; trigger fullscreen via `playerStateProvider.notifier.setFullScreen(true)`. See: [lib/features/navigation/presentation/shell_page.dart](lib/features/navigation/presentation/shell_page.dart), [lib/features/scenes/presentation/widgets/global_fullscreen_overlay.dart](lib/features/scenes/presentation/widgets/global_fullscreen_overlay.dart).
+- **Single source of truth:** [SPECS.md](SPECS.md) — all design specs in one categorized file.
+- **No individual spec files:** The old `docs/superpowers/specs/` directory has been removed.
+- **Adding a new spec:** Edit `SPECS.md` directly — insert a new `### N. title` subsection under the relevant category heading, keeping the numbered sequence intact. Use the same format (goal, scope, data-flow, implementation guidance).
 
 ## Dynamic UI Scaling — Standards
 
@@ -57,4 +56,4 @@ worktree unless the user explicitly requests one for a task.
 - Add `maxPerformerAvatars` provider and implement avatar row + hover scrubbing with platform checks.
 - Run `flutter build` and relevant tests; fix layout/localization regressions.
 
-References: `docs/superpowers/specs/` (2026-04-25 → 2026-04-28).
+References: [`SPECS.md`](SPECS.md) (combined spec document).
