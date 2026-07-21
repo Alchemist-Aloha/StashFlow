@@ -260,6 +260,61 @@ void main() {
       expect(deleteTopLeft.dy, greaterThan(openTopLeft.dy));
     },
   );
+
+  testWidgets('opens scene details from the duplicate scene action', (
+    tester,
+  ) async {
+    final repo = MockGraphQLSceneRepository()
+      ..duplicateGroups = [
+        SceneDuplicateGroup(
+          scenes: [
+            duplicateScene(id: 'a'),
+            duplicateScene(id: 'b'),
+          ],
+        ),
+      ];
+    final router = GoRouter(
+      initialLocation: '/tools/scene-deduplication',
+      routes: [
+        GoRoute(
+          path: '/tools',
+          builder: (context, state) => const SizedBox.shrink(),
+          routes: [
+            GoRoute(
+              path: 'scene-deduplication',
+              builder: (context, state) => const SceneDeduplicationPage(),
+            ),
+          ],
+        ),
+        GoRoute(
+          path: '/scene/:id',
+          builder: (context, state) =>
+              Text('Details ${state.pathParameters['id']}'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          sceneRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Open scene').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Details a'), findsOneWidget);
+  });
 }
 
 SceneDuplicateScene duplicateScene({
