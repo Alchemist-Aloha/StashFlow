@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
@@ -253,6 +254,21 @@ class StartupErrorApp extends StatelessWidget {
   }
 }
 
+/// A [ScrollBehavior] that also allows mouse drag to scroll, so desktop/web
+/// horizontal strips and scroll views respond to click-and-drag with a mouse.
+class DesktopScrollBehavior extends MaterialScrollBehavior {
+  const DesktopScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.stylus,
+    PointerDeviceKind.invertedStylus,
+    PointerDeviceKind.trackpad,
+    PointerDeviceKind.mouse,
+  };
+}
+
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
@@ -270,6 +286,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       routerConfig: router,
+      scrollBehavior: const DesktopScrollBehavior(),
       builder: (context, child) {
         if (child == null) {
           return const SizedBox.shrink();

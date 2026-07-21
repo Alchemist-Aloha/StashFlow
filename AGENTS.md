@@ -6,10 +6,11 @@ Short, action-oriented guidance for agents working in this repository.
 
 - **Localization:** Never ship plain strings; use ARB keys and run `flutter gen-l10n` after edits.
 - **Docs:** Add docstrings for new providers, widgets, and public APIs.
-- **Verify:** Run `flutter build apk --split-per-abi` or project tests after UI/logic changes.
+- **Verify:** Run `flutter analyze` or project tests after UI/logic changes.
 - **Design:** Follow Material 3 expressive patterns (consistent spacing, soft shapes, readable type).
 - **Worktree:** Use the current `dev` branch directly by default. Do not create an isolated
 worktree unless the user explicitly requests one for a task.
+- **Build:** Run `flutter build apk --split-per-abi` after each implementation.
 - **Official Stash:** locate in `/stash` subdirectory. Do not edit the official Stash code; it is for reference only.
 
 ## Release Notes
