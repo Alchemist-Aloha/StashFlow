@@ -39,7 +39,8 @@ worktree unless the user explicitly requests one for a task.
 
 - **Single source of truth:** [SPECS.md](SPECS.md) — all design specs in one categorized file.
 - **No individual spec files:** The old `docs/superpowers/specs/` directory has been removed.
-- **Adding a new spec:** Edit `SPECS.md` directly — insert a new `### N. title` subsection under the relevant category heading, keeping the numbered sequence intact. Use the same format (goal, scope, data-flow, implementation guidance).
+- **Finding a spec:** Browse the category index at the top of `SPECS.md`; the file describes current contracts, while implementation history belongs in Git.
+- **Updating specs:** Edit the owning category instead of adding a dated duplicate. Keep goals, invariants, ownership, and verification guidance; put migration plans and change narratives in issues or pull requests.
 
 ## Dynamic UI Scaling — Standards
 
@@ -53,7 +54,6 @@ worktree unless the user explicitly requests one for a task.
 
 - Update ARB keys and run `flutter gen-l10n`.
 - Replace remaining dropdowns in settings pages with bottom sheets / sliders / menu anchors.
-- Add `maxPerformerAvatars` provider and implement avatar row + hover scrubbing with platform checks.
-- Run `flutter build` and relevant tests; fix layout/localization regressions.
+- Run `flutter build apk --split-per-abi` and relevant tests; fix layout/localization regressions.
 
 References: [`SPECS.md`](SPECS.md) (combined spec document).
