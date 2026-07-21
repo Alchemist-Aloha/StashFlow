@@ -60,15 +60,7 @@ The app is primarily tested on Android and Windows. The web build is best treate
 
 ### Build
 
-Use the provided build script to check dependencies, generate code, and build for all available platforms:
-
-```bash
-./build.sh
-# or on windows run:
-./build.ps1
-```
-
-Or you can build the project manually for a specific platform:
+Build the project for the platform you need:
 
 ```bash
 # Get dependencies
