@@ -40,6 +40,8 @@ void main() {
       preferences: {
         'app_theme_mode': 'dark',
         'show_random_navigation': true,
+        'scene_sort_field': 'rating',
+        'scene_filter_state': '{"rating100":{"value":80}}',
         'server_profiles': jsonEncode([_profileJson('old')]),
         'active_server_profile_id': 'old',
         'search_history_scenes': <String>['keep'],
@@ -50,7 +52,12 @@ void main() {
       schemaVersion: 1,
       createdAt: DateTime.utc(2026, 7, 15),
       appVersion: '1.0.0',
-      settings: const {'app_theme_mode': 'light'},
+      settings: const {
+        'app_theme_mode': 'light',
+        'image_sort_field': 'date',
+        'image_sort_descending': true,
+        'image_filter_state': '{"organized":false}',
+      },
       serverProfiles: const [
         AppConfigProfile(
           id: 'new',
@@ -70,6 +77,14 @@ void main() {
 
     expect(service.preferences.getString('app_theme_mode'), 'light');
     expect(service.preferences.containsKey('show_random_navigation'), isFalse);
+    expect(service.preferences.containsKey('scene_sort_field'), isFalse);
+    expect(service.preferences.containsKey('scene_filter_state'), isFalse);
+    expect(service.preferences.getString('image_sort_field'), 'date');
+    expect(service.preferences.getBool('image_sort_descending'), isTrue);
+    expect(
+      service.preferences.getString('image_filter_state'),
+      '{"organized":false}',
+    );
     expect(service.preferences.getStringList('search_history_scenes'), [
       'keep',
     ]);

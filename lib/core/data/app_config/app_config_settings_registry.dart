@@ -70,6 +70,55 @@ final class AppConfigSettingsRegistry {
     _bool('show_random_navigation'),
     _bool('scene_random_respect_active_filter'),
     _bool('main_page_gravity_orientation'),
+    for (final prefix in const [
+      'scene',
+      'gallery',
+      'performer',
+      'image',
+      'studio',
+      'tag',
+      'group',
+      'scene_marker',
+    ]) ...[_string('${prefix}_sort_field'), _bool('${prefix}_sort_descending')],
+    for (final key in const [
+      'scene_filter_state',
+      'gallery_filter_state',
+      'performer_filter_state',
+      'image_filter_state',
+      'studio_filter_state',
+      'group_list_filter',
+      'scene_marker_filter_state',
+    ])
+      _jsonString(key),
+    for (final key in const [
+      'scene_organized_only_v2',
+      'gallery_organized_only_v2',
+      'image_organized_only_v2',
+    ])
+      _string(key, allowed: {'all', 'organized', 'unorganized'}),
+    _bool('tag_favorites_only'),
+    _string(
+      'entity_image_filter_method',
+      allowed: {'directEntity', 'relatedGalleries'},
+    ),
+    for (final kind in const ['performer', 'studio', 'tag', 'group']) ...[
+      _string('entity_media_${kind}_sort_field'),
+      _bool('entity_media_${kind}_sort_descending'),
+      _jsonString('entity_media_${kind}_filter_state'),
+      _string(
+        'entity_media_${kind}_organized_only_v2',
+        allowed: {'all', 'organized', 'unorganized'},
+      ),
+    ],
+    for (final kind in const ['performer', 'studio', 'tag']) ...[
+      _string('entity_galleries_${kind}_sort_field'),
+      _bool('entity_galleries_${kind}_sort_descending'),
+      _jsonString('entity_galleries_${kind}_filter_state'),
+      _string(
+        'entity_galleries_${kind}_organized_only_v2',
+        allowed: {'all', 'organized', 'unorganized'},
+      ),
+    ],
     _jsonString('navigation_tabs_config', expectList: true),
     _jsonString('desktop_keybinds'),
     _double('desktop_volume', min: 0, max: 1),

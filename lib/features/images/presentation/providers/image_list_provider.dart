@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/image.dart' as entity;
@@ -56,9 +58,23 @@ class ImageSearchQuery extends _$ImageSearchQuery {
 
 @Riverpod(keepAlive: true)
 class ImageFilterState extends _$ImageFilterState {
+  static const _storageKey = 'image_filter_state';
+
   @override
   ({String? galleryId, ImageFilter filter}) build() {
-    return (galleryId: null, filter: const ImageFilter());
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final jsonString = prefs.getString(_storageKey);
+    if (jsonString != null) {
+      try {
+        return (
+          galleryId: null,
+          filter: ImageFilter.fromJson(jsonDecode(jsonString)),
+        );
+      } catch (_) {
+        // Fall through to the empty default for corrupt legacy preferences.
+      }
+    }
+    return (galleryId: null, filter: ImageFilter.empty());
   }
 
   void setGalleryId(String? id) =>
@@ -69,7 +85,8 @@ class ImageFilterState extends _$ImageFilterState {
   void clearGalleryId() => state = (galleryId: null, filter: state.filter);
 
   Future<void> saveAsDefault() async {
-    // Implementation for saving filter as default if desired.
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setString(_storageKey, jsonEncode(state.filter.toJson()));
   }
 }
 

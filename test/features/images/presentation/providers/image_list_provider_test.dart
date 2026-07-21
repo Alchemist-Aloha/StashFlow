@@ -2,7 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
+import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
 
 import '../../../../helpers/test_helpers.dart';
@@ -59,6 +61,28 @@ void main() {
       expect(sortState.sort, 'rating');
       expect(sortState.descending, false);
     });
+
+    test(
+      'ImageFilterState persists the default without gallery context',
+      () async {
+        final filterState = container.read(imageFilterStateProvider.notifier);
+        filterState.setGalleryId('gallery-1');
+        filterState.updateFilter(
+          const ImageFilter(rating100: IntCriterion(value: 80)),
+        );
+        await filterState.saveAsDefault();
+
+        final sharedPrefs = await SharedPreferences.getInstance();
+        final newContainer = ProviderContainer(
+          overrides: [sharedPreferencesProvider.overrideWithValue(sharedPrefs)],
+        );
+        addTearDown(newContainer.dispose);
+
+        final restored = newContainer.read(imageFilterStateProvider);
+        expect(restored.galleryId, isNull);
+        expect(restored.filter.rating100?.value, 80);
+      },
+    );
 
     test('refresh changes effective random sort seed', () async {
       final sort = container.read(imageSortProvider.notifier);
