@@ -1,6 +1,6 @@
 # 📱 StashFlow
 
-### Your Stash library, everywhere
+## Your Stash library, everywhere
 
 A modern, multi-platform client for your [**Stash server**](https://github.com/stashapp/stash). Built for fast browsing, playback, and library management across **Android**, **Desktop** (Windows, macOS, Linux), and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
 
@@ -24,8 +24,6 @@ The app is primarily tested on Android and Windows. The web build is best treate
 </p>
 
 ## ✨ Key Features
-
-### ✨ Key Features
 
 - 📱 **Cross-platform** support for Android, desktop, and web.
 - 🧭 **Flexible navigation** with customizable primary tabs and responsive layouts.
