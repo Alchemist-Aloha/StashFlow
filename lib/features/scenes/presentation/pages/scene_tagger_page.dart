@@ -73,7 +73,9 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   final Map<String, int> _selectedMatchIndexes = {};
   final Set<String> _expandedSceneIds = <String>{};
   _TaggerMode _mode = _TaggerMode.currentPage;
+  int _page = 1;
   int _pageSize = 25;
+  int _totalSceneCount = 0;
   String? _sort = 'date';
   bool _descending = true;
   SceneFilter _filter = SceneFilter.empty();
@@ -119,8 +121,8 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       if (effectiveSort == 'random') {
         effectiveSort = 'random';
       }
-      final scenes = await repository.findScenes(
-        page: 1,
+      final scenePage = await repository.findScenesPage(
+        page: _page,
         perPage: _pageSize,
         filter: _searchController.text.trim().isEmpty
             ? null
@@ -132,7 +134,8 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       );
       if (!mounted) return;
       setState(() {
-        _scenes = scenes;
+        _scenes = scenePage.scenes;
+        _totalSceneCount = scenePage.totalCount;
       });
     } catch (error) {
       if (!mounted) return;
@@ -156,16 +159,32 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _expandedSceneIds.clear();
       _activePreviewSceneId = null;
       _scrapedCount = 0;
+      _page = 1;
+      _totalSceneCount = 0;
       _loadError = null;
     });
   }
 
-  void _reloadForMode() {
+  void _reloadForMode({bool resetPage = true}) {
+    if (resetPage) {
+      _page = 1;
+    }
     if (_mode == _TaggerMode.currentPage) {
       _loadScenes();
     } else {
       _clearRandomModeList();
     }
+  }
+
+  void _goToPage(int page) {
+    if (_loadingScenes || page < 1 || page > _totalPages) return;
+    setState(() => _page = page);
+    _loadScenes();
+  }
+
+  int get _totalPages {
+    if (_totalSceneCount <= 0) return 1;
+    return (_totalSceneCount + _pageSize - 1) ~/ _pageSize;
   }
 
   Future<void> _startTagging(String stashBoxEndpoint) async {
@@ -389,46 +408,112 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   Widget build(BuildContext context) {
     final stashBoxesAsync = ref.watch(stashBoxEndpointsProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.scene_tagger)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            InkWell(
-              onTap: () => setState(() => _configExpanded = !_configExpanded),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                child: Row(
-                  children: [
-                    Icon(
-                      _configExpanded ? Icons.expand_less : Icons.expand_more,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      context.l10n.configuration,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ],
+      appBar: AppBar(
+        title: Text(context.l10n.scene_tagger),
+        actions: [
+          IconButton(
+            tooltip: context.l10n.common_refresh,
+            onPressed: _scraping
+                ? null
+                : () => _reloadForMode(resetPage: false),
+            icon: const Icon(Icons.refresh_rounded),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth >= 1000;
+            final horizontalPadding = isWide ? 24.0 : 12.0;
+            final controls = _buildControls(
+              stashBoxesAsync,
+              showHeading: isWide,
+            );
+            final results = _buildResultsScaffold(context);
+
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1440),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    12,
+                    horizontalPadding,
+                    0,
+                  ),
+                  child: isWide
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(
+                              width: 340,
+                              child: SingleChildScrollView(child: controls),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(child: results),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _TaggerCompactConfiguration(
+                              expanded: _configExpanded,
+                              maxBodyHeight: constraints.maxHeight * 0.48,
+                              onToggle: () => setState(
+                                () => _configExpanded = !_configExpanded,
+                              ),
+                              child: controls,
+                            ),
+                            const SizedBox(height: 12),
+                            Expanded(child: results),
+                          ],
+                        ),
                 ),
               ),
-            ),
-            AnimatedCrossFade(
-              firstChild: const SizedBox.shrink(),
-              secondChild: _buildControls(stashBoxesAsync),
-              crossFadeState: _configExpanded
-                  ? CrossFadeState.showSecond
-                  : CrossFadeState.showFirst,
-              duration: const Duration(milliseconds: 200),
-            ),
-            if (_configExpanded) const SizedBox(height: 8),
-            const SizedBox(height: 16),
-            Expanded(child: _buildResultList(context)),
-          ],
+            );
+          },
         ),
       ),
+    );
+  }
+
+  Widget _buildResultsScaffold(BuildContext context) {
+    final showPagination =
+        _mode == _TaggerMode.currentPage &&
+        !_loadingScenes &&
+        _loadError == null;
+    final pagination = _TaggerPaginationBar(
+      page: _page,
+      totalPages: _totalPages,
+      onPrevious: _page > 1 ? () => _goToPage(_page - 1) : null,
+      onNext: _page < _totalPages ? () => _goToPage(_page + 1) : null,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (showPagination) ...[
+          KeyedSubtree(
+            key: const ValueKey('scene_tagger_pagination_top'),
+            child: pagination,
+          ),
+          const SizedBox(height: 8),
+        ],
+        Expanded(child: _buildResultList(context)),
+        if (showPagination) ...[
+          const SizedBox(height: 4),
+          KeyedSubtree(
+            key: const ValueKey('scene_tagger_pagination_bottom'),
+            child: _TaggerPaginationBar(
+              page: _page,
+              totalPages: _totalPages,
+              onPrevious: _page > 1 ? () => _goToPage(_page - 1) : null,
+              onNext: _page < _totalPages ? () => _goToPage(_page + 1) : null,
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -440,46 +525,20 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final summary = _mode == _TaggerMode.randomUnorganized
-        ? context.l10n.scene_tagger_checked_matches_summary(
-            _scrapedCount,
-            _scenes.length,
-          )
-        : context.l10n.scene_tagger_page_summary(_scenes.length);
     if (_scenes.isEmpty) {
-      return ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          Text(summary, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32),
-            child: Center(
-              child: Text(
-                _mode == _TaggerMode.randomUnorganized
-                    ? context.l10n.no_matched_scenes_yet
-                    : context.l10n.no_scenes_match_configuration,
-              ),
-            ),
-          ),
-        ],
+      return _TaggerEmptyResults(
+        message: _mode == _TaggerMode.randomUnorganized
+            ? context.l10n.no_matched_scenes_yet
+            : context.l10n.no_scenes_match_configuration,
       );
     }
 
     return ListView.builder(
       key: ValueKey('scene_tagger_results_${_mode.name}'),
-      itemCount: _scenes.length + 1,
+      padding: const EdgeInsets.only(bottom: 24),
+      itemCount: _scenes.length,
       itemBuilder: (context, index) {
-        if (index == 0) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Text(
-              summary,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          );
-        }
-        final scene = _scenes[index - 1];
+        final scene = _scenes[index];
         final result = _results[scene.id];
         final selectedMatchIndex = _selectedMatchIndex(
           scene.id,
@@ -519,143 +578,170 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     );
   }
 
-  Widget _buildControls(AsyncValue<List<StashBoxEndpoint>> stashBoxesAsync) {
-    final compact = MediaQuery.sizeOf(context).width < 640;
-    return Card(
+  Widget _buildControls(
+    AsyncValue<List<StashBoxEndpoint>> stashBoxesAsync, {
+    required bool showHeading,
+  }) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Material(
+      color: colors.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(28),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 12 : 16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              crossAxisAlignment: WrapCrossAlignment.center,
+            if (showHeading) ...[
+              _TaggerPanelHeading(
+                icon: Icons.tune_rounded,
+                title: context.l10n.configuration,
+              ),
+              const SizedBox(height: 16),
+            ],
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: context.l10n.common_search,
+                prefixIcon: const Icon(Icons.search_rounded),
+                border: const OutlineInputBorder(),
+              ),
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) => _reloadForMode(),
+            ),
+            const SizedBox(height: 12),
+            DropdownMenu<String>(
+              expandedInsets: EdgeInsets.zero,
+              initialSelection: _mode.value,
+              label: Text(context.l10n.mode),
+              dropdownMenuEntries: _TaggerMode.values
+                  .map(
+                    (mode) =>
+                        DropdownMenuEntry(value: mode.value, label: mode.label),
+                  )
+                  .toList(growable: false),
+              onSelected: (value) {
+                final selected = _TaggerMode.values.firstWhere(
+                  (mode) => mode.value == value,
+                  orElse: () => _TaggerMode.currentPage,
+                );
+                setState(() {
+                  _mode = selected;
+                  _page = 1;
+                  _results.clear();
+                  _scrapedCount = 0;
+                  if (_mode == _TaggerMode.randomUnorganized) {
+                    _scenes = [];
+                  }
+                });
+                if (_mode == _TaggerMode.currentPage) {
+                  _loadScenes();
+                }
+              },
+            ),
+            const SizedBox(height: 12),
+            Row(
               children: [
-                SizedBox(
-                  width: compact ? double.infinity : 220,
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      labelText: '',
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                    ).copyWith(labelText: context.l10n.common_search),
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (_) => _loadScenes(),
+                Expanded(
+                  child: DropdownMenu<int>(
+                    expandedInsets: EdgeInsets.zero,
+                    initialSelection: _pageSize,
+                    label: Text(context.l10n.page_size),
+                    dropdownMenuEntries: _pageSizeOptions
+                        .map(
+                          (size) =>
+                              DropdownMenuEntry(value: size, label: '$size'),
+                        )
+                        .toList(growable: false),
+                    onSelected: (value) {
+                      if (value == null) return;
+                      setState(() => _pageSize = value);
+                      _reloadForMode();
+                    },
                   ),
                 ),
-                DropdownMenu<int>(
-                  width: compact ? 150 : 170,
-                  initialSelection: _pageSize,
-                  label: Text(context.l10n.page_size),
-                  dropdownMenuEntries: _pageSizeOptions
-                      .map(
-                        (size) =>
-                            DropdownMenuEntry(value: size, label: '$size'),
-                      )
-                      .toList(growable: false),
-                  onSelected: (value) {
-                    if (value == null) return;
-                    setState(() {
-                      _pageSize = value;
-                    });
-                    _reloadForMode();
-                  },
-                ),
-                DropdownMenu<String>(
-                  width: compact ? 190 : 210,
-                  initialSelection: _mode.value,
-                  label: Text(context.l10n.mode),
-                  dropdownMenuEntries: _TaggerMode.values
-                      .map(
-                        (mode) => DropdownMenuEntry(
-                          value: mode.value,
-                          label: mode.label,
-                        ),
-                      )
-                      .toList(growable: false),
-                  onSelected: (value) {
-                    final selected = _TaggerMode.values.firstWhere(
-                      (mode) => mode.value == value,
-                      orElse: () => _TaggerMode.currentPage,
-                    );
-                    setState(() {
-                      _mode = selected;
-                      _results.clear();
-                      _scrapedCount = 0;
-                      if (_mode == _TaggerMode.randomUnorganized) {
-                        _scenes = [];
-                      }
-                    });
-                    if (_mode == _TaggerMode.currentPage) {
-                      _loadScenes();
-                    }
-                  },
-                ),
-                DropdownMenu<String>(
-                  width: compact ? 150 : 170,
-                  initialSelection: _sort,
-                  label: Text(context.l10n.sort),
-                  dropdownMenuEntries: _sortOptions.entries
-                      .map(
-                        (entry) => DropdownMenuEntry(
-                          value: entry.key,
-                          label: entry.value,
-                        ),
-                      )
-                      .toList(growable: false),
-                  onSelected: (value) {
-                    setState(() {
-                      _sort = value;
-                    });
-                    _reloadForMode();
-                  },
-                ),
-                SegmentedButton<bool>(
-                  segments: [
-                    ButtonSegment(value: true, label: Text(context.l10n.desc)),
-                    ButtonSegment(value: false, label: Text(context.l10n.asc)),
-                  ],
-                  selected: {_descending},
-                  onSelectionChanged: (selection) {
-                    setState(() {
-                      _descending = selection.first;
-                    });
-                    _reloadForMode();
-                  },
-                ),
-                OutlinedButton.icon(
-                  onPressed: _openFilterPanel,
-                  icon: const Icon(Icons.filter_list),
-                  label: Text(context.l10n.filter),
-                ),
-                FutureBuilder<List<SceneSavedFilterConfig>>(
-                  future: _presetsFuture,
-                  builder: (context, snapshot) {
-                    final presets = snapshot.data ?? const [];
-                    return PopupMenuButton<SceneSavedFilterConfig>(
-                      tooltip: context.l10n.load_preset,
-                      enabled: presets.isNotEmpty,
-                      onSelected: _applyPreset,
-                      itemBuilder: (context) => [
-                        for (final preset in presets)
-                          PopupMenuItem(
-                            value: preset,
-                            child: Text(preset.name),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: DropdownMenu<String>(
+                    expandedInsets: EdgeInsets.zero,
+                    initialSelection: _sort,
+                    label: Text(context.l10n.sort),
+                    dropdownMenuEntries: _sortOptions.entries
+                        .map(
+                          (entry) => DropdownMenuEntry(
+                            value: entry.key,
+                            label: entry.value,
                           ),
-                      ],
-                      child: IgnorePointer(
-                        child: OutlinedButton.icon(
-                          onPressed: presets.isEmpty ? null : () {},
-                          icon: const Icon(Icons.bookmark_border),
-                          label: Text(context.l10n.preset),
-                        ),
-                      ),
-                    );
-                  },
+                        )
+                        .toList(growable: false),
+                    onSelected: (value) {
+                      setState(() => _sort = value);
+                      _reloadForMode();
+                    },
+                  ),
                 ),
               ],
+            ),
+            const SizedBox(height: 12),
+            SegmentedButton<bool>(
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(value: true, label: Text(context.l10n.desc)),
+                ButtonSegment(value: false, label: Text(context.l10n.asc)),
+              ],
+              selected: {_descending},
+              onSelectionChanged: (selection) {
+                setState(() => _descending = selection.first);
+                _reloadForMode();
+              },
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _openFilterPanel,
+                    icon: const Icon(Icons.filter_list_rounded),
+                    label: Text(context.l10n.filter),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FutureBuilder<List<SceneSavedFilterConfig>>(
+                    future: _presetsFuture,
+                    builder: (context, snapshot) {
+                      final presets = snapshot.data ?? const [];
+                      return PopupMenuButton<SceneSavedFilterConfig>(
+                        tooltip: context.l10n.load_preset,
+                        enabled: presets.isNotEmpty,
+                        onSelected: _applyPreset,
+                        itemBuilder: (context) => [
+                          for (final preset in presets)
+                            PopupMenuItem(
+                              value: preset,
+                              child: Text(preset.name),
+                            ),
+                        ],
+                        child: IgnorePointer(
+                          child: OutlinedButton.icon(
+                            onPressed: presets.isEmpty ? null : () {},
+                            icon: const Icon(Icons.bookmark_rounded),
+                            label: Text(context.l10n.preset),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Divider(height: 1),
+            ),
+            _TaggerPanelHeading(
+              icon: Icons.cloud_sync_rounded,
+              title: context.l10n.stash_box_scraper,
             ),
             const SizedBox(height: 12),
             stashBoxesAsync.when(
@@ -663,13 +749,11 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 final endpoint =
                     _selectedStashBoxEndpoint ??
                     stashBoxes.firstOrNull?.endpoint;
-                return Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     DropdownMenu<String>(
-                      width: compact ? double.infinity : 280,
+                      expandedInsets: EdgeInsets.zero,
                       initialSelection: endpoint,
                       label: Text(context.l10n.stash_box_scraper),
                       dropdownMenuEntries: stashBoxes
@@ -686,6 +770,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                         });
                       },
                     ),
+                    const SizedBox(height: 12),
                     FilledButton.icon(
                       onPressed:
                           endpoint == null ||
@@ -695,28 +780,60 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                                   _scenes.isEmpty)
                           ? null
                           : () => _startTagging(endpoint),
-                      icon: const Icon(Icons.sell),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(52),
+                      ),
+                      icon: _scraping
+                          ? const SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.sell_rounded),
                       label: Text(context.l10n.start_tagging),
                     ),
                     if (_scraping)
-                      OutlinedButton.icon(
-                        onPressed: () {
-                          setState(() {
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: OutlinedButton.icon(
+                          onPressed: () => setState(() {
                             _stopRequested = true;
-                          });
-                        },
-                        icon: const Icon(Icons.stop),
-                        label: Text(context.l10n.stop),
+                          }),
+                          icon: const Icon(Icons.stop_circle_outlined),
+                          label: Text(context.l10n.stop),
+                        ),
                       ),
-                    Text(
-                      _mode == _TaggerMode.randomUnorganized
-                          ? context.l10n.scene_tagger_checked_count(
-                              _scrapedCount,
-                            )
-                          : context.l10n.scene_tagger_progress(
-                              _scrapedCount,
-                              _scenes.length,
+                    const SizedBox(height: 12),
+                    Material(
+                      color: colors.primaryContainer.withValues(alpha: 0.45),
+                      borderRadius: BorderRadius.circular(18),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.query_stats_rounded,
+                              color: colors.primary,
                             ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                _mode == _TaggerMode.randomUnorganized
+                                    ? context.l10n.scene_tagger_checked_count(
+                                        _scrapedCount,
+                                      )
+                                    : context.l10n.scene_tagger_progress(
+                                        _scrapedCount,
+                                        _scenes.length,
+                                      ),
+                                style: theme.textTheme.labelLarge,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 );
@@ -727,6 +844,195 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TaggerCompactConfiguration extends StatelessWidget {
+  const _TaggerCompactConfiguration({
+    required this.expanded,
+    required this.maxBodyHeight,
+    required this.onToggle,
+    required this.child,
+  });
+
+  final bool expanded;
+  final double maxBodyHeight;
+  final VoidCallback onToggle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(24),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          InkWell(
+            onTap: onToggle,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(Icons.tune_rounded, color: colors.primary),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      context.l10n.configuration,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOutCubic,
+                    child: const Icon(Icons.keyboard_arrow_down_rounded),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedCrossFade(
+            firstChild: const SizedBox(width: double.infinity),
+            secondChild: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: maxBodyHeight),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                child: child,
+              ),
+            ),
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 250),
+            sizeCurve: Curves.easeOutCubic,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TaggerPanelHeading extends StatelessWidget {
+  const _TaggerPanelHeading({required this.icon, required this.title});
+
+  final IconData icon;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Row(
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.secondaryContainer,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Icon(icon, size: 20, color: colors.onSecondaryContainer),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            title,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TaggerPaginationBar extends StatelessWidget {
+  const _TaggerPaginationBar({
+    required this.page,
+    required this.totalPages,
+    required this.onPrevious,
+    required this.onNext,
+  });
+
+  final int page;
+  final int totalPages;
+  final VoidCallback? onPrevious;
+  final VoidCallback? onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Center(
+      child: Material(
+        color: colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(999),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                tooltip: context.l10n.previous_page,
+                onPressed: onPrevious,
+                icon: const Icon(Icons.chevron_left_rounded),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  context.l10n.scene_deduplication_page_count(page, totalPages),
+                ),
+              ),
+              IconButton(
+                tooltip: context.l10n.next_page,
+                onPressed: onNext,
+                icon: const Icon(Icons.chevron_right_rounded),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TaggerEmptyResults extends StatelessWidget {
+  const _TaggerEmptyResults({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Center(
+      child: Material(
+        color: colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(28),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.manage_search_rounded,
+                size: 48,
+                color: colors.primary,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -763,6 +1069,8 @@ class _TaggerSceneCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final matches = result?.matches ?? const <ScrapedScene>[];
     final hasMatches = matches.isNotEmpty;
     final safeSelectedIndex = hasMatches
@@ -812,17 +1120,50 @@ class _TaggerSceneCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      elevation: 0,
+      color: colors.surfaceContainerLow,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    scene.title,
-                    style: Theme.of(context).textTheme.titleMedium,
+                  child: Row(
+                    children: [
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: hasMatches
+                              ? colors.primaryContainer
+                              : colors.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Icon(
+                            hasMatches
+                                ? Icons.auto_awesome_rounded
+                                : Icons.movie_outlined,
+                            size: 19,
+                            color: hasMatches
+                                ? colors.onPrimaryContainer
+                                : colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          scene.title,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 IconButton(
@@ -864,14 +1205,23 @@ class _TaggerSceneCard extends StatelessWidget {
               ],
             ],
             const SizedBox(height: 12),
-            Wrap(
-              alignment: WrapAlignment.end,
-              spacing: 8,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton(onPressed: onSkip, child: Text(context.l10n.skip)),
-                FilledButton(
-                  onPressed: scraped == null ? null : onApply,
-                  child: Text(context.l10n.apply),
+                Flexible(
+                  child: TextButton.icon(
+                    onPressed: onSkip,
+                    icon: const Icon(Icons.skip_next_rounded),
+                    label: Text(context.l10n.skip),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: FilledButton.icon(
+                    onPressed: scraped == null ? null : onApply,
+                    icon: const Icon(Icons.check_rounded),
+                    label: Text(context.l10n.apply),
+                  ),
                 ),
               ],
             ),
@@ -1032,19 +1382,24 @@ class _MetadataPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final colors = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colors.outlineVariant),
-      ),
+    return Material(
+      color: colors.surfaceContainerHighest.withValues(alpha: 0.48),
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleSmall),
+            Text(
+              title,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: colors.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             if (headerTrailing != null) ...[
               const SizedBox(height: 8),
               Align(alignment: Alignment.centerLeft, child: headerTrailing!),
@@ -1063,7 +1418,7 @@ class _MetadataPanel extends StatelessWidget {
                         color: colors.onSurfaceVariant,
                       ),
                     ),
-                    Text(row.$2),
+                    SelectableText(row.$2),
                   ],
                 ),
               ),
@@ -1082,13 +1437,27 @@ class _ErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.errorContainer,
+      borderRadius: BorderRadius.circular(28),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 8),
+            Icon(
+              Icons.cloud_off_rounded,
+              size: 44,
+              color: colors.onErrorContainer,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.onErrorContainer),
+            ),
+            const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),

@@ -354,7 +354,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Open scene').first);
+    final openSceneButton = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, Icons.open_in_new_rounded).first,
+    );
+    openSceneButton.onPressed!();
     await tester.pumpAndSettle();
 
     expect(find.text('Details a'), findsOneWidget);

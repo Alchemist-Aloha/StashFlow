@@ -20,7 +20,37 @@ class GraphQLSceneRepository {
   Uri get _graphqlEndpoint => _client.link is HttpLink
       ? (_client.link as HttpLink).uri
       : Uri.parse('https://localhost/graphql');
+
   Future<List<Scene>> findScenes({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool descending = true,
+    bool? organized,
+    bool? performerFavorite,
+    String? performerId,
+    String? studioId,
+    String? tagId,
+    SceneFilter? sceneFilter,
+  }) async {
+    final result = await findScenesPage(
+      page: page,
+      perPage: perPage,
+      filter: filter,
+      sort: sort,
+      descending: descending,
+      organized: organized,
+      performerFavorite: performerFavorite,
+      performerId: performerId,
+      studioId: studioId,
+      tagId: tagId,
+      sceneFilter: sceneFilter,
+    );
+    return result.scenes;
+  }
+
+  Future<({List<Scene> scenes, int totalCount})> findScenesPage({
     int? page,
     int? perPage,
     String? filter,
@@ -69,7 +99,8 @@ class GraphQLSceneRepository {
 
     validateGraphQLResult(result);
 
-    return result.parsedData!.findScenes.scenes
+    final data = result.parsedData!.findScenes;
+    final scenes = data.scenes
         .map(
           (s) => Scene(
             id: s.id,
@@ -163,6 +194,7 @@ class GraphQLSceneRepository {
           ),
         )
         .toList();
+    return (scenes: scenes, totalCount: data.count);
   }
 
   Future<QueryResult<Query$FindScenes>> _runFindScenes({

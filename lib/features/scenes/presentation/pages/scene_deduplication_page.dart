@@ -342,28 +342,35 @@ class _SceneDeduplicationPageState
     return ListView.builder(
       key: ValueKey('scene_dedup_groups_$_page-$_pageSize'),
       padding: const EdgeInsets.only(bottom: 24),
-      itemCount: visibleGroups.length + 1,
+      itemCount: visibleGroups.length + 2,
       itemBuilder: (context, index) {
-        if (index == visibleGroups.length) {
-          return _PaginationBar(
-            page: _page,
-            totalPages: totalPages,
-            onPrevious: _page > 1
-                ? () => setState(() {
-                    _page -= 1;
-                    _selectedSceneIds.clear();
-                  })
-                : null,
-            onNext: _page < totalPages
-                ? () => setState(() {
-                    _page += 1;
-                    _selectedSceneIds.clear();
-                  })
-                : null,
+        if (index == 0 || index == visibleGroups.length + 1) {
+          return KeyedSubtree(
+            key: ValueKey(
+              index == 0
+                  ? 'scene_dedup_pagination_top'
+                  : 'scene_dedup_pagination_bottom',
+            ),
+            child: _PaginationBar(
+              page: _page,
+              totalPages: totalPages,
+              onPrevious: _page > 1
+                  ? () => setState(() {
+                      _page -= 1;
+                      _selectedSceneIds.clear();
+                    })
+                  : null,
+              onNext: _page < totalPages
+                  ? () => setState(() {
+                      _page += 1;
+                      _selectedSceneIds.clear();
+                    })
+                  : null,
+            ),
           );
         }
 
-        final groupIndex = index;
+        final groupIndex = index - 1;
         final group = visibleGroups[groupIndex];
         return _DuplicateGroupCard(
           key: ValueKey(
