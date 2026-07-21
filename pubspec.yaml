@@ -60,7 +60,6 @@ dependencies:
   package_info_plus: ^10.1.0
   pub_semver: ^2.2.0
   window_manager: ^0.5.2
-  screen_retriever: ^0.2.2
   dio: ^5.10.0
   dio_cookie_manager: ^3.4.0
   cookie_jar: ^4.0.9
