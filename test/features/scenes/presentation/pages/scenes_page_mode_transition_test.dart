@@ -23,6 +23,21 @@ class _FakeGraphQLSceneRepository implements GraphQLSceneRepository {
   final List<Scene> _scenes;
 
   @override
+  Future<({List<Scene> scenes, int totalCount})> findScenesPage({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool descending = true,
+    bool? organized,
+    bool? performerFavorite,
+    String? performerId,
+    String? studioId,
+    String? tagId,
+    SceneFilter? sceneFilter,
+  }) async => (scenes: _scenes, totalCount: _scenes.length);
+
+  @override
   Future<List<Scene>> findScenes({
     int? page,
     int? perPage,

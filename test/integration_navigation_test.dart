@@ -59,6 +59,36 @@ class LocalMockGraphQLSceneRepository implements GraphQLSceneRepository {
   LocalMockGraphQLSceneRepository(this.scenes);
 
   @override
+  Future<({List<Scene> scenes, int totalCount})> findScenesPage({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool descending = true,
+    bool? organized,
+    bool? performerFavorite,
+    String? performerId,
+    String? studioId,
+    String? tagId,
+    SceneFilter? sceneFilter,
+  }) async {
+    final result = await findScenes(
+      page: page,
+      perPage: perPage,
+      filter: filter,
+      sort: sort,
+      descending: descending,
+      organized: organized,
+      performerFavorite: performerFavorite,
+      performerId: performerId,
+      studioId: studioId,
+      tagId: tagId,
+      sceneFilter: sceneFilter,
+    );
+    return (scenes: result, totalCount: result.length);
+  }
+
+  @override
   Future<List<Scene>> findScenes({
     int? page,
     int? perPage,

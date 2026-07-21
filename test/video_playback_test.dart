@@ -21,6 +21,21 @@ class MockGraphQLSceneRepository implements GraphQLSceneRepository {
   MockGraphQLSceneRepository(this.scenes);
 
   @override
+  Future<({List<Scene> scenes, int totalCount})> findScenesPage({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool descending = true,
+    bool? organized,
+    bool? performerFavorite,
+    String? performerId,
+    String? studioId,
+    String? tagId,
+    SceneFilter? sceneFilter,
+  }) async => (scenes: scenes, totalCount: scenes.length);
+
+  @override
   Future<List<Scene>> findScenes({
     int? page,
     int? perPage,
@@ -204,7 +219,10 @@ void main() {
 
     // Find the play button in the video player overlay if not auto-started
     if (find.byIcon(Icons.play_arrow).evaluate().isNotEmpty) {
-      await tester.tap(find.byIcon(Icons.play_arrow).first, warnIfMissed: false);
+      await tester.tap(
+        find.byIcon(Icons.play_arrow).first,
+        warnIfMissed: false,
+      );
       await tester.pump();
     }
   });

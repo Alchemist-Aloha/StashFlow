@@ -135,7 +135,7 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
                   child: GalleryCard(
                     gallery: gallery,
                     isGrid: true,
-                    onTap: onTap != null ? () => onTap!(gallery) : null,
+                    onTap: onTap == null ? null : () => onTap(gallery),
                   ),
                 ),
               );
