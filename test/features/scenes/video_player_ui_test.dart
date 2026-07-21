@@ -7,6 +7,7 @@ import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
@@ -163,10 +164,7 @@ void main() {
         )
         .padding
         .resolve(TextDirection.ltr);
-    expect(
-      sectionPadding.top,
-      sectionPadding.bottom,
-    );
+    expect(sectionPadding.top, sectionPadding.bottom);
   });
 
   testWidgets('SceneDetailsPage reveals hidden technical metadata', (
@@ -251,6 +249,32 @@ void main() {
       tester.widget<Card>(header).color,
       tester.widget<Card>(details).color,
     );
+  });
+
+  testWidgets('SceneDetailsPage refresh action is desktop-only', (
+    tester,
+  ) async {
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+    Future<void> pump({required bool isDesktop}) => pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+        desktopCapabilitiesProvider.overrideWithValue(isDesktop),
+      ],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+
+    await pump(isDesktop: true);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.tap(find.byKey(const Key('scene_action_refresh')));
+    await tester.pump();
+    expect(mockRepo.getSceneByIdRefreshValues, contains(true));
+
+    await pump(isDesktop: false);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byKey(const Key('scene_action_refresh')), findsNothing);
   });
 
   testWidgets(

@@ -13,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -882,6 +883,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildActions(BuildContext context, Scene scene) {
+    final isDesktop = ref.watch(desktopCapabilitiesProvider);
     final ratingControls = Wrap(
       key: const Key('scene_rating_controls'),
       spacing: 8,
@@ -893,6 +895,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           children: [
             for (var i = 1; i <= 5; i++)
               IconButton(
+                visualDensity: isDesktop ? VisualDensity.compact : null,
                 tooltip: context.l10n.scene_rating_stars(i),
                 onPressed: () async {
                   final currentRating = scene.rating100 ?? 0;
@@ -978,8 +981,20 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       spacing: 4,
       runSpacing: 4,
       children: [
+        if (isDesktop)
+          IconButton(
+            key: const Key('scene_action_refresh'),
+            visualDensity: VisualDensity.compact,
+            tooltip: context.l10n.common_refresh,
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () async {
+              await ref.read(sceneDetailsProvider(scene.id).notifier).refresh();
+              _invalidateSceneListUnlessRandom();
+            },
+          ),
         IconButton(
           key: const Key('scene_action_add_marker'),
+          visualDensity: isDesktop ? VisualDensity.compact : null,
           tooltip: context.l10n.scene_details_add_marker,
           icon: const Icon(Icons.bookmark_add_outlined),
           onPressed: () => _showAddMarkerDialog(
@@ -989,6 +1004,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         ),
         IconButton(
           key: const Key('scene_action_info'),
+          visualDensity: isDesktop ? VisualDensity.compact : null,
           tooltip: context.l10n.common_more,
           icon: const Icon(Icons.info_outline_rounded),
           onPressed: () => _showSceneDetailsSheet(scene),
@@ -996,12 +1012,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         if (!kIsWeb)
           IconButton(
             key: const Key('scene_action_download'),
+            visualDensity: isDesktop ? VisualDensity.compact : null,
             tooltip: context.l10n.common_download,
             icon: const Icon(Icons.download_outlined),
             onPressed: () => _saveVideoToGallery(scene),
           ),
         IconButton(
           key: const Key('scene_action_edit'),
+          visualDensity: isDesktop ? VisualDensity.compact : null,
           tooltip: context.l10n.common_edit,
           icon: const Icon(Icons.edit_outlined),
           onPressed: () =>
@@ -1009,6 +1027,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         ),
         IconButton(
           key: const Key('scene_action_delete'),
+          visualDensity: isDesktop ? VisualDensity.compact : null,
           tooltip: context.l10n.delete_scene,
           icon: const Icon(Icons.delete_outline),
           onPressed: () => _showDeleteSceneDialog(scene),

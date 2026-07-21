@@ -325,6 +325,13 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     onPressed: widget.onFilterPressed,
                     tooltip: context.l10n.common_filter,
                   ),
+                if (isDesktop && widget.onRefresh != null)
+                  IconButton(
+                    key: const Key('list_page_refresh'),
+                    icon: const Icon(Icons.refresh_rounded),
+                    onPressed: widget.onRefresh,
+                    tooltip: context.l10n.common_refresh,
+                  ),
                 SearchAnchor(
                   searchController: _searchController,
                   viewOnClose: () {

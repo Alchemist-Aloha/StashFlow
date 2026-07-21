@@ -7,6 +7,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
+import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../../../helpers/test_helpers.dart';
@@ -151,6 +152,33 @@ void main() {
         tester.widget<ListView>(find.byType(ListView)).physics,
         isA<AlwaysScrollableScrollPhysics>(),
       );
+    });
+
+    testWidgets('shows refresh action only on desktop and invokes it', (
+      WidgetTester tester,
+    ) async {
+      var refreshCount = 0;
+
+      Future<void> pump({required bool isDesktop}) => pumpTestWidget(
+        tester,
+        overrides: [desktopCapabilitiesProvider.overrideWithValue(isDesktop)],
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.data(['Item 1']),
+          onRefresh: () async => refreshCount++,
+          itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
+        ),
+      );
+
+      await pump(isDesktop: true);
+      await tester.tap(find.byKey(const Key('list_page_refresh')));
+      await tester.pump();
+      expect(refreshCount, 1);
+
+      await pump(isDesktop: false);
+      expect(find.byKey(const Key('list_page_refresh')), findsNothing);
     });
 
     testWidgets('shows grid view when gridDelegate is provided', (
