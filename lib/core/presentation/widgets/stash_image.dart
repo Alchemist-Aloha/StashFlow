@@ -167,7 +167,7 @@ class StashImage extends ConsumerWidget {
     );
   }
 
-  static final Set<String> _prefetched = <String>{};
+  static final Set<String> _prefetching = <String>{};
   static const int defaultPrefetchDistance = 40;
   static const int _maxConcurrentPrefetch = 10;
   static int _ongoingPrefetches = 0;
@@ -186,19 +186,18 @@ class StashImage extends ConsumerWidget {
     }
 
     final dedupeKey = '$imageUrl|w${memCacheWidth ?? 0}h${memCacheHeight ?? 0}';
-    if (_prefetched.contains(dedupeKey)) return;
+    if (!_prefetching.add(dedupeKey)) return;
 
-    // Optimistically mark as prefetched to prevent concurrent attempts
-    // from queuing up while we wait on the throttle limit or IO
-    _prefetched.add(dedupeKey);
-
-    // Throttle concurrent prefetches to avoid saturating network / IO.
-    while (_ongoingPrefetches >= _maxConcurrentPrefetch) {
-      await Future.delayed(const Duration(milliseconds: 50));
-    }
-    if (!context.mounted) return;
-    _ongoingPrefetches++;
+    var acquiredSlot = false;
     try {
+      // Throttle concurrent prefetches to avoid saturating network / IO.
+      while (_ongoingPrefetches >= _maxConcurrentPrefetch) {
+        await Future.delayed(const Duration(milliseconds: 50));
+      }
+      if (!context.mounted) return;
+      _ongoingPrefetches++;
+      acquiredSlot = true;
+
       final baseProvider = CachedNetworkImageProvider(
         imageUrl,
         headers: headers,
@@ -218,10 +217,10 @@ class StashImage extends ConsumerWidget {
 
       await precacheImage(provider, context);
     } catch (_) {
-      // If it failed to prefetch, allow future attempts to try again
-      _prefetched.remove(dedupeKey);
+      // A visible image load can retry through the normal widget path.
     } finally {
-      _ongoingPrefetches--;
+      if (acquiredSlot) _ongoingPrefetches--;
+      _prefetching.remove(dedupeKey);
     }
   }
 
