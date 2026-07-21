@@ -5,7 +5,7 @@ import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/gallery.dart';
 import 'gallery_card.dart';
 
-class GalleryStrip extends ConsumerWidget {
+class GalleryStrip extends ConsumerStatefulWidget {
   const GalleryStrip({
     super.key,
     required this.galleries,
@@ -18,7 +18,23 @@ class GalleryStrip extends ConsumerWidget {
   final void Function(Gallery)? onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GalleryStrip> createState() => _GalleryStripState();
+}
+
+class _GalleryStripState extends ConsumerState<GalleryStrip> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final galleries = widget.galleries;
+    final itemWidth = widget.itemWidth;
+    final onTap = widget.onTap;
     final effectiveItemWidth = itemWidth * context.dimensions.fontSizeFactor;
 
     if (galleries.isEmpty) {
@@ -96,7 +112,11 @@ class GalleryStrip extends ConsumerWidget {
           return false;
         },
         child: Scrollbar(
+          controller: _scrollController,
+          interactive: true,
+          thumbVisibility: true,
           child: ListView.builder(
+            controller: _scrollController,
             padding: EdgeInsets.symmetric(
               horizontal: context.dimensions.spacingMedium,
             ),

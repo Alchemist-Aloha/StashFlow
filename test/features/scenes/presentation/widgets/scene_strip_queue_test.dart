@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +36,53 @@ Scene _scene(String id, String title) {
 }
 
 void main() {
+  testWidgets('SceneStrip scrollbar thumb supports mouse dragging', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'server_base_url': 'http://localhost:9999',
+    });
+    final prefs = await SharedPreferences.getInstance();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        child: MaterialApp(
+          theme: ThemeData(
+            scrollbarTheme: const ScrollbarThemeData(
+              thickness: WidgetStatePropertyAll(12),
+            ),
+          ),
+          home: Scaffold(
+            body: SceneStrip(
+              scenes: List.generate(
+                12,
+                (index) => _scene('scene-$index', 'Scene $index'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final scrollbar = tester.widget<Scrollbar>(find.byType(Scrollbar));
+    final listView = tester.widget<ListView>(find.byType(ListView));
+    expect(scrollbar.controller, same(listView.controller));
+    expect(scrollbar.interactive, isTrue);
+
+    final bounds = tester.getRect(find.byType(Scrollbar));
+    final gesture = await tester.startGesture(
+      Offset(bounds.left + 20, bounds.bottom - 6),
+      kind: PointerDeviceKind.mouse,
+    );
+    await gesture.moveBy(const Offset(200, 0));
+    await gesture.up();
+    await tester.pumpAndSettle();
+
+    expect(listView.controller!.offset, greaterThan(0));
+  });
+
   testWidgets(
     'SceneStrip activates a contextual queue for its displayed list',
     (tester) async {

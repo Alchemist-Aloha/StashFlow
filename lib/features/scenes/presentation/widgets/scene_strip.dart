@@ -6,7 +6,7 @@ import '../../domain/entities/scene.dart';
 import '../providers/playback_queue_provider.dart';
 import 'scene_card.dart';
 
-class SceneStrip extends ConsumerWidget {
+class SceneStrip extends ConsumerStatefulWidget {
   const SceneStrip({
     super.key,
     required this.scenes,
@@ -21,7 +21,24 @@ class SceneStrip extends ConsumerWidget {
   final void Function(Scene)? onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SceneStrip> createState() => _SceneStripState();
+}
+
+class _SceneStripState extends ConsumerState<SceneStrip> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scenes = widget.scenes;
+    final itemWidth = widget.itemWidth;
+    final queueId = widget.queueId;
+    final onTap = widget.onTap;
     final effectiveItemWidth = itemWidth * context.dimensions.fontSizeFactor;
 
     if (scenes.isEmpty) {
@@ -96,7 +113,11 @@ class SceneStrip extends ConsumerWidget {
           return false;
         },
         child: Scrollbar(
+          controller: _scrollController,
+          interactive: true,
+          thumbVisibility: true,
           child: ListView.builder(
+            controller: _scrollController,
             padding: EdgeInsets.symmetric(
               horizontal: context.dimensions.spacingMedium,
             ),
