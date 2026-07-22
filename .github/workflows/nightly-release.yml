@@ -6,6 +6,9 @@ on:
       - dev
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   release:
     uses: ./.github/workflows/reusable-release.yml
