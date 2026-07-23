@@ -1209,12 +1209,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final imageUrl = marker.screenshot?.isNotEmpty == true
         ? marker.screenshot
         : marker.preview;
-    final tagName = marker.primaryTagName?.trim().isNotEmpty == true
-        ? marker.primaryTagName!.trim()
-        : marker.tagNames.firstWhere(
-            (name) => name.trim().isNotEmpty,
-            orElse: () => '',
-          );
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1255,19 +1249,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   color: context.colors.onSurfaceVariant,
                 ),
               ),
-              if (tagName.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Chip(
-                    label: Text(tagName),
-                    visualDensity: VisualDensity.compact,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    side: BorderSide.none,
-                    backgroundColor: context.colors.surfaceVariant,
-                  ),
-                ),
-              ],
             ],
           ),
         ),

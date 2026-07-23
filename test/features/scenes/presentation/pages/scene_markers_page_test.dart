@@ -26,7 +26,8 @@ void main() {
     expect(find.text('Opening beat'), findsOneWidget);
     expect(find.text('01:05 - 01:35'), findsOneWidget);
     expect(find.text('Test Scene'), findsOneWidget);
-    expect(find.text('Intro'), findsOneWidget);
+    expect(find.text('Intro'), findsNothing);
+    expect(find.byTooltip('Performer'), findsOneWidget);
   });
 
   testWidgets('sort sheet forwards marker sort to repository', (tester) async {
@@ -120,6 +121,7 @@ void main() {
       tester.widget<SceneMarkerCard>(find.byType(SceneMarkerCard)).isGrid,
       isFalse,
     );
+    expect(find.byTooltip('Performer'), findsOneWidget);
   });
 }
 
@@ -157,6 +159,8 @@ SceneMarkerSummary _marker({
     sceneId: 'scene-1',
     sceneTitle: 'Test Scene',
     performerNames: const ['Performer'],
+    performerIds: const ['performer-1'],
+    performerImagePaths: const [null],
   );
 }
 

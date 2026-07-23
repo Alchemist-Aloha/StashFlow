@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene_marker.dart';
+import 'scene_card.dart';
 
 class SceneMarkerCard extends StatelessWidget {
   const SceneMarkerCard({
     required this.marker,
     required this.isGrid,
+    this.memCacheWidth,
+    this.memCacheHeight,
     super.key,
   });
 
   final SceneMarkerSummary marker;
   final bool isGrid;
+  final int? memCacheWidth;
+  final int? memCacheHeight;
 
   String _formatDuration(double seconds) {
     final duration = Duration(seconds: seconds.toInt());
@@ -45,14 +53,14 @@ class SceneMarkerCard extends StatelessWidget {
     final imageUrl = marker.screenshot?.isNotEmpty == true
         ? marker.screenshot
         : marker.preview;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
-      margin: isGrid
-          ? EdgeInsets.zero
-          : const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingMedium,
-              vertical: AppTheme.spacingSmall,
-            ),
+      margin: isGrid ? EdgeInsets.zero : GridUtils.defaultPadding(context),
+      color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _openMarker(context),
@@ -60,27 +68,37 @@ class SceneMarkerCard extends StatelessWidget {
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _MarkerImage(imageUrl: imageUrl),
+                  _MarkerImage(
+                    imageUrl: imageUrl,
+                    range: _formatRange(),
+                    memCacheWidth: memCacheWidth,
+                    memCacheHeight: memCacheHeight,
+                  ),
                   Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingSmall),
-                    child: _MarkerDetails(
-                      marker: marker,
-                      range: _formatRange(),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.dimensions.spacingSmall,
+                      vertical: context.dimensions.spacingSmall / 2,
                     ),
+                    child: _MarkerDetails(marker: marker),
                   ),
                 ],
               )
             : Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(width: 150, child: _MarkerImage(imageUrl: imageUrl)),
+                  SizedBox(
+                    width: context.dimensions.spacingLarge * 6.25,
+                    child: _MarkerImage(
+                      imageUrl: imageUrl,
+                      range: _formatRange(),
+                      memCacheWidth: memCacheWidth,
+                      memCacheHeight: memCacheHeight,
+                    ),
+                  ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                      child: _MarkerDetails(
-                        marker: marker,
-                        range: _formatRange(),
-                      ),
+                      padding: EdgeInsets.all(context.dimensions.spacingMedium),
+                      child: _MarkerDetails(marker: marker),
                     ),
                   ),
                 ],
@@ -91,38 +109,77 @@ class SceneMarkerCard extends StatelessWidget {
 }
 
 class _MarkerImage extends StatelessWidget {
-  const _MarkerImage({required this.imageUrl});
+  const _MarkerImage({
+    required this.imageUrl,
+    required this.range,
+    this.memCacheWidth,
+    this.memCacheHeight,
+  });
 
   final String? imageUrl;
+  final String range;
+  final int? memCacheWidth;
+  final int? memCacheHeight;
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 16 / 9,
-      child: imageUrl?.isNotEmpty == true
-          ? StashImage(imageUrl: imageUrl, fit: BoxFit.cover)
-          : ColoredBox(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (imageUrl?.isNotEmpty == true)
+            StashImage(
+              imageUrl: imageUrl,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              memCacheWidth: memCacheWidth,
+              memCacheHeight: memCacheHeight,
+            )
+          else
+            ColoredBox(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               child: Icon(
-                Icons.bookmark_outline,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                Icons.bookmark_outline_rounded,
+                color: context.colors.onSurfaceVariant,
+                size: context.dimensions.spacingLarge,
               ),
             ),
+          Positioned(
+            right: context.dimensions.spacingSmall,
+            bottom: context.dimensions.spacingSmall,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingSmall,
+                vertical: context.dimensions.spacingSmall / 2,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.72),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+              ),
+              child: Text(
+                range,
+                style: context.textTheme.labelSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _MarkerDetails extends StatelessWidget {
-  const _MarkerDetails({required this.marker, required this.range});
+class _MarkerDetails extends ConsumerWidget {
+  const _MarkerDetails({required this.marker});
 
   final SceneMarkerSummary marker;
-  final String range;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final primaryTag = marker.primaryTagName?.trim();
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -131,31 +188,28 @@ class _MarkerDetails extends StatelessWidget {
           marker.title,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+          style: context.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: context.dimensions.cardTitleFontSize,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          range,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.primary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 4),
+        SizedBox(height: context.dimensions.spacingSmall / 4),
         Text(
           marker.sceneTitle,
-          maxLines: 2,
+          maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.bodyMedium,
+          style: context.textTheme.labelSmall?.copyWith(
+            color: context.colors.primary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        if (primaryTag != null && primaryTag.isNotEmpty) ...[
-          const SizedBox(height: 6),
-          Chip(
-            label: Text(primaryTag),
-            visualDensity: VisualDensity.compact,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        if (ref.watch(showPerformerAvatarsProvider) &&
+            marker.performerNames.isNotEmpty) ...[
+          SizedBox(height: context.dimensions.spacingSmall / 2),
+          ScenePerformerAvatarRow(
+            performerImagePaths: marker.performerImagePaths,
+            performerNames: marker.performerNames,
+            performerIds: marker.performerIds,
           ),
         ],
       ],

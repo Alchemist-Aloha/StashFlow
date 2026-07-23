@@ -14,6 +14,8 @@ class SceneMarkerSummary {
     required this.sceneId,
     required this.sceneTitle,
     required this.performerNames,
+    this.performerIds = const [],
+    this.performerImagePaths = const [],
   });
 
   final String id;
@@ -28,6 +30,8 @@ class SceneMarkerSummary {
   final String sceneId;
   final String sceneTitle;
   final List<String> performerNames;
+  final List<String> performerIds;
+  final List<String?> performerImagePaths;
 }
 
 class SceneMarkerFilter {

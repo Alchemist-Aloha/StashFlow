@@ -226,7 +226,12 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
         ),
       ],
       itemBuilder: (context, marker, memCacheWidth, memCacheHeight) {
-        return SceneMarkerCard(marker: marker, isGrid: isGridLayout);
+        return SceneMarkerCard(
+          marker: marker,
+          isGrid: isGridLayout,
+          memCacheWidth: memCacheWidth,
+          memCacheHeight: memCacheHeight,
+        );
       },
     );
   }

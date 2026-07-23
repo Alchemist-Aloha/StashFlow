@@ -59,6 +59,7 @@ class GraphQLSceneMarkerRepository {
                   performers {
                     id
                     name
+                    image_path
                   }
                 }
               }
@@ -153,6 +154,18 @@ class GraphQLSceneMarkerRepository {
       performerNames: performers
           .map((performer) => performer['name'] as String?)
           .whereType<String>()
+          .toList(growable: false),
+      performerIds: performers
+          .map((performer) => performer['id'] as String?)
+          .whereType<String>()
+          .toList(growable: false),
+      performerImagePaths: performers
+          .map(
+            (performer) => resolveGraphqlMediaUrl(
+              rawUrl: performer['image_path'] as String?,
+              graphqlEndpoint: _graphqlEndpoint,
+            ),
+          )
           .toList(growable: false),
     );
   }
