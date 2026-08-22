@@ -1,0 +1,4 @@
+💡 What: Replaced the raw `Checkbox` and `Text` wrapped in a `Row` with a native `CheckboxListTile` in the scraper query dialog.
+🎯 Why: Increases the touch target size to the entire row, making it much easier for mobile users to toggle the setting.
+📸 Before/After: Visual appearance is similar but the entire row is now tappable.
+♿ Accessibility: Natively associates the text label with the checkbox, improving the experience for screen reader users.
