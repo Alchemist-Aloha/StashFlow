@@ -9,6 +9,11 @@
 
 - Made session restore more robust: a network hiccup while refreshing an existing session during startup now falls back cleanly to signed-out instead of interrupting the restore partway.
 
+## 🎬 Linux Playback
+
+- Connected video playback to Linux system media controls, including scene details, artwork, playback position, and play, pause, seek, previous, and next actions.
+- Fixed a freeze that could occur after returning from a playing scene to the scene list and then opening another scene.
+
 ## 🔧 Maintenance
 
 - Removed unused experimental developer options for web and proxy-based authentication.
