@@ -26,6 +26,7 @@ dependencies:
   media_kit_video: ^2.0.1
   media_kit_libs_video: ^1.0.7
   audio_service: ^0.18.19
+  audio_service_mpris: ^0.2.1
   wakelock_plus: ^1.6.1
   shared_preferences: ^2.5.5
   path_provider: ^2.1.6
