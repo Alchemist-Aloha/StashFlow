@@ -1588,6 +1588,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         player ??
         _sessionController.player ??
         (ref.mounted ? state.player : null);
+
     await _activityTracker.stop(
       sceneId: effectiveSceneId,
       resumePositionProvider: () =>
@@ -1597,6 +1598,24 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     await _sessionController.disposeSession(
       isTestMode: isTestMode,
       fallbackPlayer: player ?? (ref.mounted ? state.player : null),
+      beforePlayerDispose: () async {
+        // A live video surface (notably the Linux mini-player texture) must be
+        // removed from the widget tree before its native media_kit player is
+        // disposed. Keeping the controller published while awaiting dispose
+        // can deadlock texture teardown and freeze the next details route.
+        if (!ref.mounted || state.player != effectivePlayer) return;
+        state = state.copyWith(
+          clearActive: true,
+          isPlaying: false,
+          isBuffering: false,
+        );
+        if (!isTestMode) {
+          await WidgetsBinding.instance.endOfFrame.timeout(
+            const Duration(milliseconds: 250),
+            onTimeout: () {},
+          );
+        }
+      },
       log: (message) {
         AppLogStore.instance.add(message, source: 'player_provider');
       },

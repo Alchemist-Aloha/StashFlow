@@ -75,9 +75,12 @@ class PlaybackSessionController {
     );
   }
 
+  /// Releases the current playback session after [beforePlayerDispose] has
+  /// detached any widgets that still render its video controller.
   Future<void> disposeSession({
     required bool isTestMode,
     Player? fallbackPlayer,
+    Future<void> Function()? beforePlayerDispose,
     required void Function(String message) log,
   }) async {
     await _cancelSubscriptions();
@@ -92,6 +95,7 @@ class PlaybackSessionController {
     }
 
     if (prevPlayer != null) {
+      await beforePlayerDispose?.call();
       if (_isUsingBorrowedController) {
         await prevPlayer.pause();
         log('provider paused borrowed controller instead of disposing it');

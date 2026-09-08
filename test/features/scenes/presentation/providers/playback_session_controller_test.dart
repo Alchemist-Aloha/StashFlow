@@ -151,6 +151,28 @@ void main() {
       expect(ticks, 1);
     });
 
+    test('disposeSession detaches the video surface before disposal', () async {
+      final events = <String>[];
+      final sessionController = PlaybackSessionController(
+        createPlayer: () => player1,
+        createVideoController: (_) => controller1,
+      );
+      sessionController.createOwnedSession();
+      when(player1.dispose()).thenAnswer((_) async {
+        events.add('dispose');
+      });
+
+      await sessionController.disposeSession(
+        isTestMode: false,
+        beforePlayerDispose: () async {
+          events.add('detach');
+        },
+        log: (_) {},
+      );
+
+      expect(events, ['detach', 'dispose']);
+    });
+
     test('disposeSession pauses borrowed controller', () async {
       final sessionController = PlaybackSessionController(
         createPlayer: () => player1,
