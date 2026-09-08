@@ -17,4 +17,5 @@
 ## 🔧 Maintenance
 
 - Removed unused experimental developer options for web and proxy-based authentication.
+- Updated core Flutter dependencies and Android build compatibility, including support for Android API 37.
 - Simplified internal playback, fullscreen, queue, and cache handling without changing app behavior.
