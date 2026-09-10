@@ -373,7 +373,14 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     // This is called here instead of main() to improve initial app startup performance.
     MediaKit.ensureInitialized();
     WidgetsBinding.instance.addObserver(this);
-    _sessionController = PlaybackSessionController();
+    _sessionController = PlaybackSessionController(
+      createVideoController: (player) => VideoController(
+        player,
+        configuration: PlayerSettingsStore(
+          ref.read(sharedPreferencesProvider),
+        ).loadVideoConfiguration(),
+      ),
+    );
 
     _activityTracker = PlaybackActivityTracker(
       now: DateTime.now,

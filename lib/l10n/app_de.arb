@@ -1183,5 +1183,20 @@
   "filter_field": "Feld",
   "filter_values": "Werte (kommagetrennt)",
   "filter_folder": "Ordner",
-  "filter_photographer": "Fotograf"
+  "filter_photographer": "Fotograf",
+  "settings_playback_mpv_title": "Videodekodierung und Ausgabe",
+  "settings_playback_mpv_subtitle": "Gilt für neu erstellte Player. Starte die App neu, um aktive Videos und vorgeladene Feed-Player zu aktualisieren.",
+  "settings_playback_mpv_vo": "Videoausgabe (vo)",
+  "settings_playback_mpv_hwdec": "Hardwaredekodierung (hwdec)",
+  "settings_playback_mpv_default": "Plattformstandard",
+  "settings_playback_mpv_software": "Softwaredekodierung (no)",
+  "settings_playback_mpv_auto": "Automatisch (auto)",
+  "settings_playback_mpv_auto_safe": "Automatisch, sichere Modi (auto-safe)",
+  "settings_playback_mpv_auto_copy": "Automatisch, Rückkopieren (auto-copy)",
+  "settings_playback_mpv_gpu": "GPU-Ausgabe (gpu)",
+  "settings_playback_mpv_libmpv": "Eingebettete Ausgabe (libmpv)",
+  "settings_playback_mpv_embed": "Direkte Android-Ausgabe (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Android-Hardwaredecoder (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Android-Hardwaredecoder mit Rückkopieren (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "Die direkte Android-Ausgabe wählt mediacodec und unterstützt keine von mpv gerenderten Untertitel oder Videofilter. Ein anderer Decoder stellt die Standardausgabe wieder her."
 }

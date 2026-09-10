@@ -10,9 +10,11 @@ import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene.dart';
+import '../providers/player_settings.dart';
 import 'scene_cover_fullscreen_viewer.dart';
 
 typedef SceneInfoMediaBuilder =
@@ -251,7 +253,12 @@ class _SceneInfoPreviewPlayerState
 
   Future<void> _initialize() async {
     final player = Player();
-    final controller = VideoController(player);
+    final controller = VideoController(
+      player,
+      configuration: PlayerSettingsStore(
+        ref.read(sharedPreferencesProvider),
+      ).loadVideoConfiguration(),
+    );
     _player = player;
     _controller = controller;
 

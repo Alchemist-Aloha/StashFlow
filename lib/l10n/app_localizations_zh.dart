@@ -3271,6 +3271,54 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get filter_photographer => '摄影师';
+
+  @override
+  String get settings_playback_mpv_title => '视频解码与输出';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      '应用于新建的播放器。请重启应用，以更新正在播放的视频和已预加载的信息流播放器。';
+
+  @override
+  String get settings_playback_mpv_vo => '视频输出 (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec => '硬件解码 (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => '平台默认';
+
+  @override
+  String get settings_playback_mpv_software => '软件解码 (no)';
+
+  @override
+  String get settings_playback_mpv_auto => '自动 (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe => '自动选择安全模式 (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy => '自动回拷 (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'GPU 输出 (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => '嵌入式输出 (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed => 'Android 直接输出 (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec => 'Android 硬件解码器 (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Android 硬件解码器，回拷模式 (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'Android 直接输出会选择 mediacodec 解码，不支持 mpv 渲染的字幕或视频滤镜。选择其他解码器将恢复默认输出。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6540,6 +6588,54 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get filter_photographer => '摄影师';
+
+  @override
+  String get settings_playback_mpv_title => '视频解码与输出';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      '应用于新建的播放器。请重启应用，以更新正在播放的视频和已预加载的信息流播放器。';
+
+  @override
+  String get settings_playback_mpv_vo => '视频输出 (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec => '硬件解码 (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => '平台默认';
+
+  @override
+  String get settings_playback_mpv_software => '软件解码 (no)';
+
+  @override
+  String get settings_playback_mpv_auto => '自动 (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe => '自动选择安全模式 (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy => '自动回拷 (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'GPU 输出 (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => '嵌入式输出 (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed => 'Android 直接输出 (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec => 'Android 硬件解码器 (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Android 硬件解码器，回拷模式 (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'Android 直接输出会选择 mediacodec 解码，不支持 mpv 渲染的字幕或视频滤镜。选择其他解码器将恢复默认输出。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9817,4 +9913,52 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get filter_photographer => '攝影師';
+
+  @override
+  String get settings_playback_mpv_title => '影片解碼與輸出';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      '套用至新建立的播放器。請重新啟動應用程式，以更新播放中的影片和已預載的動態牆播放器。';
+
+  @override
+  String get settings_playback_mpv_vo => '影片輸出 (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec => '硬體解碼 (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => '平台預設';
+
+  @override
+  String get settings_playback_mpv_software => '軟體解碼 (no)';
+
+  @override
+  String get settings_playback_mpv_auto => '自動 (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe => '自動選擇安全模式 (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy => '自動回拷 (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'GPU 輸出 (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => '嵌入式輸出 (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed => 'Android 直接輸出 (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec => 'Android 硬體解碼器 (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Android 硬體解碼器，回拷模式 (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'Android 直接輸出會選擇 mediacodec 解碼，不支援 mpv 繪製的字幕或影片濾鏡。選擇其他解碼器將恢復預設輸出。';
 }

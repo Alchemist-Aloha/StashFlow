@@ -12,6 +12,8 @@ void main() {
       'show_random_navigation': true,
       'auto_hide_top_app_bar': true,
       'video_enter_fullscreen_on_navigation': true,
+      'video_mpv_vo': 'gpu',
+      'video_mpv_hwdec': 'no',
       'max_image_cache_size_mb': 500,
       'app_global_scale_factor': 1.2,
       'scene_sort_field': 'rating',
@@ -28,6 +30,8 @@ void main() {
       'show_random_navigation': true,
       'auto_hide_top_app_bar': true,
       'video_enter_fullscreen_on_navigation': true,
+      'video_mpv_vo': 'gpu',
+      'video_mpv_hwdec': 'no',
       'max_image_cache_size_mb': 500,
       'app_global_scale_factor': 1.2,
       'scene_sort_field': 'rating',
@@ -43,6 +47,9 @@ void main() {
     for (final invalid in <Map<String, Object>>[
       {'app_theme_mode': 1},
       {'app_theme_mode': 'neon'},
+      {'video_mpv_vo': 'gpu-next'},
+      {'video_mpv_hwdec': 'invalid'},
+      {'video_mpv_hwdec': false},
       {'subtitle_position_bottom_ratio': 2.0},
       {'scene_filter_state': 'not-json'},
       {'image_organized_only_v2': 'sometimes'},
@@ -63,12 +70,16 @@ void main() {
       SharedPreferences.setMockInitialValues({
         'app_theme_mode': 'dark',
         'show_random_navigation': false,
+        'video_mpv_vo': 'gpu',
+        'video_mpv_hwdec': 'no',
         'search_history_scenes': ['keep'],
       });
       final prefs = await SharedPreferences.getInstance();
       await registry.replace(prefs, {'app_theme_mode': 'light'});
       expect(prefs.getString('app_theme_mode'), 'light');
       expect(prefs.containsKey('show_random_navigation'), isFalse);
+      expect(prefs.containsKey('video_mpv_vo'), isFalse);
+      expect(prefs.containsKey('video_mpv_hwdec'), isFalse);
       expect(prefs.getStringList('search_history_scenes'), ['keep']);
     },
   );
@@ -86,6 +97,8 @@ void main() {
         'navigation_tabs_config',
         'desktop_keybinds',
         'video_play_end_behavior',
+        'video_mpv_vo',
+        'video_mpv_hwdec',
         'video_enter_fullscreen_on_navigation',
         'app_lock_enabled',
         'scene_grid_columns_v2',

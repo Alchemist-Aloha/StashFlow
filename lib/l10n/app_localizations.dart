@@ -6095,6 +6095,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Photographer'**
   String get filter_photographer;
+
+  /// No description provided for @settings_playback_mpv_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Video decoding and output'**
+  String get settings_playback_mpv_title;
+
+  /// No description provided for @settings_playback_mpv_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to newly created players. Restart the app to update active videos and preloaded feed players.'**
+  String get settings_playback_mpv_subtitle;
+
+  /// No description provided for @settings_playback_mpv_vo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video output (vo)'**
+  String get settings_playback_mpv_vo;
+
+  /// No description provided for @settings_playback_mpv_hwdec.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware decoding (hwdec)'**
+  String get settings_playback_mpv_hwdec;
+
+  /// No description provided for @settings_playback_mpv_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform default'**
+  String get settings_playback_mpv_default;
+
+  /// No description provided for @settings_playback_mpv_software.
+  ///
+  /// In en, this message translates to:
+  /// **'Software decoding (no)'**
+  String get settings_playback_mpv_software;
+
+  /// No description provided for @settings_playback_mpv_auto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic (auto)'**
+  String get settings_playback_mpv_auto;
+
+  /// No description provided for @settings_playback_mpv_auto_safe.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic, safe modes (auto-safe)'**
+  String get settings_playback_mpv_auto_safe;
+
+  /// No description provided for @settings_playback_mpv_auto_copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic, copy-back (auto-copy)'**
+  String get settings_playback_mpv_auto_copy;
+
+  /// No description provided for @settings_playback_mpv_gpu.
+  ///
+  /// In en, this message translates to:
+  /// **'GPU output (gpu)'**
+  String get settings_playback_mpv_gpu;
+
+  /// No description provided for @settings_playback_mpv_libmpv.
+  ///
+  /// In en, this message translates to:
+  /// **'Embedded output (libmpv)'**
+  String get settings_playback_mpv_libmpv;
+
+  /// No description provided for @settings_playback_mpv_embed.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Android output (mediacodec_embed)'**
+  String get settings_playback_mpv_embed;
+
+  /// No description provided for @settings_playback_mpv_mediacodec.
+  ///
+  /// In en, this message translates to:
+  /// **'Android hardware decoder (mediacodec)'**
+  String get settings_playback_mpv_mediacodec;
+
+  /// No description provided for @settings_playback_mpv_mediacodec_copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Android hardware decoder, copy-back (mediacodec-copy)'**
+  String get settings_playback_mpv_mediacodec_copy;
+
+  /// No description provided for @settings_playback_mpv_embed_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Android output selects mediacodec decoding and does not support mpv-rendered subtitles or video filters. Choosing another decoder restores the default output.'**
+  String get settings_playback_mpv_embed_help;
 }
 
 class _AppLocalizationsDelegate

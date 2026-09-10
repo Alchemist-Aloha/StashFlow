@@ -1162,5 +1162,20 @@
   "filter_field": "Campo",
   "filter_values": "Valori (separati da virgole)",
   "filter_folder": "Cartella",
-  "filter_photographer": "Fotografo"
+  "filter_photographer": "Fotografo",
+  "settings_playback_mpv_title": "Decodifica e uscita video",
+  "settings_playback_mpv_subtitle": "Si applica ai nuovi lettori. Riavvia l’app per aggiornare i video attivi e i lettori precaricati del feed.",
+  "settings_playback_mpv_vo": "Uscita video (vo)",
+  "settings_playback_mpv_hwdec": "Decodifica hardware (hwdec)",
+  "settings_playback_mpv_default": "Predefinito della piattaforma",
+  "settings_playback_mpv_software": "Decodifica software (no)",
+  "settings_playback_mpv_auto": "Automatico (auto)",
+  "settings_playback_mpv_auto_safe": "Automatico, modalità sicure (auto-safe)",
+  "settings_playback_mpv_auto_copy": "Automatico, copia in RAM (auto-copy)",
+  "settings_playback_mpv_gpu": "Uscita GPU (gpu)",
+  "settings_playback_mpv_libmpv": "Uscita incorporata (libmpv)",
+  "settings_playback_mpv_embed": "Uscita Android diretta (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Decoder hardware Android (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Decoder Android con copia in RAM (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "L’uscita Android diretta seleziona mediacodec e non supporta i sottotitoli renderizzati da mpv o i filtri video. La scelta di un altro decoder ripristina l’uscita predefinita."
 }

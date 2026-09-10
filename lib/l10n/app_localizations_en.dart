@@ -3378,4 +3378,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filter_photographer => 'Photographer';
+
+  @override
+  String get settings_playback_mpv_title => 'Video decoding and output';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      'Applies to newly created players. Restart the app to update active videos and preloaded feed players.';
+
+  @override
+  String get settings_playback_mpv_vo => 'Video output (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec => 'Hardware decoding (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => 'Platform default';
+
+  @override
+  String get settings_playback_mpv_software => 'Software decoding (no)';
+
+  @override
+  String get settings_playback_mpv_auto => 'Automatic (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe =>
+      'Automatic, safe modes (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy =>
+      'Automatic, copy-back (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'GPU output (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => 'Embedded output (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed =>
+      'Direct Android output (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec =>
+      'Android hardware decoder (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Android hardware decoder, copy-back (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'Direct Android output selects mediacodec decoding and does not support mpv-rendered subtitles or video filters. Choosing another decoder restores the default output.';
 }

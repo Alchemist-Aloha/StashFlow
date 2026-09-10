@@ -1162,5 +1162,20 @@
   "filter_field": "Campo",
   "filter_values": "Valores (separados por comas)",
   "filter_folder": "Carpeta",
-  "filter_photographer": "Fotógrafo"
+  "filter_photographer": "Fotógrafo",
+  "settings_playback_mpv_title": "Decodificación y salida de vídeo",
+  "settings_playback_mpv_subtitle": "Se aplica a los reproductores nuevos. Reinicia la aplicación para actualizar los vídeos activos y los reproductores precargados del feed.",
+  "settings_playback_mpv_vo": "Salida de vídeo (vo)",
+  "settings_playback_mpv_hwdec": "Decodificación por hardware (hwdec)",
+  "settings_playback_mpv_default": "Predeterminado de la plataforma",
+  "settings_playback_mpv_software": "Decodificación por software (no)",
+  "settings_playback_mpv_auto": "Automático (auto)",
+  "settings_playback_mpv_auto_safe": "Automático, modos seguros (auto-safe)",
+  "settings_playback_mpv_auto_copy": "Automático, copia a RAM (auto-copy)",
+  "settings_playback_mpv_gpu": "Salida GPU (gpu)",
+  "settings_playback_mpv_libmpv": "Salida integrada (libmpv)",
+  "settings_playback_mpv_embed": "Salida directa de Android (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Decodificador de hardware de Android (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Decodificador de Android con copia a RAM (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "La salida directa de Android selecciona mediacodec y no admite subtítulos renderizados por mpv ni filtros de vídeo. Elegir otro decodificador restaura la salida predeterminada."
 }

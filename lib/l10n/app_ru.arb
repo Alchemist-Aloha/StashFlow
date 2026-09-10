@@ -1162,5 +1162,20 @@
   "filter_field": "Поле",
   "filter_values": "Значения (через запятую)",
   "filter_folder": "Папка",
-  "filter_photographer": "Фотограф"
+  "filter_photographer": "Фотограф",
+  "settings_playback_mpv_title": "Декодирование и вывод видео",
+  "settings_playback_mpv_subtitle": "Применяется к новым плеерам. Перезапустите приложение, чтобы обновить активные видео и предварительно загруженные плееры ленты.",
+  "settings_playback_mpv_vo": "Вывод видео (vo)",
+  "settings_playback_mpv_hwdec": "Аппаратное декодирование (hwdec)",
+  "settings_playback_mpv_default": "По умолчанию для платформы",
+  "settings_playback_mpv_software": "Программное декодирование (no)",
+  "settings_playback_mpv_auto": "Автоматически (auto)",
+  "settings_playback_mpv_auto_safe": "Автоматически, безопасные режимы (auto-safe)",
+  "settings_playback_mpv_auto_copy": "Автоматически, копирование в ОЗУ (auto-copy)",
+  "settings_playback_mpv_gpu": "Вывод через GPU (gpu)",
+  "settings_playback_mpv_libmpv": "Встроенный вывод (libmpv)",
+  "settings_playback_mpv_embed": "Прямой вывод Android (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Аппаратный декодер Android (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Декодер Android с копированием в ОЗУ (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "Прямой вывод Android выбирает декодер mediacodec и не поддерживает отрисовку субтитров mpv и видеофильтры. Выбор другого декодера восстанавливает вывод по умолчанию."
 }

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../features/scenes/presentation/providers/player_settings.dart';
+
 final class AppConfigSettingException implements Exception {
   const AppConfigSettingException(this.key);
 
@@ -136,6 +138,14 @@ final class AppConfigSettingsRegistry {
     _bool('video_enter_fullscreen_on_navigation'),
     _bool('feed_start_random'),
     _bool('video_resume_play_position'),
+    _string(
+      PlayerSettingsStore.mpvVoKey,
+      allowed: PlayerSettingsStore.mpvVoValues,
+    ),
+    _string(
+      PlayerSettingsStore.mpvHwdecKey,
+      allowed: PlayerSettingsStore.mpvHwdecValues,
+    ),
     _bool('show_video_debug_info'),
     _bool('enable_debug_logging'),
     _bool('app_lock_enabled'),

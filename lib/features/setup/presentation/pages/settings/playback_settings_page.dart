@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
@@ -7,6 +8,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/player_
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import '../../widgets/settings_page_shell.dart';
 
+/// Persistent playback preferences, including native mpv output and decoding.
 class PlaybackSettingsPage extends ConsumerStatefulWidget {
   const PlaybackSettingsPage({super.key});
 
@@ -42,6 +44,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _enterFullscreenOnNavigation = false;
   bool _feedStartRandom = false;
   bool _resumePlayPosition = true;
+  String _mpvVo = 'default';
+  String _mpvHwdec = 'default';
 
   @override
   void initState() {
@@ -83,6 +87,11 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         false;
     _feedStartRandom = prefs.getBool(_feedStartRandomKey) ?? false;
     _resumePlayPosition = prefs.getBool(_resumePlayPositionKey) ?? true;
+    final videoConfiguration = PlayerSettingsStore(
+      prefs,
+    ).loadVideoConfiguration();
+    _mpvVo = videoConfiguration.vo ?? 'default';
+    _mpvHwdec = videoConfiguration.hwdec ?? 'default';
 
     setState(() => _loading = false);
   }
@@ -267,9 +276,136 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                     subtitle: context.l10n.settings_playback_seek_subtitle,
                     child: _buildSeekInteractionSelector(),
                   ),
+                  if (!kIsWeb) ...[
+                    SizedBox(height: context.dimensions.spacingLarge),
+                    _buildMpvSettings(),
+                  ],
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildMpvSettings() {
+    final l10n = context.l10n;
+    final labels = {
+      'default': l10n.settings_playback_mpv_default,
+      'no': l10n.settings_playback_mpv_software,
+      'auto': l10n.settings_playback_mpv_auto,
+      'auto-safe': l10n.settings_playback_mpv_auto_safe,
+      'auto-copy': l10n.settings_playback_mpv_auto_copy,
+      'gpu': l10n.settings_playback_mpv_gpu,
+      'libmpv': l10n.settings_playback_mpv_libmpv,
+      'mediacodec_embed': l10n.settings_playback_mpv_embed,
+      'mediacodec': l10n.settings_playback_mpv_mediacodec,
+      'mediacodec-copy': l10n.settings_playback_mpv_mediacodec_copy,
+    };
+    return SettingsSectionCard(
+      title: l10n.settings_playback_mpv_title,
+      subtitle: l10n.settings_playback_mpv_subtitle,
+      child: Column(
+        children: [
+          _buildChoiceSelector(
+            title: l10n.settings_playback_mpv_vo,
+            description: defaultTargetPlatform == TargetPlatform.android
+                ? l10n.settings_playback_mpv_embed_help
+                : null,
+            value: _mpvVo,
+            choices: [
+              for (final value in PlayerSettingsStore.supportedMpvVoValues(
+                defaultTargetPlatform,
+              ))
+                (value, labels[value]!),
+            ],
+            onChanged: (value) => _saveMpvSettings(vo: value),
+          ),
+          Divider(height: context.dimensions.spacingLarge),
+          _buildChoiceSelector(
+            title: l10n.settings_playback_mpv_hwdec,
+            value: _mpvHwdec,
+            choices: [
+              for (final value in PlayerSettingsStore.supportedMpvHwdecValues(
+                defaultTargetPlatform,
+              ))
+                (value, labels[value]!),
+            ],
+            onChanged: (value) => _saveMpvSettings(hwdec: value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _saveMpvSettings({String? vo, String? hwdec}) async {
+    var nextVo = vo ?? _mpvVo;
+    var nextHwdec = hwdec ?? _mpvHwdec;
+    if (vo == 'mediacodec_embed') nextHwdec = 'mediacodec';
+    if (nextVo == 'mediacodec_embed' && nextHwdec != 'mediacodec') {
+      nextVo = 'default';
+    }
+    await PlayerSettingsStore(
+      ref.read(sharedPreferencesProvider),
+    ).saveMpvConfiguration(vo: nextVo, hwdec: nextHwdec);
+    if (!mounted) return;
+    setState(() {
+      _mpvVo = nextVo;
+      _mpvHwdec = nextHwdec;
+    });
+  }
+
+  Widget _buildChoiceSelector<T>({
+    required String title,
+    String? description,
+    required T value,
+    required List<(T, String)> choices,
+    required Future<void> Function(T) onChanged,
+  }) {
+    final label = choices
+        .firstWhere((choice) => choice.$1 == value, orElse: () => choices.first)
+        .$2;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(title),
+      subtitle: Text(description == null ? label : '$label\n$description'),
+      trailing: Icon(
+        Icons.chevron_right,
+        size: 24 * context.dimensions.fontSizeFactor,
+      ),
+      onTap: () async {
+        final selected = await showModalBottomSheet<T>(
+          context: context,
+          isScrollControlled: true,
+          useSafeArea: true,
+          showDragHandle: true,
+          builder: (sheetContext) => SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(sheetContext.dimensions.spacingMedium),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(title, style: sheetContext.textTheme.titleLarge),
+                  if (description != null) Text(description),
+                  SizedBox(height: sheetContext.dimensions.spacingSmall),
+                  for (final choice in choices)
+                    ListTile(
+                      title: Text(choice.$2),
+                      selected: choice.$1 == value,
+                      trailing: choice.$1 == value
+                          ? Icon(
+                              Icons.check,
+                              size: 24 * sheetContext.dimensions.fontSizeFactor,
+                            )
+                          : null,
+                      onTap: () => Navigator.pop(sheetContext, choice.$1),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+        if (selected != null && mounted) await onChanged(selected);
+      },
     );
   }
 
@@ -280,22 +416,15 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       (VideoEndBehavior.next, context.l10n.settings_playback_end_behavior_next),
     ];
 
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(context.l10n.settings_playback_end_behavior),
-      subtitle: Text(context.l10n.settings_playback_end_behavior_subtitle),
-      trailing: DropdownButton<VideoEndBehavior>(
-        value: _playEndBehavior,
-        onChanged: (value) async {
-          if (value != null) {
-            setState(() => _playEndBehavior = value);
-            await _saveToggleSettings();
-          }
-        },
-        items: behaviors
-            .map((b) => DropdownMenuItem(value: b.$1, child: Text(b.$2)))
-            .toList(),
-      ),
+    return _buildChoiceSelector(
+      title: context.l10n.settings_playback_end_behavior,
+      description: context.l10n.settings_playback_end_behavior_subtitle,
+      value: _playEndBehavior,
+      choices: behaviors,
+      onChanged: (value) async {
+        setState(() => _playEndBehavior = value);
+        await _saveToggleSettings();
+      },
     );
   }
 
@@ -313,22 +442,15 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       ('ko', context.l10n.settings_playback_subtitle_lang_korean),
     ];
 
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(context.l10n.settings_playback_subtitle_lang),
-      subtitle: Text(context.l10n.settings_playback_subtitle_lang_subtitle),
-      trailing: DropdownButton<String>(
-        value: _defaultSubtitleLanguage,
-        onChanged: (value) async {
-          if (value != null) {
-            setState(() => _defaultSubtitleLanguage = value);
-            await _saveToggleSettings();
-          }
-        },
-        items: languages
-            .map((l) => DropdownMenuItem(value: l.$1, child: Text(l.$2)))
-            .toList(),
-      ),
+    return _buildChoiceSelector(
+      title: context.l10n.settings_playback_subtitle_lang,
+      description: context.l10n.settings_playback_subtitle_lang_subtitle,
+      value: _defaultSubtitleLanguage,
+      choices: languages,
+      onChanged: (value) async {
+        setState(() => _defaultSubtitleLanguage = value);
+        await _saveToggleSettings();
+      },
     );
   }
 
@@ -339,7 +461,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(context.l10n.settings_playback_subtitle_size),
+            Expanded(child: Text(context.l10n.settings_playback_subtitle_size)),
+            SizedBox(width: context.dimensions.spacingSmall),
             Text(
               '${_subtitleFontSize.round()} px',
               style: context.textTheme.bodyMedium?.copyWith(
@@ -371,13 +494,17 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(context.l10n.settings_playback_subtitle_pos),
-            Text(
-              context.l10n.settings_playback_subtitle_pos_desc(
-                (_subtitlePositionBottomRatio * 100).round().toString(),
-              ),
-              style: context.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+            Expanded(child: Text(context.l10n.settings_playback_subtitle_pos)),
+            SizedBox(width: context.dimensions.spacingSmall),
+            Expanded(
+              child: Text(
+                context.l10n.settings_playback_subtitle_pos_desc(
+                  (_subtitlePositionBottomRatio * 100).round().toString(),
+                ),
+                textAlign: TextAlign.end,
+                style: context.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -405,22 +532,15 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       ('right', context.l10n.settings_playback_subtitle_align_right),
     ];
 
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(context.l10n.settings_playback_subtitle_align),
-      subtitle: Text(context.l10n.settings_playback_subtitle_align_subtitle),
-      trailing: DropdownButton<String>(
-        value: _subtitleTextAlignment,
-        onChanged: (value) async {
-          if (value != null) {
-            setState(() => _subtitleTextAlignment = value);
-            await _saveToggleSettings();
-          }
-        },
-        items: alignments
-            .map((a) => DropdownMenuItem(value: a.$1, child: Text(a.$2)))
-            .toList(),
-      ),
+    return _buildChoiceSelector(
+      title: context.l10n.settings_playback_subtitle_align,
+      description: context.l10n.settings_playback_subtitle_align_subtitle,
+      value: _subtitleTextAlignment,
+      choices: alignments,
+      onChanged: (value) async {
+        setState(() => _subtitleTextAlignment = value);
+        await _saveToggleSettings();
+      },
     );
   }
 

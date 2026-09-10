@@ -1162,5 +1162,20 @@
   "filter_field": "字段",
   "filter_values": "值（以逗号分隔）",
   "filter_folder": "文件夹",
-  "filter_photographer": "摄影师"
+  "filter_photographer": "摄影师",
+  "settings_playback_mpv_title": "视频解码与输出",
+  "settings_playback_mpv_subtitle": "应用于新建的播放器。请重启应用，以更新正在播放的视频和已预加载的信息流播放器。",
+  "settings_playback_mpv_vo": "视频输出 (vo)",
+  "settings_playback_mpv_hwdec": "硬件解码 (hwdec)",
+  "settings_playback_mpv_default": "平台默认",
+  "settings_playback_mpv_software": "软件解码 (no)",
+  "settings_playback_mpv_auto": "自动 (auto)",
+  "settings_playback_mpv_auto_safe": "自动选择安全模式 (auto-safe)",
+  "settings_playback_mpv_auto_copy": "自动回拷 (auto-copy)",
+  "settings_playback_mpv_gpu": "GPU 输出 (gpu)",
+  "settings_playback_mpv_libmpv": "嵌入式输出 (libmpv)",
+  "settings_playback_mpv_embed": "Android 直接输出 (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Android 硬件解码器 (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Android 硬件解码器，回拷模式 (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "Android 直接输出会选择 mediacodec 解码，不支持 mpv 渲染的字幕或视频滤镜。选择其他解码器将恢复默认输出。"
 }

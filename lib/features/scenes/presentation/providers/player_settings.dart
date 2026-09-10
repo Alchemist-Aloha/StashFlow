@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayerSettings {
@@ -15,6 +17,12 @@ class PlayerSettings {
   final bool feedStartRandom;
   final bool resumePlayPosition;
 
+  /// mpv video output override, or `default` for media-kit's platform default.
+  final String mpvVo;
+
+  /// mpv hardware decoder override; `no` explicitly uses software decoding.
+  final String mpvHwdec;
+
   const PlayerSettings({
     this.playEndBehaviorName = 'stop',
     this.showVideoDebugInfo = false,
@@ -29,8 +37,9 @@ class PlayerSettings {
     this.subtitleTextAlignment = 'center',
     this.feedStartRandom = false,
     this.resumePlayPosition = true,
+    this.mpvVo = 'default',
+    this.mpvHwdec = 'default',
   });
-
 }
 
 class PlayerSettingsStore {
@@ -54,6 +63,38 @@ class PlayerSettingsStore {
   static const subtitleTextAlignmentKey = 'subtitle_text_alignment';
   static const feedStartRandomKey = 'feed_start_random';
   static const resumePlayPositionKey = 'video_resume_play_position';
+
+  /// Persisted mpv output choice, also included in config backups.
+  static const mpvVoKey = 'video_mpv_vo';
+
+  /// Persisted mpv decoder choice, also included in config backups.
+  static const mpvHwdecKey = 'video_mpv_hwdec';
+
+  /// Output drivers compatible with media-kit's embedded video surfaces.
+  static const mpvVoValues = {'default', 'gpu', 'mediacodec_embed', 'libmpv'};
+
+  /// Supported decoder choices; platform-specific entries are filtered below.
+  static const mpvHwdecValues = {
+    'default',
+    'no',
+    'auto',
+    'auto-safe',
+    'auto-copy',
+    'mediacodec',
+    'mediacodec-copy',
+  };
+
+  /// Outputs that can render inside the app on [platform].
+  static Set<String> supportedMpvVoValues(TargetPlatform platform) =>
+      platform == TargetPlatform.android
+      ? const {'default', 'gpu', 'mediacodec_embed'}
+      : const {'default', 'libmpv'};
+
+  /// Decoder modes available for selection on [platform].
+  static Set<String> supportedMpvHwdecValues(TargetPlatform platform) =>
+      platform == TargetPlatform.android
+      ? mpvHwdecValues
+      : const {'default', 'no', 'auto', 'auto-safe', 'auto-copy'};
 
   final SharedPreferences prefs;
 
@@ -89,7 +130,51 @@ class PlayerSettingsStore {
           prefs.getString(subtitleTextAlignmentKey) ?? 'center',
       feedStartRandom: prefs.getBool(feedStartRandomKey) ?? false,
       resumePlayPosition: prefs.getBool(resumePlayPositionKey) ?? true,
+      mpvVo: _loadMpvChoice(mpvVoKey, mpvVoValues),
+      mpvHwdec: _loadMpvChoice(mpvHwdecKey, mpvHwdecValues),
     );
+  }
+
+  String _loadMpvChoice(String key, Set<String> allowed) {
+    final value = prefs.get(key);
+    return value is String && allowed.contains(value) ? value : 'default';
+  }
+
+  /// Reads current preferences for each new controller, without caching them.
+  /// Unsupported imported choices fall back to the platform default. Decoder
+  /// choice takes precedence over an incompatible direct MediaCodec output.
+  VideoControllerConfiguration loadVideoConfiguration({
+    TargetPlatform? platform,
+    bool isWeb = kIsWeb,
+  }) {
+    if (isWeb) return const VideoControllerConfiguration();
+    platform ??= defaultTargetPlatform;
+    var vo = _loadMpvChoice(mpvVoKey, supportedMpvVoValues(platform));
+    final hwdec = _loadMpvChoice(
+      mpvHwdecKey,
+      supportedMpvHwdecValues(platform),
+    );
+    if (vo == 'mediacodec_embed' && hwdec != 'mediacodec') {
+      vo = 'default';
+    }
+    return VideoControllerConfiguration(
+      vo: vo == 'default' ? null : vo,
+      hwdec: hwdec == 'default' ? null : hwdec,
+    );
+  }
+
+  /// Saves a compatible output/decoder pair selected by the playback settings.
+  Future<void> saveMpvConfiguration({
+    required String vo,
+    required String hwdec,
+  }) async {
+    if (!mpvVoValues.contains(vo) ||
+        !mpvHwdecValues.contains(hwdec) ||
+        (vo == 'mediacodec_embed' && hwdec != 'mediacodec')) {
+      throw ArgumentError('Invalid mpv output/decoder combination');
+    }
+    await prefs.setString(mpvVoKey, vo);
+    await prefs.setString(mpvHwdecKey, hwdec);
   }
 
   Future<void> savePlayEndBehaviorName(String behaviorName) async {
