@@ -9,23 +9,34 @@ No Stash server? See the [Stash project](https://github.com/stashapp/stash) firs
 
 Before launching StashFlow you need:
 
-- A running **Stash server** (v0.25 or later recommended).
+- A running **Stash server** (keep it up to date for the newest filter and sort features).
 - The server's **base URL** (e.g. `http://192.168.1.100:9999`).
-- An **API key** — generate one in Stash → Settings → Security → API Keys.
+- Credentials for one of the supported **authentication methods**:
+  - **API Key** — generate one in Stash → Settings → Security → API Keys.
+  - **Username + Password** — your Stash login; recommended when available, since it uses a session.
+  - **Basic Auth** — sends an `Authorization: Basic <base64(user:pass)>` header.
+  - **Bearer Token** — sends an `Authorization: Bearer <token>` header.
+
+You can store credentials for multiple servers as profiles and switch between them. See the
+[Settings Reference](Settings-Reference) for details.
 
 ---
 
 ## Android
 
-### Minimum requirements
-- Android 5.0 (API 21) or later.
+### Requirements
+- **Android 7.0 (API 24)** or later.
+- Your phone on the same network as your Stash server if you use a local address.
 
 ### Steps
 
-1. Open the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page and download the latest `StashFlow-*.apk`.
-2. On your device, go to **Settings → Apps → Special app access → Install unknown apps** and allow your browser or file manager.
+1. Open the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page and download the APK that matches your device's CPU:
+   - `StashFlow-<version>-android-arm64-v8a.apk` (most modern phones)
+   - `StashFlow-<version>-android-armeabi-v7a.apk` (older 32-bit devices)
+   - `StashFlow-<version>-android-x86_64.apk` (emulators / x86 devices)
+2. Allow installs from your browser or file manager: **Settings → Apps → Special app access → Install unknown apps**.
 3. Open the downloaded APK and tap **Install**.
-4. Launch **StashFlow** → tap **Settings** (gear icon) → enter your **Server URL** and **API Key** → tap **Save**.
+4. Launch **StashFlow** → **Settings → Server → Add Profile** → enter a profile name, your **Stash URL**, and credentials → **Test Connection** → **Save**. The profile becomes active immediately.
 
 > **Tip:** If your Stash server is on your local network, make sure your phone is connected to the same Wi-Fi network.
 
@@ -33,64 +44,76 @@ Before launching StashFlow you need:
 
 ## Desktop — Windows
 
-1. Download `StashFlow-windows-*.zip` from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
-2. Extract the archive to any folder (e.g. `C:\Program Files\StashFlow`).
-3. Run `stash_app_flutter.exe`.
-4. Open **Settings** → enter your **Server URL** and **API Key** → click **Save**.
+Choose one of the two downloads from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page:
+
+- **`StashFlow-<version>-windows-x64.exe`** — installer. Run it, follow the prompts, then launch **StashFlow** from the Start menu.
+- **`StashFlow-<version>-windows-x64.zip`** — portable build. Extract anywhere and run `StashFlow.exe`.
+
+Then open **Settings → Server → Add Profile**, enter your **Stash URL** and credentials, and click **Save**.
 
 ---
 
 ## Desktop — macOS
 
-1. Download `StashFlow-macos-*.dmg` (or `.zip`) from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
-2. Open the DMG and drag **StashFlow** to your Applications folder.
-3. On first launch, macOS may show a security warning. Go to **System Preferences → Security & Privacy → General** and click **Open Anyway**.
-4. Open **Settings** → enter your **Server URL** and **API Key** → click **Save**.
+1. Download `StashFlow-<version>-macos-<arch>.zip` (Apple Silicon `arm64` or Intel `x86_64`) from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
+2. Unzip and drag **StashFlow.app** to your Applications folder.
+3. On first launch, macOS may show a security warning. Open **System Settings → Privacy & Security → General** and click **Open Anyway**.
+4. Open **Settings → Server → Add Profile**, enter your **Stash URL** and credentials, and click **Save**.
+
+> The macOS build is unsigned, so Gatekeeper will warn on first launch. This is expected.
 
 ---
 
 ## Desktop — Linux
 
-1. Download `StashFlow-linux-*.tar.gz` from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
-2. Extract:
-   ```bash
-   tar -xzf StashFlow-linux-*.tar.gz
-   cd StashFlow
-   ./stash_app_flutter
-   ```
-3. Open **Settings** → enter your **Server URL** and **API Key** → click **Save**.
+Pick the package that matches your distribution from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page:
 
-> **Optional:** Create a `.desktop` file or symlink to launch from your application menu.
+| File | Distribution |
+|------|--------------|
+| `StashFlow-<version>-linux-x64.AppImage` | Any distro — mark executable and run |
+| `StashFlow-<version>-linux-x64.deb` | Debian, Ubuntu, and derivatives |
+| `StashFlow-<version>-linux-x64.pkg.tar.zst` | Arch Linux and derivatives |
+| `StashFlow-<version>-linux-x64.zip` | Portable bundle — extract and run `StashFlow` |
+
+Example for the portable bundle:
+
+```bash
+unzip StashFlow-*-linux-x64.zip -d StashFlow
+cd StashFlow
+./StashFlow
+```
+
+Arch users can install with `sudo pacman -U StashFlow-<version>-linux-x64.pkg.tar.zst`, which installs to `/opt/StashFlow` and adds a `stashflow` launcher.
+
+> **RPM packages** are not published in Releases. Build one locally with `scripts/build_linux_rpm.sh` — see [Building from Source](Building-from-Source).
+
+Then open **Settings → Server → Add Profile**, enter your **Stash URL** and credentials, and click **Save**.
 
 ---
 
 ## Web
 
 1. Visit the [Live Web App](https://alchemist-aloha.github.io/StashFlow/).
-2. Your browser will prompt for server connection details on the first visit.
-3. Enter your **Server URL** and **API Key** and click **Connect**.
+2. Add a server profile on first visit.
+3. Enter your **Stash URL** and **API Key** and connect.
 
-> **CORS note:** Your Stash server must allow requests from the web app origin. In Stash → Settings → Security, add the web app URL to the allowed origins list (or set it to `*` for local use).
+> **Web is a demo.** Browser security rules (CORS) restrict the web build to **API-key authentication
+> only**, and video playback depends on which codecs your browser supports. Use the Android or
+> desktop builds for the full feature set.
+
+> **CORS note:** Your Stash server must allow requests from the web app origin. In Stash →
+> Settings → Security, add the web app URL to the allowed origins list (or set it to `*` for local use).
 
 ### Self-hosting the web build
 
-See [Building from Source](Building-from-Source) for instructions on producing a `flutter build web` output you can deploy to any static host.
+See [Building from Source](Building-from-Source) for instructions on producing a `flutter build web`
+output you can deploy to any static host. Remember to build with the correct base href for your host path.
 
 ---
 
-## Runtime Settings
+## Next steps
 
-After connecting, you can configure the following in **Settings**:
+After connecting, open **Settings** to configure appearance, interface, playback, subtitles, storage
+and cache, security, and (on desktop/web) keyboard shortcuts.
 
-| Setting | Description |
-|---------|-------------|
-| `server_base_url` | Full URL to your Stash server |
-| `server_api_key` | API key for authentication |
-| `scene_layout_mode` | Scene list view: **List**, **Grid**, or **TikTok** |
-| `autoplay_next` | Automatically play the next scene when playback ends |
-| `video_background_playback` | Continue audio when the app is minimised (Android) |
-| `video_native_pip` | Auto-enter Picture-in-Picture when backgrounded (Android) |
-| `default_subtitle_language` | Auto-load subtitles in this language when available |
-| `subtitle_font_size` | Subtitle text size in pixels (12–32) |
-| `subtitle_position_bottom_ratio` | Subtitle distance from bottom (5%–40%) |
-| `image_fullscreen_vertical_swipe` | Swipe direction to advance images in fullscreen |
+→ Full details: **[Settings Reference](Settings-Reference)**

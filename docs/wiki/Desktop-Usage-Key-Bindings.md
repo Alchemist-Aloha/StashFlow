@@ -2,6 +2,9 @@
 
 StashFlow supports configurable keyboard shortcuts on Windows, macOS, Linux, and the web. Mobile hardware keyboards are not currently supported.
 
+> The **Keyboard** settings page is shown only on desktop and web. See the
+> [Settings Reference](Settings-Reference) for the other settings pages.
+
 ## Global Navigation
 
 Global shortcuts work throughout the app, except while a text field is being edited.
@@ -30,6 +33,7 @@ Video shortcuts work while the player has keyboard focus. Click the player once 
 | `Down` | Decrease volume 5% |
 | `M` | Mute or restore audio |
 | `F` | Toggle fullscreen |
+| `P` | Toggle Picture-in-Picture (where supported) |
 | `Shift+N` | Play the next queued scene |
 | `Shift+P` | Play the previous queued scene |
 | `[` | Decrease playback speed by 0.25× |

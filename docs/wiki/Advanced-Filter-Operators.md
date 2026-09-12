@@ -115,6 +115,40 @@ These are used for filters like performers, tags, studios, groups, and galleries
 
 When you choose `Is Null` or `Not Null`, the picker button disappears because no selected entity values are needed.
 
+## Specialized filter inputs
+
+Some filters do not use the standard operator dropdown. They still live inside the same filter panel:
+
+| Input | What it does |
+| --- | --- |
+| **pHash (duplicate distance)** | Enter a perceptual-hash value plus a **Distance** tolerance |
+| **Stash ID** | Enter an **Endpoint** and a Stash ID to match items synced from another instance |
+| **Missing field** | Select a field to match items where that field is missing |
+| **Custom fields** | Filter on user-defined custom field values (uses the text operators) |
+| **Hierarchy depth** | Constrain tag/studio hierarchy traversal depth |
+| **Folder** | Match by library folder path |
+
+## Filter panel groups
+
+Filter fields are organized into collapsible groups so you can find them quickly:
+
+- **General**
+- **Performer**
+- **Library**
+- **Metadata**
+- **Media Info**
+- **Usage**
+- **System**
+- **Physical**
+
+## Reusing filters
+
+- **Save as default** stores the current sort and filter as the page's default.
+- **Saved filters / presets** let you save, load, rename, and delete named configurations
+  (server-backed where the server mode supports it).
+- Saved presets capture search text, sort method and direction, and the active typed filter values,
+  so loading one restores the whole query in a single step.
+
 ## Practical tips
 
 - Use `Is Null` to find missing metadata.
