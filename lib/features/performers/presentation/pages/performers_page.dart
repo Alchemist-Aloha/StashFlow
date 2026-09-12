@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart';
 import '../providers/performer_list_provider.dart';
-import '../providers/performer_random_navigation_provider.dart';
 import '../widgets/performer_filter_panel.dart';
 import '../widgets/performer_card.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
@@ -191,7 +190,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
 
   Future<void> _openRandomPerformer() async {
     final random = await ref
-        .read(performerRandomNavigationControllerProvider)
+        .read(performerListProvider.notifier)
         .getRandomPerformer(excludePerformerId: _lastRandomPerformerId);
     if (!mounted) return;
 

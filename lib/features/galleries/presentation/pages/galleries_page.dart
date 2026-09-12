@@ -9,7 +9,6 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../providers/gallery_list_provider.dart';
-import '../providers/gallery_random_navigation_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../domain/entities/gallery.dart';
 
@@ -117,7 +116,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   /// Opens a random gallery image view.
   Future<void> _openRandomGallery() async {
     final gallery = await ref
-        .read(galleryRandomNavigationControllerProvider)
+        .read(galleryListProvider.notifier)
         .getRandomGallery(excludeGalleryId: _lastRandomGalleryId);
     if (!mounted || gallery == null) return;
 

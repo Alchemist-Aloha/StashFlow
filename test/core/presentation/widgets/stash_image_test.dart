@@ -38,8 +38,15 @@ void main() {
       source,
       contains('void didUpdateWidget(_RetryingCachedImage oldWidget)'),
     );
-    expect(source, contains('if (_retrying ||'));
+    expect(source, contains('if (_retrying) return;'));
     expect(source, contains('generation == _retryGeneration'));
+    expect(source, contains('retryBackoff = Duration(seconds: 30)'));
+    expect(source, contains('maxBackoffEntries = 256'));
+    expect(source, contains('_RetryingCachedImage.backOff(widget.imageUrl)'));
+    expect(
+      source,
+      contains('_RetryingCachedImage.isBackedOff(widget.imageUrl)'),
+    );
   });
 
   testWidgets('StashImage builds successfully with imageUrl', (

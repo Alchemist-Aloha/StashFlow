@@ -37,7 +37,6 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.customBody,
     this.gridDelegate,
     this.actions = const [],
-    this.actionsInTopPanel = false,
     this.sortBar,
     this.emptyMessage = 'No items found',
     this.onRefresh,
@@ -53,7 +52,6 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.onSortPressed,
     this.onFilterPressed,
     this.memCacheWidthBuilder,
-    this.itemExtent,
     this.loadingItemBuilder,
   });
 
@@ -136,16 +134,9 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   /// Optional callback to get the memCacheWidth for prefetching.
   final int? Function(BuildContext context, bool isGrid)? memCacheWidthBuilder;
 
-  /// Optional fixed extent (height for list, or main axis extent for grid if applicable) for items.
-  /// For list view, this enables [ListView.itemExtent] optimization.
-  final double? itemExtent;
-
   /// Optional builder used for loading placeholders.
   final Widget Function(BuildContext context, bool isGrid, int index)?
   loadingItemBuilder;
-
-  /// Whether to render [actions] in the top AppBar instead of the floating bottom pill.
-  final bool actionsInTopPanel;
 
   @override
   ConsumerState<ListPageScaffold<T>> createState() =>
@@ -403,7 +394,6 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
           onPressed: () => context.push('/settings'),
           tooltip: context.l10n.common_settings,
         ),
-        if (widget.actionsInTopPanel) ...widget.actions,
       ],
     );
     final body = NotificationListener<UserScrollNotification>(
@@ -620,7 +610,6 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                   scrollCacheExtent:
                                       const ScrollCacheExtent.viewport(2.0),
                                   itemCount: items.length,
-                                  itemExtent: widget.itemExtent,
                                   itemBuilder: (context, index) =>
                                       widget.itemBuilder!(
                                         context,
@@ -690,7 +679,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 ),
               ],
             ),
-            if (widget.actions.isNotEmpty && !widget.actionsInTopPanel)
+            if (widget.actions.isNotEmpty)
               Positioned(
                 bottom: 16,
                 left: 0,

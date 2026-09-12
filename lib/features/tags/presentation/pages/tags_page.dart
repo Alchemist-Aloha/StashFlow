@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../providers/tag_list_provider.dart';
-import '../providers/tag_random_navigation_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../widgets/tag_filter_panel.dart';
 
@@ -235,7 +234,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
 
   Future<void> _openRandomTag() async {
     final randomTag = await ref
-        .read(tagRandomNavigationControllerProvider)
+        .read(tagListProvider.notifier)
         .getRandomTag(excludeTagId: _lastRandomTagId);
     if (!mounted) return;
 

@@ -464,10 +464,6 @@
   "settings_develop_log_viewer_subtitle": "Live-Ansicht der In-App-Logs öffnen.",
   "settings_develop_logs_copied": "Logs in die Zwischenablage kopiert",
   "settings_develop_no_logs": "Noch keine Logs. Interagiere mit der App, um Logs zu erfassen.",
-  "settings_develop_web_overrides": "Web-Overrides",
-  "settings_develop_web_overrides_subtitle": "Erweiterte Flags für die Web-Plattform",
-  "settings_develop_web_auth": "Passwort-Login im Web erlauben",
-  "settings_develop_web_auth_subtitle": "Hebt die Native-only-Beschränkung auf und erzwingt die Sichtbarkeit der Benutzername + Passwort-Authentifizierungsmethode in Flutter Web.",
   "@settings_support_update_to": {
     "placeholders": {
       "version": {
@@ -684,8 +680,6 @@
     }
   },
   "scenes_filter_saved": "Filtereinstellungen als Standard gespeichert",
-  "settings_develop_proxy_auth": "Proxy-Authentifizierungsmodi aktivieren",
-  "settings_develop_proxy_auth_subtitle": "Aktivieren Sie erweiterte Basic-Auth- und Bearer-Token-Methoden für die Verwendung mit authentifizierungsfreien Backends hinter Proxys wie Authentik.",
   "settings_server_auth_basic": "Basic Auth",
   "settings_server_auth_bearer": "Bearer-Token",
   "settings_server_auth_basic_desc": "Sendet den Header 'Authorization: Basic <base64(user:pass)>'.",
@@ -1189,5 +1183,20 @@
   "filter_field": "Feld",
   "filter_values": "Werte (kommagetrennt)",
   "filter_folder": "Ordner",
-  "filter_photographer": "Fotograf"
+  "filter_photographer": "Fotograf",
+  "settings_playback_mpv_title": "Videodekodierung und Ausgabe",
+  "settings_playback_mpv_subtitle": "Gilt für neu erstellte Player. Starte die App neu, um aktive Videos und vorgeladene Feed-Player zu aktualisieren.",
+  "settings_playback_mpv_vo": "Videoausgabe (vo)",
+  "settings_playback_mpv_hwdec": "Hardwaredekodierung (hwdec)",
+  "settings_playback_mpv_default": "Plattformstandard",
+  "settings_playback_mpv_software": "Softwaredekodierung (no)",
+  "settings_playback_mpv_auto": "Automatisch (auto)",
+  "settings_playback_mpv_auto_safe": "Automatisch, sichere Modi (auto-safe)",
+  "settings_playback_mpv_auto_copy": "Automatisch, Rückkopieren (auto-copy)",
+  "settings_playback_mpv_gpu": "GPU-Ausgabe (gpu)",
+  "settings_playback_mpv_libmpv": "Eingebettete Ausgabe (libmpv)",
+  "settings_playback_mpv_embed": "Direkte Android-Ausgabe (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Android-Hardwaredecoder (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Android-Hardwaredecoder mit Rückkopieren (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "Die direkte Android-Ausgabe wählt mediacodec und unterstützt keine von mpv gerenderten Untertitel oder Videofilter. Ein anderer Decoder stellt die Standardausgabe wieder her."
 }

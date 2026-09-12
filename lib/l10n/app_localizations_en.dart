@@ -1848,27 +1848,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'No logs yet. Interact with the app to capture logs.';
 
   @override
-  String get settings_develop_web_overrides => 'Web Overrides';
-
-  @override
-  String get settings_develop_web_overrides_subtitle =>
-      'Advanced flags for web platform';
-
-  @override
-  String get settings_develop_web_auth => 'Allow Password Login on Web';
-
-  @override
-  String get settings_develop_web_auth_subtitle =>
-      'Overrides the native-only restriction and forces the Username + Password auth method to be visible on Flutter Web.';
-
-  @override
-  String get settings_develop_proxy_auth => 'Enable Proxy Auth Modes';
-
-  @override
-  String get settings_develop_proxy_auth_subtitle =>
-      'Enable advanced Basic Auth and Bearer Token methods for use with auth-free backends behind proxies like Authentik.';
-
-  @override
   String get settings_server_auth_basic => 'Basic Auth';
 
   @override
@@ -3399,4 +3378,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filter_photographer => 'Photographer';
+
+  @override
+  String get settings_playback_mpv_title => 'Video decoding and output';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      'Applies to newly created players. Restart the app to update active videos and preloaded feed players.';
+
+  @override
+  String get settings_playback_mpv_vo => 'Video output (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec => 'Hardware decoding (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => 'Platform default';
+
+  @override
+  String get settings_playback_mpv_software => 'Software decoding (no)';
+
+  @override
+  String get settings_playback_mpv_auto => 'Automatic (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe =>
+      'Automatic, safe modes (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy =>
+      'Automatic, copy-back (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'GPU output (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => 'Embedded output (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed =>
+      'Direct Android output (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec =>
+      'Android hardware decoder (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Android hardware decoder, copy-back (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'Direct Android output selects mediacodec decoding and does not support mpv-rendered subtitles or video filters. Choosing another decoder restores the default output.';
 }

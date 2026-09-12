@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
-import '../providers/scene_random_navigation_provider.dart';
+import '../providers/scene_list_provider.dart';
 import '../providers/player_view_mode.dart';
 import '../providers/player_settings.dart';
 import '../providers/video_player_provider.dart';
@@ -191,9 +191,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     setState(() => _isStarting = true);
     try {
       if (!mounted) return;
-      final resolver = ref.read(streamResolverProvider.notifier);
+      final resolver = ref.read(streamResolverProvider);
 
-      final choice = await resolver.resolvePreferredStream(widget.scene);
+      final choice = await resolver(widget.scene);
       if (choice != null && mounted) {
         final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
         final castStateBeforeStart = ref.read(castServiceProvider);
@@ -421,7 +421,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
   Future<void> _openRandomScene() async {
     final randomScene = await ref
-        .read(sceneRandomNavigationControllerProvider)
+        .read(sceneListProvider.notifier)
         .getRandomScene(excludeSceneId: widget.scene.id);
     if (!mounted || randomScene == null) return;
 

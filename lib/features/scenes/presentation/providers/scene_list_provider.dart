@@ -12,6 +12,7 @@ import '../../../../core/utils/pagination.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'playback_queue_provider.dart';
 import '../../../../core/domain/entities/filter_options.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 part 'scene_list_provider.g.dart';
 
@@ -22,6 +23,19 @@ final sceneRepositoryProvider = Provider<GraphQLSceneRepository>((ref) {
 });
 
 final sceneRandomSeedProvider = listRandomSeedProvider('scene');
+
+final sceneListRandomReturnProvider =
+    NotifierProvider<SceneListRandomReturn, bool>(SceneListRandomReturn.new);
+
+/// Tracks whether scene-list return focus should use the retained playlist.
+class SceneListRandomReturn extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void markRandom() => state = true;
+
+  void reset() => state = false;
+}
 
 @Riverpod(keepAlive: true)
 class SceneSort extends _$SceneSort {
@@ -301,12 +315,12 @@ class SceneList extends _$SceneList {
   bool get isLoadingMore => _isLoadingMore;
 
   Future<Scene?> getRandomScene({
-    bool useCurrentFilter = false,
     String? performerId,
     String? studioId,
     String? tagId,
     String? excludeSceneId,
   }) async {
+    final useCurrentFilter = ref.read(sceneRandomRespectActiveFilterProvider);
     final repository = ref.read(sceneRepositoryProvider);
     final query = useCurrentFilter ? ref.read(sceneSearchQueryProvider) : '';
     final filter = useCurrentFilter
@@ -335,6 +349,7 @@ class SceneList extends _$SceneList {
       if (randomPage.isEmpty) continue;
       final candidate = randomPage.first;
       if (excludeSceneId == null || candidate.id != excludeSceneId) {
+        ref.read(sceneListRandomReturnProvider.notifier).markRandom();
         return candidate;
       }
     }

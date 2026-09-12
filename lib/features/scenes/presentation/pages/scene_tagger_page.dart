@@ -14,6 +14,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/domain/entities/scraped/scraped_scene.dart';
 import '../../../../core/domain/entities/scraped/scraped_tag.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
@@ -24,6 +25,7 @@ import '../../domain/entities/scene_filter.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
 import '../../data/utils/scrape_normalizer.dart';
 import '../providers/scene_list_provider.dart';
+import '../providers/player_settings.dart';
 import '../widgets/scene_filter_panel.dart';
 
 class SceneTaggerPage extends ConsumerStatefulWidget {
@@ -1593,7 +1595,12 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
     });
 
     final player = Player();
-    final controller = VideoController(player);
+    final controller = VideoController(
+      player,
+      configuration: PlayerSettingsStore(
+        ref.read(sharedPreferencesProvider),
+      ).loadVideoConfiguration(),
+    );
     _player = player;
     _controller = controller;
 

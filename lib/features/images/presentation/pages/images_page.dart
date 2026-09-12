@@ -14,7 +14,7 @@ import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
-import '../../../galleries/presentation/providers/gallery_random_navigation_provider.dart';
+import '../../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../providers/image_list_provider.dart';
 import '../widgets/image_card.dart';
 import '../../domain/entities/image.dart' as entity;
@@ -221,7 +221,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   /// Opens a random gallery's images.
   Future<void> _openRandomGallery() async {
     final gallery = await ref
-        .read(galleryRandomNavigationControllerProvider)
+        .read(galleryListProvider.notifier)
         .getRandomGallery(excludeGalleryId: _lastRandomGalleryId);
     if (!mounted || gallery == null) return;
 

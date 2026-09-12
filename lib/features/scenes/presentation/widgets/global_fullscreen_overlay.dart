@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 import '../providers/video_player_provider.dart';
-import '../providers/fullscreen_controller.dart';
-import '../providers/scene_random_navigation_provider.dart';
+import '../providers/player_view_mode.dart';
+import '../providers/scene_list_provider.dart';
 import 'player_surface.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/desktop_fullscreen.dart';
@@ -360,7 +360,7 @@ class _GlobalFullscreenOverlayState
 
   Future<void> _openRandomScene(String currentSceneId) async {
     final randomScene = await ref
-        .read(sceneRandomNavigationControllerProvider)
+        .read(sceneListProvider.notifier)
         .getRandomScene(excludeSceneId: currentSceneId);
     if (!mounted) return;
 

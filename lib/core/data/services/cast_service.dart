@@ -353,10 +353,6 @@ class AppCastService extends Notifier<CastState> {
     await session.seek(position);
     state = state.copyWith(remotePosition: position);
   }
-
-  Future<Duration> getRemotePosition() async {
-    return state.remotePosition;
-  }
 }
 
 final castServiceProvider = NotifierProvider<AppCastService, CastState>(

@@ -8,6 +8,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 part 'studio_list_provider.g.dart';
 
@@ -199,10 +200,8 @@ class StudioList extends _$StudioList {
   bool get hasMore => _hasMore;
   bool get isLoadingMore => _isLoadingMore;
 
-  Future<Studio?> getRandomStudio({
-    bool useCurrentFilter = false,
-    String? excludeStudioId,
-  }) async {
+  Future<Studio?> getRandomStudio({String? excludeStudioId}) async {
+    final useCurrentFilter = ref.read(sceneRandomRespectActiveFilterProvider);
     final repository = ref.read(studioRepositoryProvider);
     final query = useCurrentFilter ? ref.read(studioSearchQueryProvider) : '';
     final filterState = useCurrentFilter

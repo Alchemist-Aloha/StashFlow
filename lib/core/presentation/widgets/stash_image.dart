@@ -39,6 +39,26 @@ class _RetryingCachedImage extends StatefulWidget {
   final int? memCacheWidth;
   final int? memCacheHeight;
   static const int maxRetries = 2;
+  static const retryBackoff = Duration(seconds: 30);
+  static const maxBackoffEntries = 256;
+  static final LinkedHashMap<String, DateTime> _retryAfter =
+      LinkedHashMap<String, DateTime>();
+
+  static bool isBackedOff(String imageUrl) {
+    final retryAfter = _retryAfter[imageUrl];
+    if (retryAfter == null) return false;
+    if (retryAfter.isAfter(DateTime.now())) return true;
+    _retryAfter.remove(imageUrl);
+    return false;
+  }
+
+  static void backOff(String imageUrl) {
+    _retryAfter.remove(imageUrl);
+    if (_retryAfter.length >= maxBackoffEntries) {
+      _retryAfter.remove(_retryAfter.keys.first);
+    }
+    _retryAfter[imageUrl] = DateTime.now().add(retryBackoff);
+  }
 
   @override
   State<_RetryingCachedImage> createState() => _RetryingCachedImageState();
@@ -62,7 +82,11 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
   }
 
   Future<void> _handleError() async {
-    if (_retrying || _attempt >= _RetryingCachedImage.maxRetries) return;
+    if (_retrying) return;
+    if (_attempt >= _RetryingCachedImage.maxRetries) {
+      _RetryingCachedImage.backOff(widget.imageUrl);
+      return;
+    }
     final generation = _retryGeneration;
     final imageUrl = widget.imageUrl;
     final cacheManager = widget.cacheManager;
@@ -84,6 +108,9 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_RetryingCachedImage.isBackedOff(widget.imageUrl)) {
+      return _buildError(context);
+    }
     return CachedNetworkImage(
       key: ValueKey('${widget.imageUrl}::$_attempt'),
       imageUrl: widget.imageUrl,
@@ -112,21 +139,23 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
       errorWidget: (context, url, error) {
         // Kick off async cleanup + retry; show the standard error UI immediately.
         _handleError();
-        return Container(
-          width: widget.width,
-          height: widget.height,
-          color: context.colors.surfaceVariant,
-          child: Center(
-            child: Icon(
-              Icons.broken_image,
-              color: context.colors.onSurfaceVariant,
-              size: 24 * context.dimensions.fontSizeFactor,
-            ),
-          ),
-        );
+        return _buildError(context);
       },
     );
   }
+
+  Widget _buildError(BuildContext context) => Container(
+    width: widget.width,
+    height: widget.height,
+    color: context.colors.surfaceVariant,
+    child: Center(
+      child: Icon(
+        Icons.broken_image,
+        color: context.colors.onSurfaceVariant,
+        size: 24 * context.dimensions.fontSizeFactor,
+      ),
+    ),
+  );
 }
 
 class StashImage extends ConsumerWidget {

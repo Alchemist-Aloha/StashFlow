@@ -7,16 +7,9 @@ import '../providers/playback_queue_provider.dart';
 import 'scene_card.dart';
 
 class SceneStrip extends ConsumerStatefulWidget {
-  const SceneStrip({
-    super.key,
-    required this.scenes,
-    this.itemWidth = 220,
-    this.queueId,
-    this.onTap,
-  });
+  const SceneStrip({super.key, required this.scenes, this.queueId, this.onTap});
 
   final List<Scene> scenes;
-  final double itemWidth;
   final String? queueId;
   final void Function(Scene)? onTap;
 
@@ -37,8 +30,7 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
   @override
   void didUpdateWidget(SceneStrip oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.scenes, widget.scenes) ||
-        oldWidget.itemWidth != widget.itemWidth) {
+    if (!identical(oldWidget.scenes, widget.scenes)) {
       _lastVisibleIndex = -1;
       _scheduleInitialPrefetch();
     }
@@ -48,8 +40,7 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final scenes = widget.scenes;
-      final effectiveItemWidth =
-          widget.itemWidth * context.dimensions.fontSizeFactor;
+      final effectiveItemWidth = 220 * context.dimensions.fontSizeFactor;
       final initialCount = scenes.length < StashImage.defaultPrefetchDistance
           ? scenes.length
           : StashImage.defaultPrefetchDistance;
@@ -72,10 +63,9 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
   @override
   Widget build(BuildContext context) {
     final scenes = widget.scenes;
-    final itemWidth = widget.itemWidth;
     final queueId = widget.queueId;
     final onTap = widget.onTap;
-    final effectiveItemWidth = itemWidth * context.dimensions.fontSizeFactor;
+    final effectiveItemWidth = 220 * context.dimensions.fontSizeFactor;
 
     if (scenes.isEmpty) {
       return const SizedBox.shrink();

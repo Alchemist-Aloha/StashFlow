@@ -1895,29 +1895,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'No hay registros todavía. Interactúa con la app para capturar registros.';
 
   @override
-  String get settings_develop_web_overrides => 'Anulaciones web';
-
-  @override
-  String get settings_develop_web_overrides_subtitle =>
-      'Indicadores avanzados para la plataforma web';
-
-  @override
-  String get settings_develop_web_auth =>
-      'Permitir inicio de sesión con contraseña en la web';
-
-  @override
-  String get settings_develop_web_auth_subtitle =>
-      'Anula la restricción solo nativa y fuerza a que el método de autenticación Usuario + Contraseña sea visible en Flutter Web.';
-
-  @override
-  String get settings_develop_proxy_auth =>
-      'Habilitar modos de autenticación de proxy';
-
-  @override
-  String get settings_develop_proxy_auth_subtitle =>
-      'Habilite los métodos avanzados de Basic Auth y Bearer Token para su uso con backends sin autenticación detrás de proxies como Authentik.';
-
-  @override
   String get settings_server_auth_basic => 'Autenticación básica';
 
   @override
@@ -3473,4 +3450,58 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get filter_photographer => 'Fotógrafo';
+
+  @override
+  String get settings_playback_mpv_title => 'Decodificación y salida de vídeo';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      'Se aplica a los reproductores nuevos. Reinicia la aplicación para actualizar los vídeos activos y los reproductores precargados del feed.';
+
+  @override
+  String get settings_playback_mpv_vo => 'Salida de vídeo (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec =>
+      'Decodificación por hardware (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => 'Predeterminado de la plataforma';
+
+  @override
+  String get settings_playback_mpv_software =>
+      'Decodificación por software (no)';
+
+  @override
+  String get settings_playback_mpv_auto => 'Automático (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe =>
+      'Automático, modos seguros (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy =>
+      'Automático, copia a RAM (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'Salida GPU (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => 'Salida integrada (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed =>
+      'Salida directa de Android (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec =>
+      'Decodificador de hardware de Android (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Decodificador de Android con copia a RAM (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'La salida directa de Android selecciona mediacodec y no admite subtítulos renderizados por mpv ni filtros de vídeo. Elegir otro decodificador restaura la salida predeterminada.';
 }

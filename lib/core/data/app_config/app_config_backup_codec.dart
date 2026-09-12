@@ -126,7 +126,6 @@ final class AppConfigBackupCodec {
     if (profile.name != null) 'name': profile.name,
     'baseUrl': profile.baseUrl,
     'authMode': profile.authMode,
-    'allowWebPasswordLogin': profile.allowWebPasswordLogin,
   };
 
   static AppConfigProfile _profileFromJson(Map<String, dynamic> json) {
@@ -134,16 +133,11 @@ final class AppConfigBackupCodec {
     if (name != null && name is! String) {
       throw const AppConfigFormatException(AppConfigFormatError.invalidData);
     }
-    final allow = json['allowWebPasswordLogin'];
-    if (allow is! bool) {
-      throw const AppConfigFormatException(AppConfigFormatError.invalidData);
-    }
     return AppConfigProfile(
       id: _string(json['id']),
       name: name as String?,
       baseUrl: _string(json['baseUrl']),
       authMode: _string(json['authMode']),
-      allowWebPasswordLogin: allow,
     );
   }
 

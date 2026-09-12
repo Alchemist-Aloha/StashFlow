@@ -6,15 +6,9 @@ import '../../domain/entities/gallery.dart';
 import 'gallery_card.dart';
 
 class GalleryStrip extends ConsumerStatefulWidget {
-  const GalleryStrip({
-    super.key,
-    required this.galleries,
-    this.itemWidth = 220,
-    this.onTap,
-  });
+  const GalleryStrip({super.key, required this.galleries, this.onTap});
 
   final List<Gallery> galleries;
-  final double itemWidth;
   final void Function(Gallery)? onTap;
 
   @override
@@ -34,8 +28,7 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
   @override
   void didUpdateWidget(GalleryStrip oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.galleries, widget.galleries) ||
-        oldWidget.itemWidth != widget.itemWidth) {
+    if (!identical(oldWidget.galleries, widget.galleries)) {
       _lastVisibleIndex = -1;
       _scheduleInitialPrefetch();
     }
@@ -45,8 +38,7 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final galleries = widget.galleries;
-      final effectiveItemWidth =
-          widget.itemWidth * context.dimensions.fontSizeFactor;
+      final effectiveItemWidth = 220 * context.dimensions.fontSizeFactor;
       final initialCount = galleries.length < StashImage.defaultPrefetchDistance
           ? galleries.length
           : StashImage.defaultPrefetchDistance;
@@ -70,9 +62,8 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
   @override
   Widget build(BuildContext context) {
     final galleries = widget.galleries;
-    final itemWidth = widget.itemWidth;
     final onTap = widget.onTap;
-    final effectiveItemWidth = itemWidth * context.dimensions.fontSizeFactor;
+    final effectiveItemWidth = 220 * context.dimensions.fontSizeFactor;
 
     if (galleries.isEmpty) {
       return const SizedBox.shrink();

@@ -157,7 +157,10 @@ Key takeaways from the comparison:
   deletes the cache file and re-downloads on every failed decode (150 ms delay +
   rebuild). Rapid scroll can abort partial downloads → re-download/re-decode
   loops.
-- Action: don't persist incomplete downloads on cancel; add per-URL back-off.
+- Mitigation (2026-09-04): after the existing two recovery attempts fail,
+  retries for that URL are suppressed across card recreation for 30 seconds.
+  The back-off table is capped at 256 URLs. Preventing incomplete cache writes
+  remains cache-manager work if errors continue after this change.
 
 ### F5 — Notes / environment-specific
 - SceneDetails with a playing video sustains ~45–50% CPU (this box software-
@@ -182,7 +185,8 @@ Key takeaways from the comparison:
 3. Investigate **F1** native growth with a DevTools memory snapshot (impeller /
    image cache) and review the 200 MB image-cache budget and `indexedStack`
    retention for low-memory devices.
-4. Harden image loading (**F4**) against partial downloads / retry storms.
+4. Recheck image failures after the **F4** retry-storm mitigation; investigate
+   incomplete cache writes only if invalid downloads still recur.
 
 ---
 
@@ -193,6 +197,9 @@ Key takeaways from the comparison:
 flutter run -d linux --debug
 # Profile (realistic numbers)
 flutter run -d linux --profile
+
+# Deterministic headless list/grid/masonry regression benchmark
+flutter test benchmark/common_surfaces.dart --reporter expanded
 ```
 
 Drive the UI (5 default tabs via `Ctrl+1..5`, wheel-scroll the grids) while

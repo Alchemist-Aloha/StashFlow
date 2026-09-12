@@ -316,7 +316,7 @@ class AppCacheService {
       'matchedFiles=${result.matchedFiles} '
       'deleted=${_formatBytes(result.deletedBytes)} '
       'deletedFiles=${result.deletedFiles} '
-      'remaining=${_formatBytes(result.remainingBytes)} '
+      'remaining=${_formatBytes(result.totalBytes - result.deletedBytes)} '
       'scanErrors=${result.scanErrors} '
       'deleteErrors=${result.deleteErrors}',
     );
@@ -440,13 +440,11 @@ _CacheLimitEnforcementResult _enforceCacheLimitSync(
         if (!_matchesExtension(entity.path, extensions)) continue;
         final stat = entity.statSync();
         final length = stat.size;
-        files.add(
-          _CacheFile(
-            path: entity.path,
-            size: length,
-            modifiedMs: stat.modified.millisecondsSinceEpoch,
-          ),
-        );
+        files.add((
+          path: entity.path,
+          size: length,
+          modifiedMs: stat.modified.millisecondsSinceEpoch,
+        ));
         totalBytes += length;
       }
     } catch (_) {
@@ -456,7 +454,7 @@ _CacheLimitEnforcementResult _enforceCacheLimitSync(
   }
 
   if (totalBytes <= maxBytes || files.isEmpty) {
-    return _CacheLimitEnforcementResult(
+    return (
       totalBytes: totalBytes,
       matchedFiles: files.length,
       deletedBytes: 0,
@@ -482,7 +480,7 @@ _CacheLimitEnforcementResult _enforceCacheLimitSync(
       deleteErrors++;
     }
   }
-  return _CacheLimitEnforcementResult(
+  return (
     totalBytes: totalBytes,
     matchedFiles: files.length,
     deletedBytes: deletedBytes,
@@ -497,34 +495,13 @@ bool _matchesExtension(String path, Set<String>? extensions) {
   return extensions.contains(p.extension(path).toLowerCase());
 }
 
-class _CacheFile {
-  const _CacheFile({
-    required this.path,
-    required this.size,
-    required this.modifiedMs,
-  });
+typedef _CacheFile = ({String path, int size, int modifiedMs});
 
-  final String path;
-  final int size;
-  final int modifiedMs;
-}
-
-class _CacheLimitEnforcementResult {
-  const _CacheLimitEnforcementResult({
-    required this.totalBytes,
-    required this.matchedFiles,
-    required this.deletedBytes,
-    required this.deletedFiles,
-    required this.scanErrors,
-    required this.deleteErrors,
-  });
-
-  final int totalBytes;
-  final int matchedFiles;
-  final int deletedBytes;
-  final int deletedFiles;
-  final int scanErrors;
-  final int deleteErrors;
-
-  int get remainingBytes => totalBytes - deletedBytes;
-}
+typedef _CacheLimitEnforcementResult = ({
+  int totalBytes,
+  int matchedFiles,
+  int deletedBytes,
+  int deletedFiles,
+  int scanErrors,
+  int deleteErrors,
+});

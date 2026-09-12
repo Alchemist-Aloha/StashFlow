@@ -19,7 +19,6 @@ void main() {
         name: 'Home',
         baseUrl: 'https://stash.example',
         authMode: 'apiKey',
-        allowWebPasswordLogin: false,
       ),
     ],
     activeServerProfileId: 'primary',

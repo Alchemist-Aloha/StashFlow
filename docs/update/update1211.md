@@ -21,5 +21,5 @@
 ## 🌍 Localization
 
 *   **Comprehensive i18n Refactoring**: Removed hardcoded text strings in [saved_filter_dialog.dart](../../lib/core/presentation/widgets/saved_filter_dialog.dart), [scene_deduplication_page.dart](../../lib/features/scenes/presentation/pages/scene_deduplication_page.dart), [scene_tagger_page.dart](../../lib/features/scenes/presentation/pages/scene_tagger_page.dart), [scenes_page.dart](../../lib/features/scenes/presentation/pages/scenes_page.dart), [tools_page.dart](../../lib/features/tools/presentation/pages/tools_page.dart), and [settings_hub_page.dart](../../lib/features/setup/presentation/pages/settings/settings_hub_page.dart), converting them to use `context.l10n`.
-*   **Expanded Translations**: Refreshed and populated new localizations across German, English, Spanish, French, Italian, Japanese, Korean, Russian, and Chinese within [apply_translations.py](../../scripts/apply_translations.py) and the corresponding generated `.arb` / `.dart` localizations.
+*   **Expanded Translations**: Refreshed and populated localizations across German, English, Spanish, French, Italian, Japanese, Korean, Russian, and Chinese.
 *   **Language Fixes**: Standardized Simplified Chinese settings translations (e.g., updating `common_set` to `设置`) and polished grammar patterns across deduplication messages.

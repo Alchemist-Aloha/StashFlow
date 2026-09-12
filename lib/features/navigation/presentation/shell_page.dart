@@ -254,18 +254,12 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       });
     }
 
-    ref.listen(playerStateProvider.select((s) => s.navigationIntent), (
-      prev,
-      next,
+    ref.listen(playerStateProvider.select((s) => s.navigationReplacementPath), (
+      previous,
+      path,
     ) {
-      if (next != null && mounted) {
-        for (final action in next.actions) {
-          if (action.isReplacement) {
-            context.pushReplacement(action.path);
-          } else {
-            context.push(action.path);
-          }
-        }
+      if (path != null && mounted) {
+        context.pushReplacement(path);
       }
     });
 

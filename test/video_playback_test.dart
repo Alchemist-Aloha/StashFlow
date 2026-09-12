@@ -139,15 +139,8 @@ class MockGraphQLSceneRepository implements GraphQLSceneRepository {
   Future<int> countScenesMissingPhash() async => 0;
 }
 
-class MockStreamResolver extends StreamResolver {
-  @override
-  void build() {}
-
-  @override
-  Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
-    return StreamChoice(url: scene.paths.stream ?? '', mimeType: 'video/mp4');
-  }
-}
+Future<StreamChoice?> mockStreamResolver(Scene scene) async =>
+    StreamChoice(url: scene.paths.stream ?? '', mimeType: 'video/mp4');
 
 void main() {
   setUpAll(() {
@@ -202,7 +195,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           sceneRepositoryProvider.overrideWithValue(repo),
           entityMediaPreviewProvider.overrideWith((ref, arg) => const []),
-          streamResolverProvider.overrideWith(MockStreamResolver.new),
+          streamResolverProvider.overrideWithValue(mockStreamResolver),
           mediaHeadersProvider.overrideWithValue(const {}),
         ],
         child: const MyApp(),

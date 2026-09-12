@@ -6,7 +6,6 @@ import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
-import 'package:stash_app_flutter/features/performers/presentation/providers/performer_random_navigation_provider.dart';
 
 import '../../../../helpers/test_helpers.dart';
 
@@ -95,46 +94,43 @@ const _loadedPerformer = Performer(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test(
-    'performer random controller forwards active filters when enabled',
-    () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final repo = _CapturingPerformerRepository()
-        ..queuedResponses.addAll([
-          [_loadedPerformer],
-          [_filteredPerformer],
-        ]);
+  test('performer random selection uses active filters when enabled', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final repo = _CapturingPerformerRepository()
+      ..queuedResponses.addAll([
+        [_loadedPerformer],
+        [_filteredPerformer],
+      ]);
 
-      final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          performerRepositoryProvider.overrideWithValue(repo),
-        ],
-      );
-      addTearDown(container.dispose);
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        performerRepositoryProvider.overrideWithValue(repo),
+      ],
+    );
+    addTearDown(container.dispose);
 
-      container.read(performerSearchQueryProvider.notifier).update('filtered');
-      container
-          .read(performerFilterStateProvider.notifier)
-          .update(const PerformerFilter(rating100: IntCriterion(value: 80)));
+    container.read(performerSearchQueryProvider.notifier).update('filtered');
+    container
+        .read(performerFilterStateProvider.notifier)
+        .update(const PerformerFilter(rating100: IntCriterion(value: 80)));
 
-      final performer = await container
-          .read(performerRandomNavigationControllerProvider)
-          .getRandomPerformer(excludePerformerId: 'current');
+    final performer = await container
+        .read(performerListProvider.notifier)
+        .getRandomPerformer(excludePerformerId: 'current');
 
-      expect(performer?.id, _filteredPerformer.id);
-      expect(repo.findCalls.last.filter, 'filtered');
-      expect(repo.findCalls.last.sort, 'random');
-      expect(
-        repo.findCalls.last.performerFilter,
-        const PerformerFilter(rating100: IntCriterion(value: 80)),
-      );
-    },
-  );
+    expect(performer?.id, _filteredPerformer.id);
+    expect(repo.findCalls.last.filter, 'filtered');
+    expect(repo.findCalls.last.sort, 'random');
+    expect(
+      repo.findCalls.last.performerFilter,
+      const PerformerFilter(rating100: IntCriterion(value: 80)),
+    );
+  });
 
   test(
-    'performer random controller ignores active filters when disabled',
+    'performer random selection ignores active filters when disabled',
     () async {
       SharedPreferences.setMockInitialValues({
         'scene_random_respect_active_filter': false,
@@ -159,9 +155,7 @@ void main() {
           .read(performerFilterStateProvider.notifier)
           .update(const PerformerFilter(rating100: IntCriterion(value: 80)));
 
-      await container
-          .read(performerRandomNavigationControllerProvider)
-          .getRandomPerformer();
+      await container.read(performerListProvider.notifier).getRandomPerformer();
 
       expect(repo.findCalls.last.filter, isNull);
       expect(repo.findCalls.last.performerFilter, PerformerFilter.empty());
@@ -192,7 +186,7 @@ void main() {
       await container.read(performerListProvider.future);
 
       final performer = await container
-          .read(performerRandomNavigationControllerProvider)
+          .read(performerListProvider.notifier)
           .getRandomPerformer(excludePerformerId: _filteredPerformer.id);
 
       expect(performer, isNull);

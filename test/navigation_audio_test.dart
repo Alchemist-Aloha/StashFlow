@@ -12,22 +12,6 @@ import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart'
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
-class MockStreamResolver extends StreamResolver {
-  final Map<String, String> _streamMap;
-  MockStreamResolver(this._streamMap);
-  @override
-  void build() {}
-
-  @override
-  Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
-    return StreamChoice(
-      url: _streamMap[scene.id]!,
-      label: 'Direct',
-      mimeType: 'video/mp4',
-    );
-  }
-}
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late SharedPreferences prefs;
@@ -84,11 +68,12 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
-        streamResolverProvider.overrideWith(
-          () => MockStreamResolver({
-            's1': 'http://test.com/s1.mp4',
-            's2': 'http://test.com/s2.mp4',
-          }),
+        streamResolverProvider.overrideWithValue(
+          (scene) async => StreamChoice(
+            url: 'http://test.com/${scene.id}.mp4',
+            label: 'Direct',
+            mimeType: 'video/mp4',
+          ),
         ),
         mediaHeadersProvider.overrideWithValue(const {}),
       ],

@@ -548,10 +548,6 @@
   "settings_develop_log_viewer_subtitle": "打开应用内日志的实时视图。",
   "settings_develop_logs_copied": "日志已复制到剪贴板",
   "settings_develop_no_logs": "尚无日志。与应用交互以捕获日志。",
-  "settings_develop_web_overrides": "Web 覆盖",
-  "settings_develop_web_overrides_subtitle": "Web 平台的高级标志",
-  "settings_develop_web_auth": "允许在 Web 上使用密码登录",
-  "settings_develop_web_auth_subtitle": "覆盖仅限原生的限制，并强制用户名 + 密码身份验证方式在 Flutter Web 上可见。",
   "@common_not_found": {
     "placeholders": {
       "item": {
@@ -668,8 +664,6 @@
   "scenes_phash_failed": "生成 phash 失败：{error}",
   "details_failed_update_studio": "更新工作室失败：{error}",
   "scenes_filter_saved": "筛选偏好已保存为默认设置",
-  "settings_develop_proxy_auth": "启用代理认证模式",
-  "settings_develop_proxy_auth_subtitle": "启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。",
   "settings_server_auth_basic": "基础认证",
   "settings_server_auth_bearer": "Bearer 令牌",
   "settings_server_auth_basic_desc": "发送 'Authorization: Basic <base64(user:pass)>' 请求头。",
@@ -1168,5 +1162,20 @@
   "filter_field": "字段",
   "filter_values": "值（以逗号分隔）",
   "filter_folder": "文件夹",
-  "filter_photographer": "摄影师"
+  "filter_photographer": "摄影师",
+  "settings_playback_mpv_title": "视频解码与输出",
+  "settings_playback_mpv_subtitle": "应用于新建的播放器。请重启应用，以更新正在播放的视频和已预加载的信息流播放器。",
+  "settings_playback_mpv_vo": "视频输出 (vo)",
+  "settings_playback_mpv_hwdec": "硬件解码 (hwdec)",
+  "settings_playback_mpv_default": "平台默认",
+  "settings_playback_mpv_software": "软件解码 (no)",
+  "settings_playback_mpv_auto": "自动 (auto)",
+  "settings_playback_mpv_auto_safe": "自动选择安全模式 (auto-safe)",
+  "settings_playback_mpv_auto_copy": "自动回拷 (auto-copy)",
+  "settings_playback_mpv_gpu": "GPU 输出 (gpu)",
+  "settings_playback_mpv_libmpv": "嵌入式输出 (libmpv)",
+  "settings_playback_mpv_embed": "Android 直接输出 (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Android 硬件解码器 (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Android 硬件解码器，回拷模式 (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "Android 直接输出会选择 mediacodec 解码，不支持 mpv 渲染的字幕或视频滤镜。选择其他解码器将恢复默认输出。"
 }

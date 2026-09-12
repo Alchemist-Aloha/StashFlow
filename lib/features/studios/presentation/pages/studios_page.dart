@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../domain/entities/studio_filter.dart';
 import '../providers/studio_list_provider.dart';
-import '../providers/studio_random_navigation_provider.dart';
 import '../widgets/studio_filter_panel.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
@@ -266,7 +265,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
 
   Future<void> _openRandomStudio() async {
     final randomStudio = await ref
-        .read(studioRandomNavigationControllerProvider)
+        .read(studioListProvider.notifier)
         .getRandomStudio(excludeStudioId: _lastRandomStudioId);
     if (!mounted) return;
 

@@ -29,14 +29,12 @@ final class AppConfigProfile {
     required this.name,
     required this.baseUrl,
     required this.authMode,
-    required this.allowWebPasswordLogin,
   });
 
   final String id;
   final String? name;
   final String baseUrl;
   final String authMode;
-  final bool allowWebPasswordLogin;
 }
 
 /// Secrets included only when the user explicitly opts in.

@@ -508,10 +508,6 @@
   "settings_develop_log_viewer_subtitle": "開啟應用程式內記錄的即時檢視。",
   "settings_develop_logs_copied": "日誌已複製到剪貼簿",
   "settings_develop_no_logs": "尚無日誌。與應用互動以捕捉日誌。",
-  "settings_develop_web_overrides": "網頁覆寫",
-  "settings_develop_web_overrides_subtitle": "網頁平台的進階旗標",
-  "settings_develop_web_auth": "允許在網頁上使用密碼登入",
-  "settings_develop_web_auth_subtitle": "覆寫僅限原生的限制，並強制「使用者名稱 + 密碼」驗證方式在 Flutter Web 上可見。",
   "@settings_support_update_to": {
     "placeholders": {
       "version": {
@@ -663,8 +659,6 @@
   "scenes_phash_failed": "生成 phash 失败：{error}",
   "details_failed_update_studio": "更新工作室失败：{error}",
   "scenes_filter_saved": "篩選偏好已儲存為預設設定",
-  "settings_develop_proxy_auth": "啟用代理認證模式",
-  "settings_develop_proxy_auth_subtitle": "啟用進階 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背後的無認證後端中使用。",
   "settings_server_auth_basic": "基礎認證",
   "settings_server_auth_bearer": "Bearer 權杖",
   "settings_server_auth_basic_desc": "發送 'Authorization: Basic <base64(user:pass)>' 請求頭。",
@@ -1154,5 +1148,20 @@
   "filter_field": "欄位",
   "filter_values": "值（以逗號分隔）",
   "filter_folder": "資料夾",
-  "filter_photographer": "攝影師"
+  "filter_photographer": "攝影師",
+  "settings_playback_mpv_title": "影片解碼與輸出",
+  "settings_playback_mpv_subtitle": "套用至新建立的播放器。請重新啟動應用程式，以更新播放中的影片和已預載的動態牆播放器。",
+  "settings_playback_mpv_vo": "影片輸出 (vo)",
+  "settings_playback_mpv_hwdec": "硬體解碼 (hwdec)",
+  "settings_playback_mpv_default": "平台預設",
+  "settings_playback_mpv_software": "軟體解碼 (no)",
+  "settings_playback_mpv_auto": "自動 (auto)",
+  "settings_playback_mpv_auto_safe": "自動選擇安全模式 (auto-safe)",
+  "settings_playback_mpv_auto_copy": "自動回拷 (auto-copy)",
+  "settings_playback_mpv_gpu": "GPU 輸出 (gpu)",
+  "settings_playback_mpv_libmpv": "嵌入式輸出 (libmpv)",
+  "settings_playback_mpv_embed": "Android 直接輸出 (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Android 硬體解碼器 (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Android 硬體解碼器，回拷模式 (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "Android 直接輸出會選擇 mediacodec 解碼，不支援 mpv 繪製的字幕或影片濾鏡。選擇其他解碼器將恢復預設輸出。"
 }

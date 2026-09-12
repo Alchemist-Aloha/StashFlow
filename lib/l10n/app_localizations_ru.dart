@@ -1871,28 +1871,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Журналы отсутствуют. Взаимодействуйте с приложением, чтобы собрать логи.';
 
   @override
-  String get settings_develop_web_overrides => 'Переопределения для Web';
-
-  @override
-  String get settings_develop_web_overrides_subtitle =>
-      'Расширенные флаги для веб-платформы';
-
-  @override
-  String get settings_develop_web_auth => 'Разрешить вход по паролю в Web';
-
-  @override
-  String get settings_develop_web_auth_subtitle =>
-      'Переопределяет ограничение «только для нативных приложений» и делает видимым метод аутентификации по имени пользователя и паролю во Flutter Web.';
-
-  @override
-  String get settings_develop_proxy_auth =>
-      'Включить режимы аутентификации через прокси';
-
-  @override
-  String get settings_develop_proxy_auth_subtitle =>
-      'Включите расширенные методы Basic Auth и Bearer Token для использования с бэкендами без аутентификации за прокси-серверами, такими как Authentik.';
-
-  @override
   String get settings_server_auth_basic => 'Базовая аутентификация';
 
   @override
@@ -3442,4 +3420,56 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get filter_photographer => 'Фотограф';
+
+  @override
+  String get settings_playback_mpv_title => 'Декодирование и вывод видео';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      'Применяется к новым плеерам. Перезапустите приложение, чтобы обновить активные видео и предварительно загруженные плееры ленты.';
+
+  @override
+  String get settings_playback_mpv_vo => 'Вывод видео (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec => 'Аппаратное декодирование (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => 'По умолчанию для платформы';
+
+  @override
+  String get settings_playback_mpv_software => 'Программное декодирование (no)';
+
+  @override
+  String get settings_playback_mpv_auto => 'Автоматически (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe =>
+      'Автоматически, безопасные режимы (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy =>
+      'Автоматически, копирование в ОЗУ (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'Вывод через GPU (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => 'Встроенный вывод (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed =>
+      'Прямой вывод Android (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec =>
+      'Аппаратный декодер Android (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Декодер Android с копированием в ОЗУ (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'Прямой вывод Android выбирает декодер mediacodec и не поддерживает отрисовку субтитров mpv и видеофильтры. Выбор другого декодера восстанавливает вывод по умолчанию.';
 }

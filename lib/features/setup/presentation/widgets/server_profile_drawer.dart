@@ -27,7 +27,6 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   late TextEditingController _usernameController;
   late TextEditingController _passwordController;
   late AuthMode _authMode;
-  bool _allowWebPasswordLogin = false;
   bool _isTesting = false;
   String? _testResult;
   bool _obscureApiKey = true;
@@ -43,8 +42,6 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
     _usernameController = TextEditingController();
     _passwordController = TextEditingController();
     _authMode = widget.profile?.authMode ?? AuthMode.apiKey;
-    _allowWebPasswordLogin = widget.profile?.allowWebPasswordLogin ?? false;
-
     _showAdvancedAuth =
         _authMode == AuthMode.basic || _authMode == AuthMode.bearer;
 
@@ -132,7 +129,6 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         name: _nameController.text,
         baseUrl: baseUrl,
         authMode: _authMode,
-        allowWebPasswordLogin: _allowWebPasswordLogin,
       );
 
       final profilesNotifier = ref.read(serverProfilesProvider.notifier);
@@ -191,7 +187,6 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       name: _nameController.text.isEmpty ? null : _nameController.text,
       baseUrl: _urlController.text,
       authMode: _authMode,
-      allowWebPasswordLogin: _allowWebPasswordLogin,
     );
 
     if (widget.profile == null) {

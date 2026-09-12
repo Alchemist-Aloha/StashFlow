@@ -306,6 +306,24 @@ Responsibilities:
 The UI talks directly to media-kit state. Do not restore the removed
 video-player compatibility adapters or route-owned fullscreen player.
 
+### Native video output and decoding
+
+- Playback settings persist `video_mpv_vo` and `video_mpv_hwdec`; `default`
+  leaves media-kit's platform defaults unchanged. `hwdec=no` selects software
+  decoding without disabling GPU rendering.
+- Every newly created controller reads these preferences: global playback,
+  TikTok feed, scene-info previews, and the scene tagger. Existing or preloaded
+  controllers retain their configuration; restarting the app updates all of them.
+- Android offers `gpu` and `mediacodec_embed`; other native platforms use the
+  embedded `libmpv` output. Web does not expose or apply mpv preferences.
+- Direct Android output requires `hwdec=mediacodec` and does not support mpv
+  subtitle rendering or video filters. Selecting it sets the required decoder;
+  selecting another decoder restores default output. Runtime loading also guards
+  against incompatible pairs and platform-specific options imported from backups.
+- Configuration backups include both keys with allowlisted values. Verify
+  persistence, effective controller configuration, platform filtering, and paired
+  selection behavior in tests; hardware compatibility requires device testing.
+
 ### Playback queues
 
 `PlaybackQueue` retains contextual queues keyed by `PlaybackQueueIds`. The main

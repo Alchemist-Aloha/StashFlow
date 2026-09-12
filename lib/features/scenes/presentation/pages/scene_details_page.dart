@@ -24,9 +24,8 @@ import '../../../../core/utils/responsive.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../providers/entity_media_filter_scope.dart';
 import '../providers/scene_details_provider.dart';
-import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
-import '../providers/scene_random_navigation_provider.dart';
+import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
 import 'scene_info_page.dart';
 import '../../data/repositories/stream_resolver.dart';
@@ -105,7 +104,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   Future<void> _openRandomScene(BuildContext context) async {
     final randomScene = await ref
-        .read(sceneRandomNavigationControllerProvider)
+        .read(sceneListProvider.notifier)
         .getRandomScene(excludeSceneId: widget.sceneId);
     if (!context.mounted) return;
 
@@ -145,13 +144,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 Icons.delete_outline,
                 color: dialogContext.colors.error,
               ),
-              title: Text(context.l10n.delete_scene),
+              title: Text(dialogContext.l10n.delete_scene),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    context.l10n.delete_scenes_help,
+                    dialogContext.l10n.delete_scenes_help,
                     style: dialogContext.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
@@ -161,7 +160,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     children: [
                       ChoiceChip(
                         avatar: const Icon(Icons.storage_outlined, size: 18),
-                        label: Text(context.l10n.metadata_only),
+                        label: Text(dialogContext.l10n.metadata_only),
                         selected: mode == _SceneDeleteMode.metadataOnly,
                         onSelected: isDeleting
                             ? null
@@ -178,7 +177,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           Icons.folder_delete_outlined,
                           size: 18,
                         ),
-                        label: Text(context.l10n.files),
+                        label: Text(dialogContext.l10n.files),
                         selected: mode == _SceneDeleteMode.files,
                         onSelected: isDeleting
                             ? null
@@ -208,7 +207,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   onPressed: isDeleting
                       ? null
                       : () => Navigator.of(dialogContext).pop(false),
-                  child: Text(context.l10n.common_cancel),
+                  child: Text(dialogContext.l10n.common_cancel),
                 ),
                 FilledButton.icon(
                   style: FilledButton.styleFrom(
@@ -250,7 +249,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.delete_outline),
-                  label: Text(context.l10n.common_delete),
+                  label: Text(dialogContext.l10n.common_delete),
                 ),
               ],
             );
@@ -397,8 +396,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
 
     try {
-      final resolver = ref.read(streamResolverProvider.notifier);
-      final choice = await resolver.resolvePreferredStream(scene);
+      final resolver = ref.read(streamResolverProvider);
+      final choice = await resolver(scene);
       final videoUrl = choice?.url ?? scene.paths.stream;
 
       if (videoUrl == null || videoUrl.isEmpty) {

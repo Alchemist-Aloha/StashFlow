@@ -25,16 +25,16 @@ void main() {
 
     await expand('Performer');
     expect(find.text('Favorite'), findsOneWidget);
+
+    await expand('Library');
     expect(find.text('Folder'), findsOneWidget);
 
     await expand('Media Info');
-    expect(find.text('Stash ID'), findsWidgets);
     expect(find.text('Phash'), findsOneWidget);
 
-    await expand('Usage');
-    expect(find.text('Custom Fields'), findsOneWidget);
-
     await expand('System');
+    expect(find.text('Stash ID'), findsWidgets);
+    expect(find.text('Custom Fields'), findsOneWidget);
     expect(find.text('Missing Field'), findsOneWidget);
   });
 }

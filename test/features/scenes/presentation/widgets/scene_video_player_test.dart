@@ -77,31 +77,14 @@ class _DelayedPlayerState extends MockPlayerState {
   }
 }
 
-class MockStreamResolverNull extends StreamResolver {
-  @override
-  void build() {}
+Future<StreamChoice?> mockNullStreamResolver(Scene scene) async => null;
 
-  @override
-  Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
-    return Future.value(null);
-  }
-}
-
-class MockStreamResolverChoice extends StreamResolver {
-  @override
-  void build() {}
-
-  @override
-  Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
-    return Future.value(
-      const StreamChoice(
-        url: 'http://test.com/stream.mp4',
-        mimeType: 'video/mp4',
-        label: 'direct',
-      ),
+Future<StreamChoice?> mockStreamResolver(Scene scene) async =>
+    const StreamChoice(
+      url: 'http://test.com/stream.mp4',
+      mimeType: 'video/mp4',
+      label: 'direct',
     );
-  }
-}
 
 class MockStreamPrewarmer extends StreamPrewarmer {
   @override
@@ -166,7 +149,7 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           playerStateProvider.overrideWith(MockPlayerState.new),
-          streamResolverProvider.overrideWith(MockStreamResolverNull.new),
+          streamResolverProvider.overrideWithValue(mockNullStreamResolver),
           streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
           mediaHeadersProvider.overrideWithValue(const {}),
         ],
@@ -229,7 +212,7 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           playerStateProvider.overrideWith(MockPlayerState.new),
-          streamResolverProvider.overrideWith(MockStreamResolverChoice.new),
+          streamResolverProvider.overrideWithValue(mockStreamResolver),
           streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
           mediaHeadersProvider.overrideWithValue(const {}),
         ],
@@ -280,7 +263,7 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           playerStateProvider.overrideWith(() => playerState),
-          streamResolverProvider.overrideWith(MockStreamResolverChoice.new),
+          streamResolverProvider.overrideWithValue(mockStreamResolver),
           streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
           mediaHeadersProvider.overrideWithValue(const {}),
         ],
@@ -341,7 +324,7 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           playerStateProvider.overrideWith(MockPlayerState.new),
-          streamResolverProvider.overrideWith(MockStreamResolverChoice.new),
+          streamResolverProvider.overrideWithValue(mockStreamResolver),
           streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
           mediaHeadersProvider.overrideWithValue(const {}),
         ],
@@ -381,7 +364,7 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           playerStateProvider.overrideWith(MockPlayerState.new),
-          streamResolverProvider.overrideWith(MockStreamResolverChoice.new),
+          streamResolverProvider.overrideWithValue(mockStreamResolver),
           streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
           mediaHeadersProvider.overrideWithValue(const {}),
         ],
@@ -406,7 +389,7 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         playerStateProvider.overrideWith(MockPlayerState.new),
-        streamResolverProvider.overrideWith(MockStreamResolverChoice.new),
+        streamResolverProvider.overrideWithValue(mockStreamResolver),
         streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
         mediaHeadersProvider.overrideWithValue(const {}),
         castServiceProvider.overrideWith(_FakeAppCastService.new),

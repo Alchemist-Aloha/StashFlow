@@ -481,10 +481,6 @@
   "settings_develop_log_viewer_subtitle": "Ouvrir une vue en direct des journaux de l'application.",
   "settings_develop_logs_copied": "Journaux copiés dans le presse-papiers",
   "settings_develop_no_logs": "Pas encore de journaux. Interagissez avec l'application pour capturer des journaux.",
-  "settings_develop_web_overrides": "Surcharges Web",
-  "settings_develop_web_overrides_subtitle": "Drapeaux avancés pour la plateforme Web",
-  "settings_develop_web_auth": "Autoriser la connexion par mot de passe sur le Web",
-  "settings_develop_web_auth_subtitle": "Surcharge la restriction native uniquement et force la visibilité de la méthode d'authentification Utilisateur + Mot de passe sur Flutter Web.",
   "@settings_support_update_to": {
     "placeholders": {
       "version": {
@@ -663,8 +659,6 @@
   "scenes_phash_failed": "Échec de la génération de phash : {error}",
   "details_failed_update_studio": "Échec de la mise à jour du studio : {error}",
   "scenes_filter_saved": "Préférences de filtre enregistrées par défaut",
-  "settings_develop_proxy_auth": "Activer les modes d'authentification proxy",
-  "settings_develop_proxy_auth_subtitle": "Activez les méthodes avancées Basic Auth et Bearer Token pour une utilisation avec des backends sans authentification derrière des proxys comme Authentik.",
   "settings_server_auth_basic": "Authentification de base",
   "settings_server_auth_bearer": "Jeton porteur",
   "settings_server_auth_basic_desc": "Envoie l'en-tête 'Authorization: Basic <base64(user:pass)>'.",
@@ -1168,5 +1162,20 @@
   "filter_field": "Champ",
   "filter_values": "Valeurs (séparées par des virgules)",
   "filter_folder": "Répertoire",
-  "filter_photographer": "Photographe"
+  "filter_photographer": "Photographe",
+  "settings_playback_mpv_title": "Décodage et sortie vidéo",
+  "settings_playback_mpv_subtitle": "S’applique aux nouveaux lecteurs. Redémarrez l’application pour mettre à jour les vidéos actives et les lecteurs préchargés du fil.",
+  "settings_playback_mpv_vo": "Sortie vidéo (vo)",
+  "settings_playback_mpv_hwdec": "Décodage matériel (hwdec)",
+  "settings_playback_mpv_default": "Valeur par défaut de la plateforme",
+  "settings_playback_mpv_software": "Décodage logiciel (no)",
+  "settings_playback_mpv_auto": "Automatique (auto)",
+  "settings_playback_mpv_auto_safe": "Automatique, modes sûrs (auto-safe)",
+  "settings_playback_mpv_auto_copy": "Automatique, copie en RAM (auto-copy)",
+  "settings_playback_mpv_gpu": "Sortie GPU (gpu)",
+  "settings_playback_mpv_libmpv": "Sortie intégrée (libmpv)",
+  "settings_playback_mpv_embed": "Sortie Android directe (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Décodeur matériel Android (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Décodeur Android avec copie en RAM (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "La sortie Android directe sélectionne mediacodec et ne prend pas en charge les sous-titres rendus par mpv ni les filtres vidéo. Choisir un autre décodeur rétablit la sortie par défaut."
 }

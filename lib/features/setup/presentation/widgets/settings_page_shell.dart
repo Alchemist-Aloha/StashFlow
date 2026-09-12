@@ -10,13 +10,11 @@ class SettingsPageShell extends ConsumerWidget {
     super.key,
     required this.title,
     required this.child,
-    this.maxContentWidth = 920,
     this.floatingActionButton,
   });
 
   final String title;
   final Widget child;
-  final double maxContentWidth;
   final Widget? floatingActionButton;
 
   @override
@@ -44,7 +42,9 @@ class SettingsPageShell extends ConsumerWidget {
         child: Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: maxContentWidth),
+            constraints: BoxConstraints(
+              maxWidth: 920 * context.dimensions.fontSizeFactor,
+            ),
             child: child,
           ),
         ),

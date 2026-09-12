@@ -31,7 +31,7 @@ worktree unless the user explicitly requests one for a task.
 - Files: [lib/l10n/](lib/l10n/)
 - Target locales: de, es, fr, it, ja, ko, ru, zh, zh_Hans, zh_Hant.
 - Preserve placeholders (e.g., {count}, {error}) exactly.
-- Use `scripts/apply_translations.py` and `scripts/check_translations.py` to help validation.
+- Use `scripts/analyze_translations.py` and `scripts/check_translations.py` to validate ARB edits.
 
 ## Design Specifications
 

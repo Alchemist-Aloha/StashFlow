@@ -31,17 +31,12 @@ Scene _scene(String id) {
 }
 
 void main() {
-  group('QueuePlaybackCoordinator', () {
-    const coordinator = QueuePlaybackCoordinator();
-
+  group('findQueuePlaybackTarget', () {
     test('findTarget returns next scene and index', () {
       final scenes = [_scene('1'), _scene('2'), _scene('3')];
       final state = PlaybackQueueState(sequence: scenes, currentIndex: 0);
 
-      final target = coordinator.findTarget(
-        queueState: state,
-        direction: QueueAdvanceDirection.next,
-      );
+      final target = findQueuePlaybackTarget(queueState: state, delta: 1);
 
       expect(target?.scene.id, '2');
       expect(target?.targetIndex, 1);
@@ -53,9 +48,9 @@ void main() {
         final scenes = [_scene('1'), _scene('2'), _scene('3')];
         final state = PlaybackQueueState(sequence: scenes, currentIndex: -1);
 
-        final target = coordinator.findTarget(
+        final target = findQueuePlaybackTarget(
           queueState: state,
-          direction: QueueAdvanceDirection.next,
+          delta: 1,
           activeSceneId: '2',
         );
 
@@ -68,10 +63,7 @@ void main() {
       final scenes = [_scene('1'), _scene('2')];
       final state = PlaybackQueueState(sequence: scenes, currentIndex: 1);
 
-      final target = coordinator.findTarget(
-        queueState: state,
-        direction: QueueAdvanceDirection.next,
-      );
+      final target = findQueuePlaybackTarget(queueState: state, delta: 1);
 
       expect(target, isNull);
     });

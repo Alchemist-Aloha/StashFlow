@@ -5,7 +5,6 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_random_navigation_provider.dart';
 
 import '../../../../helpers/test_helpers.dart';
 
@@ -39,7 +38,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test(
-    'scene random controller forwards the preference and exclusion id',
+    'scene random selection respects active filters and exclusion id',
     () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
@@ -63,7 +62,7 @@ void main() {
           .update(const SceneFilter(organized: true));
 
       final scene = await container
-          .read(sceneRandomNavigationControllerProvider)
+          .read(sceneListProvider.notifier)
           .getRandomScene(excludeSceneId: 'current');
 
       expect(scene?.id, 'random-a');
@@ -72,7 +71,7 @@ void main() {
     },
   );
 
-  test('scene random controller can ignore active filters', () async {
+  test('scene random selection can ignore active filters', () async {
     SharedPreferences.setMockInitialValues({
       'scene_random_respect_active_filter': false,
     });
@@ -96,9 +95,7 @@ void main() {
         .read(sceneFilterStateProvider.notifier)
         .update(const SceneFilter(organized: true));
 
-    await container
-        .read(sceneRandomNavigationControllerProvider)
-        .getRandomScene();
+    await container.read(sceneListProvider.notifier).getRandomScene();
 
     expect(repo.findSceneCalls.last.filter, isNull);
     expect(repo.findSceneCalls.last.sceneFilter, SceneFilter.empty());

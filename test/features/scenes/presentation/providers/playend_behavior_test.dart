@@ -67,10 +67,8 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPrefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
-        streamResolverProvider.overrideWith(
-          () => TestStreamResolver(
-            () => pendingResolution?.future ?? Future.value(resolvedChoice),
-          ),
+        streamResolverProvider.overrideWithValue(
+          (scene) => pendingResolution?.future ?? Future.value(resolvedChoice),
         ),
       ],
     );
@@ -420,16 +418,4 @@ class CustomPlayerStream extends Mock implements mk.PlayerStream {
     this.position,
     this.duration,
   );
-}
-
-class TestStreamResolver extends StreamResolver {
-  TestStreamResolver(this.resolve);
-
-  final Future<StreamChoice?> Function() resolve;
-
-  @override
-  void build() {}
-
-  @override
-  Future<StreamChoice?> resolvePreferredStream(Scene scene) => resolve();
 }

@@ -1797,26 +1797,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_develop_no_logs => 'まだログはありません。アプリを操作してログを取得してください。';
 
   @override
-  String get settings_develop_web_overrides => 'Webオーバーライド';
-
-  @override
-  String get settings_develop_web_overrides_subtitle => 'Webプラットフォーム向けの高度なフラグ';
-
-  @override
-  String get settings_develop_web_auth => 'Webでのパスワードログインを許可';
-
-  @override
-  String get settings_develop_web_auth_subtitle =>
-      'ネイティブ限定の制限を上書きし、Flutter Webでユーザー名 + パスワード認証を強制表示します。';
-
-  @override
-  String get settings_develop_proxy_auth => 'プロキシ認証モードを有効にする';
-
-  @override
-  String get settings_develop_proxy_auth_subtitle =>
-      'Authentikなどのプロキシの背後にある認証不要のバックエンドで使用するために、高度なBasic認証およびBearerトークン方式を有効にします。';
-
-  @override
   String get settings_server_auth_basic => 'Basic認証';
 
   @override
@@ -3329,4 +3309,53 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get filter_photographer => '写真家';
+
+  @override
+  String get settings_playback_mpv_title => '動画のデコードと出力';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      '新しく作成されるプレーヤーに適用されます。再生中の動画や読み込み済みのフィードプレーヤーに適用するには、アプリを再起動してください。';
+
+  @override
+  String get settings_playback_mpv_vo => '映像出力 (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec => 'ハードウェアデコード (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => 'プラットフォームの既定値';
+
+  @override
+  String get settings_playback_mpv_software => 'ソフトウェアデコード (no)';
+
+  @override
+  String get settings_playback_mpv_auto => '自動 (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe => '自動・安全なモード (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy => '自動・コピーバック (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'GPU 出力 (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => '埋め込み出力 (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed => 'Android 直接出力 (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec =>
+      'Android ハードウェアデコーダー (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Android ハードウェアデコーダー・コピーバック (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'Android 直接出力を選択するとデコーダーは mediacodec になります。mpv による字幕描画や映像フィルターには対応していません。別のデコーダーを選ぶと、出力は既定値に戻ります。';
 }

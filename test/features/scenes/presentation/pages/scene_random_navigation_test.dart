@@ -10,7 +10,6 @@ import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_detai
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scenes_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_random_navigation_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 import '../../../../helpers/test_helpers.dart';
@@ -45,16 +44,6 @@ Scene _scene(String id) {
   );
 }
 
-class _FakeSceneRandomNavigationController
-    extends SceneRandomNavigationController {
-  _FakeSceneRandomNavigationController(super.ref, this.result);
-
-  final Scene? result;
-
-  @override
-  Future<Scene?> getRandomScene({String? excludeSceneId}) async => result;
-}
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -73,16 +62,14 @@ void main() {
 
     expect(container.read(sceneListRandomReturnProvider), isFalse);
     expect(
-      await container
-          .read(sceneRandomNavigationControllerProvider)
-          .getRandomScene(),
+      await container.read(sceneListProvider.notifier).getRandomScene(),
       randomScene,
     );
     expect(container.read(sceneListRandomReturnProvider), isTrue);
   });
 
   testWidgets(
-    'ScenesPage random button uses shared controller and preserves the main queue',
+    'ScenesPage random button preserves the main queue',
     (tester) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
@@ -90,7 +77,12 @@ void main() {
       final randomScene = _scene('backend-random');
       final queuedA = _scene('queue-a');
       final queuedB = _scene('queue-b');
-      final repo = MockGraphQLSceneRepository()..withData([listedScene]);
+      final repo = MockGraphQLSceneRepository()
+        ..withData([listedScene])
+        ..findScenesResponses.addAll([
+          [listedScene],
+          [randomScene],
+        ]);
       Object? randomRouteExtra;
 
       final router = GoRouter(
@@ -111,9 +103,6 @@ void main() {
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
             sceneRepositoryProvider.overrideWithValue(repo),
-            sceneRandomNavigationControllerProvider.overrideWith(
-              (ref) => _FakeSceneRandomNavigationController(ref, randomScene),
-            ),
           ],
           child: MaterialApp.router(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -149,14 +138,19 @@ void main() {
     },
   );
 
-  testWidgets('SceneDetailsPage random button uses the shared controller', (
+  testWidgets('SceneDetailsPage random button uses the list provider', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final currentScene = _scene('current');
     final randomScene = _scene('backend-next');
-    final repo = MockGraphQLSceneRepository()..withData([currentScene]);
+    final repo = MockGraphQLSceneRepository()
+      ..withData([currentScene])
+      ..findScenesResponses.addAll([
+        [currentScene],
+        [randomScene],
+      ]);
     Object? randomRouteExtra;
 
     final router = GoRouter(
@@ -180,9 +174,6 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           sceneRepositoryProvider.overrideWithValue(repo),
-          sceneRandomNavigationControllerProvider.overrideWith(
-            (ref) => _FakeSceneRandomNavigationController(ref, randomScene),
-          ),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

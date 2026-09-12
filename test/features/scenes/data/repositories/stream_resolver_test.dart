@@ -8,9 +8,9 @@ void main() {
     final container = ProviderContainer();
     addTearDown(container.dispose);
 
-    final choice = await container
-        .read(streamResolverProvider.notifier)
-        .resolvePreferredStream(_scene('https://stash.test/scene/1/stream'));
+    final choice = await container.read(streamResolverProvider)(
+      _scene('https://stash.test/scene/1/stream'),
+    );
 
     expect(choice?.url, 'https://stash.test/scene/1/stream');
     expect(choice?.label, 'Direct');

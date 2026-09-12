@@ -64,7 +64,6 @@ void main() {
           name: 'New',
           baseUrl: 'https://stash.example',
           authMode: 'apiKey',
-          allowWebPasswordLogin: false,
         ),
       ],
       activeServerProfileId: 'new',
@@ -117,7 +116,6 @@ void main() {
           name: null,
           baseUrl: 'https://stash.example',
           authMode: 'apiKey',
-          allowWebPasswordLogin: false,
         ),
       ],
       activeServerProfileId: 'new',
@@ -142,7 +140,6 @@ Map<String, Object?> _profileJson(String id) => {
   'name': id,
   'baseUrl': 'https://$id.example',
   'authMode': 'apiKey',
-  'allowWebPasswordLogin': false,
 };
 
 Future<AppConfigService> _service({

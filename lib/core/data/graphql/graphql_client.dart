@@ -79,12 +79,6 @@ class ServerApiKey extends _$ServerApiKey {
   }
 }
 
-final proxyAuthModesEnabledProvider = Provider<bool>((ref) {
-  ref.watch(sharedPreferencesTriggerProvider);
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return prefs.getBool('enable_proxy_auth_modes') ?? false;
-});
-
 @riverpod
 Future<GraphQLClient> profileGraphqlClient(
   Ref ref,

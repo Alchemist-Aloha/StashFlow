@@ -8,9 +8,8 @@ import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
 import '../../../../core/domain/entities/filter_options.dart';
-import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
-import '../providers/scene_random_navigation_provider.dart';
+import '../providers/scene_list_provider.dart';
 import '../providers/player_view_mode.dart';
 import '../providers/video_player_provider.dart';
 import '../widgets/scene_card.dart';
@@ -270,7 +269,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   /// Opens the "Casino mode" random scene view.
   Future<void> _openRandomScene() async {
     final randomScene = await ref
-        .read(sceneRandomNavigationControllerProvider)
+        .read(sceneListProvider.notifier)
         .getRandomScene(excludeSceneId: _lastRandomSceneId);
     if (!mounted || randomScene == null) return;
 

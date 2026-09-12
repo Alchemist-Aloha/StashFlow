@@ -3,7 +3,7 @@ import 'package:audio_service/audio_service.dart';
 /// A bridge between the application's video players and the system media session.
 ///
 /// [StashMediaHandler] uses the `audio_service` package to:
-/// 1. Show media notifications on the lock screen and notification shade.
+/// 1. Show media notifications on mobile and MPRIS media controls on Linux.
 /// 2. Handle remote control events (play, pause, skip, seek) from headphones,
 ///    Bluetooth devices, and the system UI.
 /// 3. Provide metadata (title, studio, duration) to the OS.

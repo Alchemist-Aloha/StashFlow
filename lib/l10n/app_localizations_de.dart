@@ -1875,28 +1875,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Noch keine Logs. Interagiere mit der App, um Logs zu erfassen.';
 
   @override
-  String get settings_develop_web_overrides => 'Web-Overrides';
-
-  @override
-  String get settings_develop_web_overrides_subtitle =>
-      'Erweiterte Flags für die Web-Plattform';
-
-  @override
-  String get settings_develop_web_auth => 'Passwort-Login im Web erlauben';
-
-  @override
-  String get settings_develop_web_auth_subtitle =>
-      'Hebt die Native-only-Beschränkung auf und erzwingt die Sichtbarkeit der Benutzername + Passwort-Authentifizierungsmethode in Flutter Web.';
-
-  @override
-  String get settings_develop_proxy_auth =>
-      'Proxy-Authentifizierungsmodi aktivieren';
-
-  @override
-  String get settings_develop_proxy_auth_subtitle =>
-      'Aktivieren Sie erweiterte Basic-Auth- und Bearer-Token-Methoden für die Verwendung mit authentifizierungsfreien Backends hinter Proxys wie Authentik.';
-
-  @override
   String get settings_server_auth_basic => 'Basic Auth';
 
   @override
@@ -3445,4 +3423,56 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get filter_photographer => 'Fotograf';
+
+  @override
+  String get settings_playback_mpv_title => 'Videodekodierung und Ausgabe';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      'Gilt für neu erstellte Player. Starte die App neu, um aktive Videos und vorgeladene Feed-Player zu aktualisieren.';
+
+  @override
+  String get settings_playback_mpv_vo => 'Videoausgabe (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec => 'Hardwaredekodierung (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => 'Plattformstandard';
+
+  @override
+  String get settings_playback_mpv_software => 'Softwaredekodierung (no)';
+
+  @override
+  String get settings_playback_mpv_auto => 'Automatisch (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe =>
+      'Automatisch, sichere Modi (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy =>
+      'Automatisch, Rückkopieren (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'GPU-Ausgabe (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => 'Eingebettete Ausgabe (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed =>
+      'Direkte Android-Ausgabe (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec =>
+      'Android-Hardwaredecoder (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Android-Hardwaredecoder mit Rückkopieren (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'Die direkte Android-Ausgabe wählt mediacodec und unterstützt keine von mpv gerenderten Untertitel oder Videofilter. Ein anderer Decoder stellt die Standardausgabe wieder her.';
 }

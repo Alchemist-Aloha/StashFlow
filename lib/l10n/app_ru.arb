@@ -508,10 +508,6 @@
   "settings_develop_log_viewer_subtitle": "Открыть просмотр журналов приложения в реальном времени.",
   "settings_develop_logs_copied": "Логи скопированы в буфер обмена",
   "settings_develop_no_logs": "Журналы отсутствуют. Взаимодействуйте с приложением, чтобы собрать логи.",
-  "settings_develop_web_overrides": "Переопределения для Web",
-  "settings_develop_web_overrides_subtitle": "Расширенные флаги для веб-платформы",
-  "settings_develop_web_auth": "Разрешить вход по паролю в Web",
-  "settings_develop_web_auth_subtitle": "Переопределяет ограничение «только для нативных приложений» и делает видимым метод аутентификации по имени пользователя и паролю во Flutter Web.",
   "@settings_support_update_to": {
     "placeholders": {
       "version": {
@@ -663,8 +659,6 @@
   "scenes_phash_failed": "Не удалось сгенерировать phash: {error}",
   "details_failed_update_studio": "Не удалось обновить студию: {error}",
   "scenes_filter_saved": "Настройки фильтра сохранены по умолчанию",
-  "settings_develop_proxy_auth": "Включить режимы аутентификации через прокси",
-  "settings_develop_proxy_auth_subtitle": "Включите расширенные методы Basic Auth и Bearer Token для использования с бэкендами без аутентификации за прокси-серверами, такими как Authentik.",
   "settings_server_auth_basic": "Базовая аутентификация",
   "settings_server_auth_bearer": "Токен носителя",
   "settings_server_auth_basic_desc": "Отправляет заголовок 'Authorization: Basic <base64(user:pass)>'.",
@@ -1168,5 +1162,20 @@
   "filter_field": "Поле",
   "filter_values": "Значения (через запятую)",
   "filter_folder": "Папка",
-  "filter_photographer": "Фотограф"
+  "filter_photographer": "Фотограф",
+  "settings_playback_mpv_title": "Декодирование и вывод видео",
+  "settings_playback_mpv_subtitle": "Применяется к новым плеерам. Перезапустите приложение, чтобы обновить активные видео и предварительно загруженные плееры ленты.",
+  "settings_playback_mpv_vo": "Вывод видео (vo)",
+  "settings_playback_mpv_hwdec": "Аппаратное декодирование (hwdec)",
+  "settings_playback_mpv_default": "По умолчанию для платформы",
+  "settings_playback_mpv_software": "Программное декодирование (no)",
+  "settings_playback_mpv_auto": "Автоматически (auto)",
+  "settings_playback_mpv_auto_safe": "Автоматически, безопасные режимы (auto-safe)",
+  "settings_playback_mpv_auto_copy": "Автоматически, копирование в ОЗУ (auto-copy)",
+  "settings_playback_mpv_gpu": "Вывод через GPU (gpu)",
+  "settings_playback_mpv_libmpv": "Встроенный вывод (libmpv)",
+  "settings_playback_mpv_embed": "Прямой вывод Android (mediacodec_embed)",
+  "settings_playback_mpv_mediacodec": "Аппаратный декодер Android (mediacodec)",
+  "settings_playback_mpv_mediacodec_copy": "Декодер Android с копированием в ОЗУ (mediacodec-copy)",
+  "settings_playback_mpv_embed_help": "Прямой вывод Android выбирает декодер mediacodec и не поддерживает отрисовку субтитров mpv и видеофильтры. Выбор другого декодера восстанавливает вывод по умолчанию."
 }

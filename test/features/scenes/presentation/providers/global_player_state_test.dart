@@ -137,7 +137,6 @@ void main() {
       expect(state.prewarmSucceeded, isTrue);
       expect(state.prewarmLatencyMs, equals(50));
       expect(state.playEndBehavior, VideoEndBehavior.next);
-      expect(state.autoplayNext, isTrue);
       expect(state.showVideoDebugInfo, isTrue);
       expect(state.useDoubleTapSeek, isFalse);
       expect(state.enableBackgroundPlayback, isTrue);
@@ -161,7 +160,6 @@ void main() {
         expect(newState.isPlaying, isTrue);
         expect(newState.streamMimeType, equals('video/mp4'));
         expect(newState.playEndBehavior, VideoEndBehavior.next);
-        expect(newState.autoplayNext, isTrue);
       });
 
       test('updates specified values', () {
@@ -212,7 +210,6 @@ void main() {
         // Retained fields
         expect(newState.isPlaying, isTrue);
         expect(newState.playEndBehavior, VideoEndBehavior.next);
-        expect(newState.autoplayNext, isTrue);
       });
     });
   });

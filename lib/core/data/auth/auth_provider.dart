@@ -334,7 +334,7 @@ class AuthProvider extends Notifier<AuthState> {
 
     try {
       final service = await ref.read(authServiceProvider.future);
-      return service.cookieHeaderFor(requestUri: Uri.parse(endpoint));
+      return await service.cookieHeaderFor(requestUri: Uri.parse(endpoint));
     } catch (_) {
       return '';
     }

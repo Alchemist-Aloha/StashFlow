@@ -9,6 +9,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 part 'tag_list_provider.g.dart';
 
@@ -204,10 +205,8 @@ class TagList extends _$TagList {
   bool get hasMore => _hasMore;
   bool get isLoadingMore => _isLoadingMore;
 
-  Future<Tag?> getRandomTag({
-    bool useCurrentFilter = false,
-    String? excludeTagId,
-  }) async {
+  Future<Tag?> getRandomTag({String? excludeTagId}) async {
+    final useCurrentFilter = ref.read(sceneRandomRespectActiveFilterProvider);
     final repository = ref.read(tagRepositoryProvider);
     final query = useCurrentFilter ? ref.read(tagSearchQueryProvider) : '';
     final tagFilter = useCurrentFilter

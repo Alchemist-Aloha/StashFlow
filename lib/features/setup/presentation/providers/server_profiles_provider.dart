@@ -24,8 +24,6 @@ class ServerProfiles extends _$ServerProfiles {
           name: 'Default',
           baseUrl: legacyUrl,
           authMode: _getLegacyAuthMode(),
-          allowWebPasswordLogin:
-              prefs.getBool('allow_web_password_login') ?? false,
         );
 
         Future.microtask(() => _migrateCredentials(profile));

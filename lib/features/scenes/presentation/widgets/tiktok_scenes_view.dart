@@ -13,6 +13,8 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../providers/player_view_mode.dart';
+import '../providers/player_settings.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
@@ -239,14 +241,19 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   Future<void> _initializeController(Scene scene) async {
     try {
-      final resolver = ref.read(streamResolverProvider.notifier);
-      final choice = await resolver.resolvePreferredStream(scene);
+      final resolver = ref.read(streamResolverProvider);
+      final choice = await resolver(scene);
       if (choice == null) return;
 
       final headers = ref.read(mediaPlaybackHeadersProvider);
 
       final player = Player();
-      final controller = VideoController(player);
+      final controller = VideoController(
+        player,
+        configuration: PlayerSettingsStore(
+          ref.read(sharedPreferencesProvider),
+        ).loadVideoConfiguration(),
+      );
 
       _players[scene.id] = player;
       _controllers[scene.id] = controller;
@@ -704,8 +711,8 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         source: 'TiktokScenesView',
       );
 
-      final resolver = ref.read(streamResolverProvider.notifier);
-      final choice = await resolver.resolvePreferredStream(widget.scene);
+      final resolver = ref.read(streamResolverProvider);
+      final choice = await resolver(widget.scene);
 
       await playerNotifier.attachController(
         widget.scene,

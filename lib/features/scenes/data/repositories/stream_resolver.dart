@@ -1,7 +1,5 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/scene.dart';
-
-part 'stream_resolver.g.dart';
 
 /// Represents a potential video stream candidate for a scene.
 class StreamChoice {
@@ -17,16 +15,15 @@ class StreamChoice {
   final String? label;
 }
 
-/// Resolves Stash's direct file stream for a [Scene].
-@riverpod
-class StreamResolver extends _$StreamResolver {
-  @override
-  void build() {}
+typedef StreamResolver = Future<StreamChoice?> Function(Scene scene);
 
-  /// Returns `null` when Stash did not provide a direct stream path.
-  Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
-    final url = scene.paths.stream?.trim();
-    if (url == null || url.isEmpty) return null;
-    return StreamChoice(url: url, mimeType: 'video/mp4', label: 'Direct');
-  }
+final streamResolverProvider = Provider<StreamResolver>(
+  (ref) => resolvePreferredStream,
+);
+
+/// Resolves Stash's direct file stream, or `null` when no path is available.
+Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
+  final url = scene.paths.stream?.trim();
+  if (url == null || url.isEmpty) return null;
+  return StreamChoice(url: url, mimeType: 'video/mp4', label: 'Direct');
 }

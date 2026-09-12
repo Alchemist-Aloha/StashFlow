@@ -131,8 +131,6 @@ final class AppConfigService {
               name: json['name'] as String?,
               baseUrl: json['baseUrl'] as String,
               authMode: json['authMode'] as String,
-              allowWebPasswordLogin:
-                  json['allowWebPasswordLogin'] as bool? ?? false,
             );
           })
           .toList(growable: false);
@@ -241,7 +239,6 @@ final class AppConfigService {
     'name': profile.name,
     'baseUrl': profile.baseUrl,
     'authMode': profile.authMode,
-    'allowWebPasswordLogin': profile.allowWebPasswordLogin,
   };
 
   static String _credentialKey(String id, String suffix) =>

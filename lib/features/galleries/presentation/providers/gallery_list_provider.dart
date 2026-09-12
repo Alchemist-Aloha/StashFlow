@@ -9,6 +9,7 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../../core/domain/entities/filter_options.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 part 'gallery_list_provider.g.dart';
 
@@ -236,12 +237,12 @@ class GalleryList extends _$GalleryList {
   bool get isLoadingMore => _isLoadingMore;
 
   Future<Gallery?> getRandomGallery({
-    bool useCurrentFilter = false,
     String? performerId,
     String? studioId,
     String? tagId,
     String? excludeGalleryId,
   }) async {
+    final useCurrentFilter = ref.read(sceneRandomRespectActiveFilterProvider);
     final repository = ref.read(galleryRepositoryProvider);
     final query = useCurrentFilter ? ref.read(gallerySearchQueryProvider) : '';
     final filter = useCurrentFilter

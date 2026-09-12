@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 
 class TransformableVideoSurface extends StatefulWidget {
   const TransformableVideoSurface({
@@ -11,8 +12,6 @@ class TransformableVideoSurface extends StatefulWidget {
     this.transformationNotifier,
     this.textAlign = TextAlign.center,
     this.fit = BoxFit.contain,
-    this.horizontalPadding = 16,
-    this.maxWidthFactor = 0.9,
     super.key,
   });
 
@@ -23,8 +22,6 @@ class TransformableVideoSurface extends StatefulWidget {
   final double bottomRatio;
   final TextAlign textAlign;
   final BoxConstraints constraints;
-  final double horizontalPadding;
-  final double maxWidthFactor;
 
   /// Optional notifier to sync transformations from external gesture detectors.
   final ValueNotifier<Matrix4>? transformationNotifier;
@@ -83,9 +80,9 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
         visible: true,
         textAlign: widget.textAlign,
         padding: EdgeInsets.fromLTRB(
-          widget.horizontalPadding,
+          context.dimensions.spacingMedium,
           0,
-          widget.horizontalPadding,
+          context.dimensions.spacingMedium,
           widget.bottomRatio * widget.constraints.maxHeight,
         ),
         style: TextStyle(

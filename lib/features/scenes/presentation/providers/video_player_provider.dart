@@ -16,7 +16,6 @@ import 'scene_details_provider.dart';
 import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/stream_prewarmer.dart';
-import 'fullscreen_controller.dart';
 import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
 import 'player_view_mode.dart';
@@ -58,17 +57,6 @@ String? resolveSceneSubtitleUrl({
   if (languageCode.isNotEmpty) query['lang'] = languageCode;
   if (captionType?.isNotEmpty ?? false) query['type'] = captionType!;
   return appendApiKey(uri.replace(queryParameters: query).toString(), apiKey);
-}
-
-class NavigationAction {
-  final String path;
-  final bool isReplacement;
-  NavigationAction(this.path, {this.isReplacement = false});
-}
-
-class NavigationIntent {
-  final List<NavigationAction> actions;
-  NavigationIntent(this.actions);
 }
 
 /// Represents the global state of the video player.
@@ -173,11 +161,8 @@ class GlobalPlayerState {
   final PlayerViewMode viewMode;
   final FullscreenPhase fullscreenPhase;
 
-  /// Flag to ignore redundant triggers during navigation.
-  final bool isTransitioning;
-
-  /// Intent for coordinated navigation triggered by player state changes.
-  final NavigationIntent? navigationIntent;
+  /// Replacement route requested by a player-driven scene transition.
+  final String? navigationReplacementPath;
 
   GlobalPlayerState({
     this.activeScene,
@@ -213,13 +198,8 @@ class GlobalPlayerState {
     this.subtitleTextAlignment = 'center',
     this.viewMode = PlayerViewMode.inline,
     this.fullscreenPhase = FullscreenPhase.inline,
-    this.isTransitioning = false,
-    this.navigationIntent,
+    this.navigationReplacementPath,
   });
-
-  /// User preference: whether to automatically play the next scene when current ends.
-  /// (Deprecated: Use [playEndBehavior] instead)
-  bool get autoplayNext => playEndBehavior == VideoEndBehavior.next;
 
   /// Creates a copy of the state with updated fields.
   /// Use [clearActive] to explicitly reset the active scene and controller.
@@ -241,7 +221,6 @@ class GlobalPlayerState {
     bool? prewarmSucceeded,
     int? prewarmLatencyMs,
     VideoEndBehavior? playEndBehavior,
-    bool? autoplayNext,
     bool? showVideoDebugInfo,
     bool? useDoubleTapSeek,
     bool? enableBackgroundPlayback,
@@ -258,11 +237,10 @@ class GlobalPlayerState {
     String? subtitleTextAlignment,
     PlayerViewMode? viewMode,
     FullscreenPhase? fullscreenPhase,
-    bool? isTransitioning,
-    NavigationIntent? navigationIntent,
+    String? navigationReplacementPath,
     bool clearActive = false,
     bool clearSubtitle = false,
-    bool clearNavigation = false,
+    bool clearNavigationReplacement = false,
   }) {
     return GlobalPlayerState(
       activeScene: clearActive ? null : (activeScene ?? this.activeScene),
@@ -293,11 +271,7 @@ class GlobalPlayerState {
       prewarmLatencyMs: clearActive
           ? null
           : (prewarmLatencyMs ?? this.prewarmLatencyMs),
-      playEndBehavior:
-          playEndBehavior ??
-          (autoplayNext != null
-              ? (autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop)
-              : this.playEndBehavior),
+      playEndBehavior: playEndBehavior ?? this.playEndBehavior,
       showVideoDebugInfo: showVideoDebugInfo ?? this.showVideoDebugInfo,
       useDoubleTapSeek: useDoubleTapSeek ?? this.useDoubleTapSeek,
       enableBackgroundPlayback:
@@ -325,10 +299,9 @@ class GlobalPlayerState {
           subtitleTextAlignment ?? this.subtitleTextAlignment,
       viewMode: viewMode ?? this.viewMode,
       fullscreenPhase: fullscreenPhase ?? this.fullscreenPhase,
-      isTransitioning: isTransitioning ?? this.isTransitioning,
-      navigationIntent: clearNavigation
+      navigationReplacementPath: clearNavigationReplacement
           ? null
-          : (navigationIntent ?? this.navigationIntent),
+          : (navigationReplacementPath ?? this.navigationReplacementPath),
     );
   }
 }
@@ -378,10 +351,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   late final PlaybackSessionController _sessionController;
   final PlaybackStartupRecovery _startupRecovery =
       const PlaybackStartupRecovery();
-  final FullscreenController _fullscreenController =
-      const FullscreenController();
-  final QueuePlaybackCoordinator _queuePlaybackCoordinator =
-      const QueuePlaybackCoordinator();
   bool? _fullscreenBeforePip;
   PlayerViewMode? _viewModeBeforePip;
   bool _pipRequestInFlight = false;
@@ -404,7 +373,14 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     // This is called here instead of main() to improve initial app startup performance.
     MediaKit.ensureInitialized();
     WidgetsBinding.instance.addObserver(this);
-    _sessionController = PlaybackSessionController();
+    _sessionController = PlaybackSessionController(
+      createVideoController: (player) => VideoController(
+        player,
+        configuration: PlayerSettingsStore(
+          ref.read(sharedPreferencesProvider),
+        ).loadVideoConfiguration(),
+      ),
+    );
 
     _activityTracker = PlaybackActivityTracker(
       now: DateTime.now,
@@ -498,20 +474,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       _viewModeBeforePip = null;
 
       if (restoreFullscreen != null && restoreViewMode != null) {
-        final runtime = _fullscreenController.syncFromLegacy(
-          isFullScreen: restoreFullscreen,
-          viewModeName: restoreViewMode.name,
-        );
         state = state.copyWith(
           isInPipMode: false,
-          isFullScreen: runtime.isFullScreen,
-          viewMode: PlayerViewMode.values.firstWhere(
-            (e) => e.name == runtime.viewModeName,
-            orElse: () => runtime.isFullScreen
-                ? PlayerViewMode.fullscreen
-                : PlayerViewMode.inline,
-          ),
-          fullscreenPhase: runtime.fullscreenPhase,
+          isFullScreen: restoreFullscreen,
+          viewMode: restoreViewMode,
+          fullscreenPhase: restoreViewMode == PlayerViewMode.tiktok
+              ? FullscreenPhase.tiktok
+              : restoreFullscreen
+              ? FullscreenPhase.fullscreen
+              : FullscreenPhase.inline,
         );
         return;
       }
@@ -654,10 +625,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
   }
 
-  void setAutoplayNext(bool value) {
-    setPlayEndBehavior(value ? VideoEndBehavior.next : VideoEndBehavior.stop);
-  }
-
   void setPlayEndBehavior(VideoEndBehavior behavior) {
     state = state.copyWith(playEndBehavior: behavior);
     unawaited(_settingsStore.savePlayEndBehaviorName(behavior.name));
@@ -794,30 +761,18 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
   }
 
-  void setPrewarmResult({
-    required bool attempted,
-    required bool succeeded,
-    int? latencyMs,
-  }) {
-    state = state.copyWith(
-      prewarmAttempted: attempted,
-      prewarmSucceeded: succeeded,
-      prewarmLatencyMs: latencyMs,
-    );
-  }
-
   void setFullScreen(bool value) {
     AppLogStore.instance.add(
       'PlayerState setFullScreen: $value',
       source: 'player_provider',
     );
-    final runtime = _fullscreenController.syncFromLegacy(
-      isFullScreen: value,
-      viewModeName: state.viewMode.name,
-    );
     state = state.copyWith(
-      isFullScreen: runtime.isFullScreen,
-      fullscreenPhase: runtime.fullscreenPhase,
+      isFullScreen: value,
+      fullscreenPhase: state.viewMode == PlayerViewMode.tiktok
+          ? FullscreenPhase.tiktok
+          : value
+          ? FullscreenPhase.fullscreen
+          : FullscreenPhase.inline,
     );
   }
 
@@ -826,67 +781,56 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       'PlayerState setViewMode: $mode',
       source: 'player_provider',
     );
-    final runtime = _fullscreenController.syncFromLegacy(
-      isFullScreen: state.isFullScreen,
-      viewModeName: mode.name,
-    );
     state = state.copyWith(
       viewMode: mode,
-      fullscreenPhase: runtime.fullscreenPhase,
+      fullscreenPhase: mode == PlayerViewMode.tiktok
+          ? FullscreenPhase.tiktok
+          : state.isFullScreen
+          ? FullscreenPhase.fullscreen
+          : FullscreenPhase.inline,
     );
   }
 
   void requestEnterFullscreen() {
-    final runtime = _fullscreenController.requestEnterFullscreen(
-      viewModeName: state.viewMode.name,
-    );
     state = state.copyWith(
-      isFullScreen: runtime.isFullScreen,
-      viewMode: PlayerViewMode.values.firstWhere(
-        (e) => e.name == runtime.viewModeName,
-        orElse: () => PlayerViewMode.fullscreen,
-      ),
-      fullscreenPhase: runtime.fullscreenPhase,
+      isFullScreen: true,
+      viewMode: state.viewMode == PlayerViewMode.tiktok
+          ? PlayerViewMode.tiktok
+          : PlayerViewMode.fullscreen,
+      fullscreenPhase: FullscreenPhase.entering,
     );
   }
 
   void requestExitFullscreen() {
-    final runtime = _fullscreenController.requestExitFullscreen();
     state = state.copyWith(
-      isFullScreen: runtime.isFullScreen,
-      viewMode: PlayerViewMode.values.firstWhere(
-        (mode) => mode.name == runtime.viewModeName,
-        orElse: () => PlayerViewMode.fullscreen,
-      ),
-      fullscreenPhase: runtime.fullscreenPhase,
+      isFullScreen: true,
+      viewMode: PlayerViewMode.fullscreen,
+      fullscreenPhase: FullscreenPhase.exiting,
     );
   }
 
   void markFullscreenEntered() {
-    final runtime = _fullscreenController.markEntered(
-      viewModeName: state.viewMode.name,
-    );
     state = state.copyWith(
-      isFullScreen: runtime.isFullScreen,
-      fullscreenPhase: runtime.fullscreenPhase,
+      isFullScreen: true,
+      fullscreenPhase: state.viewMode == PlayerViewMode.tiktok
+          ? FullscreenPhase.tiktok
+          : FullscreenPhase.fullscreen,
     );
   }
 
   void markFullscreenExited() {
-    final runtime = _fullscreenController.markExited();
     state = state.copyWith(
-      isFullScreen: runtime.isFullScreen,
+      isFullScreen: false,
       viewMode: PlayerViewMode.inline,
-      fullscreenPhase: runtime.fullscreenPhase,
+      fullscreenPhase: FullscreenPhase.inline,
     );
   }
 
   void markFullscreenExitFailed() {
-    final runtime = _fullscreenController.restoreAfterFailedExit();
     state = state.copyWith(
-      isFullScreen: runtime.isFullScreen,
+      isFullScreen: true,
       viewMode: PlayerViewMode.fullscreen,
-      fullscreenPhase: runtime.fullscreenPhase,
+      fullscreenPhase: FullscreenPhase.fullscreen,
     );
   }
 
@@ -918,11 +862,12 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
   }
 
-  void _navigate(List<NavigationAction> actions) {
-    state = state.copyWith(navigationIntent: NavigationIntent(actions));
-    // Immediately clear intent so it's not re-processed on next state update
+  void _replaceRoute(String path) {
+    state = state.copyWith(navigationReplacementPath: path);
     Future.microtask(() {
-      if (ref.mounted) state = state.copyWith(clearNavigation: true);
+      if (ref.mounted) {
+        state = state.copyWith(clearNavigationReplacement: true);
+      }
     });
   }
 
@@ -969,7 +914,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
 
     final prewarmer = ref.read(streamPrewarmerProvider.notifier);
-    final resolver = ref.read(streamResolverProvider.notifier);
+    final resolver = ref.read(streamResolverProvider);
     final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
 
     // Cancel any active prewarms for scenes that are no longer in our current "next N" window.
@@ -979,7 +924,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     for (final scene in nextScenes) {
       unawaited(() async {
         // Resolve URL (hits cache if already resolved)
-        final choice = await resolver.resolvePreferredStream(scene);
+        final choice = await resolver(scene);
         if (choice != null) {
           // Perform network-level prewarming
           await prewarmer.prewarm(scene, choice.url, headers: mediaHeaders);
@@ -1601,18 +1546,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     );
   }
 
-  void seekRelative(Duration delta) {
-    final player = state.player;
-    if (player == null) return;
-
-    final current = player.state.position;
-    final duration = player.state.duration;
-    var target = current + delta;
-    if (target < Duration.zero) target = Duration.zero;
-    if (target > duration) target = duration;
-    player.seek(target);
-  }
-
   void stop({bool dismissNotification = true}) {
     if (ref.mounted) {
       final castState = ref.read(castServiceProvider);
@@ -1662,6 +1595,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         player ??
         _sessionController.player ??
         (ref.mounted ? state.player : null);
+
     await _activityTracker.stop(
       sceneId: effectiveSceneId,
       resumePositionProvider: () =>
@@ -1671,6 +1605,24 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     await _sessionController.disposeSession(
       isTestMode: isTestMode,
       fallbackPlayer: player ?? (ref.mounted ? state.player : null),
+      beforePlayerDispose: () async {
+        // A live video surface (notably the Linux mini-player texture) must be
+        // removed from the widget tree before its native media_kit player is
+        // disposed. Keeping the controller published while awaiting dispose
+        // can deadlock texture teardown and freeze the next details route.
+        if (!ref.mounted || state.player != effectivePlayer) return;
+        state = state.copyWith(
+          clearActive: true,
+          isPlaying: false,
+          isBuffering: false,
+        );
+        if (!isTestMode) {
+          await WidgetsBinding.instance.endOfFrame.timeout(
+            const Duration(milliseconds: 250),
+            onTimeout: () {},
+          );
+        }
+      },
       log: (message) {
         AppLogStore.instance.add(message, source: 'player_provider');
       },
@@ -1865,15 +1817,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     _isTransitioning = true;
     try {
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
-      final target = _queuePlaybackCoordinator.findTarget(
+      final target = findQueuePlaybackTarget(
         queueState: queueNotifier.state,
-        direction: QueueAdvanceDirection.next,
+        delta: 1,
         activeSceneId: state.activeScene?.id,
       );
       if (target == null) return false;
 
-      final resolver = ref.read(streamResolverProvider.notifier);
-      final choice = await resolver.resolvePreferredStream(target.scene);
+      final resolver = ref.read(streamResolverProvider);
+      final choice = await resolver(target.scene);
       if (choice == null) return false;
 
       final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
@@ -1891,12 +1843,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         // Trigger navigation synchronization so background details match active scene.
         // Skip for TikTok mode as it handles its own navigation via PageView.
         if (state.viewMode != PlayerViewMode.tiktok) {
-          _navigate([
-            NavigationAction(
-              '/scenes/scene/${target.scene.id}',
-              isReplacement: true,
-            ),
-          ]);
+          _replaceRoute('/scenes/scene/${target.scene.id}');
         }
         return true;
       }
@@ -1916,15 +1863,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     _isTransitioning = true;
     try {
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
-      final target = _queuePlaybackCoordinator.findTarget(
+      final target = findQueuePlaybackTarget(
         queueState: queueNotifier.state,
-        direction: QueueAdvanceDirection.previous,
+        delta: -1,
         activeSceneId: state.activeScene?.id,
       );
       if (target == null) return;
 
-      final resolver = ref.read(streamResolverProvider.notifier);
-      final choice = await resolver.resolvePreferredStream(target.scene);
+      final resolver = ref.read(streamResolverProvider);
+      final choice = await resolver(target.scene);
       if (choice == null) return;
 
       final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
@@ -1942,12 +1889,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         // Trigger navigation synchronization.
         // Skip for TikTok mode as it handles its own navigation via PageView.
         if (state.viewMode != PlayerViewMode.tiktok) {
-          _navigate([
-            NavigationAction(
-              '/scenes/scene/${target.scene.id}',
-              isReplacement: true,
-            ),
-          ]);
+          _replaceRoute('/scenes/scene/${target.scene.id}');
         }
       }
     } finally {

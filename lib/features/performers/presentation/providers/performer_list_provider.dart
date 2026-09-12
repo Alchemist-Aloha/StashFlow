@@ -8,6 +8,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 part 'performer_list_provider.g.dart';
 
@@ -205,10 +206,8 @@ class PerformerList extends _$PerformerList {
   bool get hasMore => _hasMore;
   bool get isLoadingMore => _isLoadingMore;
 
-  Future<Performer?> getRandomPerformer({
-    bool useCurrentFilter = false,
-    String? excludePerformerId,
-  }) async {
+  Future<Performer?> getRandomPerformer({String? excludePerformerId}) async {
+    final useCurrentFilter = ref.read(sceneRandomRespectActiveFilterProvider);
     final repository = ref.read(performerRepositoryProvider);
     final query = useCurrentFilter
         ? ref.read(performerSearchQueryProvider)

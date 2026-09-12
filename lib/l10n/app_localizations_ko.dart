@@ -1795,26 +1795,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_develop_no_logs => '아직 로그가 없습니다. 앱과 상호작용하여 로그를 캡처하세요.';
 
   @override
-  String get settings_develop_web_overrides => '웹 재정의';
-
-  @override
-  String get settings_develop_web_overrides_subtitle => '웹 플랫폼용 고급 플래그';
-
-  @override
-  String get settings_develop_web_auth => '웹에서 비밀번호 로그인 허용';
-
-  @override
-  String get settings_develop_web_auth_subtitle =>
-      '네이티브 전용 제한을 무시하고 Flutter 웹에서 사용자 이름 + 비밀번호 인증 방식을 강제로 표시합니다.';
-
-  @override
-  String get settings_develop_proxy_auth => '프록시 인증 모드 활성화';
-
-  @override
-  String get settings_develop_proxy_auth_subtitle =>
-      'Authentik과 같은 프록시 뒤의 인증 없는 백엔드에서 사용하기 위해 고급 Basic Auth 및 Bearer Token 방식을 활성화합니다.';
-
-  @override
   String get settings_server_auth_basic => '기본 인증';
 
   @override
@@ -3326,4 +3306,53 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get filter_photographer => '사진가';
+
+  @override
+  String get settings_playback_mpv_title => '동영상 디코딩 및 출력';
+
+  @override
+  String get settings_playback_mpv_subtitle =>
+      '새로 생성되는 플레이어에 적용됩니다. 재생 중인 동영상과 미리 로드된 피드 플레이어에 적용하려면 앱을 다시 시작하세요.';
+
+  @override
+  String get settings_playback_mpv_vo => '영상 출력 (vo)';
+
+  @override
+  String get settings_playback_mpv_hwdec => '하드웨어 디코딩 (hwdec)';
+
+  @override
+  String get settings_playback_mpv_default => '플랫폼 기본값';
+
+  @override
+  String get settings_playback_mpv_software => '소프트웨어 디코딩 (no)';
+
+  @override
+  String get settings_playback_mpv_auto => '자동 (auto)';
+
+  @override
+  String get settings_playback_mpv_auto_safe => '자동, 안전 모드 (auto-safe)';
+
+  @override
+  String get settings_playback_mpv_auto_copy => '자동, 메모리 복사 (auto-copy)';
+
+  @override
+  String get settings_playback_mpv_gpu => 'GPU 출력 (gpu)';
+
+  @override
+  String get settings_playback_mpv_libmpv => '내장 출력 (libmpv)';
+
+  @override
+  String get settings_playback_mpv_embed => 'Android 직접 출력 (mediacodec_embed)';
+
+  @override
+  String get settings_playback_mpv_mediacodec =>
+      'Android 하드웨어 디코더 (mediacodec)';
+
+  @override
+  String get settings_playback_mpv_mediacodec_copy =>
+      'Android 하드웨어 디코더, 메모리 복사 (mediacodec-copy)';
+
+  @override
+  String get settings_playback_mpv_embed_help =>
+      'Android 직접 출력을 선택하면 mediacodec 디코딩이 사용되며 mpv 자막 렌더링과 영상 필터는 지원되지 않습니다. 다른 디코더를 선택하면 기본 출력으로 돌아갑니다.';
 }
