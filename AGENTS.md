@@ -81,14 +81,27 @@ broad checks unless later edits or failures justify it.
 
 ## Release Notes
 
-- Draft `docs/update/updateNNNN.md` from the real target-tag-to-`HEAD` range.
-  Start with `rtk git diff --stat <tag>..HEAD`, then inspect the user-facing
-  changes in that range.
-- Match the recent release-note style: a short title, concise sections, and
-  user-visible outcomes. Do not dump commit lists, hashes, or implementation
-  trivia.
-- Documentation-only release-note work does not require an application build;
-  verify the range, scope, Markdown, and `rtk git diff --check`.
+- Name the file for the target version, for example `update1330.md` for
+  `v1.33.0`, and use `# StashFlow vX.Y.Z` as the title.
+- Before drafting, inspect `git status`, the nearest existing update notes, and
+  the actual previous-release-tag-to-`HEAD` range. Do not infer the release from
+  only the latest commits or from uncommitted worktree changes.
+- Start with `rtk git diff --stat <previous-tag>..HEAD` and
+  `rtk git log --no-merges <previous-tag>..HEAD`, then inspect targeted diffs for
+  the largest user-facing areas.
+- Group changes by user-visible outcome under short `##` sections with relevant
+  emoji, following the newest notes in `docs/update/`. Omit empty categories.
+- Write concise bullets in plain language. Cover meaningful features, fixes,
+  compatibility, performance, and packaging changes a user would recognize.
+  Combine related commits into one outcome.
+- Exclude commit hashes, commit-by-commit narration, raw file churn, internal
+  refactors without user impact, speculative claims, and verification that did
+  not run.
+- Unless requested, edit only the update-note file; do not change package
+  versions, locks, tags, or release configuration.
+- Documentation-only release-note work does not require an application build.
+  Verify the selected range, changed-file scope, final Markdown, and
+  `rtk git diff --check`.
 
 ## Reviews and Handoffs
 
