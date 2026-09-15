@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:dart_cast/dart_cast.dart' as dc;
+import 'dart:async';
+import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/data/services/cast_service.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/utils/vtt_service.dart';
 import 'package:mockito/mockito.dart';
@@ -132,6 +136,55 @@ class FakeVideoController extends Mock implements VideoController {
 
   @override
   Future<void> get waitUntilFirstFrameRendered async {}
+}
+
+class _FakeCastSession extends dc.CastSession {
+  _FakeCastSession()
+    : super(
+        dc.CastDevice(
+          id: 'fake',
+          name: 'Fake Cast',
+          protocol: dc.CastProtocol.chromecast,
+          address: InternetAddress.loopbackIPv4,
+          port: 8009,
+        ),
+      );
+
+  int playCalls = 0;
+  int pauseCalls = 0;
+
+  @override
+  Future<void> play() async {
+    playCalls++;
+    stateMachine.forceState(dc.SessionState.playing);
+  }
+
+  @override
+  Future<void> pause() async {
+    pauseCalls++;
+    stateMachine.forceState(dc.SessionState.paused);
+  }
+
+  @override
+  Future<void> connect() async {}
+
+  @override
+  Future<void> disconnect() async {}
+
+  @override
+  Future<void> loadMedia(dc.CastMedia media) async {}
+
+  @override
+  Future<void> seek(Duration position) async {}
+
+  @override
+  Future<void> setSubtitle(dc.CastSubtitle? subtitle) async {}
+
+  @override
+  Future<void> setVolume(double volume) async {}
+
+  @override
+  Future<void> stop() async {}
 }
 
 void main() {
@@ -337,6 +390,35 @@ void main() {
       find.byKey(const Key('fullscreen_video_top_gradient')),
       findsOneWidget,
     );
+  });
+
+  testWidgets('play button resumes an active cast session', (tester) async {
+    final scene = _buildScene();
+    await _pumpControls(tester, scene: scene);
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(NativeVideoControls)),
+    );
+    final session = _FakeCastSession();
+    session.stateMachine.forceState(dc.SessionState.playing);
+    await container
+        .read(castServiceProvider.notifier)
+        .setActiveSession(session, localWasPlaying: true);
+    await tester.pump();
+
+    // Casting and playing: the button pauses the remote.
+    await tester.tap(find.byKey(const Key('video_play_pause_button')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(session.pauseCalls, 1);
+    expect(container.read(castServiceProvider).remoteIsPlaying, isFalse);
+
+    // Paused: the same button has to resume the remote, not the local player.
+    await tester.tap(find.byKey(const Key('video_play_pause_button')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(session.playCalls, 1);
+    expect(container.read(castServiceProvider).remoteIsPlaying, isTrue);
   });
 
   testWidgets(

@@ -367,6 +367,153 @@ void main() {
   );
 
   test(
+    're-points the media when play is requested on a stopped remote',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final session = _FakeDlnaSession(
+        avTransportControlUrl: 'http://127.0.0.1:1/control',
+      );
+      final notifier = container.read(castServiceProvider.notifier);
+      const media = dc.CastMedia(
+        url: 'http://example.test/video.mp4',
+        type: dc.CastMediaType.mp4,
+      );
+      await notifier.loadMediaAndConfirm(session, media);
+      await notifier.setActiveSession(
+        session,
+        localResumePosition: const Duration(seconds: 30),
+        localWasPlaying: true,
+      );
+
+      // The renderer dropped the transport while paused.
+      session.emitState(dc.SessionState.idle);
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(castServiceProvider).remoteIsStopped, isTrue);
+
+      await notifier.play();
+
+      expect(session.playCalls, 0);
+      expect(session.loadMediaCalls, 2);
+      expect(
+        session.lastLoadedMedia?.startPosition,
+        const Duration(seconds: 30),
+      );
+      final state = container.read(castServiceProvider);
+      expect(state.remotePosition, const Duration(seconds: 30));
+      expect(state.remoteIsPlaying, isTrue);
+      expect(state.remoteIsStopped, isFalse);
+    },
+  );
+
+  test(
+    're-points the media when a plain Play does not resume the remote',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final session = _FakeDlnaSession(
+        avTransportControlUrl: 'http://127.0.0.1:1/control',
+      );
+      final notifier = container.read(castServiceProvider.notifier)
+        ..resumeVerifyAfter = const Duration(milliseconds: 20);
+      await notifier.loadMediaAndConfirm(
+        session,
+        const dc.CastMedia(
+          url: 'http://example.test/video.mp4',
+          type: dc.CastMediaType.mp4,
+        ),
+      );
+      await notifier.setActiveSession(
+        session,
+        localResumePosition: const Duration(seconds: 12),
+        localWasPlaying: true,
+      );
+
+      await notifier.play();
+      expect(session.playCalls, 1);
+      expect(session.loadMediaCalls, 1);
+
+      // The renderer never reported playback, so the media is re-pointed at
+      // the position the user resumed from.
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+
+      expect(session.loadMediaCalls, 2);
+      expect(
+        session.lastLoadedMedia?.startPosition,
+        const Duration(seconds: 12),
+      );
+    },
+  );
+
+  test('re-points the media when the renderer rejects Play', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final session = _FakeDlnaSession(
+      avTransportControlUrl: 'http://127.0.0.1:1/control',
+    )..failPlay = true;
+    final notifier = container.read(castServiceProvider.notifier);
+    await notifier.loadMediaAndConfirm(
+      session,
+      const dc.CastMedia(
+        url: 'http://example.test/video.mp4',
+        type: dc.CastMediaType.mp4,
+      ),
+    );
+    await notifier.setActiveSession(
+      session,
+      localResumePosition: const Duration(seconds: 7),
+      localWasPlaying: true,
+    );
+
+    await notifier.play();
+
+    expect(session.playCalls, 1);
+    expect(session.loadMediaCalls, 2);
+    expect(session.lastLoadedMedia?.startPosition, const Duration(seconds: 7));
+    expect(container.read(castServiceProvider).remoteIsPlaying, isTrue);
+  });
+
+  test(
+    'does not re-point the media when the remote resumes on its own',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final session = _FakeDlnaSession(
+        avTransportControlUrl: 'http://127.0.0.1:1/control',
+      );
+      final notifier = container.read(castServiceProvider.notifier)
+        ..resumeVerifyAfter = const Duration(milliseconds: 20);
+      await notifier.loadMediaAndConfirm(
+        session,
+        const dc.CastMedia(
+          url: 'http://example.test/video.mp4',
+          type: dc.CastMediaType.mp4,
+        ),
+      );
+      await notifier.setActiveSession(
+        session,
+        localResumePosition: const Duration(seconds: 12),
+        localWasPlaying: true,
+      );
+
+      await notifier.play();
+      session.emitState(dc.SessionState.playing);
+      session.emitPosition(const Duration(seconds: 14));
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+
+      expect(session.loadMediaCalls, 1);
+      expect(
+        container.read(castServiceProvider).remotePosition,
+        const Duration(seconds: 14),
+      );
+    },
+  );
+
+  test(
     'restarts cast media on the current session for scene switches',
     () async {
       final container = ProviderContainer();
@@ -424,12 +571,29 @@ class _FakeDlnaSession extends dc.DlnaSession {
         ),
       );
 
+  int loadMediaCalls = 0;
+  int playCalls = 0;
+  bool failPlay = false;
+  dc.CastMedia? lastLoadedMedia;
+
+  void emitPosition(Duration position) => updatePosition(position);
+
+  void emitState(dc.SessionState state) => stateMachine.forceState(state);
+
   @override
-  Future<void> loadMedia(dc.CastMedia media) async {}
+  Future<void> loadMedia(dc.CastMedia media) async {
+    loadMediaCalls++;
+    lastLoadedMedia = media;
+  }
 
   // Transport actions are exercised through the app service, not the renderer.
   @override
-  Future<void> play() async {}
+  Future<void> play() async {
+    playCalls++;
+    if (failPlay) {
+      throw dc.ProtocolException('Play rejected', dc.CastProtocol.dlna);
+    }
+  }
 
   @override
   Future<void> pause() async {}

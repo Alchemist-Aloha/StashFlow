@@ -27,7 +27,7 @@ It runs on **Android**, **Windows**, **macOS**, **Linux**, and the **Web**.
 ### Key capabilities
 
 - 📱 **Adaptive UI** — mobile-first on phones; navigation rail, wide grids, hover feedback, and keyboard shortcuts on desktop and web
-- 🎬 **Playback** — autoplay queue continuity, next/previous navigation, subtitles and styling, playback speed, PiP and background audio (Android), casting, and a mini-player
+- 🎬 **Playback** — autoplay queue continuity, next/previous navigation, subtitles and styling, playback speed, PiP and background audio (Android), casting (prefer Chromecast), and a mini-player
 - 🖼️ **Image viewer** — swipe navigation, pinch/double-tap zoom, slideshow, and inline rating
 - 🎞️ **Media browsing** — Scenes, Markers, Images, Galleries, Performers, Studios, Tags, and Groups
 - 🔎 **Filtering & sorting** — typed filters with advanced operators, per-page defaults, and server-backed saved presets
