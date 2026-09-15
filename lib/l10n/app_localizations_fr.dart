@@ -2679,6 +2679,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scene_info_preview => 'Aperçu';
 
   @override
+  String get scene_info_preview_unavailable => 'Vidéo d\'aperçu indisponible';
+
+  @override
   String get scene_info_screenshot => 'Capture d\'écran';
 
   @override

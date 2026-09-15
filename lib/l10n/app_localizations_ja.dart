@@ -2571,6 +2571,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scene_info_preview => 'プレビュー';
 
   @override
+  String get scene_info_preview_unavailable => 'プレビュー動画を利用できません';
+
+  @override
   String get scene_info_screenshot => 'スクリーンショット';
 
   @override

@@ -2539,10 +2539,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_audio_codec => '音频编解码器';
 
   @override
-  String get scene_info_stream => '溪流';
+  String get scene_info_stream => '串流';
 
   @override
   String get scene_info_preview => '预览';
+
+  @override
+  String get scene_info_preview_unavailable => '预览视频不可用';
 
   @override
   String get scene_info_screenshot => '截屏';
@@ -2557,7 +2560,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_vtt => '视听测试';
 
   @override
-  String get scene_info_sprite => '雪碧';
+  String get scene_info_sprite => '预览图';
 
   @override
   String get scene_info_technical => '技术的';
@@ -5868,10 +5871,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_info_audio_codec => '音频编解码器';
 
   @override
-  String get scene_info_stream => '溪流';
+  String get scene_info_stream => '串流';
 
   @override
   String get scene_info_preview => '预览';
+
+  @override
+  String get scene_info_preview_unavailable => '预览视频不可用';
 
   @override
   String get scene_info_screenshot => '截屏';
@@ -5886,7 +5892,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_info_vtt => '视听测试';
 
   @override
-  String get scene_info_sprite => '雪碧';
+  String get scene_info_sprite => '预览图';
 
   @override
   String get scene_info_technical => '技术的';
@@ -9201,10 +9207,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scene_info_audio_codec => '音訊編解碼器';
 
   @override
-  String get scene_info_stream => '溪流';
+  String get scene_info_stream => '串流';
 
   @override
   String get scene_info_preview => '預覽';
+
+  @override
+  String get scene_info_preview_unavailable => '預覽影片無法使用';
 
   @override
   String get scene_info_screenshot => '螢幕截圖';
@@ -9219,7 +9228,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scene_info_vtt => '視聽測試';
 
   @override
-  String get scene_info_sprite => '雪碧';
+  String get scene_info_sprite => '精靈圖';
 
   @override
   String get scene_info_technical => '技術的';

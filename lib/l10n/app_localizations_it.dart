@@ -2679,6 +2679,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scene_info_preview => 'Anteprima';
 
   @override
+  String get scene_info_preview_unavailable =>
+      'Video di anteprima non disponibile';
+
+  @override
   String get scene_info_screenshot => 'Schermata';
 
   @override

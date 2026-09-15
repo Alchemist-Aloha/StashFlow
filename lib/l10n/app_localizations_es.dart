@@ -2687,6 +2687,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scene_info_preview => 'Avance';
 
   @override
+  String get scene_info_preview_unavailable => 'Video de avance no disponible';
+
+  @override
   String get scene_info_screenshot => 'Captura de pantalla';
 
   @override

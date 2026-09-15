@@ -4908,6 +4908,12 @@ abstract class AppLocalizations {
   /// **'Preview'**
   String get scene_info_preview;
 
+  /// No description provided for @scene_info_preview_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview video unavailable'**
+  String get scene_info_preview_unavailable;
+
   /// No description provided for @scene_info_screenshot.
   ///
   /// In en, this message translates to:

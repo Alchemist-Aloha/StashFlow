@@ -910,6 +910,7 @@
   "scene_info_audio_codec": "オーディオコーデック",
   "scene_info_stream": "ストリーム",
   "scene_info_preview": "プレビュー",
+  "scene_info_preview_unavailable": "プレビュー動画を利用できません",
   "scene_info_screenshot": "スクリーンショット",
   "scene_info_caption": "キャプション",
   "scene_info_vtt": "VTT",

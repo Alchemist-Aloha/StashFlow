@@ -2664,6 +2664,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scene_info_preview => 'Vorschau';
 
   @override
+  String get scene_info_preview_unavailable => 'Vorschauvideo nicht verfügbar';
+
+  @override
   String get scene_info_screenshot => 'Screenshot';
 
   @override

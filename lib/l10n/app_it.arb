@@ -910,6 +910,7 @@
   "scene_info_audio_codec": "Codec audio",
   "scene_info_stream": "Flusso",
   "scene_info_preview": "Anteprima",
+  "scene_info_preview_unavailable": "Video di anteprima non disponibile",
   "scene_info_screenshot": "Schermata",
   "scene_info_caption": "Didascalia",
   "scene_info_vtt": "VTT",

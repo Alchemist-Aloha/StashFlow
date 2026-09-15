@@ -2660,6 +2660,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scene_info_preview => 'Предварительный просмотр';
 
   @override
+  String get scene_info_preview_unavailable =>
+      'Видео предварительного просмотра недоступно';
+
+  @override
   String get scene_info_screenshot => 'Скриншот';
 
   @override

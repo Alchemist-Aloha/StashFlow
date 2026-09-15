@@ -910,6 +910,7 @@
   "scene_info_audio_codec": "Códec de audio",
   "scene_info_stream": "Arroyo",
   "scene_info_preview": "Avance",
+  "scene_info_preview_unavailable": "Video de avance no disponible",
   "scene_info_screenshot": "Captura de pantalla",
   "scene_info_caption": "Subtítulo",
   "scene_info_vtt": "VTT",

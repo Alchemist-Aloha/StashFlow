@@ -910,6 +910,7 @@
   "scene_info_audio_codec": "Аудиокодек",
   "scene_info_stream": "Транслировать",
   "scene_info_preview": "Предварительный просмотр",
+  "scene_info_preview_unavailable": "Видео предварительного просмотра недоступно",
   "scene_info_screenshot": "Скриншот",
   "scene_info_caption": "Подпись",
   "scene_info_vtt": "ВТТ",

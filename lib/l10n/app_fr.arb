@@ -910,6 +910,7 @@
   "scene_info_audio_codec": "Codec audio",
   "scene_info_stream": "Flux",
   "scene_info_preview": "Aperçu",
+  "scene_info_preview_unavailable": "Vidéo d'aperçu indisponible",
   "scene_info_screenshot": "Capture d'écran",
   "scene_info_caption": "Légende",
   "scene_info_vtt": "VTT",

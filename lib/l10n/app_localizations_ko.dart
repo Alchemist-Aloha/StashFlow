@@ -2570,6 +2570,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scene_info_preview => '시사';
 
   @override
+  String get scene_info_preview_unavailable => '시사 영상을 사용할 수 없습니다';
+
+  @override
   String get scene_info_screenshot => '스크린샷';
 
   @override

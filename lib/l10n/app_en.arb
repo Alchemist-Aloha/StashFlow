@@ -1065,6 +1065,7 @@
   "scene_info_audio_codec": "Audio Codec",
   "scene_info_stream": "Stream",
   "scene_info_preview": "Preview",
+  "scene_info_preview_unavailable": "Preview video unavailable",
   "scene_info_screenshot": "Screenshot",
   "scene_info_cover": "Cover",
   "scene_info_caption": "Caption",

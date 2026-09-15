@@ -931,6 +931,7 @@
   "scene_info_audio_codec": "Audio-Codec",
   "scene_info_stream": "Strom",
   "scene_info_preview": "Vorschau",
+  "scene_info_preview_unavailable": "Vorschauvideo nicht verfügbar",
   "scene_info_screenshot": "Screenshot",
   "scene_info_caption": "Untertitel",
   "scene_info_vtt": "VTT",

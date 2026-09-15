@@ -910,6 +910,7 @@
   "scene_info_audio_codec": "오디오 코덱",
   "scene_info_stream": "개울",
   "scene_info_preview": "시사",
+  "scene_info_preview_unavailable": "시사 영상을 사용할 수 없습니다",
   "scene_info_screenshot": "스크린샷",
   "scene_info_caption": "표제",
   "scene_info_vtt": "VTT",
