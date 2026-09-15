@@ -9,11 +9,35 @@ import '../../../scenes/domain/entities/scene_title_utils.dart';
 import '../../../scenes/presentation/providers/video_player_provider.dart';
 import '../../../scenes/presentation/widgets/player_surface.dart';
 
-class MiniPlayer extends ConsumerWidget {
+class MiniPlayer extends ConsumerStatefulWidget {
   const MiniPlayer({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MiniPlayer> createState() => _MiniPlayerState();
+}
+
+class _MiniPlayerState extends ConsumerState<MiniPlayer> {
+  // Captured here because `ref` is unsafe to use in `dispose`.
+  late final PlayerState _playerNotifier = ref.read(
+    playerStateProvider.notifier,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    // Being mounted is what makes the mini player the playback surface, so
+    // playback transitions must not push a details route while it is alive.
+    _playerNotifier.setMiniPlayerVisible(true);
+  }
+
+  @override
+  void dispose() {
+    _playerNotifier.setMiniPlayerVisible(false);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final activeScene = ref.watch(
       playerStateProvider.select((s) => s.activeScene),
     );

@@ -190,6 +190,113 @@ void main() {
     expect(container.read(playerStateProvider).resumePlayPosition, isFalse);
   });
 
+  test('next advances without leaving the mini player', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final queue = container.read(playbackQueueProvider.notifier);
+    final scene1 = createTestScene('mini-1');
+    final scene2 = createTestScene('mini-2');
+    resolvedChoice = const StreamChoice(
+      url: 'https://example.test/mini-2.mp4',
+      mimeType: 'video/mp4',
+    );
+
+    queue.setSequence([scene1, scene2], 0);
+    await notifier.attachController(scene1, mockPlayer, mockVideoController);
+    notifier.setMiniPlayerVisible(true);
+    notifier.setPlayEndBehavior(VideoEndBehavior.next);
+
+    final navigationPaths = <String?>[];
+    container.listen<String?>(
+      playerStateProvider.select((s) => s.navigationReplacementPath),
+      (_, next) => navigationPaths.add(next),
+    );
+
+    completedStream.add(true);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+
+    expect(container.read(playerStateProvider).activeScene?.id, 'mini-2');
+    expect(
+      navigationPaths.whereType<String>(),
+      isEmpty,
+      reason: 'mini player playback must not open the scene details page',
+    );
+  });
+
+  test('next opens the details page when not in the mini player', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final queue = container.read(playbackQueueProvider.notifier);
+    final scene1 = createTestScene('details-1');
+    final scene2 = createTestScene('details-2');
+    resolvedChoice = const StreamChoice(
+      url: 'https://example.test/details-2.mp4',
+      mimeType: 'video/mp4',
+    );
+
+    queue.setSequence([scene1, scene2], 0);
+    await notifier.attachController(scene1, mockPlayer, mockVideoController);
+    notifier.setMiniPlayerVisible(false);
+    notifier.setPlayEndBehavior(VideoEndBehavior.next);
+
+    final navigationPaths = <String?>[];
+    container.listen<String?>(
+      playerStateProvider.select((s) => s.navigationReplacementPath),
+      (_, next) => navigationPaths.add(next),
+    );
+
+    completedStream.add(true);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+
+    expect(container.read(playerStateProvider).activeScene?.id, 'details-2');
+    expect(
+      navigationPaths.whereType<String>(),
+      contains('/scenes/scene/details-2'),
+    );
+  });
+
+  test(
+    'details page still navigates when the mini player mounts mid-transition',
+    () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      final queue = container.read(playbackQueueProvider.notifier);
+      final scene1 = createTestScene('race-1');
+      final scene2 = createTestScene('race-2');
+      resolvedChoice = const StreamChoice(
+        url: 'https://example.test/race-2.mp4',
+        mimeType: 'video/mp4',
+      );
+
+      queue.setSequence([scene1, scene2], 0);
+      await notifier.attachController(scene1, mockPlayer, mockVideoController);
+      // Details page: the mini player is not mounted when playback ends.
+      notifier.setMiniPlayerVisible(false);
+      notifier.setPlayEndBehavior(VideoEndBehavior.next);
+
+      final navigationPaths = <String?>[];
+      container.listen<String?>(
+        playerStateProvider.select((s) => s.navigationReplacementPath),
+        (_, next) => navigationPaths.add(next),
+      );
+      // Mimic the shell briefly mounting the mini player once the new scene goes
+      // active, before playNext decides whether to replace the route.
+      final transientMount = container.listen<String?>(
+        playerStateProvider.select((s) => s.activeScene?.id),
+        (_, next) {
+          if (next == 'race-2') notifier.setMiniPlayerVisible(true);
+        },
+      );
+
+      completedStream.add(true);
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      transientMount.close();
+
+      expect(container.read(playerStateProvider).activeScene?.id, 'race-2');
+      expect(
+        navigationPaths.whereType<String>(),
+        contains('/scenes/scene/race-2'),
+      );
+    },
+  );
+
   test(
     'remote completion advances and switches the active cast media',
     () async {

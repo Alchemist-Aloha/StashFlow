@@ -329,6 +329,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   /// especially when triggered by multiple listeners (e.g. video finish + UI button).
   bool _isTransitioning = false;
 
+  /// Whether the mini player is the surface currently hosting playback.
+  /// Kept out of [GlobalPlayerState] because it changes during widget build and
+  /// only affects transition routing, never rendering.
+  bool _isMiniPlayerVisible = false;
+
   /// Internal flag to track playback state changes across listener fires.
   bool? _lastIsPlaying;
 
@@ -808,6 +813,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           ? FullscreenPhase.fullscreen
           : FullscreenPhase.inline,
     );
+  }
+
+  /// Reports whether the mini player is mounted and hosting playback. Scene
+  /// transitions stay put when playback started there, instead of opening the
+  /// details page.
+  void setMiniPlayerVisible(bool visible) {
+    _isMiniPlayerVisible = visible;
   }
 
   void setViewMode(PlayerViewMode mode) {
@@ -1907,6 +1919,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
     _isTransitioning = true;
     try {
+      // Captured before playScene: changing the active scene makes the shell
+      // briefly mount the mini player during the route transition, which must
+      // not be mistaken for playback that actually lives in the mini player.
+      final startedInMiniPlayer = _isMiniPlayerVisible;
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
       final target = findQueuePlaybackTarget(
         queueState: queueNotifier.state,
@@ -1932,8 +1948,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (state.activeScene?.id == target.scene.id) {
         queueNotifier.setIndex(target.targetIndex);
         // Trigger navigation synchronization so background details match active scene.
-        // Skip for TikTok mode as it handles its own navigation via PageView.
-        if (state.viewMode != PlayerViewMode.tiktok) {
+        // Skip for TikTok mode (its PageView handles navigation) and when
+        // playback started in the mini player, which must keep playing in place.
+        if (state.viewMode != PlayerViewMode.tiktok && !startedInMiniPlayer) {
           _replaceRoute('/scenes/scene/${target.scene.id}');
         }
         return true;
@@ -1953,6 +1970,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
     _isTransitioning = true;
     try {
+      final startedInMiniPlayer = _isMiniPlayerVisible;
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
       final target = findQueuePlaybackTarget(
         queueState: queueNotifier.state,
@@ -1978,8 +1996,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (state.activeScene?.id == target.scene.id) {
         queueNotifier.setIndex(target.targetIndex);
         // Trigger navigation synchronization.
-        // Skip for TikTok mode as it handles its own navigation via PageView.
-        if (state.viewMode != PlayerViewMode.tiktok) {
+        // Skip for TikTok mode (its PageView handles navigation) and when
+        // playback started in the mini player, which must keep playing in place.
+        if (state.viewMode != PlayerViewMode.tiktok && !startedInMiniPlayer) {
           _replaceRoute('/scenes/scene/${target.scene.id}');
         }
       }
