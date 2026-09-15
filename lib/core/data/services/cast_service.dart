@@ -19,7 +19,9 @@ class CastState {
   final Duration? localResumePosition;
   final bool localWasPlaying;
   final Duration remotePosition;
+  final Duration remoteDuration;
   final bool remoteIsPlaying;
+  final int completedMediaCount;
 
   CastState({
     this.discoveredDevices = const [],
@@ -28,7 +30,9 @@ class CastState {
     this.localResumePosition,
     this.localWasPlaying = false,
     this.remotePosition = Duration.zero,
+    this.remoteDuration = Duration.zero,
     this.remoteIsPlaying = false,
+    this.completedMediaCount = 0,
   });
 
   CastState copyWith({
@@ -38,7 +42,9 @@ class CastState {
     Duration? localResumePosition,
     bool? localWasPlaying,
     Duration? remotePosition,
+    Duration? remoteDuration,
     bool? remoteIsPlaying,
+    int? completedMediaCount,
     bool clearActiveSession = false,
     bool clearLocalHandoff = false,
   }) {
@@ -55,7 +61,9 @@ class CastState {
           ? false
           : (localWasPlaying ?? this.localWasPlaying),
       remotePosition: remotePosition ?? this.remotePosition,
+      remoteDuration: remoteDuration ?? this.remoteDuration,
       remoteIsPlaying: remoteIsPlaying ?? this.remoteIsPlaying,
+      completedMediaCount: completedMediaCount ?? this.completedMediaCount,
     );
   }
 }
@@ -65,7 +73,10 @@ class AppCastService extends Notifier<CastState> {
   StreamSubscription<List<dc.CastDevice>>? _subscription;
   StreamSubscription<dc.CastSession?>? _sessionSubscription;
   StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<Duration>? _durationSubscription;
   StreamSubscription<dc.SessionState>? _stateSubscription;
+  bool _remoteMediaStarted = false;
+  bool _remoteCompletionReported = false;
 
   @override
   CastState build() {
@@ -96,6 +107,7 @@ class AppCastService extends Notifier<CastState> {
       _subscription?.cancel();
       _sessionSubscription?.cancel();
       _positionSubscription?.cancel();
+      _durationSubscription?.cancel();
       _stateSubscription?.cancel();
       _castService.dispose();
     });
@@ -207,7 +219,12 @@ class AppCastService extends Notifier<CastState> {
   }) async {
     await _sessionSubscription?.cancel();
     await _positionSubscription?.cancel();
+    await _durationSubscription?.cancel();
     await _stateSubscription?.cancel();
+    _remoteMediaStarted =
+        session.state == dc.SessionState.playing ||
+        session.state == dc.SessionState.buffering;
+    _remoteCompletionReported = false;
     logCastProcess(
       'CastService: active session set device=${session.device.name} protocol=${session.device.protocol.name} localResumePosition=$localResumePosition localWasPlaying=$localWasPlaying',
     );
@@ -217,6 +234,7 @@ class AppCastService extends Notifier<CastState> {
       localResumePosition: localResumePosition,
       localWasPlaying: localWasPlaying,
       remotePosition: localResumePosition,
+      remoteDuration: session.duration,
       remoteIsPlaying: true,
     );
 
@@ -225,6 +243,11 @@ class AppCastService extends Notifier<CastState> {
         'CastService: remote position updated device=${session.device.name} position=$position',
       );
       state = state.copyWith(remotePosition: position);
+      _reportRemoteCompletionIfNeeded(session);
+    });
+    _durationSubscription = session.durationStream.listen((duration) {
+      state = state.copyWith(remoteDuration: duration);
+      _reportRemoteCompletionIfNeeded(session);
     });
     _stateSubscription = session.stateStream.listen((sessionState) {
       logCastProcess(
@@ -232,13 +255,39 @@ class AppCastService extends Notifier<CastState> {
       );
       if (sessionState == dc.SessionState.playing ||
           sessionState == dc.SessionState.buffering) {
+        _remoteMediaStarted = true;
         state = state.copyWith(remoteIsPlaying: true);
       } else if (sessionState == dc.SessionState.paused ||
           sessionState == dc.SessionState.idle ||
           sessionState == dc.SessionState.disconnected) {
         state = state.copyWith(remoteIsPlaying: false);
       }
+      _reportRemoteCompletionIfNeeded(session);
     });
+  }
+
+  void _reportRemoteCompletionIfNeeded(dc.CastSession session) {
+    if (_remoteCompletionReported ||
+        !_remoteMediaStarted ||
+        state.activeSession != session) {
+      return;
+    }
+
+    final duration = session.duration;
+    final reachedKnownEnd =
+        duration > Duration.zero && session.position >= duration;
+    final endedWithoutDuration =
+        duration == Duration.zero && session.state == dc.SessionState.idle;
+    if (!reachedKnownEnd && !endedWithoutDuration) return;
+
+    _remoteCompletionReported = true;
+    logCastProcess(
+      'CastService: remote media completed device=${session.device.name}',
+    );
+    state = state.copyWith(
+      remoteIsPlaying: false,
+      completedMediaCount: state.completedMediaCount + 1,
+    );
   }
 
   Future<void> restartActiveSessionWithMedia(
@@ -251,6 +300,7 @@ class AppCastService extends Notifier<CastState> {
 
     await _sessionSubscription?.cancel();
     await _positionSubscription?.cancel();
+    await _durationSubscription?.cancel();
     await _stateSubscription?.cancel();
 
     try {
@@ -291,6 +341,7 @@ class AppCastService extends Notifier<CastState> {
       state = state.copyWith(
         isCasting: false,
         remotePosition: Duration.zero,
+        remoteDuration: Duration.zero,
         remoteIsPlaying: false,
         clearActiveSession: true,
         clearLocalHandoff: true,
@@ -315,10 +366,12 @@ class AppCastService extends Notifier<CastState> {
     }
     await _sessionSubscription?.cancel();
     await _positionSubscription?.cancel();
+    await _durationSubscription?.cancel();
     await _stateSubscription?.cancel();
     state = state.copyWith(
       isCasting: false,
       remotePosition: Duration.zero,
+      remoteDuration: Duration.zero,
       remoteIsPlaying: false,
       clearActiveSession: true,
       clearLocalHandoff: true,
@@ -331,6 +384,8 @@ class AppCastService extends Notifier<CastState> {
     if (session == null) return;
     logCastProcess('CastService: play requested device=${session.device.name}');
     await session.play();
+    _remoteMediaStarted = true;
+    _remoteCompletionReported = false;
     state = state.copyWith(remoteIsPlaying: true);
   }
 

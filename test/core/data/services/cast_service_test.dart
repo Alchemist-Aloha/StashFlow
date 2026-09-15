@@ -147,6 +147,73 @@ void main() {
   });
 
   test(
+    'reports remote completion once after playback reaches the end',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final session = _FakeCastSession();
+      final notifier = container.read(castServiceProvider.notifier);
+      session.emitState(dc.SessionState.playing);
+      await notifier.setActiveSession(session);
+
+      session.emitDuration(const Duration(minutes: 2));
+      session.emitPosition(const Duration(minutes: 2));
+      session.emitState(dc.SessionState.idle);
+      await Future<void>.delayed(Duration.zero);
+
+      var state = container.read(castServiceProvider);
+      expect(state.remoteDuration, const Duration(minutes: 2));
+      expect(state.completedMediaCount, 1);
+
+      session.emitState(dc.SessionState.idle);
+      await Future<void>.delayed(Duration.zero);
+      state = container.read(castServiceProvider);
+      expect(state.completedMediaCount, 1);
+    },
+  );
+
+  test(
+    'does not report a known-duration cast stopped before its end',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final session = _FakeCastSession();
+      final notifier = container.read(castServiceProvider.notifier);
+      session.emitState(dc.SessionState.playing);
+      await notifier.setActiveSession(session);
+
+      session.emitDuration(const Duration(minutes: 2));
+      session.emitPosition(const Duration(seconds: 30));
+      session.emitState(dc.SessionState.idle);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(container.read(castServiceProvider).completedMediaCount, 0);
+    },
+  );
+
+  test('playing again rearms remote completion for loop playback', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final session = _FakeCastSession();
+    final notifier = container.read(castServiceProvider.notifier);
+    session.emitState(dc.SessionState.playing);
+    await notifier.setActiveSession(session);
+    session.emitState(dc.SessionState.idle);
+    await Future<void>.delayed(Duration.zero);
+    expect(container.read(castServiceProvider).completedMediaCount, 1);
+
+    await notifier.seek(Duration.zero);
+    await notifier.play();
+    session.emitState(dc.SessionState.idle);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(container.read(castServiceProvider).completedMediaCount, 2);
+  });
+
+  test(
     'restarts cast media on the current session for scene switches',
     () async {
       final container = ProviderContainer();
@@ -214,6 +281,10 @@ class _FakeCastSession extends dc.CastSession {
     updatePosition(position);
     _positionController.add(position);
   }
+
+  void emitDuration(Duration duration) => updateDuration(duration);
+
+  void emitState(dc.SessionState state) => stateMachine.forceState(state);
 
   @override
   Stream<Duration> get positionStream => _positionController.stream;

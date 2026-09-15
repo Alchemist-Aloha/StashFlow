@@ -371,6 +371,11 @@ and remote position/state changes must synchronize without starting duplicate
 sessions. Disconnect and load failures return to a coherent local state and are
 logged without leaking authenticated URLs.
 
+Remote completion follows the configured playback-end behavior. Scene changes
+from queue controls, keyboard or media actions, playlists, and contextual strips
+switch the active cast session to the selected scene while preserving the active
+queue and its previous/next navigation.
+
 ### Background playback and Android media session
 
 Background playback follows the persisted preference:

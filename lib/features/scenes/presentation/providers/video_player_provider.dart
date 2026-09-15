@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -417,6 +418,17 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     });
 
     PipMode.isInPipMode.addListener(_onPipModeChanged);
+
+    ref.listen(castServiceProvider, (previous, next) {
+      if (next.completedMediaCount == 0 ||
+          next.completedMediaCount == previous?.completedMediaCount) {
+        return;
+      }
+      final completedSceneId = state.activeScene?.id;
+      if (completedSceneId != null) {
+        unawaited(_applyVideoEndBehavior(completedSceneId));
+      }
+    });
 
     // Link system media controls to our provider
     mediaHandler?.onPlayCallback = () async => play();
@@ -946,6 +958,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     Duration? initialPosition,
     bool force = false,
   }) async {
+    final castBeforeStart = ref.read(castServiceProvider);
+    final switchActiveCast =
+        castBeforeStart.isCasting &&
+        castBeforeStart.activeSession != null &&
+        state.activeScene?.id != scene.id;
     AppLogStore.instance.add(
       'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'} initialPos=${initialPosition?.inMilliseconds}ms force=$force',
       source: 'player_provider',
@@ -1182,7 +1199,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
 
       state = state.copyWith(
-        isPlaying: true,
+        isPlaying: !switchActiveCast,
         startupLatencyMs: initializeElapsedMs,
       );
 
@@ -1216,7 +1233,33 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
             );
           },
         );
-        unawaited(player.play());
+        if (!switchActiveCast) unawaited(player.play());
+      }
+
+      if (switchActiveCast) {
+        final media = dc.CastMedia(
+          url: streamUrl,
+          type: detectCastMediaType(streamUrl),
+          title: scene.title,
+          startPosition: initialPosition,
+          httpHeaders: httpHeaders ?? const <String, String>{},
+        );
+        try {
+          await ref
+              .read(castServiceProvider.notifier)
+              .restartActiveSessionWithMedia(
+                media,
+                localResumePosition: initialPosition ?? Duration.zero,
+                localWasPlaying: castBeforeStart.localWasPlaying,
+              );
+        } catch (e) {
+          AppLogStore.instance.add(
+            'PlayerState: failed to switch cast to scene ${scene.id}: $e',
+            source: 'player_provider',
+          );
+          if (!isTestMode) unawaited(player.play());
+          state = state.copyWith(isPlaying: true);
+        }
       }
 
       // Prepare for the next scene in the queue
@@ -1770,6 +1813,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         stop();
         return;
       case VideoEndBehavior.loop:
+        final castState = ref.read(castServiceProvider);
+        if (castState.isCasting) {
+          final cast = ref.read(castServiceProvider.notifier);
+          await cast.seek(Duration.zero);
+          if (ref.read(castServiceProvider).isCasting) await cast.play();
+          return;
+        }
         final completedPlayer = state.player;
         await completedPlayer?.seek(Duration.zero);
         if (state.player == completedPlayer) await completedPlayer?.play();

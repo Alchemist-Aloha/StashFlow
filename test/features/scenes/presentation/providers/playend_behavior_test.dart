@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
+import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +17,7 @@ import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scen
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/data/services/cast_service.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/core/utils/media_handler.dart';
@@ -70,6 +74,7 @@ void main() {
         streamResolverProvider.overrideWithValue(
           (scene) => pendingResolution?.future ?? Future.value(resolvedChoice),
         ),
+        castServiceProvider.overrideWith(_FakeAppCastService.new),
       ],
     );
   });
@@ -183,6 +188,67 @@ void main() {
     expect(container.read(playerStateProvider).isFullScreen, isTrue);
     expect(container.read(playerStateProvider).feedStartRandom, isTrue);
     expect(container.read(playerStateProvider).resumePlayPosition, isFalse);
+  });
+
+  test(
+    'remote completion advances and switches the active cast media',
+    () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      final queue = container.read(playbackQueueProvider.notifier);
+      final cast =
+          container.read(castServiceProvider.notifier) as _FakeAppCastService;
+      final scene1 = createTestScene('1');
+      final scene2 = createTestScene('2');
+      resolvedChoice = const StreamChoice(
+        url: 'https://example.test/2.mp4',
+        mimeType: 'video/mp4',
+      );
+
+      queue.setSequence([scene1, scene2], 0);
+      await notifier.attachController(scene1, mockPlayer, mockVideoController);
+      notifier.setPlayEndBehavior(VideoEndBehavior.next);
+      cast.activate(localWasPlaying: true);
+
+      cast.completeRemoteMedia();
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+
+      expect(container.read(playbackQueueProvider).currentIndex, 1);
+      expect(container.read(playerStateProvider).activeScene?.id, '2');
+      expect(cast.restartCalls, 1);
+      expect(cast.lastMedia?.url, 'https://example.test/2.mp4');
+      expect(container.read(castServiceProvider).isCasting, isTrue);
+    },
+  );
+
+  test('cast previous follows the active More From Studio queue', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final queue = container.read(playbackQueueProvider.notifier);
+    final cast =
+        container.read(castServiceProvider.notifier) as _FakeAppCastService;
+    final scene1 = createTestScene('1');
+    final scene2 = createTestScene('2');
+    resolvedChoice = const StreamChoice(
+      url: 'https://example.test/1.mp4',
+      mimeType: 'video/mp4',
+    );
+
+    queue.setSequence(
+      [scene1, scene2],
+      1,
+      queueId: PlaybackQueueIds.sceneMoreFromStudio(
+        sceneId: 'source',
+        studioId: 's1',
+      ),
+    );
+    await notifier.attachController(scene2, mockPlayer, mockVideoController);
+    cast.activate(localWasPlaying: true);
+
+    await notifier.playPrevious();
+
+    expect(container.read(playbackQueueProvider).currentIndex, 0);
+    expect(container.read(playerStateProvider).activeScene?.id, '1');
+    expect(cast.restartCalls, 1);
+    expect(cast.lastMedia?.url, 'https://example.test/1.mp4');
   });
 
   test('next stops when the next stream cannot be resolved', () async {
@@ -352,6 +418,87 @@ void main() {
       expect(container.read(playerStateProvider).activeScene?.id, '2');
     },
   );
+}
+
+class _FakeAppCastService extends AppCastService {
+  final session = _FakeCastSession();
+  int restartCalls = 0;
+  dc.CastMedia? lastMedia;
+
+  @override
+  CastState build() => CastState();
+
+  void activate({bool localWasPlaying = false}) {
+    state = state.copyWith(
+      activeSession: session,
+      isCasting: true,
+      localWasPlaying: localWasPlaying,
+    );
+  }
+
+  void completeRemoteMedia() {
+    state = state.copyWith(
+      remoteIsPlaying: false,
+      completedMediaCount: state.completedMediaCount + 1,
+    );
+  }
+
+  @override
+  Future<void> restartActiveSessionWithMedia(
+    dc.CastMedia media, {
+    Duration localResumePosition = Duration.zero,
+    bool localWasPlaying = false,
+  }) async {
+    restartCalls++;
+    lastMedia = media;
+    state = state.copyWith(
+      localResumePosition: localResumePosition,
+      localWasPlaying: localWasPlaying,
+      remotePosition: localResumePosition,
+      remoteIsPlaying: true,
+    );
+  }
+
+  @override
+  Future<void> stopCasting() async {
+    state = state.copyWith(
+      isCasting: false,
+      clearActiveSession: true,
+      clearLocalHandoff: true,
+    );
+  }
+}
+
+class _FakeCastSession extends dc.CastSession {
+  _FakeCastSession()
+    : super(
+        dc.CastDevice(
+          id: 'fake',
+          name: 'Fake Cast',
+          protocol: dc.CastProtocol.chromecast,
+          address: InternetAddress.loopbackIPv4,
+          port: 8009,
+        ),
+      );
+
+  @override
+  Future<void> connect() async {}
+  @override
+  Future<void> disconnect() async {}
+  @override
+  Future<void> loadMedia(dc.CastMedia media) async {}
+  @override
+  Future<void> pause() async {}
+  @override
+  Future<void> play() async {}
+  @override
+  Future<void> seek(Duration position) async {}
+  @override
+  Future<void> setSubtitle(dc.CastSubtitle? subtitle) async {}
+  @override
+  Future<void> setVolume(double volume) async {}
+  @override
+  Future<void> stop() async {}
 }
 
 // Minimal mock for PlayerState (media_kit)

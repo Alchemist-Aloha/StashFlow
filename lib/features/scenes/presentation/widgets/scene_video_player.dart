@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/entities/scene.dart';
-import '../../domain/entities/scene_title_utils.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/player_view_mode.dart';
 import '../providers/player_settings.dart';
@@ -153,7 +151,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         'SceneVideoPlayer: Scene ${widget.scene.id} already active, resuming if paused',
         source: 'scene_video_player',
       );
-      if (playerState.player != null && !playerState.player!.state.playing) {
+      if (!ref.read(castServiceProvider).isCasting &&
+          playerState.player != null &&
+          !playerState.player!.state.playing) {
         playerState.player!.play();
       }
       _enterPreferredFullscreenIfNeeded();
@@ -196,12 +196,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       final choice = await resolver(widget.scene);
       if (choice != null && mounted) {
         final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
-        final castStateBeforeStart = ref.read(castServiceProvider);
-        final shouldRestartCastForScene =
-            castStateBeforeStart.isCasting &&
-            castStateBeforeStart.activeSession != null &&
-            playerState.activeScene?.id != widget.scene.id;
-
         final currentPlayerState = ref.read(playerStateProvider);
         final resumeSec = widget.scene.resumeTime;
         Duration? resumePosition;
@@ -234,12 +228,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
               initialPosition: resumePosition,
             );
 
-        if (shouldRestartCastForScene && mounted) {
-          await _restartCastForCurrentScene(
-            streamUrl: choice.url,
-            startPosition: resumePosition ?? Duration.zero,
-          );
-        }
         _enterPreferredFullscreenIfNeeded();
       }
     } finally {
@@ -270,44 +258,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     final notifier = ref.read(playerStateProvider.notifier);
     notifier.setViewMode(PlayerViewMode.fullscreen);
     notifier.requestEnterFullscreen();
-  }
-
-  Future<void> _restartCastForCurrentScene({
-    required String streamUrl,
-    required Duration startPosition,
-  }) async {
-    final playerStateNotifier = ref.read(playerStateProvider.notifier);
-    final localPlayer = ref.read(playerStateProvider).player;
-    final localWasPlaying = localPlayer?.state.playing ?? false;
-
-    if (localWasPlaying) {
-      playerStateNotifier.pause();
-    }
-
-    final media = dc.CastMedia(
-      url: streamUrl,
-      type: detectCastMediaType(streamUrl),
-      title: widget.scene.displayTitle,
-      startPosition: startPosition > Duration.zero ? startPosition : null,
-    );
-
-    try {
-      await ref
-          .read(castServiceProvider.notifier)
-          .restartActiveSessionWithMedia(
-            media,
-            localResumePosition: startPosition,
-            localWasPlaying: localWasPlaying,
-          );
-    } catch (e) {
-      AppLogStore.instance.add(
-        'SceneVideoPlayer: failed to restart cast for scene ${widget.scene.id}: $e',
-        source: 'scene_video_player',
-      );
-      if (localWasPlaying) {
-        playerStateNotifier.play();
-      }
-    }
   }
 
   /// Returns the intended aspect ratio for the video container.
