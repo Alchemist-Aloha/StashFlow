@@ -417,19 +417,19 @@ abstract class AppLocalizations {
   /// No description provided for @sort_file_mod_time.
   ///
   /// In en, this message translates to:
-  /// **'File Mod Time'**
+  /// **'File Modification Time'**
   String get sort_file_mod_time;
 
   /// No description provided for @sort_filesize.
   ///
   /// In en, this message translates to:
-  /// **'Filesize'**
+  /// **'File Size'**
   String get sort_filesize;
 
   /// No description provided for @sort_o_count.
   ///
   /// In en, this message translates to:
-  /// **'O-Counter'**
+  /// **'O-Count'**
   String get sort_o_count;
 
   /// No description provided for @sort_height.
@@ -459,7 +459,7 @@ abstract class AppLocalizations {
   /// No description provided for @sort_o_counter.
   ///
   /// In en, this message translates to:
-  /// **'O-Counter'**
+  /// **'O-Count'**
   String get sort_o_counter;
 
   /// No description provided for @sort_zip_file_count.
@@ -471,7 +471,7 @@ abstract class AppLocalizations {
   /// No description provided for @sort_last_o_at.
   ///
   /// In en, this message translates to:
-  /// **'Last O At'**
+  /// **'Last O Activity'**
   String get sort_last_o_at;
 
   /// No description provided for @sort_latest_scene.
@@ -507,13 +507,13 @@ abstract class AppLocalizations {
   /// No description provided for @sort_scenes_duration.
   ///
   /// In en, this message translates to:
-  /// **'Scenes Duration'**
+  /// **'Total Scene Duration'**
   String get sort_scenes_duration;
 
   /// No description provided for @sort_scenes_size.
   ///
   /// In en, this message translates to:
-  /// **'Scenes Size'**
+  /// **'Total Scene Size'**
   String get sort_scenes_size;
 
   /// No description provided for @sort_images_count.
@@ -1263,7 +1263,7 @@ abstract class AppLocalizations {
   /// No description provided for @scenes_sort_framerate.
   ///
   /// In en, this message translates to:
-  /// **'Framerate'**
+  /// **'Frame Rate'**
   String get scenes_sort_framerate;
 
   /// No description provided for @scenes_sort_file_count.
@@ -1275,7 +1275,7 @@ abstract class AppLocalizations {
   /// No description provided for @scenes_sort_filesize.
   ///
   /// In en, this message translates to:
-  /// **'Filesize'**
+  /// **'File Size'**
   String get scenes_sort_filesize;
 
   /// No description provided for @scenes_sort_resolution.
@@ -1341,7 +1341,7 @@ abstract class AppLocalizations {
   /// No description provided for @scenes_sort_file_mod_time.
   ///
   /// In en, this message translates to:
-  /// **'File Mod Time'**
+  /// **'File Modification Time'**
   String get scenes_sort_file_mod_time;
 
   /// No description provided for @scenes_sort_tag_count.
@@ -1359,19 +1359,19 @@ abstract class AppLocalizations {
   /// No description provided for @scenes_sort_o_counter.
   ///
   /// In en, this message translates to:
-  /// **'O-Counter'**
+  /// **'O-Count'**
   String get scenes_sort_o_counter;
 
   /// No description provided for @scenes_sort_last_o_at.
   ///
   /// In en, this message translates to:
-  /// **'Last O At'**
+  /// **'Last O Activity'**
   String get scenes_sort_last_o_at;
 
   /// No description provided for @scenes_sort_group_scene_number.
   ///
   /// In en, this message translates to:
-  /// **'Group/Movie Scene Number'**
+  /// **'Scene Number in Group/Movie'**
   String get scenes_sort_group_scene_number;
 
   /// No description provided for @scenes_sort_code.
@@ -1485,7 +1485,7 @@ abstract class AppLocalizations {
   /// No description provided for @performers_gender_non_binary.
   ///
   /// In en, this message translates to:
-  /// **'Non Binary'**
+  /// **'Non-binary'**
   String get performers_gender_non_binary;
 
   /// No description provided for @performers_circumcised.
@@ -1884,6 +1884,30 @@ abstract class AppLocalizations {
   /// **'Resolution'**
   String get images_resolution_title;
 
+  /// No description provided for @resolution_filter_four_k.
+  ///
+  /// In en, this message translates to:
+  /// **'4K'**
+  String get resolution_filter_four_k;
+
+  /// No description provided for @resolution_filter_full_hd.
+  ///
+  /// In en, this message translates to:
+  /// **'FHD'**
+  String get resolution_filter_full_hd;
+
+  /// No description provided for @resolution_filter_standard_hd.
+  ///
+  /// In en, this message translates to:
+  /// **'HD'**
+  String get resolution_filter_standard_hd;
+
+  /// No description provided for @resolution_filter_standard.
+  ///
+  /// In en, this message translates to:
+  /// **'SD'**
+  String get resolution_filter_standard;
+
   /// No description provided for @resolution_144p.
   ///
   /// In en, this message translates to:
@@ -1971,7 +1995,7 @@ abstract class AppLocalizations {
   /// No description provided for @scenes_phash_started.
   ///
   /// In en, this message translates to:
-  /// **'Phash generation started'**
+  /// **'pHash generation started'**
   String get scenes_phash_started;
 
   /// No description provided for @scenes_phash_failed.
@@ -2451,13 +2475,13 @@ abstract class AppLocalizations {
   /// No description provided for @settings_interface_show_random.
   ///
   /// In en, this message translates to:
-  /// **'Show Random Navigation Buttons'**
+  /// **'Show random navigation buttons'**
   String get settings_interface_show_random;
 
   /// No description provided for @settings_interface_show_random_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enable or disable the floating casino buttons across list and details pages'**
+  /// **'Show or hide the floating random-navigation buttons on list and details pages'**
   String get settings_interface_show_random_subtitle;
 
   /// No description provided for @settings_interface_auto_hide_app_bar.
@@ -2481,7 +2505,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_interface_hide_scene_metadata_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Show technical scene metadata only after tapping Show metadata.'**
+  /// **'Show technical scene metadata only when requested.'**
   String get settings_interface_hide_scene_metadata_subtitle;
 
   /// No description provided for @settings_interface_random_scene_filter.
@@ -2835,13 +2859,13 @@ abstract class AppLocalizations {
   /// No description provided for @settings_server_auth_password.
   ///
   /// In en, this message translates to:
-  /// **'Username + Password'**
+  /// **'Username and password'**
   String get settings_server_auth_password;
 
   /// No description provided for @settings_server_auth_password_desc.
   ///
   /// In en, this message translates to:
-  /// **'Recommended: use your Stash username/password session.'**
+  /// **'Recommended: use your Stash username and password.'**
   String get settings_server_auth_password_desc;
 
   /// No description provided for @settings_server_auth_apikey_desc.
@@ -3015,7 +3039,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_playback_feed_random.
   ///
   /// In en, this message translates to:
-  /// **'Start Feed from random position'**
+  /// **'Start feed at a random position'**
   String get settings_playback_feed_random;
 
   /// No description provided for @settings_playback_feed_random_subtitle.
@@ -3039,7 +3063,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_playback_end_behavior.
   ///
   /// In en, this message translates to:
-  /// **'Play End Behavior'**
+  /// **'End-of-playback behavior'**
   String get settings_playback_end_behavior;
 
   /// No description provided for @settings_playback_end_behavior_subtitle.
@@ -3087,7 +3111,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_playback_background_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Keep video audio playing when app is backgrounded'**
+  /// **'Keep video audio playing when the app is in the background'**
   String get settings_playback_background_subtitle;
 
   /// No description provided for @settings_playback_pip.
@@ -3225,7 +3249,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_playback_subtitle_lang_auto_if_only_one.
   ///
   /// In en, this message translates to:
-  /// **'Auto (If only one)'**
+  /// **'Auto (if only one)'**
   String get settings_playback_subtitle_lang_auto_if_only_one;
 
   /// No description provided for @settings_playback_subtitle_lang_english.
@@ -4215,7 +4239,7 @@ abstract class AppLocalizations {
   /// No description provided for @performers_field_o_counter.
   ///
   /// In en, this message translates to:
-  /// **'O-Counter'**
+  /// **'O-Count'**
   String get performers_field_o_counter;
 
   /// No description provided for @performers_field_tag_count.
@@ -4359,7 +4383,7 @@ abstract class AppLocalizations {
   /// No description provided for @images_field_o_counter.
   ///
   /// In en, this message translates to:
-  /// **'O-Counter'**
+  /// **'O-Count'**
   String get images_field_o_counter;
 
   /// No description provided for @studios_field_name.
@@ -4515,7 +4539,7 @@ abstract class AppLocalizations {
   /// No description provided for @scenes_field_framerate.
   ///
   /// In en, this message translates to:
-  /// **'Framerate'**
+  /// **'Frame Rate'**
   String get scenes_field_framerate;
 
   /// No description provided for @scenes_field_file_count.
@@ -4539,7 +4563,7 @@ abstract class AppLocalizations {
   /// No description provided for @scenes_field_o_counter.
   ///
   /// In en, this message translates to:
-  /// **'O-Counter'**
+  /// **'O-Count'**
   String get scenes_field_o_counter;
 
   /// No description provided for @scenes_field_last_played_at.
@@ -4575,7 +4599,7 @@ abstract class AppLocalizations {
   /// No description provided for @scenes_field_oshash.
   ///
   /// In en, this message translates to:
-  /// **'Oshash'**
+  /// **'OSHash'**
   String get scenes_field_oshash;
 
   /// No description provided for @scenes_field_checksum.
@@ -4587,7 +4611,7 @@ abstract class AppLocalizations {
   /// No description provided for @scenes_field_phash.
   ///
   /// In en, this message translates to:
-  /// **'Phash'**
+  /// **'pHash'**
   String get scenes_field_phash;
 
   /// No description provided for @scenes_field_created_at.
@@ -5997,7 +6021,7 @@ abstract class AppLocalizations {
   /// No description provided for @sort_o_count_all.
   ///
   /// In en, this message translates to:
-  /// **'O-Counter (including subsidiaries)'**
+  /// **'O-Count (including subsidiaries)'**
   String get sort_o_count_all;
 
   /// No description provided for @sort_performers_count_all.

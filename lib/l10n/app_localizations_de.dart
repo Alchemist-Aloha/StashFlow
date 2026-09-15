@@ -230,7 +230,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sort_zip_file_count => 'Anzahl von ZIP-Dateien';
 
   @override
-  String get sort_last_o_at => 'Letzte O-Zeit';
+  String get sort_last_o_at => 'Letzte O-Aktivität';
 
   @override
   String get sort_latest_scene => 'Neueste Szene';
@@ -248,10 +248,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sort_measurements => 'Maße';
 
   @override
-  String get sort_scenes_duration => 'Szenen-Dauer';
+  String get sort_scenes_duration => 'Gesamte Szenendauer';
 
   @override
-  String get sort_scenes_size => 'Szenengröße';
+  String get sort_scenes_size => 'Gesamtgröße der Szenen';
 
   @override
   String get sort_images_count => 'Bilderanzahl';
@@ -700,7 +700,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_sort_o_counter => 'O-Zähler';
 
   @override
-  String get scenes_sort_last_o_at => 'Letztes O am';
+  String get scenes_sort_last_o_at => 'Letzte O-Aktivität';
 
   @override
   String get scenes_sort_group_scene_number => 'Szenennummer in Gruppe/Film';
@@ -963,6 +963,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get images_resolution_title => 'Auflösung';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -1005,7 +1017,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scrape_from_url => 'Von URL scrapen';
 
   @override
-  String get scenes_phash_started => 'Phash-Generierung gestartet';
+  String get scenes_phash_started => 'pHash-Generierung gestartet';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -1280,7 +1292,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_interface_show_random_subtitle =>
-      'Aktivieren oder deaktivieren Sie die schwebenden Casino-Schaltflächen auf Listen- und Detailseiten';
+      'Schwebende Zufallsnavigationsschaltflächen auf Listen- und Detailseiten ein- oder ausblenden';
 
   @override
   String get settings_interface_auto_hide_app_bar =>
@@ -1503,11 +1515,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_server_auth_apikey => 'API-Key';
 
   @override
-  String get settings_server_auth_password => 'Benutzername + Passwort';
+  String get settings_server_auth_password => 'Benutzername und Passwort';
 
   @override
   String get settings_server_auth_password_desc =>
-      'Empfohlen: Verwenden Sie Ihre Stash Benutzername/Passwort-Sitzung.';
+      'Empfohlen: Verwenden Sie Ihren Stash-Benutzernamen und Ihr Passwort.';
 
   @override
   String get settings_server_auth_apikey_desc =>
@@ -1624,7 +1636,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenn Sie ein Video öffnen, wird es automatisch an der Stelle fortgesetzt, an der Sie aufgehört haben';
 
   @override
-  String get settings_playback_end_behavior => 'Endeverhalten abspielen';
+  String get settings_playback_end_behavior => 'Verhalten bei Wiedergabeende';
 
   @override
   String get settings_playback_end_behavior_subtitle =>
@@ -1738,7 +1750,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_playback_subtitle_lang_auto_if_only_one =>
-      'Automatisch (Wenn nur eins)';
+      'Automatisch (wenn nur einer verfügbar ist)';
 
   @override
   String get settings_playback_subtitle_lang_english => 'Englisch';
@@ -2471,13 +2483,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_field_stash_id_count => 'Stash-ID-Anzahl';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => 'Prüfsumme';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => 'Erstellt am';

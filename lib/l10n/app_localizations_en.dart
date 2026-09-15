@@ -201,13 +201,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sort_random => 'Random';
 
   @override
-  String get sort_file_mod_time => 'File Mod Time';
+  String get sort_file_mod_time => 'File Modification Time';
 
   @override
-  String get sort_filesize => 'Filesize';
+  String get sort_filesize => 'File Size';
 
   @override
-  String get sort_o_count => 'O-Counter';
+  String get sort_o_count => 'O-Count';
 
   @override
   String get sort_height => 'Height';
@@ -222,13 +222,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sort_play_count => 'Play Count';
 
   @override
-  String get sort_o_counter => 'O-Counter';
+  String get sort_o_counter => 'O-Count';
 
   @override
   String get sort_zip_file_count => 'Zip File Count';
 
   @override
-  String get sort_last_o_at => 'Last O At';
+  String get sort_last_o_at => 'Last O Activity';
 
   @override
   String get sort_latest_scene => 'Latest Scene';
@@ -246,10 +246,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sort_measurements => 'Measurements';
 
   @override
-  String get sort_scenes_duration => 'Scenes Duration';
+  String get sort_scenes_duration => 'Total Scene Duration';
 
   @override
-  String get sort_scenes_size => 'Scenes Size';
+  String get sort_scenes_size => 'Total Scene Size';
 
   @override
   String get sort_images_count => 'Image Count';
@@ -642,13 +642,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scenes_sort_bitrate => 'Bitrate';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => 'Frame Rate';
 
   @override
   String get scenes_sort_file_count => 'File Count';
 
   @override
-  String get scenes_sort_filesize => 'Filesize';
+  String get scenes_sort_filesize => 'File Size';
 
   @override
   String get scenes_sort_resolution => 'Resolution';
@@ -681,7 +681,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scenes_sort_path => 'Path';
 
   @override
-  String get scenes_sort_file_mod_time => 'File Mod Time';
+  String get scenes_sort_file_mod_time => 'File Modification Time';
 
   @override
   String get scenes_sort_tag_count => 'Tag Count';
@@ -690,13 +690,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scenes_sort_performer_count => 'Performer Count';
 
   @override
-  String get scenes_sort_o_counter => 'O-Counter';
+  String get scenes_sort_o_counter => 'O-Count';
 
   @override
-  String get scenes_sort_last_o_at => 'Last O At';
+  String get scenes_sort_last_o_at => 'Last O Activity';
 
   @override
-  String get scenes_sort_group_scene_number => 'Group/Movie Scene Number';
+  String get scenes_sort_group_scene_number => 'Scene Number in Group/Movie';
 
   @override
   String get scenes_sort_code => 'Code';
@@ -753,7 +753,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get performers_gender_intersex => 'Intersex';
 
   @override
-  String get performers_gender_non_binary => 'Non Binary';
+  String get performers_gender_non_binary => 'Non-binary';
 
   @override
   String get performers_circumcised => 'Circumcised';
@@ -954,6 +954,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get images_resolution_title => 'Resolution';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -996,7 +1008,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scrape_from_url => 'Scrape from URL';
 
   @override
-  String get scenes_phash_started => 'Phash generation started';
+  String get scenes_phash_started => 'pHash generation started';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -1262,11 +1274,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Visibility of global navigation shortcuts';
 
   @override
-  String get settings_interface_show_random => 'Show Random Navigation Buttons';
+  String get settings_interface_show_random => 'Show random navigation buttons';
 
   @override
   String get settings_interface_show_random_subtitle =>
-      'Enable or disable the floating casino buttons across list and details pages';
+      'Show or hide the floating random-navigation buttons on list and details pages';
 
   @override
   String get settings_interface_auto_hide_app_bar =>
@@ -1282,7 +1294,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_interface_hide_scene_metadata_subtitle =>
-      'Show technical scene metadata only after tapping Show metadata.';
+      'Show technical scene metadata only when requested.';
 
   @override
   String get settings_interface_random_scene_filter =>
@@ -1489,11 +1501,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_server_auth_apikey => 'API Key';
 
   @override
-  String get settings_server_auth_password => 'Username + Password';
+  String get settings_server_auth_password => 'Username and password';
 
   @override
   String get settings_server_auth_password_desc =>
-      'Recommended: use your Stash username/password session.';
+      'Recommended: use your Stash username and password.';
 
   @override
   String get settings_server_auth_apikey_desc =>
@@ -1593,7 +1605,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Default playback and background handling';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random => 'Start feed at a random position';
 
   @override
   String get settings_playback_feed_random_subtitle =>
@@ -1608,7 +1620,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'When opening a video, automatically resume from where you left off';
 
   @override
-  String get settings_playback_end_behavior => 'Play End Behavior';
+  String get settings_playback_end_behavior => 'End-of-playback behavior';
 
   @override
   String get settings_playback_end_behavior_subtitle =>
@@ -1635,7 +1647,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_playback_background_subtitle =>
-      'Keep video audio playing when app is backgrounded';
+      'Keep video audio playing when the app is in the background';
 
   @override
   String get settings_playback_pip => 'Native Picture-in-Picture';
@@ -1716,7 +1728,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_playback_subtitle_lang_auto_if_only_one =>
-      'Auto (If only one)';
+      'Auto (if only one)';
 
   @override
   String get settings_playback_subtitle_lang_english => 'English';
@@ -2256,7 +2268,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get performers_field_play_count => 'Play Count';
 
   @override
-  String get performers_field_o_counter => 'O-Counter';
+  String get performers_field_o_counter => 'O-Count';
 
   @override
   String get performers_field_tag_count => 'Tag Count';
@@ -2328,7 +2340,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get images_field_file_count => 'File Count';
 
   @override
-  String get images_field_o_counter => 'O-Counter';
+  String get images_field_o_counter => 'O-Count';
 
   @override
   String get studios_field_name => 'Name';
@@ -2406,7 +2418,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scenes_field_audio_codec => 'Audio Codec';
 
   @override
-  String get scenes_field_framerate => 'Framerate';
+  String get scenes_field_framerate => 'Frame Rate';
 
   @override
   String get scenes_field_file_count => 'File Count';
@@ -2418,7 +2430,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scenes_field_play_duration => 'Play Duration';
 
   @override
-  String get scenes_field_o_counter => 'O-Counter';
+  String get scenes_field_o_counter => 'O-Count';
 
   @override
   String get scenes_field_last_played_at => 'Last Played At';
@@ -2436,13 +2448,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scenes_field_stash_id_count => 'Stash ID Count';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => 'Checksum';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => 'Created At';
@@ -3328,7 +3340,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scenes_field_production_date => 'Production Date';
 
   @override
-  String get sort_o_count_all => 'O-Counter (including subsidiaries)';
+  String get sort_o_count_all => 'O-Count (including subsidiaries)';
 
   @override
   String get sort_performers_count_all =>

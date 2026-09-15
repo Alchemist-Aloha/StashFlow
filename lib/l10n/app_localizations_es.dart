@@ -248,10 +248,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sort_measurements => 'Medidas';
 
   @override
-  String get sort_scenes_duration => 'Duración de escenas';
+  String get sort_scenes_duration => 'Duración total de escenas';
 
   @override
-  String get sort_scenes_size => 'Tamaño de escenas';
+  String get sort_scenes_size => 'Tamaño total de escenas';
 
   @override
   String get sort_images_count => 'Número de imágenes';
@@ -702,7 +702,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scenes_sort_o_counter => 'Contador O';
 
   @override
-  String get scenes_sort_last_o_at => 'Último O el';
+  String get scenes_sort_last_o_at => 'Última actividad O';
 
   @override
   String get scenes_sort_group_scene_number =>
@@ -966,6 +966,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get images_resolution_title => 'Resolución';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -1008,7 +1020,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scrape_from_url => 'Raspar desde URL';
 
   @override
-  String get scenes_phash_started => 'Generación de phash iniciada';
+  String get scenes_phash_started => 'Generación de pHash iniciada';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -1516,11 +1528,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settings_server_auth_apikey => 'Clave API';
 
   @override
-  String get settings_server_auth_password => 'Usuario + Contraseña';
+  String get settings_server_auth_password => 'Usuario y contraseña';
 
   @override
   String get settings_server_auth_password_desc =>
-      'Recomendado: usa tu sesión de usuario/contraseña de Stash.';
+      'Recomendado: usa tu nombre de usuario y contraseña de Stash.';
 
   @override
   String get settings_server_auth_apikey_desc =>
@@ -1638,7 +1650,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settings_playback_end_behavior =>
-      'Comportamiento de finalización del juego';
+      'Comportamiento al finalizar la reproducción';
 
   @override
   String get settings_playback_end_behavior_subtitle =>
@@ -1755,7 +1767,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settings_playback_subtitle_lang_auto_if_only_one =>
-      'Automático (Si solo hay uno)';
+      'Automático (si solo hay uno)';
 
   @override
   String get settings_playback_subtitle_lang_english => 'Inglés';
@@ -2494,13 +2506,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scenes_field_stash_id_count => 'Recuento de IDs de Stash';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => 'Suma de comprobación';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => 'Creado el';

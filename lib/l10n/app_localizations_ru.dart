@@ -249,10 +249,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sort_measurements => 'Размеры';
 
   @override
-  String get sort_scenes_duration => 'Длительность сцен';
+  String get sort_scenes_duration => 'Общая длительность сцен';
 
   @override
-  String get sort_scenes_size => 'Размер сцен';
+  String get sort_scenes_size => 'Общий размер сцен';
 
   @override
   String get sort_images_count => 'Количество изображений';
@@ -697,7 +697,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_sort_o_counter => 'Счетчик O';
 
   @override
-  String get scenes_sort_last_o_at => 'Последний O';
+  String get scenes_sort_last_o_at => 'Последняя активность O';
 
   @override
   String get scenes_sort_group_scene_number => 'Номер сцены в группе/фильме';
@@ -961,6 +961,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get images_resolution_title => 'Разрешение';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -1003,7 +1015,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scrape_from_url => 'Собрать с URL';
 
   @override
-  String get scenes_phash_started => 'Генерация phash начата';
+  String get scenes_phash_started => 'Генерация pHash начата';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -1498,7 +1510,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_server_auth_apikey => 'API-ключ';
 
   @override
-  String get settings_server_auth_password => 'Имя пользователя + Пароль';
+  String get settings_server_auth_password => 'Имя пользователя и пароль';
 
   @override
   String get settings_server_auth_password_desc =>
@@ -1618,7 +1630,8 @@ class AppLocalizationsRu extends AppLocalizations {
       'При открытии видео автоматически возобновляется с того места, на котором вы остановились.';
 
   @override
-  String get settings_playback_end_behavior => 'Поведение в конце игры';
+  String get settings_playback_end_behavior =>
+      'Поведение при завершении воспроизведения';
 
   @override
   String get settings_playback_end_behavior_subtitle =>
@@ -2466,13 +2479,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_field_stash_id_count => 'Количество ID Stash';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => 'Контрольная сумма';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => 'Создано';

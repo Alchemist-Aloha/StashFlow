@@ -228,7 +228,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sort_zip_file_count => 'ZIPファイル数';
 
   @override
-  String get sort_last_o_at => '最終O日時';
+  String get sort_last_o_at => '最終Oアクティビティ';
 
   @override
   String get sort_latest_scene => '最新シーン';
@@ -952,6 +952,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get images_resolution_title => '解像度';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -994,7 +1006,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scrape_from_url => 'URLからスクレイプ';
 
   @override
-  String get scenes_phash_started => 'Phash生成を開始しました';
+  String get scenes_phash_started => 'pHashの生成を開始しました';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -1459,7 +1471,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_auth_apikey => 'APIキー';
 
   @override
-  String get settings_server_auth_password => 'ユーザー名 + パスワード';
+  String get settings_server_auth_password => 'ユーザー名とパスワード';
 
   @override
   String get settings_server_auth_password_desc =>
@@ -1670,7 +1682,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_playback_subtitle_lang_none_disabled => 'なし（無効）';
 
   @override
-  String get settings_playback_subtitle_lang_auto_if_only_one => '自動（1つのみの場合）';
+  String get settings_playback_subtitle_lang_auto_if_only_one => '自動（1つだけの場合）';
 
   @override
   String get settings_playback_subtitle_lang_english => '英語';
@@ -2381,13 +2393,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scenes_field_stash_id_count => 'Stash ID数';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => 'チェックサム';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => '作成日時';
