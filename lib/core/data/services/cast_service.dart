@@ -77,6 +77,28 @@ class AppCastService extends Notifier<CastState> {
   StreamSubscription<dc.SessionState>? _stateSubscription;
   bool _remoteMediaStarted = false;
   bool _remoteCompletionReported = false;
+  bool _remoteMediaIsPiped = false;
+
+  /// Offset added to the renderer's relative position for piped (HLS -> TS)
+  /// DLNA routes. The renderer restarts such a stream at zero on every seek,
+  /// so the absolute position is the restart point plus its reported position.
+  Duration _pipedBase = Duration.zero;
+
+  Timer? _remotePollTimer;
+  bool _remotePollInFlight = false;
+  DateTime? _lastRemoteReportAt;
+  dc.DlnaHttpClient? _dlnaPollClient;
+
+  /// How long the active session may go without reporting before the service
+  /// polls the renderer directly. dart_cast's DLNA session stops its own poll
+  /// for good once the renderer reports `STOPPED` (which some renderers send
+  /// transiently while seeking), so the app falls back to asking the renderer.
+  @visibleForTesting
+  Duration remoteReportStaleAfter = const Duration(seconds: 4);
+
+  /// How often the service checks whether the active session has gone quiet.
+  @visibleForTesting
+  Duration remotePollInterval = const Duration(seconds: 1);
 
   @override
   CastState build() {
@@ -109,6 +131,8 @@ class AppCastService extends Notifier<CastState> {
       _positionSubscription?.cancel();
       _durationSubscription?.cancel();
       _stateSubscription?.cancel();
+      _stopRemotePollWatchdog();
+      _dlnaPollClient?.close();
       _castService.dispose();
     });
 
@@ -156,6 +180,11 @@ class AppCastService extends Notifier<CastState> {
     logCastProcess(
       'CastService: loading media device=${session.device.name} protocol=${session.device.protocol.name} type=${media.type.name} url=${media.url}',
     );
+    // HLS is piped as MPEG-TS for DLNA, which restarts the pipe at the seek
+    // offset; every other type is byte-seekable and reports absolute time.
+    _remoteMediaIsPiped =
+        session.device.protocol == dc.CastProtocol.dlna &&
+        media.type == dc.CastMediaType.hls;
     if (session.device.protocol != dc.CastProtocol.chromecast) {
       await session.loadMedia(media);
       logCastProcess(
@@ -225,6 +254,8 @@ class AppCastService extends Notifier<CastState> {
         session.state == dc.SessionState.playing ||
         session.state == dc.SessionState.buffering;
     _remoteCompletionReported = false;
+    _pipedBase = _remoteMediaIsPiped ? localResumePosition : Duration.zero;
+    _lastRemoteReportAt = DateTime.now();
     logCastProcess(
       'CastService: active session set device=${session.device.name} protocol=${session.device.protocol.name} localResumePosition=$localResumePosition localWasPlaying=$localWasPlaying',
     );
@@ -242,10 +273,12 @@ class AppCastService extends Notifier<CastState> {
       logCastProcess(
         'CastService: remote position updated device=${session.device.name} position=$position',
       );
+      _lastRemoteReportAt = DateTime.now();
       state = state.copyWith(remotePosition: position);
       _reportRemoteCompletionIfNeeded(session);
     });
     _durationSubscription = session.durationStream.listen((duration) {
+      _lastRemoteReportAt = DateTime.now();
       state = state.copyWith(remoteDuration: duration);
       _reportRemoteCompletionIfNeeded(session);
     });
@@ -253,6 +286,7 @@ class AppCastService extends Notifier<CastState> {
       logCastProcess(
         'CastService: remote state updated device=${session.device.name} state=${sessionState.name}',
       );
+      _lastRemoteReportAt = DateTime.now();
       if (sessionState == dc.SessionState.playing ||
           sessionState == dc.SessionState.buffering) {
         _remoteMediaStarted = true;
@@ -264,25 +298,120 @@ class AppCastService extends Notifier<CastState> {
       }
       _reportRemoteCompletionIfNeeded(session);
     });
+
+    _startRemotePollWatchdog(session);
+  }
+
+  /// Starts the fallback renderer poll for [session] when it is a DLNA session.
+  void _startRemotePollWatchdog(dc.CastSession session) {
+    _stopRemotePollWatchdog();
+    if (session is! dc.DlnaSession) return;
+    _lastRemoteReportAt = DateTime.now();
+    _remotePollTimer = Timer.periodic(
+      remotePollInterval,
+      (_) => unawaited(_pollRemoteWhenStale()),
+    );
+  }
+
+  void _stopRemotePollWatchdog() {
+    _remotePollTimer?.cancel();
+    _remotePollTimer = null;
+  }
+
+  /// Polls the renderer only after the session has stopped reporting, so the
+  /// normal poll path stays untouched.
+  Future<void> _pollRemoteWhenStale() async {
+    if (_remotePollInFlight) return;
+    final session = state.activeSession;
+    if (session is! dc.DlnaSession || !state.isCasting) return;
+    final lastReport = _lastRemoteReportAt;
+    if (lastReport != null &&
+        DateTime.now().difference(lastReport) < remoteReportStaleAfter) {
+      return;
+    }
+    _remotePollInFlight = true;
+    try {
+      await _refreshDlnaRemoteState(session);
+    } finally {
+      _remotePollInFlight = false;
+    }
+  }
+
+  /// Reads position and transport state straight from a DLNA renderer.
+  Future<void> _refreshDlnaRemoteState(dc.DlnaSession session) async {
+    final controlUrl = session.description.avTransportControlUrl;
+    if (controlUrl == null) return;
+    final client = _dlnaPollClient ??= dc.DlnaHttpClient();
+    try {
+      final positionXml = await client.sendAction(
+        controlUrl,
+        dc.DlnaServiceType.avTransport,
+        'GetPositionInfo',
+        dc.DlnaSoapBuilder.buildGetPositionInfo(),
+      );
+      if (state.activeSession != session) return;
+      final info = dc.DlnaSoapParser.parsePositionInfo(positionXml);
+      final position = info.position + _pipedBase;
+      // Renderers fed a piped TS report a placeholder duration; keep the value
+      // the session probed from the playlist instead of clobbering it.
+      if (info.duration > const Duration(seconds: 2)) {
+        state = state.copyWith(remoteDuration: info.duration);
+      }
+      state = state.copyWith(remotePosition: position);
+
+      final transportXml = await client.sendAction(
+        controlUrl,
+        dc.DlnaServiceType.avTransport,
+        'GetTransportInfo',
+        dc.DlnaSoapBuilder.buildGetTransportInfo(),
+      );
+      if (state.activeSession != session) return;
+      final transportState = dc.DlnaSoapParser.parseTransportInfo(transportXml);
+      final playing =
+          transportState == 'PLAYING' ||
+          transportState == 'BUFFERING' ||
+          transportState == 'TRANSITIONING';
+      if (playing) _remoteMediaStarted = true;
+      state = state.copyWith(remoteIsPlaying: playing);
+      _reportRemoteCompletion(
+        position: position,
+        duration: state.remoteDuration,
+        idle:
+            transportState == 'STOPPED' || transportState == 'NO_MEDIA_PRESENT',
+      );
+      logCastProcess(
+        'CastService: polled DLNA renderer device=${session.device.name} position=$position state=$transportState',
+      );
+    } catch (e) {
+      logCastProcess(
+        'CastService: DLNA renderer poll failed device=${session.device.name}: $e',
+      );
+    }
   }
 
   void _reportRemoteCompletionIfNeeded(dc.CastSession session) {
-    if (_remoteCompletionReported ||
-        !_remoteMediaStarted ||
-        state.activeSession != session) {
-      return;
-    }
+    if (state.activeSession != session) return;
+    _reportRemoteCompletion(
+      position: session.position,
+      duration: session.duration,
+      idle: session.state == dc.SessionState.idle,
+    );
+  }
 
-    final duration = session.duration;
-    final reachedKnownEnd =
-        duration > Duration.zero && session.position >= duration;
-    final endedWithoutDuration =
-        duration == Duration.zero && session.state == dc.SessionState.idle;
+  void _reportRemoteCompletion({
+    required Duration position,
+    required Duration duration,
+    required bool idle,
+  }) {
+    if (_remoteCompletionReported || !_remoteMediaStarted) return;
+
+    final reachedKnownEnd = duration > Duration.zero && position >= duration;
+    final endedWithoutDuration = duration == Duration.zero && idle;
     if (!reachedKnownEnd && !endedWithoutDuration) return;
 
     _remoteCompletionReported = true;
     logCastProcess(
-      'CastService: remote media completed device=${session.device.name}',
+      'CastService: remote media completed device=${state.activeSession?.device.name}',
     );
     state = state.copyWith(
       remoteIsPlaying: false,
@@ -338,6 +467,7 @@ class AppCastService extends Notifier<CastState> {
       logCastProcess(
         'CastService: failed to restart active session media device=${session.device.name}: $e',
       );
+      _stopRemotePollWatchdog();
       state = state.copyWith(
         isCasting: false,
         remotePosition: Duration.zero,
@@ -368,6 +498,7 @@ class AppCastService extends Notifier<CastState> {
     await _positionSubscription?.cancel();
     await _durationSubscription?.cancel();
     await _stateSubscription?.cancel();
+    _stopRemotePollWatchdog();
     state = state.copyWith(
       isCasting: false,
       remotePosition: Duration.zero,
@@ -402,11 +533,20 @@ class AppCastService extends Notifier<CastState> {
   Future<void> seek(Duration position) async {
     final session = state.activeSession;
     if (session == null) return;
+    final wasPlaying = state.remoteIsPlaying;
     logCastProcess(
-      'CastService: seek requested device=${session.device.name} position=$position',
+      'CastService: seek requested device=${session.device.name} position=$position wasPlaying=$wasPlaying',
     );
     await session.seek(position);
+    if (_remoteMediaIsPiped) _pipedBase = position;
+    _lastRemoteReportAt = DateTime.now();
     state = state.copyWith(remotePosition: position);
+    if (!wasPlaying) {
+      // Seeking must not change whether the remote is playing, but renderers
+      // commonly resume on a seek: DLNA's piped-TS route re-issues Play after
+      // every seek, and byte-seekable renderers often come back PLAYING too.
+      await pause();
+    }
   }
 }
 

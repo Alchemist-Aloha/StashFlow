@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_cast/dart_cast.dart' as dc;
@@ -213,6 +214,158 @@ void main() {
     expect(container.read(castServiceProvider).completedMediaCount, 2);
   });
 
+  test('keeps the remote paused when a seek is issued while paused', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final session = _FakeCastSession();
+    final notifier = container.read(castServiceProvider.notifier);
+
+    await notifier.setActiveSession(session, localWasPlaying: true);
+    await notifier.pause();
+    expect(container.read(castServiceProvider).remoteIsPlaying, isFalse);
+
+    await notifier.seek(const Duration(seconds: 60));
+
+    final state = container.read(castServiceProvider);
+    expect(state.remotePosition, const Duration(seconds: 60));
+    expect(state.remoteIsPlaying, isFalse);
+    // One pause from the user, one re-asserted because renderers commonly
+    // resume playback when a seek lands.
+    expect(session.pauseCalls, 2);
+  });
+
+  test(
+    'keeps the remote playing when a seek is issued while playing',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final session = _FakeCastSession();
+      final notifier = container.read(castServiceProvider.notifier);
+
+      session.emitState(dc.SessionState.playing);
+      await notifier.setActiveSession(session, localWasPlaying: true);
+
+      await notifier.seek(const Duration(seconds: 60));
+
+      expect(container.read(castServiceProvider).remoteIsPlaying, isTrue);
+      expect(session.pauseCalls, 0);
+    },
+  );
+
+  test(
+    'polls a silent DLNA renderer to keep position and state in sync',
+    () async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(server.close);
+      final controlUrl = 'http://127.0.0.1:${server.port}/control';
+      server.listen((request) async {
+        final body = await utf8.decoder.bind(request).join();
+        if (body.contains('GetPositionInfo')) {
+          request.response.write(
+            '<?xml version="1.0"?><s:Envelope><s:Body>'
+            '<u:GetPositionInfoResponse>'
+            '<TrackDuration>00:10:00</TrackDuration>'
+            '<RelTime>00:05:30</RelTime>'
+            '</u:GetPositionInfoResponse></s:Body></s:Envelope>',
+          );
+        } else if (body.contains('GetTransportInfo')) {
+          request.response.write(
+            '<?xml version="1.0"?><s:Envelope><s:Body>'
+            '<u:GetTransportInfoResponse>'
+            '<CurrentTransportState>PLAYING</CurrentTransportState>'
+            '</u:GetTransportInfoResponse></s:Body></s:Envelope>',
+          );
+        } else {
+          request.response.statusCode = HttpStatus.internalServerError;
+        }
+        await request.response.close();
+      });
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(castServiceProvider.notifier)
+        ..remotePollInterval = const Duration(milliseconds: 20)
+        ..remoteReportStaleAfter = const Duration(milliseconds: 20);
+
+      final session = _FakeDlnaSession(avTransportControlUrl: controlUrl);
+      await notifier.setActiveSession(session, localWasPlaying: true);
+
+      // The session never reports, so the fallback poll has to take over.
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+
+      final state = container.read(castServiceProvider);
+      expect(state.remotePosition, const Duration(minutes: 5, seconds: 30));
+      expect(state.remoteIsPlaying, isTrue);
+      expect(state.remoteDuration, const Duration(minutes: 10));
+
+      await notifier.stopCasting();
+    },
+  );
+
+  test(
+    'adds the piped seek offset when polling a silent DLNA renderer',
+    () async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(server.close);
+      final controlUrl = 'http://127.0.0.1:${server.port}/control';
+      server.listen((request) async {
+        final body = await utf8.decoder.bind(request).join();
+        if (body.contains('GetPositionInfo')) {
+          request.response.write(
+            '<?xml version="1.0"?><s:Envelope><s:Body>'
+            '<u:GetPositionInfoResponse>'
+            '<TrackDuration>00:00:01</TrackDuration>'
+            '<RelTime>00:00:05</RelTime>'
+            '</u:GetPositionInfoResponse></s:Body></s:Envelope>',
+          );
+        } else if (body.contains('GetTransportInfo')) {
+          request.response.write(
+            '<?xml version="1.0"?><s:Envelope><s:Body>'
+            '<u:GetTransportInfoResponse>'
+            '<CurrentTransportState>PLAYING</CurrentTransportState>'
+            '</u:GetTransportInfoResponse></s:Body></s:Envelope>',
+          );
+        } else {
+          request.response.statusCode = HttpStatus.internalServerError;
+        }
+        await request.response.close();
+      });
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(castServiceProvider.notifier)
+        ..remotePollInterval = const Duration(milliseconds: 20)
+        ..remoteReportStaleAfter = const Duration(milliseconds: 20);
+
+      final session = _FakeDlnaSession(avTransportControlUrl: controlUrl);
+      await notifier.loadMediaAndConfirm(
+        session,
+        const dc.CastMedia(
+          url: 'http://example.test/stream.m3u8',
+          type: dc.CastMediaType.hls,
+        ),
+      );
+      await notifier.setActiveSession(
+        session,
+        localResumePosition: const Duration(seconds: 10),
+        localWasPlaying: true,
+      );
+      await notifier.seek(const Duration(seconds: 100));
+
+      // A piped TS restarts at zero, so the renderer's 5s is 105s absolute.
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+
+      final state = container.read(castServiceProvider);
+      expect(state.remotePosition, const Duration(seconds: 105));
+      // The renderer's placeholder duration must not replace the real one.
+      expect(state.remoteDuration, Duration.zero);
+
+      await notifier.stopCasting();
+    },
+  );
+
   test(
     'restarts cast media on the current session for scene switches',
     () async {
@@ -251,6 +404,38 @@ void main() {
       expect(state.remoteIsPlaying, isTrue);
     },
   );
+}
+
+class _FakeDlnaSession extends dc.DlnaSession {
+  _FakeDlnaSession({required String avTransportControlUrl})
+    : super(
+        device: dc.CastDevice(
+          id: 'fake-dlna',
+          name: 'Fake DLNA TV',
+          protocol: dc.CastProtocol.dlna,
+          address: InternetAddress.loopbackIPv4,
+          port: 80,
+        ),
+        description: dc.DlnaDeviceDescription(
+          friendlyName: 'Fake DLNA TV',
+          udn: 'uuid:fake-dlna',
+          avTransportControlUrl: avTransportControlUrl,
+          locationUrl: 'http://127.0.0.1/',
+        ),
+      );
+
+  @override
+  Future<void> loadMedia(dc.CastMedia media) async {}
+
+  // Transport actions are exercised through the app service, not the renderer.
+  @override
+  Future<void> play() async {}
+
+  @override
+  Future<void> pause() async {}
+
+  @override
+  Future<void> seek(Duration position) async {}
 }
 
 class _FakeCastSession extends dc.CastSession {

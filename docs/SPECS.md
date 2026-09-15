@@ -371,6 +371,12 @@ and remote position/state changes must synchronize without starting duplicate
 sessions. Disconnect and load failures return to a coherent local state and are
 logged without leaking authenticated URLs.
 
+A seek must not change whether the remote is playing, so a seek issued while
+paused re-asserts the pause even when the renderer resumes on its own. Remote
+progress must keep advancing in the app even when the underlying session stops
+reporting it, and the media session follows the remote position and state while
+casting rather than the paused local player.
+
 Remote completion follows the configured playback-end behavior. Scene changes
 from queue controls, keyboard or media actions, playlists, and contextual strips
 switch the active cast session to the selected scene while preserving the active

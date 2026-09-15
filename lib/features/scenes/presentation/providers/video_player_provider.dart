@@ -430,8 +430,30 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       }
     });
 
-    // Link system media controls to our provider
-    mediaHandler?.onPlayCallback = () async => play();
+    // The local player is paused while casting, so the media session has to
+    // follow the remote renderer instead of the local player's ticks.
+    ref.listen(castServiceProvider, (previous, next) {
+      if (!next.isCasting) return;
+      _lastMediaHandlerPosition = next.remotePosition;
+      mediaHandler?.updatePlaybackState(
+        isPlaying: next.remoteIsPlaying,
+        position: next.remotePosition,
+        bufferedPosition: next.remotePosition,
+        speed: 1.0,
+        processingState: AudioProcessingState.ready,
+      );
+    });
+
+    // Link system media controls to our provider. While a cast session owns
+    // playback the local player is paused, so transport commands from the
+    // notification / lock screen / headset have to be routed to the remote.
+    mediaHandler?.onPlayCallback = () async {
+      if (ref.read(castServiceProvider).isCasting) {
+        await ref.read(castServiceProvider.notifier).play();
+        return;
+      }
+      play();
+    };
     mediaHandler?.onPauseCallback = () async => _handleMediaPauseCommand();
     mediaHandler?.onStopCallback = () async => stop(dismissNotification: false);
     mediaHandler?.onSeekCallback = _seekFromMediaNotification;
@@ -1551,10 +1573,25 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       return;
     }
 
+    if (ref.read(castServiceProvider).isCasting) {
+      await ref.read(castServiceProvider.notifier).pause();
+      return;
+    }
     pause(suppressBackgroundRecovery: true);
   }
 
   Future<void> _seekFromMediaNotification(Duration position) async {
+    final castState = ref.read(castServiceProvider);
+    if (castState.isCasting) {
+      var castTarget = position < Duration.zero ? Duration.zero : position;
+      final remoteDuration = castState.remoteDuration;
+      if (remoteDuration > Duration.zero && castTarget > remoteDuration) {
+        castTarget = remoteDuration;
+      }
+      await ref.read(castServiceProvider.notifier).seek(castTarget);
+      return;
+    }
+
     final player = state.player;
     if (player == null) return;
 
@@ -1769,14 +1806,18 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       }
 
       // Only update media handler if state changed or if position drifted significantly
-      // (audio_service increments position automatically, so we only need to sync periodically)
+      // (audio_service increments position automatically, so we only need to sync periodically).
+      // While casting the remote state is published instead.
       final shouldUpdateMediaHandler =
-          playingChanged ||
-          bufferingChanged ||
-          speedChanged ||
-          _lastMediaHandlerPosition == null ||
-          (currentPosition - _lastMediaHandlerPosition!).abs().inMilliseconds >
-              1000;
+          !ref.read(castServiceProvider).isCasting &&
+          (playingChanged ||
+              bufferingChanged ||
+              speedChanged ||
+              _lastMediaHandlerPosition == null ||
+              (currentPosition - _lastMediaHandlerPosition!)
+                      .abs()
+                      .inMilliseconds >
+                  1000);
 
       if (shouldUpdateMediaHandler) {
         _lastMediaHandlerPosition = currentPosition;
