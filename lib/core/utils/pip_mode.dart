@@ -7,14 +7,14 @@ import 'package:flutter/widgets.dart';
 /// Minimum window size the desktop layouts are designed around.
 const Size kDesktopMinimumWindowSize = Size(800, 600);
 
-typedef WindowedPipEnter = Future<bool> Function(double? aspectRatio);
-typedef WindowedPipExit = Future<bool> Function();
+typedef DesktopPipEnter = Future<bool> Function(double? aspectRatio);
+typedef DesktopPipExit = Future<bool> Function();
 
 /// Manages platform picture-in-picture (PiP) state.
 ///
-/// Android delegates to the system PiP window over a [MethodChannel]. Linux
-/// delegates to a separately registered multi-view window, so the primary app
-/// window is never resized or redecorated.
+/// Android delegates to the system PiP window over a [MethodChannel]. Desktop
+/// platforms delegate to a separately registered multi-view window, so the
+/// primary app window is never resized or redecorated.
 class PipMode {
   PipMode._();
 
@@ -23,8 +23,8 @@ class PipMode {
   /// Tracks whether playback is currently presented in PiP.
   static final ValueNotifier<bool> isInPipMode = ValueNotifier<bool>(false);
 
-  static WindowedPipEnter? _windowedEnter;
-  static WindowedPipExit? _windowedExit;
+  static DesktopPipEnter? _windowedEnter;
+  static DesktopPipExit? _windowedExit;
 
   /// Whether PiP is available on the current platform.
   static bool get isSupported => isWindowed || (!kIsWeb && Platform.isAndroid);
@@ -34,24 +34,27 @@ class PipMode {
 
   /// Whether PiP uses a separate application-managed desktop window.
   static bool get isWindowed =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.macOS);
 
-  /// Registers the feature-owned Linux window lifecycle.
+  /// Registers the feature-owned desktop window lifecycle.
   static void configureWindowedHandlers({
-    required WindowedPipEnter enter,
-    required WindowedPipExit exit,
+    required DesktopPipEnter enter,
+    required DesktopPipExit exit,
   }) {
     _windowedEnter = enter;
     _windowedExit = exit;
   }
 
-  /// Removes Linux window handlers owned by a disposed player provider.
+  /// Removes desktop window handlers owned by a disposed player provider.
   static void clearWindowedHandlers() {
     _windowedEnter = null;
     _windowedExit = null;
   }
 
-  /// Notifies shared player state that the Linux PiP window was closed by the
+  /// Notifies shared player state that the desktop PiP window was closed by the
   /// window manager or one of its own controls.
   static void windowedWindowClosed() {
     if (isWindowed) isInPipMode.value = false;
@@ -101,7 +104,7 @@ class PipMode {
     }
   }
 
-  /// Closes the application-managed Linux PiP window.
+  /// Closes the application-managed desktop PiP window.
   static Future<bool> exitIfAvailable() async {
     if (!canExit || !isInPipMode.value) return false;
     final exit = _windowedExit;

@@ -169,7 +169,10 @@ Future<void> main() async {
 }
 
 void _runRootApp(Widget app) {
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.linux) {
+  if (!kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.macOS)) {
     mvd.runMultiApp(home: (context, viewId) => app);
     return;
   }

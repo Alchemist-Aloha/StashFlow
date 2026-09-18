@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,25 +11,25 @@ import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/pip_mode.dart';
 import 'video_controls/video_progress_bar.dart';
 
-const Size kLinuxPipMinimumSize = Size(240, 135);
+const Size kDesktopPipMinimumSize = Size(240, 135);
 const double _defaultAspectRatio = 16 / 9;
-const String kLinuxPipWindowTitle = 'Picture-in-Picture — StashFlow';
+const String kDesktopPipWindowTitle = 'Picture-in-Picture — StashFlow';
 
-double sanitizeLinuxPipAspectRatio(double? aspectRatio) {
+double sanitizeDesktopPipAspectRatio(double? aspectRatio) {
   if (aspectRatio == null || !aspectRatio.isFinite || aspectRatio <= 0) {
     return _defaultAspectRatio;
   }
   return aspectRatio.clamp(0.25, 4.0).toDouble();
 }
 
-Size linuxPipWindowSize(double? aspectRatio) {
-  final ratio = sanitizeLinuxPipAspectRatio(aspectRatio);
+Size desktopPipWindowSize(double? aspectRatio) {
+  final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
   const height = 300.0;
   return Size(height * ratio, height);
 }
 
-class LinuxPipPlaybackSource {
-  const LinuxPipPlaybackSource({
+class DesktopPipPlaybackSource {
+  const DesktopPipPlaybackSource({
     required this.controller,
     required this.canPlayPrevious,
     required this.canPlayNext,
@@ -39,17 +40,17 @@ class LinuxPipPlaybackSource {
   final bool canPlayNext;
 }
 
-/// Owns the one secondary Linux view used for picture-in-picture playback.
-class LinuxPipWindowSession {
-  LinuxPipWindowSession._();
+/// Owns the one secondary desktop view used for picture-in-picture playback.
+class DesktopPipWindowSession {
+  DesktopPipWindowSession._();
 
   static int? _viewId;
   static bool _opening = false;
-  static final ValueNotifier<LinuxPipPlaybackSource?> _source =
-      ValueNotifier<LinuxPipPlaybackSource?>(null);
+  static final ValueNotifier<DesktopPipPlaybackSource?> _source =
+      ValueNotifier<DesktopPipPlaybackSource?>(null);
 
   static Future<bool> open({
-    required LinuxPipPlaybackSource source,
+    required DesktopPipPlaybackSource source,
     required double? aspectRatio,
     required VoidCallback onTogglePlayback,
     required Future<void> Function(Duration position) onSeek,
@@ -61,12 +62,12 @@ class LinuxPipWindowSession {
     if (_opening) return false;
     _opening = true;
 
-    final ratio = sanitizeLinuxPipAspectRatio(aspectRatio);
+    final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
     try {
       final viewId = await openWindow(
         (context, id) {
           _viewId ??= id;
-          return _LinuxPipPlayerWindow(
+          return _DesktopPipPlayerWindow(
             source: _source,
             viewId: id,
             onTogglePlayback: onTogglePlayback,
@@ -77,15 +78,15 @@ class LinuxPipWindowSession {
           );
         },
         options: WindowOptions(
-          size: linuxPipWindowSize(ratio),
-          minimumSize: kLinuxPipMinimumSize,
+          size: desktopPipWindowSize(ratio),
+          minimumSize: kDesktopPipMinimumSize,
           alignment: Alignment.bottomRight,
           backgroundColor: Colors.black,
           titleBarStyle: TitleBarStyle.hidden,
           windowButtonVisibility: false,
           // Matches the desktop's generic Picture-in-Picture window rule so
           // Hyprland floats, pins, and preserves the aspect ratio of this view.
-          title: kLinuxPipWindowTitle,
+          title: kDesktopPipWindowTitle,
           alwaysOnTop: true,
         ),
       );
@@ -93,7 +94,15 @@ class LinuxPipWindowSession {
 
       final window = MultiViewDesktop.fromId(viewId);
       await window.setAspectRatio(ratio);
-      await window.hideCurrentAppTabFromTaskbar(true);
+      if (Platform.isMacOS) {
+        await window.macos.hideFromCollection(true);
+        await window.macos.setVisibleOnAllWorkspaces(
+          true,
+          visibleOnFullScreen: true,
+        );
+      } else {
+        await window.hideCurrentAppTabFromTaskbar(true);
+      }
       return true;
     } catch (_) {
       _viewId = null;
@@ -104,7 +113,7 @@ class LinuxPipWindowSession {
     }
   }
 
-  static void updateSource(LinuxPipPlaybackSource source) {
+  static void updateSource(DesktopPipPlaybackSource source) {
     if (_viewId != null) _source.value = source;
   }
 
@@ -123,8 +132,8 @@ class LinuxPipWindowSession {
   }
 }
 
-class _LinuxPipPlayerWindow extends StatefulWidget {
-  const _LinuxPipPlayerWindow({
+class _DesktopPipPlayerWindow extends StatefulWidget {
+  const _DesktopPipPlayerWindow({
     required this.source,
     required this.viewId,
     required this.onTogglePlayback,
@@ -134,7 +143,7 @@ class _LinuxPipPlayerWindow extends StatefulWidget {
     required this.onClosed,
   });
 
-  final ValueListenable<LinuxPipPlaybackSource?> source;
+  final ValueListenable<DesktopPipPlaybackSource?> source;
   final int viewId;
   final VoidCallback onTogglePlayback;
   final Future<void> Function(Duration position) onSeek;
@@ -143,10 +152,11 @@ class _LinuxPipPlayerWindow extends StatefulWidget {
   final VoidCallback onClosed;
 
   @override
-  State<_LinuxPipPlayerWindow> createState() => _LinuxPipPlayerWindowState();
+  State<_DesktopPipPlayerWindow> createState() =>
+      _DesktopPipPlayerWindowState();
 }
 
-class _LinuxPipPlayerWindowState extends State<_LinuxPipPlayerWindow> {
+class _DesktopPipPlayerWindowState extends State<_DesktopPipPlayerWindow> {
   bool _showControls = true;
 
   Future<void> _exitPip() => PipMode.exitIfAvailable();
@@ -176,7 +186,7 @@ class _LinuxPipPlayerWindowState extends State<_LinuxPipPlayerWindow> {
               if (!_showControls) setState(() => _showControls = true);
             },
             onExit: (_) => setState(() => _showControls = false),
-            child: ValueListenableBuilder<LinuxPipPlaybackSource?>(
+            child: ValueListenableBuilder<DesktopPipPlaybackSource?>(
               valueListenable: widget.source,
               builder: (context, source, _) {
                 if (source == null) return const SizedBox.expand();
@@ -189,7 +199,7 @@ class _LinuxPipPlayerWindowState extends State<_LinuxPipPlayerWindow> {
     );
   }
 
-  Widget _buildPlayer(BuildContext context, LinuxPipPlaybackSource source) {
+  Widget _buildPlayer(BuildContext context, DesktopPipPlaybackSource source) {
     final controller = source.controller;
     return Stack(
       fit: StackFit.expand,
@@ -229,7 +239,7 @@ class _LinuxPipPlayerWindowState extends State<_LinuxPipPlayerWindow> {
                   left: 8,
                   right: 8,
                   bottom: 4,
-                  child: LinuxPipTransportControls(
+                  child: DesktopPipTransportControls(
                     key: ValueKey(controller),
                     controller: controller,
                     canPlayPrevious: source.canPlayPrevious,
@@ -249,8 +259,8 @@ class _LinuxPipPlayerWindowState extends State<_LinuxPipPlayerWindow> {
   }
 }
 
-class LinuxPipTransportControls extends StatefulWidget {
-  const LinuxPipTransportControls({
+class DesktopPipTransportControls extends StatefulWidget {
+  const DesktopPipTransportControls({
     super.key,
     required this.controller,
     required this.canPlayPrevious,
@@ -270,11 +280,12 @@ class LinuxPipTransportControls extends StatefulWidget {
   final Future<void> Function() onNext;
 
   @override
-  State<LinuxPipTransportControls> createState() =>
-      _LinuxPipTransportControlsState();
+  State<DesktopPipTransportControls> createState() =>
+      _DesktopPipTransportControlsState();
 }
 
-class _LinuxPipTransportControlsState extends State<LinuxPipTransportControls> {
+class _DesktopPipTransportControlsState
+    extends State<DesktopPipTransportControls> {
   bool _isScrubbing = false;
   double _scrubMs = 0;
 

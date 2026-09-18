@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:mockito/mockito.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/widgets/linux_pip_window.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/desktop_pip_window.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 class _FakeVideoController extends Mock implements VideoController {
@@ -51,7 +51,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Material(
-          child: LinuxPipTransportControls(
+          child: DesktopPipTransportControls(
             controller: controller,
             canPlayPrevious: true,
             canPlayNext: true,
@@ -86,7 +86,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Material(
-          child: LinuxPipTransportControls(
+          child: DesktopPipTransportControls(
             controller: controller,
             canPlayPrevious: false,
             canPlayNext: false,
@@ -117,6 +117,6 @@ void main() {
   });
 
   test('PiP title is stable for compositor window rules', () {
-    expect(kLinuxPipWindowTitle, startsWith('Picture-in-Picture'));
+    expect(kDesktopPipWindowTitle, startsWith('Picture-in-Picture'));
   });
 }

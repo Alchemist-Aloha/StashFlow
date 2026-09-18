@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:stash_app_flutter/core/utils/pip_mode.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/widgets/linux_pip_window.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/desktop_pip_window.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +32,7 @@ void main() {
   });
 
   test(
-    'delegates Linux PiP to a separate window without changing main window',
+    'delegates desktop PiP to a separate window without changing main window',
     () async {
       double? receivedAspectRatio;
       var exitCalls = 0;
@@ -59,7 +59,20 @@ void main() {
     },
   );
 
-  test('does not create duplicate Linux PiP windows', () async {
+  test('supports windowed PiP on every desktop platform', () {
+    for (final platform in <TargetPlatform>[
+      TargetPlatform.windows,
+      TargetPlatform.linux,
+      TargetPlatform.macOS,
+    ]) {
+      debugDefaultTargetPlatformOverride = platform;
+
+      expect(PipMode.isWindowed, isTrue, reason: platform.name);
+      expect(PipMode.isSupported, isTrue, reason: platform.name);
+    }
+  });
+
+  test('does not create duplicate desktop PiP windows', () async {
     var enterCalls = 0;
     PipMode.configureWindowedHandlers(
       enter: (_) async {
@@ -75,7 +88,7 @@ void main() {
   });
 
   test(
-    'reports unavailable until the Linux window owner is registered',
+    'reports unavailable until the desktop window owner is registered',
     () async {
       expect(await PipMode.enterIfAvailable(), isFalse);
       expect(await PipMode.exitIfAvailable(), isFalse);
@@ -95,9 +108,12 @@ void main() {
     expect(PipMode.isInPipMode.value, isFalse);
   });
 
-  test('Linux PiP size follows a sanitized aspect ratio', () {
-    expect(linuxPipWindowSize(2), const Size(600, 300));
-    expect(linuxPipWindowSize(double.nan).aspectRatio, closeTo(16 / 9, 0.001));
-    expect(sanitizeLinuxPipAspectRatio(100), 4);
+  test('desktop PiP size follows a sanitized aspect ratio', () {
+    expect(desktopPipWindowSize(2), const Size(600, 300));
+    expect(
+      desktopPipWindowSize(double.nan).aspectRatio,
+      closeTo(16 / 9, 0.001),
+    );
+    expect(sanitizeDesktopPipAspectRatio(100), 4);
   });
 }

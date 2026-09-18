@@ -67,7 +67,7 @@ the current **Authentication status**.
 | **Start Feed from random position** | Off | In Feed mode, begin each scene at a random point between 0% and 90% |
 | **Play End Behavior** | Stop | What happens when a scene ends: `Stop`, `Loop current scene`, or `Play next scene` |
 | **Background Playback** | Off | Keep audio playing when the app is backgrounded (Android) |
-| **Native Picture-in-Picture** | Off | Show the PiP button and auto-enter PiP on background (Android); enables the PiP button on Linux |
+| **Native Picture-in-Picture** | Off | Show the PiP button and auto-enter PiP on background (Android); enables the PiP button on Windows, macOS, and Linux |
 | **Open scenes in fullscreen** | Off | Open playback directly in fullscreen |
 | **Gravity-controlled orientation** | On | Rotate with the device sensor during playback |
 | **Resume from last playing position** | On | Continue from where you left off |

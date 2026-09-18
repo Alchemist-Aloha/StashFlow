@@ -44,19 +44,51 @@ void main() {
     expect(source, contains('await windowManager.focus()'));
   });
 
-  test('Linux startup installs and runs the shared-engine multi-view root', () {
+  test('desktop startup runs the shared-engine multi-view root', () {
     final dartSource = File('lib/main.dart').readAsStringSync();
-    final runnerSource = File(
+    final linuxRunnerSource = File(
       'linux/runner/my_application.cc',
+    ).readAsStringSync();
+    final windowsRunnerSource = File(
+      'windows/runner/flutter_window.cpp',
+    ).readAsStringSync();
+    final windowsMainSource = File(
+      'windows/runner/main.cpp',
+    ).readAsStringSync();
+    final macosWindowSource = File(
+      'macos/Runner/MainFlutterWindow.swift',
+    ).readAsStringSync();
+    final macosDelegateSource = File(
+      'macos/Runner/AppDelegate.swift',
     ).readAsStringSync();
 
     expect(dartSource, contains('mvd.runMultiApp('));
-    expect(runnerSource, contains('multiview_desktop_linux_runner_install('));
     expect(
-      runnerSource,
+      linuxRunnerSource,
+      contains('multiview_desktop_linux_runner_install('),
+    );
+    expect(
+      linuxRunnerSource,
       contains('multiview_desktop_linux_runner_register_primary('),
     );
-    expect(runnerSource, isNot(contains('G_APPLICATION_NON_UNIQUE')));
+    expect(linuxRunnerSource, isNot(contains('G_APPLICATION_NON_UNIQUE')));
+    expect(windowsRunnerSource, contains('MultiViewDesktopPrepareEngine('));
+    expect(windowsRunnerSource, contains('MultiViewDesktopCreateMainView('));
+    expect(windowsMainSource, contains('SetQuitOnClose(false)'));
+    expect(
+      macosWindowSource,
+      contains('MultiviewDesktopPlugin.prepareEngine('),
+    );
+    expect(
+      macosDelegateSource,
+      contains(
+        'MultiviewDesktopPlugin.applicationShouldTerminateAfterLastWindowClosed()',
+      ),
+    );
+    expect(
+      macosDelegateSource,
+      contains('MultiviewDesktopPlugin.applicationShouldHandleReopen('),
+    );
   });
 
   testWidgets('desktop scroll behavior supports mouse drag scrolling', (

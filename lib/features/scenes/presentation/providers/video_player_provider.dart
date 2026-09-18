@@ -21,7 +21,7 @@ import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
 import 'player_view_mode.dart';
 import 'player_settings.dart';
-import '../widgets/linux_pip_window.dart';
+import '../widgets/desktop_pip_window.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
 import '../../../../core/data/auth/auth_provider.dart';
@@ -413,7 +413,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       WidgetsBinding.instance.removeObserver(this);
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
       PipMode.clearWindowedHandlers();
-      unawaited(LinuxPipWindowSession.close());
+      unawaited(DesktopPipWindowSession.close());
       _cleanupNotificationArt();
       _activityTracker.dispose();
 
@@ -428,8 +428,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     PipMode.isInPipMode.addListener(_onPipModeChanged);
     if (PipMode.isWindowed) {
       PipMode.configureWindowedHandlers(
-        enter: _openLinuxPipWindow,
-        exit: LinuxPipWindowSession.close,
+        enter: _openDesktopPipWindow,
+        exit: DesktopPipWindowSession.close,
       );
     }
 
@@ -437,7 +437,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (!PipMode.isWindowed || !PipMode.isInPipMode.value) return;
       final controller = state.videoController;
       if (controller != null) {
-        LinuxPipWindowSession.updateSource(_linuxPipSource(controller));
+        DesktopPipWindowSession.updateSource(_desktopPipSource(controller));
       }
     });
 
@@ -777,11 +777,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
   }
 
-  Future<bool> _openLinuxPipWindow(double? aspectRatio) async {
+  Future<bool> _openDesktopPipWindow(double? aspectRatio) async {
     final controller = state.videoController;
     if (controller == null || !ref.mounted) return false;
-    return LinuxPipWindowSession.open(
-      source: _linuxPipSource(controller),
+    return DesktopPipWindowSession.open(
+      source: _desktopPipSource(controller),
       aspectRatio: aspectRatio,
       onTogglePlayback: togglePlayPause,
       onSeek: seek,
@@ -792,10 +792,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     );
   }
 
-  LinuxPipPlaybackSource _linuxPipSource(VideoController controller) {
+  DesktopPipPlaybackSource _desktopPipSource(VideoController controller) {
     final queueState = ref.read(playbackQueueProvider);
     final activeSceneId = state.activeScene?.id;
-    return LinuxPipPlaybackSource(
+    return DesktopPipPlaybackSource(
       controller: controller,
       canPlayPrevious:
           findQueuePlaybackTarget(
@@ -1246,7 +1246,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
 
       if (PipMode.isWindowed && PipMode.isInPipMode.value) {
-        LinuxPipWindowSession.updateSource(_linuxPipSource(videoController));
+        DesktopPipWindowSession.updateSource(
+          _desktopPipSource(videoController),
+        );
       }
 
       if (isTestMode) {
