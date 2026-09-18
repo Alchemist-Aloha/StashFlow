@@ -21,6 +21,7 @@ import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
 import 'player_view_mode.dart';
 import 'player_settings.dart';
+import '../widgets/linux_pip_window.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
 import '../../../../core/data/auth/auth_provider.dart';
@@ -411,6 +412,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     ref.onDispose(() {
       WidgetsBinding.instance.removeObserver(this);
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
+      PipMode.clearWindowedHandlers();
+      unawaited(LinuxPipWindowSession.close());
       _cleanupNotificationArt();
       _activityTracker.dispose();
 
@@ -423,6 +426,20 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     });
 
     PipMode.isInPipMode.addListener(_onPipModeChanged);
+    if (PipMode.isWindowed) {
+      PipMode.configureWindowedHandlers(
+        enter: _openLinuxPipWindow,
+        exit: LinuxPipWindowSession.close,
+      );
+    }
+
+    ref.listen(playbackQueueProvider, (previous, next) {
+      if (!PipMode.isWindowed || !PipMode.isInPipMode.value) return;
+      final controller = state.videoController;
+      if (controller != null) {
+        LinuxPipWindowSession.updateSource(_linuxPipSource(controller));
+      }
+    });
 
     ref.listen(castServiceProvider, (previous, next) {
       if (next.completedMediaCount == 0 ||
@@ -745,6 +762,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     try {
       _fullscreenBeforePip = state.isFullScreen;
       _viewModeBeforePip = state.viewMode;
+      if (PipMode.isWindowed) {
+        // The windowed PiP window renders the player UI itself, so the app must
+        // not switch the window to OS fullscreen first.
+        return await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
+      }
       if (!state.isFullScreen) {
         requestEnterFullscreen();
         await Future<void>.delayed(const Duration(milliseconds: 150));
@@ -753,6 +775,59 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     } finally {
       _pipRequestInFlight = false;
     }
+  }
+
+  Future<bool> _openLinuxPipWindow(double? aspectRatio) async {
+    final controller = state.videoController;
+    if (controller == null || !ref.mounted) return false;
+    return LinuxPipWindowSession.open(
+      source: _linuxPipSource(controller),
+      aspectRatio: aspectRatio,
+      onTogglePlayback: togglePlayPause,
+      onSeek: seek,
+      onPrevious: playPrevious,
+      onNext: () async {
+        await playNext();
+      },
+    );
+  }
+
+  LinuxPipPlaybackSource _linuxPipSource(VideoController controller) {
+    final queueState = ref.read(playbackQueueProvider);
+    final activeSceneId = state.activeScene?.id;
+    return LinuxPipPlaybackSource(
+      controller: controller,
+      canPlayPrevious:
+          findQueuePlaybackTarget(
+            queueState: queueState,
+            delta: -1,
+            activeSceneId: activeSceneId,
+          ) !=
+          null,
+      canPlayNext:
+          findQueuePlaybackTarget(
+            queueState: queueState,
+            delta: 1,
+            activeSceneId: activeSceneId,
+          ) !=
+          null,
+    );
+  }
+
+  /// Leaves the windowed PiP mode. No-op on platforms where the system owns the
+  /// PiP window (Android).
+  Future<void> requestExitPip() async {
+    if (!PipMode.canExit || !ref.mounted) return;
+    await PipMode.exitIfAvailable();
+  }
+
+  /// Enters PiP, or leaves it when the platform allows that.
+  Future<void> togglePip({double? aspectRatio}) async {
+    if (PipMode.canExit && PipMode.isInPipMode.value) {
+      await requestExitPip();
+      return;
+    }
+    await requestEnterPip(aspectRatio: aspectRatio);
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
@@ -1169,6 +1244,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         resumePlayPosition: state.resumePlayPosition,
         fullscreenPhase: state.fullscreenPhase,
       );
+
+      if (PipMode.isWindowed && PipMode.isInPipMode.value) {
+        LinuxPipWindowSession.updateSource(_linuxPipSource(videoController));
+      }
 
       if (isTestMode) {
         return;
@@ -1638,12 +1717,22 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     );
   }
 
+  /// Seeks the active local or cast playback session without changing whether
+  /// it is playing.
+  Future<void> seek(Duration position) => _seekFromMediaNotification(position);
+
   void stop({bool dismissNotification = true}) {
     if (ref.mounted) {
       final castState = ref.read(castServiceProvider);
       if (castState.isCasting) {
         unawaited(ref.read(castServiceProvider.notifier).stopCasting());
       }
+    }
+
+    // Stopping resets the player state, which would leave a windowed PiP window
+    // behind with nothing to play in it.
+    if (PipMode.canExit && PipMode.isInPipMode.value) {
+      unawaited(PipMode.exitIfAvailable());
     }
 
     unawaited(_disposeControllers());

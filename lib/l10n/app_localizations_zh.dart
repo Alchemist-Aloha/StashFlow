@@ -439,6 +439,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_pip => '画中画';
 
   @override
+  String get common_exit_pip => '退出画中画';
+
+  @override
   String get common_toggle_fullscreen => '切换全屏';
 
   @override
@@ -1595,7 +1598,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_pip => '原生画中画';
 
   @override
-  String get settings_playback_pip_subtitle => '启用 Android 画中画按钮并在进入后台时自动进入';
+  String get settings_playback_pip_subtitle => '启用画中画按钮，并在进入后台时自动进入画中画';
 
   @override
   String get settings_playback_subtitles => '字幕设置';
@@ -3771,6 +3774,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_pip => '画中画';
 
   @override
+  String get common_exit_pip => '退出画中画';
+
+  @override
   String get common_toggle_fullscreen => '切换全屏';
 
   @override
@@ -4927,7 +4933,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_playback_pip => '原生画中画';
 
   @override
-  String get settings_playback_pip_subtitle => '启用 Android 画中画按钮并在进入后台时自动进入';
+  String get settings_playback_pip_subtitle => '启用画中画按钮，并在进入后台时自动进入画中画';
 
   @override
   String get settings_playback_subtitles => '字幕设置';
@@ -7105,6 +7111,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_pip => '子母畫面';
 
   @override
+  String get common_exit_pip => '退出子母畫面';
+
+  @override
   String get common_toggle_fullscreen => '切換全螢幕';
 
   @override
@@ -8262,7 +8271,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_playback_pip => '原生子母畫面';
 
   @override
-  String get settings_playback_pip_subtitle => '啟用 Android 子母畫面按鈕並在背景執行時自動進入';
+  String get settings_playback_pip_subtitle => '啟用子母畫面按鈕，並在背景執行時自動進入子母畫面';
 
   @override
   String get settings_playback_subtitles => '字幕設定';

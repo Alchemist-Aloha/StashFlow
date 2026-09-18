@@ -1157,6 +1157,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.3+1"
+  multiview_desktop:
+    dependency: "direct main"
+    description:
+      name: multiview_desktop
+      sha256: ea65edd2cf7c071cdb27eb0f38e5cddf7983d2098b8f475d05f321284392c148
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.2"
   mustache_template:
     dependency: transitive
     description:

@@ -37,11 +37,26 @@ void main() {
     final source = File('lib/main.dart').readAsStringSync();
 
     expect(source, contains('const windowOptions = WindowOptions('));
-    expect(source, contains('minimumSize: Size(800, 600)'));
+    expect(source, contains('minimumSize: kDesktopMinimumWindowSize'));
     expect(source, contains('windowManager.waitUntilReadyToShow('));
     expect(source, contains('await windowManager.maximize()'));
     expect(source, contains('await windowManager.show()'));
     expect(source, contains('await windowManager.focus()'));
+  });
+
+  test('Linux startup installs and runs the shared-engine multi-view root', () {
+    final dartSource = File('lib/main.dart').readAsStringSync();
+    final runnerSource = File(
+      'linux/runner/my_application.cc',
+    ).readAsStringSync();
+
+    expect(dartSource, contains('mvd.runMultiApp('));
+    expect(runnerSource, contains('multiview_desktop_linux_runner_install('));
+    expect(
+      runnerSource,
+      contains('multiview_desktop_linux_runner_register_primary('),
+    );
+    expect(runnerSource, isNot(contains('G_APPLICATION_NON_UNIQUE')));
   });
 
   testWidgets('desktop scroll behavior supports mouse drag scrolling', (

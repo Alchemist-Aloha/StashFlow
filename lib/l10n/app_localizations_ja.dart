@@ -441,6 +441,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_pip => 'ピクチャーインピクチャー';
 
   @override
+  String get common_exit_pip => 'ピクチャーインピクチャーを終了';
+
+  @override
   String get common_toggle_fullscreen => '全画面切替';
 
   @override
@@ -1615,7 +1618,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Android PiPボタンを有効にし、バックグラウンド時に自動移行します';
+      'ピクチャーインピクチャーボタンを有効にし、バックグラウンド時に自動移行します';
 
   @override
   String get settings_playback_subtitles => '字幕設定';

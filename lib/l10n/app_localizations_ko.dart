@@ -439,6 +439,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_pip => 'PIP';
 
   @override
+  String get common_exit_pip => 'PIP 종료';
+
+  @override
   String get common_toggle_fullscreen => '전체 화면 전환';
 
   @override
@@ -1613,7 +1616,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Android PiP 버튼을 활성화하고 백그라운드 전환 시 자동 진입합니다';
+      'PIP 버튼을 활성화하고 백그라운드 전환 시 자동 진입합니다';
 
   @override
   String get settings_playback_subtitles => '자막 설정';

@@ -447,6 +447,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_pip => 'картинка в карт.';
 
   @override
+  String get common_exit_pip => 'выйти из «картинки в картинке»';
+
+  @override
   String get common_toggle_fullscreen => 'весь экран';
 
   @override
@@ -1667,7 +1670,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Включить кнопку PiP на Android и автоматический переход при сворачивании';
+      'Включить кнопку «картинка в картинке» и автоматический переход при сворачивании';
 
   @override
   String get settings_playback_subtitles => 'Настройки субтитров';

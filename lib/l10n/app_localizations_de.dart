@@ -449,6 +449,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get common_pip => 'Bild-im-Bild';
 
   @override
+  String get common_exit_pip => 'Bild-im-Bild beenden';
+
+  @override
   String get common_toggle_fullscreen => 'Vollbild umschalten';
 
   @override
@@ -1672,7 +1675,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Android PiP-Schaltfläche aktivieren und automatisch bei Hintergrundwechsel starten';
+      'Bild-im-Bild-Schaltfläche aktivieren und automatisch bei Hintergrundwechsel starten';
 
   @override
   String get settings_playback_subtitles => 'Untertitel-Einstellungen';

@@ -443,6 +443,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get common_pip => 'Picture-in-Picture';
 
   @override
+  String get common_exit_pip => 'Exit Picture-in-Picture';
+
+  @override
   String get common_toggle_fullscreen => 'Toggle Fullscreen';
 
   @override
@@ -1654,7 +1657,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Enable Android PiP button and auto-enter on background';
+      'Enable the Picture-in-Picture button and auto-enter on background';
 
   @override
   String get settings_playback_subtitles => 'Subtitle settings';

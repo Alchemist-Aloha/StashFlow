@@ -882,6 +882,12 @@ abstract class AppLocalizations {
   /// **'Picture-in-Picture'**
   String get common_pip;
 
+  /// No description provided for @common_exit_pip.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Picture-in-Picture'**
+  String get common_exit_pip;
+
   /// No description provided for @common_toggle_fullscreen.
   ///
   /// In en, this message translates to:
@@ -3123,7 +3129,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_playback_pip_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enable Android PiP button and auto-enter on background'**
+  /// **'Enable the Picture-in-Picture button and auto-enter on background'**
   String get settings_playback_pip_subtitle;
 
   /// No description provided for @settings_playback_subtitles.

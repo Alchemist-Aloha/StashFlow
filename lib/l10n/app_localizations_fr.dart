@@ -449,6 +449,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get common_pip => 'image dans l\'image';
 
   @override
+  String get common_exit_pip => 'quitter image dans l\'image';
+
+  @override
   String get common_toggle_fullscreen => 'plein écran';
 
   @override
@@ -1678,7 +1681,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Activer le bouton PiP Android et l\'entrée automatique en arrière-plan';
+      'Activer le bouton image dans l\'image et l\'entrée automatique en arrière-plan';
 
   @override
   String get settings_playback_subtitles => 'Paramètres des sous-titres';

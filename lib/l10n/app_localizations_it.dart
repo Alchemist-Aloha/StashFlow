@@ -451,6 +451,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_pip => 'PiP';
 
   @override
+  String get common_exit_pip => 'esci da PiP';
+
+  @override
   String get common_toggle_fullscreen => 'schermo intero';
 
   @override
@@ -1681,7 +1684,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Abilita il pulsante PiP di Android e l\'ingresso automatico in background';
+      'Abilita il pulsante PiP e l\'ingresso automatico in background';
 
   @override
   String get settings_playback_subtitles => 'Impostazioni sottotitoli';

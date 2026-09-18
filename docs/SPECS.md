@@ -363,6 +363,27 @@ Pinch/rotate behavior:
 - supports an explicit reset to identity;
 - does not steal taps and drags intended for playback controls.
 
+### Picture-in-picture
+
+PiP is available where the platform provides it: Android uses the system PiP
+window, and Linux opens a separate lightweight player window while the main app
+window remains in place. Both paths share the same player state, so entering PiP
+never restarts playback and leaving it restores the presentation that was active
+before entering.
+
+- The PiP surface omits navigation chrome, details, and the mini player. Linux
+  shows only a transient minimal transport overlay over the video.
+- The Linux PiP window is frameless, always on top where supported, and omitted
+  from the taskbar. Closing it leaves the main window geometry and decoration
+  untouched, and stopping playback also closes it so no empty player is left
+  behind.
+- Android PiP is entered through the system window and can only be left by the
+  user. Linux PiP is an ordinary window: `P` toggles it, and its minimal controls
+  expose previous, play/pause, next, seeking, and exit-PiP actions.
+- Linux window placement is best-effort. Wayland compositors choose window
+positions and may ignore always-on-top requests, so the PiP window may open where
+the compositor decides and can be dragged.
+
 ### Casting
 
 Casting discovery and session control are owned by the cast service. The player

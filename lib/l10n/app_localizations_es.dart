@@ -451,6 +451,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get common_pip => 'imagen en imagen';
 
   @override
+  String get common_exit_pip => 'salir de imagen en imagen';
+
+  @override
   String get common_toggle_fullscreen => 'pantalla completa';
 
   @override
@@ -1686,7 +1689,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Habilitar el botón PiP de Android y entrar automáticamente al pasar a segundo plano';
+      'Habilitar el botón de imagen en imagen y entrar automáticamente al pasar a segundo plano';
 
   @override
   String get settings_playback_subtitles => 'Ajustes de subtítulos';

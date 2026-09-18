@@ -1,23 +1,63 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
-/// A utility class for managing Android's native Picture-in-Picture (PiP) mode.
+/// Minimum window size the desktop layouts are designed around.
+const Size kDesktopMinimumWindowSize = Size(800, 600);
+
+typedef WindowedPipEnter = Future<bool> Function(double? aspectRatio);
+typedef WindowedPipExit = Future<bool> Function();
+
+/// Manages platform picture-in-picture (PiP) state.
 ///
-/// This class uses [MethodChannel] to communicate with the native Android
-/// activity to trigger PiP and listen for status changes.
+/// Android delegates to the system PiP window over a [MethodChannel]. Linux
+/// delegates to a separately registered multi-view window, so the primary app
+/// window is never resized or redecorated.
 class PipMode {
   PipMode._();
 
   static const MethodChannel _channel = MethodChannel('stash_app_flutter/pip');
 
-  /// A notifier that tracks whether the app is currently in PiP mode.
-  ///
-  /// UI components can listen to this to hide non-essential elements (like
-  /// navigation bars and details panels) when in PiP.
+  /// Tracks whether playback is currently presented in PiP.
   static final ValueNotifier<bool> isInPipMode = ValueNotifier<bool>(false);
 
-  /// Initializes the PiP status listener. Should be called at app startup.
+  static WindowedPipEnter? _windowedEnter;
+  static WindowedPipExit? _windowedExit;
+
+  /// Whether PiP is available on the current platform.
+  static bool get isSupported => isWindowed || (!kIsWeb && Platform.isAndroid);
+
+  /// Whether the app can close its PiP window programmatically.
+  static bool get canExit => isWindowed;
+
+  /// Whether PiP uses a separate application-managed desktop window.
+  static bool get isWindowed =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
+
+  /// Registers the feature-owned Linux window lifecycle.
+  static void configureWindowedHandlers({
+    required WindowedPipEnter enter,
+    required WindowedPipExit exit,
+  }) {
+    _windowedEnter = enter;
+    _windowedExit = exit;
+  }
+
+  /// Removes Linux window handlers owned by a disposed player provider.
+  static void clearWindowedHandlers() {
+    _windowedEnter = null;
+    _windowedExit = null;
+  }
+
+  /// Notifies shared player state that the Linux PiP window was closed by the
+  /// window manager or one of its own controls.
+  static void windowedWindowClosed() {
+    if (isWindowed) isInPipMode.value = false;
+  }
+
+  /// Initializes the Android PiP status listener.
   static void initialize() {
     _channel.setMethodCallHandler((call) async {
       if (call.method == 'pipModeChanged') {
@@ -26,19 +66,27 @@ class PipMode {
     });
   }
 
-  /// Attempts to enter Picture-in-Picture mode on the Android device.
-  ///
-  /// [aspectRatio] should match the current video's dimensions to ensure
-  /// the system window is sized correctly. Android enforces limits (0.418 to 2.39).
+  /// Attempts to enter picture-in-picture mode.
   static Future<bool> enterIfAvailable({double? aspectRatio}) async {
+    if (isWindowed) {
+      if (isInPipMode.value) return true;
+      final enter = _windowedEnter;
+      if (enter == null) return false;
+      try {
+        final entered = await enter(aspectRatio);
+        if (entered) isInPipMode.value = true;
+        return entered;
+      } catch (_) {
+        return false;
+      }
+    }
+
     if (kIsWeb || !Platform.isAndroid) return false;
     try {
       final Map<String, dynamic> args = {};
       if (aspectRatio != null) {
-        // Clamp aspect ratio to Android's supported range
-        if (aspectRatio > 2.39) aspectRatio = 2.39; // Android max limit
-        if (aspectRatio < 0.418) aspectRatio = 0.418; // Android min limit
-
+        // Android permits aspect ratios from 0.418 through 2.39.
+        aspectRatio = aspectRatio.clamp(0.418, 2.39).toDouble();
         args['numerator'] = (aspectRatio * 1000).toInt();
         args['denominator'] = 1000;
       }
@@ -48,6 +96,20 @@ class PipMode {
         args,
       );
       return result ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Closes the application-managed Linux PiP window.
+  static Future<bool> exitIfAvailable() async {
+    if (!canExit || !isInPipMode.value) return false;
+    final exit = _windowedExit;
+    if (exit == null) return false;
+    try {
+      final exited = await exit();
+      if (exited) isInPipMode.value = false;
+      return exited;
     } catch (_) {
       return false;
     }
