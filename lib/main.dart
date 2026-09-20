@@ -51,10 +51,12 @@ Future<void> main() async {
       await windowManager.ensureInitialized();
       try {
         if (defaultTargetPlatform == TargetPlatform.windows) {
-          const windowOptions = WindowOptions(
-            size: kDesktopMinimumWindowSize,
-            minimumSize: kDesktopMinimumWindowSize,
-          );
+          // window_manager registers one top-level window proc delegate per
+          // engine, so its minimum size would also clamp every
+          // multiview_desktop window, including the desktop PiP window. The
+          // Windows runner enforces the main window's minimum instead; see
+          // windows/runner/flutter_window.cpp.
+          const windowOptions = WindowOptions(size: kDesktopMinimumWindowSize);
           await windowManager.waitUntilReadyToShow(windowOptions, () async {
             await windowManager.maximize();
             await windowManager.show();

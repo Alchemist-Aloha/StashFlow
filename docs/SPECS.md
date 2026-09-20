@@ -378,8 +378,10 @@ presentation that was active before entering.
   leaves the main window geometry and decoration untouched, and stopping
   playback also closes it so no empty player is left behind.
 - The desktop PiP window is locked to the active video's aspect ratio and can
-  be resized freely down to a small minimum derived from that same ratio, so the
-  minimum never inflates the short side of portrait or ultra-wide videos.
+  be resized freely down to a small minimum, so the minimum never inflates the
+  short side of portrait or ultra-wide videos. A minimum size set through
+  `window_manager` applies to every window in the shared engine on Windows, so
+  the main window's minimum is enforced by the Windows runner instead.
 - Android PiP is entered through the system window and can only be left by the
   user. Desktop PiP is an ordinary window: `P` toggles it, and its minimal
   controls expose previous, play/pause, next, seeking, and exit-PiP actions.

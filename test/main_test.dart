@@ -37,11 +37,27 @@ void main() {
     final source = File('lib/main.dart').readAsStringSync();
 
     expect(source, contains('const windowOptions = WindowOptions('));
-    expect(source, contains('minimumSize: kDesktopMinimumWindowSize'));
     expect(source, contains('windowManager.waitUntilReadyToShow('));
     expect(source, contains('await windowManager.maximize()'));
     expect(source, contains('await windowManager.show()'));
     expect(source, contains('await windowManager.focus()'));
+  });
+
+  test('Windows main-window minimum stays out of the global window rules', () {
+    final dartSource = File('lib/main.dart').readAsStringSync();
+    final windowsRunnerSource = File(
+      'windows/runner/flutter_window.cpp',
+    ).readAsStringSync();
+
+    // window_manager's minimum applies to every multiview_desktop window on
+    // Windows, so the main window's minimum is enforced by the runner instead.
+    expect(
+      dartSource,
+      isNot(contains('minimumSize: kDesktopMinimumWindowSize')),
+    );
+    expect(windowsRunnerSource, contains('WM_GETMINMAXINFO'));
+    expect(windowsRunnerSource, contains('ptMinTrackSize'));
+    expect(windowsRunnerSource, contains('kMainWindowMinimumWidth'));
   });
 
   test('desktop startup runs the shared-engine multi-view root', () {
