@@ -116,4 +116,19 @@ void main() {
     );
     expect(sanitizeDesktopPipAspectRatio(100), 4);
   });
+
+  test('desktop PiP minimum stays on the video aspect ratio', () {
+    final wide = desktopPipMinimumSize(2);
+    expect(wide.height, kDesktopPipMinimumShortSide);
+    expect(wide.width / wide.height, closeTo(2, 0.001));
+
+    final tall = desktopPipMinimumSize(9 / 16);
+    expect(tall.width, kDesktopPipMinimumShortSide);
+    expect(tall.width / tall.height, closeTo(9 / 16, 0.001));
+    // The old 16:9 minimum forced this portrait window to 240x427.
+    expect(tall.height, lessThan(240));
+
+    final fallback = desktopPipMinimumSize(double.nan);
+    expect(fallback.width / fallback.height, closeTo(16 / 9, 0.001));
+  });
 }

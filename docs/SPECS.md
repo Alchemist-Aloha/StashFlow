@@ -377,6 +377,9 @@ presentation that was active before entering.
   omitted from the taskbar, dock window collection, or equivalent. Closing it
   leaves the main window geometry and decoration untouched, and stopping
   playback also closes it so no empty player is left behind.
+- The desktop PiP window is locked to the active video's aspect ratio and can
+  be resized freely down to a small minimum derived from that same ratio, so the
+  minimum never inflates the short side of portrait or ultra-wide videos.
 - Android PiP is entered through the system window and can only be left by the
   user. Desktop PiP is an ordinary window: `P` toggles it, and its minimal
   controls expose previous, play/pause, next, seeking, and exit-PiP actions.

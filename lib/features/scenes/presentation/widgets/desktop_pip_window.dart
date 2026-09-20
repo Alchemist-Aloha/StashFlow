@@ -11,7 +11,8 @@ import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/pip_mode.dart';
 import 'video_controls/video_progress_bar.dart';
 
-const Size kDesktopPipMinimumSize = Size(240, 135);
+/// Shorter side of the smallest desktop PiP window the user can resize to.
+const double kDesktopPipMinimumShortSide = 120;
 const double _defaultAspectRatio = 16 / 9;
 const String kDesktopPipWindowTitle = 'Picture-in-Picture — StashFlow';
 
@@ -26,6 +27,22 @@ Size desktopPipWindowSize(double? aspectRatio) {
   final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
   const height = 300.0;
   return Size(height * ratio, height);
+}
+
+/// Smallest window size the PiP window can be resized to.
+///
+/// The minimum follows [aspectRatio] so it never conflicts with the window's
+/// locked ratio: a fixed 16:9 minimum inflates the short side of portrait and
+/// ultra-wide videos (a 9:16 video could not shrink below 240 wide) and keeps
+/// the ratio from being applied consistently at small sizes. Keeping both
+/// dimensions on the same ratio lets the window scale freely down to
+/// [kDesktopPipMinimumShortSide].
+Size desktopPipMinimumSize(double? aspectRatio) {
+  final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
+  const shortSide = kDesktopPipMinimumShortSide;
+  return ratio >= 1
+      ? Size(shortSide * ratio, shortSide)
+      : Size(shortSide, shortSide / ratio);
 }
 
 class DesktopPipPlaybackSource {
@@ -63,6 +80,7 @@ class DesktopPipWindowSession {
     _opening = true;
 
     final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
+    final minimumSize = desktopPipMinimumSize(ratio);
     try {
       final viewId = await openWindow(
         (context, id) {
@@ -79,7 +97,7 @@ class DesktopPipWindowSession {
         },
         options: WindowOptions(
           size: desktopPipWindowSize(ratio),
-          minimumSize: kDesktopPipMinimumSize,
+          minimumSize: minimumSize,
           alignment: Alignment.bottomRight,
           backgroundColor: Colors.black,
           titleBarStyle: TitleBarStyle.hidden,
@@ -329,34 +347,39 @@ class _DesktopPipTransportControlsState
             StreamBuilder<bool>(
               stream: player.stream.playing,
               initialData: player.state.playing,
-              builder: (context, playingSnapshot) => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _PipIconButton(
-                    icon: Icons.skip_previous_rounded,
-                    tooltip: context.l10n.common_skip_previous,
-                    onPressed: widget.canPlayPrevious
-                        ? () => unawaited(widget.onPrevious())
-                        : null,
-                  ),
-                  _PipIconButton(
-                    icon: playingSnapshot.data ?? false
-                        ? Icons.pause_rounded
-                        : Icons.play_arrow_rounded,
-                    tooltip: playingSnapshot.data ?? false
-                        ? context.l10n.common_pause
-                        : context.l10n.common_play,
-                    emphasized: true,
-                    onPressed: widget.onTogglePlayback,
-                  ),
-                  _PipIconButton(
-                    icon: Icons.skip_next_rounded,
-                    tooltip: context.l10n.common_skip_next,
-                    onPressed: widget.canPlayNext
-                        ? () => unawaited(widget.onNext())
-                        : null,
-                  ),
-                ],
+              // Scale the fixed-size buttons down instead of overflowing once
+              // the window is resized near its minimum.
+              builder: (context, playingSnapshot) => FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _PipIconButton(
+                      icon: Icons.skip_previous_rounded,
+                      tooltip: context.l10n.common_skip_previous,
+                      onPressed: widget.canPlayPrevious
+                          ? () => unawaited(widget.onPrevious())
+                          : null,
+                    ),
+                    _PipIconButton(
+                      icon: playingSnapshot.data ?? false
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
+                      tooltip: playingSnapshot.data ?? false
+                          ? context.l10n.common_pause
+                          : context.l10n.common_play,
+                      emphasized: true,
+                      onPressed: widget.onTogglePlayback,
+                    ),
+                    _PipIconButton(
+                      icon: Icons.skip_next_rounded,
+                      tooltip: context.l10n.common_skip_next,
+                      onPressed: widget.canPlayNext
+                          ? () => unawaited(widget.onNext())
+                          : null,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
