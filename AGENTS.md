@@ -1,57 +1,114 @@
-# Docs Index — Agent Reference
+# StashFlow Agent Guide
 
-Short, action-oriented guidance for agents working in this repository.
+Repository-specific instructions for agents working in this checkout.
 
-## Quick Rules
+## Scope and Precedence
 
-- **Localization:** Never ship plain strings; use ARB keys and run `flutter gen-l10n` after edits.
-- **Docs:** Add docstrings for new providers, widgets, and public APIs.
-- **Verify:** Run `flutter analyze` or project tests after UI/logic changes.
-- **Design:** Follow Material 3 expressive patterns (consistent spacing, soft shapes, readable type).
-- **Worktree:** Use the current `dev` branch directly by default. Do not create an isolated
-worktree unless the user explicitly requests one for a task.
-- **Build:** Run `flutter build apk --split-per-abi` after each implementation.
-- **Official Stash:** locate in `/stash` subdirectory. Do not edit the official Stash code; it is for reference only.
+- This file applies to the repository root and all nested paths unless a closer
+  `AGENTS.md` or `AGENTS.override.md` provides more specific guidance.
+- Explicit user instructions take precedence over this file and any skill.
+- Parent/global agent instructions still apply; this file adds StashFlow-specific
+  rules.
+- [`docs/SPECS.md`](docs/SPECS.md) is the source of truth for current product,
+  architecture, design, and verification contracts. Current code wins when a
+  path or symbol has moved; intentional behavior changes must update the owning
+  specification section.
+- Release notes and audits are historical evidence, not current requirements.
+
+## Working Agreement
+
+- Proceed with reversible, in-scope work without unnecessary clarification. Ask
+  only when a missing choice would materially change behavior, scope, or risk.
+- Before editing, inspect `git status`, the relevant specification section, the
+  real code path, its callers, and nearby tests.
+- Preserve unrelated worktree changes. Never discard, overwrite, or reformat
+  unrelated files.
+- Use the current `dev` checkout directly. Do not create another worktree unless
+  the user explicitly requests one.
+- Prefer the smallest repository-native change that fixes the shared root cause.
+  Reuse existing helpers and dependencies before adding abstractions or packages.
+- Keep backlog items, migration narratives, and one-off investigations in issues
+  or pull requests, not in this file or `docs/SPECS.md`.
+- The ignored `stash/` directory contains the official Stash project for
+  reference. Do not edit it.
+
+## Authored and Generated Files
+
+- Do not hand-edit generated Dart files, including `*.g.dart`, `*.freezed.dart`,
+  `*.graphql.dart`, `*.mocks.dart`, or `lib/l10n/app_localizations*.dart`.
+- After GraphQL, Freezed, Riverpod generator, serialization, or mock changes, run:
+
+  ```bash
+  rtk dart run build_runner build --delete-conflicting-outputs
+  ```
+
+- After ARB changes, run `rtk flutter gen-l10n` and inspect all generated and
+  authored changes before continuing.
+
+## Repository Contracts
+
+- Localize every user-visible string through ARB files under `lib/l10n/`.
+  Maintain de, es, fr, it, ja, ko, ru, zh_Hans, and zh_Hant; keep the base
+  `app_zh.arb` fallback aligned, and preserve placeholders exactly.
+- Run `rtk python3 scripts/analyze_translations.py` and
+  `rtk python3 scripts/check_translations.py` after localization changes; review
+  their output because these scripts report findings without failing the command.
+- Follow the Material 3, responsive-layout, dynamic-scaling, and accessibility
+  contracts in `docs/SPECS.md`. Use `context.dimensions` for scalable layout
+  values and verify supported scale extremes.
+- Document new public APIs and non-obvious ownership or lifecycle contracts.
+  Avoid comments that merely restate the code.
+
+## Verification
+
+Match verification to the change, run focused checks first, and do not repeat
+broad checks unless later edits or failures justify it.
+
+- Documentation-only changes: verify touched links and paths, then run
+  `rtk git diff --check`.
+- Dart changes: run `rtk dart format <changed-dart-files>`, the narrowest relevant
+  test, `rtk flutter analyze`, and `rtk git diff --check`.
+- Shared state, navigation, playback, persistence, or cross-feature changes: run
+  the full `rtk flutter test` suite after focused tests pass.
+- Localization changes: also run generation and both translation checks above.
+- Platform-specific changes: run the relevant host tests or manual acceptance
+  pass when the current host supports them.
+- Android, native-player, Gradle, manifest, dependency-packaging, and release
+  changes require `rtk flutter build apk --split-per-abi`; verify all three APKs
+  exist.
+- If an applicable check cannot run, report the exact gap. A successful build
+  does not prove device, browser, remote-CI, or native runtime behavior.
 
 ## Release Notes
 
-- When drafting `docs/update/updateNNNN.md`, start from the real tag diff between the target release tag and `HEAD`.
-- Use `git diff --stat <tag>..HEAD` first, then inspect targeted file diffs for the biggest user-facing areas.
-- Group entries by user-visible behavior, not by commit list or raw file churn.
-- Match the existing update-note style in `docs/update/`:
-  - short release title
-  - sectioned markdown
-  - concise bullets
-  - plain language
-- Prefer concrete outcomes and feature names the user can recognize in the app.
-- Avoid dumping full diff output, commit hashes, or implementation trivia unless it directly explains a user-facing change.
+- Name the file for the target version, for example `update1330.md` for
+  `v1.33.0`, and use `# StashFlow vX.Y.Z` as the title.
+- Before drafting, inspect `git status`, the nearest existing update notes, and
+  the actual previous-release-tag-to-`HEAD` range. Do not infer the release from
+  only the latest commits or from uncommitted worktree changes.
+- Start with `rtk git diff --stat <previous-tag>..HEAD` and
+  `rtk git log --no-merges <previous-tag>..HEAD`, then inspect targeted diffs for
+  the largest user-facing areas.
+- Group changes by user-visible outcome under short `##` sections with relevant
+  emoji, following the newest notes in `docs/update/`. Omit empty categories.
+- Write concise bullets in plain language. Cover meaningful features, fixes,
+  compatibility, performance, and packaging changes a user would recognize.
+  Combine related commits into one outcome.
+- Exclude commit hashes, commit-by-commit narration, raw file churn, internal
+  refactors without user impact, speculative claims, and verification that did
+  not run.
+- Unless requested, edit only the update-note file; do not change package
+  versions, locks, tags, or release configuration.
+- Documentation-only release-note work does not require an application build.
+  Verify the selected range, changed-file scope, final Markdown, and
+  `rtk git diff --check`.
 
-## Localization (l10n) — Essentials
+## Reviews and Handoffs
 
-- Files: [lib/l10n/](lib/l10n/)
-- Target locales: de, es, fr, it, ja, ko, ru, zh, zh_Hans, zh_Hant.
-- Preserve placeholders (e.g., {count}, {error}) exactly.
-- Use `scripts/analyze_translations.py` and `scripts/check_translations.py` to validate ARB edits.
-
-## Design Specifications
-
-- **Single source of truth:** [SPECS.md](docs/SPECS.md) — all design specs in one categorized file.
-- **No individual spec files:** The old `docs/superpowers/specs/` directory has been removed.
-- **Finding a spec:** Browse the category index at the top of `SPECS.md`; the file describes current contracts, while implementation history belongs in Git.
-- **Updating specs:** Edit the owning category instead of adding a dated duplicate. Keep goals, invariants, ownership, and verification guidance; put migration plans and change narratives in issues or pull requests.
-
-## Dynamic UI Scaling — Standards
-
-- **Core Rule:** NEVER use hardcoded spacing (e.g., `EdgeInsets.all(16)`) or static `AppTheme` constants for layout dimensions.
-- **Access:** Use `context.dimensions.spacingSmall/Medium/Large` for all padding, margins, and gaps.
-- **Scaling:** All dimensions must scale with `context.dimensions.fontSizeFactor` (controlled by the global UI size slider).
-- **Component Sizes:** Use `context.dimensions.buttonHeight` and scale manual icon sizes by multiplying with `context.dimensions.fontSizeFactor`.
-- **Implementation:** When adding new UI, ensure `AppDimensions` is supported and the widget tree is responsive to theme changes.
-
-## Actionable Checklist for Implementers/Agents
-
-- Update ARB keys and run `flutter gen-l10n`.
-- Replace remaining dropdowns in settings pages with bottom sheets / sliders / menu anchors.
-- Run `flutter build apk --split-per-abi` and relevant tests; fix layout/localization regressions.
-
-References: [`SPECS.md`](docs/SPECS.md) (combined spec document).
+- For reviews, report actionable findings first, ordered by severity, with file
+  and line references. Prioritize correctness, security, data loss, regressions,
+  and missing meaningful coverage.
+- If no findings remain, say so and identify any unverified runtime or platform
+  risk.
+- Final handoffs must state what changed, which checks passed, and what remains
+  unverified. Do not imply that an unrun check passed.

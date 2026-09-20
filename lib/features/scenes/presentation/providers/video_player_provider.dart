@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -20,6 +21,7 @@ import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
 import 'player_view_mode.dart';
 import 'player_settings.dart';
+import '../widgets/desktop_pip_window.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
 import '../../../../core/data/auth/auth_provider.dart';
@@ -328,6 +330,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   /// especially when triggered by multiple listeners (e.g. video finish + UI button).
   bool _isTransitioning = false;
 
+  /// Whether the mini player is the surface currently hosting playback.
+  /// Kept out of [GlobalPlayerState] because it changes during widget build and
+  /// only affects transition routing, never rendering.
+  bool _isMiniPlayerVisible = false;
+
   /// Internal flag to track playback state changes across listener fires.
   bool? _lastIsPlaying;
 
@@ -405,6 +412,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     ref.onDispose(() {
       WidgetsBinding.instance.removeObserver(this);
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
+      PipMode.clearWindowedHandlers();
+      unawaited(DesktopPipWindowSession.close());
       _cleanupNotificationArt();
       _activityTracker.dispose();
 
@@ -417,9 +426,56 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     });
 
     PipMode.isInPipMode.addListener(_onPipModeChanged);
+    if (PipMode.isWindowed) {
+      PipMode.configureWindowedHandlers(
+        enter: _openDesktopPipWindow,
+        exit: DesktopPipWindowSession.close,
+      );
+    }
 
-    // Link system media controls to our provider
-    mediaHandler?.onPlayCallback = () async => play();
+    ref.listen(playbackQueueProvider, (previous, next) {
+      if (!PipMode.isWindowed || !PipMode.isInPipMode.value) return;
+      final controller = state.videoController;
+      if (controller != null) {
+        DesktopPipWindowSession.updateSource(_desktopPipSource(controller));
+      }
+    });
+
+    ref.listen(castServiceProvider, (previous, next) {
+      if (next.completedMediaCount == 0 ||
+          next.completedMediaCount == previous?.completedMediaCount) {
+        return;
+      }
+      final completedSceneId = state.activeScene?.id;
+      if (completedSceneId != null) {
+        unawaited(_applyVideoEndBehavior(completedSceneId));
+      }
+    });
+
+    // The local player is paused while casting, so the media session has to
+    // follow the remote renderer instead of the local player's ticks.
+    ref.listen(castServiceProvider, (previous, next) {
+      if (!next.isCasting) return;
+      _lastMediaHandlerPosition = next.remotePosition;
+      mediaHandler?.updatePlaybackState(
+        isPlaying: next.remoteIsPlaying,
+        position: next.remotePosition,
+        bufferedPosition: next.remotePosition,
+        speed: 1.0,
+        processingState: AudioProcessingState.ready,
+      );
+    });
+
+    // Link system media controls to our provider. While a cast session owns
+    // playback the local player is paused, so transport commands from the
+    // notification / lock screen / headset have to be routed to the remote.
+    mediaHandler?.onPlayCallback = () async {
+      if (ref.read(castServiceProvider).isCasting) {
+        await ref.read(castServiceProvider.notifier).play();
+        return;
+      }
+      play();
+    };
     mediaHandler?.onPauseCallback = () async => _handleMediaPauseCommand();
     mediaHandler?.onStopCallback = () async => stop(dismissNotification: false);
     mediaHandler?.onSeekCallback = _seekFromMediaNotification;
@@ -706,6 +762,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     try {
       _fullscreenBeforePip = state.isFullScreen;
       _viewModeBeforePip = state.viewMode;
+      if (PipMode.isWindowed) {
+        // The windowed PiP window renders the player UI itself, so the app must
+        // not switch the window to OS fullscreen first.
+        return await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
+      }
       if (!state.isFullScreen) {
         requestEnterFullscreen();
         await Future<void>.delayed(const Duration(milliseconds: 150));
@@ -714,6 +775,59 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     } finally {
       _pipRequestInFlight = false;
     }
+  }
+
+  Future<bool> _openDesktopPipWindow(double? aspectRatio) async {
+    final controller = state.videoController;
+    if (controller == null || !ref.mounted) return false;
+    return DesktopPipWindowSession.open(
+      source: _desktopPipSource(controller),
+      aspectRatio: aspectRatio,
+      onTogglePlayback: togglePlayPause,
+      onSeek: seek,
+      onPrevious: playPrevious,
+      onNext: () async {
+        await playNext();
+      },
+    );
+  }
+
+  DesktopPipPlaybackSource _desktopPipSource(VideoController controller) {
+    final queueState = ref.read(playbackQueueProvider);
+    final activeSceneId = state.activeScene?.id;
+    return DesktopPipPlaybackSource(
+      controller: controller,
+      canPlayPrevious:
+          findQueuePlaybackTarget(
+            queueState: queueState,
+            delta: -1,
+            activeSceneId: activeSceneId,
+          ) !=
+          null,
+      canPlayNext:
+          findQueuePlaybackTarget(
+            queueState: queueState,
+            delta: 1,
+            activeSceneId: activeSceneId,
+          ) !=
+          null,
+    );
+  }
+
+  /// Leaves the windowed PiP mode. No-op on platforms where the system owns the
+  /// PiP window (Android).
+  Future<void> requestExitPip() async {
+    if (!PipMode.canExit || !ref.mounted) return;
+    await PipMode.exitIfAvailable();
+  }
+
+  /// Enters PiP, or leaves it when the platform allows that.
+  Future<void> togglePip({double? aspectRatio}) async {
+    if (PipMode.canExit && PipMode.isInPipMode.value) {
+      await requestExitPip();
+      return;
+    }
+    await requestEnterPip(aspectRatio: aspectRatio);
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
@@ -774,6 +888,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           ? FullscreenPhase.fullscreen
           : FullscreenPhase.inline,
     );
+  }
+
+  /// Reports whether the mini player is mounted and hosting playback. Scene
+  /// transitions stay put when playback started there, instead of opening the
+  /// details page.
+  void setMiniPlayerVisible(bool visible) {
+    _isMiniPlayerVisible = visible;
   }
 
   void setViewMode(PlayerViewMode mode) {
@@ -946,6 +1067,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     Duration? initialPosition,
     bool force = false,
   }) async {
+    final castBeforeStart = ref.read(castServiceProvider);
+    final switchActiveCast =
+        castBeforeStart.isCasting &&
+        castBeforeStart.activeSession != null &&
+        state.activeScene?.id != scene.id;
     AppLogStore.instance.add(
       'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'} initialPos=${initialPosition?.inMilliseconds}ms force=$force',
       source: 'player_provider',
@@ -1119,6 +1245,12 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         fullscreenPhase: state.fullscreenPhase,
       );
 
+      if (PipMode.isWindowed && PipMode.isInPipMode.value) {
+        DesktopPipWindowSession.updateSource(
+          _desktopPipSource(videoController),
+        );
+      }
+
       if (isTestMode) {
         return;
       }
@@ -1182,7 +1314,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
 
       state = state.copyWith(
-        isPlaying: true,
+        isPlaying: !switchActiveCast,
         startupLatencyMs: initializeElapsedMs,
       );
 
@@ -1216,7 +1348,33 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
             );
           },
         );
-        unawaited(player.play());
+        if (!switchActiveCast) unawaited(player.play());
+      }
+
+      if (switchActiveCast) {
+        final media = dc.CastMedia(
+          url: streamUrl,
+          type: detectCastMediaType(streamUrl),
+          title: scene.title,
+          startPosition: initialPosition,
+          httpHeaders: httpHeaders ?? const <String, String>{},
+        );
+        try {
+          await ref
+              .read(castServiceProvider.notifier)
+              .restartActiveSessionWithMedia(
+                media,
+                localResumePosition: initialPosition ?? Duration.zero,
+                localWasPlaying: castBeforeStart.localWasPlaying,
+              );
+        } catch (e) {
+          AppLogStore.instance.add(
+            'PlayerState: failed to switch cast to scene ${scene.id}: $e',
+            source: 'player_provider',
+          );
+          if (!isTestMode) unawaited(player.play());
+          state = state.copyWith(isPlaying: true);
+        }
       }
 
       // Prepare for the next scene in the queue
@@ -1508,10 +1666,25 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       return;
     }
 
+    if (ref.read(castServiceProvider).isCasting) {
+      await ref.read(castServiceProvider.notifier).pause();
+      return;
+    }
     pause(suppressBackgroundRecovery: true);
   }
 
   Future<void> _seekFromMediaNotification(Duration position) async {
+    final castState = ref.read(castServiceProvider);
+    if (castState.isCasting) {
+      var castTarget = position < Duration.zero ? Duration.zero : position;
+      final remoteDuration = castState.remoteDuration;
+      if (remoteDuration > Duration.zero && castTarget > remoteDuration) {
+        castTarget = remoteDuration;
+      }
+      await ref.read(castServiceProvider.notifier).seek(castTarget);
+      return;
+    }
+
     final player = state.player;
     if (player == null) return;
 
@@ -1546,12 +1719,22 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     );
   }
 
+  /// Seeks the active local or cast playback session without changing whether
+  /// it is playing.
+  Future<void> seek(Duration position) => _seekFromMediaNotification(position);
+
   void stop({bool dismissNotification = true}) {
     if (ref.mounted) {
       final castState = ref.read(castServiceProvider);
       if (castState.isCasting) {
         unawaited(ref.read(castServiceProvider.notifier).stopCasting());
       }
+    }
+
+    // Stopping resets the player state, which would leave a windowed PiP window
+    // behind with nothing to play in it.
+    if (PipMode.canExit && PipMode.isInPipMode.value) {
+      unawaited(PipMode.exitIfAvailable());
     }
 
     unawaited(_disposeControllers());
@@ -1726,14 +1909,18 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       }
 
       // Only update media handler if state changed or if position drifted significantly
-      // (audio_service increments position automatically, so we only need to sync periodically)
+      // (audio_service increments position automatically, so we only need to sync periodically).
+      // While casting the remote state is published instead.
       final shouldUpdateMediaHandler =
-          playingChanged ||
-          bufferingChanged ||
-          speedChanged ||
-          _lastMediaHandlerPosition == null ||
-          (currentPosition - _lastMediaHandlerPosition!).abs().inMilliseconds >
-              1000;
+          !ref.read(castServiceProvider).isCasting &&
+          (playingChanged ||
+              bufferingChanged ||
+              speedChanged ||
+              _lastMediaHandlerPosition == null ||
+              (currentPosition - _lastMediaHandlerPosition!)
+                      .abs()
+                      .inMilliseconds >
+                  1000);
 
       if (shouldUpdateMediaHandler) {
         _lastMediaHandlerPosition = currentPosition;
@@ -1770,6 +1957,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         stop();
         return;
       case VideoEndBehavior.loop:
+        final castState = ref.read(castServiceProvider);
+        if (castState.isCasting) {
+          final cast = ref.read(castServiceProvider.notifier);
+          await cast.seek(Duration.zero);
+          if (ref.read(castServiceProvider).isCasting) await cast.play();
+          return;
+        }
         final completedPlayer = state.player;
         await completedPlayer?.seek(Duration.zero);
         if (state.player == completedPlayer) await completedPlayer?.play();
@@ -1816,6 +2010,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
     _isTransitioning = true;
     try {
+      // Captured before playScene: changing the active scene makes the shell
+      // briefly mount the mini player during the route transition, which must
+      // not be mistaken for playback that actually lives in the mini player.
+      final startedInMiniPlayer = _isMiniPlayerVisible;
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
       final target = findQueuePlaybackTarget(
         queueState: queueNotifier.state,
@@ -1841,8 +2039,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (state.activeScene?.id == target.scene.id) {
         queueNotifier.setIndex(target.targetIndex);
         // Trigger navigation synchronization so background details match active scene.
-        // Skip for TikTok mode as it handles its own navigation via PageView.
-        if (state.viewMode != PlayerViewMode.tiktok) {
+        // Skip for TikTok mode (its PageView handles navigation) and when
+        // playback started in the mini player, which must keep playing in place.
+        if (state.viewMode != PlayerViewMode.tiktok && !startedInMiniPlayer) {
           _replaceRoute('/scenes/scene/${target.scene.id}');
         }
         return true;
@@ -1862,6 +2061,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
     _isTransitioning = true;
     try {
+      final startedInMiniPlayer = _isMiniPlayerVisible;
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
       final target = findQueuePlaybackTarget(
         queueState: queueNotifier.state,
@@ -1887,8 +2087,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (state.activeScene?.id == target.scene.id) {
         queueNotifier.setIndex(target.targetIndex);
         // Trigger navigation synchronization.
-        // Skip for TikTok mode as it handles its own navigation via PageView.
-        if (state.viewMode != PlayerViewMode.tiktok) {
+        // Skip for TikTok mode (its PageView handles navigation) and when
+        // playback started in the mini player, which must keep playing in place.
+        if (state.viewMode != PlayerViewMode.tiktok && !startedInMiniPlayer) {
           _replaceRoute('/scenes/scene/${target.scene.id}');
         }
       }

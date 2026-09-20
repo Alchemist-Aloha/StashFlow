@@ -244,10 +244,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sort_measurements => '三围';
 
   @override
-  String get sort_scenes_duration => '场景时长';
+  String get sort_scenes_duration => '场景总时长';
 
   @override
-  String get sort_scenes_size => '场景大小';
+  String get sort_scenes_size => '场景总大小';
 
   @override
   String get sort_images_count => '图片数量';
@@ -437,6 +437,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get common_pip => '画中画';
+
+  @override
+  String get common_exit_pip => '退出画中画';
 
   @override
   String get common_toggle_fullscreen => '切换全屏';
@@ -689,7 +692,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_sort_o_counter => 'O计数器';
 
   @override
-  String get scenes_sort_last_o_at => '上次O时间';
+  String get scenes_sort_last_o_at => '上次 O 活动';
 
   @override
   String get scenes_sort_group_scene_number => '合集/电影场景编号';
@@ -950,6 +953,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get images_resolution_title => '分辨率';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -992,7 +1007,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scrape_from_url => '从 URL 抓取';
 
   @override
-  String get scenes_phash_started => '开始生成 phash';
+  String get scenes_phash_started => '开始生成 pHash';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -1445,7 +1460,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_auth_apikey => 'API 密钥';
 
   @override
-  String get settings_server_auth_password => '用户名 + 密码';
+  String get settings_server_auth_password => '用户名和密码';
 
   @override
   String get settings_server_auth_password_desc => '推荐：使用您的 Stash 用户名/密码会话。';
@@ -1553,7 +1568,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '打开视频时，自动从上次中断的地方继续播放';
 
   @override
-  String get settings_playback_end_behavior => '播放结束行为';
+  String get settings_playback_end_behavior => '播放结束时的行为';
 
   @override
   String get settings_playback_end_behavior_subtitle => '当前视频播放结束时的操作';
@@ -1583,7 +1598,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_pip => '原生画中画';
 
   @override
-  String get settings_playback_pip_subtitle => '启用 Android 画中画按钮并在进入后台时自动进入';
+  String get settings_playback_pip_subtitle => '启用画中画按钮，并在进入后台时自动进入画中画';
 
   @override
   String get settings_playback_subtitles => '字幕设置';
@@ -2355,13 +2370,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_field_stash_id_count => 'Stash ID 数量';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => '校验和';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => '创建于';
@@ -2527,10 +2542,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_audio_codec => '音频编解码器';
 
   @override
-  String get scene_info_stream => '溪流';
+  String get scene_info_stream => '串流';
 
   @override
   String get scene_info_preview => '预览';
+
+  @override
+  String get scene_info_preview_unavailable => '预览视频不可用';
 
   @override
   String get scene_info_screenshot => '截屏';
@@ -2545,7 +2563,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_vtt => '视听测试';
 
   @override
-  String get scene_info_sprite => '雪碧';
+  String get scene_info_sprite => '预览图';
 
   @override
   String get scene_info_technical => '技术的';
@@ -3561,10 +3579,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get sort_measurements => '三围';
 
   @override
-  String get sort_scenes_duration => '场景时长';
+  String get sort_scenes_duration => '场景总时长';
 
   @override
-  String get sort_scenes_size => '场景大小';
+  String get sort_scenes_size => '场景总大小';
 
   @override
   String get sort_images_count => '图片数量';
@@ -3754,6 +3772,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get common_pip => '画中画';
+
+  @override
+  String get common_exit_pip => '退出画中画';
 
   @override
   String get common_toggle_fullscreen => '切换全屏';
@@ -4006,7 +4027,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_sort_o_counter => 'O计数器';
 
   @override
-  String get scenes_sort_last_o_at => '上次O时间';
+  String get scenes_sort_last_o_at => '上次 O 活动';
 
   @override
   String get scenes_sort_group_scene_number => '合集/电影场景编号';
@@ -4267,6 +4288,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get images_resolution_title => '分辨率';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -4309,7 +4342,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scrape_from_url => '从 URL 抓取';
 
   @override
-  String get scenes_phash_started => '开始生成 phash';
+  String get scenes_phash_started => '开始生成 pHash';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -4762,7 +4795,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_auth_apikey => 'API 密钥';
 
   @override
-  String get settings_server_auth_password => '用户名 + 密码';
+  String get settings_server_auth_password => '用户名和密码';
 
   @override
   String get settings_server_auth_password_desc => '推荐：使用您的 Stash 用户名/密码会话。';
@@ -4870,7 +4903,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '打开视频时，自动从上次中断的地方继续播放';
 
   @override
-  String get settings_playback_end_behavior => '播放结束行为';
+  String get settings_playback_end_behavior => '播放结束时的行为';
 
   @override
   String get settings_playback_end_behavior_subtitle => '当前视频播放结束时的操作';
@@ -4900,7 +4933,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_playback_pip => '原生画中画';
 
   @override
-  String get settings_playback_pip_subtitle => '启用 Android 画中画按钮并在进入后台时自动进入';
+  String get settings_playback_pip_subtitle => '启用画中画按钮，并在进入后台时自动进入画中画';
 
   @override
   String get settings_playback_subtitles => '字幕设置';
@@ -5672,13 +5705,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_field_stash_id_count => 'Stash ID 数量';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => '校验和';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => '创建于';
@@ -5844,10 +5877,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_info_audio_codec => '音频编解码器';
 
   @override
-  String get scene_info_stream => '溪流';
+  String get scene_info_stream => '串流';
 
   @override
   String get scene_info_preview => '预览';
+
+  @override
+  String get scene_info_preview_unavailable => '预览视频不可用';
 
   @override
   String get scene_info_screenshot => '截屏';
@@ -5862,7 +5898,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_info_vtt => '视听测试';
 
   @override
-  String get scene_info_sprite => '雪碧';
+  String get scene_info_sprite => '预览图';
 
   @override
   String get scene_info_technical => '技术的';
@@ -6880,10 +6916,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get sort_measurements => '三圍';
 
   @override
-  String get sort_scenes_duration => '場景時長';
+  String get sort_scenes_duration => '場景總時長';
 
   @override
-  String get sort_scenes_size => '場景大小';
+  String get sort_scenes_size => '場景總大小';
 
   @override
   String get sort_images_count => '圖片數';
@@ -7073,6 +7109,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get common_pip => '子母畫面';
+
+  @override
+  String get common_exit_pip => '退出子母畫面';
 
   @override
   String get common_toggle_fullscreen => '切換全螢幕';
@@ -7325,7 +7364,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_sort_o_counter => 'O計數器';
 
   @override
-  String get scenes_sort_last_o_at => '上次O時間';
+  String get scenes_sort_last_o_at => '上次 O 活動';
 
   @override
   String get scenes_sort_group_scene_number => '合集/電影場景編號';
@@ -7586,6 +7625,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get images_resolution_title => '解析度';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -7628,7 +7679,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scrape_from_url => '从 URL 抓取';
 
   @override
-  String get scenes_phash_started => '开始生成 phash';
+  String get scenes_phash_started => '開始產生 pHash';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -8081,7 +8132,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_auth_apikey => 'API 金鑰';
 
   @override
-  String get settings_server_auth_password => '使用者名稱 + 密碼';
+  String get settings_server_auth_password => '使用者名稱和密碼';
 
   @override
   String get settings_server_auth_password_desc =>
@@ -8190,7 +8241,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '打開影片時，自動從上次中斷的地方繼續播放';
 
   @override
-  String get settings_playback_end_behavior => '播放結束行為';
+  String get settings_playback_end_behavior => '播放結束時的行為';
 
   @override
   String get settings_playback_end_behavior_subtitle => '目前播放結束後該怎麼辦';
@@ -8220,7 +8271,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_playback_pip => '原生子母畫面';
 
   @override
-  String get settings_playback_pip_subtitle => '啟用 Android 子母畫面按鈕並在背景執行時自動進入';
+  String get settings_playback_pip_subtitle => '啟用子母畫面按鈕，並在背景執行時自動進入子母畫面';
 
   @override
   String get settings_playback_subtitles => '字幕設定';
@@ -8993,13 +9044,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_field_stash_id_count => 'Stash ID 數量';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => '校驗和';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => '建立於';
@@ -9165,10 +9216,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scene_info_audio_codec => '音訊編解碼器';
 
   @override
-  String get scene_info_stream => '溪流';
+  String get scene_info_stream => '串流';
 
   @override
   String get scene_info_preview => '預覽';
+
+  @override
+  String get scene_info_preview_unavailable => '預覽影片無法使用';
 
   @override
   String get scene_info_screenshot => '螢幕截圖';
@@ -9183,7 +9237,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scene_info_vtt => '視聽測試';
 
   @override
-  String get scene_info_sprite => '雪碧';
+  String get scene_info_sprite => '精靈圖';
 
   @override
   String get scene_info_technical => '技術的';

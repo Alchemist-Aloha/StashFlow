@@ -37,11 +37,74 @@ void main() {
     final source = File('lib/main.dart').readAsStringSync();
 
     expect(source, contains('const windowOptions = WindowOptions('));
-    expect(source, contains('minimumSize: Size(800, 600)'));
     expect(source, contains('windowManager.waitUntilReadyToShow('));
     expect(source, contains('await windowManager.maximize()'));
     expect(source, contains('await windowManager.show()'));
     expect(source, contains('await windowManager.focus()'));
+  });
+
+  test('Windows main-window minimum stays out of the global window rules', () {
+    final dartSource = File('lib/main.dart').readAsStringSync();
+    final windowsRunnerSource = File(
+      'windows/runner/flutter_window.cpp',
+    ).readAsStringSync();
+
+    // window_manager's minimum applies to every multiview_desktop window on
+    // Windows, so the main window's minimum is enforced by the runner instead.
+    expect(
+      dartSource,
+      isNot(contains('minimumSize: kDesktopMinimumWindowSize')),
+    );
+    expect(windowsRunnerSource, contains('WM_GETMINMAXINFO'));
+    expect(windowsRunnerSource, contains('ptMinTrackSize'));
+    expect(windowsRunnerSource, contains('kMainWindowMinimumWidth'));
+  });
+
+  test('desktop startup runs the shared-engine multi-view root', () {
+    final dartSource = File('lib/main.dart').readAsStringSync();
+    final linuxRunnerSource = File(
+      'linux/runner/my_application.cc',
+    ).readAsStringSync();
+    final windowsRunnerSource = File(
+      'windows/runner/flutter_window.cpp',
+    ).readAsStringSync();
+    final windowsMainSource = File(
+      'windows/runner/main.cpp',
+    ).readAsStringSync();
+    final macosWindowSource = File(
+      'macos/Runner/MainFlutterWindow.swift',
+    ).readAsStringSync();
+    final macosDelegateSource = File(
+      'macos/Runner/AppDelegate.swift',
+    ).readAsStringSync();
+
+    expect(dartSource, contains('mvd.runMultiApp('));
+    expect(
+      linuxRunnerSource,
+      contains('multiview_desktop_linux_runner_install('),
+    );
+    expect(
+      linuxRunnerSource,
+      contains('multiview_desktop_linux_runner_register_primary('),
+    );
+    expect(linuxRunnerSource, isNot(contains('G_APPLICATION_NON_UNIQUE')));
+    expect(windowsRunnerSource, contains('MultiViewDesktopPrepareEngine('));
+    expect(windowsRunnerSource, contains('MultiViewDesktopCreateMainView('));
+    expect(windowsMainSource, contains('SetQuitOnClose(false)'));
+    expect(
+      macosWindowSource,
+      contains('MultiviewDesktopPlugin.prepareEngine('),
+    );
+    expect(
+      macosDelegateSource,
+      contains(
+        'MultiviewDesktopPlugin.applicationShouldTerminateAfterLastWindowClosed()',
+      ),
+    );
+    expect(
+      macosDelegateSource,
+      contains('MultiviewDesktopPlugin.applicationShouldHandleReopen('),
+    );
   });
 
   testWidgets('desktop scroll behavior supports mouse drag scrolling', (

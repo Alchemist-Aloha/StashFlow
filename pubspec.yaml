@@ -1,13 +1,13 @@
 name: stash_app_flutter
 description: "A modern Flutter client app for browsing and managing your Stash library."
 publish_to: 'none'
-version: 1.33.0+105
+version: 1.34.0+106
 
 msix_config:
   display_name: StashFlow
   identity_name: com.stashflow.app
   publisher_display_name: StashFlow
-  msix_version: 1.33.0.105
+  msix_version: 1.34.0.106
   logo_path: asset/stashfluttericon.png
 
 environment:
@@ -46,6 +46,7 @@ dependencies:
   package_info_plus: ^10.1.0
   pub_semver: ^2.2.0
   window_manager: ^0.5.2
+  multiview_desktop: ^1.2.2
   dio: ^5.10.0
   dio_cookie_manager: ^3.4.0
   cookie_jar: ^4.0.9

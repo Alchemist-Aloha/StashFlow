@@ -19,6 +19,7 @@ import 'core/utils/pip_mode.dart';
 import 'core/utils/media_handler.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:multiview_desktop/multiview_desktop.dart' as mvd;
 import 'package:window_manager/window_manager.dart';
 
 import 'core/presentation/theme/app_theme.dart';
@@ -50,18 +51,20 @@ Future<void> main() async {
       await windowManager.ensureInitialized();
       try {
         if (defaultTargetPlatform == TargetPlatform.windows) {
-          const windowOptions = WindowOptions(
-            size: Size(800, 600),
-            minimumSize: Size(800, 600),
-          );
+          // window_manager registers one top-level window proc delegate per
+          // engine, so its minimum size would also clamp every
+          // multiview_desktop window, including the desktop PiP window. The
+          // Windows runner enforces the main window's minimum instead; see
+          // windows/runner/flutter_window.cpp.
+          const windowOptions = WindowOptions(size: kDesktopMinimumWindowSize);
           await windowManager.waitUntilReadyToShow(windowOptions, () async {
             await windowManager.maximize();
             await windowManager.show();
             await windowManager.focus();
           });
         } else {
-          await windowManager.setMinimumSize(const Size(800, 600));
-          await windowManager.setSize(const Size(800, 600));
+          await windowManager.setMinimumSize(kDesktopMinimumWindowSize);
+          await windowManager.setSize(kDesktopMinimumWindowSize);
           await windowManager.maximize();
         }
       } catch (e) {
@@ -143,7 +146,7 @@ Future<void> main() async {
 
     unawaited(_enforceStartupCacheLimits(sharedPreferences));
 
-    runApp(
+    _runRootApp(
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
@@ -163,8 +166,19 @@ Future<void> main() async {
     });
   } catch (error, stackTrace) {
     AppLogStore.instance.add('$error\n$stackTrace', source: 'startup_error');
-    runApp(StartupErrorApp(error: error, stackTrace: stackTrace));
+    _runRootApp(StartupErrorApp(error: error, stackTrace: stackTrace));
   }
+}
+
+void _runRootApp(Widget app) {
+  if (!kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.macOS)) {
+    mvd.runMultiApp(home: (context, viewId) => app);
+    return;
+  }
+  runApp(app);
 }
 
 Future<void> _attachPersistentGraphqlStore(

@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:media_kit/media_kit.dart' as mk;
+import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
@@ -23,11 +23,12 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 class MockPlayerState extends PlayerState {
   static String? lastPlayedSceneId;
   static Scene? initialActiveScene;
+  static mk.Player? initialPlayer;
   static int fullscreenEntryRequests = 0;
 
   @override
   GlobalPlayerState build() =>
-      GlobalPlayerState(activeScene: initialActiveScene);
+      GlobalPlayerState(activeScene: initialActiveScene, player: initialPlayer);
 
   @override
   Future<void> playScene(
@@ -109,6 +110,7 @@ void main() {
     });
     prefs = await SharedPreferences.getInstance();
     MockPlayerState.initialActiveScene = null;
+    MockPlayerState.initialPlayer = null;
     MockPlayerState.fullscreenEntryRequests = 0;
   });
 
@@ -341,6 +343,31 @@ void main() {
     expect(MockPlayerState.fullscreenEntryRequests, 0);
   });
 
+  testWidgets('active scene does not resume local audio while casting', (
+    tester,
+  ) async {
+    final player = _MockMediaPlayer();
+    MockPlayerState.initialActiveScene = testScene;
+    MockPlayerState.initialPlayer = player;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          playerStateProvider.overrideWith(MockPlayerState.new),
+          castServiceProvider.overrideWith(_CastingAppCastService.new),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: Scaffold(body: SceneVideoPlayer(scene: testScene)),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(player.playCalls, 0);
+  });
+
   testWidgets('top-level scene alias always starts the navigated scene', (
     tester,
   ) async {
@@ -380,103 +407,19 @@ void main() {
 
     expect(MockPlayerState.lastPlayedSceneId, targetScene.id);
   });
-
-  testWidgets('forced scene switch restarts active cast on the same session', (
-    tester,
-  ) async {
-    MockPlayerState.lastPlayedSceneId = null;
-    final container = ProviderContainer(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        playerStateProvider.overrideWith(MockPlayerState.new),
-        streamResolverProvider.overrideWithValue(mockStreamResolver),
-        streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
-        mediaHeadersProvider.overrideWithValue(const {}),
-        castServiceProvider.overrideWith(_FakeAppCastService.new),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          theme: AppTheme.darkTheme,
-          home: Scaffold(
-            body: SceneVideoPlayer(scene: testScene, autoPlayOnMount: true),
-          ),
-        ),
-      ),
-    );
-
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 50));
-
-    final castService =
-        container.read(castServiceProvider.notifier) as _FakeAppCastService;
-
-    expect(MockPlayerState.lastPlayedSceneId, testScene.id);
-    expect(castService.restartCalls, 1);
-    expect(castService.lastMedia?.url, 'http://test.com/stream.mp4');
-  });
 }
 
-class _FakeAppCastService extends AppCastService {
-  int restartCalls = 0;
-  dc.CastMedia? lastMedia;
+class _MockMediaPlayer extends Mock implements mk.Player {
+  int playCalls = 0;
 
   @override
-  CastState build() {
-    return CastState(isCasting: true, activeSession: _FakeCastSession());
-  }
+  mk.PlayerState get state => const mk.PlayerState();
 
   @override
-  Future<void> restartActiveSessionWithMedia(
-    dc.CastMedia media, {
-    Duration localResumePosition = Duration.zero,
-    bool localWasPlaying = false,
-  }) async {
-    restartCalls++;
-    lastMedia = media;
-  }
+  Future<void> play() async => playCalls++;
 }
 
-class _FakeCastSession extends dc.CastSession {
-  _FakeCastSession()
-    : super(
-        dc.CastDevice(
-          id: 'fake',
-          name: 'Fake Cast',
-          protocol: dc.CastProtocol.airplay,
-          address: InternetAddress.loopbackIPv4,
-          port: 8009,
-        ),
-      );
-
+class _CastingAppCastService extends AppCastService {
   @override
-  Future<void> connect() async {}
-
-  @override
-  Future<void> disconnect() async {}
-
-  @override
-  Future<void> loadMedia(dc.CastMedia media) async {}
-
-  @override
-  Future<void> pause() async {}
-
-  @override
-  Future<void> play() async {}
-
-  @override
-  Future<void> seek(Duration position) async {}
-
-  @override
-  Future<void> setSubtitle(dc.CastSubtitle? subtitle) async {}
-
-  @override
-  Future<void> setVolume(double volume) async {}
-
-  @override
-  Future<void> stop() async {}
+  CastState build() => CastState(isCasting: true);
 }

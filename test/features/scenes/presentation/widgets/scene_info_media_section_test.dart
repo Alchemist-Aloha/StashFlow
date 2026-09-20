@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/preview_availability_service.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_info_media_section.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -39,8 +40,15 @@ void main() {
   Widget buildSubject(
     Scene scene, {
     void Function(bool autoplay)? onPreviewBuilt,
+    SceneInfoPreviewBuilder? previewBuilder,
+    PreviewAvailabilityCheck? previewAvailability,
   }) {
     return ProviderScope(
+      overrides: [
+        previewAvailabilityCheckProvider.overrideWithValue(
+          previewAvailability ?? (_) async => true,
+        ),
+      ],
       child: MaterialApp(
         theme: AppTheme.darkTheme,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -50,10 +58,12 @@ void main() {
             scene: scene,
             coverBuilder: (context, scene) =>
                 const ColoredBox(color: Colors.blue),
-            previewBuilder: (context, scene, autoplay) {
-              onPreviewBuilt?.call(autoplay);
-              return const ColoredBox(color: Colors.red);
-            },
+            previewBuilder:
+                previewBuilder ??
+                (context, scene, autoplay, onUnavailable) {
+                  onPreviewBuilt?.call(autoplay);
+                  return const ColoredBox(color: Colors.red);
+                },
           ),
         ),
       ),
@@ -185,4 +195,120 @@ void main() {
     expect(find.byKey(const Key('scene_info_media_cover')), findsNothing);
     expect(find.byKey(const Key('scene_info_media_preview')), findsNothing);
   });
+
+  testWidgets('unavailable preview falls back to cover with notice', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildSubject(
+        baseScene,
+        previewBuilder: (context, scene, autoplay, onUnavailable) =>
+            _FailingPreview(onUnavailable: onUnavailable),
+      ),
+    );
+
+    final toggle = find.byKey(const Key('scene_info_media_toggle'));
+    await tester.tap(
+      find.descendant(of: toggle, matching: find.text('Preview')),
+    );
+    await tester.pump();
+    expect(find.byKey(const Key('scene_info_media_preview')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('test_preview_fail')));
+    await tester.pump();
+
+    expect(find.byKey(const Key('scene_info_media_preview')), findsNothing);
+    expect(find.byKey(const Key('scene_info_media_cover')), findsOneWidget);
+    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
+    expect(
+      find.byKey(const Key('scene_info_media_preview_unavailable_notice')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('scene_info_media_preview_unavailable')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('preview-only scene shows unavailable placeholder', (
+    tester,
+  ) async {
+    final scene = baseScene.copyWith(
+      paths: baseScene.paths.copyWith(screenshot: null),
+    );
+
+    await tester.pumpWidget(
+      buildSubject(
+        scene,
+        previewBuilder: (context, scene, autoplay, onUnavailable) =>
+            _FailingPreview(onUnavailable: onUnavailable),
+      ),
+    );
+
+    await tester.tap(find.byKey(const Key('test_preview_fail')));
+    await tester.pump();
+
+    expect(
+      find.byKey(const Key('scene_info_media_preview_unavailable')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
+  });
+
+  testWidgets('probe marks preview unavailable and hides the pill', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildSubject(baseScene, previewAvailability: (_) async => false),
+    );
+
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
+    expect(find.byKey(const Key('scene_info_media_cover')), findsOneWidget);
+    expect(find.byKey(const Key('scene_info_media_preview')), findsNothing);
+    expect(
+      find.byKey(const Key('scene_info_media_preview_unavailable_notice')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('probe unavailable keeps preview-only placeholder', (
+    tester,
+  ) async {
+    final scene = baseScene.copyWith(
+      paths: baseScene.paths.copyWith(screenshot: null),
+    );
+
+    await tester.pumpWidget(
+      buildSubject(scene, previewAvailability: (_) async => false),
+    );
+
+    await tester.pump();
+    await tester.pump();
+
+    expect(
+      find.byKey(const Key('scene_info_media_preview_unavailable')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
+  });
+}
+
+class _FailingPreview extends StatelessWidget {
+  const _FailingPreview({required this.onUnavailable});
+
+  final VoidCallback onUnavailable;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: TextButton(
+        key: const Key('test_preview_fail'),
+        onPressed: onUnavailable,
+        child: const Text('fail'),
+      ),
+    );
+  }
 }

@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
@@ -13,6 +10,7 @@ import '../../providers/video_player_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/data/services/cast_service.dart';
+import '../../../../../core/utils/pip_mode.dart';
 
 class VideoPlaybackControls extends ConsumerWidget {
   const VideoPlaybackControls({
@@ -462,7 +460,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                           },
                         ),
                       SizedBox(width: buttonGap),
-                      if (enableNativePip && !kIsWeb && Platform.isAndroid) ...[
+                      if (enableNativePip && PipMode.isSupported) ...[
                         IconButton(
                           tooltip: context.l10n.common_pip,
                           style: _controlButtonStyle(context),

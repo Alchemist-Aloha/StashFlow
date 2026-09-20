@@ -14,17 +14,25 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene.dart';
+import '../../data/repositories/preview_availability_service.dart';
 import '../providers/player_settings.dart';
 import 'scene_cover_fullscreen_viewer.dart';
 
 typedef SceneInfoMediaBuilder =
     Widget Function(BuildContext context, Scene scene);
 typedef SceneInfoPreviewBuilder =
-    Widget Function(BuildContext context, Scene scene, bool autoplay);
+    Widget Function(
+      BuildContext context,
+      Scene scene,
+      bool autoplay,
+      VoidCallback onUnavailable,
+    );
 
 enum _SceneInfoMediaMode { cover, preview }
 
-class SceneInfoMediaSection extends StatefulWidget {
+enum _PreviewAvailability { checking, available, unavailable }
+
+class SceneInfoMediaSection extends ConsumerStatefulWidget {
   const SceneInfoMediaSection({
     required this.scene,
     this.coverBuilder,
@@ -47,12 +55,15 @@ class SceneInfoMediaSection extends StatefulWidget {
   }
 
   @override
-  State<SceneInfoMediaSection> createState() => _SceneInfoMediaSectionState();
+  ConsumerState<SceneInfoMediaSection> createState() =>
+      _SceneInfoMediaSectionState();
 }
 
-class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
+class _SceneInfoMediaSectionState extends ConsumerState<SceneInfoMediaSection> {
   late _SceneInfoMediaMode _mode = _initialMode(widget.scene);
   late bool _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
+  _PreviewAvailability _previewAvailability = _PreviewAvailability.checking;
+  int _availabilityGeneration = 0;
 
   String? get _coverUrl =>
       SceneInfoMediaSection._normalized(widget.scene.paths.screenshot);
@@ -88,6 +99,12 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _checkPreviewAvailability();
+  }
+
+  @override
   void didUpdateWidget(covariant SceneInfoMediaSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.scene.id != widget.scene.id ||
@@ -95,7 +112,59 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
         oldWidget.scene.paths.preview != widget.scene.paths.preview) {
       _mode = _initialMode(widget.scene);
       _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
+      _previewAvailability = _PreviewAvailability.checking;
+      _checkPreviewAvailability();
     }
+  }
+
+  /// Probes the preview URL once so a missing preview never appears as a
+  /// selectable option in the pill toggle.
+  void _checkPreviewAvailability() {
+    final previewUrl = _previewUrl;
+    if (previewUrl == null) {
+      _previewAvailability = _PreviewAvailability.unavailable;
+      return;
+    }
+
+    final generation = ++_availabilityGeneration;
+    unawaited(
+      ref
+          .read(previewAvailabilityCheckProvider)(previewUrl)
+          .then((available) {
+            if (!mounted || generation != _availabilityGeneration) return;
+            setState(() {
+              _previewAvailability = available
+                  ? _PreviewAvailability.available
+                  : _PreviewAvailability.unavailable;
+              if (!available) _fallBackFromUnavailablePreview();
+            });
+          })
+          .catchError((Object _) {
+            if (!mounted || generation != _availabilityGeneration) return;
+            setState(
+              () => _previewAvailability = _PreviewAvailability.available,
+            );
+          }),
+    );
+  }
+
+  /// Moves off a preview that is known to be dead while keeping a cover shown.
+  void _fallBackFromUnavailablePreview() {
+    if (_mode == _SceneInfoMediaMode.preview && _coverUrl != null) {
+      _mode = _SceneInfoMediaMode.cover;
+      _previewAutoplay = false;
+    }
+  }
+
+  /// Handles a preview that failed during playback after passing the probe.
+  void _handlePreviewUnavailable() {
+    if (!mounted || _previewAvailability == _PreviewAvailability.unavailable) {
+      return;
+    }
+    setState(() {
+      _previewAvailability = _PreviewAvailability.unavailable;
+      _fallBackFromUnavailablePreview();
+    });
   }
 
   @override
@@ -107,6 +176,8 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
     }
 
     final hasBoth = coverUrl != null && previewUrl != null;
+    final previewUnavailable =
+        _previewAvailability == _PreviewAvailability.unavailable;
     final showCover = coverUrl != null && _mode == _SceneInfoMediaMode.cover;
 
     return Container(
@@ -132,7 +203,7 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
                   ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
-              if (hasBoth)
+              if (hasBoth && !previewUnavailable)
                 SegmentedButton<_SceneInfoMediaMode>(
                   key: const Key('scene_info_media_toggle'),
                   showSelectedIcon: false,
@@ -191,6 +262,10 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
                           ),
                         ),
                       )
+                    : previewUnavailable
+                    ? const _SceneInfoPreviewUnavailable(
+                        key: Key('scene_info_media_preview_unavailable'),
+                      )
                     : KeyedSubtree(
                         key: const Key('scene_info_media_preview'),
                         child:
@@ -198,6 +273,7 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
                               context,
                               widget.scene,
                               _previewAutoplay,
+                              _handlePreviewUnavailable,
                             ) ??
                             _SceneInfoPreviewPlayer(
                               key: ValueKey(
@@ -205,9 +281,61 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
                               ),
                               previewUrl: previewUrl!,
                               autoplay: _previewAutoplay,
+                              onUnavailable: _handlePreviewUnavailable,
                             ),
                       ),
               ),
+            ),
+          ),
+          if (previewUnavailable && coverUrl != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              key: const Key('scene_info_media_preview_unavailable_notice'),
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    context.l10n.scene_info_preview_unavailable,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SceneInfoPreviewUnavailable extends StatelessWidget {
+  const _SceneInfoPreviewUnavailable({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.videocam_off_outlined,
+            color: Colors.white54,
+            size: 36,
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              context.l10n.scene_info_preview_unavailable,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white70),
             ),
           ),
         ],
@@ -220,11 +348,16 @@ class _SceneInfoPreviewPlayer extends ConsumerStatefulWidget {
   const _SceneInfoPreviewPlayer({
     required this.previewUrl,
     required this.autoplay,
+    required this.onUnavailable,
     super.key,
   });
 
   final String previewUrl;
   final bool autoplay;
+
+  /// Invoked when the preview cannot be loaded or played so the surrounding
+  /// section can present a fallback instead of an unusable player surface.
+  final VoidCallback onUnavailable;
 
   @override
   ConsumerState<_SceneInfoPreviewPlayer> createState() =>
@@ -233,11 +366,16 @@ class _SceneInfoPreviewPlayer extends ConsumerStatefulWidget {
 
 class _SceneInfoPreviewPlayerState
     extends ConsumerState<_SceneInfoPreviewPlayer> {
+  /// Upper bound for a preview that never finishes loading (for example a
+  /// server that accepts the request but never returns media).
+  static const Duration _startupTimeout = Duration(seconds: 12);
+
   Player? _player;
   VideoController? _controller;
   StreamSubscription<Object>? _errorSubscription;
+  Timer? _startupWatchdog;
   bool _initializing = true;
-  String? _error;
+  bool _reportedUnavailable = false;
 
   @override
   void initState() {
@@ -251,6 +389,12 @@ class _SceneInfoPreviewPlayerState
     super.dispose();
   }
 
+  void _reportUnavailable() {
+    if (_reportedUnavailable || !mounted) return;
+    _reportedUnavailable = true;
+    widget.onUnavailable();
+  }
+
   Future<void> _initialize() async {
     final player = Player();
     final controller = VideoController(
@@ -262,9 +406,13 @@ class _SceneInfoPreviewPlayerState
     _player = player;
     _controller = controller;
 
-    _errorSubscription = player.stream.error.listen((error) {
-      if (!mounted) return;
-      setState(() => _error = error.toString());
+    _errorSubscription = player.stream.error.listen(
+      (_) => _reportUnavailable(),
+    );
+    _startupWatchdog = Timer(_startupTimeout, () {
+      if (mounted && _initializing && !_reportedUnavailable) {
+        _reportUnavailable();
+      }
     });
 
     try {
@@ -294,10 +442,8 @@ class _SceneInfoPreviewPlayerState
         Media(effectiveUrl, httpHeaders: effectiveHeaders),
         play: widget.autoplay,
       );
-    } catch (error) {
-      if (mounted) {
-        setState(() => _error = error.toString());
-      }
+    } catch (_) {
+      _reportUnavailable();
     } finally {
       if (mounted) {
         setState(() => _initializing = false);
@@ -306,6 +452,8 @@ class _SceneInfoPreviewPlayerState
   }
 
   Future<void> _disposePlayer() async {
+    _startupWatchdog?.cancel();
+    _startupWatchdog = null;
     await _errorSubscription?.cancel();
     _errorSubscription = null;
     final player = _player;
@@ -323,17 +471,6 @@ class _SceneInfoPreviewPlayerState
         if (controller != null)
           _PreviewNativeControls(child: Video(controller: controller)),
         if (_initializing) const Center(child: CircularProgressIndicator()),
-        if (_error != null)
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
       ],
     );
   }

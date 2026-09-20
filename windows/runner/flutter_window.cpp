@@ -1,8 +1,17 @@
 #include "flutter_window.h"
 
-#include <optional>
+#include <flutter_windows.h>
+#include <multiview_desktop/multi_view_desktop_plugin.h>
 
 #include "flutter/generated_plugin_registrant.h"
+
+namespace {
+
+// Mirrors kDesktopMinimumWindowSize in lib/core/utils/pip_mode.dart.
+constexpr double kMainWindowMinimumWidth = 800;
+constexpr double kMainWindowMinimumHeight = 600;
+
+}  // namespace
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -15,35 +24,21 @@ bool FlutterWindow::OnCreate() {
   }
 
   RECT frame = GetClientArea();
+  const int width = frame.right - frame.left;
+  const int height = frame.bottom - frame.top;
 
-  // The size here must match the window dimensions to avoid unnecessary surface
-  // creation / destruction in the startup path.
-  flutter_controller_ = std::make_unique<flutter::FlutterViewController>(
-      frame.right - frame.left, frame.bottom - frame.top, project_);
-  // Ensure that basic setup of the controller was successful.
-  if (!flutter_controller_->engine() || !flutter_controller_->view()) {
-    return false;
+  MultiViewDesktopPrepareEngine(project_, GetHandle());
+  MultiViewDesktopCreateMainView(GetHandle(), width, height, RegisterPlugins);
+  const HWND flutter_hwnd =
+      MultiViewDesktopGetFlutterHwnd(MultiViewDesktopGetMainViewId());
+  if (flutter_hwnd != nullptr) {
+    SetChildContent(flutter_hwnd);
   }
-  RegisterPlugins(flutter_controller_->engine());
-  SetChildContent(flutter_controller_->view()->GetNativeWindow());
-
-  flutter_controller_->engine()->SetNextFrameCallback([&]() {
-  // this->Show()
-  });
-
-  // Flutter can complete the first frame before the "show window" callback is
-  // registered. The following call ensures a frame is pending to ensure the
-  // window is shown. It is a no-op if the first frame hasn't completed yet.
-  flutter_controller_->ForceRedraw();
 
   return true;
 }
 
 void FlutterWindow::OnDestroy() {
-  if (flutter_controller_) {
-    flutter_controller_ = nullptr;
-  }
-
   Win32Window::OnDestroy();
 }
 
@@ -51,20 +46,28 @@ LRESULT
 FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
                               WPARAM const wparam,
                               LPARAM const lparam) noexcept {
-  // Give Flutter, including plugins, an opportunity to handle window messages.
-  if (flutter_controller_) {
-    std::optional<LRESULT> result =
-        flutter_controller_->HandleTopLevelWindowProc(hwnd, message, wparam,
-                                                      lparam);
-    if (result) {
-      return *result;
-    }
+  LRESULT result = 0;
+  if (message == WM_FONTCHANGE) {
+    FlutterDesktopEngineReloadSystemFonts(MultiViewDesktopGetEngineRef());
   }
-
-  switch (message) {
-    case WM_FONTCHANGE:
-      flutter_controller_->engine()->ReloadSystemFonts();
-      break;
+  // window_manager registers a single process-wide top-level window proc
+  // delegate, so a minimum size set through it also constrains
+  // multiview_desktop's secondary windows such as the desktop PiP window.
+  // Enforce the main window's minimum here, where it can only affect the main
+  // window, and leave the PiP window free to follow the video's aspect ratio.
+  if (message == WM_GETMINMAXINFO) {
+    const double scale =
+        FlutterDesktopGetDpiForMonitor(
+            MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST)) /
+        96.0;
+    auto* info = reinterpret_cast<MINMAXINFO*>(lparam);
+    info->ptMinTrackSize.x =
+        static_cast<LONG>(kMainWindowMinimumWidth * scale);
+    info->ptMinTrackSize.y =
+        static_cast<LONG>(kMainWindowMinimumHeight * scale);
+  }
+  if (MultiViewDesktopHandleWindowProc(hwnd, message, wparam, lparam, &result)) {
+    return result;
   }
 
   return Win32Window::MessageHandler(hwnd, message, wparam, lparam);

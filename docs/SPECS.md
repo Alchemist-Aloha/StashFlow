@@ -363,6 +363,32 @@ Pinch/rotate behavior:
 - supports an explicit reset to identity;
 - does not steal taps and drags intended for playback controls.
 
+### Picture-in-picture
+
+PiP is available where the platform provides it: Android uses the system PiP
+window, while Windows, macOS, and Linux open a separate lightweight player
+window and leave the main app window in place. Both paths share the same player
+state, so entering PiP never restarts playback and leaving it restores the
+presentation that was active before entering.
+
+- The PiP surface omits navigation chrome, details, and the mini player. Desktop
+  builds show only a transient minimal transport overlay over the video.
+- The desktop PiP window is frameless, always on top where supported, and
+  omitted from the taskbar, dock window collection, or equivalent. Closing it
+  leaves the main window geometry and decoration untouched, and stopping
+  playback also closes it so no empty player is left behind.
+- The desktop PiP window is locked to the active video's aspect ratio and can
+  be resized freely down to a small minimum, so the minimum never inflates the
+  short side of portrait or ultra-wide videos. A minimum size set through
+  `window_manager` applies to every window in the shared engine on Windows, so
+  the main window's minimum is enforced by the Windows runner instead.
+- Android PiP is entered through the system window and can only be left by the
+  user. Desktop PiP is an ordinary window: `P` toggles it, and its minimal
+  controls expose previous, play/pause, next, seeking, and exit-PiP actions.
+- Desktop window placement is best-effort. In particular, Wayland compositors
+  choose window positions and may ignore always-on-top requests, so the PiP
+  window may open where the compositor decides and can be dragged.
+
 ### Casting
 
 Casting discovery and session control are owned by the cast service. The player
@@ -370,6 +396,20 @@ surface displays a remote-playback state while a cast session is active. Local
 and remote position/state changes must synchronize without starting duplicate
 sessions. Disconnect and load failures return to a coherent local state and are
 logged without leaking authenticated URLs.
+
+A seek must not change whether the remote is playing, so a seek issued while
+paused re-asserts the pause even when the renderer resumes on its own. Resuming
+a cast must actually resume the remote: a renderer whose transport stopped (or
+that ignored `Play`) gets the current media re-pointed at the last known
+position instead of another `Play`. Remote progress must keep advancing in the
+app even when the underlying session stops reporting it, and the media session
+follows the remote position and state while casting rather than the paused local
+player.
+
+Remote completion follows the configured playback-end behavior. Scene changes
+from queue controls, keyboard or media actions, playlists, and contextual strips
+switch the active cast session to the selected scene while preserving the active
+queue and its previous/next navigation.
 
 ### Background playback and Android media session
 

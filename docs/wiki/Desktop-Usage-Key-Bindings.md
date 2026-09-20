@@ -33,7 +33,7 @@ Video shortcuts work while the player has keyboard focus. Click the player once 
 | `Down` | Decrease volume 5% |
 | `M` | Mute or restore audio |
 | `F` | Toggle fullscreen |
-| `P` | Toggle Picture-in-Picture (where supported) |
+| `P` | Toggle Picture-in-Picture (Android, Windows, macOS, and Linux) |
 | `Shift+N` | Play the next queued scene |
 | `Shift+P` | Play the previous queued scene |
 | `[` | Decrease playback speed by 0.25× |
@@ -42,6 +42,8 @@ Video shortcuts work while the player has keyboard focus. Click the player once 
 | `Esc` | Stop and close the player |
 
 Desktop fullscreen uses the operating system window through `window_manager`. `Esc` also exits the viewer through the configured player action.
+
+While the desktop PiP window is active, drag the video to move it, double-click it or press `Esc` to exit PiP, and hover for previous, play/pause, next, seek, and exit-PiP controls.
 
 ## Image Viewer
 

@@ -244,10 +244,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sort_measurements => '치수';
 
   @override
-  String get sort_scenes_duration => '씬 길이';
+  String get sort_scenes_duration => '씬 총 길이';
 
   @override
-  String get sort_scenes_size => '씬 크기';
+  String get sort_scenes_size => '씬 총 크기';
 
   @override
   String get sort_images_count => '이미지 수';
@@ -437,6 +437,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get common_pip => 'PIP';
+
+  @override
+  String get common_exit_pip => 'PIP 종료';
 
   @override
   String get common_toggle_fullscreen => '전체 화면 전환';
@@ -689,7 +692,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_sort_o_counter => 'O 카운터';
 
   @override
-  String get scenes_sort_last_o_at => '최근 O 시간';
+  String get scenes_sort_last_o_at => '마지막 O 활동';
 
   @override
   String get scenes_sort_group_scene_number => '그룹/영화 장면 번호';
@@ -950,6 +953,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get images_resolution_title => '해상도';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -992,7 +1007,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scrape_from_url => 'URL에서 스크랩';
 
   @override
-  String get scenes_phash_started => 'Phash 생성 시작됨';
+  String get scenes_phash_started => 'pHash 생성 시작됨';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -1456,7 +1471,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_auth_apikey => 'API 키';
 
   @override
-  String get settings_server_auth_password => '사용자 이름 + 비밀번호';
+  String get settings_server_auth_password => '사용자 이름 및 비밀번호';
 
   @override
   String get settings_server_auth_password_desc =>
@@ -1567,7 +1582,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '비디오를 열 때 중단한 부분부터 자동으로 다시 시작';
 
   @override
-  String get settings_playback_end_behavior => '재생 종료 동작';
+  String get settings_playback_end_behavior => '재생 종료 시 동작';
 
   @override
   String get settings_playback_end_behavior_subtitle =>
@@ -1601,7 +1616,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Android PiP 버튼을 활성화하고 백그라운드 전환 시 자동 진입합니다';
+      'PIP 버튼을 활성화하고 백그라운드 전환 시 자동 진입합니다';
 
   @override
   String get settings_playback_subtitles => '자막 설정';
@@ -2380,13 +2395,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_field_stash_id_count => 'Stash ID 수';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => '체크섬';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => '생성 일시';
@@ -2556,6 +2571,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scene_info_preview => '시사';
+
+  @override
+  String get scene_info_preview_unavailable => '시사 영상을 사용할 수 없습니다';
 
   @override
   String get scene_info_screenshot => '스크린샷';

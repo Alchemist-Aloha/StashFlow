@@ -663,6 +663,12 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildResolutionFilter() {
     final resolutions = ['FOUR_K', 'FULL_HD', 'STANDARD_HD', 'STANDARD'];
+    final resolutionLabels = {
+      'FOUR_K': context.l10n.resolution_filter_four_k,
+      'FULL_HD': context.l10n.resolution_filter_full_hd,
+      'STANDARD_HD': context.l10n.resolution_filter_standard_hd,
+      'STANDARD': context.l10n.resolution_filter_standard,
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -676,7 +682,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
             final isSelected =
                 _tempFilter.resolutions?.value.contains(res) ?? false;
             return FilterChip(
-              label: Text(res.replaceAll('_', ' ')),
+              label: Text(resolutionLabels[res] ?? res),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {

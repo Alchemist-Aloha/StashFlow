@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -23,6 +22,7 @@ import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import '../../../../core/utils/pip_mode.dart';
 import '../../../../core/utils/system_media_volume.dart';
 import 'playlist_floating_panel.dart';
 import 'scrubbing_preview.dart';
@@ -813,16 +813,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
           break;
         case KeybindAction.togglePip:
           callback = () {
-            if (widget.enableNativePip && !kIsWeb && Platform.isAndroid) {
-              final w = widget.controller.player.state.width;
-              final h = widget.controller.player.state.height;
-              final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
-              unawaited(
-                ref
-                    .read(playerStateProvider.notifier)
-                    .requestEnterPip(aspectRatio: r),
-              );
-            }
+            if (!widget.enableNativePip || !PipMode.isSupported) return;
+            final w = widget.controller.player.state.width;
+            final h = widget.controller.player.state.height;
+            final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
+            unawaited(
+              ref.read(playerStateProvider.notifier).togglePip(aspectRatio: r),
+            );
           };
           break;
         case KeybindAction.nextScene:

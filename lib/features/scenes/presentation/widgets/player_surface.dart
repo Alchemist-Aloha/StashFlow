@@ -9,6 +9,7 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/services/cast_service.dart';
+import '../../../../core/utils/pip_mode.dart';
 import '../../domain/entities/scene.dart';
 import '../providers/video_player_provider.dart';
 import 'native_video_controls.dart';
@@ -180,6 +181,8 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                               ),
                             ),
                       )
+                    : playerState.isInPipMode && PipMode.isWindowed
+                    ? const SizedBox.expand()
                     : TransformableVideoSurface(
                         fontSize: playerState.subtitleFontSize,
                         textAlign: _subtitleTextAlign(

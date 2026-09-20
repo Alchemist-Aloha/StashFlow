@@ -248,10 +248,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sort_measurements => 'Mensurations';
 
   @override
-  String get sort_scenes_duration => 'Durée des scènes';
+  String get sort_scenes_duration => 'Durée totale des scènes';
 
   @override
-  String get sort_scenes_size => 'Taille des scènes';
+  String get sort_scenes_size => 'Taille totale des scènes';
 
   @override
   String get sort_images_count => 'Nombre d\'images';
@@ -447,6 +447,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get common_pip => 'image dans l\'image';
+
+  @override
+  String get common_exit_pip => 'quitter image dans l\'image';
 
   @override
   String get common_toggle_fullscreen => 'plein écran';
@@ -700,7 +703,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scenes_sort_o_counter => 'Compteur O';
 
   @override
-  String get scenes_sort_last_o_at => 'Dernier O le';
+  String get scenes_sort_last_o_at => 'Dernière activité O';
 
   @override
   String get scenes_sort_group_scene_number =>
@@ -965,6 +968,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get images_resolution_title => 'Résolution';
 
   @override
+  String get resolution_filter_four_k => '4K';
+
+  @override
+  String get resolution_filter_full_hd => 'FHD';
+
+  @override
+  String get resolution_filter_standard_hd => 'HD';
+
+  @override
+  String get resolution_filter_standard => 'SD';
+
+  @override
   String get resolution_144p => '144p';
 
   @override
@@ -1007,7 +1022,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scrape_from_url => 'Extraire depuis l\'URL';
 
   @override
-  String get scenes_phash_started => 'Génération de phash commencée';
+  String get scenes_phash_started => 'Génération du pHash commencée';
 
   @override
   String scenes_phash_failed(Object error) {
@@ -1510,11 +1525,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settings_server_auth_apikey => 'Clé API';
 
   @override
-  String get settings_server_auth_password => 'Utilisateur + Mot de passe';
+  String get settings_server_auth_password =>
+      'Nom d’utilisateur et mot de passe';
 
   @override
   String get settings_server_auth_password_desc =>
-      'Recommandé : utilisez votre session utilisateur/mot de passe Stash.';
+      'Recommandé : utilisez votre nom d’utilisateur et votre mot de passe Stash.';
 
   @override
   String get settings_server_auth_apikey_desc =>
@@ -1630,7 +1646,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Lors de l\'ouverture d\'une vidéo, reprenez automatiquement là où vous vous étiez arrêté';
 
   @override
-  String get settings_playback_end_behavior => 'Comportement de fin de lecture';
+  String get settings_playback_end_behavior => 'Comportement en fin de lecture';
 
   @override
   String get settings_playback_end_behavior_subtitle =>
@@ -1665,7 +1681,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Activer le bouton PiP Android et l\'entrée automatique en arrière-plan';
+      'Activer le bouton image dans l\'image et l\'entrée automatique en arrière-plan';
 
   @override
   String get settings_playback_subtitles => 'Paramètres des sous-titres';
@@ -2485,13 +2501,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scenes_field_stash_id_count => 'Nombre d\'IDs Stash';
 
   @override
-  String get scenes_field_oshash => 'Oshash';
+  String get scenes_field_oshash => 'OSHash';
 
   @override
   String get scenes_field_checksum => 'Somme de contrôle';
 
   @override
-  String get scenes_field_phash => 'Phash';
+  String get scenes_field_phash => 'pHash';
 
   @override
   String get scenes_field_created_at => 'Créé le';
@@ -2664,6 +2680,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scene_info_preview => 'Aperçu';
+
+  @override
+  String get scene_info_preview_unavailable => 'Vidéo d\'aperçu indisponible';
 
   @override
   String get scene_info_screenshot => 'Capture d\'écran';
