@@ -200,6 +200,25 @@ class _SceneDeduplicationPageState
           const SizedBox(width: 8),
         ],
       ),
+      floatingActionButton: _selectedSceneIds.isEmpty
+          ? null
+          : FloatingActionButton.extended(
+              key: const ValueKey('delete_selected_scenes'),
+              onPressed: _deleting
+                  ? null
+                  : () => _confirmDelete(_selectedSceneIds),
+              backgroundColor: Theme.of(context).colorScheme.errorContainer,
+              foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+              icon: _deleting
+                  ? const SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.delete_outline_rounded),
+              label: Text(
+                context.l10n.delete_selected_count(_selectedSceneIds.length),
+              ),
+            ),
       body: FutureBuilder<_SceneDeduplicationData>(
         future: _future,
         builder: (context, snapshot) {
@@ -226,7 +245,6 @@ class _SceneDeduplicationPageState
             pageSize: _pageSize,
             safeSelect: _safeSelect,
             selectedCount: _selectedSceneIds.length,
-            deleting: _deleting,
             onDistanceChanged: (value) {
               setState(() {
                 _distance = value;
@@ -255,7 +273,6 @@ class _SceneDeduplicationPageState
             },
             onSelectNone: () => setState(_selectedSceneIds.clear),
             onSelectMode: (mode) => _setSelection(groups, mode),
-            onDeleteSelected: () => _confirmDelete(_selectedSceneIds),
           );
 
           final results = Column(
@@ -570,14 +587,12 @@ class _Controls extends StatelessWidget {
     required this.pageSize,
     required this.safeSelect,
     required this.selectedCount,
-    required this.deleting,
     required this.onDistanceChanged,
     required this.onDurationChanged,
     required this.onPageSizeChanged,
     required this.onSafeSelectChanged,
     required this.onSelectNone,
     required this.onSelectMode,
-    required this.onDeleteSelected,
   });
 
   final int distance;
@@ -585,14 +600,12 @@ class _Controls extends StatelessWidget {
   final int pageSize;
   final bool safeSelect;
   final int selectedCount;
-  final bool deleting;
   final ValueChanged<int> onDistanceChanged;
   final ValueChanged<double> onDurationChanged;
   final ValueChanged<int> onPageSizeChanged;
   final ValueChanged<bool> onSafeSelectChanged;
   final VoidCallback onSelectNone;
   final ValueChanged<DuplicateSelectionMode> onSelectMode;
-  final VoidCallback onDeleteSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -686,26 +699,6 @@ class _Controls extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 10),
-            FilledButton.icon(
-              onPressed: selectedCount == 0 || deleting
-                  ? null
-                  : onDeleteSelected,
-              style: FilledButton.styleFrom(
-                backgroundColor: colors.errorContainer,
-                foregroundColor: colors.onErrorContainer,
-                disabledBackgroundColor: colors.surfaceContainerHighest,
-                disabledForegroundColor: colors.onSurfaceVariant,
-                minimumSize: const Size.fromHeight(48),
-              ),
-              icon: deleting
-                  ? const SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.delete_outline_rounded),
-              label: Text(context.l10n.delete_selected_count(selectedCount)),
             ),
           ],
         ),
