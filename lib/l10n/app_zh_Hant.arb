@@ -425,6 +425,7 @@
   "settings_server_url": "Stash 位址",
   "settings_server_url_helper": "輸入 Stash 伺服器的 URL。如果配置了自定義路徑，請在此處包含它。",
   "settings_server_auth_method": "驗證方式",
+  "settings_server_allow_self_signed": "允許自簽署 HTTPS 憑證",
   "settings_server_auth_apikey": "API 金鑰",
   "settings_server_auth_password": "使用者名稱和密碼",
   "settings_server_auth_password_desc": "建議：使用您的 Stash 使用者名稱/密碼工作階段。",

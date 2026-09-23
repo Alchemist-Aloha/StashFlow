@@ -119,7 +119,10 @@ Future<GraphQLClient> profileGraphqlClient(
   debugPrint('profileGraphqlClient: Headers: ${headers.keys.join(', ')}');
 
   final isPasswordMode = profile.authMode == AuthMode.password;
-  final httpClient = createGraphqlHttpClient(withCredentials: isPasswordMode);
+  final httpClient = createGraphqlHttpClient(
+    withCredentials: isPasswordMode,
+    profile: profile,
+  );
 
   final HttpLink httpLink = HttpLink(
     url,
@@ -158,7 +161,10 @@ class GraphqlClient extends _$GraphqlClient {
 
     final headers = getAuthHeaders(authState: authState, apiKey: apiKey);
 
-    final httpClient = createGraphqlHttpClient(withCredentials: isPasswordMode);
+    final httpClient = createGraphqlHttpClient(
+      withCredentials: isPasswordMode,
+      profile: ref.watch(activeProfileProvider),
+    );
 
     final HttpLink httpLink = HttpLink(
       url,

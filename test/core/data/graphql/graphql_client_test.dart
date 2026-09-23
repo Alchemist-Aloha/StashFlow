@@ -5,6 +5,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_mode.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_provider.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/server_profiles_provider.dart';
 
 class MockAuthProvider extends AuthProvider {
   MockAuthProvider(this._state);
@@ -21,6 +22,7 @@ void main() {
         overrides: [
           serverUrlProvider.overrideWithValue('http://localhost/graphql'),
           serverApiKeyProvider.overrideWithValue(''),
+          activeProfileProvider.overrideWithValue(null),
           authProvider.overrideWith(
             () => MockAuthProvider(
               AuthState.initial().copyWith(
@@ -47,6 +49,7 @@ void main() {
         overrides: [
           serverUrlProvider.overrideWithValue('http://localhost/graphql'),
           serverApiKeyProvider.overrideWithValue('some-token'),
+          activeProfileProvider.overrideWithValue(null),
           authProvider.overrideWith(
             () => MockAuthProvider(
               AuthState.initial().copyWith(mode: AuthMode.bearer),

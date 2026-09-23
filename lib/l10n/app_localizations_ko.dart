@@ -1468,6 +1468,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_auth_method => '인증 방식';
 
   @override
+  String get settings_server_allow_self_signed => '자체 서명된 HTTPS 인증서 허용';
+
+  @override
   String get settings_server_auth_apikey => 'API 키';
 
   @override

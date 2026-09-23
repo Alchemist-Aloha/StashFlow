@@ -1510,6 +1510,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_server_auth_method => 'Метод аутентификации';
 
   @override
+  String get settings_server_allow_self_signed =>
+      'Разрешить самоподписанные сертификаты HTTPS';
+
+  @override
   String get settings_server_auth_apikey => 'API-ключ';
 
   @override

@@ -29,12 +29,14 @@ final class AppConfigProfile {
     required this.name,
     required this.baseUrl,
     required this.authMode,
+    this.allowSelfSignedCertificates = false,
   });
 
   final String id;
   final String? name;
   final String baseUrl;
   final String authMode;
+  final bool allowSelfSignedCertificates;
 }
 
 /// Secrets included only when the user explicitly opts in.

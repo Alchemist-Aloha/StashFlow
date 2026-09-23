@@ -36,5 +36,19 @@ void main() {
     // The tooltip string comes from l10n.settings_server_profile_add, which should be 'Add Profile' in english
     expect(widget.tooltip, 'Add Profile');
     expect(find.byType(SettingsEmptyState), findsOneWidget);
+
+    await tester.tap(fab);
+    await tester.pumpAndSettle();
+    final certificateCheckbox = find.byType(CheckboxListTile);
+    expect(tester.widget<CheckboxListTile>(certificateCheckbox).value, false);
+    expect(
+      tester.getTopLeft(certificateCheckbox).dy,
+      greaterThanOrEqualTo(
+        tester.getBottomLeft(find.byType(TextFormField).at(1)).dy,
+      ),
+    );
+    await tester.tap(certificateCheckbox);
+    await tester.pumpAndSettle();
+    expect(tester.widget<CheckboxListTile>(certificateCheckbox).value, true);
   });
 }

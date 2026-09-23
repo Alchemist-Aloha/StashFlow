@@ -2856,6 +2856,12 @@ abstract class AppLocalizations {
   /// **'Authentication Method'**
   String get settings_server_auth_method;
 
+  /// No description provided for @settings_server_allow_self_signed.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow self-signed HTTPS certificates'**
+  String get settings_server_allow_self_signed;
+
   /// No description provided for @settings_server_auth_apikey.
   ///
   /// In en, this message translates to:

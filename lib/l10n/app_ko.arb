@@ -382,6 +382,7 @@
   "settings_server_url": "Stash 주소",
   "settings_server_url_helper": "Stash 서버의 URL을 입력하세요. 사용자 정의 경로가 구성된 경우 여기에 포함하세요.",
   "settings_server_auth_method": "인증 방식",
+  "settings_server_allow_self_signed": "자체 서명된 HTTPS 인증서 허용",
   "settings_server_auth_apikey": "API 키",
   "settings_server_auth_password": "사용자 이름 및 비밀번호",
   "settings_server_auth_password_desc": "권장: Stash 사용자 이름/비밀번호 세션을 사용하세요.",

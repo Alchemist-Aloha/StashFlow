@@ -1471,6 +1471,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_auth_method => '認証方法';
 
   @override
+  String get settings_server_allow_self_signed => '自己署名の HTTPS 証明書を許可する';
+
+  @override
   String get settings_server_auth_apikey => 'APIキー';
 
   @override

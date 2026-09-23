@@ -1457,6 +1457,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_auth_method => '身份验证方式';
 
   @override
+  String get settings_server_allow_self_signed => '允许自签名 HTTPS 证书';
+
+  @override
   String get settings_server_auth_apikey => 'API 密钥';
 
   @override
@@ -4790,6 +4793,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_server_auth_method => '身份验证方式';
+
+  @override
+  String get settings_server_allow_self_signed => '允许自签名 HTTPS 证书';
 
   @override
   String get settings_server_auth_apikey => 'API 密钥';
@@ -8127,6 +8133,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_server_auth_method => '驗證方式';
+
+  @override
+  String get settings_server_allow_self_signed => '允許自簽署 HTTPS 憑證';
 
   @override
   String get settings_server_auth_apikey => 'API 金鑰';

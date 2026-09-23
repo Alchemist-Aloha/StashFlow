@@ -372,6 +372,7 @@
   "settings_server_url_example": "http://192.168.1.100:9999",
   "settings_server_login_failed": "Anmeldung fehlgeschlagen",
   "settings_server_auth_method": "Authentifizierungsmethode",
+  "settings_server_allow_self_signed": "Selbstsignierte HTTPS-Zertifikate zulassen",
   "settings_server_auth_apikey": "API-Key",
   "settings_server_auth_password": "Benutzername und Passwort",
   "settings_server_auth_password_desc": "Empfohlen: Verwenden Sie Ihren Stash-Benutzernamen und Ihr Passwort.",

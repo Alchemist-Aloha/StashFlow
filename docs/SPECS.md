@@ -455,6 +455,9 @@ New settings require:
 Users can maintain multiple server profiles and switch the active profile.
 Profile metadata is stored in SharedPreferences; credentials and the app-lock
 passcode are stored in secure storage.
+Each profile can opt into accepting a self-signed HTTPS certificate for its own
+host and port on native platforms. The option defaults to off, is included in
+configuration backups, and cannot override browser certificate validation.
 
 Supported authentication modes are:
 

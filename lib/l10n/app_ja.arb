@@ -369,6 +369,7 @@
   "settings_server_url": "StashのURL",
   "settings_server_url_helper": "StashサーバーのURLを入力してください。カスタムパスが設定されている場合は、それを含めてください。",
   "settings_server_auth_method": "認証方法",
+  "settings_server_allow_self_signed": "自己署名の HTTPS 証明書を許可する",
   "settings_server_auth_apikey": "APIキー",
   "settings_server_auth_password": "ユーザー名とパスワード",
   "settings_server_auth_password_desc": "推奨: Stashのユーザー名/パスワードセッションを使用します。",

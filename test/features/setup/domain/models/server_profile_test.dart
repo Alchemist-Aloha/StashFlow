@@ -17,12 +17,34 @@ void main() {
       expect(json['name'], 'Test Server');
       expect(json['baseUrl'], 'http://localhost:9999');
       expect(json['authMode'], 'apiKey');
+      expect(json['allowSelfSignedCertificates'], false);
 
       final fromJson = ServerProfile.fromJson(json);
       expect(fromJson.id, profile.id);
       expect(fromJson.name, profile.name);
       expect(fromJson.baseUrl, profile.baseUrl);
       expect(fromJson.authMode, profile.authMode);
+      expect(fromJson.allowSelfSignedCertificates, false);
+      expect(
+        ServerProfile.fromJson(
+          {...json}..remove('allowSelfSignedCertificates'),
+        ).allowSelfSignedCertificates,
+        false,
+      );
+    });
+
+    test('persists the certificate opt-in', () {
+      final profile = ServerProfile(
+        id: 'secure',
+        baseUrl: 'https://stash.example:9443/graphql',
+        authMode: AuthMode.apiKey,
+        allowSelfSignedCertificates: true,
+      );
+
+      expect(
+        ServerProfile.fromJson(profile.toJson()).allowSelfSignedCertificates,
+        true,
+      );
     });
 
     test('should correctly use copyWith', () {

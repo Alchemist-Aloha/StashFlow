@@ -1522,6 +1522,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings_server_auth_method => 'Metodo di Autenticazione';
 
   @override
+  String get settings_server_allow_self_signed =>
+      'Consenti certificati HTTPS autofirmati';
+
+  @override
   String get settings_server_auth_apikey => 'Chiave API';
 
   @override

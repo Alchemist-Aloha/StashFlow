@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../../../../core/data/auth/auth_mode.dart';
 import '../../../../core/data/auth/auth_provider.dart';
+import '../../../../core/data/auth/auth_service.dart';
 import '../../../../core/data/preferences/secure_storage_provider.dart';
 import '../../domain/models/server_profile.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -27,6 +28,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   late TextEditingController _usernameController;
   late TextEditingController _passwordController;
   late AuthMode _authMode;
+  bool _allowSelfSignedCertificates = false;
   bool _isTesting = false;
   String? _testResult;
   bool _obscureApiKey = true;
@@ -42,6 +44,8 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
     _usernameController = TextEditingController();
     _passwordController = TextEditingController();
     _authMode = widget.profile?.authMode ?? AuthMode.apiKey;
+    _allowSelfSignedCertificates =
+        widget.profile?.allowSelfSignedCertificates ?? false;
     _showAdvancedAuth =
         _authMode == AuthMode.basic || _authMode == AuthMode.bearer;
 
@@ -96,9 +100,17 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       final password = _passwordController.text;
       var cookieHeader = '';
 
+      final tempProfile = ServerProfile(
+        id: 'test',
+        name: _nameController.text,
+        baseUrl: baseUrl,
+        authMode: _authMode,
+        allowSelfSignedCertificates: _allowSelfSignedCertificates,
+      );
+
       if (_authMode == AuthMode.password) {
         setState(() => _testResult = 'Attempting login...');
-        final service = await ref.read(authServiceProvider.future);
+        final service = await AuthService.create(profile: tempProfile);
         final endpointUri = Uri.parse(baseUrl);
         final loggedIn = await service.login(
           graphqlEndpoint: endpointUri,
@@ -123,13 +135,6 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
           return;
         }
       }
-
-      final tempProfile = ServerProfile(
-        id: 'test',
-        name: _nameController.text,
-        baseUrl: baseUrl,
-        authMode: _authMode,
-      );
 
       final profilesNotifier = ref.read(serverProfilesProvider.notifier);
       await profilesNotifier.updateProfileCredentials(
@@ -187,6 +192,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       name: _nameController.text.isEmpty ? null : _nameController.text,
       baseUrl: _urlController.text,
       authMode: _authMode,
+      allowSelfSignedCertificates: _allowSelfSignedCertificates,
     );
 
     if (widget.profile == null) {
@@ -304,6 +310,14 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                     }
                     return null;
                   },
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.settings_server_allow_self_signed),
+                  value: _allowSelfSignedCertificates,
+                  onChanged: (value) => setState(
+                    () => _allowSelfSignedCertificates = value ?? false,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Text(

@@ -334,6 +334,7 @@
   "settings_server_url": "URL di Stash",
   "settings_server_url_helper": "Inserisci l'URL del tuo server Stash. Se configurato con un percorso personalizzato, includilo qui.",
   "settings_server_auth_method": "Metodo di Autenticazione",
+  "settings_server_allow_self_signed": "Consenti certificati HTTPS autofirmati",
   "settings_server_auth_apikey": "Chiave API",
   "settings_server_auth_password": "Nome utente e password",
   "settings_server_auth_password_desc": "Consigliato: usa il tuo nome utente e la tua password Stash.",
