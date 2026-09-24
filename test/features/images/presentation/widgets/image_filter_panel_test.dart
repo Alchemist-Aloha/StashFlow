@@ -38,7 +38,7 @@ void main() {
     expect(find.text('Updated At'), findsOneWidget);
 
     await expand('Media Info');
-    expect(find.text('Phash'), findsOneWidget);
+    expect(find.text('pHash'), findsOneWidget);
 
     expect(find.text('Missing Field'), findsOneWidget);
     expect(find.text('Custom Fields'), findsOneWidget);
