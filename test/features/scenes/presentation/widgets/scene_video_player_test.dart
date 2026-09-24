@@ -167,6 +167,7 @@ void main() {
 
     expect(find.byType(AspectRatio), findsWidgets);
     expect(find.byType(Container), findsWidgets);
+    expect(find.byKey(const Key('inline_video_back_button')), findsOneWidget);
 
     // The play button should be visible since this scene is not active.
     final iconFinder = find.byIcon(Icons.play_arrow_rounded);
@@ -176,6 +177,63 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets(
+    'inactive inline back button uses the active control position and pops',
+    (tester) async {
+      final router = GoRouter(
+        initialLocation: '/scenes',
+        routes: [
+          GoRoute(
+            path: '/scenes',
+            builder: (context, state) => Scaffold(
+              body: TextButton(
+                onPressed: () => context.push('/scenes/scene/s1'),
+                child: const Text('Open scene'),
+              ),
+            ),
+            routes: [
+              GoRoute(
+                path: 'scene/:id',
+                builder: (context, state) =>
+                    Scaffold(body: SceneVideoPlayer(scene: testScene)),
+              ),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            playerStateProvider.overrideWith(MockPlayerState.new),
+            streamResolverProvider.overrideWithValue(mockNullStreamResolver),
+            streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
+            mediaHeadersProvider.overrideWithValue(const {}),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.darkTheme,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open scene'));
+      await tester.pumpAndSettle();
+
+      final back = find.byKey(const Key('inline_video_back_button'));
+      expect(back, findsOneWidget);
+      final playerTopLeft = tester.getTopLeft(find.byType(SceneVideoPlayer));
+      final backTopLeft = tester.getTopLeft(back);
+      expect(backTopLeft.dx - playerTopLeft.dx, 8);
+      expect(backTopLeft.dy - playerTopLeft.dy, 8);
+
+      await tester.tap(back);
+      await tester.pumpAndSettle();
+      expect(find.text('Open scene'), findsOneWidget);
+    },
+  );
 
   testWidgets('SceneVideoPlayer auto-starts when mount autoplay is forced', (
     tester,

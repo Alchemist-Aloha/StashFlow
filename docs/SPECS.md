@@ -243,6 +243,11 @@ Layout contract:
 - At 768 logical pixels and above, identity, actions, and supporting metadata
   use the responsive large-screen composition.
 - Header actions remain reachable without crowding the title or studio.
+- On touch, dragging the scene title previews previous/next navigation with
+  title movement and a directional chevron; completing the swipe starts the
+  adjacent scene in the active queue. At queue ends, the title resists the drag
+  without navigating. Once per app launch, the title gives a brief directional
+  hint when an adjacent scene exists; reduced-motion users do not see it.
 - Metadata visibility follows the user's setting.
 - Editing and scraping entry points appear only when their prerequisites are
   available.
@@ -297,6 +302,8 @@ Responsibilities:
 
 - `video_player_provider.dart` owns session lifecycle and global player state.
 - `SceneVideoPlayer` decides when an inline scene may acquire playback.
+- Inactive inline placeholders keep the Back control in the active inline
+  player's top-left position, including while playback starts.
 - `PlayerSurface` owns shared visual rendering, controls, transforms, subtitles,
   buffering, and casting placeholders.
 - `GlobalFullscreenOverlay` owns overlay visibility and platform fullscreen
