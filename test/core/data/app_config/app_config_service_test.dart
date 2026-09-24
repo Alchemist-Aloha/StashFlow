@@ -13,7 +13,9 @@ void main() {
     final service = await _service(
       preferences: {
         'app_theme_mode': 'dark',
-        'server_profiles': jsonEncode([_profileJson('one')]),
+        'server_profiles': jsonEncode([
+          {..._profileJson('one'), 'allowSelfSignedCertificates': true},
+        ]),
         'active_server_profile_id': 'one',
       },
       secrets: {'profile_one_api_key': 'secret', 'app_lock_passcode': '1234'},
@@ -27,6 +29,7 @@ void main() {
     );
 
     expect(safe.credentials, isNull);
+    expect(safe.serverProfiles.single.allowSelfSignedCertificates, true);
     expect(unsafe.credentials!.profiles['one']!.apiKey, 'secret');
     expect(unsafe.credentials!.appLockPasscode, '1234');
   });
@@ -64,6 +67,7 @@ void main() {
           name: 'New',
           baseUrl: 'https://stash.example',
           authMode: 'apiKey',
+          allowSelfSignedCertificates: true,
         ),
       ],
       activeServerProfileId: 'new',
@@ -88,6 +92,11 @@ void main() {
       'keep',
     ]);
     expect(service.preferences.getString('active_server_profile_id'), 'new');
+    expect(
+      (jsonDecode(service.preferences.getString('server_profiles')!) as List)
+          .single['allowSelfSignedCertificates'],
+      true,
+    );
     expect(store.values['profile_old_api_key'], isNull);
     expect(store.values['profile_new_api_key'], 'new-secret');
     expect(store.values['app_lock_passcode'], isNull);

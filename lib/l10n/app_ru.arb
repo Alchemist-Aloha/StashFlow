@@ -425,6 +425,7 @@
   "settings_server_url": "URL-адрес Stash",
   "settings_server_url_helper": "Введите URL-адрес вашего сервера Stash. Если настроен пользовательский путь, укажите его здесь.",
   "settings_server_auth_method": "Метод аутентификации",
+  "settings_server_allow_self_signed": "Разрешить самоподписанные сертификаты HTTPS",
   "settings_server_auth_apikey": "API-ключ",
   "settings_server_auth_password": "Имя пользователя и пароль",
   "settings_server_auth_password_desc": "Рекомендуется: используйте имя пользователя и пароль Stash.",

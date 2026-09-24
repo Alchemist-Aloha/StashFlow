@@ -62,7 +62,7 @@ class AuthState {
 }
 
 final authServiceProvider = FutureProvider<AuthService>((ref) async {
-  return AuthService.create();
+  return AuthService.create(profile: ref.watch(activeProfileProvider));
 });
 
 final authProvider = NotifierProvider<AuthProvider, AuthState>(

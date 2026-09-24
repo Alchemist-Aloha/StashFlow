@@ -75,6 +75,174 @@ class SceneDetailsPage extends ConsumerStatefulWidget {
   ConsumerState<SceneDetailsPage> createState() => _SceneDetailsPageState();
 }
 
+/// Gives the scene title a horizontal drag preview before changing scenes.
+class SceneSwipeTitle extends StatefulWidget {
+  const SceneSwipeTitle({
+    required this.child,
+    required this.canGoPrevious,
+    required this.canGoNext,
+    required this.onPrevious,
+    required this.onNext,
+    super.key,
+  });
+
+  final Widget child;
+  final bool canGoPrevious;
+  final bool canGoNext;
+  final VoidCallback onPrevious;
+  final VoidCallback onNext;
+
+  @override
+  State<SceneSwipeTitle> createState() => _SceneSwipeTitleState();
+}
+
+class _SceneSwipeTitleState extends State<SceneSwipeTitle> {
+  static const _swipeThreshold = 64.0;
+  static bool _hintShownThisLaunch = false;
+  Timer? _hintTimer;
+  double _drag = 0;
+  double _hintOffset = 0;
+  bool _dragging = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _scheduleHint();
+  }
+
+  @override
+  void didUpdateWidget(SceneSwipeTitle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _scheduleHint();
+  }
+
+  void _scheduleHint() {
+    if (_hintShownThisLaunch ||
+        _hintTimer != null ||
+        (!widget.canGoNext && !widget.canGoPrevious) ||
+        MediaQuery.disableAnimationsOf(context)) {
+      return;
+    }
+    _hintTimer = Timer(const Duration(milliseconds: 700), () {
+      _hintTimer = null;
+      if (!mounted ||
+          _dragging ||
+          _hintShownThisLaunch ||
+          (!widget.canGoNext && !widget.canGoPrevious) ||
+          MediaQuery.disableAnimationsOf(context)) {
+        return;
+      }
+      _hintShownThisLaunch = true;
+      setState(() => _hintOffset = widget.canGoNext ? -12 : 12);
+      _hintTimer = Timer(const Duration(milliseconds: 550), () {
+        _hintTimer = null;
+        if (mounted) setState(() => _hintOffset = 0);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _hintTimer?.cancel();
+    super.dispose();
+  }
+
+  void _finishDrag() {
+    final direction = _drag >= _swipeThreshold && widget.canGoPrevious
+        ? widget.onPrevious
+        : _drag <= -_swipeThreshold && widget.canGoNext
+        ? widget.onNext
+        : null;
+    setState(() {
+      _drag = 0;
+      _dragging = false;
+    });
+    direction?.call();
+    _scheduleHint();
+  }
+
+  void _cancelDrag() {
+    setState(() {
+      _drag = 0;
+      _dragging = false;
+    });
+    _scheduleHint();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final canMove = _drag > 0 ? widget.canGoPrevious : widget.canGoNext;
+    final travel = _hintOffset != 0
+        ? _hintOffset
+        : _drag.clamp(canMove ? -40.0 : -12.0, canMove ? 40.0 : 12.0);
+    final indicatorOpacity = (_drag.abs() / _swipeThreshold).clamp(0.0, 1.0);
+    final duration = _dragging || MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : const Duration(milliseconds: 180);
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onHorizontalDragStart: (_) {
+        _hintTimer?.cancel();
+        _hintTimer = null;
+        setState(() {
+          _hintOffset = 0;
+          _dragging = true;
+        });
+      },
+      onHorizontalDragUpdate: (details) =>
+          setState(() => _drag += details.primaryDelta ?? 0),
+      onHorizontalDragEnd: (_) => _finishDrag(),
+      onHorizontalDragCancel: _cancelDrag,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          if (widget.canGoPrevious)
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Opacity(
+                  opacity: _hintOffset > 0
+                      ? 0.4
+                      : _drag > 0
+                      ? indicatorOpacity
+                      : 0,
+                  child: const Icon(
+                    Icons.chevron_left,
+                    key: Key('scene_swipe_previous'),
+                  ),
+                ),
+              ),
+            ),
+          if (widget.canGoNext)
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Opacity(
+                  opacity: _hintOffset < 0
+                      ? 0.4
+                      : _drag < 0
+                      ? indicatorOpacity
+                      : 0,
+                  child: const Icon(
+                    Icons.chevron_right,
+                    key: Key('scene_swipe_next'),
+                  ),
+                ),
+              ),
+            ),
+          AnimatedContainer(
+            duration: duration,
+            curve: Curves.easeOut,
+            transform: Matrix4.translationValues(travel, 0, 0),
+            child: SizedBox(width: double.infinity, child: widget.child),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   static const _collapsedDetailsLines = 6;
   static const _collapsedTagRowsHeight = 84.0;
@@ -100,6 +268,23 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       return;
     }
     ref.invalidate(sceneListProvider);
+  }
+
+  void _swipeToScene(String sceneId, int delta) {
+    final queue = ref.read(playbackQueueProvider);
+    final index = queue.sequence.indexWhere((scene) => scene.id == sceneId);
+    final targetIndex = index + delta;
+    if (index < 0 || targetIndex < 0 || targetIndex >= queue.sequence.length) {
+      return;
+    }
+    if (queue.currentIndex != index) {
+      ref.read(playbackQueueProvider.notifier).setIndex(index);
+    }
+    if (delta > 0) {
+      unawaited(ref.read(playerStateProvider.notifier).playNext());
+    } else {
+      unawaited(ref.read(playerStateProvider.notifier).playPrevious());
+    }
   }
 
   Future<void> _openRandomScene(BuildContext context) async {
@@ -770,12 +955,20 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final style = isWide
         ? context.textTheme.headlineMedium
         : context.textTheme.headlineSmall;
-    return Text(
-      scene.displayTitle,
-      style: style?.copyWith(
-        fontWeight: FontWeight.w700,
-        letterSpacing: isWide ? -0.5 : -0.3,
-        color: context.colors.onSurface,
+    final queue = ref.watch(playbackQueueProvider);
+    final index = queue.sequence.indexWhere((item) => item.id == scene.id);
+    return SceneSwipeTitle(
+      canGoPrevious: index > 0,
+      canGoNext: index >= 0 && index < queue.sequence.length - 1,
+      onPrevious: () => _swipeToScene(scene.id, -1),
+      onNext: () => _swipeToScene(scene.id, 1),
+      child: Text(
+        scene.displayTitle,
+        style: style?.copyWith(
+          fontWeight: FontWeight.w700,
+          letterSpacing: isWide ? -0.5 : -0.3,
+          color: context.colors.onSurface,
+        ),
       ),
     );
   }

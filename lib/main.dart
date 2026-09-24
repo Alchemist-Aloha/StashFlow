@@ -30,6 +30,7 @@ import 'core/presentation/providers/layout_settings_provider.dart';
 import 'core/presentation/widgets/app_lock_gate.dart';
 import 'core/data/graphql/deferred_graphql_store.dart';
 import 'core/data/graphql/graphql_client.dart';
+import 'core/data/auth/server_certificate_policy.dart';
 
 import 'core/utils/environment.dart' as env;
 
@@ -103,6 +104,7 @@ Future<void> main() async {
     }
 
     final sharedPreferences = await SharedPreferences.getInstance();
+    installServerCertificatePolicy(sharedPreferences);
 
     AppLogStore.instance.isEnabled =
         sharedPreferences.getBool('enable_debug_logging') ?? false;

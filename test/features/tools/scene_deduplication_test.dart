@@ -278,13 +278,18 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byKey(const ValueKey('delete_selected_scenes')), findsNothing);
     await tester.ensureVisible(find.text('Select'));
     await tester.tap(find.text('Select'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('All but largest file'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete selected (2)'));
+    final deleteSelected = find.byKey(const ValueKey('delete_selected_scenes'));
+    expect(deleteSelected, findsOneWidget);
+    await tester.tap(deleteSelected);
     await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.text('Delete 2 scenes?'), findsOneWidget);
     await tester.tap(find.text('Delete metadata'));
     await tester.pumpAndSettle();
 

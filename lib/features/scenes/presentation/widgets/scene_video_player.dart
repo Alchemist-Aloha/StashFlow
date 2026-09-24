@@ -379,6 +379,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     router.push('/scenes/scene/${randomScene.id}', extra: true);
   }
 
+  void _goBack() {
+    final router = GoRouter.maybeOf(context);
+    if (router != null && router.canPop()) router.pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<String?>(
@@ -411,20 +416,46 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
             autofocus: false,
             child: Container(
               color: Colors.black,
-              child: Center(
-                child: _isStarting
-                    ? const CircularProgressIndicator()
-                    : IconButton.filledTonal(
-                        tooltip: context.l10n.common_play,
+              child: Stack(
+                children: [
+                  Center(
+                    child: _isStarting
+                        ? const CircularProgressIndicator()
+                        : IconButton.filledTonal(
+                            tooltip: context.l10n.common_play,
+                            style: IconButton.styleFrom(
+                              backgroundColor: colorScheme.surfaceContainerHigh
+                                  .withValues(alpha: 0.92),
+                              foregroundColor: colorScheme.onSurface,
+                              padding: const EdgeInsets.all(16),
+                            ),
+                            icon: const Icon(
+                              Icons.play_arrow_rounded,
+                              size: 32,
+                            ),
+                            onPressed: () =>
+                                _startPlaybackIfNeeded(force: true),
+                          ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: SafeArea(
+                      child: IconButton(
+                        key: const Key('inline_video_back_button'),
+                        tooltip: context.l10n.common_back,
                         style: IconButton.styleFrom(
-                          backgroundColor: colorScheme.surfaceContainerHigh
-                              .withValues(alpha: 0.92),
-                          foregroundColor: colorScheme.onSurface,
-                          padding: const EdgeInsets.all(16),
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.transparent,
+                          padding: const EdgeInsets.all(4),
+                          minimumSize: const Size(26, 26),
                         ),
-                        icon: const Icon(Icons.play_arrow_rounded, size: 32),
-                        onPressed: () => _startPlaybackIfNeeded(force: true),
+                        icon: const Icon(Icons.arrow_back_rounded),
+                        onPressed: _goBack,
                       ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -455,12 +486,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
               controller: controller,
               onFullScreenToggle: _toggleFullScreen,
               onRandomScene: _openRandomScene,
-              onInlineBack: () {
-                final router = GoRouter.of(context);
-                if (router.canPop()) {
-                  router.pop();
-                }
-              },
+              onInlineBack: _goBack,
               fit: BoxFit.contain,
               squareFit: BoxFit.contain,
             ),

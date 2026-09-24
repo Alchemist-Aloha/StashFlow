@@ -4,6 +4,8 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import '../../../features/setup/domain/models/server_profile.dart';
+import 'server_certificate_policy.dart';
 
 class AuthService {
   AuthService({required Dio dio, required this.cookieJar}) : _dio = dio;
@@ -13,7 +15,7 @@ class AuthService {
   final Dio _dio;
   final CookieJar cookieJar;
 
-  static Future<AuthService> create() async {
+  static Future<AuthService> create({ServerProfile? profile}) async {
     final cookieJar = await createPersistCookieJar();
 
     final dio = Dio(
@@ -26,6 +28,8 @@ class AuthService {
             : const <String, dynamic>{},
       ),
     );
+
+    configureServerCertificates(dio, profile);
 
     if (!kIsWeb) {
       dio.interceptors.add(CookieManager(cookieJar));

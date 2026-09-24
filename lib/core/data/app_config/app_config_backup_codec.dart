@@ -126,6 +126,7 @@ final class AppConfigBackupCodec {
     if (profile.name != null) 'name': profile.name,
     'baseUrl': profile.baseUrl,
     'authMode': profile.authMode,
+    'allowSelfSignedCertificates': profile.allowSelfSignedCertificates,
   };
 
   static AppConfigProfile _profileFromJson(Map<String, dynamic> json) {
@@ -133,11 +134,16 @@ final class AppConfigBackupCodec {
     if (name != null && name is! String) {
       throw const AppConfigFormatException(AppConfigFormatError.invalidData);
     }
+    final allowSelfSigned = json['allowSelfSignedCertificates'];
+    if (allowSelfSigned != null && allowSelfSigned is! bool) {
+      throw const AppConfigFormatException(AppConfigFormatError.invalidData);
+    }
     return AppConfigProfile(
       id: _string(json['id']),
       name: name as String?,
       baseUrl: _string(json['baseUrl']),
       authMode: _string(json['authMode']),
+      allowSelfSignedCertificates: allowSelfSigned as bool? ?? false,
     );
   }
 

@@ -13,6 +13,7 @@ abstract class ServerProfile with _$ServerProfile {
     String? name,
     required String baseUrl,
     required AuthMode authMode,
+    @Default(false) bool allowSelfSignedCertificates,
   }) = _ServerProfile;
 
   factory ServerProfile.fromJson(Map<String, dynamic> json) =>

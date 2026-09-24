@@ -131,6 +131,8 @@ final class AppConfigService {
               name: json['name'] as String?,
               baseUrl: json['baseUrl'] as String,
               authMode: json['authMode'] as String,
+              allowSelfSignedCertificates:
+                  json['allowSelfSignedCertificates'] as bool? ?? false,
             );
           })
           .toList(growable: false);
@@ -239,6 +241,7 @@ final class AppConfigService {
     'name': profile.name,
     'baseUrl': profile.baseUrl,
     'authMode': profile.authMode,
+    'allowSelfSignedCertificates': profile.allowSelfSignedCertificates,
   };
 
   static String _credentialKey(String id, String suffix) =>

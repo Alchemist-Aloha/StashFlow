@@ -19,6 +19,7 @@ void main() {
         name: 'Home',
         baseUrl: 'https://stash.example',
         authMode: 'apiKey',
+        allowSelfSignedCertificates: true,
       ),
     ],
     activeServerProfileId: 'primary',
@@ -30,6 +31,10 @@ void main() {
     final second = codec.encode(codec.decode(first));
     expect(second, first);
     expect(codec.decode(first).credentials, isNull);
+    expect(
+      codec.decode(first).serverProfiles.single.allowSelfSignedCertificates,
+      true,
+    );
   });
 
   test('round trips profile credentials and app lock passcode', () {
@@ -89,6 +94,16 @@ void main() {
             ...(base['serverProfiles'] as List<dynamic>).first
                 as Map<String, dynamic>,
             'baseUrl': 'file:///tmp',
+          },
+        ],
+      },
+      {
+        ...base,
+        'serverProfiles': [
+          {
+            ...(base['serverProfiles'] as List<dynamic>).first
+                as Map<String, dynamic>,
+            'allowSelfSignedCertificates': 'true',
           },
         ],
       },
