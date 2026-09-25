@@ -30,7 +30,7 @@ void main() {
     expect(find.text('Folder'), findsOneWidget);
 
     await expand('Media Info');
-    expect(find.text('Phash'), findsOneWidget);
+    expect(find.text('pHash'), findsOneWidget);
 
     await expand('System');
     expect(find.text('Stash ID'), findsWidgets);

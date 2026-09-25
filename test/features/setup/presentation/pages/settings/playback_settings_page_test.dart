@@ -176,7 +176,7 @@ void main() {
       await tester.pumpAndSettle();
       for (final (title, option, key, value) in [
         (
-          'Play End Behavior',
+          'End-of-playback behavior',
           'Loop current scene',
           'video_play_end_behavior',
           'loop',
@@ -290,7 +290,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Start Feed from random position'), findsOneWidget);
+      expect(find.text('Start feed at a random position'), findsOneWidget);
       expect(
         find.textContaining('start from a random position between 0% and 90%'),
         findsOneWidget,
@@ -298,7 +298,7 @@ void main() {
 
       final feedRandomSwitch = find.descendant(
         of: find.ancestor(
-          of: find.text('Start Feed from random position'),
+          of: find.text('Start feed at a random position'),
           matching: find.byType(SwitchListTile),
         ),
         matching: find.byType(Switch),
