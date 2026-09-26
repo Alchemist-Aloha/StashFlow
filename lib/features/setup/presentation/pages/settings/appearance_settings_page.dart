@@ -215,6 +215,27 @@ class _AppearanceSettingsPageState
                             style: const TextStyle(fontFamily: 'SpaceGrotesk'),
                           ),
                         ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.inter,
+                          child: Text(
+                            l10n.settings_appearance_font_inter,
+                            style: const TextStyle(fontFamily: 'Inter'),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.lora,
+                          child: Text(
+                            l10n.settings_appearance_font_lora,
+                            style: const TextStyle(fontFamily: 'Lora'),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.jetBrainsMono,
+                          child: Text(
+                            l10n.settings_appearance_font_jetbrains_mono,
+                            style: const TextStyle(fontFamily: 'JetBrainsMono'),
+                          ),
+                        ),
                       ],
                       onChanged: (family) {
                         if (family != null) {

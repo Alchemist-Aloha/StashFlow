@@ -9,7 +9,7 @@ void main() {
   test('exports only explicitly managed settings', () async {
     SharedPreferences.setMockInitialValues({
       'app_theme_mode': 'dark',
-      'app_font_family': 'space_grotesk',
+      'app_font_family': 'jetbrains_mono',
       'show_random_navigation': true,
       'auto_hide_top_app_bar': true,
       'video_enter_fullscreen_on_navigation': true,
@@ -28,7 +28,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     expect(await registry.read(prefs), {
       'app_theme_mode': 'dark',
-      'app_font_family': 'space_grotesk',
+      'app_font_family': 'jetbrains_mono',
       'show_random_navigation': true,
       'auto_hide_top_app_bar': true,
       'video_enter_fullscreen_on_navigation': true,

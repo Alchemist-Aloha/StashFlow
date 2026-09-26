@@ -1261,6 +1261,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_appearance_font_space_grotesk => 'Space Grotesk';
 
   @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
   String get settings_appearance_font_size => '글로벌 UI 규모';
 
   @override

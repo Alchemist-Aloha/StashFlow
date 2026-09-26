@@ -75,11 +75,12 @@ Canonical implementation:
 
 The app supports light/dark/system theme modes, a persisted Material seed color,
 and a True Black option for dark themes. Theme changes apply without restart.
-Appearance also offers System, Serif, Monospace, Manrope, Outfit, and Space
-Grotesk font families. The three named families are bundled under the SIL Open
-Font License; missing glyphs use platform fallback. The
-`appFontFamilyProvider` owns the `app_font_family` preference; unknown or absent
-values fall back to System. Font changes apply immediately to both themes.
+Appearance also offers System, Serif, Monospace, Manrope, Outfit, Space
+Grotesk, Inter, Lora, and JetBrains Mono font families. The six named families
+are bundled under the SIL Open Font License; missing glyphs use platform
+fallback. The `appFontFamilyProvider` owns the `app_font_family` preference;
+unknown or absent values fall back to System. Font changes apply immediately to
+both themes.
 True Black may replace dark surfaces with black, but text, outlines, disabled
 states, and overlays must retain accessible contrast.
 

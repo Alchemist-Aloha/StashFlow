@@ -38,8 +38,8 @@ void main() {
 
     await unknown
         .read(appFontFamilyProvider.notifier)
-        .setFontFamily(AppFontFamily.spaceGrotesk);
-    expect(prefs.getString(appFontFamilyPreferenceKey), 'space_grotesk');
+        .setFontFamily(AppFontFamily.jetBrainsMono);
+    expect(prefs.getString(appFontFamilyPreferenceKey), 'jetbrains_mono');
   });
 
   test('selected family reaches light and dark text themes', () {

@@ -11,7 +11,10 @@ enum AppFontFamily {
   monospace('monospace', 'monospace'),
   manrope('manrope', 'Manrope'),
   outfit('outfit', 'Outfit'),
-  spaceGrotesk('space_grotesk', 'SpaceGrotesk');
+  spaceGrotesk('space_grotesk', 'SpaceGrotesk'),
+  inter('inter', 'Inter'),
+  lora('lora', 'Lora'),
+  jetBrainsMono('jetbrains_mono', 'JetBrainsMono');
 
   const AppFontFamily(this.storageValue, this.fontFamily);
 

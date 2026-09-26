@@ -2478,6 +2478,24 @@ abstract class AppLocalizations {
   /// **'Space Grotesk'**
   String get settings_appearance_font_space_grotesk;
 
+  /// No description provided for @settings_appearance_font_inter.
+  ///
+  /// In en, this message translates to:
+  /// **'Inter'**
+  String get settings_appearance_font_inter;
+
+  /// No description provided for @settings_appearance_font_lora.
+  ///
+  /// In en, this message translates to:
+  /// **'Lora'**
+  String get settings_appearance_font_lora;
+
+  /// No description provided for @settings_appearance_font_jetbrains_mono.
+  ///
+  /// In en, this message translates to:
+  /// **'JetBrains Mono'**
+  String get settings_appearance_font_jetbrains_mono;
+
   /// No description provided for @settings_appearance_font_size.
   ///
   /// In en, this message translates to:

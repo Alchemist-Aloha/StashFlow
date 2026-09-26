@@ -57,11 +57,11 @@ void main() {
     final dropdown = find.byType(DropdownButtonFormField<AppFontFamily>);
     await tester.tap(dropdown);
     await tester.pumpAndSettle();
-    final manrope = find.text('Manrope').last;
-    expect(tester.widget<Text>(manrope).style?.fontFamily, 'Manrope');
-    await tester.tap(manrope);
+    final lora = find.text('Lora').last;
+    expect(tester.widget<Text>(lora).style?.fontFamily, 'Lora');
+    await tester.tap(lora);
     await tester.pumpAndSettle();
 
-    expect(prefs.getString(appFontFamilyPreferenceKey), 'manrope');
+    expect(prefs.getString(appFontFamilyPreferenceKey), 'lora');
   });
 }

@@ -104,7 +104,19 @@ flutter:
     - family: SpaceGrotesk
       fonts:
         - asset: asset/fonts/space_grotesk/SpaceGrotesk.ttf
+    - family: Inter
+      fonts:
+        - asset: asset/fonts/inter/Inter.ttf
+    - family: Lora
+      fonts:
+        - asset: asset/fonts/lora/Lora.ttf
+    - family: JetBrainsMono
+      fonts:
+        - asset: asset/fonts/jetbrains_mono/JetBrainsMono.ttf
   assets:
     - asset/fonts/manrope/OFL.txt
     - asset/fonts/outfit/OFL.txt
     - asset/fonts/space_grotesk/OFL.txt
+    - asset/fonts/inter/OFL.txt
+    - asset/fonts/lora/OFL.txt
+    - asset/fonts/jetbrains_mono/OFL.txt
