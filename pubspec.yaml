@@ -94,3 +94,17 @@ flutter_launcher_icons:
 flutter:
   generate: true
   uses-material-design: true
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: asset/fonts/manrope/Manrope.ttf
+    - family: Outfit
+      fonts:
+        - asset: asset/fonts/outfit/Outfit.ttf
+    - family: SpaceGrotesk
+      fonts:
+        - asset: asset/fonts/space_grotesk/SpaceGrotesk.ttf
+  assets:
+    - asset/fonts/manrope/OFL.txt
+    - asset/fonts/outfit/OFL.txt
+    - asset/fonts/space_grotesk/OFL.txt

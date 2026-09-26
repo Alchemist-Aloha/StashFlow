@@ -61,6 +61,7 @@ sheets, saved-filter UI, `StashImage`, and common state views.
   constants.
 - Layout must react immediately to `appGlobalScaleProvider` changes without
   overflow at supported scale extremes.
+- Card titles use the already scaled `context.dimensions.cardTitleFontSize` once.
 - Use capability and available-width checks instead of assuming mobile behavior
   from a platform name.
 
@@ -74,6 +75,11 @@ Canonical implementation:
 
 The app supports light/dark/system theme modes, a persisted Material seed color,
 and a True Black option for dark themes. Theme changes apply without restart.
+Appearance also offers System, Serif, Monospace, Manrope, Outfit, and Space
+Grotesk font families. The three named families are bundled under the SIL Open
+Font License; missing glyphs use platform fallback. The
+`appFontFamilyProvider` owns the `app_font_family` preference; unknown or absent
+values fall back to System. Font changes apply immediately to both themes.
 True Black may replace dark surfaces with black, but text, outlines, disabled
 states, and overlays must retain accessible contrast.
 
@@ -312,6 +318,9 @@ Responsibilities:
 
 The UI talks directly to media-kit state. Do not restore the removed
 video-player compatibility adapters or route-owned fullscreen player.
+Inline and fullscreen player utility buttons share the same overlay treatment
+at the top and bottom; mirrored edge gradients keep them legible over video.
+The centered transport group has no shared backdrop or drop shadow.
 
 ### Native video output and decoding
 
@@ -342,6 +351,11 @@ Queue invariants:
 - Fresh query state replaces the relevant sequence; pagination appends to it.
 - Selecting a scene activates the queue that supplied it.
 - Next/previous uses the active queue order.
+- Play and queue navigation sit at the center of the video, separate from the
+  bottom seek and utility controls. When either queue direction is available,
+  both navigation buttons stay visible; the unavailable direction is disabled
+  so play remains anchored between them. Navigation buttons have transparent
+  backgrounds while play retains the primary filled treatment.
 - Queue indices stay synchronized with TikTok swipes and direct scene changes.
 - A failed stream resolution/open must not leave the active scene and queue
   index disagreeing.
@@ -448,6 +462,8 @@ Settings pages use the shared shell and panel components in
 dynamic spacing, section hierarchy, loading/error presentation, and navigation
 behavior. Server Settings may keep its specialized profile-list interactions,
 but must retain the same overall visual language.
+The hub spaces its action tiles and uses two columns when available width can
+fit readable tiles at the current UI scale; compact layouts use one column.
 
 New settings require:
 

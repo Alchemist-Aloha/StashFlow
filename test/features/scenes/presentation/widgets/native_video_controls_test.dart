@@ -14,9 +14,11 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/sprite_info.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scrubbing_preview.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_progress_bar.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_playback_controls.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 class FakePlayer extends Mock implements mk.Player {
@@ -206,12 +208,112 @@ void main() {
     );
     expect(
       button.style?.backgroundColor?.resolve(const <WidgetState>{}),
-      Theme.of(context).colorScheme.primaryContainer,
+      Theme.of(context).colorScheme.primary,
     );
     expect(
       button.style?.minimumSize?.resolve(const <WidgetState>{})?.width,
+      56,
+    );
+    expect(
+      tester.getCenter(find.byKey(const Key('video_transport_controls'))),
+      tester.getCenter(find.byType(NativeVideoControls)),
+    );
+    expect(
+      find.ancestor(
+        of: find.byKey(const Key('video_play_pause_button')),
+        matching: find.byType(VideoPlaybackControls),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets('queue navigation keeps play centered at either end', (
+    tester,
+  ) async {
+    final first = _buildScene();
+    final second = _buildScene(id: 'next_scene_id');
+    await _pumpControls(tester, scene: first);
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(NativeVideoControls)),
+    );
+    container.read(playbackQueueProvider.notifier).setSequence([
+      first,
+      second,
+    ], 0);
+    await tester.pump();
+
+    IconButton previous = tester.widget(
+      find.ancestor(
+        of: find.byIcon(Icons.skip_previous_rounded),
+        matching: find.byType(IconButton),
+      ),
+    );
+    IconButton next = tester.widget(
+      find.ancestor(
+        of: find.byIcon(Icons.skip_next_rounded),
+        matching: find.byType(IconButton),
+      ),
+    );
+    expect(previous.onPressed, isNull);
+    expect(next.onPressed, isNotNull);
+    expect(
+      previous.style?.minimumSize?.resolve(const <WidgetState>{})?.width,
       48,
     );
+    final playCenter = tester.getCenter(
+      find.byKey(const Key('video_play_pause_button')),
+    );
+    expect(playCenter, tester.getCenter(find.byType(NativeVideoControls)));
+
+    container.read(playbackQueueProvider.notifier).setIndex(1);
+    await tester.pump();
+
+    previous = tester.widget(
+      find.ancestor(
+        of: find.byIcon(Icons.skip_previous_rounded),
+        matching: find.byType(IconButton),
+      ),
+    );
+    next = tester.widget(
+      find.ancestor(
+        of: find.byIcon(Icons.skip_next_rounded),
+        matching: find.byType(IconButton),
+      ),
+    );
+    expect(previous.onPressed, isNotNull);
+    expect(next.onPressed, isNull);
+    expect(
+      tester.getCenter(find.byKey(const Key('video_play_pause_button'))),
+      playCenter,
+    );
+  });
+
+  testWidgets('center transport stays clear of bottom controls inline', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 180);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final first = _buildScene();
+    final second = _buildScene(id: 'next_scene_id');
+    await _pumpControls(tester, scene: first);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(NativeVideoControls)),
+    );
+    container.read(playbackQueueProvider.notifier).setSequence([
+      first,
+      second,
+    ], 0);
+    await tester.pump();
+
+    final transport = tester.getRect(
+      find.byKey(const Key('video_transport_controls')),
+    );
+    final bottomControls = tester.getRect(find.byType(VideoPlaybackControls));
+    expect(transport.overlaps(bottomControls), isFalse);
   });
 
   testWidgets('can render without visible controls', (tester) async {
@@ -231,8 +333,9 @@ void main() {
 
     final feedback = find.byKey(const Key('video_seek_feedback'));
     final initialCenter = tester.getCenter(feedback);
+    final playerRect = tester.getRect(find.byType(NativeVideoControls));
     final gesture = await tester.startGesture(
-      tester.getCenter(find.byType(NativeVideoControls)),
+      Offset(playerRect.left + playerRect.width / 4, playerRect.center.dy),
     );
 
     await gesture.moveBy(const Offset(80, 0));
@@ -361,6 +464,10 @@ void main() {
       find.byKey(const Key('inline_video_back_button')).hitTestable(),
       findsNothing,
     );
+    expect(
+      find.byKey(const Key('video_play_pause_button')).hitTestable(),
+      findsNothing,
+    );
   });
 
   testWidgets('renders grey top gradient behind inline back row', (
@@ -369,6 +476,39 @@ void main() {
     await _pumpControls(tester, scene: _buildScene(), onInlineBack: () {});
 
     expect(find.byKey(const Key('inline_video_top_gradient')), findsOneWidget);
+    final topGradient = tester.widget<Container>(
+      find.byKey(const Key('inline_video_top_gradient')),
+    );
+    final bottomGradient = tester.widget<Container>(
+      find.byKey(const Key('inline_video_bottom_gradient')),
+    );
+    final top =
+        (topGradient.decoration! as BoxDecoration).gradient! as LinearGradient;
+    final bottom =
+        (bottomGradient.decoration! as BoxDecoration).gradient!
+            as LinearGradient;
+    expect(top.begin, Alignment.topCenter);
+    expect(bottom.begin, Alignment.bottomCenter);
+    expect(bottom.colors, top.colors);
+
+    final playlist = tester.widget<IconButton>(
+      find.byKey(const Key('inline_video_playlist_button')),
+    );
+    final fullscreen = tester.widget<IconButton>(
+      find.byKey(const Key('video_fullscreen_button')),
+    );
+    expect(
+      fullscreen.style?.minimumSize?.resolve(const <WidgetState>{}),
+      playlist.style?.minimumSize?.resolve(const <WidgetState>{}),
+    );
+    expect(
+      fullscreen.style?.foregroundColor?.resolve(const <WidgetState>{}),
+      playlist.style?.foregroundColor?.resolve(const <WidgetState>{}),
+    );
+    final transport = tester.widget<Container>(
+      find.byKey(const Key('video_transport_controls')),
+    );
+    expect(transport.decoration, isNull);
   });
 
   testWidgets('renders grey top gradient behind fullscreen back row', (
@@ -389,6 +529,24 @@ void main() {
     expect(
       find.byKey(const Key('fullscreen_video_top_gradient')),
       findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('fullscreen_video_bottom_gradient')),
+      findsOneWidget,
+    );
+    final playlist = tester.widget<IconButton>(
+      find.byKey(const Key('fullscreen_playlist_button')),
+    );
+    final fullscreen = tester.widget<IconButton>(
+      find.byKey(const Key('video_fullscreen_button')),
+    );
+    expect(
+      fullscreen.style?.minimumSize?.resolve(const <WidgetState>{}),
+      playlist.style?.minimumSize?.resolve(const <WidgetState>{}),
+    );
+    expect(
+      fullscreen.style?.foregroundColor?.resolve(const <WidgetState>{}),
+      playlist.style?.foregroundColor?.resolve(const <WidgetState>{}),
     );
   });
 
@@ -453,12 +611,13 @@ void main() {
 }
 
 Scene _buildScene({
+  String id = 'test_scene_id',
   List<VideoCaption> captions = const [],
   String? captionPath,
   String? vttPath,
 }) {
   return Scene(
-    id: 'test_scene_id',
+    id: id,
     title: 'Test Scene',
     date: DateTime(2025, 1, 1),
     rating100: 0,

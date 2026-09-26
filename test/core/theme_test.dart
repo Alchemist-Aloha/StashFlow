@@ -60,6 +60,7 @@ void main() {
         theme.inputDecorationTheme.contentPadding,
         const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       );
+      expect(theme.extension<AppDimensions>()!.cardTitleFontSize, 18);
       expect(
         theme.filledButtonTheme.style?.minimumSize?.resolve({}),
         const Size.fromHeight(72),

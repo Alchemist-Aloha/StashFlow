@@ -231,6 +231,7 @@ class AppTheme {
     double? cardTitleFontSize,
     double? performerAvatarSize,
     double fontSizeFactor = 1.0,
+    String? fontFamily,
   }) {
     final dims = AppDimensions(
       performerAvatarSize: (performerAvatarSize ?? 16.0) * fontSizeFactor,
@@ -267,6 +268,7 @@ class AppTheme {
       Typography.material2021(platform: defaultTargetPlatform).black.apply(
         bodyColor: colorScheme.onSurface,
         displayColor: colorScheme.onSurface,
+        fontFamily: fontFamily,
       ),
       fontSizeFactor,
     );
@@ -276,6 +278,7 @@ class AppTheme {
       brightness: brightness,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,
+      fontFamily: fontFamily,
       textTheme: baseTextTheme.copyWith(
         bodySmall: baseTextTheme.bodySmall?.copyWith(
           fontSize: 12 * fontSizeFactor,

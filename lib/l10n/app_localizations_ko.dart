@@ -1237,6 +1237,30 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '8자리 ARGB 헥스 코드를 입력하세요';
 
   @override
+  String get settings_appearance_font_family => '글꼴';
+
+  @override
+  String get settings_appearance_font_family_subtitle => '앱 글꼴 선택';
+
+  @override
+  String get settings_appearance_font_system => '시스템 기본값';
+
+  @override
+  String get settings_appearance_font_serif => '세리프';
+
+  @override
+  String get settings_appearance_font_monospace => '고정폭';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
   String get settings_appearance_font_size => '글로벌 UI 규모';
 
   @override

@@ -1256,6 +1256,31 @@ class AppLocalizationsRu extends AppLocalizations {
       'Введите 8-значный ARGB hex-код';
 
   @override
+  String get settings_appearance_font_family => 'Шрифт';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Выберите семейство шрифтов приложения';
+
+  @override
+  String get settings_appearance_font_system => 'Системный';
+
+  @override
+  String get settings_appearance_font_serif => 'С засечками';
+
+  @override
+  String get settings_appearance_font_monospace => 'Моноширинный';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
   String get settings_appearance_font_size =>
       'Глобальный масштаб пользовательского интерфейса';
 

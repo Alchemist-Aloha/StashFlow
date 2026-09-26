@@ -454,35 +454,23 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
     _showControlsTemporarily();
   }
 
-  ButtonStyle _controlButtonStyle(ColorScheme colorScheme) {
-    return IconButton.styleFrom(
-      backgroundColor: Colors.transparent,
-      foregroundColor: colorScheme.onSurface,
-      disabledBackgroundColor: Colors.transparent,
-      disabledForegroundColor: colorScheme.onSurfaceVariant.withValues(
-        alpha: 0.55,
-      ),
-      padding: const EdgeInsets.all(4),
-      minimumSize: const Size(26, 26),
-    );
-  }
-
-  Widget _buildTopGradientOverlay({required bool isFullScreen}) {
+  Widget _buildEdgeGradientOverlay({
+    required bool isFullScreen,
+    required bool atBottom,
+  }) {
     return IgnorePointer(
       child: AnimatedOpacity(
         opacity: _controlsVisible ? 1 : 0,
         duration: const Duration(milliseconds: 180),
         child: Container(
           key: Key(
-            isFullScreen
-                ? 'fullscreen_video_top_gradient'
-                : 'inline_video_top_gradient',
+            '${isFullScreen ? 'fullscreen' : 'inline'}_video_${atBottom ? 'bottom' : 'top'}_gradient',
           ),
           height: isFullScreen ? 124 : 88,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+              begin: atBottom ? Alignment.bottomCenter : Alignment.topCenter,
+              end: atBottom ? Alignment.topCenter : Alignment.bottomCenter,
               colors: [
                 Colors.grey.shade900.withAlpha(235),
                 Colors.grey.shade800.withAlpha(150),
@@ -589,8 +577,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
             tooltip: isMuted
                 ? context.l10n.common_unmute
                 : context.l10n.common_mute,
-            style: _controlButtonStyle(colorScheme),
-            iconSize: 20,
+            style: playerOverlayButtonStyle(context),
             icon: Icon(iconData),
             onPressed: () {
               ref.read(playerStateProvider.notifier).toggleMute();
@@ -661,8 +648,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
         children: [
           IconButton(
             tooltip: context.l10n.common_reset_to_1x,
-            style: _controlButtonStyle(colorScheme),
-            iconSize: 20,
+            style: playerOverlayButtonStyle(context),
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () {
               widget.controller.player.setRate(1.0);
@@ -697,8 +683,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
           const SizedBox(width: 8),
           IconButton(
             tooltip: context.l10n.common_close,
-            style: _controlButtonStyle(colorScheme),
-            iconSize: 20,
+            style: playerOverlayButtonStyle(context),
             icon: const Icon(Icons.close_rounded),
             onPressed: () {
               setState(() => _showSpeedSlider = false);
@@ -904,6 +889,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
             queueState.currentIndex < queueState.sequence.length)
         ? queueState.sequence[queueState.currentIndex - 1]
         : null;
+    final showTransportControls =
+        _controlsVisible &&
+        !_isScrubbing &&
+        _dragSeekTarget == null &&
+        _seekFeedbackSeconds == null &&
+        !_feedbackVisible;
 
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
     final keybinds = ref.watch(keybindsProvider);
@@ -1296,8 +1287,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                       top: 0,
                       left: 0,
                       right: 0,
-                      child: _buildTopGradientOverlay(
+                      child: _buildEdgeGradientOverlay(
                         isFullScreen: isFullScreen,
+                        atBottom: false,
                       ),
                     ),
 
@@ -1314,7 +1306,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                             child: IconButton(
                               key: const Key('inline_video_back_button'),
                               tooltip: context.l10n.common_back,
-                              style: _controlButtonStyle(colorScheme),
+                              style: playerOverlayButtonStyle(context),
                               icon: const Icon(Icons.arrow_back_rounded),
                               onPressed: widget.onInlineBack,
                             ),
@@ -1336,7 +1328,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                             child: IconButton(
                               key: const Key('inline_video_playlist_button'),
                               tooltip: 'Playlist',
-                              style: _controlButtonStyle(colorScheme),
+                              style: playerOverlayButtonStyle(context),
                               icon: const Icon(Icons.queue_music_rounded),
                               onPressed: _openPlaylist,
                             ),
@@ -1358,7 +1350,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                             children: [
                               IconButton(
                                 tooltip: context.l10n.common_exit_fullscreen,
-                                style: _controlButtonStyle(colorScheme),
+                                style: playerOverlayButtonStyle(context),
                                 icon: const Icon(Icons.arrow_back_rounded),
                                 onPressed: () {
                                   widget.onFullScreenToggle?.call();
@@ -1389,7 +1381,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                               IconButton(
                                 key: const Key('fullscreen_playlist_button'),
                                 tooltip: 'Playlist',
-                                style: _controlButtonStyle(colorScheme),
+                                style: playerOverlayButtonStyle(context),
                                 icon: const Icon(Icons.queue_music_rounded),
                                 onPressed: _openPlaylist,
                               ),
@@ -1400,7 +1392,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                     'fullscreen_random_scene_button',
                                   ),
                                   tooltip: context.l10n.random_scene,
-                                  style: _controlButtonStyle(colorScheme),
+                                  style: playerOverlayButtonStyle(context),
                                   icon: const Icon(Icons.casino_outlined),
                                   onPressed: () {
                                     widget.onRandomScene?.call();
@@ -1413,6 +1405,55 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                         ),
                       ),
                     ),
+
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: _buildEdgeGradientOverlay(
+                      isFullScreen: isFullScreen,
+                      atBottom: true,
+                    ),
+                  ),
+
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      ignoring: !showTransportControls,
+                      child: ExcludeFocus(
+                        excluding: !showTransportControls,
+                        child: AnimatedOpacity(
+                          opacity: showTransportControls ? 1 : 0,
+                          duration: const Duration(milliseconds: 180),
+                          child: Center(
+                            child: VideoTransportControls(
+                              isPlaying: effectivePlaying,
+                              isFullScreen: isFullScreen,
+                              previousScene: previousScene,
+                              nextScene: nextScene,
+                              onPlayPause: () {
+                                if (effectivePlaying) {
+                                  _pause();
+                                } else {
+                                  _play();
+                                }
+                              },
+                              onSkipPrevious: () {
+                                ref
+                                    .read(playerStateProvider.notifier)
+                                    .playPrevious();
+                              },
+                              onSkipNext: () {
+                                ref
+                                    .read(playerStateProvider.notifier)
+                                    .playNext();
+                              },
+                              onInteract: _showControlsTemporarily,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
 
                   // Bottom Control Bar
                   Align(
@@ -1551,29 +1592,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                     VideoPlaybackControls(
                                       controller: widget.controller,
                                       scene: widget.scene,
-                                      isPlaying: effectivePlaying,
                                       playbackSpeed: playbackSpeed,
-                                      nextScene: nextScene,
-                                      previousScene: previousScene,
                                       isFullScreen: isFullScreen,
-                                      onPlayPause: () {
-                                        if (effectivePlaying) {
-                                          _pause();
-                                        } else {
-                                          _play();
-                                        }
-                                      },
                                       onStopCast: _stopCast,
-                                      onSkipNext: () {
-                                        ref
-                                            .read(playerStateProvider.notifier)
-                                            .playNext();
-                                      },
-                                      onSkipPrevious: () {
-                                        ref
-                                            .read(playerStateProvider.notifier)
-                                            .playPrevious();
-                                      },
                                       onSubtitleSelected: (val) async {
                                         if (val == null || val == 'none') {
                                           await ref

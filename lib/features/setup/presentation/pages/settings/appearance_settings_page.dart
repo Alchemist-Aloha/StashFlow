@@ -6,6 +6,7 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_mode_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_color_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/true_black_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/font_family_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import '../../widgets/settings_page_shell.dart';
 
@@ -169,6 +170,60 @@ class _AppearanceSettingsPageState
                     title: l10n.settings_appearance_primary_color,
                     subtitle: l10n.settings_appearance_primary_color_subtitle,
                     child: _buildColorSelector(),
+                  ),
+                  SettingsSectionCard(
+                    title: l10n.settings_appearance_font_family,
+                    subtitle: l10n.settings_appearance_font_family_subtitle,
+                    child: DropdownButtonFormField<AppFontFamily>(
+                      key: ValueKey(ref.watch(appFontFamilyProvider)),
+                      initialValue: ref.watch(appFontFamilyProvider),
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: l10n.settings_appearance_font_family,
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: AppFontFamily.system,
+                          child: Text(l10n.settings_appearance_font_system),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.serif,
+                          child: Text(l10n.settings_appearance_font_serif),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.monospace,
+                          child: Text(l10n.settings_appearance_font_monospace),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.manrope,
+                          child: Text(
+                            l10n.settings_appearance_font_manrope,
+                            style: const TextStyle(fontFamily: 'Manrope'),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.outfit,
+                          child: Text(
+                            l10n.settings_appearance_font_outfit,
+                            style: const TextStyle(fontFamily: 'Outfit'),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.spaceGrotesk,
+                          child: Text(
+                            l10n.settings_appearance_font_space_grotesk,
+                            style: const TextStyle(fontFamily: 'SpaceGrotesk'),
+                          ),
+                        ),
+                      ],
+                      onChanged: (family) {
+                        if (family != null) {
+                          ref
+                              .read(appFontFamilyProvider.notifier)
+                              .setFontFamily(family);
+                        }
+                      },
+                    ),
                   ),
                   SettingsSectionCard(
                     title: l10n.settings_appearance_font_size,

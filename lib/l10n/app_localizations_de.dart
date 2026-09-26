@@ -1263,6 +1263,31 @@ class AppLocalizationsDe extends AppLocalizations {
       'Geben Sie einen 8-stelligen ARGB-Hex-Code ein';
 
   @override
+  String get settings_appearance_font_family => 'Schriftart';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Schriftart der App auswählen';
+
+  @override
+  String get settings_appearance_font_system => 'Systemstandard';
+
+  @override
+  String get settings_appearance_font_serif => 'Serifenschrift';
+
+  @override
+  String get settings_appearance_font_monospace => 'Festbreitenschrift';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
   String get settings_appearance_font_size => 'Globale UI-Skala';
 
   @override

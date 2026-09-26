@@ -42,9 +42,7 @@ class SettingsPageShell extends ConsumerWidget {
         child: Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 920 * context.dimensions.fontSizeFactor,
-            ),
+            constraints: BoxConstraints(maxWidth: 920),
             child: child,
           ),
         ),
@@ -308,6 +306,7 @@ class _SettingsActionCardState extends State<SettingsActionCard> {
         scale: _isPressed ? 0.98 : 1.0,
         duration: const Duration(milliseconds: 100),
         child: Card(
+          margin: EdgeInsets.zero,
           clipBehavior: Clip.antiAlias,
           elevation: 0,
           color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),

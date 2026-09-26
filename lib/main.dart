@@ -26,6 +26,7 @@ import 'core/presentation/theme/app_theme.dart';
 import 'core/presentation/theme/theme_mode_provider.dart';
 import 'core/presentation/theme/theme_color_provider.dart';
 import 'core/presentation/theme/true_black_provider.dart';
+import 'core/presentation/theme/font_family_provider.dart';
 import 'core/presentation/providers/layout_settings_provider.dart';
 import 'core/presentation/widgets/app_lock_gate.dart';
 import 'core/data/graphql/deferred_graphql_store.dart';
@@ -308,6 +309,7 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(appThemeModeProvider);
     final seedColor = ref.watch(appThemeColorProvider);
     final useTrueBlack = ref.watch(trueBlackEnabledProvider);
+    final fontFamily = ref.watch(appFontFamilyProvider).fontFamily;
     final appLocale = ref.watch(appLanguageProvider);
 
     final cardTitleFontSize = ref.watch(cardTitleFontSizeProvider);
@@ -334,6 +336,7 @@ class MyApp extends ConsumerWidget {
         cardTitleFontSize: cardTitleFontSize,
         performerAvatarSize: performerAvatarSize,
         fontSizeFactor: fontSizeFactor,
+        fontFamily: fontFamily,
       ),
       darkTheme: AppTheme.buildTheme(
         Brightness.dark,
@@ -342,6 +345,7 @@ class MyApp extends ConsumerWidget {
         cardTitleFontSize: cardTitleFontSize,
         performerAvatarSize: performerAvatarSize,
         fontSizeFactor: fontSizeFactor,
+        fontFamily: fontFamily,
       ),
     );
   }

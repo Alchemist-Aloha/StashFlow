@@ -1273,6 +1273,31 @@ class AppLocalizationsEs extends AppLocalizations {
       'Introduce un código hexadecimal ARGB de 8 dígitos';
 
   @override
+  String get settings_appearance_font_family => 'Fuente';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Elige la familia tipográfica de la aplicación';
+
+  @override
+  String get settings_appearance_font_system => 'Predeterminada del sistema';
+
+  @override
+  String get settings_appearance_font_serif => 'Con serifa';
+
+  @override
+  String get settings_appearance_font_monospace => 'Monoespaciada';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
   String get settings_appearance_font_size =>
       'Escala de interfaz de usuario global';
 

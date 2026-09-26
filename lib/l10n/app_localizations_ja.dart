@@ -1238,6 +1238,30 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '8桁のARGB 16進コードを入力してください';
 
   @override
+  String get settings_appearance_font_family => 'フォント';
+
+  @override
+  String get settings_appearance_font_family_subtitle => 'アプリのフォントを選択';
+
+  @override
+  String get settings_appearance_font_system => 'システム標準';
+
+  @override
+  String get settings_appearance_font_serif => 'セリフ体';
+
+  @override
+  String get settings_appearance_font_monospace => '等幅';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
   String get settings_appearance_font_size => 'グローバルUIスケール';
 
   @override

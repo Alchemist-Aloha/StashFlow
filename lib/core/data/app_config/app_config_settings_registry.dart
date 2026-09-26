@@ -58,6 +58,17 @@ final class AppConfigSettingsRegistry {
       },
     ),
     _string('app_theme_mode', allowed: {'system', 'light', 'dark'}),
+    _string(
+      'app_font_family',
+      allowed: {
+        'system',
+        'serif',
+        'monospace',
+        'manrope',
+        'outfit',
+        'space_grotesk',
+      },
+    ),
     _int('app_theme_seed_color'),
     _bool('use_true_black'),
     _double('app_global_scale_factor', min: 0.5, max: 2.0),

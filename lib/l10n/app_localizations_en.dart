@@ -1250,6 +1250,31 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter an 8-digit ARGB hex code';
 
   @override
+  String get settings_appearance_font_family => 'Font';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Choose the app font family';
+
+  @override
+  String get settings_appearance_font_system => 'System default';
+
+  @override
+  String get settings_appearance_font_serif => 'Serif';
+
+  @override
+  String get settings_appearance_font_monospace => 'Monospace';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
   String get settings_appearance_font_size => 'Global UI Scale';
 
   @override

@@ -9,6 +9,7 @@ void main() {
   test('exports only explicitly managed settings', () async {
     SharedPreferences.setMockInitialValues({
       'app_theme_mode': 'dark',
+      'app_font_family': 'space_grotesk',
       'show_random_navigation': true,
       'auto_hide_top_app_bar': true,
       'video_enter_fullscreen_on_navigation': true,
@@ -27,6 +28,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     expect(await registry.read(prefs), {
       'app_theme_mode': 'dark',
+      'app_font_family': 'space_grotesk',
       'show_random_navigation': true,
       'auto_hide_top_app_bar': true,
       'video_enter_fullscreen_on_navigation': true,
@@ -47,6 +49,7 @@ void main() {
     for (final invalid in <Map<String, Object>>[
       {'app_theme_mode': 1},
       {'app_theme_mode': 'neon'},
+      {'app_font_family': 'unknown'},
       {'video_mpv_vo': 'gpu-next'},
       {'video_mpv_hwdec': 'invalid'},
       {'video_mpv_hwdec': false},
@@ -90,6 +93,7 @@ void main() {
       containsAll(<String>{
         'app_language',
         'app_theme_mode',
+        'app_font_family',
         'app_theme_seed_color',
         'use_true_black',
         'app_global_scale_factor',

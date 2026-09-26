@@ -1233,6 +1233,30 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '输入 8 位 ARGB hex 代码';
 
   @override
+  String get settings_appearance_font_family => '字体';
+
+  @override
+  String get settings_appearance_font_family_subtitle => '选择应用字体';
+
+  @override
+  String get settings_appearance_font_system => '系统默认';
+
+  @override
+  String get settings_appearance_font_serif => '衬线字体';
+
+  @override
+  String get settings_appearance_font_monospace => '等宽字体';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
   String get settings_appearance_font_size => '全球用户界面规模';
 
   @override
@@ -4569,6 +4593,30 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_appearance_custom_hex_helper => '输入 8 位 ARGB hex 代码';
+
+  @override
+  String get settings_appearance_font_family => '字体';
+
+  @override
+  String get settings_appearance_font_family_subtitle => '选择应用字体';
+
+  @override
+  String get settings_appearance_font_system => '系统默认';
+
+  @override
+  String get settings_appearance_font_serif => '衬线字体';
+
+  @override
+  String get settings_appearance_font_monospace => '等宽字体';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
 
   @override
   String get settings_appearance_font_size => '全球用户界面规模';
@@ -7909,6 +7957,30 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_appearance_custom_hex_helper => '輸入 8 位數 ARGB hex 代碼';
+
+  @override
+  String get settings_appearance_font_family => '字型';
+
+  @override
+  String get settings_appearance_font_family_subtitle => '選擇應用程式字型';
+
+  @override
+  String get settings_appearance_font_system => '系統預設';
+
+  @override
+  String get settings_appearance_font_serif => '襯線字型';
+
+  @override
+  String get settings_appearance_font_monospace => '等寬字型';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
 
   @override
   String get settings_appearance_font_size => '全球使用者介面規模';

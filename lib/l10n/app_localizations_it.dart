@@ -1267,6 +1267,31 @@ class AppLocalizationsIt extends AppLocalizations {
       'Inserisci un codice esadecimale ARGB a 8 cifre';
 
   @override
+  String get settings_appearance_font_family => 'Carattere';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Scegli la famiglia di caratteri dell’app';
+
+  @override
+  String get settings_appearance_font_system => 'Predefinito di sistema';
+
+  @override
+  String get settings_appearance_font_serif => 'Con grazie';
+
+  @override
+  String get settings_appearance_font_monospace => 'Monospaziato';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
   String get settings_appearance_font_size =>
       'Scala globale dell\'interfaccia utente';
 

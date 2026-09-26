@@ -2430,6 +2430,54 @@ abstract class AppLocalizations {
   /// **'Enter an 8-digit ARGB hex code'**
   String get settings_appearance_custom_hex_helper;
 
+  /// No description provided for @settings_appearance_font_family.
+  ///
+  /// In en, this message translates to:
+  /// **'Font'**
+  String get settings_appearance_font_family;
+
+  /// No description provided for @settings_appearance_font_family_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the app font family'**
+  String get settings_appearance_font_family_subtitle;
+
+  /// No description provided for @settings_appearance_font_system.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get settings_appearance_font_system;
+
+  /// No description provided for @settings_appearance_font_serif.
+  ///
+  /// In en, this message translates to:
+  /// **'Serif'**
+  String get settings_appearance_font_serif;
+
+  /// No description provided for @settings_appearance_font_monospace.
+  ///
+  /// In en, this message translates to:
+  /// **'Monospace'**
+  String get settings_appearance_font_monospace;
+
+  /// No description provided for @settings_appearance_font_manrope.
+  ///
+  /// In en, this message translates to:
+  /// **'Manrope'**
+  String get settings_appearance_font_manrope;
+
+  /// No description provided for @settings_appearance_font_outfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Outfit'**
+  String get settings_appearance_font_outfit;
+
+  /// No description provided for @settings_appearance_font_space_grotesk.
+  ///
+  /// In en, this message translates to:
+  /// **'Space Grotesk'**
+  String get settings_appearance_font_space_grotesk;
+
   /// No description provided for @settings_appearance_font_size.
   ///
   /// In en, this message translates to:
