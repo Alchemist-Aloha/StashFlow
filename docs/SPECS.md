@@ -548,6 +548,7 @@ Encryption and cloud synchronization are outside the current backup scope.
 
 - Application ID and namespace are `io.github.alchemistaloha.stashflow`.
 - Minimum Android SDK is 24.
+- Compile SDK is 37; target SDK follows Flutter's supported default.
 - Release APK verification uses `flutter build apk --split-per-abi`.
 - Java/Gradle/plugin versions must remain compatible with the checked-in build
   configuration and CI.
