@@ -16,6 +16,19 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
+  testWidgets('InterfaceSettingsPage no longer shows app language', (
+    tester,
+  ) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const InterfaceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('App Language'), findsNothing);
+  });
+
   testWidgets(
     'InterfaceSettingsPage saves actual scene video miniplayer toggle',
     (tester) async {

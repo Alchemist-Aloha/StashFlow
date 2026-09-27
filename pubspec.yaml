@@ -1,13 +1,13 @@
 name: stash_app_flutter
 description: "A modern Flutter client app for browsing and managing your Stash library."
 publish_to: 'none'
-version: 1.35.0+106
+version: 1.36.0+107
 
 msix_config:
   display_name: StashFlow
   identity_name: com.stashflow.app
   publisher_display_name: StashFlow
-  msix_version: 1.35.0.106
+  msix_version: 1.36.0.107
   logo_path: asset/stashfluttericon.png
 
 environment:
@@ -94,3 +94,29 @@ flutter_launcher_icons:
 flutter:
   generate: true
   uses-material-design: true
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: asset/fonts/manrope/Manrope.ttf
+    - family: Outfit
+      fonts:
+        - asset: asset/fonts/outfit/Outfit.ttf
+    - family: SpaceGrotesk
+      fonts:
+        - asset: asset/fonts/space_grotesk/SpaceGrotesk.ttf
+    - family: Inter
+      fonts:
+        - asset: asset/fonts/inter/Inter.ttf
+    - family: Lora
+      fonts:
+        - asset: asset/fonts/lora/Lora.ttf
+    - family: JetBrainsMono
+      fonts:
+        - asset: asset/fonts/jetbrains_mono/JetBrainsMono.ttf
+  assets:
+    - asset/fonts/manrope/OFL.txt
+    - asset/fonts/outfit/OFL.txt
+    - asset/fonts/space_grotesk/OFL.txt
+    - asset/fonts/inter/OFL.txt
+    - asset/fonts/lora/OFL.txt
+    - asset/fonts/jetbrains_mono/OFL.txt

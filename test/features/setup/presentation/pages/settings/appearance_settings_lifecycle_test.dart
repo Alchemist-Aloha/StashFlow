@@ -1,9 +1,13 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/appearance_settings_page.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
+import 'package:stash_app_flutter/core/presentation/theme/font_family_provider.dart';
+import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 
 import '../../../../../helpers/test_helpers.dart';
 
@@ -37,5 +41,47 @@ void main() {
 
     expect(find.byType(SettingsPageBody), findsOneWidget);
     expect(find.byType(SettingsPanelCard), findsWidgets);
+  });
+
+  testWidgets('AppearanceSettingsPage saves selected font', (tester) async {
+    tester.view.physicalSize = const Size(800, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const AppearanceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    final dropdown = find.byType(DropdownButtonFormField<AppFontFamily>);
+    await tester.tap(dropdown);
+    await tester.pumpAndSettle();
+    final lora = find.text('Lora').last;
+    expect(tester.widget<Text>(lora).style?.fontFamily, 'Lora');
+    await tester.tap(lora);
+    await tester.pumpAndSettle();
+
+    expect(prefs.getString(appFontFamilyPreferenceKey), 'lora');
+  });
+
+  testWidgets('AppearanceSettingsPage saves app language', (tester) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const AppearanceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('App Language'), findsOneWidget);
+    expect(find.text('System'), findsWidgets);
+    await tester.tap(find.text('App Language'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Español'));
+    await tester.pumpAndSettle();
+
+    expect(prefs.getString(appLanguagePreferenceKey), 'es');
+    expect(find.text('Español'), findsOneWidget);
   });
 }

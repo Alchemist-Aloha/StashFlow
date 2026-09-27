@@ -1256,6 +1256,40 @@ class AppLocalizationsRu extends AppLocalizations {
       'Введите 8-значный ARGB hex-код';
 
   @override
+  String get settings_appearance_font_family => 'Шрифт';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Выберите семейство шрифтов приложения';
+
+  @override
+  String get settings_appearance_font_system => 'Системный';
+
+  @override
+  String get settings_appearance_font_serif => 'С засечками';
+
+  @override
+  String get settings_appearance_font_monospace => 'Моноширинный';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
   String get settings_appearance_font_size =>
       'Глобальный масштаб пользовательского интерфейса';
 
@@ -1635,6 +1669,14 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settings_playback_resume_position_subtitle =>
       'При открытии видео автоматически возобновляется с того места, на котором вы остановились.';
+
+  @override
+  String get settings_playback_controls_auto_hide =>
+      'Задержка скрытия элементов управления';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'Как долго элементы управления видны во время воспроизведения видео.';
 
   @override
   String get settings_playback_end_behavior =>

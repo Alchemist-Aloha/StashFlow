@@ -12,13 +12,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => 'StashFlow';
 
   @override
-  String get common_token => '代币';
+  String get common_token => '令牌';
 
   @override
   String get filter_value => '值';
 
   @override
-  String get common_yes => '是的';
+  String get common_yes => '是';
 
   @override
   String get common_no => '否';
@@ -30,7 +30,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nav_scenes => '场景';
 
   @override
-  String get nav_performers => '演职人员';
+  String get nav_performers => '演员';
 
   @override
   String get nav_studios => '制片商';
@@ -67,8 +67,8 @@ class AppLocalizationsZh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString 位演职人员',
-      zero: '无演职人员',
+      other: '$countString 位演员',
+      zero: '无演员',
     );
     return '$_temp0';
   }
@@ -83,9 +83,9 @@ class AppLocalizationsZh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString plays',
-      one: '1 play',
-      zero: 'no plays',
+      other: '播放 $countString 次',
+      one: '播放 1 次',
+      zero: '没有播放',
     );
     return '$_temp0';
   }
@@ -160,7 +160,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get details_studio => '制片商详情';
 
   @override
-  String get details_performer => '演职人员详情';
+  String get details_performer => '演员详情';
 
   @override
   String get details_tag => '标签详情';
@@ -253,10 +253,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sort_images_count => '图片数量';
 
   @override
-  String get sort_galleries_count => '画廊数量';
+  String get sort_galleries_count => '图库数量';
 
   @override
-  String get sort_child_count => '子工作室数量';
+  String get sort_child_count => '下级制片商数量';
 
   @override
   String get sort_performers_count => '演员数量';
@@ -268,7 +268,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sort_marker_count => '标记数量';
 
   @override
-  String get sort_studios_count => '工作室数量';
+  String get sort_studios_count => '制片商数量';
 
   @override
   String get sort_penis_length => '阴茎长度';
@@ -301,14 +301,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_no_random => '没有可用于随机导航的场景';
 
   @override
-  String get performers_no_random => '没有可用于随机导航的演职人员';
+  String get performers_no_random => '没有可用于随机导航的演员';
 
   @override
   String get galleries_no_random => '没有可用于随机导航的图库';
 
   @override
   String common_error(String message) {
-    return '错误: $message';
+    return '错误：$message';
   }
 
   @override
@@ -391,10 +391,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get studio_hierarchy_title => '层级';
 
   @override
-  String get studio_parent_title => '上级工作室';
+  String get studio_parent_title => '上级制片商';
 
   @override
-  String get studio_children_title => '下级工作室';
+  String get studio_children_title => '下级制片商';
 
   @override
   String get common_title => '标题';
@@ -560,7 +560,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get details_scene_add_performer => '添加出演者';
+  String get details_scene_add_performer => '添加演员';
 
   @override
   String get details_scene_add_tag => '添加标签';
@@ -716,19 +716,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tags_filter_tooltip => '筛选选项';
 
   @override
-  String get performers_title => '演职人员';
+  String get performers_title => '演员';
 
   @override
-  String get performers_sort_title => '演职人员排序';
+  String get performers_sort_title => '演员排序';
 
   @override
-  String get performers_filter_title => '演职人员筛选';
+  String get performers_filter_title => '演员筛选';
 
   @override
-  String get performers_galleries_title => '所有演职人员图库';
+  String get performers_galleries_title => '所有演员图库';
 
   @override
-  String get performers_media_title => '所有演职人员媒体';
+  String get performers_media_title => '所有演员媒体';
 
   @override
   String get performers_gender => '性别';
@@ -836,7 +836,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get random_scene => '随机场景';
 
   @override
-  String get random_performer => '随机出演者';
+  String get random_performer => '随机演员';
 
   @override
   String get filter_modifier => '修饰符';
@@ -920,13 +920,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter_less_than => '小于';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => '包括';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => '不包括';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => '全部包括';
 
   @override
   String get filter_is_null => '为空';
@@ -935,19 +935,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter_not_null => '不为空';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => '匹配正则表达式';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex => '不匹配正则表达式';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => '介于两者之间';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => '不在两者之间';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => '第二个值';
 
   @override
   String get images_resolution_title => '分辨率';
@@ -1011,12 +1011,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String scenes_phash_failed(Object error) {
-    return '生成 phash 失败：$error';
+    return '生成 pHash 失败：$error';
   }
 
   @override
   String details_failed_update_studio(Object error) {
-    return '更新工作室失败：$error';
+    return '更新制片商失败：$error';
   }
 
   @override
@@ -1233,7 +1233,40 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '输入 8 位 ARGB hex 代码';
 
   @override
-  String get settings_appearance_font_size => '全球用户界面规模';
+  String get settings_appearance_font_family => '字体';
+
+  @override
+  String get settings_appearance_font_family_subtitle => '选择应用字体';
+
+  @override
+  String get settings_appearance_font_system => '系统默认';
+
+  @override
+  String get settings_appearance_font_serif => '衬线字体';
+
+  @override
+  String get settings_appearance_font_monospace => '等宽字体';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
+  String get settings_appearance_font_size => '全局字体大小';
 
   @override
   String get settings_appearance_font_size_subtitle => '按比例缩放版式和间距';
@@ -1309,7 +1342,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get details_show_metadata => '显示元数据';
 
   @override
-  String get settings_interface_entity_image_filtering => '实体图像过滤';
+  String get settings_interface_entity_image_filtering => '实体图像筛选';
 
   @override
   String get settings_interface_entity_image_filtering_subtitle =>
@@ -1340,21 +1373,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_galleries_layout_subtitle => '图库的默认浏览模式';
 
   @override
-  String get settings_interface_max_performer_avatars => '最多出演者头像';
+  String get settings_interface_max_performer_avatars => '最多显示的演员头像';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      '在场景卡上显示的出演者头像的最大数量。';
+      '场景卡上显示的演员头像的最大数量。';
 
   @override
-  String get settings_interface_show_performer_avatars => '显示出演者头像';
+  String get settings_interface_show_performer_avatars => '显示演员头像';
 
   @override
   String get settings_interface_show_performer_avatars_subtitle =>
-      '在所有平台的场景卡上显示出演者图标。';
+      '在所有平台的场景卡上显示演员图标。';
 
   @override
-  String get settings_interface_performer_avatar_size => '出演者头像大小';
+  String get settings_interface_performer_avatar_size => '演员头像大小';
 
   @override
   String get settings_interface_layout_default => '默认布局';
@@ -1396,10 +1429,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_waterfall_columns => '瀑布流网格列数';
 
   @override
-  String get settings_interface_performer_layouts => '演职人员布局';
+  String get settings_interface_performer_layouts => '演员布局';
 
   @override
-  String get settings_interface_performer_layouts_subtitle => '演职人员的媒体和图库默认设置';
+  String get settings_interface_performer_layouts_subtitle => '演员的媒体和图库默认设置';
 
   @override
   String get settings_interface_studio_layouts => '制片商布局';
@@ -1524,7 +1557,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_profile_delete => '删除配置文件';
 
   @override
-  String get settings_server_profile_delete_confirm => '您确定要删除此配置文件吗？此操作无法撤消。';
+  String get settings_server_profile_delete_confirm => '您确定要删除此配置文件吗？此操作无法撤销。';
 
   @override
   String get settings_server_profile_active => '激活';
@@ -1569,6 +1602,12 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settings_playback_resume_position_subtitle =>
       '打开视频时，自动从上次中断的地方继续播放';
+
+  @override
+  String get settings_playback_controls_auto_hide => '播放器控件自动隐藏延迟';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle => '视频播放时控件保持可见的时长。';
 
   @override
   String get settings_playback_end_behavior => '播放结束时的行为';
@@ -1636,7 +1675,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_seek => '快进/快退交互';
 
   @override
-  String get settings_playback_seek_subtitle => '选择播放期间的进度条拖动方式';
+  String get settings_playback_seek_subtitle => '选择播放时的进度条拖动方式';
 
   @override
   String get settings_playback_seek_double_tap => '双击左/右侧快进/快退 10 秒';
@@ -1658,7 +1697,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_playback_open_fullscreen_subtitle =>
-      '以全屏模式打开选中和随机场景。上一个和下一个场景会保持当前视图。';
+      '以全屏模式打开所选和随机场景。上一个和下一个场景会保持当前视图。';
 
   @override
   String get settings_playback_gravity_orientation_subtitle =>
@@ -1828,7 +1867,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get images_title => '图片';
 
   @override
-  String get images_filter_title => '过滤图片';
+  String get images_filter_title => '筛选图片';
 
   @override
   String get images_filter_saved => '筛选偏好已保存为默认设置';
@@ -1860,7 +1899,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get images_filtered_by_gallery => '按画廊筛选';
+  String get images_filtered_by_gallery => '按图库筛选';
 
   @override
   String get images_slideshow_need_two => '幻灯片放映至少需要 2 张图片。';
@@ -1946,7 +1985,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_edit_performer => '编辑演员';
 
   @override
-  String get scenes_edit_studio => '编辑工作室';
+  String get scenes_edit_studio => '编辑制片商';
 
   @override
   String get common_no_title => '无标题';
@@ -1955,16 +1994,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_select_studio => '选择制片商';
 
   @override
-  String get scenes_select_performers => '选择出演者';
+  String get scenes_select_performers => '选择演员';
 
   @override
   String get scenes_unmatched_scraped_tags => '未匹配的抓取标签';
 
   @override
-  String get scenes_unmatched_scraped_performers => '未匹配的抓取出演者';
+  String get scenes_unmatched_scraped_performers => '未匹配的抓取演员';
 
   @override
-  String get scenes_no_matching_performer_found => '在库中未找到匹配的出演者';
+  String get scenes_no_matching_performer_found => '在库中未找到匹配的演员';
 
   @override
   String get common_unknown => '未知';
@@ -2020,13 +2059,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stats_scenes => '场景';
 
   @override
-  String get stats_galleries => '画廊';
+  String get stats_galleries => '图库';
 
   @override
-  String get stats_performers => '表演者';
+  String get stats_performers => '演员';
 
   @override
-  String get stats_studios => '工作室';
+  String get stats_studios => '制片商';
 
   @override
   String get stats_groups => '团体';
@@ -2052,7 +2091,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cast_enter_pin => '输入电视上显示的 4 位 PIN 码';
 
   @override
-  String get cast_pair => '一对';
+  String get cast_pair => '配对';
 
   @override
   String cast_connecting_to(String deviceName) {
@@ -2214,10 +2253,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get galleries_field_date => '日期';
 
   @override
-  String get galleries_field_performer_age => '演出者年龄';
+  String get galleries_field_performer_age => '演员年龄';
 
   @override
-  String get galleries_field_performer_count => '演出者人数';
+  String get galleries_field_performer_count => '演员人数';
 
   @override
   String get galleries_field_tag_count => '标签数';
@@ -2292,7 +2331,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get studios_field_gallery_count => '图库数';
 
   @override
-  String get studios_field_sub_studio_count => '子工作室数';
+  String get studios_field_sub_studio_count => '下级制片商数量';
 
   @override
   String get studios_field_created_at => '创建于';
@@ -2301,10 +2340,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get studios_field_updated_at => '更新于';
 
   @override
-  String get scenes_field_performer_age => '演出者年龄';
+  String get scenes_field_performer_age => '演员年龄';
 
   @override
-  String get scenes_field_performer_count => '演出者人数';
+  String get scenes_field_performer_count => '演员人数';
 
   @override
   String get scenes_field_tag_count => '标签数';
@@ -2446,12 +2485,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String gallery_error(String message) {
-    return '相册错误: $message';
+    return '相册错误：$message';
   }
 
   @override
   String failed_to_save(String error) {
-    return '保存失败: $error';
+    return '保存失败：$error';
   }
 
   @override
@@ -2498,17 +2537,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String update_available(String version) {
-    return 'StashFlow的更新版本 ($version) 已经发布。';
+    return 'StashFlow 的新版本（$version）已发布。';
   }
 
   @override
   String details_failed_update_favorite(String error) {
-    return '更新收藏失败: $error';
+    return '更新收藏失败：$error';
   }
 
   @override
   String details_failed_load_galleries(String error) {
-    return '加载图库失败: $error';
+    return '加载图库失败：$error';
   }
 
   @override
@@ -2527,7 +2566,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_urls => '网址';
 
   @override
-  String get scene_info_resolution => '解决';
+  String get scene_info_resolution => '分辨率';
 
   @override
   String get scene_info_bitrate => '比特率';
@@ -2545,7 +2584,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_audio_codec => '音频编解码器';
 
   @override
-  String get scene_info_stream => '串流';
+  String get scene_info_stream => '流';
 
   @override
   String get scene_info_preview => '预览';
@@ -2563,13 +2602,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_caption => '标题';
 
   @override
-  String get scene_info_vtt => '视听测试';
+  String get scene_info_vtt => 'VTT';
 
   @override
   String get scene_info_sprite => '预览图';
 
   @override
-  String get scene_info_technical => '技术的';
+  String get scene_info_technical => '技术信息';
 
   @override
   String scene_studio_id(String id) {
@@ -2605,7 +2644,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get auth_enter_passcode => '输入您的密码以继续。';
 
   @override
-  String get auth_unlock => '开锁';
+  String get auth_unlock => '解锁';
 
   @override
   String get auth_incorrect_passcode => '密码不正确';
@@ -2651,13 +2690,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_security_set_passcode => '设置密码';
 
   @override
-  String get settings_security_passcode_prompt => '密码（4-8位）';
+  String get settings_security_passcode_prompt => '密码（4–8 位数字）';
 
   @override
   String get settings_security_confirm_passcode => '确认';
 
   @override
-  String get settings_security_error_numeric => '仅使用数字，长度为 4-8。';
+  String get settings_security_error_numeric => '仅使用 4–8 位数字。';
 
   @override
   String get settings_security_error_mismatch => '密码不匹配。';
@@ -2666,10 +2705,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_change => '改变';
 
   @override
-  String get common_set => '放';
+  String get common_set => '设置';
 
   @override
-  String get common_immediately => '立即地';
+  String get common_immediately => '立即';
 
   @override
   String common_sec(int value) {
@@ -2696,10 +2735,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_security_app_lock => '应用锁';
 
   @override
-  String get settings_security_app_lock_subtitle => '后台运行后使用密码保护访问。';
+  String get settings_security_app_lock_subtitle => '应用转入后台后，需使用密码才能访问。';
 
   @override
-  String get common_saved_filters => '保存的筛选';
+  String get common_saved_filters => '已保存的筛选';
 
   @override
   String get tools => '工具';
@@ -2708,10 +2747,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tools_section_subtitle => '场景的维护和元数据工作流。';
 
   @override
-  String get tools_scene_deduplication_subtitle => '查找并管理重复的场景。';
+  String get tools_scene_deduplication_subtitle => '查找并管理重复场景。';
 
   @override
-  String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削当前场景页面。';
+  String get tools_scene_tagger_subtitle => '使用 Stash-box 抓取当前场景页面。';
 
   @override
   String get preset_deleted => '预设已删除';
@@ -2819,10 +2858,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get select_scenes => '选择场景';
 
   @override
-  String get all_but_largest_resolution => '除最大分辨率外全部';
+  String get all_but_largest_resolution => '除最大分辨率外的所有分辨率';
 
   @override
-  String get all_but_largest_file => '除最大文件外全部';
+  String get all_but_largest_file => '除最大文件外的所有文件';
 
   @override
   String get all_but_oldest => '除最旧项外全部';
@@ -2861,11 +2900,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get enter_preset_name => '输入预设名称';
 
   @override
-  String get delete_scene_confirm => '确定要删除此场景吗？';
+  String get delete_scene_confirm => '您确定要删除此场景吗？';
 
   @override
   String delete_selected_count(int selectedCount) {
-    return '删除已选项 ($selectedCount)';
+    return '删除所选内容 ($selectedCount)';
   }
 
   @override
@@ -3040,8 +3079,8 @@ class AppLocalizationsZh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString 个画廊',
-      zero: '无画廊',
+      other: '$countString 个图库',
+      zero: '无图库',
     );
     return '$_temp0';
   }
@@ -3103,7 +3142,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_details_add_marker => '添加标记';
 
   @override
-  String get scene_details_create_marker => '创造';
+  String get scene_details_create_marker => '创建';
 
   @override
   String scene_details_delete_marker_tooltip(String title) {
@@ -3120,13 +3159,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get auto_missing_field => '缺失字段';
 
   @override
-  String get filter_markers_title => '过滤标记';
+  String get filter_markers_title => '筛选标记';
 
   @override
   String get marker_title => '标记';
 
   @override
-  String get duration_title => '期间';
+  String get duration_title => '时长';
 
   @override
   String get scene_title => '场景';
@@ -3150,16 +3189,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_updated_at_title => '场景更新于';
 
   @override
-  String get organized_title => '有组织';
+  String get organized_title => '已整理';
 
   @override
-  String get interactive_title => '交互的';
+  String get interactive_title => '互动';
 
   @override
   String get scraped_metadata_title => '抓取的元数据';
 
   @override
-  String get local_scene_title => '当地场景';
+  String get local_scene_title => '本地场景';
 
   @override
   String get sort_markers_title => '对标记进行排序';
@@ -3180,7 +3219,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get entity_layouts_title => '实体布局';
 
   @override
-  String get entity_layouts_subtitle => '表演者、工作室和标签的媒体和画廊布局默认值';
+  String get entity_layouts_subtitle => '演员、制片商和标签的媒体和图库布局默认值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';
@@ -3243,10 +3282,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_field_production_date => '制作日期';
 
   @override
-  String get sort_o_count_all => '高潮次数（含下属工作室）';
+  String get sort_o_count_all => '高潮次数（含下属制片商）';
 
   @override
-  String get sort_performers_count_all => '演员数量（含下属工作室）';
+  String get sort_performers_count_all => '演员数量（含下属制片商）';
 
   @override
   String get sort_scene_marker_count => '场景标记数量';
@@ -3307,7 +3346,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_mpv_hwdec => '硬件解码 (hwdec)';
 
   @override
-  String get settings_playback_mpv_default => '平台默认';
+  String get settings_playback_mpv_default => '平台默认值';
 
   @override
   String get settings_playback_mpv_software => '软件解码 (no)';
@@ -3350,13 +3389,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get appTitle => 'StashFlow';
 
   @override
-  String get common_token => '代币';
+  String get common_token => '令牌';
 
   @override
   String get filter_value => '值';
 
   @override
-  String get common_yes => '是的';
+  String get common_yes => '是';
 
   @override
   String get common_no => '否';
@@ -3368,7 +3407,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get nav_scenes => '场景';
 
   @override
-  String get nav_performers => '演职人员';
+  String get nav_performers => '演员';
 
   @override
   String get nav_studios => '制片商';
@@ -3405,8 +3444,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString 位演职人员',
-      zero: '无演职人员',
+      other: '$countString 位演员',
+      zero: '无演员',
     );
     return '$_temp0';
   }
@@ -3421,9 +3460,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString plays',
-      one: '1 play',
-      zero: 'no plays',
+      other: '播放 $countString 次',
+      one: '播放 1 次',
+      zero: '没有播放',
     );
     return '$_temp0';
   }
@@ -3498,7 +3537,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get details_studio => '制片商详情';
 
   @override
-  String get details_performer => '演职人员详情';
+  String get details_performer => '演员详情';
 
   @override
   String get details_tag => '标签详情';
@@ -3591,10 +3630,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get sort_images_count => '图片数量';
 
   @override
-  String get sort_galleries_count => '画廊数量';
+  String get sort_galleries_count => '图库数量';
 
   @override
-  String get sort_child_count => '子工作室数量';
+  String get sort_child_count => '下级制片商数量';
 
   @override
   String get sort_performers_count => '演员数量';
@@ -3606,7 +3645,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get sort_marker_count => '标记数量';
 
   @override
-  String get sort_studios_count => '工作室数量';
+  String get sort_studios_count => '制片商数量';
 
   @override
   String get sort_penis_length => '阴茎长度';
@@ -3639,14 +3678,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_no_random => '没有可用于随机导航的场景';
 
   @override
-  String get performers_no_random => '没有可用于随机导航的演职人员';
+  String get performers_no_random => '没有可用于随机导航的演员';
 
   @override
   String get galleries_no_random => '没有可用于随机导航的图库';
 
   @override
   String common_error(String message) {
-    return '错误: $message';
+    return '错误：$message';
   }
 
   @override
@@ -3729,10 +3768,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get studio_hierarchy_title => '层级';
 
   @override
-  String get studio_parent_title => '上级工作室';
+  String get studio_parent_title => '上级制片商';
 
   @override
-  String get studio_children_title => '下级工作室';
+  String get studio_children_title => '下级制片商';
 
   @override
   String get common_title => '标题';
@@ -3898,7 +3937,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get details_scene_add_performer => '添加出演者';
+  String get details_scene_add_performer => '添加演员';
 
   @override
   String get details_scene_add_tag => '添加标签';
@@ -4054,19 +4093,19 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get tags_filter_tooltip => '筛选选项';
 
   @override
-  String get performers_title => '演职人员';
+  String get performers_title => '演员';
 
   @override
-  String get performers_sort_title => '演职人员排序';
+  String get performers_sort_title => '演员排序';
 
   @override
-  String get performers_filter_title => '演职人员筛选';
+  String get performers_filter_title => '演员筛选';
 
   @override
-  String get performers_galleries_title => '所有演职人员图库';
+  String get performers_galleries_title => '所有演员图库';
 
   @override
-  String get performers_media_title => '所有演职人员媒体';
+  String get performers_media_title => '所有演员媒体';
 
   @override
   String get performers_gender => '性别';
@@ -4174,7 +4213,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get random_scene => '随机场景';
 
   @override
-  String get random_performer => '随机出演者';
+  String get random_performer => '随机演员';
 
   @override
   String get filter_modifier => '修饰符';
@@ -4349,12 +4388,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String scenes_phash_failed(Object error) {
-    return '生成 phash 失败：$error';
+    return '生成 pHash 失败：$error';
   }
 
   @override
   String details_failed_update_studio(Object error) {
-    return '更新工作室失败：$error';
+    return '更新制片商失败：$error';
   }
 
   @override
@@ -4571,7 +4610,40 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_appearance_custom_hex_helper => '输入 8 位 ARGB hex 代码';
 
   @override
-  String get settings_appearance_font_size => '全球用户界面规模';
+  String get settings_appearance_font_family => '字体';
+
+  @override
+  String get settings_appearance_font_family_subtitle => '选择应用字体';
+
+  @override
+  String get settings_appearance_font_system => '系统默认';
+
+  @override
+  String get settings_appearance_font_serif => '衬线字体';
+
+  @override
+  String get settings_appearance_font_monospace => '等宽字体';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
+  String get settings_appearance_font_size => '全局字体大小';
 
   @override
   String get settings_appearance_font_size_subtitle => '按比例缩放版式和间距';
@@ -4647,7 +4719,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get details_show_metadata => '显示元数据';
 
   @override
-  String get settings_interface_entity_image_filtering => '实体图像过滤';
+  String get settings_interface_entity_image_filtering => '实体图像筛选';
 
   @override
   String get settings_interface_entity_image_filtering_subtitle =>
@@ -4678,21 +4750,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_galleries_layout_subtitle => '图库的默认浏览模式';
 
   @override
-  String get settings_interface_max_performer_avatars => '最多出演者头像';
+  String get settings_interface_max_performer_avatars => '最多显示的演员头像';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      '在场景卡上显示的出演者头像的最大数量。';
+      '场景卡上显示的演员头像的最大数量。';
 
   @override
-  String get settings_interface_show_performer_avatars => '显示出演者头像';
+  String get settings_interface_show_performer_avatars => '显示演员头像';
 
   @override
   String get settings_interface_show_performer_avatars_subtitle =>
-      '在所有平台的场景卡上显示出演者图标。';
+      '在所有平台的场景卡上显示演员图标。';
 
   @override
-  String get settings_interface_performer_avatar_size => '出演者头像大小';
+  String get settings_interface_performer_avatar_size => '演员头像大小';
 
   @override
   String get settings_interface_layout_default => '默认布局';
@@ -4734,10 +4806,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_waterfall_columns => '瀑布流网格列数';
 
   @override
-  String get settings_interface_performer_layouts => '演职人员布局';
+  String get settings_interface_performer_layouts => '演员布局';
 
   @override
-  String get settings_interface_performer_layouts_subtitle => '演职人员的媒体和图库默认设置';
+  String get settings_interface_performer_layouts_subtitle => '演员的媒体和图库默认设置';
 
   @override
   String get settings_interface_studio_layouts => '制片商布局';
@@ -4862,7 +4934,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_profile_delete => '删除配置文件';
 
   @override
-  String get settings_server_profile_delete_confirm => '您确定要删除此配置文件吗？此操作无法撤消。';
+  String get settings_server_profile_delete_confirm => '您确定要删除此配置文件吗？此操作无法撤销。';
 
   @override
   String get settings_server_profile_active => '激活';
@@ -4907,6 +4979,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_playback_resume_position_subtitle =>
       '打开视频时，自动从上次中断的地方继续播放';
+
+  @override
+  String get settings_playback_controls_auto_hide => '播放器控件自动隐藏延迟';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle => '视频播放时控件保持可见的时长。';
 
   @override
   String get settings_playback_end_behavior => '播放结束时的行为';
@@ -4974,7 +5052,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_playback_seek => '快进/快退交互';
 
   @override
-  String get settings_playback_seek_subtitle => '选择播放期间的进度条拖动方式';
+  String get settings_playback_seek_subtitle => '选择播放时的进度条拖动方式';
 
   @override
   String get settings_playback_seek_double_tap => '双击左/右侧快进/快退 10 秒';
@@ -4996,7 +5074,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_playback_open_fullscreen_subtitle =>
-      '以全屏模式打开选中和随机场景。上一个和下一个场景会保持当前视图。';
+      '以全屏模式打开所选和随机场景。上一个和下一个场景会保持当前视图。';
 
   @override
   String get settings_playback_gravity_orientation_subtitle =>
@@ -5166,7 +5244,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get images_title => '图片';
 
   @override
-  String get images_filter_title => '过滤图片';
+  String get images_filter_title => '筛选图片';
 
   @override
   String get images_filter_saved => '筛选偏好已保存为默认设置';
@@ -5198,7 +5276,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get images_filtered_by_gallery => '按画廊筛选';
+  String get images_filtered_by_gallery => '按图库筛选';
 
   @override
   String get images_slideshow_need_two => '幻灯片放映至少需要 2 张图片。';
@@ -5284,7 +5362,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_edit_performer => '编辑演员';
 
   @override
-  String get scenes_edit_studio => '编辑工作室';
+  String get scenes_edit_studio => '编辑制片商';
 
   @override
   String get common_no_title => '无标题';
@@ -5293,16 +5371,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_select_studio => '选择制片商';
 
   @override
-  String get scenes_select_performers => '选择出演者';
+  String get scenes_select_performers => '选择演员';
 
   @override
   String get scenes_unmatched_scraped_tags => '未匹配的抓取标签';
 
   @override
-  String get scenes_unmatched_scraped_performers => '未匹配的抓取出演者';
+  String get scenes_unmatched_scraped_performers => '未匹配的抓取演员';
 
   @override
-  String get scenes_no_matching_performer_found => '在库中未找到匹配的出演者';
+  String get scenes_no_matching_performer_found => '在库中未找到匹配的演员';
 
   @override
   String get common_unknown => '未知';
@@ -5358,13 +5436,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get stats_scenes => '场景';
 
   @override
-  String get stats_galleries => '画廊';
+  String get stats_galleries => '图库';
 
   @override
-  String get stats_performers => '表演者';
+  String get stats_performers => '演员';
 
   @override
-  String get stats_studios => '工作室';
+  String get stats_studios => '制片商';
 
   @override
   String get stats_groups => '团体';
@@ -5390,7 +5468,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get cast_enter_pin => '输入电视上显示的 4 位 PIN 码';
 
   @override
-  String get cast_pair => '一对';
+  String get cast_pair => '配对';
 
   @override
   String cast_connecting_to(String deviceName) {
@@ -5552,10 +5630,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get galleries_field_date => '日期';
 
   @override
-  String get galleries_field_performer_age => '演出者年龄';
+  String get galleries_field_performer_age => '演员年龄';
 
   @override
-  String get galleries_field_performer_count => '演出者人数';
+  String get galleries_field_performer_count => '演员人数';
 
   @override
   String get galleries_field_tag_count => '标签数';
@@ -5630,7 +5708,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get studios_field_gallery_count => '图库数';
 
   @override
-  String get studios_field_sub_studio_count => '子工作室数';
+  String get studios_field_sub_studio_count => '下级制片商数量';
 
   @override
   String get studios_field_created_at => '创建于';
@@ -5639,10 +5717,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get studios_field_updated_at => '更新于';
 
   @override
-  String get scenes_field_performer_age => '演出者年龄';
+  String get scenes_field_performer_age => '演员年龄';
 
   @override
-  String get scenes_field_performer_count => '演出者人数';
+  String get scenes_field_performer_count => '演员人数';
 
   @override
   String get scenes_field_tag_count => '标签数';
@@ -5784,12 +5862,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String gallery_error(String message) {
-    return '相册错误: $message';
+    return '相册错误：$message';
   }
 
   @override
   String failed_to_save(String error) {
-    return '保存失败: $error';
+    return '保存失败：$error';
   }
 
   @override
@@ -5836,17 +5914,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String update_available(String version) {
-    return 'StashFlow的更新版本 ($version) 已经发布。';
+    return 'StashFlow 的新版本（$version）已发布。';
   }
 
   @override
   String details_failed_update_favorite(String error) {
-    return '更新收藏失败: $error';
+    return '更新收藏失败：$error';
   }
 
   @override
   String details_failed_load_galleries(String error) {
-    return '加载图库失败: $error';
+    return '加载图库失败：$error';
   }
 
   @override
@@ -5865,7 +5943,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_info_urls => '网址';
 
   @override
-  String get scene_info_resolution => '解决';
+  String get scene_info_resolution => '分辨率';
 
   @override
   String get scene_info_bitrate => '比特率';
@@ -5883,7 +5961,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_info_audio_codec => '音频编解码器';
 
   @override
-  String get scene_info_stream => '串流';
+  String get scene_info_stream => '流';
 
   @override
   String get scene_info_preview => '预览';
@@ -5901,13 +5979,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_info_caption => '标题';
 
   @override
-  String get scene_info_vtt => '视听测试';
+  String get scene_info_vtt => 'VTT';
 
   @override
   String get scene_info_sprite => '预览图';
 
   @override
-  String get scene_info_technical => '技术的';
+  String get scene_info_technical => '技术信息';
 
   @override
   String scene_studio_id(String id) {
@@ -5943,7 +6021,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get auth_enter_passcode => '输入您的密码以继续。';
 
   @override
-  String get auth_unlock => '开锁';
+  String get auth_unlock => '解锁';
 
   @override
   String get auth_incorrect_passcode => '密码不正确';
@@ -5989,13 +6067,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_security_set_passcode => '设置密码';
 
   @override
-  String get settings_security_passcode_prompt => '密码（4-8位）';
+  String get settings_security_passcode_prompt => '密码（4–8 位数字）';
 
   @override
   String get settings_security_confirm_passcode => '确认';
 
   @override
-  String get settings_security_error_numeric => '仅使用数字，长度为 4-8。';
+  String get settings_security_error_numeric => '仅使用 4–8 位数字。';
 
   @override
   String get settings_security_error_mismatch => '密码不匹配。';
@@ -6007,7 +6085,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_set => '设置';
 
   @override
-  String get common_immediately => '立即地';
+  String get common_immediately => '立即';
 
   @override
   String common_sec(int value) {
@@ -6034,10 +6112,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_security_app_lock => '应用锁';
 
   @override
-  String get settings_security_app_lock_subtitle => '后台运行后使用密码保护访问。';
+  String get settings_security_app_lock_subtitle => '应用转入后台后，需使用密码才能访问。';
 
   @override
-  String get common_saved_filters => '已保存的过滤器';
+  String get common_saved_filters => '已保存的筛选';
 
   @override
   String get tools => '工具';
@@ -6049,7 +6127,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get tools_scene_deduplication_subtitle => '查找并管理重复场景。';
 
   @override
-  String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削当前场景页面。';
+  String get tools_scene_tagger_subtitle => '使用 Stash-box 抓取当前场景页面。';
 
   @override
   String get preset_deleted => '预设已删除';
@@ -6148,7 +6226,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get search_accuracy => '搜索准确率';
 
   @override
-  String get duration_difference => '持续时间差异';
+  String get duration_difference => '时长差异';
 
   @override
   String get only_select_matching_codecs => '仅选择匹配的编解码器';
@@ -6192,7 +6270,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String delete_preset_confirm(String name) {
-    return '删除“$name”？此操作无法撤消。';
+    return '删除“$name”？此操作无法撤销。';
   }
 
   @override
@@ -6378,8 +6456,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString 个画廊',
-      zero: '无画廊',
+      other: '$countString 个图库',
+      zero: '无图库',
     );
     return '$_temp0';
   }
@@ -6441,7 +6519,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_details_add_marker => '添加标记';
 
   @override
-  String get scene_details_create_marker => '创造';
+  String get scene_details_create_marker => '创建';
 
   @override
   String scene_details_delete_marker_tooltip(String title) {
@@ -6458,13 +6536,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get auto_missing_field => '缺失字段';
 
   @override
-  String get filter_markers_title => '过滤标记';
+  String get filter_markers_title => '筛选标记';
 
   @override
   String get marker_title => '标记';
 
   @override
-  String get duration_title => '期间';
+  String get duration_title => '时长';
 
   @override
   String get scene_title => '场景';
@@ -6488,16 +6566,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_updated_at_title => '场景更新于';
 
   @override
-  String get organized_title => '有组织';
+  String get organized_title => '已整理';
 
   @override
-  String get interactive_title => '交互的';
+  String get interactive_title => '互动';
 
   @override
   String get scraped_metadata_title => '抓取的元数据';
 
   @override
-  String get local_scene_title => '当地场景';
+  String get local_scene_title => '本地场景';
 
   @override
   String get sort_markers_title => '对标记进行排序';
@@ -6518,7 +6596,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get entity_layouts_title => '实体布局';
 
   @override
-  String get entity_layouts_subtitle => '演员、制片商和标签的媒体和画廊布局默认值';
+  String get entity_layouts_subtitle => '演员、制片商和标签的媒体和图库布局默认值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';
@@ -6581,10 +6659,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_field_production_date => '制作日期';
 
   @override
-  String get sort_o_count_all => '高潮次数（含下属工作室）';
+  String get sort_o_count_all => '高潮次数（含下属制片商）';
 
   @override
-  String get sort_performers_count_all => '演员数量（含下属工作室）';
+  String get sort_performers_count_all => '演员数量（含下属制片商）';
 
   @override
   String get sort_scene_marker_count => '场景标记数量';
@@ -6645,7 +6723,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_playback_mpv_hwdec => '硬件解码 (hwdec)';
 
   @override
-  String get settings_playback_mpv_default => '平台默认';
+  String get settings_playback_mpv_default => '平台默认值';
 
   @override
   String get settings_playback_mpv_software => '软件解码 (no)';
@@ -6688,13 +6766,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get appTitle => 'StashFlow';
 
   @override
-  String get common_token => '代幣';
+  String get common_token => '權杖';
 
   @override
   String get filter_value => '值';
 
   @override
-  String get common_yes => '是的';
+  String get common_yes => '是';
 
   @override
   String get common_no => '否';
@@ -6706,7 +6784,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get nav_scenes => '場景';
 
   @override
-  String get nav_performers => '演出者';
+  String get nav_performers => '演員';
 
   @override
   String get nav_studios => '製片商';
@@ -6744,9 +6822,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString 位演出者',
-      one: '1 位演出者',
-      zero: '沒有演出者',
+      other: '$countString 位演員',
+      one: '1 位演員',
+      zero: '沒有演員',
     );
     return '$_temp0';
   }
@@ -6761,9 +6839,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString plays',
-      one: '1 play',
-      zero: 'no plays',
+      other: '播放 $countString 次',
+      one: '播放 1 次',
+      zero: '沒有播放',
     );
     return '$_temp0';
   }
@@ -6838,7 +6916,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get details_studio => '製片商詳情';
 
   @override
-  String get details_performer => '演出者詳情';
+  String get details_performer => '演員詳情';
 
   @override
   String get details_tag => '標籤詳情';
@@ -6931,13 +7009,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get sort_images_count => '圖片數';
 
   @override
-  String get sort_galleries_count => '畫廊數';
+  String get sort_galleries_count => '圖庫數';
 
   @override
-  String get sort_child_count => '子工作室數';
+  String get sort_child_count => '下級製片商數';
 
   @override
-  String get sort_performers_count => '演出者數';
+  String get sort_performers_count => '演員數';
 
   @override
   String get sort_groups_count => '分組數';
@@ -6946,7 +7024,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get sort_marker_count => '標記數';
 
   @override
-  String get sort_studios_count => '工作室數';
+  String get sort_studios_count => '製片商數';
 
   @override
   String get sort_penis_length => '陰莖長度';
@@ -6979,7 +7057,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_no_random => '沒有可用的場景進行隨機導航';
 
   @override
-  String get performers_no_random => '沒有可用的演出者進行隨機導航';
+  String get performers_no_random => '沒有可用的演員進行隨機導覽';
 
   @override
   String get galleries_no_random => '沒有可用的圖庫進行隨機導航';
@@ -7069,10 +7147,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get studio_hierarchy_title => '層級';
 
   @override
-  String get studio_parent_title => '上級工作室';
+  String get studio_parent_title => '上級製片商';
 
   @override
-  String get studio_children_title => '下級工作室';
+  String get studio_children_title => '下級製片商';
 
   @override
   String get common_title => '標題';
@@ -7135,7 +7213,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_enable_autoscroll => '啟用自動捲動';
 
   @override
-  String get common_disable_autoscroll => '禁用自動捲動';
+  String get common_disable_autoscroll => '停用自動捲動';
 
   @override
   String get common_retry => '重試';
@@ -7162,7 +7240,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_image_count => '圖片數量';
 
   @override
-  String get common_filepath => '文件路徑';
+  String get common_filepath => '檔案路徑';
 
   @override
   String get common_random => '隨機';
@@ -7176,7 +7254,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get common_add_favorite => '添加收藏';
+  String get common_add_favorite => '加入收藏';
 
   @override
   String get common_remove_favorite => '取消收藏';
@@ -7197,7 +7275,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get details_tags => '標籤';
 
   @override
-  String get details_links => '鏈接';
+  String get details_links => '連結';
 
   @override
   String get details_scene_scrape => '擷取中繼資料';
@@ -7229,7 +7307,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String details_failed_update_performer(Object error) {
-    return '更新演员失败：$error';
+    return '更新演員失敗：$error';
   }
 
   @override
@@ -7238,13 +7316,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get details_scene_add_performer => '添加演出者';
+  String get details_scene_add_performer => '新增演員';
 
   @override
-  String get details_scene_add_tag => '添加標籤';
+  String get details_scene_add_tag => '新增標籤';
 
   @override
-  String get details_scene_add_url => '添加 URL';
+  String get details_scene_add_url => '新增 URL';
 
   @override
   String get details_scene_remove_url => '移除 URL';
@@ -7271,16 +7349,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get studios_sort_title => '製片商排序';
 
   @override
-  String get galleries_title => '圖库';
+  String get galleries_title => '圖庫';
 
   @override
-  String get galleries_sort_title => '圖库排序';
+  String get galleries_sort_title => '圖庫排序';
 
   @override
   String get galleries_all_images => '所有圖片';
 
   @override
-  String get galleries_filter_title => '圖库篩選';
+  String get galleries_filter_title => '圖庫篩選';
 
   @override
   String get galleries_min_rating => '最低評分';
@@ -7349,10 +7427,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_sort_perceptual_similarity => '感知相似度';
 
   @override
-  String get scenes_sort_performer_age => '演出者年齡';
+  String get scenes_sort_performer_age => '演員年齡';
 
   @override
-  String get scenes_sort_studio => '工作室';
+  String get scenes_sort_studio => '製片商';
 
   @override
   String get scenes_sort_path => '路徑';
@@ -7364,7 +7442,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_sort_tag_count => '標籤數量';
 
   @override
-  String get scenes_sort_performer_count => '演出者數量';
+  String get scenes_sort_performer_count => '演員數量';
 
   @override
   String get scenes_sort_o_counter => 'O計數器';
@@ -7379,7 +7457,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_sort_code => '代碼';
 
   @override
-  String get scenes_sort_saved_default => '排序偏好已保存為預設';
+  String get scenes_sort_saved_default => '排序偏好已儲存為預設';
 
   @override
   String get scenes_sort_tooltip => '排序選項';
@@ -7394,19 +7472,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get tags_filter_tooltip => '篩選選項';
 
   @override
-  String get performers_title => '演職人員';
+  String get performers_title => '演員';
 
   @override
-  String get performers_sort_title => '演職人員排序';
+  String get performers_sort_title => '演員排序';
 
   @override
-  String get performers_filter_title => '演职人员篩選';
+  String get performers_filter_title => '演員篩選';
 
   @override
-  String get performers_galleries_title => '所有演職人員圖库';
+  String get performers_galleries_title => '所有演員圖庫';
 
   @override
-  String get performers_media_title => '所有演職人員媒體';
+  String get performers_media_title => '所有演員媒體';
 
   @override
   String get performers_gender => '性別';
@@ -7433,7 +7511,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get performers_gender_non_binary => '非二元';
 
   @override
-  String get performers_circumcised => '割礼';
+  String get performers_circumcised => '割禮';
 
   @override
   String get performers_circumcised_cut => '已割禮';
@@ -7445,7 +7523,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get performers_play_count => '播放次數';
 
   @override
-  String get performers_field_disambiguation => '消歧义';
+  String get performers_field_disambiguation => '消歧義';
 
   @override
   String get performers_field_birthdate => '出生日期';
@@ -7457,49 +7535,49 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get performers_field_height_cm => '身高（cm）';
 
   @override
-  String get performers_field_weight_kg => '体重（kg）';
+  String get performers_field_weight_kg => '體重（kg）';
 
   @override
-  String get performers_field_measurements => '三围';
+  String get performers_field_measurements => '三圍';
 
   @override
   String get performers_field_fake_tits => '假胸';
 
   @override
-  String get performers_field_penis_length => '阴茎长度';
+  String get performers_field_penis_length => '陰莖長度';
 
   @override
   String get performers_field_ethnicity => '族裔';
 
   @override
-  String get performers_field_country => '国家';
+  String get performers_field_country => '國家';
 
   @override
-  String get performers_field_eye_color => '眼睛颜色';
+  String get performers_field_eye_color => '眼睛顏色';
 
   @override
-  String get performers_field_hair_color => '头发颜色';
+  String get performers_field_hair_color => '髮色';
 
   @override
-  String get performers_field_career_start => '职业开始';
+  String get performers_field_career_start => '職業開始';
 
   @override
-  String get performers_field_career_end => '职业结束';
+  String get performers_field_career_end => '職業結束';
 
   @override
-  String get performers_field_tattoos => '纹身';
+  String get performers_field_tattoos => '紋身';
 
   @override
   String get performers_field_piercings => '穿孔';
 
   @override
-  String get performers_field_aliases => '别名';
+  String get performers_field_aliases => '別名';
 
   @override
   String get common_organized => '已整理';
 
   @override
-  String get scenes_duplicated => '重复';
+  String get scenes_duplicated => '重複';
 
   @override
   String get random_studio => '隨機製片商';
@@ -7514,22 +7592,22 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get random_scene => '隨機場景';
 
   @override
-  String get random_performer => '隨機演出者';
+  String get random_performer => '隨機演員';
 
   @override
-  String get filter_modifier => '修饰符';
+  String get filter_modifier => '修飾符';
 
   @override
   String get filter_group_general => '一般';
 
   @override
-  String get filter_group_performer => '演出者';
+  String get filter_group_performer => '演員';
 
   @override
   String get filter_group_library => '媒體庫';
 
   @override
-  String get filter_group_metadata => '元數據';
+  String get filter_group_metadata => '中繼資料';
 
   @override
   String get filter_group_media_info => '媒體資訊';
@@ -7586,16 +7664,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get groups_field_back_image => '背面圖片';
 
   @override
-  String get filter_equals => '等于';
+  String get filter_equals => '等於';
 
   @override
-  String get filter_not_equals => '不等于';
+  String get filter_not_equals => '不等於';
 
   @override
-  String get filter_greater_than => '大于';
+  String get filter_greater_than => '大於';
 
   @override
-  String get filter_less_than => '小于';
+  String get filter_less_than => '小於';
 
   @override
   String get filter_includes => '包括';
@@ -7607,13 +7685,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get filter_includes_all => '包括全部';
 
   @override
-  String get filter_is_null => '为空';
+  String get filter_is_null => '為空';
 
   @override
-  String get filter_not_null => '不为空';
+  String get filter_not_null => '不為空';
 
   @override
-  String get filter_matches_regex => '匹配正規表示式';
+  String get filter_matches_regex => '符合正規表示式';
 
   @override
   String get filter_not_matches_regex => '與正規表示式不符';
@@ -7682,19 +7760,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_or => '或';
 
   @override
-  String get scrape_from_url => '从 URL 抓取';
+  String get scrape_from_url => '從 URL 擷取';
 
   @override
   String get scenes_phash_started => '開始產生 pHash';
 
   @override
   String scenes_phash_failed(Object error) {
-    return '生成 phash 失败：$error';
+    return '產生 pHash 失敗：$error';
   }
 
   @override
   String details_failed_update_studio(Object error) {
-    return '更新工作室失败：$error';
+    return '更新製片商失敗：$error';
   }
 
   @override
@@ -7734,10 +7812,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_keyboard_title => '鍵盤快捷鍵';
 
   @override
-  String get settings_keyboard_reset_defaults => '重置為默認值';
+  String get settings_keyboard_reset_defaults => '重設為預設值';
 
   @override
-  String get settings_keyboard_not_bound => '未绑定';
+  String get settings_keyboard_not_bound => '未綁定';
 
   @override
   String get settings_keyboard_volume_up => '提高音量';
@@ -7746,10 +7824,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_keyboard_volume_down => '降低音量';
 
   @override
-  String get settings_keyboard_toggle_mute => '切換静音';
+  String get settings_keyboard_toggle_mute => '切換靜音';
 
   @override
-  String get settings_keyboard_toggle_fullscreen => '切換全屏';
+  String get settings_keyboard_toggle_fullscreen => '切換全螢幕';
 
   @override
   String get settings_keyboard_next_scene => '下一個場景';
@@ -7764,7 +7842,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_keyboard_decrease_speed => '降低播放速度';
 
   @override
-  String get settings_keyboard_reset_speed => '重置播放速度';
+  String get settings_keyboard_reset_speed => '重設播放速度';
 
   @override
   String get settings_keyboard_close_player => '關閉播放器';
@@ -7779,7 +7857,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_keyboard_go_back => '返回';
 
   @override
-  String get settings_keyboard_play_pause_desc => '在播放和暫停視頻之間切換';
+  String get settings_keyboard_play_pause_desc => '在播放和暫停影片之間切換';
 
   @override
   String get settings_keyboard_seek_forward_5_desc => '快進 5 秒';
@@ -7911,7 +7989,40 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_appearance_custom_hex_helper => '輸入 8 位數 ARGB hex 代碼';
 
   @override
-  String get settings_appearance_font_size => '全球使用者介面規模';
+  String get settings_appearance_font_family => '字型';
+
+  @override
+  String get settings_appearance_font_family_subtitle => '選擇應用程式字型';
+
+  @override
+  String get settings_appearance_font_system => '系統預設';
+
+  @override
+  String get settings_appearance_font_serif => '襯線字型';
+
+  @override
+  String get settings_appearance_font_monospace => '等寬字型';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
+  String get settings_appearance_font_size => '全局字型大小';
 
   @override
   String get settings_appearance_font_size_subtitle => '按比例縮放版式和間距';
@@ -7987,11 +8098,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get details_show_metadata => '顯示中繼資料';
 
   @override
-  String get settings_interface_entity_image_filtering => '實體圖像過濾';
+  String get settings_interface_entity_image_filtering => '實體圖像篩選';
 
   @override
   String get settings_interface_entity_image_filtering_subtitle =>
-      '選擇實體圖像頁面是匹配圖像元數據還是關聯圖庫。';
+      '選擇實體圖像頁面要依照圖像中繼資料或關聯圖庫進行比對。';
 
   @override
   String get settings_interface_entity_image_filtering_direct => '直接實體';
@@ -8018,21 +8129,21 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_galleries_layout_subtitle => '圖庫的預設瀏覽模式';
 
   @override
-  String get settings_interface_max_performer_avatars => '最多演出者頭像';
+  String get settings_interface_max_performer_avatars => '最多顯示的演員頭像';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      '在場景卡上顯示的演出者頭像的最大數量。';
+      '場景卡上顯示的演員頭像最大數量。';
 
   @override
-  String get settings_interface_show_performer_avatars => '顯示演出者頭像';
+  String get settings_interface_show_performer_avatars => '顯示演員頭像';
 
   @override
   String get settings_interface_show_performer_avatars_subtitle =>
-      '在所有平台的場景卡上顯示演出者圖標。';
+      '在所有平台的場景卡上顯示演員圖示。';
 
   @override
-  String get settings_interface_performer_avatar_size => '演出者頭像大小';
+  String get settings_interface_performer_avatar_size => '演員頭像大小';
 
   @override
   String get settings_interface_layout_default => '預設佈局';
@@ -8074,10 +8185,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_waterfall_columns => '瀑布流網格欄數';
 
   @override
-  String get settings_interface_performer_layouts => '演出者佈局';
+  String get settings_interface_performer_layouts => '演員佈局';
 
   @override
-  String get settings_interface_performer_layouts_subtitle => '演出者的媒體和圖庫預設';
+  String get settings_interface_performer_layouts_subtitle => '演員的媒體和圖庫預設';
 
   @override
   String get settings_interface_studio_layouts => '製片商佈局';
@@ -8123,7 +8234,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_server_url_helper =>
-      '輸入 Stash 伺服器的 URL。如果配置了自定義路徑，請在此處包含它。';
+      '輸入 Stash 伺服器的 URL。如果設定了自訂路徑，請在此處一併填入。';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -8250,6 +8361,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '打開影片時，自動從上次中斷的地方繼續播放';
 
   @override
+  String get settings_playback_controls_auto_hide => '播放器控制項自動隱藏延遲';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      '影片播放時控制項保持顯示的時間。';
+
+  @override
   String get settings_playback_end_behavior => '播放結束時的行為';
 
   @override
@@ -8315,7 +8433,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_playback_seek => '尋找互動';
 
   @override
-  String get settings_playback_seek_subtitle => '選擇播放期間如何進行尋找';
+  String get settings_playback_seek_subtitle => '選擇播放時如何進行尋找';
 
   @override
   String get settings_playback_seek_double_tap => '雙擊左/右尋找 10 秒';
@@ -8508,7 +8626,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get images_title => '圖片';
 
   @override
-  String get images_filter_title => '過濾圖片';
+  String get images_filter_title => '篩選圖片';
 
   @override
   String get images_filter_saved => '篩選偏好已儲存為預設設定';
@@ -8623,10 +8741,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_field_urls => '連結';
 
   @override
-  String get scenes_edit_performer => '編輯演出者';
+  String get scenes_edit_performer => '編輯演員';
 
   @override
-  String get scenes_edit_studio => '編輯工作室';
+  String get scenes_edit_studio => '編輯製片商';
 
   @override
   String get common_no_title => '無標題';
@@ -8635,16 +8753,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_select_studio => '選取製片商';
 
   @override
-  String get scenes_select_performers => '選取演出者';
+  String get scenes_select_performers => '選取演員';
 
   @override
-  String get scenes_unmatched_scraped_tags => '未匹配的抓取標籤';
+  String get scenes_unmatched_scraped_tags => '未符合的擷取標籤';
 
   @override
-  String get scenes_unmatched_scraped_performers => '未匹配的抓取演出者';
+  String get scenes_unmatched_scraped_performers => '未符合的擷取演員';
 
   @override
-  String get scenes_no_matching_performer_found => '在資料庫中未找到匹配的演出者';
+  String get scenes_no_matching_performer_found => '在資料庫中找不到符合的演員';
 
   @override
   String get common_unknown => '未知';
@@ -8700,13 +8818,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get stats_scenes => '場景';
 
   @override
-  String get stats_galleries => '畫廊';
+  String get stats_galleries => '圖庫';
 
   @override
-  String get stats_performers => '表演者';
+  String get stats_performers => '演員';
 
   @override
-  String get stats_studios => '工作室';
+  String get stats_studios => '製片商';
 
   @override
   String get stats_groups => '團體';
@@ -8732,7 +8850,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get cast_enter_pin => '輸入電視上顯示的 4 位 PIN 碼';
 
   @override
-  String get cast_pair => '一對';
+  String get cast_pair => '配對';
 
   @override
   String cast_connecting_to(String deviceName) {
@@ -8791,7 +8909,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_storage_clear => '清除';
 
   @override
-  String get settings_storage_error_loading => '加載尺寸時出錯';
+  String get settings_storage_error_loading => '載入大小時發生錯誤';
 
   @override
   String settings_storage_mb(num value) {
@@ -8894,10 +9012,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get galleries_field_date => '日期';
 
   @override
-  String get galleries_field_performer_age => '演出者年齡';
+  String get galleries_field_performer_age => '演員年齡';
 
   @override
-  String get galleries_field_performer_count => '演出者人數';
+  String get galleries_field_performer_count => '演員人數';
 
   @override
   String get galleries_field_tag_count => '標籤數';
@@ -8918,7 +9036,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get galleries_field_image_count => '圖片數';
 
   @override
-  String get galleries_field_file_count => '文件數';
+  String get galleries_field_file_count => '檔案數';
 
   @override
   String get galleries_field_created_at => '建立於';
@@ -8942,7 +9060,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get images_field_url => 'URL';
 
   @override
-  String get images_field_file_count => '文件數';
+  String get images_field_file_count => '檔案數';
 
   @override
   String get images_field_o_counter => 'O-計數器';
@@ -8972,7 +9090,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get studios_field_gallery_count => '圖庫數';
 
   @override
-  String get studios_field_sub_studio_count => '子工作室數';
+  String get studios_field_sub_studio_count => '下級製片商數量';
 
   @override
   String get studios_field_created_at => '建立於';
@@ -8981,10 +9099,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get studios_field_updated_at => '更新於';
 
   @override
-  String get scenes_field_performer_age => '演出者年齡';
+  String get scenes_field_performer_age => '演員年齡';
 
   @override
-  String get scenes_field_performer_count => '演出者人數';
+  String get scenes_field_performer_count => '演員人數';
 
   @override
   String get scenes_field_tag_count => '標籤數';
@@ -9026,7 +9144,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_field_framerate => '幀率';
 
   @override
-  String get scenes_field_file_count => '文件數';
+  String get scenes_field_file_count => '檔案數';
 
   @override
   String get scenes_field_play_count => '播放次數';
@@ -9068,7 +9186,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_field_updated_at => '更新於';
 
   @override
-  String get cast_stopped_resuming_locally => '投放已停止，在本地恢復播放';
+  String get cast_stopped_resuming_locally => '投放已停止，將在本機恢復播放';
 
   @override
   String get cast_stop_casting => '停止投放';
@@ -9077,7 +9195,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get cast_cast => '投放';
 
   @override
-  String get common_add => '添加';
+  String get common_add => '新增';
 
   @override
   String get common_remove => '移除';
@@ -9126,12 +9244,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String gallery_error(String message) {
-    return '相簿錯誤: $message';
+    return '相簿錯誤：$message';
   }
 
   @override
   String failed_to_save(String error) {
-    return '儲存失敗: $error';
+    return '儲存失敗：$error';
   }
 
   @override
@@ -9161,11 +9279,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get would_you_like_to_visit_the_release_page_to_download_it =>
-      '您想訪問發佈頁面下載嗎？';
+      '您要前往發佈頁面下載嗎？';
 
   @override
   String get to_get_started_configure_stash_server =>
-      '要開始使用，您需要配置您的 Stash 伺服器連接詳細資訊。';
+      '要開始使用，您需要設定 Stash 伺服器的連線詳細資訊。';
 
   @override
   String get loading => '載入中';
@@ -9178,17 +9296,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String update_available(String version) {
-    return 'StashFlow的更新版本 ($version) 已經發布。';
+    return 'StashFlow 的新版本（$version）已發佈。';
   }
 
   @override
   String details_failed_update_favorite(String error) {
-    return '更新收藏失敗: $error';
+    return '更新收藏失敗：$error';
   }
 
   @override
   String details_failed_load_galleries(String error) {
-    return '載入圖庫失敗: $error';
+    return '載入圖庫失敗：$error';
   }
 
   @override
@@ -9207,7 +9325,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scene_info_urls => '網址';
 
   @override
-  String get scene_info_resolution => '解決';
+  String get scene_info_resolution => '解析度';
 
   @override
   String get scene_info_bitrate => '位元率';
@@ -9243,13 +9361,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scene_info_caption => '標題';
 
   @override
-  String get scene_info_vtt => '視聽測試';
+  String get scene_info_vtt => 'VTT';
 
   @override
   String get scene_info_sprite => '精靈圖';
 
   @override
-  String get scene_info_technical => '技術的';
+  String get scene_info_technical => '技術資訊';
 
   @override
   String scene_studio_id(String id) {
@@ -9285,7 +9403,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get auth_enter_passcode => '輸入您的密碼以繼續。';
 
   @override
-  String get auth_unlock => '開鎖';
+  String get auth_unlock => '解鎖';
 
   @override
   String get auth_incorrect_passcode => '密碼不正確';
@@ -9297,10 +9415,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_security_passcode => '密碼';
 
   @override
-  String get settings_security_passcode_configured => '已配置';
+  String get settings_security_passcode_configured => '已設定';
 
   @override
-  String get settings_security_passcode_not_configured => '未配置';
+  String get settings_security_passcode_not_configured => '未設定';
 
   @override
   String get settings_security_passcode_saved => '密碼已儲存';
@@ -9321,7 +9439,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_security_lock_on_launch_subtitle => '應用程式開啟時立即詢問密碼。';
 
   @override
-  String get settings_security_background_lock_timer => '後台鎖定定時器';
+  String get settings_security_background_lock_timer => '背景鎖定計時器';
 
   @override
   String get settings_security_background_lock_timer_subtitle =>
@@ -9331,25 +9449,25 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_security_set_passcode => '設定密碼';
 
   @override
-  String get settings_security_passcode_prompt => '密碼（4-8位）';
+  String get settings_security_passcode_prompt => '密碼（4–8 位數字）';
 
   @override
   String get settings_security_confirm_passcode => '確認';
 
   @override
-  String get settings_security_error_numeric => '僅使用數字，長度為 4-8。';
+  String get settings_security_error_numeric => '僅使用 4–8 位數字。';
 
   @override
   String get settings_security_error_mismatch => '密碼不符。';
 
   @override
-  String get common_change => '改變';
+  String get common_change => '變更';
 
   @override
   String get common_set => '設定';
 
   @override
-  String get common_immediately => '立即地';
+  String get common_immediately => '立即';
 
   @override
   String common_sec(int value) {
@@ -9376,22 +9494,22 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_security_app_lock => '應用鎖';
 
   @override
-  String get settings_security_app_lock_subtitle => '後台運行後使用密碼保護存取。';
+  String get settings_security_app_lock_subtitle => '應用程式進入背景後，需使用密碼才能存取。';
 
   @override
-  String get common_saved_filters => '已儲存的過濾器';
+  String get common_saved_filters => '已儲存的篩選條件';
 
   @override
   String get tools => '工具';
 
   @override
-  String get tools_section_subtitle => '場景的維護和元數據工作流。';
+  String get tools_section_subtitle => '場景維護與中繼資料工作流程。';
 
   @override
   String get tools_scene_deduplication_subtitle => '查找並管理重複的場景。';
 
   @override
-  String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削當前場景頁面。';
+  String get tools_scene_tagger_subtitle => '使用 Stash-box 擷取目前場景頁面。';
 
   @override
   String get preset_deleted => '預設已刪除';
@@ -9466,19 +9584,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get delete_scene => '刪除場景';
 
   @override
-  String get metadata_only => '僅元數據';
+  String get metadata_only => '僅中繼資料';
 
   @override
-  String get files => '文件';
+  String get files => '檔案';
 
   @override
   String get scene_deleted => '場景已刪除';
 
   @override
-  String get delete_metadata => '刪除元數據';
+  String get delete_metadata => '刪除中繼資料';
 
   @override
-  String get delete_files => '刪除文件';
+  String get delete_files => '刪除檔案';
 
   @override
   String get scene_deduplication => '場景去重';
@@ -9499,10 +9617,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get select_scenes => '選擇場景';
 
   @override
-  String get all_but_largest_resolution => '除最大分辨率外的所有分辨率';
+  String get all_but_largest_resolution => '除最大解析度外的所有解析度';
 
   @override
-  String get all_but_largest_file => '除最大文件外的所有文件';
+  String get all_but_largest_file => '除最大檔案外的所有檔案';
 
   @override
   String get all_but_oldest => '除最舊項外全部';
@@ -9723,9 +9841,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString 個畫廊',
-      one: '1 個畫廊',
-      zero: '無畫廊',
+      other: '$countString 個圖庫',
+      one: '1 個圖庫',
+      zero: '無圖庫',
     );
     return '$_temp0';
   }
@@ -9784,10 +9902,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get scene_details_add_marker => '添加標記';
+  String get scene_details_add_marker => '新增標記';
 
   @override
-  String get scene_details_create_marker => '創造';
+  String get scene_details_create_marker => '建立';
 
   @override
   String scene_details_delete_marker_tooltip(String title) {
@@ -9801,25 +9919,25 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get auto_marker_name => '標記名稱';
 
   @override
-  String get auto_missing_field => '缺失字段';
+  String get auto_missing_field => '缺少欄位';
 
   @override
-  String get filter_markers_title => '過濾標記';
+  String get filter_markers_title => '篩選標記';
 
   @override
   String get marker_title => '標記';
 
   @override
-  String get duration_title => '期間';
+  String get duration_title => '時長';
 
   @override
   String get scene_title => '場景';
 
   @override
-  String get dates_title => '棗子';
+  String get dates_title => '日期';
 
   @override
-  String get created_at_title => '創建於';
+  String get created_at_title => '建立於';
 
   @override
   String get updated_at_title => '更新於';
@@ -9828,22 +9946,22 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scene_date_title => '場景日期';
 
   @override
-  String get scene_created_at_title => '場景創建於';
+  String get scene_created_at_title => '場景建立於';
 
   @override
   String get scene_updated_at_title => '場景更新於';
 
   @override
-  String get organized_title => '有組織';
+  String get organized_title => '已整理';
 
   @override
-  String get interactive_title => '互動的';
+  String get interactive_title => '互動';
 
   @override
-  String get scraped_metadata_title => '抓取的元數據';
+  String get scraped_metadata_title => '擷取的中繼資料';
 
   @override
-  String get local_scene_title => '當地場景';
+  String get local_scene_title => '本機場景';
 
   @override
   String get sort_markers_title => '對標記進行排序';
@@ -9864,7 +9982,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get entity_layouts_title => '實體佈局';
 
   @override
-  String get entity_layouts_subtitle => '表演者、工作室和標籤的媒體和畫廊佈局預設值';
+  String get entity_layouts_subtitle => '演員、製片商和標籤的媒體與圖庫佈局預設值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';
@@ -9927,10 +10045,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_field_production_date => '製作日期';
 
   @override
-  String get sort_o_count_all => '高潮次數（含下屬工作室）';
+  String get sort_o_count_all => '高潮次數（含下屬製片商）';
 
   @override
-  String get sort_performers_count_all => '演員數量（含下屬工作室）';
+  String get sort_performers_count_all => '演員數量（含下屬製片商）';
 
   @override
   String get sort_scene_marker_count => '場景標記數量';

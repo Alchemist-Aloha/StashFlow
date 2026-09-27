@@ -1266,6 +1266,40 @@ class AppLocalizationsFr extends AppLocalizations {
       'Entrez un code hexadécimal ARGB à 8 chiffres';
 
   @override
+  String get settings_appearance_font_family => 'Police';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Choisir la famille de police de l’application';
+
+  @override
+  String get settings_appearance_font_system => 'Police du système';
+
+  @override
+  String get settings_appearance_font_serif => 'Avec empattements';
+
+  @override
+  String get settings_appearance_font_monospace => 'À chasse fixe';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
   String get settings_appearance_font_size =>
       'Échelle mondiale de l\'interface utilisateur';
 
@@ -1648,6 +1682,14 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settings_playback_resume_position_subtitle =>
       'Lors de l\'ouverture d\'une vidéo, reprenez automatiquement là où vous vous étiez arrêté';
+
+  @override
+  String get settings_playback_controls_auto_hide =>
+      'Délai de masquage des commandes';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'Durée pendant laquelle les commandes restent visibles lors de la lecture.';
 
   @override
   String get settings_playback_end_behavior => 'Comportement en fin de lecture';

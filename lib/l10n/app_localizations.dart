@@ -2430,6 +2430,72 @@ abstract class AppLocalizations {
   /// **'Enter an 8-digit ARGB hex code'**
   String get settings_appearance_custom_hex_helper;
 
+  /// No description provided for @settings_appearance_font_family.
+  ///
+  /// In en, this message translates to:
+  /// **'Font'**
+  String get settings_appearance_font_family;
+
+  /// No description provided for @settings_appearance_font_family_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the app font family'**
+  String get settings_appearance_font_family_subtitle;
+
+  /// No description provided for @settings_appearance_font_system.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get settings_appearance_font_system;
+
+  /// No description provided for @settings_appearance_font_serif.
+  ///
+  /// In en, this message translates to:
+  /// **'Serif'**
+  String get settings_appearance_font_serif;
+
+  /// No description provided for @settings_appearance_font_monospace.
+  ///
+  /// In en, this message translates to:
+  /// **'Monospace'**
+  String get settings_appearance_font_monospace;
+
+  /// No description provided for @settings_appearance_font_manrope.
+  ///
+  /// In en, this message translates to:
+  /// **'Manrope'**
+  String get settings_appearance_font_manrope;
+
+  /// No description provided for @settings_appearance_font_outfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Outfit'**
+  String get settings_appearance_font_outfit;
+
+  /// No description provided for @settings_appearance_font_space_grotesk.
+  ///
+  /// In en, this message translates to:
+  /// **'Space Grotesk'**
+  String get settings_appearance_font_space_grotesk;
+
+  /// No description provided for @settings_appearance_font_inter.
+  ///
+  /// In en, this message translates to:
+  /// **'Inter'**
+  String get settings_appearance_font_inter;
+
+  /// No description provided for @settings_appearance_font_lora.
+  ///
+  /// In en, this message translates to:
+  /// **'Lora'**
+  String get settings_appearance_font_lora;
+
+  /// No description provided for @settings_appearance_font_jetbrains_mono.
+  ///
+  /// In en, this message translates to:
+  /// **'JetBrains Mono'**
+  String get settings_appearance_font_jetbrains_mono;
+
   /// No description provided for @settings_appearance_font_size.
   ///
   /// In en, this message translates to:
@@ -3071,6 +3137,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'When opening a video, automatically resume from where you left off'**
   String get settings_playback_resume_position_subtitle;
+
+  /// No description provided for @settings_playback_controls_auto_hide.
+  ///
+  /// In en, this message translates to:
+  /// **'Player controls auto-hide delay'**
+  String get settings_playback_controls_auto_hide;
+
+  /// No description provided for @settings_playback_controls_auto_hide_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How long controls stay visible while a video plays.'**
+  String get settings_playback_controls_auto_hide_subtitle;
 
   /// No description provided for @settings_playback_end_behavior.
   ///

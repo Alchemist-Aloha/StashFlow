@@ -453,9 +453,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                             widget.scene.displayTitle,
                             style: context.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              fontSize:
-                                  context.dimensions.cardTitleFontSize *
-                                  context.dimensions.fontSizeFactor,
+                              fontSize: context.dimensions.cardTitleFontSize,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -547,9 +545,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                             widget.scene.displayTitle,
                             style: context.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              fontSize:
-                                  context.dimensions.cardTitleFontSize *
-                                  context.dimensions.fontSizeFactor,
+                              fontSize: context.dimensions.cardTitleFontSize,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,

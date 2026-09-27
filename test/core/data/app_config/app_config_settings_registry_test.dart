@@ -9,11 +9,13 @@ void main() {
   test('exports only explicitly managed settings', () async {
     SharedPreferences.setMockInitialValues({
       'app_theme_mode': 'dark',
+      'app_font_family': 'jetbrains_mono',
       'show_random_navigation': true,
       'auto_hide_top_app_bar': true,
       'video_enter_fullscreen_on_navigation': true,
       'video_mpv_vo': 'gpu',
       'video_mpv_hwdec': 'no',
+      'video_controls_auto_hide_seconds': 5,
       'max_image_cache_size_mb': 500,
       'app_global_scale_factor': 1.2,
       'scene_sort_field': 'rating',
@@ -27,11 +29,13 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     expect(await registry.read(prefs), {
       'app_theme_mode': 'dark',
+      'app_font_family': 'jetbrains_mono',
       'show_random_navigation': true,
       'auto_hide_top_app_bar': true,
       'video_enter_fullscreen_on_navigation': true,
       'video_mpv_vo': 'gpu',
       'video_mpv_hwdec': 'no',
+      'video_controls_auto_hide_seconds': 5,
       'max_image_cache_size_mb': 500,
       'app_global_scale_factor': 1.2,
       'scene_sort_field': 'rating',
@@ -47,9 +51,11 @@ void main() {
     for (final invalid in <Map<String, Object>>[
       {'app_theme_mode': 1},
       {'app_theme_mode': 'neon'},
+      {'app_font_family': 'unknown'},
       {'video_mpv_vo': 'gpu-next'},
       {'video_mpv_hwdec': 'invalid'},
       {'video_mpv_hwdec': false},
+      {'video_controls_auto_hide_seconds': 11},
       {'subtitle_position_bottom_ratio': 2.0},
       {'scene_filter_state': 'not-json'},
       {'image_organized_only_v2': 'sometimes'},
@@ -90,6 +96,7 @@ void main() {
       containsAll(<String>{
         'app_language',
         'app_theme_mode',
+        'app_font_family',
         'app_theme_seed_color',
         'use_true_black',
         'app_global_scale_factor',
@@ -99,6 +106,7 @@ void main() {
         'video_play_end_behavior',
         'video_mpv_vo',
         'video_mpv_hwdec',
+        'video_controls_auto_hide_seconds',
         'video_enter_fullscreen_on_navigation',
         'app_lock_enabled',
         'scene_grid_columns_v2',

@@ -1250,6 +1250,40 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter an 8-digit ARGB hex code';
 
   @override
+  String get settings_appearance_font_family => 'Font';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Choose the app font family';
+
+  @override
+  String get settings_appearance_font_system => 'System default';
+
+  @override
+  String get settings_appearance_font_serif => 'Serif';
+
+  @override
+  String get settings_appearance_font_monospace => 'Monospace';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
   String get settings_appearance_font_size => 'Global UI Scale';
 
   @override
@@ -1625,6 +1659,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settings_playback_resume_position_subtitle =>
       'When opening a video, automatically resume from where you left off';
+
+  @override
+  String get settings_playback_controls_auto_hide =>
+      'Player controls auto-hide delay';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'How long controls stay visible while a video plays.';
 
   @override
   String get settings_playback_end_behavior => 'End-of-playback behavior';

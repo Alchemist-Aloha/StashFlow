@@ -6,7 +6,10 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_mode_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_color_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/true_black_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/font_family_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
+import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import '../../widgets/settings_page_shell.dart';
 
 class AppearanceSettingsPage extends ConsumerStatefulWidget {
@@ -82,6 +85,10 @@ class _AppearanceSettingsPageState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(appLanguageProvider);
+    final currentLanguageKey = ref
+        .read(sharedPreferencesProvider)
+        .getString(appLanguagePreferenceKey);
     final l10n = AppLocalizations.of(context)!;
 
     return SettingsPageShell(
@@ -92,6 +99,20 @@ class _AppearanceSettingsPageState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SettingsSectionCard(
+                    title: l10n.settings_interface_language,
+                    subtitle: l10n.settings_interface_language_subtitle,
+                    child: SettingsActionCard(
+                      icon: Icons.translate_rounded,
+                      title: l10n.settings_interface_app_language,
+                      subtitle: currentLanguageKey == null
+                          ? l10n.settings_appearance_theme_system
+                          : supportedLanguages[currentLanguageKey] ??
+                                l10n.settings_appearance_theme_system,
+                      onTap: () => _showLanguagePicker(context, ref),
+                    ),
+                  ),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: l10n.settings_appearance_theme_mode,
                     subtitle: l10n.settings_appearance_theme_mode_subtitle,
@@ -171,6 +192,81 @@ class _AppearanceSettingsPageState
                     child: _buildColorSelector(),
                   ),
                   SettingsSectionCard(
+                    title: l10n.settings_appearance_font_family,
+                    subtitle: l10n.settings_appearance_font_family_subtitle,
+                    child: DropdownButtonFormField<AppFontFamily>(
+                      key: ValueKey(ref.watch(appFontFamilyProvider)),
+                      initialValue: ref.watch(appFontFamilyProvider),
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: l10n.settings_appearance_font_family,
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: AppFontFamily.system,
+                          child: Text(l10n.settings_appearance_font_system),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.serif,
+                          child: Text(l10n.settings_appearance_font_serif),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.monospace,
+                          child: Text(l10n.settings_appearance_font_monospace),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.manrope,
+                          child: Text(
+                            l10n.settings_appearance_font_manrope,
+                            style: const TextStyle(fontFamily: 'Manrope'),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.outfit,
+                          child: Text(
+                            l10n.settings_appearance_font_outfit,
+                            style: const TextStyle(fontFamily: 'Outfit'),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.spaceGrotesk,
+                          child: Text(
+                            l10n.settings_appearance_font_space_grotesk,
+                            style: const TextStyle(fontFamily: 'SpaceGrotesk'),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.inter,
+                          child: Text(
+                            l10n.settings_appearance_font_inter,
+                            style: const TextStyle(fontFamily: 'Inter'),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.lora,
+                          child: Text(
+                            l10n.settings_appearance_font_lora,
+                            style: const TextStyle(fontFamily: 'Lora'),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: AppFontFamily.jetBrainsMono,
+                          child: Text(
+                            l10n.settings_appearance_font_jetbrains_mono,
+                            style: const TextStyle(fontFamily: 'JetBrainsMono'),
+                          ),
+                        ),
+                      ],
+                      onChanged: (family) {
+                        if (family != null) {
+                          ref
+                              .read(appFontFamilyProvider.notifier)
+                              .setFontFamily(family);
+                        }
+                      },
+                    ),
+                  ),
+                  SettingsSectionCard(
                     title: l10n.settings_appearance_font_size,
                     subtitle: l10n.settings_appearance_font_size_subtitle,
                     child: _buildGlobalScaleSlider(l10n),
@@ -178,6 +274,79 @@ class _AppearanceSettingsPageState
                 ],
               ),
             ),
+    );
+  }
+
+  void _showLanguagePicker(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final currentLanguageKey = ref
+        .read(sharedPreferencesProvider)
+        .getString(appLanguagePreferenceKey);
+    final languageEntries = supportedLanguages.entries.toList(growable: false);
+
+    showModalBottomSheet<void>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(32 * context.dimensions.fontSizeFactor),
+        ),
+      ),
+      builder: (context) {
+        final textTheme = context.textTheme;
+        final fontSizeFactor = context.dimensions.fontSizeFactor;
+
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: context.dimensions.spacingMedium),
+              Container(
+                width: 32 * context.dimensions.fontSizeFactor,
+                height: 4 * context.dimensions.fontSizeFactor,
+                decoration: BoxDecoration(
+                  color: colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(
+                    2 * context.dimensions.fontSizeFactor,
+                  ),
+                ),
+              ),
+              SizedBox(height: context.dimensions.spacingMedium),
+              Flexible(
+                child: ListView.builder(
+                  itemCount: languageEntries.length,
+                  itemBuilder: (context, index) {
+                    final entry = languageEntries[index];
+                    final isSelected = entry.key == currentLanguageKey;
+                    return ListTile(
+                      leading: Icon(
+                        isSelected
+                            ? Icons.check_circle_rounded
+                            : Icons.circle_outlined,
+                        color: isSelected ? colorScheme.primary : null,
+                        size: 24 * fontSizeFactor,
+                      ),
+                      title: Text(
+                        entry.key == null
+                            ? context.l10n.settings_appearance_theme_system
+                            : entry.value,
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontWeight: isSelected ? FontWeight.bold : null,
+                        ),
+                      ),
+                      onTap: () async {
+                        await ref
+                            .read(appLanguageProvider.notifier)
+                            .setLanguage(entry.key);
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

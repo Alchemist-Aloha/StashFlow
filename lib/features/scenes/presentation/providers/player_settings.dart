@@ -6,6 +6,7 @@ class PlayerSettings {
   final String playEndBehaviorName;
   final bool showVideoDebugInfo;
   final bool useDoubleTapSeek;
+  final int controlsAutoHideSeconds;
   final bool enableBackgroundPlayback;
   final bool enableNativePip;
   final bool videoGravityOrientation;
@@ -27,6 +28,7 @@ class PlayerSettings {
     this.playEndBehaviorName = 'stop',
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = false,
+    this.controlsAutoHideSeconds = 1,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
@@ -47,6 +49,13 @@ class PlayerSettingsStore {
   static const playEndBehaviorKey = 'video_play_end_behavior';
   static const showVideoDebugInfoKey = 'show_video_debug_info';
   static const useDoubleTapSeekKey = 'video_use_double_tap_seek';
+  static const controlsAutoHideSecondsKey = 'video_controls_auto_hide_seconds';
+  static const minControlsAutoHideSeconds = 1;
+  static const maxControlsAutoHideSeconds = 10;
+
+  static bool isValidControlsAutoHideSeconds(int value) =>
+      value >= minControlsAutoHideSeconds &&
+      value <= maxControlsAutoHideSeconds;
   static const enableBackgroundPlaybackKey = 'video_background_playback';
   static const enableNativePipKey = 'video_native_pip';
   static const videoGravityOrientationKey = 'video_gravity_orientation';
@@ -102,6 +111,7 @@ class PlayerSettingsStore {
 
   PlayerSettings load() {
     final autoplayNext = prefs.getBool(autoplayNextKey) ?? false;
+    final controlsAutoHideValue = prefs.get(controlsAutoHideSecondsKey);
     final endBehaviorStr = prefs.getString(playEndBehaviorKey);
     String playEndBehaviorName;
     if (endBehaviorStr != null) {
@@ -114,6 +124,11 @@ class PlayerSettingsStore {
       playEndBehaviorName: playEndBehaviorName,
       showVideoDebugInfo: prefs.getBool(showVideoDebugInfoKey) ?? false,
       useDoubleTapSeek: prefs.getBool(useDoubleTapSeekKey) ?? false,
+      controlsAutoHideSeconds:
+          controlsAutoHideValue is int &&
+              isValidControlsAutoHideSeconds(controlsAutoHideValue)
+          ? controlsAutoHideValue
+          : 1,
       enableBackgroundPlayback:
           prefs.getBool(enableBackgroundPlaybackKey) ?? false,
       enableNativePip: prefs.getBool(enableNativePipKey) ?? false,
@@ -187,6 +202,13 @@ class PlayerSettingsStore {
 
   Future<void> saveUseDoubleTapSeek(bool value) =>
       prefs.setBool(useDoubleTapSeekKey, value);
+
+  Future<void> saveControlsAutoHideSeconds(int value) {
+    if (!isValidControlsAutoHideSeconds(value)) {
+      throw ArgumentError.value(value, 'value');
+    }
+    return prefs.setInt(controlsAutoHideSecondsKey, value);
+  }
 
   Future<void> saveEnableBackgroundPlayback(bool value) =>
       prefs.setBool(enableBackgroundPlaybackKey, value);

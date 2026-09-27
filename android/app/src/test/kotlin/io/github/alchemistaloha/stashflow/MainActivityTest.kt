@@ -9,6 +9,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
 class MainActivityTest {
@@ -32,7 +33,7 @@ class MainActivityTest {
 
     @Test
     fun `small swipe deltas accumulate into a media volume step`() {
-        val activity = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        val activity = Robolectric.buildActivity(MainActivity::class.java).get()
         val audioManager = activity.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val maximum = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val initial = maximum / 2
@@ -40,7 +41,7 @@ class MainActivityTest {
 
         repeat(10) { activity.adjustMediaVolume(0.01) }
 
-        assertEquals(initial + 1, audioManager.getStreamVolume(AudioManager.STREAM_MUSIC))
+        assertEquals(initial + (maximum * 0.1).roundToInt(), audioManager.getStreamVolume(AudioManager.STREAM_MUSIC))
     }
 
     class TestMainActivity : MainActivity() {

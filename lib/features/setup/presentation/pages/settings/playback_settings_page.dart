@@ -33,6 +33,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
   bool _useDoubleTapSeek = false;
+  int _controlsAutoHideSeconds = 1;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
   bool _videoGravityOrientation = true;
@@ -70,6 +71,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     }
 
     _useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? false;
+    _controlsAutoHideSeconds = PlayerSettingsStore(
+      prefs,
+    ).load().controlsAutoHideSeconds;
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
     _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
@@ -100,6 +104,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString(_playEndBehaviorKey, _playEndBehavior.name);
     await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);
+    await PlayerSettingsStore(
+      prefs,
+    ).saveControlsAutoHideSeconds(_controlsAutoHideSeconds);
     await prefs.setBool(
       _enableBackgroundPlaybackKey,
       _enableBackgroundPlayback,
@@ -126,6 +133,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
     playerStateNotifier.setPlayEndBehavior(_playEndBehavior);
     playerStateNotifier.setUseDoubleTapSeek(_useDoubleTapSeek);
+    playerStateNotifier.setControlsAutoHideSeconds(_controlsAutoHideSeconds);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
     playerStateNotifier.setEnableNativePip(_enableNativePip);
     playerStateNotifier.setVideoGravityOrientation(_videoGravityOrientation);
@@ -170,6 +178,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         ),
                         Divider(height: context.dimensions.spacingLarge),
                         _buildEndBehaviorSelector(),
+                        Divider(height: context.dimensions.spacingLarge),
+                        _buildControlsAutoHideSlider(),
                         Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
@@ -425,6 +435,54 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         setState(() => _playEndBehavior = value);
         await _saveToggleSettings();
       },
+    );
+  }
+
+  Widget _buildControlsAutoHideSlider() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(context.l10n.settings_playback_controls_auto_hide),
+            ),
+            SizedBox(width: context.dimensions.spacingSmall),
+            Text(
+              context.l10n.duration_seconds_format(
+                _controlsAutoHideSeconds.toString(),
+              ),
+              style: context.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          context.l10n.settings_playback_controls_auto_hide_subtitle,
+          style: context.textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        Slider(
+          min: PlayerSettingsStore.minControlsAutoHideSeconds.toDouble(),
+          max: PlayerSettingsStore.maxControlsAutoHideSeconds.toDouble(),
+          divisions:
+              PlayerSettingsStore.maxControlsAutoHideSeconds -
+              PlayerSettingsStore.minControlsAutoHideSeconds,
+          value: _controlsAutoHideSeconds.toDouble(),
+          label: context.l10n.duration_seconds_format(
+            _controlsAutoHideSeconds.toString(),
+          ),
+          onChanged: (value) {
+            setState(() => _controlsAutoHideSeconds = value.round());
+          },
+          onChangeEnd: (value) async {
+            await _saveToggleSettings();
+          },
+        ),
+      ],
     );
   }
 

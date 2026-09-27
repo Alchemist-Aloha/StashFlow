@@ -1237,6 +1237,39 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '8자리 ARGB 헥스 코드를 입력하세요';
 
   @override
+  String get settings_appearance_font_family => '글꼴';
+
+  @override
+  String get settings_appearance_font_family_subtitle => '앱 글꼴 선택';
+
+  @override
+  String get settings_appearance_font_system => '시스템 기본값';
+
+  @override
+  String get settings_appearance_font_serif => '세리프';
+
+  @override
+  String get settings_appearance_font_monospace => '고정폭';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
   String get settings_appearance_font_size => '글로벌 UI 규모';
 
   @override
@@ -1583,6 +1616,13 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get settings_playback_resume_position_subtitle =>
       '비디오를 열 때 중단한 부분부터 자동으로 다시 시작';
+
+  @override
+  String get settings_playback_controls_auto_hide => '플레이어 컨트롤 자동 숨김 시간';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      '동영상 재생 중 컨트롤이 표시되는 시간입니다.';
 
   @override
   String get settings_playback_end_behavior => '재생 종료 시 동작';

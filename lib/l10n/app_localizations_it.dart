@@ -1267,6 +1267,40 @@ class AppLocalizationsIt extends AppLocalizations {
       'Inserisci un codice esadecimale ARGB a 8 cifre';
 
   @override
+  String get settings_appearance_font_family => 'Carattere';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Scegli la famiglia di caratteri dell’app';
+
+  @override
+  String get settings_appearance_font_system => 'Predefinito di sistema';
+
+  @override
+  String get settings_appearance_font_serif => 'Con grazie';
+
+  @override
+  String get settings_appearance_font_monospace => 'Monospaziato';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
   String get settings_appearance_font_size =>
       'Scala globale dell\'interfaccia utente';
 
@@ -1648,6 +1682,14 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get settings_playback_resume_position_subtitle =>
       'Quando apri un video, riprendi automaticamente da dove avevi interrotto';
+
+  @override
+  String get settings_playback_controls_auto_hide =>
+      'Ritardo di scomparsa dei controlli';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'Per quanto tempo i controlli rimangono visibili durante la riproduzione.';
 
   @override
   String get settings_playback_end_behavior =>

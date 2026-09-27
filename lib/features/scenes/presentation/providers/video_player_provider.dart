@@ -123,6 +123,9 @@ class GlobalPlayerState {
   /// User preference: whether to allow double-tap to seek 10s.
   final bool useDoubleTapSeek;
 
+  /// Seconds that visible controls remain on screen during playback.
+  final int controlsAutoHideSeconds;
+
   /// User preference: whether to keep audio playing when the app is backgrounded.
   final bool enableBackgroundPlayback;
 
@@ -186,6 +189,7 @@ class GlobalPlayerState {
     this.playEndBehavior = VideoEndBehavior.stop,
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = false,
+    this.controlsAutoHideSeconds = 1,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
@@ -225,6 +229,7 @@ class GlobalPlayerState {
     VideoEndBehavior? playEndBehavior,
     bool? showVideoDebugInfo,
     bool? useDoubleTapSeek,
+    int? controlsAutoHideSeconds,
     bool? enableBackgroundPlayback,
     bool? enableNativePip,
     bool? videoGravityOrientation,
@@ -276,6 +281,8 @@ class GlobalPlayerState {
       playEndBehavior: playEndBehavior ?? this.playEndBehavior,
       showVideoDebugInfo: showVideoDebugInfo ?? this.showVideoDebugInfo,
       useDoubleTapSeek: useDoubleTapSeek ?? this.useDoubleTapSeek,
+      controlsAutoHideSeconds:
+          controlsAutoHideSeconds ?? this.controlsAutoHideSeconds,
       enableBackgroundPlayback:
           enableBackgroundPlayback ?? this.enableBackgroundPlayback,
       enableNativePip: enableNativePip ?? this.enableNativePip,
@@ -504,6 +511,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       playEndBehavior: playEndBehavior,
       showVideoDebugInfo: loadedSettings.showVideoDebugInfo,
       useDoubleTapSeek: loadedSettings.useDoubleTapSeek,
+      controlsAutoHideSeconds: loadedSettings.controlsAutoHideSeconds,
       enableBackgroundPlayback: loadedSettings.enableBackgroundPlayback,
       enableNativePip: loadedSettings.enableNativePip,
       videoGravityOrientation: loadedSettings.videoGravityOrientation,
@@ -694,6 +702,14 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   void setUseDoubleTapSeek(bool value) {
     state = state.copyWith(useDoubleTapSeek: value);
     unawaited(_settingsStore.saveUseDoubleTapSeek(value));
+  }
+
+  void setControlsAutoHideSeconds(int value) {
+    if (!PlayerSettingsStore.isValidControlsAutoHideSeconds(value)) {
+      throw ArgumentError.value(value, 'value');
+    }
+    state = state.copyWith(controlsAutoHideSeconds: value);
+    unawaited(_settingsStore.saveControlsAutoHideSeconds(value));
   }
 
   void setEnableBackgroundPlayback(bool value) {
@@ -1230,6 +1246,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         playEndBehavior: state.playEndBehavior,
         showVideoDebugInfo: state.showVideoDebugInfo,
         useDoubleTapSeek: state.useDoubleTapSeek,
+        controlsAutoHideSeconds: state.controlsAutoHideSeconds,
         enableBackgroundPlayback: state.enableBackgroundPlayback,
         enableNativePip: state.enableNativePip,
         videoGravityOrientation: state.videoGravityOrientation,
@@ -1751,6 +1768,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       playEndBehavior: state.playEndBehavior,
       showVideoDebugInfo: state.showVideoDebugInfo,
       useDoubleTapSeek: state.useDoubleTapSeek,
+      controlsAutoHideSeconds: state.controlsAutoHideSeconds,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
       enableNativePip: state.enableNativePip,
       videoGravityOrientation: state.videoGravityOrientation,

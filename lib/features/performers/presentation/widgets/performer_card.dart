@@ -103,9 +103,7 @@ class PerformerCard extends ConsumerWidget {
                 performer.name,
                 style: context.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize:
-                      context.dimensions.cardTitleFontSize *
-                      context.dimensions.fontSizeFactor,
+                  fontSize: context.dimensions.cardTitleFontSize,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,

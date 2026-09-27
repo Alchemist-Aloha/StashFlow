@@ -346,4 +346,38 @@ void main() {
     expect(prefs.getBool('video_resume_play_position'), isFalse);
     expect(container.read(playerStateProvider).resumePlayPosition, isFalse);
   });
+
+  testWidgets('controls auto-hide slider persists and updates live state', (
+    tester,
+  ) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const PlaybackSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    final title = find.text('Player controls auto-hide delay');
+    await tester.ensureVisible(title);
+    await tester.pumpAndSettle();
+    expect(find.text('1s'), findsOneWidget);
+    final sliderFinder = find.byType(Slider).first;
+    final slider = tester.widget<Slider>(sliderFinder);
+    expect(slider.min, 1);
+    expect(slider.max, 10);
+    expect(slider.divisions, 9);
+
+    slider.onChanged!(4);
+    await tester.pump();
+    expect(find.text('4s'), findsOneWidget);
+    slider.onChangeEnd!(4);
+    await tester.pumpAndSettle();
+
+    expect(prefs.getInt(PlayerSettingsStore.controlsAutoHideSecondsKey), 4);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(PlaybackSettingsPage)),
+      listen: false,
+    );
+    expect(container.read(playerStateProvider).controlsAutoHideSeconds, 4);
+  });
 }

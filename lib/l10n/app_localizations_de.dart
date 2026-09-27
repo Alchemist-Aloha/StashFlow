@@ -1263,6 +1263,40 @@ class AppLocalizationsDe extends AppLocalizations {
       'Geben Sie einen 8-stelligen ARGB-Hex-Code ein';
 
   @override
+  String get settings_appearance_font_family => 'Schriftart';
+
+  @override
+  String get settings_appearance_font_family_subtitle =>
+      'Schriftart der App auswählen';
+
+  @override
+  String get settings_appearance_font_system => 'Systemstandard';
+
+  @override
+  String get settings_appearance_font_serif => 'Serifenschrift';
+
+  @override
+  String get settings_appearance_font_monospace => 'Festbreitenschrift';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
   String get settings_appearance_font_size => 'Globale UI-Skala';
 
   @override
@@ -1641,6 +1675,14 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settings_playback_resume_position_subtitle =>
       'Wenn Sie ein Video öffnen, wird es automatisch an der Stelle fortgesetzt, an der Sie aufgehört haben';
+
+  @override
+  String get settings_playback_controls_auto_hide =>
+      'Ausblendverzögerung der Player-Steuerung';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'Wie lange die Steuerung während der Videowiedergabe sichtbar bleibt.';
 
   @override
   String get settings_playback_end_behavior => 'Verhalten bei Wiedergabeende';

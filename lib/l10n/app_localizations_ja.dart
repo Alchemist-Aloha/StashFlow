@@ -1238,6 +1238,39 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '8桁のARGB 16進コードを入力してください';
 
   @override
+  String get settings_appearance_font_family => 'フォント';
+
+  @override
+  String get settings_appearance_font_family_subtitle => 'アプリのフォントを選択';
+
+  @override
+  String get settings_appearance_font_system => 'システム標準';
+
+  @override
+  String get settings_appearance_font_serif => 'セリフ体';
+
+  @override
+  String get settings_appearance_font_monospace => '等幅';
+
+  @override
+  String get settings_appearance_font_manrope => 'Manrope';
+
+  @override
+  String get settings_appearance_font_outfit => 'Outfit';
+
+  @override
+  String get settings_appearance_font_space_grotesk => 'Space Grotesk';
+
+  @override
+  String get settings_appearance_font_inter => 'Inter';
+
+  @override
+  String get settings_appearance_font_lora => 'Lora';
+
+  @override
+  String get settings_appearance_font_jetbrains_mono => 'JetBrains Mono';
+
+  @override
   String get settings_appearance_font_size => 'グローバルUIスケール';
 
   @override
@@ -1586,6 +1619,13 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get settings_playback_resume_position_subtitle =>
       'ビデオを開くと、中断したところから自動的に再開します';
+
+  @override
+  String get settings_playback_controls_auto_hide => 'プレーヤー操作の自動非表示までの時間';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      '動画の再生中に操作ボタンを表示しておく時間です。';
 
   @override
   String get settings_playback_end_behavior => '再生終了時の動作';
