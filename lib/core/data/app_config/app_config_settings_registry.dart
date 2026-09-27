@@ -141,6 +141,11 @@ final class AppConfigSettingsRegistry {
     _jsonString('desktop_keybinds'),
     _string('video_play_end_behavior', allowed: {'stop', 'next', 'loop'}),
     _bool('video_use_double_tap_seek'),
+    _int(
+      PlayerSettingsStore.controlsAutoHideSecondsKey,
+      min: PlayerSettingsStore.minControlsAutoHideSeconds,
+      max: PlayerSettingsStore.maxControlsAutoHideSeconds,
+    ),
     _bool('video_background_playback'),
     _bool('video_native_pip'),
     _bool('video_gravity_orientation'),

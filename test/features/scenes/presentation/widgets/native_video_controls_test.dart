@@ -64,12 +64,16 @@ class MockVttService implements VttService {
 }
 
 class ActivePlayerState extends PlayerState {
-  ActivePlayerState(this.scene);
+  ActivePlayerState(this.scene, {this.controlsAutoHideSeconds = 1});
 
   final Scene scene;
+  final int controlsAutoHideSeconds;
 
   @override
-  GlobalPlayerState build() => GlobalPlayerState(activeScene: scene);
+  GlobalPlayerState build() => GlobalPlayerState(
+    activeScene: scene,
+    controlsAutoHideSeconds: controlsAutoHideSeconds,
+  );
 }
 
 class MockPlayerStream extends Fake implements mk.PlayerStream {
@@ -470,6 +474,29 @@ void main() {
     );
   });
 
+  testWidgets('playing controls respect the selected auto-hide delay', (
+    tester,
+  ) async {
+    await _pumpControls(
+      tester,
+      scene: _buildScene(),
+      isPlaying: true,
+      controlsAutoHideSeconds: 5,
+      onInlineBack: () {},
+    );
+
+    await tester.pump(const Duration(seconds: 4));
+    expect(
+      find.byKey(const Key('inline_video_back_button')).hitTestable(),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(milliseconds: 1100));
+    expect(
+      find.byKey(const Key('inline_video_back_button')).hitTestable(),
+      findsNothing,
+    );
+  });
+
   testWidgets('renders grey top gradient behind inline back row', (
     tester,
   ) async {
@@ -654,6 +681,7 @@ Future<void> _pumpControls(
   required Scene scene,
   bool showControls = true,
   bool isPlaying = false,
+  int controlsAutoHideSeconds = 1,
   bool useDoubleTapSeek = true,
   VoidCallback? onInlineBack,
   VoidCallback? onFullScreenToggle,
@@ -668,7 +696,12 @@ Future<void> _pumpControls(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(mockPrefs),
         vttServiceProvider.overrideWithValue(MockVttService()),
-        playerStateProvider.overrideWith(() => ActivePlayerState(scene)),
+        playerStateProvider.overrideWith(
+          () => ActivePlayerState(
+            scene,
+            controlsAutoHideSeconds: controlsAutoHideSeconds,
+          ),
+        ),
       ],
       child: MaterialApp(
         theme: AppTheme.lightTheme,

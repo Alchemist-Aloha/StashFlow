@@ -471,6 +471,8 @@
   "settings_playback_behavior_subtitle": "默认播放和后台处理",
   "settings_playback_feed_random": "从随机位置开始播放Feed",
   "settings_playback_feed_random_subtitle": "在Feed模式下播放场景时，从视频长度的0%到90%之间的随机位置开始播放",
+  "settings_playback_controls_auto_hide": "播放器控件自动隐藏延迟",
+  "settings_playback_controls_auto_hide_subtitle": "视频播放时控件保持可见的时长。",
   "settings_playback_end_behavior": "播放结束时的行为",
   "settings_playback_end_behavior_subtitle": "当前视频播放结束时的操作",
   "settings_playback_end_behavior_stop": "停止",

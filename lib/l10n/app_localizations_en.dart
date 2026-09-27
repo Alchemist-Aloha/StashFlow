@@ -1661,6 +1661,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'When opening a video, automatically resume from where you left off';
 
   @override
+  String get settings_playback_controls_auto_hide =>
+      'Player controls auto-hide delay';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'How long controls stay visible while a video plays.';
+
+  @override
   String get settings_playback_end_behavior => 'End-of-playback behavior';
 
   @override

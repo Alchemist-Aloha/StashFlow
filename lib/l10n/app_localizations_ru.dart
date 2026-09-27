@@ -1671,6 +1671,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'При открытии видео автоматически возобновляется с того места, на котором вы остановились.';
 
   @override
+  String get settings_playback_controls_auto_hide =>
+      'Задержка скрытия элементов управления';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'Как долго элементы управления видны во время воспроизведения видео.';
+
+  @override
   String get settings_playback_end_behavior =>
       'Поведение при завершении воспроизведения';
 

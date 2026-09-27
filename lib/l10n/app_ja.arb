@@ -690,6 +690,8 @@
   "settings_appearance_font_jetbrains_mono": "JetBrains Mono",
   "settings_appearance_font_size": "グローバルUIスケール",
   "settings_appearance_font_size_subtitle": "タイポグラフィと間隔を比例的に拡大縮小する",
+  "settings_playback_controls_auto_hide": "プレーヤー操作の自動非表示までの時間",
+  "settings_playback_controls_auto_hide_subtitle": "動画の再生中に操作ボタンを表示しておく時間です。",
   "settings_playback_end_behavior": "再生終了時の動作",
   "settings_playback_end_behavior_subtitle": "現在の再生が終了したらどうするか",
   "settings_playback_end_behavior_stop": "停止",

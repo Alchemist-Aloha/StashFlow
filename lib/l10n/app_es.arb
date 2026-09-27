@@ -690,6 +690,8 @@
   "settings_appearance_font_jetbrains_mono": "JetBrains Mono",
   "settings_appearance_font_size": "Escala de interfaz de usuario global",
   "settings_appearance_font_size_subtitle": "Escalar la tipografía y el espaciado proporcionalmente",
+  "settings_playback_controls_auto_hide": "Tiempo para ocultar los controles",
+  "settings_playback_controls_auto_hide_subtitle": "Cuánto tiempo permanecen visibles los controles durante la reproducción.",
   "settings_playback_end_behavior": "Comportamiento al finalizar la reproducción",
   "settings_playback_end_behavior_subtitle": "Qué hacer cuando finaliza la reproducción actual",
   "settings_playback_end_behavior_stop": "Detener",

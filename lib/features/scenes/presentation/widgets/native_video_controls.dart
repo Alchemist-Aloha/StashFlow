@@ -68,7 +68,6 @@ class NativeVideoControls extends ConsumerStatefulWidget {
 enum _DragMode { none, determining, horizontal, vertical }
 
 class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
-  static const _controlsAutoHideDelay = Duration(milliseconds: 1000);
   static const _gestureSeekSeconds = 10;
   static const _dragSeekSensitivity = 0.30;
   static const _dragSeekCurveExponent = 1.6;
@@ -215,7 +214,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
     final isPlaying = widget.controller.player.state.playing;
     if (!isPlaying || _isScrubbing) return;
 
-    _hideControlsTimer = Timer(_controlsAutoHideDelay, () {
+    final delay = Duration(
+      seconds: ref.read(playerStateProvider).controlsAutoHideSeconds,
+    );
+    _hideControlsTimer = Timer(delay, () {
       if (!mounted) return;
       final stillPlaying = widget.controller.player.state.playing;
       if (!stillPlaying || _isScrubbing || !_controlsVisible) return;
@@ -854,6 +856,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<int>(
+      playerStateProvider.select((state) => state.controlsAutoHideSeconds),
+      (previous, next) {
+        if (_controlsVisible) _scheduleAutoHide();
+      },
+    );
     if (!widget.showControls) {
       return const SizedBox.shrink();
     }

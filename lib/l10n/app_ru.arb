@@ -690,6 +690,8 @@
   "settings_appearance_font_jetbrains_mono": "JetBrains Mono",
   "settings_appearance_font_size": "Глобальный масштаб пользовательского интерфейса",
   "settings_appearance_font_size_subtitle": "Пропорционально масштабируйте типографику и интервалы.",
+  "settings_playback_controls_auto_hide": "Задержка скрытия элементов управления",
+  "settings_playback_controls_auto_hide_subtitle": "Как долго элементы управления видны во время воспроизведения видео.",
   "settings_playback_end_behavior": "Поведение при завершении воспроизведения",
   "settings_playback_end_behavior_subtitle": "Что делать, когда текущее воспроизведение заканчивается",
   "settings_playback_end_behavior_stop": "Останавливаться",

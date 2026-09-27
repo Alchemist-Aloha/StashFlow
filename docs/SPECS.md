@@ -322,6 +322,11 @@ video-player compatibility adapters or route-owned fullscreen player.
 Inline and fullscreen player utility buttons share the same overlay treatment
 at the top and bottom; mirrored edge gradients keep them legible over video.
 The centered transport group has no shared backdrop or drop shadow.
+Playback settings offer a horizontal slider from 1 to 10 seconds in one-second
+steps for the player controls' auto-hide delay. One second is the default for
+existing installs. The selected delay applies to inline and fullscreen controls
+while video is playing; paused controls remain visible. The preference is
+included in configuration backups.
 
 ### Native video output and decoding
 
@@ -457,6 +462,8 @@ references a file.
 
 The Settings hub links to focused pages for server, appearance, interface,
 playback, storage, security, keybinds, developer options, and support.
+Appearance Settings owns the app language choice alongside theme, color, font,
+and scale preferences. Interface Settings begins with navigation preferences.
 
 Settings pages use the shared shell and panel components in
 `lib/features/setup/presentation/widgets/settings_page_shell.dart`. They share

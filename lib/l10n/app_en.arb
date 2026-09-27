@@ -553,6 +553,8 @@
   "settings_playback_feed_random_subtitle": "When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length",
   "settings_playback_resume_position": "Resume from last playing position",
   "settings_playback_resume_position_subtitle": "When opening a video, automatically resume from where you left off",
+  "settings_playback_controls_auto_hide": "Player controls auto-hide delay",
+  "settings_playback_controls_auto_hide_subtitle": "How long controls stay visible while a video plays.",
   "settings_playback_end_behavior": "End-of-playback behavior",
   "settings_playback_end_behavior_subtitle": "What to do when current playback ends",
   "settings_playback_end_behavior_stop": "Stop",

@@ -1677,6 +1677,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenn Sie ein Video öffnen, wird es automatisch an der Stelle fortgesetzt, an der Sie aufgehört haben';
 
   @override
+  String get settings_playback_controls_auto_hide =>
+      'Ausblendverzögerung der Player-Steuerung';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'Wie lange die Steuerung während der Videowiedergabe sichtbar bleibt.';
+
+  @override
   String get settings_playback_end_behavior => 'Verhalten bei Wiedergabeende';
 
   @override

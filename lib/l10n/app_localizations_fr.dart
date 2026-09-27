@@ -1684,6 +1684,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Lors de l\'ouverture d\'une vidéo, reprenez automatiquement là où vous vous étiez arrêté';
 
   @override
+  String get settings_playback_controls_auto_hide =>
+      'Délai de masquage des commandes';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'Durée pendant laquelle les commandes restent visibles lors de la lecture.';
+
+  @override
   String get settings_playback_end_behavior => 'Comportement en fin de lecture';
 
   @override

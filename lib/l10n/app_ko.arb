@@ -690,6 +690,8 @@
   "settings_appearance_font_jetbrains_mono": "JetBrains Mono",
   "settings_appearance_font_size": "글로벌 UI 규모",
   "settings_appearance_font_size_subtitle": "타이포그래피와 간격을 비례적으로 조정",
+  "settings_playback_controls_auto_hide": "플레이어 컨트롤 자동 숨김 시간",
+  "settings_playback_controls_auto_hide_subtitle": "동영상 재생 중 컨트롤이 표시되는 시간입니다.",
   "settings_playback_end_behavior": "재생 종료 시 동작",
   "settings_playback_end_behavior_subtitle": "현재 재생이 끝나면 어떻게 해야 할까요?",
   "settings_playback_end_behavior_stop": "멈추다",

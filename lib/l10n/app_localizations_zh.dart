@@ -1604,6 +1604,12 @@ class AppLocalizationsZh extends AppLocalizations {
       '打开视频时，自动从上次中断的地方继续播放';
 
   @override
+  String get settings_playback_controls_auto_hide => '播放器控件自动隐藏延迟';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle => '视频播放时控件保持可见的时长。';
+
+  @override
   String get settings_playback_end_behavior => '播放结束时的行为';
 
   @override
@@ -4973,6 +4979,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_playback_resume_position_subtitle =>
       '打开视频时，自动从上次中断的地方继续播放';
+
+  @override
+  String get settings_playback_controls_auto_hide => '播放器控件自动隐藏延迟';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle => '视频播放时控件保持可见的时长。';
 
   @override
   String get settings_playback_end_behavior => '播放结束时的行为';
@@ -8347,6 +8359,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settings_playback_resume_position_subtitle =>
       '打開影片時，自動從上次中斷的地方繼續播放';
+
+  @override
+  String get settings_playback_controls_auto_hide => '播放器控制項自動隱藏延遲';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      '影片播放時控制項保持顯示的時間。';
 
   @override
   String get settings_playback_end_behavior => '播放結束時的行為';

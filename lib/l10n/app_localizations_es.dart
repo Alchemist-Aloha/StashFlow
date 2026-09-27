@@ -1690,6 +1690,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Al abrir un vídeo, se reanuda automáticamente desde donde lo dejaste.';
 
   @override
+  String get settings_playback_controls_auto_hide =>
+      'Tiempo para ocultar los controles';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'Cuánto tiempo permanecen visibles los controles durante la reproducción.';
+
+  @override
   String get settings_playback_end_behavior =>
       'Comportamiento al finalizar la reproducción';
 

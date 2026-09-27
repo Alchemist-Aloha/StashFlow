@@ -8,6 +8,8 @@ import 'package:stash_app_flutter/core/presentation/theme/theme_color_provider.d
 import 'package:stash_app_flutter/core/presentation/theme/true_black_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/font_family_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
+import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import '../../widgets/settings_page_shell.dart';
 
 class AppearanceSettingsPage extends ConsumerStatefulWidget {
@@ -83,6 +85,10 @@ class _AppearanceSettingsPageState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(appLanguageProvider);
+    final currentLanguageKey = ref
+        .read(sharedPreferencesProvider)
+        .getString(appLanguagePreferenceKey);
     final l10n = AppLocalizations.of(context)!;
 
     return SettingsPageShell(
@@ -93,6 +99,20 @@ class _AppearanceSettingsPageState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SettingsSectionCard(
+                    title: l10n.settings_interface_language,
+                    subtitle: l10n.settings_interface_language_subtitle,
+                    child: SettingsActionCard(
+                      icon: Icons.translate_rounded,
+                      title: l10n.settings_interface_app_language,
+                      subtitle: currentLanguageKey == null
+                          ? l10n.settings_appearance_theme_system
+                          : supportedLanguages[currentLanguageKey] ??
+                                l10n.settings_appearance_theme_system,
+                      onTap: () => _showLanguagePicker(context, ref),
+                    ),
+                  ),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: l10n.settings_appearance_theme_mode,
                     subtitle: l10n.settings_appearance_theme_mode_subtitle,
@@ -254,6 +274,79 @@ class _AppearanceSettingsPageState
                 ],
               ),
             ),
+    );
+  }
+
+  void _showLanguagePicker(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final currentLanguageKey = ref
+        .read(sharedPreferencesProvider)
+        .getString(appLanguagePreferenceKey);
+    final languageEntries = supportedLanguages.entries.toList(growable: false);
+
+    showModalBottomSheet<void>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(32 * context.dimensions.fontSizeFactor),
+        ),
+      ),
+      builder: (context) {
+        final textTheme = context.textTheme;
+        final fontSizeFactor = context.dimensions.fontSizeFactor;
+
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: context.dimensions.spacingMedium),
+              Container(
+                width: 32 * context.dimensions.fontSizeFactor,
+                height: 4 * context.dimensions.fontSizeFactor,
+                decoration: BoxDecoration(
+                  color: colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(
+                    2 * context.dimensions.fontSizeFactor,
+                  ),
+                ),
+              ),
+              SizedBox(height: context.dimensions.spacingMedium),
+              Flexible(
+                child: ListView.builder(
+                  itemCount: languageEntries.length,
+                  itemBuilder: (context, index) {
+                    final entry = languageEntries[index];
+                    final isSelected = entry.key == currentLanguageKey;
+                    return ListTile(
+                      leading: Icon(
+                        isSelected
+                            ? Icons.check_circle_rounded
+                            : Icons.circle_outlined,
+                        color: isSelected ? colorScheme.primary : null,
+                        size: 24 * fontSizeFactor,
+                      ),
+                      title: Text(
+                        entry.key == null
+                            ? context.l10n.settings_appearance_theme_system
+                            : entry.value,
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontWeight: isSelected ? FontWeight.bold : null,
+                        ),
+                      ),
+                      onTap: () async {
+                        await ref
+                            .read(appLanguageProvider.notifier)
+                            .setLanguage(entry.key);
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

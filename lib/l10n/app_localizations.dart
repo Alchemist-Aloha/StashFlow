@@ -3138,6 +3138,18 @@ abstract class AppLocalizations {
   /// **'When opening a video, automatically resume from where you left off'**
   String get settings_playback_resume_position_subtitle;
 
+  /// No description provided for @settings_playback_controls_auto_hide.
+  ///
+  /// In en, this message translates to:
+  /// **'Player controls auto-hide delay'**
+  String get settings_playback_controls_auto_hide;
+
+  /// No description provided for @settings_playback_controls_auto_hide_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How long controls stay visible while a video plays.'**
+  String get settings_playback_controls_auto_hide_subtitle;
+
   /// No description provided for @settings_playback_end_behavior.
   ///
   /// In en, this message translates to:

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/appearance_settings_page.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 import 'package:stash_app_flutter/core/presentation/theme/font_family_provider.dart';
+import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 
 import '../../../../../helpers/test_helpers.dart';
 
@@ -63,5 +64,24 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(prefs.getString(appFontFamilyPreferenceKey), 'lora');
+  });
+
+  testWidgets('AppearanceSettingsPage saves app language', (tester) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const AppearanceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('App Language'), findsOneWidget);
+    expect(find.text('System'), findsWidgets);
+    await tester.tap(find.text('App Language'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Español'));
+    await tester.pumpAndSettle();
+
+    expect(prefs.getString(appLanguagePreferenceKey), 'es');
+    expect(find.text('Español'), findsOneWidget);
   });
 }

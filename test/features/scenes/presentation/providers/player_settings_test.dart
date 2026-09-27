@@ -5,6 +5,25 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/player_
 
 void main() {
   group('PlayerSettingsStore', () {
+    test('control auto-hide delay defaults, validates, and persists', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final store = PlayerSettingsStore(prefs);
+      expect(store.load().controlsAutoHideSeconds, 1);
+
+      await store.saveControlsAutoHideSeconds(4);
+      expect(store.load().controlsAutoHideSeconds, 4);
+      expect(() => store.saveControlsAutoHideSeconds(11), throwsArgumentError);
+      expect(store.load().controlsAutoHideSeconds, 4);
+      await prefs.setInt(PlayerSettingsStore.controlsAutoHideSecondsKey, 99);
+      expect(store.load().controlsAutoHideSeconds, 1);
+      await prefs.setString(
+        PlayerSettingsStore.controlsAutoHideSecondsKey,
+        'invalid',
+      );
+      expect(store.load().controlsAutoHideSeconds, 1);
+    });
+
     test(
       'mpv defaults and corrupt preferences preserve platform defaults',
       () async {

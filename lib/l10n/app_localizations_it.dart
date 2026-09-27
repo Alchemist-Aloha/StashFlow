@@ -1684,6 +1684,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Quando apri un video, riprendi automaticamente da dove avevi interrotto';
 
   @override
+  String get settings_playback_controls_auto_hide =>
+      'Ritardo di scomparsa dei controlli';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      'Per quanto tempo i controlli rimangono visibili durante la riproduzione.';
+
+  @override
   String get settings_playback_end_behavior =>
       'Comportamento al termine della riproduzione';
 

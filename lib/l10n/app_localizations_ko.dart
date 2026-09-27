@@ -1618,6 +1618,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '비디오를 열 때 중단한 부분부터 자동으로 다시 시작';
 
   @override
+  String get settings_playback_controls_auto_hide => '플레이어 컨트롤 자동 숨김 시간';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      '동영상 재생 중 컨트롤이 표시되는 시간입니다.';
+
+  @override
   String get settings_playback_end_behavior => '재생 종료 시 동작';
 
   @override

@@ -12,7 +12,6 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/player_
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
-import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import '../../widgets/settings_page_shell.dart';
 
 class InterfaceSettingsPage extends ConsumerStatefulWidget {
@@ -256,11 +255,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(appLanguageProvider);
-    final currentLanguageKey = ref
-        .read(sharedPreferencesProvider)
-        .getString(appLanguagePreferenceKey);
-
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
       child: _loading
@@ -269,19 +263,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SettingsSectionCard(
-                    title: context.l10n.settings_interface_language,
-                    subtitle: context.l10n.settings_interface_language_subtitle,
-                    child: SettingsActionCard(
-                      icon: Icons.translate_rounded,
-                      title: context.l10n.settings_interface_app_language,
-                      subtitle:
-                          supportedLanguages[currentLanguageKey] ??
-                          'System Default',
-                      onTap: () => _showLanguagePicker(context, ref),
-                    ),
-                  ),
-                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_navigation,
                     subtitle:
@@ -990,77 +971,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           ),
         ],
       ],
-    );
-  }
-
-  void _showLanguagePicker(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final currentLanguageKey = ref
-        .read(sharedPreferencesProvider)
-        .getString(appLanguagePreferenceKey);
-    final languageEntries = supportedLanguages.entries.toList(growable: false);
-
-    showModalBottomSheet<void>(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(32 * context.dimensions.fontSizeFactor),
-        ),
-      ),
-      builder: (context) {
-        final textTheme = context.textTheme;
-        final fontSizeFactor = context.dimensions.fontSizeFactor;
-
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: context.dimensions.spacingMedium),
-              Container(
-                width: 32 * context.dimensions.fontSizeFactor,
-                height: 4 * context.dimensions.fontSizeFactor,
-                decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(
-                    2 * context.dimensions.fontSizeFactor,
-                  ),
-                ),
-              ),
-              SizedBox(height: context.dimensions.spacingMedium),
-              Flexible(
-                child: ListView.builder(
-                  itemCount: languageEntries.length,
-                  itemBuilder: (context, index) {
-                    final entry = languageEntries[index];
-                    final isSelected = entry.key == currentLanguageKey;
-                    return ListTile(
-                      leading: Icon(
-                        isSelected
-                            ? Icons.check_circle_rounded
-                            : Icons.circle_outlined,
-                        color: isSelected ? colorScheme.primary : null,
-                        size: 24 * fontSizeFactor,
-                      ),
-                      title: Text(
-                        entry.value,
-                        style: textTheme.bodyLarge?.copyWith(
-                          fontWeight: isSelected ? FontWeight.bold : null,
-                        ),
-                      ),
-                      onTap: () async {
-                        await ref
-                            .read(appLanguageProvider.notifier)
-                            .setLanguage(entry.key);
-                        if (context.mounted) Navigator.pop(context);
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 

@@ -1621,6 +1621,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'ビデオを開くと、中断したところから自動的に再開します';
 
   @override
+  String get settings_playback_controls_auto_hide => 'プレーヤー操作の自動非表示までの時間';
+
+  @override
+  String get settings_playback_controls_auto_hide_subtitle =>
+      '動画の再生中に操作ボタンを表示しておく時間です。';
+
+  @override
   String get settings_playback_end_behavior => '再生終了時の動作';
 
   @override
