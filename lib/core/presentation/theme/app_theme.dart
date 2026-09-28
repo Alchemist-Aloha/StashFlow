@@ -318,11 +318,9 @@ class AppTheme {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         centerTitle: false,
-        // One app-bar voice for the whole app: the list-page header's bold,
-        // tightly tracked title, so a detail, settings, or tool page does not
-        // render its title in a different weight from the list it was opened
-        // from. AppBar does not apply `foregroundColor` on top of this style,
-        // so the colour is authored here.
+        // Detail, settings, and tool titles share weight and tracking; primary
+        // list headers retain their larger text-theme size. AppBar does not
+        // apply `foregroundColor` on top of this style, so colour is set here.
         titleTextStyle: baseTextTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
           letterSpacing: -0.5,

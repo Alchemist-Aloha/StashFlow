@@ -52,12 +52,31 @@ void main() {
         galleryDetailsProvider('gallery-1').overrideWith((ref) => gallery),
         imageRepositoryProvider.overrideWithValue(repository),
       ],
-      child: const GalleryDetailsPage(galleryId: 'gallery-1'),
+      child: Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          return Theme(
+            data: theme.copyWith(
+              appBarTheme: theme.appBarTheme.copyWith(
+                titleTextStyle: theme.appBarTheme.titleTextStyle!.copyWith(
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            child: const GalleryDetailsPage(galleryId: 'gallery-1'),
+          );
+        },
+      ),
     );
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('gallery_details_expanded')), findsOneWidget);
     expect(find.text('Gallery Details'), findsOneWidget);
+    final title = find.descendant(
+      of: find.text('Gallery Details'),
+      matching: find.byType(RichText),
+    );
+    expect(tester.widget<RichText>(title).text.style?.fontSize, 18);
     expect(find.text('Compact gallery description'), findsOneWidget);
     expect(find.text('Studio One'), findsOneWidget);
     expect(

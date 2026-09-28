@@ -366,6 +366,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     return ListPageScaffold<entity.Image>(
       title: widget.title ?? context.l10n.images_title,
+      titleTextStyle: widget.title == null
+          ? null
+          : Theme.of(context).appBarTheme.titleTextStyle,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
       ),

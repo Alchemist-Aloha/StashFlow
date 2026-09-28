@@ -31,6 +31,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   const ListPageScaffold({
     super.key,
     required this.title,
+    this.titleTextStyle,
     required this.searchHint,
     required this.onSearchChanged,
     required this.provider,
@@ -59,6 +60,9 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
 
   /// The page title displayed in the AppBar.
   final String title;
+
+  /// Overrides the larger list title style when used by an embedded detail page.
+  final TextStyle? titleTextStyle;
 
   /// Whether to use a dynamic height Masonry grid layout instead of fixed ratio.
   final bool useMasonry;
@@ -258,10 +262,12 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 ),
                 child: Text(
                   widget.title,
-                  style: context.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5,
-                  ),
+                  style:
+                      widget.titleTextStyle ??
+                      context.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                      ),
                 ),
               ),
             ),

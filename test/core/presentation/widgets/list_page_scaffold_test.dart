@@ -17,6 +17,47 @@ import '../../../helpers/test_helpers.dart';
 
 void main() {
   group('ListPageScaffold', () {
+    testWidgets('primary list title stays larger than detail app bar titles', (
+      tester,
+    ) async {
+      await pumpTestWidget(
+        tester,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListPageScaffold<int>(
+                title: 'Primary title',
+                searchHint: 'Search...',
+                onSearchChanged: (_) {},
+                provider: const AsyncValue.data([1]),
+                itemBuilder: (_, item, _, _) => Text('Item $item'),
+              ),
+            ),
+            AppBar(title: const Text('Detail title')),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      double titleSize(String text) =>
+          tester
+              .widget<RichText>(
+                find.descendant(
+                  of: find.text(text),
+                  matching: find.byType(RichText),
+                ),
+              )
+              .text
+              .style!
+              .fontSize ??
+          14;
+      expect(titleSize('Primary title'), 22);
+      expect(
+        titleSize('Primary title'),
+        greaterThan(titleSize('Detail title')),
+      );
+    });
+
     for (final bottomInset in [0.0, 66.0]) {
       testWidgets('action pill clears bottom inset $bottomInset', (
         tester,

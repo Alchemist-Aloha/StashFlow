@@ -62,6 +62,8 @@ sheets, saved-filter UI, `StashImage`, and common state views.
 - Layout must react immediately to `appGlobalScaleProvider` changes without
   overflow at supported scale extremes.
 - Card titles use the already scaled `context.dimensions.cardTitleFontSize` once.
+- Primary list-page app-bar titles keep the larger list title size. Detail pages,
+  including embedded gallery details, use the standard AppBar title style.
 - Use capability and available-width checks instead of assuming mobile behavior
   from a platform name.
 - Translucent surfaces use the shared `FrostedSurface` recipe rather than

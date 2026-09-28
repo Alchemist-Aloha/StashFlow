@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
@@ -86,52 +87,67 @@ void main() {
     expect(detector.onHorizontalDragCancel, isNull);
   });
 
-  testWidgets('SceneStrip scrollbar thumb supports mouse dragging', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({
-      'server_base_url': 'http://localhost:9999',
-    });
-    final prefs = await SharedPreferences.getInstance();
+  for (final scale in [0.8, 1.0, 1.5]) {
+    testWidgets(
+      'SceneStrip scrollbar stays at the bottom with an inset at scale $scale',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({
+          'server_base_url': 'http://localhost:9999',
+        });
+        final prefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-        child: MaterialApp(
-          theme: ThemeData(
-            scrollbarTheme: const ScrollbarThemeData(
-              thickness: WidgetStatePropertyAll(12),
-            ),
-          ),
-          home: Scaffold(
-            body: SceneStrip(
-              scenes: List.generate(
-                12,
-                (index) => _scene('scene-$index', 'Scene $index'),
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+            child: MaterialApp(
+              theme:
+                  AppTheme.buildTheme(
+                    Brightness.light,
+                    Colors.teal,
+                    fontSizeFactor: scale,
+                  ).copyWith(
+                    scrollbarTheme: const ScrollbarThemeData(
+                      thickness: WidgetStatePropertyAll(12),
+                    ),
+                  ),
+              home: Scaffold(
+                body: Builder(
+                  builder: (context) => MediaQuery(
+                    data: MediaQuery.of(
+                      context,
+                    ).copyWith(padding: const EdgeInsets.only(bottom: 66)),
+                    child: SceneStrip(
+                      scenes: List.generate(
+                        12,
+                        (index) => _scene('scene-$index', 'Scene $index'),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+        await tester.pumpAndSettle();
+
+        final scrollbar = tester.widget<Scrollbar>(find.byType(Scrollbar));
+        final listView = tester.widget<ListView>(find.byType(ListView));
+        expect(scrollbar.controller, same(listView.controller));
+        expect(scrollbar.interactive, isTrue);
+
+        final bounds = tester.getRect(find.byType(Scrollbar));
+        final gesture = await tester.startGesture(
+          Offset(bounds.left + 20, bounds.bottom - 6),
+          kind: PointerDeviceKind.mouse,
+        );
+        await gesture.moveBy(const Offset(200, 0));
+        await gesture.up();
+        await tester.pumpAndSettle();
+
+        expect(listView.controller!.offset, greaterThan(0));
+      },
     );
-    await tester.pumpAndSettle();
-
-    final scrollbar = tester.widget<Scrollbar>(find.byType(Scrollbar));
-    final listView = tester.widget<ListView>(find.byType(ListView));
-    expect(scrollbar.controller, same(listView.controller));
-    expect(scrollbar.interactive, isTrue);
-
-    final bounds = tester.getRect(find.byType(Scrollbar));
-    final gesture = await tester.startGesture(
-      Offset(bounds.left + 20, bounds.bottom - 6),
-      kind: PointerDeviceKind.mouse,
-    );
-    await gesture.moveBy(const Offset(200, 0));
-    await gesture.up();
-    await tester.pumpAndSettle();
-
-    expect(listView.controller!.offset, greaterThan(0));
-  });
+  }
 
   testWidgets(
     'SceneStrip activates a contextual queue for its displayed list',
