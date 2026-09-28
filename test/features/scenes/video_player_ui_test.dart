@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_video_player.dart';
@@ -30,6 +32,23 @@ void main() {
     });
     prefs = await SharedPreferences.getInstance();
   });
+
+  Future<void> openSceneActions(WidgetTester tester) async {
+    final more = find.byKey(const Key('scene_action_more'));
+    if (more.evaluate().isEmpty) return;
+    await tester.ensureVisible(more);
+    await tester.tap(more);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+  }
+
+  Future<void> tapSceneMenuAction(WidgetTester tester, String key) async {
+    final action = find.byKey(Key(key));
+    await tester.ensureVisible(action);
+    await tester.tap(action);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+  }
 
   final testScene = Scene(
     id: 's1',
@@ -211,46 +230,49 @@ void main() {
     expect(find.byKey(const Key('scene_show_metadata')), findsNothing);
   });
 
-  testWidgets('SceneDetailsPage matches header and details section surfaces', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(400, 1200);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
+  testWidgets(
+    'SceneDetailsPage renders action controls without a panel backdrop',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
 
-    final scene = testScene.copyWith(details: 'Scene details');
-    final mockRepo = MockGraphQLSceneRepository()..withData([scene]);
+      final scene = testScene.copyWith(details: 'Scene details');
+      final mockRepo = MockGraphQLSceneRepository()..withData([scene]);
 
-    await pumpTestWidget(
-      tester,
-      prefs: prefs,
-      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
-      child: SceneDetailsPage(sceneId: scene.id),
-    );
-    await tester.pump(const Duration(seconds: 1));
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: scene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
 
-    final header = find.byKey(const Key('scene_header_section'));
-    final details = find.byKey(const Key('scene_details_section'));
-    expect(
-      find.descendant(of: header, matching: find.text('Test Scene')),
-      findsNothing,
-    );
-    expect(
-      find.descendant(of: header, matching: find.text('Test Studio')),
-      findsNothing,
-    );
-    expect(
-      find.descendant(
-        of: header,
-        matching: find.byKey(const Key('scene_action_delete')),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      tester.widget<Card>(header).color,
-      tester.widget<Card>(details).color,
-    );
-  });
+      final header = find.byKey(const Key('scene_header_section'));
+      final details = find.byKey(const Key('scene_details_section'));
+      expect(
+        find.descendant(of: header, matching: find.text('Test Scene')),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: header, matching: find.text('Test Studio')),
+        findsNothing,
+      );
+      expect(
+        find.descendant(
+          of: header,
+          matching: find.byKey(const Key('scene_rating_controls')),
+        ),
+        findsOneWidget,
+      );
+      expect(tester.widget<Container>(header).decoration, isNull);
+      expect(
+        find.descendant(of: header, matching: find.byType(SectionPanel)),
+        findsNothing,
+      );
+      expect(tester.widget<SectionPanel>(details), isA<SectionPanel>());
+    },
+  );
 
   testWidgets('SceneDetailsPage refresh action is desktop-only', (
     tester,
@@ -269,54 +291,104 @@ void main() {
 
     await pump(isDesktop: true);
     await tester.pump(const Duration(seconds: 1));
+    expect(find.byKey(const Key('scene_action_more')), findsNothing);
+    await tester.ensureVisible(find.byKey(const Key('scene_action_refresh')));
     await tester.tap(find.byKey(const Key('scene_action_refresh')));
     await tester.pump();
     expect(mockRepo.getSceneByIdRefreshValues, contains(true));
 
     await pump(isDesktop: false);
     await tester.pump(const Duration(seconds: 1));
+    await tester.tap(find.byKey(const Key('scene_action_more')));
+    await tester.pumpAndSettle();
     expect(find.byKey(const Key('scene_action_refresh')), findsNothing);
+    Navigator.of(
+      tester.element(find.byKey(const Key('scene_action_edit'))),
+    ).pop();
+    await tester.pumpAndSettle();
   });
 
-  testWidgets(
-    'SceneDetailsPage aligns tablet rating and action groups on one line',
-    (tester) async {
-      tester.view.physicalSize = const Size(1100, 1600);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-
-      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
-
-      await pumpTestWidget(
+  for (final width in [320.0, 600.0, 1100.0, 1600.0]) {
+    for (final scale in [0.8, 1.0, 1.5]) {
+      testWidgets('scene actions stay on one line at $width / $scale', (
         tester,
-        prefs: prefs,
-        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
-        child: SceneDetailsPage(sceneId: testScene.id),
-      );
-      await tester.pump(const Duration(seconds: 1));
-
-      expect(find.byType(AppBar), findsNothing);
-      expect(find.byKey(const Key('scene_action_add_marker')), findsOneWidget);
-      expect(find.byKey(const Key('scene_action_info')), findsOneWidget);
-      expect(find.byKey(const Key('scene_action_download')), findsOneWidget);
-      expect(find.byKey(const Key('scene_action_edit')), findsOneWidget);
-      expect(find.byKey(const Key('scene_action_delete')), findsOneWidget);
-
-      final rating = find.byKey(const Key('scene_rating_controls'));
-      final actions = find.byKey(const Key('scene_action_buttons'));
-      expect(
-        tester.getCenter(actions).dy,
-        closeTo(tester.getCenter(rating).dy, 0.1),
-      );
-      expect(
-        tester.getTopRight(actions).dx,
-        closeTo(
-          tester.getTopRight(find.byKey(const Key('scene_header_controls'))).dx,
-          0.1,
-        ),
-      );
-    },
-  );
+      ) async {
+        tester.view.physicalSize = Size(width, 1600);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        await prefs.setDouble('app_global_scale_factor', scale);
+        final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+        await pumpTestWidget(
+          tester,
+          prefs: prefs,
+          overrides: [
+            sceneRepositoryProvider.overrideWithValue(mockRepo),
+            desktopCapabilitiesProvider.overrideWithValue(true),
+          ],
+          child: Theme(
+            data: AppTheme.buildTheme(
+              Brightness.light,
+              const Color(0xFF0F766E),
+              fontSizeFactor: scale,
+            ),
+            child: SceneDetailsPage(sceneId: testScene.id),
+          ),
+        );
+        await tester.pump(const Duration(seconds: 1));
+        final rating = find.byKey(const Key('scene_rating_controls'));
+        expect(find.byType(RatingButton), findsOneWidget);
+        for (final key in [
+          'scene_action_add_o',
+          'scene_action_info',
+          'scene_action_download',
+          if (width < 600) 'scene_action_more',
+          if (width >= 600) ...[
+            'scene_action_add_marker',
+            'scene_action_edit',
+            'scene_action_refresh',
+            'scene_action_delete',
+          ],
+        ]) {
+          expect(
+            tester.getCenter(find.byKey(Key(key))).dy,
+            closeTo(tester.getCenter(rating).dy, 0.1),
+          );
+        }
+        if (width < 600) {
+          for (final key in [
+            'scene_action_add_marker',
+            'scene_action_edit',
+            'scene_action_delete',
+          ]) {
+            expect(find.byKey(Key(key)), findsNothing);
+          }
+          await openSceneActions(tester);
+        } else {
+          expect(find.byKey(const Key('scene_action_more')), findsNothing);
+        }
+        for (final key in [
+          'scene_action_add_marker',
+          'scene_action_edit',
+          'scene_action_delete',
+        ]) {
+          expect(find.byKey(Key(key)), findsOneWidget);
+        }
+        await tester.ensureVisible(
+          find.byKey(const Key('scene_action_delete')),
+        );
+        await tester.tap(find.byKey(const Key('scene_action_delete')));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('scene_action_edit')),
+          width < 600 ? findsNothing : findsOneWidget,
+        );
+        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(mockRepo.deletedSceneId, isNull);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
 
   testWidgets('SceneDetailsPage places metadata below identity and controls', (
     tester,
@@ -389,8 +461,8 @@ void main() {
         lessThan(tester.getSize(identity).width),
       );
       expect(
-        tester.getTopLeft(actions).dy,
-        greaterThan(tester.getTopLeft(rating).dy),
+        tester.getCenter(actions).dy,
+        closeTo(tester.getCenter(rating).dy, 0.1),
       );
       expect(tester.takeException(), isNull);
     },
@@ -434,22 +506,28 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
-    final starIcons = find.byWidgetPredicate(
-      (widget) =>
-          widget is Icon && widget.icon == Icons.star && widget.size == 24,
-    );
-    final borderIcons = find.byWidgetPredicate(
-      (widget) =>
-          widget is Icon &&
-          widget.icon == Icons.star_border &&
-          widget.size == 24,
-    );
+    final ratingButton = find.byType(RatingButton);
+    expect(ratingButton, findsOneWidget);
+    await tester.tap(ratingButton);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
 
-    expect(starIcons, findsNWidgets(2));
-    expect(borderIcons, findsNWidgets(3));
+    final picker = find.byType(RatingPicker);
+    expect(picker, findsOneWidget);
+    expect(
+      find.descendant(of: picker, matching: find.byIcon(Icons.star)),
+      findsNWidgets(2),
+    );
+    final unselectedStar = find.descendant(
+      of: picker,
+      matching: find.byIcon(Icons.star_border),
+    );
+    expect(unselectedStar, findsNWidgets(3));
 
-    await tester.tap(borderIcons.first);
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.tap(unselectedStar.first);
+    await tester.tap(find.text('Apply'));
+    await tester.pumpAndSettle();
+    expect(find.byType(RatingPicker), findsNothing);
   });
 
   testWidgets('SceneDetailsPage increments O count', (tester) async {
@@ -591,7 +669,8 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
-    await tester.tap(find.byTooltip('Add marker'));
+    await openSceneActions(tester);
+    await tapSceneMenuAction(tester, 'scene_action_add_marker');
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'New marker');
     await tester.tap(find.widgetWithText(FilledButton, 'Create'));
@@ -629,7 +708,8 @@ void main() {
       );
       await tester.pump(const Duration(seconds: 1));
 
-      await tester.tap(find.byTooltip('Add marker'));
+      await openSceneActions(tester);
+      await tapSceneMenuAction(tester, 'scene_action_add_marker');
       await tester.pump(const Duration(milliseconds: 500));
       await tester.tap(find.widgetWithText(FilledButton, 'Create'));
       await tester.pump(const Duration(milliseconds: 500));
@@ -704,7 +784,8 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
-    await tester.tap(find.byIcon(Icons.delete_outline));
+    await openSceneActions(tester);
+    await tapSceneMenuAction(tester, 'scene_action_delete');
     await tester.pumpAndSettle();
 
     expect(find.text('Delete scene'), findsOneWidget);
@@ -734,7 +815,8 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
-    await tester.tap(find.byIcon(Icons.delete_outline));
+    await openSceneActions(tester);
+    await tapSceneMenuAction(tester, 'scene_action_delete');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Files'));
     await tester.pumpAndSettle();
@@ -790,7 +872,8 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
-    await tester.tap(find.byIcon(Icons.delete_outline));
+    await openSceneActions(tester);
+    await tapSceneMenuAction(tester, 'scene_action_delete');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
@@ -855,7 +938,8 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
 
     mockRepo.withError('server refused deletion');
-    await tester.tap(find.byIcon(Icons.delete_outline));
+    await openSceneActions(tester);
+    await tapSceneMenuAction(tester, 'scene_action_delete');
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
     await tester.pumpAndSettle();
@@ -913,7 +997,8 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
-    await tester.tap(find.byIcon(Icons.delete_outline));
+    await openSceneActions(tester);
+    await tapSceneMenuAction(tester, 'scene_action_delete');
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
     await tester.pumpAndSettle();
@@ -966,7 +1051,8 @@ void main() {
       );
       await tester.pump(const Duration(seconds: 1));
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await openSceneActions(tester);
+      await tapSceneMenuAction(tester, 'scene_action_delete');
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
       await tester.pumpAndSettle();
@@ -1022,7 +1108,8 @@ void main() {
     router.push('/scenes/scene/${deletedScene.id}');
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.delete_outline));
+    await openSceneActions(tester);
+    await tapSceneMenuAction(tester, 'scene_action_delete');
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
     await tester.pumpAndSettle();

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/frosted_surface.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_bottom_sheet.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/saved_filter_dialog.dart';
 import 'package:stash_app_flutter/core/domain/entities/saved_filter_config.dart';
@@ -51,10 +52,11 @@ void main() {
       findsOneWidget,
     );
 
-    expect(find.byType(BackdropFilter), findsOneWidget);
+    expect(find.byType(BackdropFilter), findsNothing);
+    expect(find.byType(FrostedSurface), findsOneWidget);
     expect(
-      find.ancestor(
-        of: find.byType(BackdropFilter),
+      find.descendant(
+        of: find.byType(FrostedSurface),
         matching: find.byType(ClipRRect),
       ),
       findsOneWidget,
@@ -63,7 +65,7 @@ void main() {
     final material = tester
         .widgetList<Material>(
           find.descendant(
-            of: find.byType(BackdropFilter),
+            of: find.byType(FrostedSurface),
             matching: find.byType(Material),
           ),
         )
@@ -103,14 +105,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(BackdropFilter), findsOneWidget);
+    expect(find.byType(BackdropFilter), findsNothing);
+    expect(find.byType(FrostedSurface), findsOneWidget);
     expect(find.byType(BottomSheetPanelHeader), findsOneWidget);
     expect(find.byType(BottomSheetPanelActions), findsOneWidget);
 
     final material = tester
         .widgetList<Material>(
           find.descendant(
-            of: find.byType(BackdropFilter),
+            of: find.byType(FrostedSurface),
             matching: find.byType(Material),
           ),
         )
@@ -151,7 +154,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(BackdropFilter), findsOneWidget);
+    expect(find.byType(BackdropFilter), findsNothing);
+    expect(find.byType(FrostedSurface), findsOneWidget);
     expect(find.byType(ListView), findsOneWidget);
     expect(tester.widget<ListView>(find.byType(ListView)).shrinkWrap, isTrue);
     expect(find.text('Gallery Details'), findsOneWidget);

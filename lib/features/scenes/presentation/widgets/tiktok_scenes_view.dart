@@ -21,6 +21,7 @@ import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'transformable_video_surface.dart';
@@ -624,75 +625,29 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   }
 
   void _showRatingPicker() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(AppTheme.spacingLarge),
-          decoration: BoxDecoration(
-            color: context.colors.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                context.l10n.common_rate,
-                style: context.textTheme.titleLarge,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(5, (index) {
-                  final starValue = (index + 1) * 20;
-                  final currentRating = _localRating ?? 0;
-                  return IconButton(
-                    tooltip: context.l10n.common_star,
-                    icon: Icon(
-                      currentRating >= starValue
-                          ? Icons.star
-                          : Icons.star_border,
-                      size: 40,
-                      color: Colors.amber,
-                    ),
-                    onPressed: () async {
-                      setState(() {
-                        _localRating = starValue;
-                      });
-                      await ref
-                          .read(sceneRepositoryProvider)
-                          .updateSceneRating(widget.scene.id, starValue);
-                      ref.invalidate(sceneListProvider);
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
-                    },
-                  );
-                }),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () async {
-                  setState(() {
-                    _localRating = 0;
-                  });
-                  await ref
-                      .read(sceneRepositoryProvider)
-                      .updateSceneRating(widget.scene.id, 0);
-                  ref.invalidate(sceneListProvider);
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
-                },
-                child: Text(context.l10n.common_clear_rating),
-              ),
-              const SizedBox(height: AppTheme.spacingMedium),
-            ],
-          ),
-        );
-      },
+    RatingDialog.show(
+      context,
+      initialRating: _localRating ?? 0,
+      onRatingSelected: (value) => unawaited(_updateSceneRating(value)),
     );
+  }
+
+  Future<void> _updateSceneRating(int value) async {
+    try {
+      await ref
+          .read(sceneRepositoryProvider)
+          .updateSceneRating(widget.scene.id, value);
+      if (!mounted) return;
+      setState(() => _localRating = value);
+      ref.invalidate(sceneListProvider);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.details_failed_update_rating('$error')),
+        ),
+      );
+    }
   }
 
   Future<void> _handoffToGlobalPlayer() async {
@@ -990,16 +945,18 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                 ),
                                 Column(
                                   children: [
-                                    _OverlayButton(
-                                      icon: (widget.scene.rating100 ?? 0) > 0
-                                          ? Icons.star
-                                          : Icons.star_border,
-                                      onTap: _showRatingPicker,
+                                    RatingButton(
+                                      rating100: _localRating,
+                                      showValue: false,
+                                      onPressed: _showRatingPicker,
+                                      style: IconButton.styleFrom(
+                                        foregroundColor: Colors.white,
+                                      ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      (widget.scene.rating100 ?? 0) > 0
-                                          ? (widget.scene.rating100! / 20)
+                                      (_localRating ?? 0) > 0
+                                          ? (_localRating! / 20)
                                                 .toStringAsFixed(1)
                                           : '-',
                                       style: context.textTheme.bodyMedium

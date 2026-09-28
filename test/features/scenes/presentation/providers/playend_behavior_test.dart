@@ -417,6 +417,61 @@ void main() {
     expect(container.read(playerStateProvider).activeScene?.id, '1');
   });
 
+  for (final titleCase in [
+    (
+      title: '',
+      path: '/library/File_Name.mp4',
+      stream: '',
+      expected: 'File Name',
+    ),
+    (
+      title: '   ',
+      path: '/library/File_Name.mp4',
+      stream: '',
+      expected: 'File Name',
+    ),
+    (
+      title: '  Scene Title  ',
+      path: '/library/File_Name.mp4',
+      stream: '',
+      expected: 'Scene Title',
+    ),
+    (
+      title: '',
+      path: null,
+      stream: 'https://example.test/Stream_Name.mp4',
+      expected: 'Stream Name',
+    ),
+    (title: '', path: null, stream: '', expected: 'Untitled Scene'),
+  ]) {
+    test(
+      'notification keeps display title ${titleCase.expected} after duration refresh (${titleCase.title})',
+      () async {
+        final notifier = container.read(playerStateProvider.notifier);
+        final scene = createTestScene('notification-title').copyWith(
+          title: titleCase.title,
+          path: titleCase.path,
+          paths: ScenePaths(
+            screenshot: '',
+            preview: '',
+            stream: titleCase.stream,
+          ),
+        );
+
+        await notifier.attachController(scene, mockPlayer, mockVideoController);
+        expect(app.mediaHandler!.mediaItem.value?.title, titleCase.expected);
+
+        const duration = Duration(minutes: 2);
+        when(mockPlayer.state).thenReturn(PlayerStateData(duration: duration));
+        durationStream.add(duration);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(app.mediaHandler!.mediaItem.value?.title, titleCase.expected);
+        expect(app.mediaHandler!.mediaItem.value?.duration, duration);
+      },
+    );
+  }
+
   test(
     'notification duration refreshes when the player discovers it',
     () async {

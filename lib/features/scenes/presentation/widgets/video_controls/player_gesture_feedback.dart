@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/presentation/widgets/frosted_surface.dart';
+
 /// A centered overlay widget that provides visual feedback for video player gestures.
 ///
 /// Displays an icon and a text label (e.g., speed or volume level) with smooth
@@ -28,23 +30,17 @@ class PlayerGestureFeedback extends StatelessWidget {
           duration: const Duration(milliseconds: 250),
           curve: Curves.elasticOut,
           child: Center(
-            child: Padding(
+            child: FrostedSurface(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              borderRadius: BorderRadius.circular(16),
+              // The glass capsule carries legibility over the video, which is
+              // why the label no longer needs its own drop shadow.
+              tint: Colors.black.withValues(alpha: 0.55),
+              border: Border.all(color: Colors.white.withAlpha(23)),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 32,
-                    shadows: const [
-                      Shadow(
-                        blurRadius: 8,
-                        color: Colors.black26,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
+                  Icon(icon, color: Colors.white, size: 32),
                   const SizedBox(height: 8),
                   Text(
                     label,
@@ -53,13 +49,6 @@ class PlayerGestureFeedback extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 6,
-                          color: Colors.black26,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
                     ),
                   ),
                 ],

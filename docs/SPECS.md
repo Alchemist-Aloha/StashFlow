@@ -62,14 +62,40 @@ sheets, saved-filter UI, `StashImage`, and common state views.
 - Layout must react immediately to `appGlobalScaleProvider` changes without
   overflow at supported scale extremes.
 - Card titles use the already scaled `context.dimensions.cardTitleFontSize` once.
+- Primary list-page app-bar titles keep the larger list title size. Performer,
+  studio, tag, and gallery details omit the app-bar heading while keeping
+  navigation and toolbar actions; their entity identity remains in the content.
+  Other detail pages use the standard AppBar title style.
+- View-all media grids for performers, studios, tags, and groups, and view-all
+  gallery grids for performers, studios, and tags, use the owning entity name
+  as the app-bar title. Resolve names from entity details for both nested and
+  legacy direct routes; use localized Media or Galleries labels while the name
+  is unavailable or blank.
+- Entity view-all media and gallery grids and Gallery Details show search as
+  their only app-bar action, alongside standard back navigation. Sort, filter,
+  and saved-filter controls remain in the bottom action pill; these pages omit
+  app-bar refresh, Tools, and Settings shortcuts while retaining pull-to-refresh.
 - Use capability and available-width checks instead of assuming mobile behavior
   from a platform name.
+- Translucent surfaces use the shared `FrostedSurface` recipe rather than
+  hand-rolled `BackdropFilter` + `Container` pairs, and apply it only where
+  content passes behind the surface. Opaque fills omit the backdrop blur layer
+  while retaining their tint, clipping, border, shadow, and layout.
+- A surface that floats over scrolling content must publish its height as an
+  inset (scroll padding, or `MediaQuery` bottom padding) so no content is
+  permanently hidden behind it.
+- Floating list actions and pull-up panels clear the mini-player inset. The
+  shell publishes its floating band in both bottom `padding` and `viewPadding`
+  so default Scaffold FAB placement also clears it. Pages
+  inherit the shell body's remaining safe area; system padding already consumed
+  by the navigation bar must not be restored below their content or sheets.
 
 Canonical implementation:
 
 - `lib/core/presentation/theme/app_theme.dart`
 - `lib/core/presentation/providers/layout_settings_provider.dart`
 - `lib/core/utils/responsive.dart`
+- `lib/core/presentation/widgets/frosted_surface.dart`
 
 ### Theme personalization
 
@@ -235,6 +261,13 @@ overlays, context actions, and optional performer avatars. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
 scaling.
 
+Square-video scene thumbnails retain their native 1:1 frame in grid and list
+layouts on all platforms. If the decoded cover image is also square, stretch
+its painting vertically to 1:2 and crop the top and bottom to fill that frame;
+image loading must not change the card's layout bounds. Non-square covers keep
+their normal fit. Other uniform-grid thumbnails use 16:9; list and masonry
+thumbnails follow the source proportions, clamped to the supported card range.
+
 Hover scrubbing is enabled only for pointer-capable environments and only when
 sprite data is available. Touch scrolling and card activation must remain
 reliable when scrubbing is unavailable.
@@ -250,6 +283,15 @@ Layout contract:
 - At 768 logical pixels and above, identity, actions, and supporting metadata
   use the responsive large-screen composition.
 - Header actions remain reachable without crowding the title or studio.
+- Rating, add-O, details, download (where supported), and More share one action
+  row directly on the page background, without a surrounding panel backdrop.
+  The O-count button uses an unfilled icon-and-count treatment.
+  At narrow widths or large UI scales, the row scrolls horizontally instead
+  of wrapping or shrinking touch targets. Desktop-capable layouts at non-mobile
+  widths (600 logical pixels and above) show add marker, edit, refresh, and delete
+  directly in the row, without More. Smaller or touch-only layouts use More to
+  open a bottom panel containing add marker, edit, delete, and desktop refresh;
+  selecting an action closes the panel before opening its dialog or page.
 - On touch, dragging the scene title previews previous/next navigation with
   title movement and a directional chevron; completing the swipe starts the
   adjacent scene in the active queue. At queue ends, the title resists the drag
@@ -269,7 +311,22 @@ scene date. Full birthdates account for whether the birthday had occurred;
 year-only birthdates use calendar-year subtraction. Invalid, missing, or
 pre-birth dates omit the suffix without triggering extra performer requests.
 
+Performer and Studio Details group unfilled favorite, shared rating, and edit
+buttons in a single row below the performer identity chips or studio name.
+Header padding and action spacing follow the scaled theme dimensions. Aliases
+sit close to the performer identity with half the small theme spacing. Rating
+changes use the entity repository, refresh details, and invalidate affected
+lists after confirmation; cancellation or failed saves retain the confirmed
+value, with localized feedback on failure.
+
 ### Scene rating and metadata mutation
+
+Interactive rating entry points share `RatingButton` and `RatingPicker`. A single
+star opens a popup editor with five stars, fractional-rating selection, Clear,
+and Apply/Cancel. Ratings use the server's 0–100 scale; cancelling leaves the
+confirmed rating unchanged. Image metadata panels, including card long-press
+details, are read-only and omit rating controls. Fullscreen image rating retains
+its image/gallery target selector.
 
 Scene rating and metadata edits go through the scene repository. Successful
 mutations update or invalidate both details and affected lists. Failed mutations
@@ -280,9 +337,24 @@ leave the last confirmed value visible and provide localized feedback.
 Images and Galleries are separate top-level features with independent filters,
 sorting, pagination, and layout state.
 
+Gallery Details exposes the shared single-star rating button in both its expanded
+and collapsed headers, including for unrated galleries. The expanded section
+fills the available content width, retaining scaled theme padding. Both headers
+show the title and metadata without a cover thumbnail beside the title. The unfilled
+details button sits beside the rating button, with the image count immediately
+after it in the expanded header's action row, wrapping when space is limited.
+Confirmed rating changes
+refresh gallery details and update the gallery list without reshuffling it;
+failures retain the confirmed value and show localized feedback. Gallery card
+long-press and More actions open the same read-only metadata sheet as the details
+page, with no rating editor in that sheet.
+
 The fullscreen image viewer supports:
 
 - previous/next navigation with correct endpoint behavior;
+- responsive manual transitions independent of slideshow timing, with repeated
+  keyboard input advancing from the intended destination and touch swipes
+  resynchronizing navigation to the displayed page;
 - zoom and pan;
 - authenticated original-image loading;
 - download/save actions with platform-appropriate permission handling;
@@ -309,6 +381,8 @@ Responsibilities:
 
 - `video_player_provider.dart` owns session lifecycle and global player state.
 - `SceneVideoPlayer` decides when an inline scene may acquire playback.
+- Inactive inline players show the scene screenshot through `StashImage`, with
+  a readable control scrim and the normal missing/failed-image fallback.
 - Inactive inline placeholders keep the Back control in the active inline
   player's top-left position, including while playback starts.
 - `PlayerSurface` owns shared visual rendering, controls, transforms, subtitles,
@@ -452,6 +526,9 @@ The Android media session publishes current title, artwork, duration, position,
 playing state, and supported actions. Notification seeking performs true player
 seeks and keeps position/duration synchronized. Playback completion follows the
 configured end behavior. The notification intentionally has no Stop action.
+Notification titles use the same scene display title as the app: trimmed title,
+then the cleaned file-path stem, then the stream-path stem, then the default
+scene label. Artwork publication and duration refreshes preserve this fallback.
 
 Artwork caching must avoid deletion races while notification metadata still
 references a file.

@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../core/presentation/theme/app_theme.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/utils/l10n_extensions.dart';
 import '../../../core/utils/environment.dart' as env;
@@ -393,13 +392,40 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         )
         .toList();
 
+    // The mini player floats over the library instead of pushing it: content
+    // runs behind the frosted band (that is what its blur is for) and pages
+    // reserve the band's height as bottom inset through the media query, so
+    // nothing ends up permanently hidden under the glass.
+    final miniPlayerVisible = !hideMiniPlayer && activeSceneId != null;
+
     Widget bodyContent = Stack(
       children: [
         Positioned.fill(
-          bottom: (!hideMiniPlayer && activeSceneId != null) ? 66.0 : 0.0,
-          child: RepaintBoundary(child: navigationShell),
+          child: Builder(
+            builder: (bodyContext) {
+              // The scaffold has already consumed the system bottom inset in
+              // its navigation bar. Keep both inset fields in sync: Scaffold's
+              // floating-action-button location uses viewPadding for its safe
+              // bottom margin, while it replaces padding.bottom with viewInsets.
+              final mediaQuery = MediaQuery.of(bodyContext);
+              return MediaQuery(
+                data: miniPlayerVisible
+                    ? mediaQuery.copyWith(
+                        padding: mediaQuery.padding.copyWith(
+                          bottom: mediaQuery.padding.bottom + MiniPlayer.height,
+                        ),
+                        viewPadding: mediaQuery.viewPadding.copyWith(
+                          bottom:
+                              mediaQuery.viewPadding.bottom + MiniPlayer.height,
+                        ),
+                      )
+                    : mediaQuery,
+                child: RepaintBoundary(child: navigationShell),
+              );
+            },
+          ),
         ),
-        if (!hideMiniPlayer && activeSceneId != null)
+        if (miniPlayerVisible)
           const Positioned(left: 0, right: 0, bottom: 0, child: MiniPlayer()),
       ],
     );
@@ -412,10 +438,6 @@ class _ShellPageState extends ConsumerState<ShellPage> {
             onDestinationSelected: onDestinationSelected,
             labelType: NavigationRailLabelType.selected,
             useIndicator: true,
-            indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
-            indicatorShape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-            ),
             destinations: navigationRailDestinations,
           ),
           const VerticalDivider(thickness: 1, width: 1),

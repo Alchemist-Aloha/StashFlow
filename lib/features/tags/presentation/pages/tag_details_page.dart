@@ -11,7 +11,9 @@ import '../providers/tag_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 
+import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
@@ -25,19 +27,9 @@ class TagDetailsPage extends ConsumerWidget {
   const TagDetailsPage({required this.tagId, super.key});
 
   Widget _buildSectionContainer(BuildContext context, Widget child) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
-      elevation: 0,
-      color: Theme.of(
-        context,
-      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
-        child: child,
-      ),
+    return SectionPanel(
+      margin: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
+      child: child,
     );
   }
 
@@ -69,7 +61,7 @@ class TagDetailsPage extends ConsumerWidget {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.details_tag)),
+      appBar: AppBar(),
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomTag(context, ref),
@@ -109,6 +101,11 @@ class TagDetailsPage extends ConsumerWidget {
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
+              // Content passes behind the frosted mini player; this inset keeps
+              // the last rows reachable while the player is visible.
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.paddingOf(context).bottom,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -192,9 +189,7 @@ class TagDetailsPage extends ConsumerWidget {
                                 Text(
                                   tag.description!,
                                   style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurface.withValues(
-                                      alpha: 0.8,
-                                    ),
+                                    color: context.colors.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -252,9 +247,7 @@ class TagDetailsPage extends ConsumerWidget {
                                 error: (err, stack) => Text(
                                   context.l10n.common_error(err.toString()),
                                   style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurface.withValues(
-                                      alpha: 0.7,
-                                    ),
+                                    color: context.colors.onSurfaceVariant,
                                   ),
                                 ),
                               ),
@@ -300,9 +293,7 @@ class TagDetailsPage extends ConsumerWidget {
                           error: (err, stack) => Text(
                             context.l10n.common_error(err.toString()),
                             style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.7,
-                              ),
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -315,8 +306,10 @@ class TagDetailsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) =>
-            Center(child: Text(context.l10n.common_error(err.toString()))),
+        error: (err, stack) => ErrorStateView(
+          message: context.l10n.common_error(err.toString()),
+          onRetry: () => ref.invalidate(tagDetailsProvider(tagId)),
+        ),
       ),
     );
   }

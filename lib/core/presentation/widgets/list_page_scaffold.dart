@@ -10,6 +10,8 @@ import '../theme/app_theme.dart';
 import '../../utils/responsive.dart';
 import '../providers/desktop_capabilities_provider.dart';
 import 'error_state_view.dart';
+import 'frosted_surface.dart';
+import 'section_header.dart';
 import '../../utils/pagination.dart';
 import '../../data/preferences/search_history_provider.dart';
 import '../../../features/scenes/presentation/widgets/scene_card.dart';
@@ -29,6 +31,9 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   const ListPageScaffold({
     super.key,
     required this.title,
+    this.titleTextStyle,
+    this.showAppBarTitle = true,
+    this.searchOnlyAppBar = false,
     required this.searchHint,
     required this.onSearchChanged,
     required this.provider,
@@ -55,8 +60,18 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.loadingItemBuilder,
   });
 
-  /// The page title displayed in the AppBar.
+  /// Page identity used for the visible title and default search-history key.
   final String title;
+
+  /// Hides the visible heading while retaining page identity and toolbar actions.
+  final bool showAppBarTitle;
+
+  /// Keeps search as the only app-bar action, retaining leading navigation.
+  /// Bottom action-pill controls and pull-to-refresh remain available.
+  final bool searchOnlyAppBar;
+
+  /// Overrides the larger list title style when used by an embedded detail page.
+  final TextStyle? titleTextStyle;
 
   /// Whether to use a dynamic height Masonry grid layout instead of fixed ratio.
   final bool useMasonry;
@@ -95,7 +110,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   /// Delegate for grid layouts. If null, a [ListView] is used.
   final SliverGridDelegate? gridDelegate;
 
-  /// Custom actions for the AppBar.
+  /// Controls displayed in the floating bottom action pill.
   final List<Widget> actions;
 
   /// Optional widget displayed between the AppBar and the list (e.g., a filter chip row).
@@ -231,347 +246,396 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
         ? responsiveDelegate
         : null;
 
-    final appBar = AppBar(
-      scrolledUnderElevation: 4.0,
-      title: Tooltip(
-        message: context.l10n.stats_library_stats_tooltip,
-        child: Material(
-          color: Colors.transparent,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-          child: InkWell(
-            onLongPress: () {
-              HapticFeedback.lightImpact();
-              StatsFloatingPanel.show(context);
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.dimensions.spacingSmall,
-                vertical: context.dimensions.spacingSmall / 2,
-              ),
-              child: Text(
-                widget.title,
-                style: context.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      actions: [
-        if (widget.onSortPressed != null)
-          IconButton(
-            icon: const Icon(Icons.sort),
-            onPressed: widget.onSortPressed,
-            tooltip: context.l10n.common_sort,
-          ),
-        if (widget.onFilterPressed != null)
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: widget.onFilterPressed,
-            tooltip: context.l10n.common_filter,
-          ),
-        if (isDesktop && widget.onRefresh != null)
-          IconButton(
-            key: const Key('list_page_refresh'),
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: widget.onRefresh,
-            tooltip: context.l10n.common_refresh,
-          ),
-        SearchAnchor(
-          searchController: _searchController,
-          viewOnClose: () {
-            final text = _searchController.text;
-            if (text != _lastSubmittedText) {
-              _lastSubmittedText = text;
-              setState(() {
-                _currentQuery = text.isEmpty ? null : text;
-              });
-              widget.onSearchChanged(text);
-              if (text.isNotEmpty) {
-                ref
-                    .read(searchHistoryProvider(_historyKey).notifier)
-                    .addQuery(text);
-              }
-            }
-          },
-          builder: (BuildContext context, SearchController controller) {
-            return IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                _lastSubmittedText = _searchController.text;
-                controller.openView();
-              },
-              tooltip: context.l10n.common_search,
-            );
-          },
-          viewHintText: widget.searchHint,
-          viewOnSubmitted: _searchController.closeView,
-          suggestionsBuilder:
-              (BuildContext context, SearchController controller) {
-                return [
-                  Consumer(
-                    builder: (context, ref, _) {
-                      final history = ref.watch(
-                        searchHistoryProvider(_historyKey),
-                      );
-                      return Column(
-                        children: [
-                          if (history.isNotEmpty)
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: context.dimensions.spacingMedium,
-                                vertical: context.dimensions.spacingSmall,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    context.l10n.recent_searches,
-                                    style: context.textTheme.titleSmall
-                                        ?.copyWith(
-                                          color: context.colors.onSurface
-                                              .withValues(alpha: 0.7),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      ref
-                                          .read(
-                                            searchHistoryProvider(
-                                              _historyKey,
-                                            ).notifier,
-                                          )
-                                          .clearAll();
-                                    },
-                                    child: Text(
-                                      context.l10n.common_clear_history,
-                                    ),
-                                  ),
-                                ],
-                              ),
+    final appBar = _FrostedAppBar(
+      bar: AppBar(
+        // The frosted layer behind the bar is the elevation: no surface tint
+        // and no scroll lift, so the header carries one depth signal.
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: widget.showAppBarTitle
+            ? Tooltip(
+                message: context.l10n.stats_library_stats_tooltip,
+                child: Material(
+                  color: Colors.transparent,
+                  clipBehavior: Clip.antiAlias,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  child: InkWell(
+                    onLongPress: () {
+                      HapticFeedback.lightImpact();
+                      StatsFloatingPanel.show(context);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.dimensions.spacingSmall,
+                        vertical: context.dimensions.spacingSmall / 2,
+                      ),
+                      child: Text(
+                        widget.title,
+                        style:
+                            widget.titleTextStyle ??
+                            context.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: -0.5,
                             ),
-                          ...history.map((item) {
-                            return ListTile(
-                              leading: const Icon(Icons.history),
-                              title: Text(item),
-                              trailing: IconButton(
-                                tooltip: context.l10n.common_close,
-                                icon: const Icon(Icons.close),
-                                onPressed: () {
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : null,
+        actions: [
+          if (!widget.searchOnlyAppBar && widget.onSortPressed != null)
+            IconButton(
+              icon: const Icon(Icons.sort),
+              onPressed: widget.onSortPressed,
+              tooltip: context.l10n.common_sort,
+            ),
+          if (!widget.searchOnlyAppBar && widget.onFilterPressed != null)
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: widget.onFilterPressed,
+              tooltip: context.l10n.common_filter,
+            ),
+          if (!widget.searchOnlyAppBar && isDesktop && widget.onRefresh != null)
+            IconButton(
+              key: const Key('list_page_refresh'),
+              icon: const Icon(Icons.refresh_rounded),
+              onPressed: widget.onRefresh,
+              tooltip: context.l10n.common_refresh,
+            ),
+          SearchAnchor(
+            searchController: _searchController,
+            viewOnClose: () {
+              final text = _searchController.text;
+              if (text != _lastSubmittedText) {
+                _lastSubmittedText = text;
+                setState(() {
+                  _currentQuery = text.isEmpty ? null : text;
+                });
+                widget.onSearchChanged(text);
+                if (text.isNotEmpty) {
+                  ref
+                      .read(searchHistoryProvider(_historyKey).notifier)
+                      .addQuery(text);
+                }
+              }
+            },
+            builder: (BuildContext context, SearchController controller) {
+              return IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  _lastSubmittedText = _searchController.text;
+                  controller.openView();
+                },
+                tooltip: context.l10n.common_search,
+              );
+            },
+            viewHintText: widget.searchHint,
+            viewOnSubmitted: _searchController.closeView,
+            suggestionsBuilder:
+                (BuildContext context, SearchController controller) {
+                  return [
+                    Consumer(
+                      builder: (context, ref, _) {
+                        final history = ref.watch(
+                          searchHistoryProvider(_historyKey),
+                        );
+                        return Column(
+                          children: [
+                            if (history.isNotEmpty)
+                              SectionHeader(
+                                title: context.l10n.recent_searches,
+                                actionLabel: context.l10n.common_clear_history,
+                                onViewAll: () {
                                   ref
                                       .read(
                                         searchHistoryProvider(
                                           _historyKey,
                                         ).notifier,
                                       )
-                                      .removeQuery(item);
+                                      .clearAll();
                                 },
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: context.dimensions.spacingMedium,
+                                  vertical: context.dimensions.spacingSmall,
+                                ),
                               ),
-                              onTap: () {
-                                controller.closeView(item);
-                              },
-                            );
-                          }),
-                        ],
-                      );
-                    },
-                  ),
-                ];
-              },
-        ),
-        IconButton(
-          icon: const Icon(Icons.construction),
-          onPressed: () => context.push('/tools'),
-          tooltip: context.l10n.tools,
-        ),
-        IconButton(
-          icon: const Icon(Icons.settings),
-          onPressed: () => context.push('/settings'),
-          tooltip: context.l10n.common_settings,
-        ),
-      ],
+                            ...history.map((item) {
+                              return ListTile(
+                                leading: const Icon(Icons.history),
+                                title: Text(item),
+                                trailing: IconButton(
+                                  tooltip: context.l10n.common_close,
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () {
+                                    ref
+                                        .read(
+                                          searchHistoryProvider(
+                                            _historyKey,
+                                          ).notifier,
+                                        )
+                                        .removeQuery(item);
+                                  },
+                                ),
+                                onTap: () {
+                                  controller.closeView(item);
+                                },
+                              );
+                            }),
+                          ],
+                        );
+                      },
+                    ),
+                  ];
+                },
+          ),
+          if (!widget.searchOnlyAppBar) ...[
+            IconButton(
+              icon: const Icon(Icons.construction),
+              onPressed: () => context.push('/tools'),
+              tooltip: context.l10n.tools,
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () => context.push('/settings'),
+              tooltip: context.l10n.common_settings,
+            ),
+          ],
+        ],
+      ),
     );
-    final body = NotificationListener<UserScrollNotification>(
-      onNotification: (notification) {
-        if (!autoHideTopAppBar || notification.metrics.axis != Axis.vertical) {
+    // Rows pass behind the frosted app bar, which is what gives the blur a job.
+    // The list therefore carries the bar height as *scroll* padding instead of
+    // the whole body being pushed down: the viewport reaches the screen edge and
+    // artwork scrolls under the glass. When a search or sort bar is present it
+    // keeps the inset as a box offset, because that bar is opaque and must stay
+    // clear of the header.
+    Widget buildContent(double topInset) {
+      final topInsetPadding = EdgeInsets.only(top: topInset);
+      final hasLeadingBar = _currentQuery != null || widget.sortBar != null;
+      // Floating chrome (the mini player) publishes its height as a bottom
+      // inset, so the last row can always be scrolled clear of the glass.
+      final bottomInset = MediaQuery.paddingOf(context).bottom;
+      final listPadding = (widget.padding ?? EdgeInsets.zero)
+          .add(hasLeadingBar ? EdgeInsets.zero : topInsetPadding)
+          .add(EdgeInsets.only(bottom: bottomInset));
+
+      return NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          if (!autoHideTopAppBar ||
+              notification.metrics.axis != Axis.vertical) {
+            return false;
+          }
+          if (notification.direction == ScrollDirection.idle) return false;
+          final visible = notification.direction == ScrollDirection.forward;
+          if (visible != _isTopAppBarVisible) {
+            setState(() => _isTopAppBarVisible = visible);
+          }
           return false;
-        }
-        if (notification.direction == ScrollDirection.idle) return false;
-        final visible = notification.direction == ScrollDirection.forward;
-        if (visible != _isTopAppBarVisible) {
-          setState(() => _isTopAppBarVisible = visible);
-        }
-        return false;
-      },
-      child: Listener(
-        onPointerSignal: (pointerSignal) {
-          if (pointerSignal is PointerScrollEvent) {
-            // Horizontal swipe for navigation (Back)
-            if (isDesktop && pointerSignal.scrollDelta.dx.abs() > 30) {
-              final now = DateTime.now();
-              if (_lastHorizontalSwipeTime == null ||
-                  now.difference(_lastHorizontalSwipeTime!) >
-                      _horizontalSwipeThreshold) {
-                if (pointerSignal.scrollDelta.dx < -30) {
-                  // Swipe right (negative dx) -> Go Back
-                  if (context.canPop()) {
-                    _lastHorizontalSwipeTime = now;
-                    context.pop();
+        },
+        child: Listener(
+          onPointerSignal: (pointerSignal) {
+            if (pointerSignal is PointerScrollEvent) {
+              // Horizontal swipe for navigation (Back)
+              if (isDesktop && pointerSignal.scrollDelta.dx.abs() > 30) {
+                final now = DateTime.now();
+                if (_lastHorizontalSwipeTime == null ||
+                    now.difference(_lastHorizontalSwipeTime!) >
+                        _horizontalSwipeThreshold) {
+                  if (pointerSignal.scrollDelta.dx < -30) {
+                    // Swipe right (negative dx) -> Go Back
+                    if (context.canPop()) {
+                      _lastHorizontalSwipeTime = now;
+                      context.pop();
+                    }
                   }
                 }
               }
-            }
 
-            // Vertical scroll for refresh (Pull to refresh on trackpad)
-            if (widget.onRefresh != null &&
-                widget.scrollController != null &&
-                widget.scrollController!.hasClients &&
-                widget.scrollController!.position.pixels <= 0 &&
-                pointerSignal.kind == PointerDeviceKind.trackpad &&
-                pointerSignal.scrollDelta.dy < -50) {
-              widget.onRefresh!();
+              // Vertical scroll for refresh (Pull to refresh on trackpad)
+              if (widget.onRefresh != null &&
+                  widget.scrollController != null &&
+                  widget.scrollController!.hasClients &&
+                  widget.scrollController!.position.pixels <= 0 &&
+                  pointerSignal.kind == PointerDeviceKind.trackpad &&
+                  pointerSignal.scrollDelta.dy < -50) {
+                widget.onRefresh!();
+              }
             }
-          }
-        },
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                if (_currentQuery != null)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: context.dimensions.spacingMedium,
-                      vertical: context.dimensions.spacingSmall,
-                    ),
-                    color: context.colors.surfaceVariant,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: 16 * context.dimensions.fontSizeFactor,
-                        ),
-                        SizedBox(width: context.dimensions.spacingSmall),
-                        Expanded(
-                          child: Text(
-                            context.l10n.common_searching_for(
-                              _currentQuery ?? '',
-                            ),
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        IconButton(
-                          tooltip: context.l10n.common_close,
-                          icon: Icon(
-                            Icons.close,
-                            size: 20 * context.dimensions.fontSizeFactor,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _currentQuery = null;
-                            });
-                            widget.onSearchChanged('');
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                if (widget.sortBar != null) widget.sortBar!,
-                Expanded(
-                  child: widget.provider.when(
-                    data: (items) {
-                      if (items.isEmpty && widget.customBody == null) {
-                        return RefreshIndicator(
-                          onRefresh: widget.onRefresh ?? () async {},
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: SizedBox(
-                              height: MediaQuery.sizeOf(context).height * 0.7,
-                              child: Center(
-                                child: Text(
-                                  widget.emptyMessage == 'No items found'
-                                      ? context.l10n.common_no_items
-                                      : widget.emptyMessage,
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurface.withValues(
-                                      alpha: 0.7,
+          },
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  if (_currentQuery != null || widget.sortBar != null)
+                    Padding(
+                      padding: topInsetPadding,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_currentQuery != null)
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: context.dimensions.spacingMedium,
+                                vertical: context.dimensions.spacingSmall,
+                              ),
+                              color: context.colors.surfaceVariant,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.search,
+                                    size:
+                                        16 * context.dimensions.fontSizeFactor,
+                                  ),
+                                  SizedBox(
+                                    width: context.dimensions.spacingSmall,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      context.l10n.common_searching_for(
+                                        _currentQuery ?? '',
+                                      ),
+                                      style: context.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
+                                  ),
+                                  IconButton(
+                                    tooltip: context.l10n.common_close,
+                                    icon: Icon(
+                                      Icons.close,
+                                      size:
+                                          20 *
+                                          context.dimensions.fontSizeFactor,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _currentQuery = null;
+                                      });
+                                      widget.onSearchChanged('');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (widget.sortBar != null) widget.sortBar!,
+                        ],
+                      ),
+                    ),
+                  Expanded(
+                    child: widget.provider.when(
+                      data: (items) {
+                        if (items.isEmpty && widget.customBody == null) {
+                          return RefreshIndicator(
+                            onRefresh: widget.onRefresh ?? () async {},
+                            child: SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: listPadding,
+                              child: SizedBox(
+                                height: MediaQuery.sizeOf(context).height * 0.7,
+                                child: Center(
+                                  child: Text(
+                                    widget.emptyMessage == 'No items found'
+                                        ? context.l10n.common_no_items
+                                        : widget.emptyMessage,
+                                    textAlign: TextAlign.center,
+                                    style: context.textTheme.bodyMedium
+                                        ?.copyWith(
+                                          color:
+                                              context.colors.onSurfaceVariant,
+                                        ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }
-
-                      int? memCacheWidth;
-                      if (widget.itemBuilder != null) {
-                        if (widget.memCacheWidthBuilder != null) {
-                          memCacheWidth = widget.memCacheWidthBuilder!(
-                            context,
-                            isGrid,
                           );
-                        } else {
-                          if (fixedDelegate != null) {
-                            memCacheWidth =
-                                (screenWidth /
-                                        fixedDelegate.crossAxisCount *
-                                        1.5)
-                                    .toInt();
+                        }
+
+                        int? memCacheWidth;
+                        if (widget.itemBuilder != null) {
+                          if (widget.memCacheWidthBuilder != null) {
+                            memCacheWidth = widget.memCacheWidthBuilder!(
+                              context,
+                              isGrid,
+                            );
                           } else {
-                            memCacheWidth = screenWidth > 600
-                                ? 600
-                                : screenWidth.toInt();
+                            if (fixedDelegate != null) {
+                              memCacheWidth =
+                                  (screenWidth /
+                                          fixedDelegate.crossAxisCount *
+                                          1.5)
+                                      .toInt();
+                            } else {
+                              memCacheWidth = screenWidth > 600
+                                  ? 600
+                                  : screenWidth.toInt();
+                            }
                           }
                         }
-                      }
 
-                      Widget body =
-                          widget.customBody ??
-                          (isGrid
-                              ? LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final horizontalPadding =
-                                        widget.padding
-                                            ?.resolve(
-                                              Directionality.of(context),
-                                            )
-                                            .horizontal ??
-                                        0.0;
-                                    if (!constraints.hasBoundedWidth ||
-                                        constraints.maxWidth -
-                                                horizontalPadding <=
-                                            0) {
-                                      return const SizedBox.shrink();
-                                    }
+                        Widget body =
+                            widget.customBody ??
+                            (isGrid
+                                ? LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final horizontalPadding =
+                                          widget.padding
+                                              ?.resolve(
+                                                Directionality.of(context),
+                                              )
+                                              .horizontal ??
+                                          0.0;
+                                      if (!constraints.hasBoundedWidth ||
+                                          constraints.maxWidth -
+                                                  horizontalPadding <=
+                                              0) {
+                                        return const SizedBox.shrink();
+                                      }
 
-                                    if (widget.useMasonry) {
-                                      return MasonryGridView.builder(
+                                      if (widget.useMasonry) {
+                                        return MasonryGridView.builder(
+                                          controller: widget.scrollController,
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(),
+                                          padding: listPadding,
+                                          cacheExtent: masonryCacheExtent,
+                                          gridDelegate:
+                                              SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount:
+                                                    fixedDelegate
+                                                        ?.crossAxisCount ??
+                                                    1,
+                                              ),
+                                          mainAxisSpacing:
+                                              fixedDelegate?.mainAxisSpacing ??
+                                              0.0,
+                                          crossAxisSpacing:
+                                              fixedDelegate?.crossAxisSpacing ??
+                                              0.0,
+                                          itemCount: items.length,
+                                          itemBuilder: (context, index) =>
+                                              widget.itemBuilder!(
+                                                context,
+                                                items[index],
+                                                memCacheWidth,
+                                                null,
+                                              ),
+                                        );
+                                      }
+
+                                      return GridView.builder(
                                         controller: widget.scrollController,
                                         physics:
                                             const AlwaysScrollableScrollPhysics(),
-                                        padding: widget.padding,
-                                        cacheExtent: masonryCacheExtent,
-                                        gridDelegate:
-                                            SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount:
-                                                  fixedDelegate
-                                                      ?.crossAxisCount ??
-                                                  1,
+                                        padding: listPadding,
+                                        scrollCacheExtent:
+                                            const ScrollCacheExtent.viewport(
+                                              2.0,
                                             ),
-                                        mainAxisSpacing:
-                                            fixedDelegate?.mainAxisSpacing ??
-                                            0.0,
-                                        crossAxisSpacing:
-                                            fixedDelegate?.crossAxisSpacing ??
-                                            0.0,
+                                        gridDelegate: responsiveDelegate!,
                                         itemCount: items.length,
                                         itemBuilder: (context, index) =>
                                             widget.itemBuilder!(
@@ -581,139 +645,131 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                               null,
                                             ),
                                       );
-                                    }
+                                    },
+                                  )
+                                : ListView.builder(
+                                    controller: widget.scrollController,
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    padding: listPadding,
+                                    scrollCacheExtent:
+                                        const ScrollCacheExtent.viewport(2.0),
+                                    itemCount: items.length,
+                                    itemBuilder: (context, index) =>
+                                        widget.itemBuilder!(
+                                          context,
+                                          items[index],
+                                          memCacheWidth,
+                                          null,
+                                        ),
+                                  ));
 
-                                    return GridView.builder(
-                                      controller: widget.scrollController,
-                                      physics:
-                                          const AlwaysScrollableScrollPhysics(),
-                                      padding: widget.padding,
-                                      scrollCacheExtent:
-                                          const ScrollCacheExtent.viewport(2.0),
-                                      gridDelegate: responsiveDelegate!,
-                                      itemCount: items.length,
-                                      itemBuilder: (context, index) =>
-                                          widget.itemBuilder!(
-                                            context,
-                                            items[index],
-                                            memCacheWidth,
-                                            null,
-                                          ),
-                                    );
-                                  },
-                                )
-                              : ListView.builder(
-                                  controller: widget.scrollController,
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  padding: widget.padding,
-                                  scrollCacheExtent:
-                                      const ScrollCacheExtent.viewport(2.0),
-                                  itemCount: items.length,
-                                  itemBuilder: (context, index) =>
-                                      widget.itemBuilder!(
-                                        context,
-                                        items[index],
-                                        memCacheWidth,
-                                        null,
-                                      ),
-                                ));
+                        // A custom body owns its own scroll view, so it keeps the
+                        // bar height as a box offset rather than scroll padding.
+                        if (widget.customBody != null) {
+                          body = Padding(padding: topInsetPadding, child: body);
+                        }
 
-                      if (widget.onRefresh != null) {
-                        body = RefreshIndicator(
-                          onRefresh: widget.onRefresh!,
+                        if (widget.onRefresh != null) {
+                          body = RefreshIndicator(
+                            onRefresh: widget.onRefresh!,
+                            // Keep the spinner clear of the frosted header.
+                            edgeOffset: hasLeadingBar ? 0.0 : topInset,
+                            child: body,
+                          );
+                        }
+
+                        return NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification scrollInfo) {
+                            if (shouldLoadNextPage(scrollInfo.metrics)) {
+                              final now = DateTime.now();
+                              if (_lastFetchTime == null ||
+                                  now.difference(_lastFetchTime!) >
+                                      _fetchThreshold) {
+                                _lastFetchTime = now;
+                                widget.onFetchNextPage?.call();
+                              }
+                            }
+                            return false;
+                          },
                           child: body,
                         );
-                      }
+                      },
+                      loading: () {
+                        final loadingItemBuilder = widget.loadingItemBuilder;
 
-                      return NotificationListener<ScrollNotification>(
-                        onNotification: (ScrollNotification scrollInfo) {
-                          if (shouldLoadNextPage(scrollInfo.metrics)) {
-                            final now = DateTime.now();
-                            if (_lastFetchTime == null ||
-                                now.difference(_lastFetchTime!) >
-                                    _fetchThreshold) {
-                              _lastFetchTime = now;
-                              widget.onFetchNextPage?.call();
-                            }
-                          }
-                          return false;
-                        },
-                        child: body,
-                      );
-                    },
-                    loading: () {
-                      final loadingItemBuilder = widget.loadingItemBuilder;
-
-                      if (isGrid) {
-                        return GridView.builder(
-                          padding: widget.padding,
+                        if (isGrid) {
+                          return GridView.builder(
+                            padding: listPadding,
+                            scrollCacheExtent: const ScrollCacheExtent.viewport(
+                              1.0,
+                            ),
+                            gridDelegate: responsiveDelegate!,
+                            itemCount: 8,
+                            itemBuilder: (context, index) =>
+                                loadingItemBuilder != null
+                                ? loadingItemBuilder(context, true, index)
+                                : SceneCard.skeleton(isGrid: true),
+                          );
+                        }
+                        return ListView.builder(
+                          padding: listPadding,
                           scrollCacheExtent: const ScrollCacheExtent.viewport(
                             1.0,
                           ),
-                          gridDelegate: responsiveDelegate!,
-                          itemCount: 8,
+                          itemCount: 5,
                           itemBuilder: (context, index) =>
                               loadingItemBuilder != null
-                              ? loadingItemBuilder(context, true, index)
-                              : SceneCard.skeleton(isGrid: true),
+                              ? loadingItemBuilder(context, false, index)
+                              : SceneCard.skeleton(isGrid: false),
                         );
-                      }
-                      return ListView.builder(
-                        padding: widget.padding,
-                        scrollCacheExtent: const ScrollCacheExtent.viewport(
-                          1.0,
-                        ),
-                        itemCount: 5,
-                        itemBuilder: (context, index) =>
-                            loadingItemBuilder != null
-                            ? loadingItemBuilder(context, false, index)
-                            : SceneCard.skeleton(isGrid: false),
-                      );
-                    },
-                    error: (err, stack) => ErrorStateView(
-                      message: context.l10n.common_error(err.toString()),
-                      onRetry: widget.onRefresh,
+                      },
+                      error: (err, stack) => ErrorStateView(
+                        message: context.l10n.common_error(err.toString()),
+                        onRetry: widget.onRefresh,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            if (widget.actions.isNotEmpty)
-              Positioned(
-                bottom: 16,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.colors.surfaceVariant.withValues(
-                        alpha: 0.95,
+                ],
+              ),
+              if (widget.actions.isNotEmpty)
+                Positioned(
+                  bottom: bottomInset + 16,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: FrostedSurface(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 4,
                       ),
                       borderRadius: BorderRadius.circular(32),
+                      tint: context.colors.surfaceVariant.withValues(
+                        alpha: AppTheme.frostedChromeAlpha,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.shadow.withValues(alpha: 0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
                       ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: widget.actions,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: widget.actions,
+                      ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+
+    final body = buildContent(0);
 
     if (!autoHideTopAppBar || widget.hideAppBar) {
       return Scaffold(
@@ -727,15 +783,15 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     return Scaffold(
       body: Stack(
         children: [
-          AnimatedPadding(
-            duration: kThemeAnimationDuration,
-            curve: Curves.easeOutCubic,
-            padding: EdgeInsets.only(
-              top:
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(
+              end:
                   statusBarHeight +
                   (_isTopAppBarVisible ? appBar.preferredSize.height : 0),
             ),
-            child: body,
+            duration: kThemeAnimationDuration,
+            curve: Curves.easeOutCubic,
+            builder: (context, topInset, _) => buildContent(topInset),
           ),
           Positioned(
             top: 0,
@@ -752,6 +808,47 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
         ],
       ),
       floatingActionButton: widget.floatingActionButton,
+    );
+  }
+}
+
+/// An [AppBar] sitting on a frosted backdrop.
+///
+/// The frost is painted behind the bar instead of inside its `flexibleSpace`,
+/// so it takes the bar's real height and the automatic status-bar inset without
+/// fighting unbounded layout constraints; the bar itself goes transparent so
+/// the glass and the rows scrolling under it are what the header is made of.
+class _FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _FrostedAppBar({required this.bar});
+
+  final AppBar bar;
+
+  @override
+  Size get preferredSize => bar.preferredSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: FrostedSurface(
+            tint: context.colors.surface.withValues(
+              alpha: AppTheme.frostedChromeAlpha,
+            ),
+            border: Border(
+              bottom: BorderSide(
+                color: colorScheme.outlineVariant.withValues(
+                  alpha: AppTheme.frostedHairlineAlpha,
+                ),
+              ),
+            ),
+            child: const SizedBox.shrink(),
+          ),
+        ),
+        bar,
+      ],
     );
   }
 }

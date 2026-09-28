@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stash_app_flutter/core/presentation/widgets/rating_bottom_sheet.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
     as entity;
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
@@ -10,7 +10,7 @@ import 'package:stash_app_flutter/features/images/presentation/widgets/image_det
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
-  testWidgets('long press opens image details with rating controls', (
+  testWidgets('long press opens image details without rating controls', (
     tester,
   ) async {
     final repository = MockGraphQLImageRepository();
@@ -37,21 +37,19 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.byType(RatingBottomSheet), findsOneWidget);
+    expect(find.byType(ImageDetailsBottomSheet), findsOneWidget);
     expect(find.byType(ImageDetailsContent), findsOneWidget);
     expect(find.text('Image Details'), findsOneWidget);
     expect(find.text('/images/image-1.jpg'), findsOneWidget);
-    final ratingSheet = find.byType(RatingBottomSheet);
+    expect(find.text('Image title'), findsOneWidget);
+    final detailsSheet = find.byType(ImageDetailsBottomSheet);
     expect(
-      find.descendant(of: ratingSheet, matching: find.byIcon(Icons.star)),
-      findsNWidgets(3),
+      find.descendant(of: detailsSheet, matching: find.byType(RatingButton)),
+      findsNothing,
     );
-    expect(
-      find.descendant(
-        of: ratingSheet,
-        matching: find.byIcon(Icons.star_border),
-      ),
-      findsNWidgets(2),
-    );
+    expect(find.byType(RatingPicker), findsNothing);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ImageDetailsBottomSheet), findsNothing);
   });
 }

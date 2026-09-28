@@ -121,7 +121,7 @@ class ServerProfileCard extends ConsumerWidget {
           data: (version) => Icon(
             Icons.check_circle_outline,
             size: 16,
-            color: Colors.green[700],
+            color: Theme.of(context).colorScheme.primary,
           ),
           loading: () => const SizedBox(
             width: 16,
@@ -144,7 +144,7 @@ class ServerProfileCard extends ConsumerWidget {
             ),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: status.when(
-                data: (_) => Colors.green[700],
+                data: (_) => Theme.of(context).colorScheme.primary,
                 loading: () => null,
                 error: (_, _) => Theme.of(context).colorScheme.error,
               ),

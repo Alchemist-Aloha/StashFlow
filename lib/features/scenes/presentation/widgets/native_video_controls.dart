@@ -17,6 +17,7 @@ import '../../../../core/presentation/providers/desktop_capabilities_provider.da
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/frosted_surface.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
@@ -515,25 +516,25 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
           scale: isVisible ? 1.0 : 0.96,
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOutCubic,
-          child: Container(
+          child: FrostedSurface(
             key: const Key('video_seek_feedback'),
             constraints: BoxConstraints(minHeight: dimensions.buttonHeight),
             padding: EdgeInsets.symmetric(
               horizontal: dimensions.spacingMedium,
               vertical: dimensions.spacingSmall,
             ),
-            decoration: BoxDecoration(
-              color: Colors.black.withAlpha(184),
-              borderRadius: BorderRadius.circular(dimensions.spacingMedium),
-              border: Border.all(color: Colors.white.withAlpha(36)),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black38,
-                  blurRadius: 16,
-                  offset: Offset(0, 6),
-                ),
-              ],
-            ),
+            borderRadius: BorderRadius.circular(dimensions.spacingMedium),
+            // Media chrome keeps the player's dark tint rather than the theme
+            // surface: it must hold white type over any frame of the video.
+            tint: Colors.black.withValues(alpha: 0.55),
+            border: Border.all(color: Colors.white.withAlpha(36)),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black38,
+                blurRadius: 16,
+                offset: Offset(0, 6),
+              ),
+            ],
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -728,17 +729,15 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
     String label, {
     bool compact = false,
   }) {
-    return Container(
+    return FrostedSurface(
       constraints: BoxConstraints(minWidth: compact ? 48 : 54),
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 7 : 8,
         vertical: compact ? 3 : 4,
       ),
-      decoration: BoxDecoration(
-        color: Colors.black.withAlpha(130),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withAlpha(24)),
-      ),
+      borderRadius: BorderRadius.circular(999),
+      tint: Colors.black.withValues(alpha: 0.55),
+      border: Border.all(color: Colors.white.withAlpha(24)),
       child: Text(
         label,
         textAlign: TextAlign.center,

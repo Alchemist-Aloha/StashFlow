@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/studio_performer_info_sections.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/image.dart' as entity;
@@ -44,7 +45,7 @@ class ImageDetailsBottomSheet extends StatelessWidget {
                     children: [
                       Text(
                         context.l10n.details_image,
-                        style: context.textTheme.titleLarge?.copyWith(
+                        style: context.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -74,7 +75,7 @@ class ImageDetailsBottomSheet extends StatelessWidget {
   }
 }
 
-/// Metadata sections shared by the information-only and rating sheets.
+/// Metadata sections used by image details sheets.
 class ImageDetailsContent extends StatelessWidget {
   const ImageDetailsContent({required this.image, super.key});
 
@@ -163,34 +164,8 @@ class _SectionCard extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    final dims = context.dimensions;
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(dims.spacingMedium),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(dims.spacingMedium),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.35),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: context.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: dims.spacingSmall),
-          child,
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      SectionPanel(title: title, child: child);
 }
 
 class _MetaRow extends StatelessWidget {

@@ -28,6 +28,7 @@ class _RetryingCachedImage extends StatefulWidget {
     this.fit,
     this.memCacheWidth,
     this.memCacheHeight,
+    this.frameBuilder,
   });
 
   final String imageUrl;
@@ -38,6 +39,7 @@ class _RetryingCachedImage extends StatefulWidget {
   final BoxFit? fit;
   final int? memCacheWidth;
   final int? memCacheHeight;
+  final ImageFrameBuilder? frameBuilder;
   static const int maxRetries = 2;
   static const retryBackoff = Duration(seconds: 30);
   static const maxBackoffEntries = 256;
@@ -121,6 +123,22 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
       fit: widget.fit,
       memCacheWidth: widget.memCacheWidth,
       memCacheHeight: widget.memCacheHeight,
+      imageBuilder: widget.frameBuilder == null
+          ? null
+          : (context, provider) => Image(
+              image: ResizeImage.resizeIfNeeded(
+                widget.memCacheWidth,
+                widget.memCacheHeight,
+                provider,
+              ),
+              excludeFromSemantics: true,
+              width: widget.width,
+              height: widget.height,
+              fit: widget.fit,
+              frameBuilder: widget.frameBuilder,
+              errorBuilder: (context, error, stackTrace) =>
+                  _buildError(context),
+            ),
       placeholder: (context, url) => Container(
         color: context.colors.surfaceVariant,
         child: Center(
@@ -175,6 +193,7 @@ class StashImage extends ConsumerWidget {
     this.fit = BoxFit.cover,
     this.memCacheWidth,
     this.memCacheHeight,
+    this.frameBuilder,
     super.key,
   });
 
@@ -184,6 +203,10 @@ class StashImage extends ConsumerWidget {
   final BoxFit fit;
   final int? memCacheWidth;
   final int? memCacheHeight;
+
+  /// Optionally decorates decoded image frames without changing cache or retry
+  /// ownership. The child excludes image semantics on both native and web.
+  final ImageFrameBuilder? frameBuilder;
 
   /// Returns an [ImageProvider] for the given [imageUrl], applying web-specific
   /// authentication fallbacks (apikey query parameter) when running on the web.
@@ -319,6 +342,7 @@ class StashImage extends ConsumerWidget {
         width: width,
         height: height,
         fit: fit,
+        frameBuilder: frameBuilder,
         errorBuilder: (context, error, stackTrace) => _buildError(context),
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
@@ -336,6 +360,7 @@ class StashImage extends ConsumerWidget {
       fit: fit,
       memCacheWidth: memCacheWidth,
       memCacheHeight: memCacheHeight,
+      frameBuilder: frameBuilder,
     );
   }
 

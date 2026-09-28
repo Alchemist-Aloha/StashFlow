@@ -323,7 +323,9 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       ),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppTheme.radiusExtraLarge),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

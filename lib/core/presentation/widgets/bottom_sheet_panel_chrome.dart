@@ -1,9 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../../utils/l10n_extensions.dart';
 import '../theme/app_theme.dart';
+import 'frosted_surface.dart';
 
 Future<T?> showFrostedPanelBottomSheet<T>({
   required BuildContext context,
@@ -42,41 +41,24 @@ class FrostedPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
+    return FrostedSurface(
       width: width,
       margin: margin,
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.withValues(alpha: 0.4),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-          child: Container(
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHigh,
-              borderRadius: borderRadius,
-              border: Border.all(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-                width: 1,
-              ),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              borderRadius: borderRadius,
-              clipBehavior: Clip.antiAlias,
-              child: child,
-            ),
-          ),
+      borderRadius: borderRadius,
+      tint: colorScheme.surfaceContainerHigh,
+      border: Border.all(
+        color: colorScheme.outlineVariant.withValues(
+          alpha: AppTheme.frostedHairlineAlpha,
         ),
       ),
+      boxShadow: [
+        BoxShadow(
+          color: colorScheme.shadow.withValues(alpha: 0.4),
+          blurRadius: 24,
+          offset: const Offset(0, 8),
+        ),
+      ],
+      child: child,
     );
   }
 }

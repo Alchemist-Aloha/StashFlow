@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 class SettingsPageShell extends ConsumerWidget {
@@ -86,7 +87,6 @@ class SettingsSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return Padding(
@@ -101,9 +101,11 @@ class SettingsSectionHeader extends StatelessWidget {
           if (title != null)
             Text(
               title!,
-              style: textTheme.headlineSmall?.copyWith(
+              // Same voice as every other section header in the app; the
+              // accent stays for actions, not for headings.
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.primary,
+                color: context.colors.onSurface,
               ),
             ),
           if (subtitle != null) ...[
@@ -111,7 +113,7 @@ class SettingsSectionHeader extends StatelessWidget {
             Text(
               subtitle!,
               style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+                color: context.colors.onSurfaceVariant,
               ),
             ),
           ],
@@ -128,20 +130,7 @@ class SettingsPanelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(context.dimensions.spacingMedium),
-        child: child,
-      ),
-    );
+    return SectionPanel(child: child);
   }
 }
 
@@ -305,76 +294,63 @@ class _SettingsActionCardState extends State<SettingsActionCard> {
       child: AnimatedScale(
         scale: _isPressed ? 0.98 : 1.0,
         duration: const Duration(milliseconds: 100),
-        child: Card(
-          margin: EdgeInsets.zero,
-          clipBehavior: Clip.antiAlias,
-          elevation: 0,
-          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+        child: SectionPanel(
+          onTap: widget.onTap,
+          onHighlightChanged: (value) => setState(() => _isPressed = value),
+          padding: EdgeInsets.symmetric(
+            horizontal: context.dimensions.spacingMedium,
+            vertical: context.dimensions.spacingMedium,
           ),
-          child: InkWell(
-            onTapDown: (_) => setState(() => _isPressed = true),
-            onTapUp: (_) => setState(() => _isPressed = false),
-            onTapCancel: () => setState(() => _isPressed = false),
-            onTap: widget.onTap,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.dimensions.spacingMedium,
-                vertical: context.dimensions.spacingMedium,
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 48 * context.dimensions.fontSizeFactor,
-                    height: 48 * context.dimensions.fontSizeFactor,
-                    decoration: ShapeDecoration(
-                      color: colorScheme.secondaryContainer,
-                      shape: ContinuousRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          32 * context.dimensions.fontSizeFactor,
-                        ),
-                      ),
-                    ),
-                    child: Icon(
-                      widget.icon,
-                      color: colorScheme.primary,
-                      size: 24 * context.dimensions.fontSizeFactor,
+          child: Row(
+            children: [
+              Container(
+                width: 48 * context.dimensions.fontSizeFactor,
+                height: 48 * context.dimensions.fontSizeFactor,
+                decoration: ShapeDecoration(
+                  color: colorScheme.secondaryContainer,
+                  shape: ContinuousRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      32 * context.dimensions.fontSizeFactor,
                     ),
                   ),
-                  SizedBox(width: context.dimensions.spacingMedium),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.title,
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        SizedBox(height: 2 * context.dimensions.fontSizeFactor),
-                        Text(
-                          widget.subtitle,
-                          style: textTheme.labelMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            height: 1.2,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: context.dimensions.spacingSmall),
-                  widget.trailing ??
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 14 * context.dimensions.fontSizeFactor,
-                        color: colorScheme.outline,
-                      ),
-                ],
+                ),
+                child: Icon(
+                  widget.icon,
+                  color: colorScheme.primary,
+                  size: 24 * context.dimensions.fontSizeFactor,
+                ),
               ),
-            ),
+              SizedBox(width: context.dimensions.spacingMedium),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    SizedBox(height: 2 * context.dimensions.fontSizeFactor),
+                    Text(
+                      widget.subtitle,
+                      style: textTheme.labelMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        height: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: context.dimensions.spacingSmall),
+              widget.trailing ??
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 14 * context.dimensions.fontSizeFactor,
+                    color: colorScheme.outline,
+                  ),
+            ],
           ),
         ),
       ),

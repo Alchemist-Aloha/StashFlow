@@ -219,6 +219,12 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double? duration,
     double aspectRatio,
   ) {
+    final file = widget.scene.files.firstOrNull;
+    final isSquareVideo =
+        file?.width != null &&
+        file?.height != null &&
+        file!.height! > 0 &&
+        (file.width! / file.height! - 1).abs() < 0.01;
     final isDesktop =
         kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
@@ -262,6 +268,21 @@ class _SceneCardState extends ConsumerState<SceneCard> {
           width: double.infinity,
           height: double.infinity,
           fit: BoxFit.cover,
+          frameBuilder: isSquareVideo
+              ? (context, child, frame, wasSynchronouslyLoaded) {
+                  final image = child is RawImage ? child.image : null;
+                  if (image == null ||
+                      (image.width / image.height - 1).abs() >= 0.01) {
+                    return child;
+                  }
+                  // Stretch the cover to 1:2 and crop its center inside the
+                  // native 1:1 frame without changing masonry layout bounds.
+                  // Replace with official aspect ratio from server if supported in the future. 
+                  return ClipRect(
+                    child: Transform.scale(scaleY: 2, child: child),
+                  );
+                }
+              : null,
         ),
         if (_isScrubbing && canScrub)
           Positioned.fill(
@@ -384,10 +405,8 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         ? widget.scene.files.first.duration
         : null;
 
-    // Use primary file's aspect ratio if available, default to 16/9.
-    // This ensures the image container in List view adapts to the media,
-    // preventing black bars or forced cropping of portrait/square content.
-    double? fileAspectRatio =
+    // Metadata determines card bounds independently of decoded cover painting.
+    final double? fileAspectRatio =
         (widget.scene.files.isNotEmpty &&
             widget.scene.files.first.width != null &&
             widget.scene.files.first.height != null)
@@ -395,16 +414,16 @@ class _SceneCardState extends ConsumerState<SceneCard> {
               widget.scene.files.first.height!.toDouble()
         : null;
 
-    // Force square videos to 9/16 portrait on mobile to avoid the "fat" look.
-    if (fileAspectRatio != null &&
-        (fileAspectRatio - 1.0).abs() < 0.01 &&
-        (defaultTargetPlatform == TargetPlatform.android ||
-            defaultTargetPlatform == TargetPlatform.iOS)) {
-      fileAspectRatio = 9 / 16;
-    }
+    final isSquareVideo =
+        fileAspectRatio != null && (fileAspectRatio - 1.0).abs() < 0.01;
 
     if (widget.isGrid) {
-      return _buildGridCard(context, ref, duration, fileAspectRatio ?? 16 / 9);
+      return _buildGridCard(
+        context,
+        ref,
+        duration,
+        widget.useMasonry || isSquareVideo ? fileAspectRatio ?? 16 / 9 : 16 / 9,
+      );
     }
     return _buildListCard(context, ref, duration, fileAspectRatio ?? 16 / 9);
   }
@@ -499,8 +518,8 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
   /// Builds the compact grid variant of the card.
   ///
-  /// Forces a 16:9 [aspectRatio] for the image to maintain a uniform grid appearance,
-  /// relying on BoxFit.cover to fill the frame elegantly.
+  /// Uses native square thumbnails and 16:9 for other uniform-grid cards.
+  /// Masonry cards follow the source proportions for non-square videos.
   Widget _buildGridCard(
     BuildContext context,
     WidgetRef ref,
@@ -524,13 +543,11 @@ class _SceneCardState extends ConsumerState<SceneCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AspectRatio(
-                aspectRatio: widget.useMasonry
-                    ? aspectRatio.clamp(0.5, 2.5)
-                    : 16 / 9,
+                aspectRatio: aspectRatio.clamp(0.5, 2.5),
                 child: _buildThumbnail(
                   context,
                   duration,
-                  widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
+                  aspectRatio.clamp(0.5, 2.5),
                 ),
               ),
               Padding(

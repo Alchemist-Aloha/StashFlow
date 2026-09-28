@@ -18,6 +18,7 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/web_helpers.dart';
+import '../../../../core/presentation/widgets/stash_image.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'player_surface.dart';
 
@@ -414,49 +415,48 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
           },
           child: Focus(
             autofocus: false,
-            child: Container(
-              color: Colors.black,
-              child: Stack(
-                children: [
-                  Center(
-                    child: _isStarting
-                        ? const CircularProgressIndicator()
-                        : IconButton.filledTonal(
-                            tooltip: context.l10n.common_play,
-                            style: IconButton.styleFrom(
-                              backgroundColor: colorScheme.surfaceContainerHigh
-                                  .withValues(alpha: 0.92),
-                              foregroundColor: colorScheme.onSurface,
-                              padding: const EdgeInsets.all(16),
-                            ),
-                            icon: const Icon(
-                              Icons.play_arrow_rounded,
-                              size: 32,
-                            ),
-                            onPressed: () =>
-                                _startPlaybackIfNeeded(force: true),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                StashImage(
+                  imageUrl: widget.scene.paths.screenshot,
+                  fit: BoxFit.cover,
+                ),
+                const ColoredBox(color: Color(0x99000000)),
+                Center(
+                  child: _isStarting
+                      ? const CircularProgressIndicator()
+                      : IconButton.filledTonal(
+                          tooltip: context.l10n.common_play,
+                          style: IconButton.styleFrom(
+                            backgroundColor: colorScheme.surfaceContainerHigh
+                                .withValues(alpha: 0.92),
+                            foregroundColor: colorScheme.onSurface,
+                            padding: const EdgeInsets.all(16),
                           ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: SafeArea(
-                      child: IconButton(
-                        key: const Key('inline_video_back_button'),
-                        tooltip: context.l10n.common_back,
-                        style: IconButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.transparent,
-                          padding: const EdgeInsets.all(4),
-                          minimumSize: const Size(26, 26),
+                          icon: const Icon(Icons.play_arrow_rounded, size: 32),
+                          onPressed: () => _startPlaybackIfNeeded(force: true),
                         ),
-                        icon: const Icon(Icons.arrow_back_rounded),
-                        onPressed: _goBack,
+                ),
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: SafeArea(
+                    child: IconButton(
+                      key: const Key('inline_video_back_button'),
+                      tooltip: context.l10n.common_back,
+                      style: IconButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(4),
+                        minimumSize: const Size(26, 26),
                       ),
+                      icon: const Icon(Icons.arrow_back_rounded),
+                      onPressed: _goBack,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

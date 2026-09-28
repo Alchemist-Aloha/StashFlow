@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../performers/presentation/providers/performer_details_provider.dart';
+import '../../../studios/presentation/providers/studio_details_provider.dart';
+import '../../../tags/presentation/providers/tag_details_provider.dart';
+import '../../../groups/presentation/providers/group_details_provider.dart';
 import '../providers/entity_media_filter_scope.dart';
 import '../providers/playback_queue_provider.dart';
 import '../widgets/entity_scene_media_grid.dart';
@@ -22,7 +26,7 @@ class EntityMediaGridPage extends ConsumerWidget {
     final mediaAsync = ref.watch(entityMediaGridProvider(filterKind, entityId));
 
     return EntitySceneMediaGrid(
-      title: _title(context),
+      title: _title(context, ref),
       entityId: entityId,
       filterKind: filterKind,
       mediaAsync: mediaAsync,
@@ -60,10 +64,17 @@ class EntityMediaGridPage extends ConsumerWidget {
     EntityMediaFilterKind.group => PlaybackQueueIds.groupMedia(entityId),
   };
 
-  String _title(BuildContext context) => switch (filterKind) {
-    EntityMediaFilterKind.performer => context.l10n.performers_media_title,
-    EntityMediaFilterKind.studio => context.l10n.studios_media_title,
-    EntityMediaFilterKind.tag => context.l10n.studios_media_title,
-    EntityMediaFilterKind.group => context.l10n.studios_media_title,
-  };
+  String _title(BuildContext context, WidgetRef ref) {
+    final name = switch (filterKind) {
+      EntityMediaFilterKind.performer =>
+        ref.watch(performerDetailsProvider(entityId)).value?.name,
+      EntityMediaFilterKind.studio =>
+        ref.watch(studioDetailsProvider(entityId)).value?.name,
+      EntityMediaFilterKind.tag =>
+        ref.watch(tagDetailsProvider(entityId)).value?.name,
+      EntityMediaFilterKind.group =>
+        ref.watch(groupDetailsProvider(entityId)).value?.name,
+    };
+    return name?.trim().isNotEmpty == true ? name! : context.l10n.details_media;
+  }
 }

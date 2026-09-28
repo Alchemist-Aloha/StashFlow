@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/studio_performer_info_sections.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/gallery.dart';
@@ -37,8 +38,8 @@ class GalleryDetailsBottomSheet extends StatelessWidget {
       key: const Key('gallery_details_sheet'),
       top: false,
       child: FrostedPanel(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(dims.spacingLarge),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppTheme.radiusExtraLarge),
         ),
         child: ListView(
           shrinkWrap: true,
@@ -52,7 +53,7 @@ class GalleryDetailsBottomSheet extends StatelessWidget {
                     children: [
                       Text(
                         context.l10n.details_gallery,
-                        style: context.textTheme.titleLarge?.copyWith(
+                        style: context.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -118,6 +119,12 @@ class GalleryDetailsBottomSheet extends StatelessWidget {
                     label: context.l10n.galleries_field_id,
                     value: gallery.id,
                   ),
+                  if (gallery.path?.trim().isNotEmpty == true)
+                    _MetaRow(
+                      label: context.l10n.galleries_field_path,
+                      value: gallery.path!,
+                      selectable: true,
+                    ),
                   if (gallery.code?.trim().isNotEmpty == true)
                     _MetaRow(
                       label: context.l10n.gallery_code_title,
@@ -173,6 +180,31 @@ class GalleryDetailsBottomSheet extends StatelessWidget {
                 ],
               ),
             ),
+            if (gallery.coverPath?.trim().isNotEmpty == true ||
+                (gallery.coverWidth != null &&
+                    gallery.coverHeight != null)) ...[
+              SizedBox(height: dims.spacingMedium),
+              _SectionCard(
+                title: context.l10n.scene_info_technical,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (gallery.coverWidth != null &&
+                        gallery.coverHeight != null)
+                      _MetaRow(
+                        label: context.l10n.common_resolution,
+                        value: '${gallery.coverWidth} x ${gallery.coverHeight}',
+                      ),
+                    if (gallery.coverPath?.trim().isNotEmpty == true)
+                      _MetaRow(
+                        label: context.l10n.scene_info_screenshot,
+                        value: gallery.coverPath!,
+                        selectable: true,
+                      ),
+                  ],
+                ),
+              ),
+            ],
             if (gallery.filePaths.isNotEmpty) ...[
               SizedBox(height: dims.spacingMedium),
               _SectionCard(
@@ -216,34 +248,8 @@ class _SectionCard extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    final dims = context.dimensions;
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(dims.spacingMedium),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(dims.spacingMedium),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.35),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: context.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: dims.spacingSmall),
-          Material(color: Colors.transparent, child: child),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      SectionPanel(title: title, child: child);
 }
 
 class _MetaRow extends StatelessWidget {

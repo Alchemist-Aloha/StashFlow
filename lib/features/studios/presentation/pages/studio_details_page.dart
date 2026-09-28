@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/studio_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 
+import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
@@ -26,19 +29,9 @@ class StudioDetailsPage extends ConsumerWidget {
   const StudioDetailsPage({required this.studioId, super.key});
 
   Widget _buildSectionContainer(BuildContext context, Widget child) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
-      elevation: 0,
-      color: Theme.of(
-        context,
-      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
-        child: child,
-      ),
+    return SectionPanel(
+      margin: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
+      child: child,
     );
   }
 
@@ -58,6 +51,32 @@ class StudioDetailsPage extends ConsumerWidget {
     context.push('/studios/studio/${randomStudio.id}');
   }
 
+  Future<void> _updateRating(
+    BuildContext context,
+    WidgetRef ref,
+    Studio studio,
+    int rating,
+  ) async {
+    try {
+      final repository = ref.read(studioRepositoryProvider);
+      await repository.updateStudio(
+        id: studio.id,
+        input: {'rating100': rating},
+      );
+      await repository.getStudioById(studio.id, refresh: true);
+      if (!context.mounted) return;
+      ref.invalidate(studioDetailsProvider(studio.id));
+      ref.invalidate(studioListProvider);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.details_failed_update_rating('$error')),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final studioAsync = ref.watch(studioDetailsProvider(studioId));
@@ -70,22 +89,7 @@ class StudioDetailsPage extends ConsumerWidget {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.details_studio),
-        actions: [
-          studioAsync.maybeWhen(
-            data: (studio) => IconButton(
-              tooltip: context.l10n.common_edit,
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: () => context.push(
-                '/studios/studio/${studio.id}/edit',
-                extra: studio,
-              ),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
-      ),
+      appBar: AppBar(),
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomStudio(context, ref),
@@ -128,6 +132,11 @@ class StudioDetailsPage extends ConsumerWidget {
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
+              // Content passes behind the frosted mini player; this inset keeps
+              // the last rows reachable while the player is visible.
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.paddingOf(context).bottom,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -145,7 +154,7 @@ class StudioDetailsPage extends ConsumerWidget {
                       ),
                     ),
                   Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                    padding: EdgeInsets.all(context.dimensions.spacingMedium),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -161,7 +170,14 @@ class StudioDetailsPage extends ConsumerWidget {
                                     ),
                               ),
                             ),
-                            IconButton.filledTonal(
+                          ],
+                        ),
+                        SizedBox(height: context.dimensions.spacingSmall),
+                        Row(
+                          key: const Key('studio_actions'),
+                          children: [
+                            IconButton(
+                              key: const Key('studio_action_favorite'),
                               icon: Icon(
                                 studio.favorite
                                     ? Icons.favorite
@@ -198,11 +214,28 @@ class StudioDetailsPage extends ConsumerWidget {
                                 }
                               },
                             ),
+                            SizedBox(width: context.dimensions.spacingSmall),
+                            RatingButton(
+                              key: const Key('studio_action_rating'),
+                              rating100: studio.rating100,
+                              onRatingSelected: (rating) =>
+                                  _updateRating(context, ref, studio, rating),
+                            ),
+                            SizedBox(width: context.dimensions.spacingSmall),
+                            IconButton(
+                              key: const Key('studio_action_edit'),
+                              tooltip: context.l10n.common_edit,
+                              icon: const Icon(Icons.edit_outlined),
+                              onPressed: () => context.push(
+                                '/studios/studio/${studio.id}/edit',
+                                extra: studio,
+                              ),
+                            ),
                           ],
                         ),
                         if (studio.details != null &&
                             studio.details!.trim().isNotEmpty) ...[
-                          const SizedBox(height: AppTheme.spacingMedium),
+                          SizedBox(height: context.dimensions.spacingMedium),
                           _buildSectionContainer(
                             context,
                             Column(
@@ -216,9 +249,7 @@ class StudioDetailsPage extends ConsumerWidget {
                                 Text(
                                   studio.details!,
                                   style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurface.withValues(
-                                      alpha: 0.8,
-                                    ),
+                                    color: context.colors.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -284,9 +315,7 @@ class StudioDetailsPage extends ConsumerWidget {
                                 error: (err, stack) => Text(
                                   context.l10n.common_error(err.toString()),
                                   style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurface.withValues(
-                                      alpha: 0.7,
-                                    ),
+                                    color: context.colors.onSurfaceVariant,
                                   ),
                                 ),
                               ),
@@ -332,9 +361,7 @@ class StudioDetailsPage extends ConsumerWidget {
                           error: (err, stack) => Text(
                             context.l10n.common_error(err.toString()),
                             style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.7,
-                              ),
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -347,8 +374,10 @@ class StudioDetailsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) =>
-            Center(child: Text(context.l10n.common_error(err.toString()))),
+        error: (err, stack) => ErrorStateView(
+          message: context.l10n.common_error(err.toString()),
+          onRetry: () => ref.invalidate(studioDetailsProvider(studioId)),
+        ),
       ),
     );
   }

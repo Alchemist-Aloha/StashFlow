@@ -121,51 +121,56 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
           }
           return false;
         },
-        child: Scrollbar(
-          controller: _scrollController,
-          interactive: true,
-          thumbVisibility: true,
-          child: ListView.builder(
+        child: MediaQuery.removePadding(
+          context: context,
+          // Page-level insets must not lift this strip's scrollbar.
+          removeBottom: true,
+          child: Scrollbar(
             controller: _scrollController,
-            padding: EdgeInsets.symmetric(
-              horizontal: context.dimensions.spacingMedium,
-            ),
-            scrollDirection: Axis.horizontal,
-            itemExtent: stride,
-            itemCount: scenes.length,
-            itemBuilder: (context, index) {
-              final scene = scenes[index];
+            interactive: true,
+            thumbVisibility: true,
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingMedium,
+              ),
+              scrollDirection: Axis.horizontal,
+              itemExtent: stride,
+              itemCount: scenes.length,
+              itemBuilder: (context, index) {
+                final scene = scenes[index];
 
-              return Padding(
-                padding: EdgeInsets.only(
-                  right: index == scenes.length - 1 ? 0 : separatorWidth,
-                ),
-                child: SizedBox(
-                  width: effectiveItemWidth,
-                  child: SceneCard(
-                    scene: scene,
-                    isGrid: true,
-                    showPerformers: false,
-                    useHero: false,
-                    onTap: queueId != null || onTap != null
-                        ? () {
-                            final playbackQueueId = queueId;
-                            if (playbackQueueId != null) {
-                              ref
-                                  .read(playbackQueueProvider.notifier)
-                                  .setSequence(
-                                    scenes,
-                                    index,
-                                    queueId: playbackQueueId,
-                                  );
-                            }
-                            onTap?.call(scene);
-                          }
-                        : null,
+                return Padding(
+                  padding: EdgeInsets.only(
+                    right: index == scenes.length - 1 ? 0 : separatorWidth,
                   ),
-                ),
-              );
-            },
+                  child: SizedBox(
+                    width: effectiveItemWidth,
+                    child: SceneCard(
+                      scene: scene,
+                      isGrid: true,
+                      showPerformers: false,
+                      useHero: false,
+                      onTap: queueId != null || onTap != null
+                          ? () {
+                              final playbackQueueId = queueId;
+                              if (playbackQueueId != null) {
+                                ref
+                                    .read(playbackQueueProvider.notifier)
+                                    .setSequence(
+                                      scenes,
+                                      index,
+                                      queueId: playbackQueueId,
+                                    );
+                              }
+                              onTap?.call(scene);
+                            }
+                          : null,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),

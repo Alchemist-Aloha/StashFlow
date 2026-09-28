@@ -5,11 +5,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../../core/presentation/widgets/rating_bottom_sheet.dart';
-import '../../../../core/presentation/widgets/studio_performer_info_sections.dart';
-import '../providers/gallery_list_provider.dart';
 import '../../domain/entities/gallery.dart';
-import '../providers/gallery_details_provider.dart';
+import 'gallery_details_bottom_sheet.dart';
 import '../../../scenes/presentation/widgets/scene_card.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
@@ -81,46 +78,6 @@ class GalleryCard extends ConsumerWidget {
     return _buildListCard(context, ref, aspectRatio);
   }
 
-  Future<void> _showRating(BuildContext context, WidgetRef ref) async {
-    await RatingBottomSheet.show(
-      context,
-      initialRating: gallery.rating100 ?? 0,
-      title: context.l10n.details_gallery,
-      subtitle: gallery.displayName,
-      detailsWidget: _buildGalleryDetails(context),
-      onRatingSelected: (rating) async {
-        try {
-          await ref
-              .read(galleryRepositoryProvider)
-              .updateGalleryRating(gallery.id, rating);
-
-          // Fetch fresh data for the specific gallery to ensure UI is in sync
-          final updatedGallery = await ref
-              .read(galleryRepositoryProvider)
-              .getGalleryById(gallery.id, refresh: true);
-
-          // Update the list state with the new info to avoid full reshuffle
-          ref
-              .read(galleryListProvider.notifier)
-              .updateGalleryInList(updatedGallery);
-
-          // If anyone else is watching this specific gallery's details, update them
-          ref.invalidate(galleryDetailsProvider(gallery.id));
-        } catch (e) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  context.l10n.details_failed_update_rating(e.toString()),
-                ),
-              ),
-            );
-          }
-        }
-      },
-    );
-  }
-
   Widget _buildListCard(
     BuildContext context,
     WidgetRef ref,
@@ -137,7 +94,7 @@ class GalleryCard extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: skeletonize ? null : onTap ?? () => _openDetails(context, ref),
-          onLongPress: () => _showRating(context, ref),
+          onLongPress: () => GalleryDetailsBottomSheet.show(context, gallery),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -190,7 +147,8 @@ class GalleryCard extends ConsumerWidget {
                       tooltip: context.l10n.common_more,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
-                      onPressed: () => _showRating(context, ref),
+                      onPressed: () =>
+                          GalleryDetailsBottomSheet.show(context, gallery),
                       icon: const Icon(Icons.more_vert, size: 20),
                     ),
                   ],
@@ -219,7 +177,7 @@ class GalleryCard extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: skeletonize ? null : onTap ?? () => _openDetails(context, ref),
-          onLongPress: () => _showRating(context, ref),
+          onLongPress: () => GalleryDetailsBottomSheet.show(context, gallery),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -277,7 +235,8 @@ class GalleryCard extends ConsumerWidget {
                           width: 32,
                           height: 32,
                         ),
-                        onPressed: () => _showRating(context, ref),
+                        onPressed: () =>
+                            GalleryDetailsBottomSheet.show(context, gallery),
                         icon: const Icon(Icons.more_vert, size: 16),
                       ),
                     ),
@@ -321,13 +280,17 @@ class GalleryCard extends ConsumerWidget {
                 vertical: isGrid ? 1 : 2,
               ),
               decoration: BoxDecoration(
-                color: Colors.black.withAlpha(200),
-                borderRadius: BorderRadius.circular(isGrid ? 2 : 4),
+                color: Colors.black.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.star, color: Colors.amber, size: isGrid ? 10 : 14),
+                  Icon(
+                    Icons.star,
+                    color: context.colors.ratingColor,
+                    size: isGrid ? 10 : 14,
+                  ),
                   SizedBox(width: isGrid ? 2 : 4),
                   Text(
                     (gallery.rating100! / 20).toStringAsFixed(1),
@@ -351,8 +314,8 @@ class GalleryCard extends ConsumerWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.black.withAlpha(200),
-                borderRadius: BorderRadius.circular(2),
+                color: Colors.black.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
               ),
               child: isGrid
                   ? Text(
@@ -386,166 +349,5 @@ class GalleryCard extends ConsumerWidget {
     return aspectRatio != null
         ? AspectRatio(aspectRatio: aspectRatio, child: child)
         : child;
-  }
-
-  Widget _buildGalleryDetails(BuildContext context) {
-    final theme = Theme.of(context);
-    final hasDetails = (gallery.details ?? '').trim().isNotEmpty;
-
-    return Column(
-      children: [
-        if (StudioPerformerInfoSections.isVisible(
-          studioName: gallery.studioName,
-          performerNames: gallery.performerNames,
-        )) ...[
-          StudioPerformerInfoSections(
-            studioId: gallery.studioId,
-            studioName: gallery.studioName,
-            performerIds: gallery.performerIds,
-            performerNames: gallery.performerNames,
-            performerImagePaths: gallery.performerImagePaths,
-          ),
-          SizedBox(height: context.dimensions.spacingMedium),
-        ],
-        _SectionCard(
-          title: context.l10n.common_details,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _MetaRow(
-                label: context.l10n.galleries_field_id,
-                value: gallery.id,
-              ),
-              _MetaRow(
-                label: context.l10n.galleries_field_path,
-                value: gallery.path?.trim().isNotEmpty == true
-                    ? gallery.path!
-                    : '--',
-                selectable: true,
-              ),
-              _MetaRow(
-                label: context.l10n.galleries_field_date,
-                value: gallery.date ?? '--',
-              ),
-              _MetaRow(
-                label: context.l10n.galleries_field_image_count,
-                value: gallery.imageCount?.toString() ?? '--',
-              ),
-              if (hasDetails) ...[
-                const SizedBox(height: 8),
-                SelectableText(
-                  gallery.details!,
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ],
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        _SectionCard(
-          title: context.l10n.scene_info_technical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _MetaRow(
-                label: context.l10n.common_resolution,
-                value: gallery.coverWidth != null && gallery.coverHeight != null
-                    ? '${gallery.coverWidth} x ${gallery.coverHeight}'
-                    : '--',
-              ),
-              _MetaRow(
-                label: context.l10n.scene_info_screenshot,
-                value: gallery.coverPath ?? '--',
-                selectable: true,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.title, required this.child});
-
-  final String title;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(
-          alpha: 0.45,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          child,
-        ],
-      ),
-    );
-  }
-}
-
-class _MetaRow extends StatelessWidget {
-  const _MetaRow({
-    required this.label,
-    required this.value,
-    this.selectable = false,
-  });
-
-  final String label;
-  final String value;
-  final bool selectable;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 128,
-            child: Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Expanded(
-            child: selectable
-                ? SelectableText(value, style: theme.textTheme.bodySmall)
-                : Text(value, style: theme.textTheme.bodySmall),
-          ),
-        ],
-      ),
-    );
   }
 }

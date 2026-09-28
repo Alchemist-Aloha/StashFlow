@@ -7,6 +7,40 @@ import '../../../helpers/test_helpers.dart';
 
 void main() {
   group('SectionHeader', () {
+    testWidgets(
+      'long title wraps beside a reachable action at large UI scale',
+      (tester) async {
+        var tapped = false;
+        await pumpTestWidget(
+          tester,
+          child: Theme(
+            data: AppTheme.buildTheme(
+              Brightness.dark,
+              const Color(0xFF0F766E),
+              fontSizeFactor: 1.5,
+            ),
+            child: Scaffold(
+              body: SizedBox(
+                width: 224,
+                child: SectionHeader(
+                  title: 'Recently added media',
+                  padding: EdgeInsets.zero,
+                  onViewAll: () => tapped = true,
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(
+          tester.getRect(find.byType(TextButton)).right,
+          lessThanOrEqualTo(224),
+        );
+        await tester.tap(find.byType(TextButton));
+        expect(tapped, isTrue);
+      },
+    );
     testWidgets('renders title correctly', (WidgetTester tester) async {
       await pumpTestWidget(
         tester,

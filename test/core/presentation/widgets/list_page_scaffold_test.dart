@@ -5,17 +5,221 @@ import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/features/navigation/presentation/shell_page.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/frosted_surface.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
+import 'package:stash_app_flutter/features/navigation/presentation/widgets/mini_player.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../../../helpers/test_helpers.dart';
 
+class _ActivePlayerState extends PlayerState {
+  _ActivePlayerState(this.scene);
+
+  final Scene scene;
+
+  @override
+  GlobalPlayerState build() => GlobalPlayerState(activeScene: scene);
+}
+
+Scene _activeScene() => Scene(
+  id: 'active',
+  title: 'Active scene',
+  date: DateTime(2024),
+  rating100: null,
+  oCounter: 0,
+  organized: true,
+  interactive: false,
+  resumeTime: null,
+  playCount: 0,
+  playDuration: null,
+  files: const [],
+  urls: const [],
+  paths: const ScenePaths(screenshot: null, preview: null, stream: null),
+  studioId: null,
+  studioName: null,
+  studioImagePath: null,
+  performerIds: const [],
+  performerNames: const [],
+  performerImagePaths: const [],
+  tagIds: const [],
+  tagNames: const [],
+);
+
 void main() {
   group('ListPageScaffold', () {
+    testWidgets('primary list title stays larger than detail app bar titles', (
+      tester,
+    ) async {
+      await pumpTestWidget(
+        tester,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListPageScaffold<int>(
+                title: 'Primary title',
+                searchHint: 'Search...',
+                onSearchChanged: (_) {},
+                provider: const AsyncValue.data([1]),
+                itemBuilder: (_, item, _, _) => Text('Item $item'),
+              ),
+            ),
+            AppBar(title: const Text('Detail title')),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      double titleSize(String text) =>
+          tester
+              .widget<RichText>(
+                find.descendant(
+                  of: find.text(text),
+                  matching: find.byType(RichText),
+                ),
+              )
+              .text
+              .style!
+              .fontSize ??
+          14;
+      expect(titleSize('Primary title'), 22);
+      expect(
+        titleSize('Primary title'),
+        greaterThan(titleSize('Detail title')),
+      );
+    });
+
+    for (final bottomInset in [0.0, 66.0]) {
+      testWidgets('action pill clears bottom inset $bottomInset', (
+        tester,
+      ) async {
+        await pumpTestWidget(
+          tester,
+          child: Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(padding: EdgeInsets.only(bottom: bottomInset)),
+              child: ListPageScaffold<int>(
+                title: 'Test Title',
+                searchHint: 'Search...',
+                onSearchChanged: (_) {},
+                provider: const AsyncValue.data([1]),
+                itemBuilder: (_, item, _, _) => Text('Item $item'),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final pill = find.ancestor(
+          of: find.byIcon(Icons.filter_list),
+          matching: find.byType(FrostedSurface),
+        );
+        final page = find.byType(ListPageScaffold<int>);
+        expect(
+          tester.getRect(pill).bottom,
+          tester.getRect(page).bottom - bottomInset - 16,
+        );
+        expect(tester.getRect(pill).center.dx, tester.getRect(page).center.dx);
+        expect(
+          tester.getSize(pill).width,
+          lessThan(tester.getSize(page).width),
+        );
+      });
+    }
+
+    testWidgets('random FAB clears the mini player in the real shell', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final scene = _activeScene();
+      final router = GoRouter(
+        initialLocation: '/home',
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) =>
+                ShellPage(navigationShell: navigationShell),
+            branches: [
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/home',
+                    builder: (context, state) => ListPageScaffold<int>(
+                      title: 'Test Title',
+                      searchHint: 'Search...',
+                      onSearchChanged: (_) {},
+                      provider: const AsyncValue.data([1]),
+                      itemBuilder: (_, item, _, _) => Text('Item $item'),
+                      floatingActionButton: FloatingActionButton.small(
+                        onPressed: () {},
+                        child: const Icon(Icons.casino_outlined),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/other',
+                    builder: (context, state) => const Scaffold(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            playerStateProvider.overrideWith(() => _ActivePlayerState(scene)),
+            desktopCapabilitiesProvider.overrideWithValue(false),
+          ],
+          child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.byType(MiniPlayer), findsOneWidget);
+      final randomFab = tester.getRect(find.byType(FloatingActionButton));
+      final miniPlayer = tester.getRect(find.byType(MiniPlayer));
+      expect(randomFab.bottom, lessThanOrEqualTo(miniPlayer.top - 16));
+    });
+
     test('avoids layout-driven paging and duplicate repaint boundaries', () {
       final source = File(
         'lib/core/presentation/widgets/list_page_scaffold.dart',
@@ -85,6 +289,56 @@ void main() {
       await tester.drag(find.byType(ListView).first, const Offset(0, 100));
       await tester.pumpAndSettle();
       expect(tester.widget<AnimatedSlide>(slide).offset, Offset.zero);
+    });
+
+    testWidgets('frosts the app bar and lets rows scroll behind it', (
+      WidgetTester tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({'auto_hide_top_app_bar': true});
+      final prefs = await SharedPreferences.getInstance();
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: Builder(
+          builder: (context) => MediaQuery(
+            // The shell publishes the mini player band as a bottom inset.
+            data: MediaQuery.of(
+              context,
+            ).copyWith(padding: const EdgeInsets.only(bottom: 66)),
+            child: ListPageScaffold<int>(
+              title: 'Test Title',
+              searchHint: 'Search...',
+              onSearchChanged: (_) {},
+              provider: AsyncValue.data(List.generate(30, (index) => index)),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+              ),
+              itemBuilder: (context, item, mw, mh) =>
+                  SizedBox(height: 80, child: Text('Item $item')),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The header is glass: a real backdrop blur sits behind the bar.
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('top-app-bar-slide')),
+          matching: find.byType(BackdropFilter),
+        ),
+        findsOneWidget,
+      );
+
+      // Rows travel behind the header: the bar height is scroll padding rather
+      // than a box offset, so the viewport still reaches the screen edge and
+      // the frosted bar has artwork to frost. The floating band's height is
+      // reserved at the other end so no row ends up stuck under it.
+      final grid = tester.widget<GridView>(find.byType(GridView).first);
+      final resolved = grid.padding!.resolve(TextDirection.ltr);
+      expect(resolved.top, kToolbarHeight);
+      expect(resolved.bottom, 66);
     });
 
     testWidgets('shows empty state correctly', (WidgetTester tester) async {
@@ -177,18 +431,23 @@ void main() {
     ) async {
       var refreshCount = 0;
 
-      Future<void> pump({required bool isDesktop}) => pumpTestWidget(
-        tester,
-        overrides: [desktopCapabilitiesProvider.overrideWithValue(isDesktop)],
-        child: ListPageScaffold<String>(
-          title: 'Test Title',
-          searchHint: 'Search...',
-          onSearchChanged: (_) {},
-          provider: const AsyncValue.data(['Item 1']),
-          onRefresh: () async => refreshCount++,
-          itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
-        ),
-      );
+      Future<void> pump({required bool isDesktop, bool searchOnly = false}) =>
+          pumpTestWidget(
+            tester,
+            overrides: [
+              desktopCapabilitiesProvider.overrideWithValue(isDesktop),
+            ],
+            child: ListPageScaffold<String>(
+              title: 'Test Title',
+              searchOnlyAppBar: searchOnly,
+              searchHint: 'Search...',
+              onSearchChanged: (_) {},
+              provider: const AsyncValue.data(['Item 1']),
+              onRefresh: () async => refreshCount++,
+              itemBuilder: (context, item, mw, mh) =>
+                  ListTile(title: Text(item)),
+            ),
+          );
 
       await pump(isDesktop: true);
       await tester.tap(find.byKey(const Key('list_page_refresh')));
@@ -197,6 +456,18 @@ void main() {
 
       await pump(isDesktop: false);
       expect(find.byKey(const Key('list_page_refresh')), findsNothing);
+
+      await pump(isDesktop: true, searchOnly: true);
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.actions, hasLength(1));
+      expect(find.byIcon(Icons.search), findsOneWidget);
+      expect(find.byKey(const Key('list_page_refresh')), findsNothing);
+      expect(find.byIcon(Icons.construction), findsNothing);
+      expect(find.byIcon(Icons.settings), findsNothing);
+      await tester
+          .widget<RefreshIndicator>(find.byType(RefreshIndicator))
+          .onRefresh();
+      expect(refreshCount, 2);
     });
 
     testWidgets('shows grid view when gridDelegate is provided', (
