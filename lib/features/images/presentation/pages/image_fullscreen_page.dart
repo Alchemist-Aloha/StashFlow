@@ -46,12 +46,16 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   static const _ratingTargetGalleryKey = 'image_rating_target_gallery';
   static const _imageFullscreenVerticalSwipeKey =
       'image_fullscreen_vertical_swipe';
+  static const _manualNavigationTransition = Duration(milliseconds: 180);
 
   late ExtendedPageController _pageController;
   Timer? _slideshowTimer;
   final _keyboardFocusNode = FocusNode(debugLabel: 'image_keyboard_shortcuts');
   Map<ShortcutActivator, VoidCallback> _keyBindings = const {};
   int _currentIndex = 0;
+  // Repeated manual input advances from its destination while the page is moving.
+  int? _manualNavigationTarget;
+  int _manualNavigationRevision = 0;
   bool _initialPageSet = false;
   bool _showOverlays = true;
   bool _isSlideshowPlaying = false;
@@ -196,6 +200,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
   void _advanceSlideshow(int itemCount) {
     if (!_isSlideshowPlaying || !_pageController.hasClients || !mounted) return;
+    // Let an in-flight manual transition finish before the next slideshow tick.
+    if (_manualNavigationTarget != null) return;
     if (itemCount <= 1) {
       _stopSlideshow();
       return;
@@ -231,36 +237,54 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     });
   }
 
-  Future<void> _goToPreviousImage() async {
-    // Keep manual navigation behavior aligned with slideshow transition.
-    if (!_pageController.hasClients || _currentIndex <= 0) return;
-    await _pageController.animateToPage(
-      _currentIndex - 1,
-      duration: _slideshowTransition,
-      curve: Curves.easeInOutCubic,
-    );
+  void _clearManualNavigationTarget() {
+    _manualNavigationTarget = null;
+    _manualNavigationRevision++;
   }
 
-  Future<void> _goToNextImage(int itemCount) async {
-    // Keep manual navigation behavior aligned with slideshow transition.
-    if (!_pageController.hasClients || itemCount <= 0) return;
-    if (_currentIndex >= itemCount - 1) return;
+  Future<void> _animateManualNavigation(int targetIndex) async {
+    _manualNavigationTarget = targetIndex;
+    final revision = ++_manualNavigationRevision;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _pageController.jumpToPage(targetIndex);
+      _clearManualNavigationTarget();
+      return;
+    }
     await _pageController.animateToPage(
-      _currentIndex + 1,
-      duration: _slideshowTransition,
-      curve: Curves.easeInOutCubic,
+      targetIndex,
+      duration: _manualNavigationTransition,
+      curve: Curves.easeOutCubic,
     );
+    // A superseded animation also completes; it must not clear a newer target.
+    if (mounted && revision == _manualNavigationRevision) {
+      _clearManualNavigationTarget();
+    }
+  }
+
+  void _goToPreviousImage() {
+    if (!_pageController.hasClients) return;
+    final index = _manualNavigationTarget ?? _currentIndex;
+    if (index <= 0) return;
+    unawaited(_animateManualNavigation(index - 1));
+  }
+
+  void _goToNextImage(int itemCount) {
+    if (!_pageController.hasClients || itemCount <= 0) return;
+    final index = _manualNavigationTarget ?? _currentIndex;
+    if (index >= itemCount - 1) return;
+    unawaited(_animateManualNavigation(index + 1));
   }
 
   void _goToFirstImage() {
-    if (!_pageController.hasClients || _currentIndex <= 0) return;
+    if (!_pageController.hasClients) return;
+    _clearManualNavigationTarget();
     _pageController.jumpToPage(0);
   }
 
   void _goToLastImage(int itemCount) {
     if (!_pageController.hasClients || itemCount <= 0) return;
     final lastIndex = itemCount - 1;
-    if (_currentIndex >= lastIndex) return;
+    _clearManualNavigationTarget();
     _pageController.jumpToPage(lastIndex);
   }
 
@@ -1088,124 +1112,140 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                   onPointerUp: _onPointerUp,
                   child: Stack(
                     children: [
-                      ExtendedImageGesturePageView.builder(
-                        controller: _pageController,
-                        scrollDirection: scrollDirection,
-                        itemCount: items.length,
-                        physics: const BouncingScrollPhysics(),
-                        onPageChanged: (index) {
-                          _handlePageChanged(index, items, headers);
-                        },
-                        itemBuilder: (context, index) {
-                          final image = items[index];
-                          final imageUrl =
-                              image.paths.image ?? image.paths.preview;
-
-                          if (imageUrl == null || imageUrl.isEmpty) {
-                            return const Center(
-                              child: Icon(
-                                Icons.broken_image,
-                                color: Colors.white54,
-                                size: 64,
-                              ),
-                            );
+                      NotificationListener<ScrollStartNotification>(
+                        onNotification: (notification) {
+                          if (notification.depth == 0 &&
+                              notification.dragDetails != null) {
+                            _clearManualNavigationTarget();
                           }
+                          return false;
+                        },
+                        child: ExtendedImageGesturePageView.builder(
+                          controller: _pageController,
+                          scrollDirection: scrollDirection,
+                          itemCount: items.length,
+                          physics: const BouncingScrollPhysics(),
+                          onPageChanged: (index) {
+                            _handlePageChanged(index, items, headers);
+                          },
+                          itemBuilder: (context, index) {
+                            final image = items[index];
+                            final imageUrl =
+                                image.paths.image ?? image.paths.preview;
 
-                          return RepaintBoundary(
-                            child: ExtendedImage.network(
-                              imageUrl,
-                              excludeFromSemantics: true,
-                              headers: headers,
-                              fit: BoxFit.contain,
-                              mode: ExtendedImageMode.gesture,
-                              cache: true,
-                              initGestureConfigHandler: (state) {
-                                return GestureConfig(
-                                  minScale: 0.9,
-                                  animationMinScale: 0.7,
-                                  maxScale: 5.0,
-                                  animationMaxScale: 6.0,
-                                  speed: 1.0,
-                                  inertialSpeed: 100.0,
-                                  initialScale: 1.0,
-                                  inPageView: true,
-                                  initialAlignment: InitialAlignment.center,
-                                );
-                              },
-                              onDoubleTap: (ExtendedImageGestureState state) {
-                                final pointerDownPosition =
-                                    state.pointerDownPosition;
-                                final begin = state.gestureDetails!.totalScale;
-                                final end = begin == 1.0 ? 3.0 : 1.0;
+                            if (imageUrl == null || imageUrl.isEmpty) {
+                              return const Center(
+                                child: Icon(
+                                  Icons.broken_image,
+                                  color: Colors.white54,
+                                  size: 64,
+                                ),
+                              );
+                            }
 
-                                state.handleDoubleTap(
-                                  scale: end,
-                                  doubleTapPosition: pointerDownPosition,
-                                );
-                              },
-                              loadStateChanged: (ExtendedImageState state) {
-                                switch (state.extendedImageLoadState) {
-                                  case LoadState.loading:
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  case LoadState.completed:
-                                    return state.completedWidget;
-                                  case LoadState.failed:
-                                    return Center(
-                                      child: Semantics(
-                                        button: true,
-                                        label: context
-                                            .l10n
-                                            .failed_to_load_tap_to_retry,
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: InkWell(
-                                            onTap: () => state.reLoadImage(),
-                                            borderRadius: BorderRadius.circular(
-                                              context.dimensions.spacingMedium,
-                                            ),
-                                            child: Padding(
-                                              padding: EdgeInsets.all(
-                                                context.dimensions.spacingLarge,
-                                              ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Icon(
-                                                    Icons.broken_image,
-                                                    color: Colors.white54,
-                                                    size:
-                                                        64 *
-                                                        context
-                                                            .dimensions
-                                                            .fontSizeFactor,
-                                                  ),
-                                                  SizedBox(
-                                                    height: context
+                            return RepaintBoundary(
+                              child: ExtendedImage.network(
+                                imageUrl,
+                                excludeFromSemantics: true,
+                                headers: headers,
+                                fit: BoxFit.contain,
+                                mode: ExtendedImageMode.gesture,
+                                cache: true,
+                                initGestureConfigHandler: (state) {
+                                  return GestureConfig(
+                                    minScale: 0.9,
+                                    animationMinScale: 0.7,
+                                    maxScale: 5.0,
+                                    animationMaxScale: 6.0,
+                                    speed: 1.0,
+                                    inertialSpeed: 100.0,
+                                    initialScale: 1.0,
+                                    inPageView: true,
+                                    initialAlignment: InitialAlignment.center,
+                                  );
+                                },
+                                onDoubleTap: (ExtendedImageGestureState state) {
+                                  final pointerDownPosition =
+                                      state.pointerDownPosition;
+                                  final begin =
+                                      state.gestureDetails!.totalScale;
+                                  final end = begin == 1.0 ? 3.0 : 1.0;
+
+                                  state.handleDoubleTap(
+                                    scale: end,
+                                    doubleTapPosition: pointerDownPosition,
+                                  );
+                                },
+                                loadStateChanged: (ExtendedImageState state) {
+                                  switch (state.extendedImageLoadState) {
+                                    case LoadState.loading:
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    case LoadState.completed:
+                                      return state.completedWidget;
+                                    case LoadState.failed:
+                                      return Center(
+                                        child: Semantics(
+                                          button: true,
+                                          label: context
+                                              .l10n
+                                              .failed_to_load_tap_to_retry,
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              onTap: () => state.reLoadImage(),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    context
                                                         .dimensions
                                                         .spacingMedium,
                                                   ),
-                                                  Text(
-                                                    context
-                                                        .l10n
-                                                        .failed_to_load_tap_to_retry,
-                                                    style: const TextStyle(
-                                                      color: Colors.white70,
+                                              child: Padding(
+                                                padding: EdgeInsets.all(
+                                                  context
+                                                      .dimensions
+                                                      .spacingLarge,
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.broken_image,
+                                                      color: Colors.white54,
+                                                      size:
+                                                          64 *
+                                                          context
+                                                              .dimensions
+                                                              .fontSizeFactor,
                                                     ),
-                                                  ),
-                                                ],
+                                                    SizedBox(
+                                                      height: context
+                                                          .dimensions
+                                                          .spacingMedium,
+                                                    ),
+                                                    Text(
+                                                      context
+                                                          .l10n
+                                                          .failed_to_load_tap_to_retry,
+                                                      style: const TextStyle(
+                                                        color: Colors.white70,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                }
-                              },
-                            ),
-                          );
-                        },
+                                      );
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        ),
                       ),
                       if (_showOverlays) ...[
                         _buildOverlayHeader(

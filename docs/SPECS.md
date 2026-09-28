@@ -335,6 +335,9 @@ page, with no rating editor in that sheet.
 The fullscreen image viewer supports:
 
 - previous/next navigation with correct endpoint behavior;
+- responsive manual transitions independent of slideshow timing, with repeated
+  keyboard input advancing from the intended destination and touch swipes
+  resynchronizing navigation to the displayed page;
 - zoom and pan;
 - authenticated original-image loading;
 - download/save actions with platform-appropriate permission handling;

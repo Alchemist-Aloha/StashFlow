@@ -286,6 +286,164 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
     });
 
+    testWidgets('keyboard navigation moves promptly and settles quickly', (
+      tester,
+    ) async {
+      await _pumpKeyboardGallery(tester, mockRepository, count: 3);
+      final focus = _keyboardFocus(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // The eased transition should already have crossed its midpoint.
+      expect(_currentImageId(tester), '2');
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(_currentImageId(tester), '2');
+      expect(
+        tester
+            .widget<ExtendedImageGesturePageView>(
+              find.byType(ExtendedImageGesturePageView),
+            )
+            .controller
+            .page,
+        closeTo(1, 0.01),
+      );
+      expect(focus.focusNode!.hasFocus, isTrue);
+    });
+
+    testWidgets('rapid arrow presses advance once per input', (tester) async {
+      await _pumpKeyboardGallery(tester, mockRepository, count: 5);
+
+      for (var i = 0; i < 3; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(_currentImageId(tester), '4');
+    });
+
+    testWidgets('slideshow ticks do not cancel rapid manual navigation', (
+      tester,
+    ) async {
+      await _pumpKeyboardGallery(tester, mockRepository, count: 5);
+
+      await tester.tap(find.byKey(const Key('image_slideshow_button')));
+      await tester.pumpAndSettle();
+      await tester.drag(find.byType(Slider).first, const Offset(-1000, 0));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.play_arrow_rounded));
+      await tester.pumpAndSettle();
+
+      await tester.pump(const Duration(milliseconds: 850));
+      for (var i = 0; i < 3; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 25));
+      }
+      // Cross the 1 second slideshow interval while keyboard motion is active.
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(_currentImageId(tester), '4');
+      await tester.tap(find.byKey(const Key('image_slideshow_button')));
+      await tester.pump();
+    });
+
+    testWidgets('held arrow repeats advance and clamp at loaded endpoints', (
+      tester,
+    ) async {
+      await _pumpKeyboardGallery(tester, mockRepository, count: 3);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      for (var i = 0; i < 4; i++) {
+        await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowRight);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 40));
+      }
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(_currentImageId(tester), '3');
+
+      for (var i = 0; i < 5; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 40));
+      }
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(_currentImageId(tester), '1');
+    });
+
+    testWidgets('opposite arrow before midpoint reverses to prior image', (
+      tester,
+    ) async {
+      await _pumpKeyboardGallery(tester, mockRepository, count: 3);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 20));
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 220));
+
+      expect(_currentImageId(tester), '1');
+    });
+
+    testWidgets(
+      'Home and End interrupt transitions and keep later arrows in sync',
+      (tester) async {
+        await _pumpKeyboardGallery(tester, mockRepository, count: 4);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 30));
+        await tester.sendKeyEvent(LogicalKeyboardKey.end);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 220));
+        expect(_currentImageId(tester), '4');
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.home);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 220));
+        expect(_currentImageId(tester), '1');
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 220));
+        expect(_currentImageId(tester), '2');
+      },
+    );
+
+    testWidgets('touch swipe synchronizes later keyboard navigation', (
+      tester,
+    ) async {
+      await _pumpKeyboardGallery(tester, mockRepository, count: 4);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 30));
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+
+      await tester.drag(
+        find.byType(ExtendedImageGesturePageView),
+        const Offset(1000, 0),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(_currentImageId(tester), '1');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 220));
+      expect(_currentImageId(tester), '2');
+    });
+
     testWidgets('ImageFullscreenPage shows title in header', (tester) async {
       final image = entity.Image(
         id: '1',
@@ -422,3 +580,39 @@ void main() {
     });
   });
 }
+
+Future<void> _pumpKeyboardGallery(
+  WidgetTester tester,
+  MockGraphQLImageRepository repository, {
+  required int count,
+}) async {
+  final images = List.generate(
+    count,
+    (index) => entity.Image(
+      id: '${index + 1}',
+      title: 'Image ${index + 1}',
+      files: const [],
+      paths: const entity.ImagePaths(image: ''),
+    ),
+  );
+  repository.withData(images);
+
+  await pumpTestWidget(
+    tester,
+    child: const ImageFullscreenPage(imageId: '1'),
+    overrides: [imageRepositoryProvider.overrideWithValue(repository)],
+  );
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 100));
+  _keyboardFocus(tester).focusNode!.requestFocus();
+  await tester.pump();
+  // Keep automatic near-end pagination from appending the mock page again.
+  repository.withEmpty();
+}
+
+Focus _keyboardFocus(WidgetTester tester) =>
+    tester.widget<Focus>(find.byKey(const Key('image_keyboard_shortcuts')));
+
+String? _currentImageId(WidgetTester tester) => ProviderScope.containerOf(
+  tester.element(find.byType(ImageFullscreenPage)),
+).read(imageFullscreenCurrentIdProvider);
