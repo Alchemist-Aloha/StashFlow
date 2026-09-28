@@ -36,8 +36,8 @@ class FrostedSurface extends StatelessWidget {
   /// Content painted on top of the frosted layer.
   final Widget child;
 
-  /// The translucent fill. Must stay semi-transparent or the blur is wasted
-  /// work — an opaque tint turns this widget into an expensive [Container].
+  /// The surface fill. Opaque tints skip backdrop blur because they completely
+  /// cover it; translucent tints retain the shared frosted treatment.
   final Color tint;
 
   /// Backdrop blur radius. Media-backed chrome may exceed the chrome default;
@@ -64,23 +64,18 @@ class FrostedSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = borderRadius;
+    Widget body = _tintedBody(radius);
+    if (tint.a < 1.0 && blurSigma > 0) {
+      body = BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+        child: body,
+      );
+    }
 
-    // Blur strictly inside the surface bounds, so a bar cannot leak its
-    // backdrop into neighbouring content.
+    // Keep content and any visible blur inside the surface bounds.
     Widget frosted = radius == null
-        ? ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-              child: _tintedBody(radius),
-            ),
-          )
-        : ClipRRect(
-            borderRadius: radius,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-              child: _tintedBody(radius),
-            ),
-          );
+        ? ClipRect(child: body)
+        : ClipRRect(borderRadius: radius, child: body);
 
     // The shadow belongs to the un-clipped shell so it can fall outside the
     // surface edge instead of being cut off by the clip.

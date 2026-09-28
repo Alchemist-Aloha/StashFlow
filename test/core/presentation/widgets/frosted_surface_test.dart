@@ -141,30 +141,84 @@ void main() {
       );
     });
 
-    testWidgets('overlay panels use the same recipe', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.buildTheme(Brightness.dark, const Color(0xFF0F766E)),
-          home: const FrostedPanel(child: SizedBox(width: 100, height: 40)),
-        ),
+    testWidgets('opaque fills skip blur and retain rounded content clipping', (
+      tester,
+    ) async {
+      await pumpFrosted(
+        tester,
+        tint: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.red),
       );
-      await tester.pump();
-
+      expect(find.byType(BackdropFilter), findsNothing);
       expect(
         find.descendant(
-          of: find.byType(FrostedPanel),
-          matching: find.byType(FrostedSurface),
+          of: find.byType(FrostedSurface),
+          matching: find.byType(ClipRRect),
         ),
         findsOneWidget,
       );
-      final filter = tester.widget<BackdropFilter>(
-        find.descendant(
-          of: find.byType(FrostedPanel),
-          matching: find.byType(BackdropFilter),
+      final decorations = tester
+          .widgetList<Container>(
+            find.descendant(
+              of: find.byType(FrostedSurface),
+              matching: find.byType(Container),
+            ),
+          )
+          .map((c) => c.decoration)
+          .whereType<BoxDecoration>();
+      expect(
+        decorations.any(
+          (d) =>
+              d.color == Colors.white &&
+              d.border == Border.all(color: Colors.red),
         ),
+        isTrue,
       );
-      final blur = filter.filter as dynamic;
-      expect(blur.sigmaX, AppTheme.frostedBlurSigma);
+      await pumpFrosted(tester, tint: const Color(0xFEFFFFFF));
+      expect(find.byType(BackdropFilter), findsOneWidget);
     });
+
+    testWidgets('zero blur skips the backdrop layer for translucent fills', (
+      tester,
+    ) async {
+      await pumpFrosted(tester, blurSigma: 0);
+      expect(find.byType(BackdropFilter), findsNothing);
+    });
+
+    for (final variant in ['light', 'dark', 'black']) {
+      testWidgets('opaque $variant panels retain styling without blur', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.buildTheme(
+              variant == 'light' ? Brightness.light : Brightness.dark,
+              const Color(0xFF0F766E),
+              useTrueBlack: variant == 'black',
+            ),
+            home: const Center(
+              child: FrostedPanel(child: SizedBox(width: 100, height: 40)),
+            ),
+          ),
+        );
+        await tester.pump();
+        final panel = find.byType(FrostedPanel);
+        final surface = find.descendant(
+          of: panel,
+          matching: find.byType(FrostedSurface),
+        );
+        expect(surface, findsOneWidget);
+        expect(tester.widget<FrostedSurface>(surface).tint.a, 1);
+        expect(
+          find.descendant(of: panel, matching: find.byType(BackdropFilter)),
+          findsNothing,
+        );
+        final recipe = tester.widget<FrostedSurface>(surface);
+        expect(recipe.border, isNotNull);
+        expect(recipe.boxShadow, isNotEmpty);
+        expect(tester.getSize(panel), const Size(102, 42));
+      });
+    }
   });
 }

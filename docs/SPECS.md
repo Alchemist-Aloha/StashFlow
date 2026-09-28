@@ -70,7 +70,8 @@ sheets, saved-filter UI, `StashImage`, and common state views.
   from a platform name.
 - Translucent surfaces use the shared `FrostedSurface` recipe rather than
   hand-rolled `BackdropFilter` + `Container` pairs, and apply it only where
-  content passes behind the surface.
+  content passes behind the surface. Opaque fills omit the backdrop blur layer
+  while retaining their tint, clipping, border, shadow, and layout.
 - A surface that floats over scrolling content must publish its height as an
   inset (scroll padding, or `MediaQuery` bottom padding) so no content is
   permanently hidden behind it.
