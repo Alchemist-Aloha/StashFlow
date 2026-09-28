@@ -261,6 +261,13 @@ overlays, context actions, and optional performer avatars. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
 scaling.
 
+Square-video scene thumbnails retain their native 1:1 frame in grid and list
+layouts on all platforms. If the decoded cover image is also square, stretch
+its painting vertically to 1:2 and crop the top and bottom to fill that frame;
+image loading must not change the card's layout bounds. Non-square covers keep
+their normal fit. Other uniform-grid thumbnails use 16:9; list and masonry
+thumbnails follow the source proportions, clamped to the supported card range.
+
 Hover scrubbing is enabled only for pointer-capable environments and only when
 sprite data is available. Touch scrolling and card activation must remain
 reliable when scrubbing is unavailable.
@@ -519,6 +526,9 @@ The Android media session publishes current title, artwork, duration, position,
 playing state, and supported actions. Notification seeking performs true player
 seeks and keeps position/duration synchronized. Playback completion follows the
 configured end behavior. The notification intentionally has no Stop action.
+Notification titles use the same scene display title as the app: trimmed title,
+then the cleaned file-path stem, then the stream-path stem, then the default
+scene label. Artwork publication and duration refreshes preserve this fallback.
 
 Artwork caching must avoid deletion races while notification metadata still
 references a file.

@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/sprite_info.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
@@ -116,6 +118,30 @@ void main() {
     );
   }
 
+  Scene videoScene({required int width, required int height}) {
+    return defaultTestScene.copyWith(
+      files: [
+        defaultTestScene.files.first.copyWith(width: width, height: height),
+      ],
+      paths: defaultTestScene.paths.copyWith(
+        screenshot: 'http://test.com/thumbnail.jpg',
+      ),
+    );
+  }
+
+  Future<ui.Image> createTestImage(int width, int height) async {
+    final recorder = ui.PictureRecorder();
+    final canvas = ui.Canvas(recorder);
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
+      Paint()..color = Colors.blue,
+    );
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(width, height);
+    picture.dispose();
+    return image;
+  }
+
   testWidgets('SceneCard renders list mode properly', (tester) async {
     await tester.pumpWidget(
       buildTestWidget(SceneCard(scene: defaultTestScene, isGrid: false)),
@@ -141,6 +167,144 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Test Scene'), findsOneWidget);
+  });
+
+  testWidgets('square video thumbnail keeps native square layout bounds', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestWidget(
+        SizedBox(
+          width: 200,
+          child: SceneCard(
+            scene: videoScene(width: 1080, height: 1080),
+            isGrid: true,
+            useHero: false,
+          ),
+        ),
+      ),
+    );
+
+    final imageFinder = find.byType(StashImage);
+    final image = tester.widget<StashImage>(imageFinder);
+    expect(image.frameBuilder, isNotNull);
+
+    final aspectRatioFinder = find.descendant(
+      of: find.byType(SceneCard),
+      matching: find.byType(AspectRatio),
+    );
+    expect(tester.widget<AspectRatio>(aspectRatioFinder).aspectRatio, 1);
+    expect(tester.getSize(aspectRatioFinder), const Size(200, 200));
+  });
+
+  testWidgets('square decoded cover stretches vertically within its bounds', (
+    tester,
+  ) async {
+    final image = await tester.runAsync(() => createTestImage(64, 64));
+    expect(image, isNotNull);
+    addTearDown(image!.dispose);
+
+    await tester.pumpWidget(
+      buildTestWidget(
+        SizedBox(
+          width: 200,
+          child: SceneCard(
+            scene: videoScene(width: 1080, height: 1080),
+            isGrid: true,
+            useHero: false,
+          ),
+        ),
+      ),
+    );
+
+    final stashImage = tester.widget<StashImage>(find.byType(StashImage));
+    final child = RawImage(image: image);
+    final transformed = stashImage.frameBuilder!(
+      tester.element(find.byType(StashImage)),
+      child,
+      1,
+      false,
+    );
+
+    await tester.pumpWidget(
+      buildTestWidget(SizedBox(width: 200, height: 200, child: transformed)),
+    );
+
+    expect(tester.getSize(find.byType(SizedBox).first), const Size(200, 200));
+    expect(tester.getSize(find.byType(ClipRect)), const Size(200, 200));
+    final transformFinder = find.byWidgetPredicate(
+      (widget) => widget is Transform && widget.transform.storage[5] == 2,
+    );
+    expect(tester.getSize(transformFinder), const Size(200, 200));
+    final transform = tester.widget<Transform>(transformFinder);
+    expect(transform.transform.storage[5], 2);
+
+    final clipBox = tester.renderObject<RenderBox>(find.byType(ClipRect));
+    final rawImageBox = tester.renderObject<RenderBox>(find.byType(RawImage));
+    final paintedTopLeft = rawImageBox.localToGlobal(
+      Offset.zero,
+      ancestor: clipBox,
+    );
+    final paintedBottomRight = rawImageBox.localToGlobal(
+      const Offset(200, 200),
+      ancestor: clipBox,
+    );
+    expect(paintedTopLeft.dy, -100);
+    expect(paintedBottomRight.dy, 300);
+    expect(paintedTopLeft.dx, 0);
+    expect(paintedBottomRight.dx, 200);
+  });
+
+  testWidgets('square video leaves a decoded rectangular cover unchanged', (
+    tester,
+  ) async {
+    final image = await tester.runAsync(() => createTestImage(80, 40));
+    expect(image, isNotNull);
+    addTearDown(image!.dispose);
+
+    await tester.pumpWidget(
+      buildTestWidget(
+        SizedBox(
+          width: 200,
+          child: SceneCard(
+            scene: videoScene(width: 1080, height: 1080),
+            isGrid: true,
+            useHero: false,
+          ),
+        ),
+      ),
+    );
+
+    final stashImage = tester.widget<StashImage>(find.byType(StashImage));
+    final child = RawImage(image: image);
+    final result = stashImage.frameBuilder!(
+      tester.element(find.byType(StashImage)),
+      child,
+      1,
+      false,
+    );
+
+    expect(identical(result, child), isTrue);
+  });
+
+  testWidgets('non-square video does not install a thumbnail frame builder', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestWidget(
+        SizedBox(
+          width: 200,
+          child: SceneCard(
+            scene: videoScene(width: 1920, height: 1080),
+            isGrid: true,
+            useHero: false,
+          ),
+        ),
+      ),
+    );
+
+    final image = tester.widget<StashImage>(find.byType(StashImage));
+    expect(image.frameBuilder, isNull);
   });
 
   testWidgets('SceneCard pan gesture is enabled when VTT is present', (

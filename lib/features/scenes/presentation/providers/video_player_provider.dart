@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_title_utils.dart';
 import 'playback_queue_provider.dart';
 import 'queue_playback_coordinator.dart';
 import 'scene_details_provider.dart';
@@ -569,7 +570,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     if (screenshotUrl == null || screenshotUrl.isEmpty || isTestMode) {
       mediaHandler?.updateMetadata(
         id: scene.id,
-        title: scene.title,
+        title: scene.displayTitle,
         studio: scene.studioName,
         duration: duration,
       );
@@ -608,7 +609,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     if (!_isCurrentNotificationRequest(scene, generation)) return;
     mediaHandler?.updateMetadata(
       id: scene.id,
-      title: scene.title,
+      title: scene.displayTitle,
       studio: scene.studioName,
       duration: duration,
       thumbnailUri: thumbnailUri,
@@ -1868,7 +1869,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           currentMediaItem?.duration != currentDuration) {
         mediaHandler?.updateMetadata(
           id: activeScene.id,
-          title: activeScene.title,
+          title: activeScene.displayTitle,
           studio: activeScene.studioName,
           duration: currentDuration,
         );
