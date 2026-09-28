@@ -404,13 +404,19 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           child: Builder(
             builder: (bodyContext) {
               // The scaffold has already consumed the system bottom inset in
-              // its navigation bar. Preserve the body's remaining safe area.
+              // its navigation bar. Keep both inset fields in sync: Scaffold's
+              // floating-action-button location uses viewPadding for its safe
+              // bottom margin, while it replaces padding.bottom with viewInsets.
               final mediaQuery = MediaQuery.of(bodyContext);
               return MediaQuery(
                 data: miniPlayerVisible
                     ? mediaQuery.copyWith(
                         padding: mediaQuery.padding.copyWith(
                           bottom: mediaQuery.padding.bottom + MiniPlayer.height,
+                        ),
+                        viewPadding: mediaQuery.viewPadding.copyWith(
+                          bottom:
+                              mediaQuery.viewPadding.bottom + MiniPlayer.height,
                         ),
                       )
                     : mediaQuery,

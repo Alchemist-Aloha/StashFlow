@@ -19,6 +19,7 @@ import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart'
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/data/services/cast_service.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 
 class MockPlayerState extends PlayerState {
   static String? lastPlayedSceneId;
@@ -128,7 +129,7 @@ void main() {
     files: [],
     urls: [],
     paths: const ScenePaths(
-      screenshot: null,
+      screenshot: 'http://test.com/screenshot.jpg',
       preview: null,
       stream: 'http://test.com/stream.mp4',
     ),
@@ -168,6 +169,15 @@ void main() {
     expect(find.byType(AspectRatio), findsWidgets);
     expect(find.byType(Container), findsWidgets);
     expect(find.byKey(const Key('inline_video_back_button')), findsOneWidget);
+    final sceneImage = tester.widget<StashImage>(find.byType(StashImage));
+    expect(sceneImage.imageUrl, testScene.paths.screenshot);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ColoredBox && widget.color == const Color(0x99000000),
+      ),
+      findsOneWidget,
+    );
 
     // The play button should be visible since this scene is not active.
     final iconFinder = find.byIcon(Icons.play_arrow_rounded);

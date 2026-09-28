@@ -5,15 +5,54 @@ import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/features/navigation/presentation/shell_page.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/frosted_surface.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
+import 'package:stash_app_flutter/features/navigation/presentation/widgets/mini_player.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../../../helpers/test_helpers.dart';
+
+class _ActivePlayerState extends PlayerState {
+  _ActivePlayerState(this.scene);
+
+  final Scene scene;
+
+  @override
+  GlobalPlayerState build() => GlobalPlayerState(activeScene: scene);
+}
+
+Scene _activeScene() => Scene(
+  id: 'active',
+  title: 'Active scene',
+  date: DateTime(2024),
+  rating100: null,
+  oCounter: 0,
+  organized: true,
+  interactive: false,
+  resumeTime: null,
+  playCount: 0,
+  playDuration: null,
+  files: const [],
+  urls: const [],
+  paths: const ScenePaths(screenshot: null, preview: null, stream: null),
+  studioId: null,
+  studioName: null,
+  studioImagePath: null,
+  performerIds: const [],
+  performerNames: const [],
+  performerImagePaths: const [],
+  tagIds: const [],
+  tagNames: const [],
+);
 
 void main() {
   group('ListPageScaffold', () {
@@ -103,6 +142,83 @@ void main() {
         );
       });
     }
+
+    testWidgets('random FAB clears the mini player in the real shell', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final scene = _activeScene();
+      final router = GoRouter(
+        initialLocation: '/home',
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) =>
+                ShellPage(navigationShell: navigationShell),
+            branches: [
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/home',
+                    builder: (context, state) => ListPageScaffold<int>(
+                      title: 'Test Title',
+                      searchHint: 'Search...',
+                      onSearchChanged: (_) {},
+                      provider: const AsyncValue.data([1]),
+                      itemBuilder: (_, item, _, _) => Text('Item $item'),
+                      floatingActionButton: FloatingActionButton.small(
+                        onPressed: () {},
+                        child: const Icon(Icons.casino_outlined),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/other',
+                    builder: (context, state) => const Scaffold(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            playerStateProvider.overrideWith(() => _ActivePlayerState(scene)),
+            desktopCapabilitiesProvider.overrideWithValue(false),
+          ],
+          child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.byType(MiniPlayer), findsOneWidget);
+      final randomFab = tester.getRect(find.byType(FloatingActionButton));
+      final miniPlayer = tester.getRect(find.byType(MiniPlayer));
+      expect(randomFab.bottom, lessThanOrEqualTo(miniPlayer.top - 16));
+    });
 
     test('avoids layout-driven paging and duplicate repaint boundaries', () {
       final source = File(

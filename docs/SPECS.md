@@ -72,7 +72,9 @@ sheets, saved-filter UI, `StashImage`, and common state views.
 - A surface that floats over scrolling content must publish its height as an
   inset (scroll padding, or `MediaQuery` bottom padding) so no content is
   permanently hidden behind it.
-- Floating list actions and pull-up panels clear the mini-player inset. Pages
+- Floating list actions and pull-up panels clear the mini-player inset. The
+  shell publishes its floating band in both bottom `padding` and `viewPadding`
+  so default Scaffold FAB placement also clears it. Pages
   inherit the shell body's remaining safe area; system padding already consumed
   by the navigation bar must not be restored below their content or sheets.
 
@@ -262,6 +264,13 @@ Layout contract:
 - At 768 logical pixels and above, identity, actions, and supporting metadata
   use the responsive large-screen composition.
 - Header actions remain reachable without crowding the title or studio.
+- Rating, add-O, details, download (where supported), and More share one action
+  row directly on the page background, without a surrounding panel backdrop.
+  The O-count button uses an unfilled icon-and-count treatment.
+  At narrow widths or large UI scales, the row scrolls horizontally instead
+  of wrapping or shrinking touch targets. More opens a bottom panel containing
+  add marker, edit, delete, and desktop refresh; selecting an action closes the
+  panel before opening its dialog or page.
 - On touch, dragging the scene title previews previous/next navigation with
   title movement and a directional chevron; completing the swipe starts the
   adjacent scene in the active queue. At queue ends, the title resists the drag
@@ -282,6 +291,12 @@ year-only birthdates use calendar-year subtraction. Invalid, missing, or
 pre-birth dates omit the suffix without triggering extra performer requests.
 
 ### Scene rating and metadata mutation
+
+Interactive rating entry points share `RatingButton` and `RatingPicker`. A single
+star opens a popup editor with five stars, fractional-rating selection, Clear,
+and Apply/Cancel. Ratings use the server's 0–100 scale; cancelling leaves the
+confirmed rating unchanged. Image/gallery metadata panels use the same compact
+button, and fullscreen image rating retains its image/gallery target selector.
 
 Scene rating and metadata edits go through the scene repository. Successful
 mutations update or invalidate both details and affected lists. Failed mutations
@@ -321,6 +336,8 @@ Responsibilities:
 
 - `video_player_provider.dart` owns session lifecycle and global player state.
 - `SceneVideoPlayer` decides when an inline scene may acquire playback.
+- Inactive inline players show the scene screenshot through `StashImage`, with
+  a readable control scrim and the normal missing/failed-image fallback.
 - Inactive inline placeholders keep the Back control in the active inline
   player's top-left position, including while playback starts.
 - `PlayerSurface` owns shared visual rendering, controls, transforms, subtitles,

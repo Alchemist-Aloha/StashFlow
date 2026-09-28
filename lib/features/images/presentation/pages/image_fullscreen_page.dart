@@ -17,6 +17,7 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/desktop_fullscreen.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -544,6 +545,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
+              scrollable: true,
               title: Text(context.l10n.common_rate),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -596,19 +598,10 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                     ),
                   ],
                   SizedBox(height: context.dimensions.spacingMedium),
-                  Text(
-                    context.l10n.images_rating(
-                      (rating / 20).toStringAsFixed(1),
-                    ),
-                  ),
-                  Slider(
-                    value: rating.toDouble(),
-                    min: 0,
-                    max: 100,
-                    divisions: 20,
-                    label: (rating / 20).toStringAsFixed(1),
+                  RatingPicker(
+                    rating100: rating,
                     onChanged: (value) {
-                      setDialogState(() => rating = value.round());
+                      setDialogState(() => rating = value);
                     },
                   ),
                 ],
@@ -914,13 +907,18 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                     ? _goToPreviousImage
                                     : null,
                               ),
-                              IconButton.filledTonal(
+                              RatingButton(
                                 key: const Key('image_rate_button'),
-                                icon: const Icon(Icons.star_rate_rounded),
+                                rating100: currentImage?.rating100,
+                                style: IconButton.styleFrom(
+                                  backgroundColor:
+                                      colorScheme.secondaryContainer,
+                                  foregroundColor:
+                                      colorScheme.onSecondaryContainer,
+                                ),
                                 onPressed: currentImage == null
                                     ? null
                                     : () => _showRatingDialog(currentImage),
-                                tooltip: context.l10n.common_rate,
                               ),
                               if (!kIsWeb)
                                 IconButton.filledTonal(
