@@ -270,9 +270,11 @@ Layout contract:
   row directly on the page background, without a surrounding panel backdrop.
   The O-count button uses an unfilled icon-and-count treatment.
   At narrow widths or large UI scales, the row scrolls horizontally instead
-  of wrapping or shrinking touch targets. More opens a bottom panel containing
-  add marker, edit, delete, and desktop refresh; selecting an action closes the
-  panel before opening its dialog or page.
+  of wrapping or shrinking touch targets. Desktop-capable layouts at non-mobile
+  widths (600 logical pixels and above) show add marker, edit, refresh, and delete
+  directly in the row, without More. Smaller or touch-only layouts use More to
+  open a bottom panel containing add marker, edit, delete, and desktop refresh;
+  selecting an action closes the panel before opening its dialog or page.
 - On touch, dragging the scene title previews previous/next navigation with
   title movement and a directional chevron; completing the swipe starts the
   adjacent scene in the active queue. At queue ends, the title resists the drag
@@ -292,6 +294,14 @@ scene date. Full birthdates account for whether the birthday had occurred;
 year-only birthdates use calendar-year subtraction. Invalid, missing, or
 pre-birth dates omit the suffix without triggering extra performer requests.
 
+Performer and Studio Details group unfilled favorite, shared rating, and edit
+buttons in a single row below the performer identity chips or studio name.
+Header padding and action spacing follow the scaled theme dimensions. Aliases
+sit close to the performer identity with half the small theme spacing. Rating
+changes use the entity repository, refresh details, and invalidate affected
+lists after confirmation; cancellation or failed saves retain the confirmed
+value, with localized feedback on failure.
+
 ### Scene rating and metadata mutation
 
 Interactive rating entry points share `RatingButton` and `RatingPicker`. A single
@@ -310,9 +320,10 @@ Images and Galleries are separate top-level features with independent filters,
 sorting, pagination, and layout state.
 
 Gallery Details exposes the shared single-star rating button in both its expanded
-and collapsed headers, including for unrated galleries. Expanded cover and
-identity stack when the available width cannot keep the title readable at the
-selected UI scale. The unfilled details button sits beside the rating button;
+and collapsed headers, including for unrated galleries. The expanded section
+fills the available content width, retaining scaled theme padding. Both headers
+show the title and metadata without a cover thumbnail beside the title. The unfilled
+details button sits beside the rating button;
 image count appears on its own line below the studio name (or title when no
 studio is available). Confirmed rating changes
 refresh gallery details and update the gallery list without reshuffling it;

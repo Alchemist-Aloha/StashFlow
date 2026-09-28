@@ -208,7 +208,7 @@ void main() {
     await tester.tap(find.text('Play Scene'));
     await tester.pumpAndSettle();
     // Verify we are on details page
-    expect(find.byKey(const Key('scene_action_more')), findsOneWidget);
+    expect(find.byKey(const Key('scene_action_buttons')), findsOneWidget);
 
     // Find the play button in the video player overlay if not auto-started
     if (find.byIcon(Icons.play_arrow).evaluate().isNotEmpty) {

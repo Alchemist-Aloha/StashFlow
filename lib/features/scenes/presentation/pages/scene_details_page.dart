@@ -1182,6 +1182,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   Widget _buildActions(BuildContext context, Scene scene) {
     final dims = context.dimensions;
+    final showAllActions =
+        ref.watch(desktopCapabilitiesProvider) && !Responsive.isMobile(context);
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -1271,16 +1273,71 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   onPressed: () => _saveVideoToGallery(scene),
                 ),
               ],
-              SizedBox(width: dims.spacingSmall),
-              IconButton(
-                key: const Key('scene_action_more'),
-                tooltip: context.l10n.common_more,
-                icon: Icon(
-                  Icons.more_horiz_rounded,
-                  size: 24 * dims.fontSizeFactor,
+              if (showAllActions) ...[
+                SizedBox(width: dims.spacingSmall),
+                IconButton(
+                  key: const Key('scene_action_add_marker'),
+                  tooltip: context.l10n.scene_details_add_marker,
+                  icon: Icon(
+                    Icons.bookmark_add_outlined,
+                    size: 24 * dims.fontSizeFactor,
+                  ),
+                  onPressed: () => _showAddMarkerDialog(
+                    scene,
+                    markerSeconds: _currentMarkerSeconds(scene),
+                  ),
                 ),
-                onPressed: () => _showActionMenu(scene),
-              ),
+                SizedBox(width: dims.spacingSmall),
+                IconButton(
+                  key: const Key('scene_action_edit'),
+                  tooltip: context.l10n.common_edit,
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    size: 24 * dims.fontSizeFactor,
+                  ),
+                  onPressed: () => context.push(
+                    '/scenes/scene/${scene.id}/edit',
+                    extra: scene,
+                  ),
+                ),
+                SizedBox(width: dims.spacingSmall),
+                IconButton(
+                  key: const Key('scene_action_refresh'),
+                  tooltip: context.l10n.common_refresh,
+                  icon: Icon(
+                    Icons.refresh_rounded,
+                    size: 24 * dims.fontSizeFactor,
+                  ),
+                  onPressed: () async {
+                    await ref
+                        .read(sceneDetailsProvider(scene.id).notifier)
+                        .refresh();
+                    if (mounted) _invalidateSceneListUnlessRandom();
+                  },
+                ),
+                SizedBox(width: dims.spacingSmall),
+                IconButton(
+                  key: const Key('scene_action_delete'),
+                  tooltip: context.l10n.delete_scene,
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: context.colors.error,
+                    size: 24 * dims.fontSizeFactor,
+                  ),
+                  onPressed: () => _showDeleteSceneDialog(scene),
+                ),
+              ] else ...[
+                SizedBox(width: dims.spacingSmall),
+                IconButton(
+                  key: const Key('scene_action_more'),
+                  tooltip: context.l10n.common_more,
+                  icon: Icon(
+                    Icons.more_horiz_rounded,
+                    size: 24 * dims.fontSizeFactor,
+                  ),
+                  onPressed: () => _showActionMenu(scene),
+                ),
+              ],
             ],
           ),
         ),

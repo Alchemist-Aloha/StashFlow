@@ -1,8 +1,6 @@
 # Plan
 
-- add rating button to performer and studio details pages. consolidate like, rating, and edit buttons in to a single row below the Performer details chips or studio name (use spacing values from the theme). 
-- reduce the distance between performer name and alias in performer details page. 
-- remove the "Performer Details" title in the appbar of the performer details page. Do the same for the studio details page, tag details page, and gallery details page. 
+- hide dedup name line below performer name if it is empty 
 - diagnose not smooth transition animation for filter/sort panel
 
 # Future Improvements

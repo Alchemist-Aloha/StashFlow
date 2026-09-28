@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/performer_details_provider.dart';
@@ -81,21 +82,7 @@ class PerformerDetailsPage extends ConsumerWidget {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          performerAsync.maybeWhen(
-            data: (performer) => IconButton(
-              tooltip: context.l10n.common_edit,
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: () => context.push(
-                '/performers/performer/${performer.id}/edit',
-                extra: performer,
-              ),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
-      ),
+      appBar: AppBar(),
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomPerformer(context, ref),
@@ -164,23 +151,61 @@ class PerformerDetailsPage extends ConsumerWidget {
                       ),
                     ),
                   Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                    padding: EdgeInsets.all(context.dimensions.spacingMedium),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                performer.name,
-                                style: context.textTheme.headlineMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: context.colors.onSurface,
-                                    ),
-                              ),
+                        Text(
+                          performer.name,
+                          style: context.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: context.colors.onSurface,
+                          ),
+                        ),
+                        if (performer.disambiguation != null)
+                          Text(
+                            performer.disambiguation!,
+                            style: context.textTheme.titleMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
                             ),
-                            IconButton.filledTonal(
+                          ),
+                        if (performer.aliasList.isNotEmpty) ...[
+                          SizedBox(height: context.dimensions.spacingSmall / 2),
+                          Text(
+                            performer.aliasList.join(', '),
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        Wrap(
+                          spacing: context.dimensions.spacingSmall,
+                          runSpacing: context.dimensions.spacingSmall,
+                          children: [
+                            if (performer.gender != null)
+                              _buildChip(context, performer.gender!),
+                            if (age != null) _buildChip(context, '$age'),
+                            if (performer.birthdate != null)
+                              _buildChip(context, performer.birthdate!),
+                            if (performer.country != null)
+                              _buildChip(context, performer.country!),
+                            if (performer.ethnicity != null)
+                              _buildChip(context, performer.ethnicity!),
+                            if (performer.heightCm != null)
+                              _buildChip(context, '${performer.heightCm} cm'),
+                            if (performer.eyeColor != null)
+                              _buildChip(context, performer.eyeColor!),
+                            if (performer.hairColor != null)
+                              _buildChip(context, performer.hairColor!),
+                          ],
+                        ),
+                        SizedBox(height: context.dimensions.spacingSmall),
+                        Row(
+                          key: const Key('performer_actions'),
+                          children: [
+                            IconButton(
+                              key: const Key('performer_action_favorite'),
                               icon: Icon(
                                 performer.favorite
                                     ? Icons.favorite
@@ -217,47 +242,56 @@ class PerformerDetailsPage extends ConsumerWidget {
                                 }
                               },
                             ),
+                            SizedBox(width: context.dimensions.spacingSmall),
+                            RatingButton(
+                              key: const Key('performer_action_rating'),
+                              rating100: performer.rating100,
+                              onRatingSelected: (rating) async {
+                                try {
+                                  final repository = ref.read(
+                                    performerRepositoryProvider,
+                                  );
+                                  await repository.updatePerformer(
+                                    id: performer.id,
+                                    input: {'rating100': rating},
+                                  );
+                                  await repository.getPerformerById(
+                                    performer.id,
+                                    refresh: true,
+                                  );
+                                  if (!context.mounted) return;
+                                  ref.invalidate(
+                                    performerDetailsProvider(performer.id),
+                                  );
+                                  ref.invalidate(performerListProvider);
+                                } catch (error) {
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        context.l10n
+                                            .details_failed_update_rating(
+                                              '$error',
+                                            ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            SizedBox(width: context.dimensions.spacingSmall),
+                            IconButton(
+                              key: const Key('performer_action_edit'),
+                              tooltip: context.l10n.common_edit,
+                              icon: const Icon(Icons.edit_outlined),
+                              onPressed: () => context.push(
+                                '/performers/performer/${performer.id}/edit',
+                                extra: performer,
+                              ),
+                            ),
                           ],
                         ),
-                        if (performer.disambiguation != null)
-                          Text(
-                            performer.disambiguation!,
-                            style: context.textTheme.titleMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                            ),
-                          ),
-                        if (performer.aliasList.isNotEmpty) ...[
-                          const SizedBox(height: AppTheme.spacingSmall),
-                          Text(
-                            performer.aliasList.join(', '),
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: AppTheme.spacingSmall),
-                        Wrap(
-                          spacing: AppTheme.spacingSmall,
-                          runSpacing: AppTheme.spacingSmall,
-                          children: [
-                            if (performer.gender != null)
-                              _buildChip(context, performer.gender!),
-                            if (age != null) _buildChip(context, '$age'),
-                            if (performer.birthdate != null)
-                              _buildChip(context, performer.birthdate!),
-                            if (performer.country != null)
-                              _buildChip(context, performer.country!),
-                            if (performer.ethnicity != null)
-                              _buildChip(context, performer.ethnicity!),
-                            if (performer.heightCm != null)
-                              _buildChip(context, '${performer.heightCm} cm'),
-                            if (performer.eyeColor != null)
-                              _buildChip(context, performer.eyeColor!),
-                            if (performer.hairColor != null)
-                              _buildChip(context, performer.hairColor!),
-                          ],
-                        ),
-                        const SizedBox(height: AppTheme.spacingSmall),
+                        SizedBox(height: context.dimensions.spacingMedium),
                         if (performer.tagNames.isNotEmpty) ...[
                           _buildSectionContainer(
                             context,

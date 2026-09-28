@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/studio_details_provider.dart';
@@ -50,6 +51,32 @@ class StudioDetailsPage extends ConsumerWidget {
     context.push('/studios/studio/${randomStudio.id}');
   }
 
+  Future<void> _updateRating(
+    BuildContext context,
+    WidgetRef ref,
+    Studio studio,
+    int rating,
+  ) async {
+    try {
+      final repository = ref.read(studioRepositoryProvider);
+      await repository.updateStudio(
+        id: studio.id,
+        input: {'rating100': rating},
+      );
+      await repository.getStudioById(studio.id, refresh: true);
+      if (!context.mounted) return;
+      ref.invalidate(studioDetailsProvider(studio.id));
+      ref.invalidate(studioListProvider);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.details_failed_update_rating('$error')),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final studioAsync = ref.watch(studioDetailsProvider(studioId));
@@ -62,21 +89,7 @@ class StudioDetailsPage extends ConsumerWidget {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          studioAsync.maybeWhen(
-            data: (studio) => IconButton(
-              tooltip: context.l10n.common_edit,
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: () => context.push(
-                '/studios/studio/${studio.id}/edit',
-                extra: studio,
-              ),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
-      ),
+      appBar: AppBar(),
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomStudio(context, ref),
@@ -141,7 +154,7 @@ class StudioDetailsPage extends ConsumerWidget {
                       ),
                     ),
                   Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                    padding: EdgeInsets.all(context.dimensions.spacingMedium),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -157,7 +170,14 @@ class StudioDetailsPage extends ConsumerWidget {
                                     ),
                               ),
                             ),
-                            IconButton.filledTonal(
+                          ],
+                        ),
+                        SizedBox(height: context.dimensions.spacingSmall),
+                        Row(
+                          key: const Key('studio_actions'),
+                          children: [
+                            IconButton(
+                              key: const Key('studio_action_favorite'),
                               icon: Icon(
                                 studio.favorite
                                     ? Icons.favorite
@@ -194,11 +214,28 @@ class StudioDetailsPage extends ConsumerWidget {
                                 }
                               },
                             ),
+                            SizedBox(width: context.dimensions.spacingSmall),
+                            RatingButton(
+                              key: const Key('studio_action_rating'),
+                              rating100: studio.rating100,
+                              onRatingSelected: (rating) =>
+                                  _updateRating(context, ref, studio, rating),
+                            ),
+                            SizedBox(width: context.dimensions.spacingSmall),
+                            IconButton(
+                              key: const Key('studio_action_edit'),
+                              tooltip: context.l10n.common_edit,
+                              icon: const Icon(Icons.edit_outlined),
+                              onPressed: () => context.push(
+                                '/studios/studio/${studio.id}/edit',
+                                extra: studio,
+                              ),
+                            ),
                           ],
                         ),
                         if (studio.details != null &&
                             studio.details!.trim().isNotEmpty) ...[
-                          const SizedBox(height: AppTheme.spacingMedium),
+                          SizedBox(height: context.dimensions.spacingMedium),
                           _buildSectionContainer(
                             context,
                             Column(

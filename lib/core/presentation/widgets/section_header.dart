@@ -31,14 +31,15 @@ class SectionHeader extends StatelessWidget {
           ),
       child: Row(
         children: [
-          Text(
-            title,
-            style: context.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: context.colors.onSurface,
+          Expanded(
+            child: Text(
+              title,
+              style: context.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: context.colors.onSurface,
+              ),
             ),
           ),
-          const Spacer(),
           if (onViewAll != null)
             TextButton(
               onPressed: onViewAll,

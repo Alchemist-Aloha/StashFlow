@@ -149,6 +149,17 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.byKey(const Key('gallery_action_rating')), findsOneWidget);
+        final expanded = find.byKey(const Key('gallery_details_expanded'));
+        final dims = tester.element(expanded).dimensions;
+        expect(tester.getSize(expanded).width, closeTo(width, 0.01));
+        final surface = find
+            .descendant(of: expanded, matching: find.byType(Material))
+            .first;
+        expect(
+          tester.getSize(surface).width,
+          closeTo(width - dims.spacingSmall * 2, 0.01),
+        );
+
         if (width == 320 && scale == 1.5) {
           expect(
             tester.getSize(find.text('Gallery One')).width,
@@ -224,6 +235,7 @@ void main() {
     expect(find.text('Gallery Details'), findsNothing);
     expect(tester.widget<AppBar>(find.byType(AppBar)).title, isNull);
     expect(find.text('Gallery One'), findsOneWidget);
+    expect(find.byIcon(Icons.photo_library_rounded), findsNothing);
     expect(find.text('Compact gallery description'), findsOneWidget);
     expect(find.text('Studio One'), findsOneWidget);
     expect(
@@ -270,6 +282,7 @@ void main() {
 
     expect(find.byKey(const Key('gallery_details_collapsed')), findsOneWidget);
     expect(find.byKey(const Key('gallery_action_rating')), findsOneWidget);
+    expect(find.byIcon(Icons.photo_library_rounded), findsNothing);
 
     final scrollPosition = Scrollable.of(
       tester.element(find.byType(ImageCard).first),

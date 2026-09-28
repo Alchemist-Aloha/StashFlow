@@ -35,6 +35,7 @@ void main() {
 
   Future<void> openSceneActions(WidgetTester tester) async {
     final more = find.byKey(const Key('scene_action_more'));
+    if (more.evaluate().isEmpty) return;
     await tester.ensureVisible(more);
     await tester.tap(more);
     await tester.pump();
@@ -260,7 +261,7 @@ void main() {
       expect(
         find.descendant(
           of: header,
-          matching: find.byKey(const Key('scene_action_more')),
+          matching: find.byKey(const Key('scene_rating_controls')),
         ),
         findsOneWidget,
       );
@@ -290,8 +291,8 @@ void main() {
 
     await pump(isDesktop: true);
     await tester.pump(const Duration(seconds: 1));
-    await tester.tap(find.byKey(const Key('scene_action_more')));
-    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('scene_action_more')), findsNothing);
+    await tester.ensureVisible(find.byKey(const Key('scene_action_refresh')));
     await tester.tap(find.byKey(const Key('scene_action_refresh')));
     await tester.pump();
     expect(mockRepo.getSceneByIdRefreshValues, contains(true));
@@ -307,7 +308,7 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  for (final width in [320.0, 1100.0]) {
+  for (final width in [320.0, 600.0, 1100.0, 1600.0]) {
     for (final scale in [0.8, 1.0, 1.5]) {
       testWidgets('scene actions stay on one line at $width / $scale', (
         tester,
@@ -321,7 +322,10 @@ void main() {
         await pumpTestWidget(
           tester,
           prefs: prefs,
-          overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+          overrides: [
+            sceneRepositoryProvider.overrideWithValue(mockRepo),
+            desktopCapabilitiesProvider.overrideWithValue(true),
+          ],
           child: Theme(
             data: AppTheme.buildTheme(
               Brightness.light,
@@ -338,24 +342,31 @@ void main() {
           'scene_action_add_o',
           'scene_action_info',
           'scene_action_download',
-          'scene_action_more',
+          if (width < 600) 'scene_action_more',
+          if (width >= 600) ...[
+            'scene_action_add_marker',
+            'scene_action_edit',
+            'scene_action_refresh',
+            'scene_action_delete',
+          ],
         ]) {
           expect(
             tester.getCenter(find.byKey(Key(key))).dy,
             closeTo(tester.getCenter(rating).dy, 0.1),
           );
         }
-        for (final key in [
-          'scene_action_add_marker',
-          'scene_action_edit',
-          'scene_action_delete',
-        ]) {
-          expect(find.byKey(Key(key)), findsNothing);
+        if (width < 600) {
+          for (final key in [
+            'scene_action_add_marker',
+            'scene_action_edit',
+            'scene_action_delete',
+          ]) {
+            expect(find.byKey(Key(key)), findsNothing);
+          }
+          await openSceneActions(tester);
+        } else {
+          expect(find.byKey(const Key('scene_action_more')), findsNothing);
         }
-        final more = find.byKey(const Key('scene_action_more'));
-        await tester.ensureVisible(more);
-        await tester.tap(more);
-        await tester.pumpAndSettle();
         for (final key in [
           'scene_action_add_marker',
           'scene_action_edit',
@@ -363,9 +374,15 @@ void main() {
         ]) {
           expect(find.byKey(Key(key)), findsOneWidget);
         }
+        await tester.ensureVisible(
+          find.byKey(const Key('scene_action_delete')),
+        );
         await tester.tap(find.byKey(const Key('scene_action_delete')));
         await tester.pumpAndSettle();
-        expect(find.byKey(const Key('scene_action_edit')), findsNothing);
+        expect(
+          find.byKey(const Key('scene_action_edit')),
+          width < 600 ? findsNothing : findsOneWidget,
+        );
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(mockRepo.deletedSceneId, isNull);
         expect(tester.takeException(), isNull);
