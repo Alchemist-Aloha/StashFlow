@@ -123,6 +123,7 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
     return ImagesPage(
       title: context.l10n.details_gallery,
       showAppBarTitle: false,
+      searchOnlyAppBar: true,
       topContent: AnimatedSize(
         duration: const Duration(milliseconds: 200),
         alignment: Alignment.topCenter,

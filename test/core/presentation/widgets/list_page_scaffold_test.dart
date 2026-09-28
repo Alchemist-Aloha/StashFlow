@@ -431,18 +431,23 @@ void main() {
     ) async {
       var refreshCount = 0;
 
-      Future<void> pump({required bool isDesktop}) => pumpTestWidget(
-        tester,
-        overrides: [desktopCapabilitiesProvider.overrideWithValue(isDesktop)],
-        child: ListPageScaffold<String>(
-          title: 'Test Title',
-          searchHint: 'Search...',
-          onSearchChanged: (_) {},
-          provider: const AsyncValue.data(['Item 1']),
-          onRefresh: () async => refreshCount++,
-          itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
-        ),
-      );
+      Future<void> pump({required bool isDesktop, bool searchOnly = false}) =>
+          pumpTestWidget(
+            tester,
+            overrides: [
+              desktopCapabilitiesProvider.overrideWithValue(isDesktop),
+            ],
+            child: ListPageScaffold<String>(
+              title: 'Test Title',
+              searchOnlyAppBar: searchOnly,
+              searchHint: 'Search...',
+              onSearchChanged: (_) {},
+              provider: const AsyncValue.data(['Item 1']),
+              onRefresh: () async => refreshCount++,
+              itemBuilder: (context, item, mw, mh) =>
+                  ListTile(title: Text(item)),
+            ),
+          );
 
       await pump(isDesktop: true);
       await tester.tap(find.byKey(const Key('list_page_refresh')));
@@ -451,6 +456,18 @@ void main() {
 
       await pump(isDesktop: false);
       expect(find.byKey(const Key('list_page_refresh')), findsNothing);
+
+      await pump(isDesktop: true, searchOnly: true);
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.actions, hasLength(1));
+      expect(find.byIcon(Icons.search), findsOneWidget);
+      expect(find.byKey(const Key('list_page_refresh')), findsNothing);
+      expect(find.byIcon(Icons.construction), findsNothing);
+      expect(find.byIcon(Icons.settings), findsNothing);
+      await tester
+          .widget<RefreshIndicator>(find.byType(RefreshIndicator))
+          .onRefresh();
+      expect(refreshCount, 2);
     });
 
     testWidgets('shows grid view when gridDelegate is provided', (

@@ -263,6 +263,7 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
 
     return ListPageScaffold<Scene>(
       title: widget.title,
+      searchOnlyAppBar: true,
       searchHint: context.l10n.scenes_search_hint,
       onSearchChanged: (query) => ref
           .read(entityMediaSearchQueryProvider(widget.filterKind).notifier)

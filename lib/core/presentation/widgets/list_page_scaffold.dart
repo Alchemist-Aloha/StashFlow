@@ -33,6 +33,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     required this.title,
     this.titleTextStyle,
     this.showAppBarTitle = true,
+    this.searchOnlyAppBar = false,
     required this.searchHint,
     required this.onSearchChanged,
     required this.provider,
@@ -64,6 +65,10 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
 
   /// Hides the visible heading while retaining page identity and toolbar actions.
   final bool showAppBarTitle;
+
+  /// Keeps search as the only app-bar action, retaining leading navigation.
+  /// Bottom action-pill controls and pull-to-refresh remain available.
+  final bool searchOnlyAppBar;
 
   /// Overrides the larger list title style when used by an embedded detail page.
   final TextStyle? titleTextStyle;
@@ -105,7 +110,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   /// Delegate for grid layouts. If null, a [ListView] is used.
   final SliverGridDelegate? gridDelegate;
 
-  /// Custom actions for the AppBar.
+  /// Controls displayed in the floating bottom action pill.
   final List<Widget> actions;
 
   /// Optional widget displayed between the AppBar and the list (e.g., a filter chip row).
@@ -280,19 +285,19 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
               )
             : null,
         actions: [
-          if (widget.onSortPressed != null)
+          if (!widget.searchOnlyAppBar && widget.onSortPressed != null)
             IconButton(
               icon: const Icon(Icons.sort),
               onPressed: widget.onSortPressed,
               tooltip: context.l10n.common_sort,
             ),
-          if (widget.onFilterPressed != null)
+          if (!widget.searchOnlyAppBar && widget.onFilterPressed != null)
             IconButton(
               icon: const Icon(Icons.filter_list),
               onPressed: widget.onFilterPressed,
               tooltip: context.l10n.common_filter,
             ),
-          if (isDesktop && widget.onRefresh != null)
+          if (!widget.searchOnlyAppBar && isDesktop && widget.onRefresh != null)
             IconButton(
               key: const Key('list_page_refresh'),
               icon: const Icon(Icons.refresh_rounded),
@@ -385,16 +390,18 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                   ];
                 },
           ),
-          IconButton(
-            icon: const Icon(Icons.construction),
-            onPressed: () => context.push('/tools'),
-            tooltip: context.l10n.tools,
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => context.push('/settings'),
-            tooltip: context.l10n.common_settings,
-          ),
+          if (!widget.searchOnlyAppBar) ...[
+            IconButton(
+              icon: const Icon(Icons.construction),
+              onPressed: () => context.push('/tools'),
+              tooltip: context.l10n.tools,
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () => context.push('/settings'),
+              tooltip: context.l10n.common_settings,
+            ),
+          ],
         ],
       ),
     );

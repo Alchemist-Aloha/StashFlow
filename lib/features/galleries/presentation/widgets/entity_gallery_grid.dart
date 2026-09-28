@@ -330,6 +330,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
 
     return ListPageScaffold<Gallery>(
       title: widget.title,
+      searchOnlyAppBar: true,
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: (query) => ref
           .read(entityGallerySearchQueryProvider(widget.filterKind).notifier)

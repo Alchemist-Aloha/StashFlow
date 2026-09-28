@@ -66,6 +66,15 @@ sheets, saved-filter UI, `StashImage`, and common state views.
   studio, tag, and gallery details omit the app-bar heading while keeping
   navigation and toolbar actions; their entity identity remains in the content.
   Other detail pages use the standard AppBar title style.
+- View-all media grids for performers, studios, tags, and groups, and view-all
+  gallery grids for performers, studios, and tags, use the owning entity name
+  as the app-bar title. Resolve names from entity details for both nested and
+  legacy direct routes; use localized Media or Galleries labels while the name
+  is unavailable or blank.
+- Entity view-all media and gallery grids and Gallery Details show search as
+  their only app-bar action, alongside standard back navigation. Sort, filter,
+  and saved-filter controls remain in the bottom action pill; these pages omit
+  app-bar refresh, Tools, and Settings shortcuts while retaining pull-to-refresh.
 - Use capability and available-width checks instead of assuming mobile behavior
   from a platform name.
 - Translucent surfaces use the shared `FrostedSurface` recipe rather than

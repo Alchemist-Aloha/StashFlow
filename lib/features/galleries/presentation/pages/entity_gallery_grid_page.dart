@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../performers/presentation/providers/performer_details_provider.dart';
+import '../../../studios/presentation/providers/studio_details_provider.dart';
+import '../../../tags/presentation/providers/tag_details_provider.dart';
 import '../providers/entity_gallery_filter_scope.dart'
     show EntityGalleryFilterKind, entityGalleryGridProvider;
 import '../widgets/entity_gallery_grid.dart';
@@ -24,7 +27,7 @@ class EntityGalleryGridPage extends ConsumerWidget {
     );
 
     return EntityGalleryGrid(
-      title: _title(context),
+      title: _title(context, ref),
       entityId: entityId,
       filterKind: filterKind,
       galleriesAsync: galleriesAsync,
@@ -50,10 +53,17 @@ class EntityGalleryGridPage extends ConsumerWidget {
     EntityGalleryFilterKind.tag => GridColumnSetting.tag,
   };
 
-  String _title(BuildContext context) => switch (filterKind) {
-    EntityGalleryFilterKind.performer =>
-      context.l10n.performers_galleries_title,
-    EntityGalleryFilterKind.studio => context.l10n.studios_galleries_title,
-    EntityGalleryFilterKind.tag => context.l10n.details_galleries,
-  };
+  String _title(BuildContext context, WidgetRef ref) {
+    final name = switch (filterKind) {
+      EntityGalleryFilterKind.performer =>
+        ref.watch(performerDetailsProvider(entityId)).value?.name,
+      EntityGalleryFilterKind.studio =>
+        ref.watch(studioDetailsProvider(entityId)).value?.name,
+      EntityGalleryFilterKind.tag =>
+        ref.watch(tagDetailsProvider(entityId)).value?.name,
+    };
+    return name?.trim().isNotEmpty == true
+        ? name!
+        : context.l10n.details_galleries;
+  }
 }

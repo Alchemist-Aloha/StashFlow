@@ -47,6 +47,7 @@ class ImagesPage extends ConsumerStatefulWidget {
     super.key,
     this.title,
     this.showAppBarTitle = true,
+    this.searchOnlyAppBar = false,
     this.topContent,
     this.scrollController,
     this.onRefresh,
@@ -57,6 +58,9 @@ class ImagesPage extends ConsumerStatefulWidget {
 
   /// Embedding detail pages can omit the heading without losing toolbar actions.
   final bool showAppBarTitle;
+
+  /// Restricts the app-bar actions to search for embedded detail browsing.
+  final bool searchOnlyAppBar;
 
   /// Optional content shown above the image grid.
   final Widget? topContent;
@@ -371,6 +375,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     return ListPageScaffold<entity.Image>(
       title: widget.title ?? context.l10n.images_title,
       showAppBarTitle: widget.showAppBarTitle,
+      searchOnlyAppBar: widget.searchOnlyAppBar,
       titleTextStyle: widget.title == null
           ? null
           : Theme.of(context).appBarTheme.titleTextStyle,

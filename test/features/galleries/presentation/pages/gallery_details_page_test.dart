@@ -270,6 +270,8 @@ void main() {
     expect(find.byIcon(Icons.sort), findsOneWidget);
     expect(find.byIcon(Icons.filter_list), findsOneWidget);
     expect(find.byIcon(Icons.bookmarks_outlined), findsOneWidget);
+    expect(tester.widget<AppBar>(find.byType(AppBar)).actions, hasLength(1));
+    expect(find.byIcon(Icons.search), findsOneWidget);
     expect(repository.findImageCalls.last.galleryId, 'gallery-1');
 
     await tester.tap(find.byKey(const Key('gallery_action_info')));
