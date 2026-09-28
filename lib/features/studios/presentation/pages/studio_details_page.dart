@@ -63,7 +63,6 @@ class StudioDetailsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.details_studio),
         actions: [
           studioAsync.maybeWhen(
             data: (studio) => IconButton(

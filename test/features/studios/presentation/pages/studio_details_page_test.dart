@@ -41,6 +41,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(tester.widget<AppBar>(find.byType(AppBar)).title, isNull);
     expect(find.byType(TabBar), findsNothing);
     expect(find.text('Hierarchy'), findsOneWidget);
     expect(find.text('Parent Studio'), findsOneWidget);

@@ -32,6 +32,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     super.key,
     required this.title,
     this.titleTextStyle,
+    this.showAppBarTitle = true,
     required this.searchHint,
     required this.onSearchChanged,
     required this.provider,
@@ -58,8 +59,11 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.loadingItemBuilder,
   });
 
-  /// The page title displayed in the AppBar.
+  /// Page identity used for the visible title and default search-history key.
   final String title;
+
+  /// Hides the visible heading while retaining page identity and toolbar actions.
+  final bool showAppBarTitle;
 
   /// Overrides the larger list title style when used by an embedded detail page.
   final TextStyle? titleTextStyle;
@@ -244,35 +248,37 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: Tooltip(
-          message: context.l10n.stats_library_stats_tooltip,
-          child: Material(
-            color: Colors.transparent,
-            clipBehavior: Clip.antiAlias,
-            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-            child: InkWell(
-              onLongPress: () {
-                HapticFeedback.lightImpact();
-                StatsFloatingPanel.show(context);
-              },
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.dimensions.spacingSmall,
-                  vertical: context.dimensions.spacingSmall / 2,
-                ),
-                child: Text(
-                  widget.title,
-                  style:
-                      widget.titleTextStyle ??
-                      context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5,
+        title: widget.showAppBarTitle
+            ? Tooltip(
+                message: context.l10n.stats_library_stats_tooltip,
+                child: Material(
+                  color: Colors.transparent,
+                  clipBehavior: Clip.antiAlias,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  child: InkWell(
+                    onLongPress: () {
+                      HapticFeedback.lightImpact();
+                      StatsFloatingPanel.show(context);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.dimensions.spacingSmall,
+                        vertical: context.dimensions.spacingSmall / 2,
                       ),
+                      child: Text(
+                        widget.title,
+                        style:
+                            widget.titleTextStyle ??
+                            context.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: -0.5,
+                            ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ),
+              )
+            : null,
         actions: [
           if (widget.onSortPressed != null)
             IconButton(

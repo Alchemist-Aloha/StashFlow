@@ -62,8 +62,10 @@ sheets, saved-filter UI, `StashImage`, and common state views.
 - Layout must react immediately to `appGlobalScaleProvider` changes without
   overflow at supported scale extremes.
 - Card titles use the already scaled `context.dimensions.cardTitleFontSize` once.
-- Primary list-page app-bar titles keep the larger list title size. Detail pages,
-  including embedded gallery details, use the standard AppBar title style.
+- Primary list-page app-bar titles keep the larger list title size. Performer,
+  studio, tag, and gallery details omit the app-bar heading while keeping
+  navigation and toolbar actions; their entity identity remains in the content.
+  Other detail pages use the standard AppBar title style.
 - Use capability and available-width checks instead of assuming mobile behavior
   from a platform name.
 - Translucent surfaces use the shared `FrostedSurface` recipe rather than
@@ -295,8 +297,8 @@ pre-birth dates omit the suffix without triggering extra performer requests.
 Interactive rating entry points share `RatingButton` and `RatingPicker`. A single
 star opens a popup editor with five stars, fractional-rating selection, Clear,
 and Apply/Cancel. Ratings use the server's 0–100 scale; cancelling leaves the
-confirmed rating unchanged. Image/gallery metadata panels use the same compact
-button, and fullscreen image rating retains its image/gallery target selector.
+confirmed rating unchanged. Image metadata panels use the same compact button,
+and fullscreen image rating retains its image/gallery target selector.
 
 Scene rating and metadata edits go through the scene repository. Successful
 mutations update or invalidate both details and affected lists. Failed mutations
@@ -306,6 +308,17 @@ leave the last confirmed value visible and provide localized feedback.
 
 Images and Galleries are separate top-level features with independent filters,
 sorting, pagination, and layout state.
+
+Gallery Details exposes the shared single-star rating button in both its expanded
+and collapsed headers, including for unrated galleries. Expanded cover and
+identity stack when the available width cannot keep the title readable at the
+selected UI scale. The unfilled details button sits beside the rating button;
+image count appears on its own line below the studio name (or title when no
+studio is available). Confirmed rating changes
+refresh gallery details and update the gallery list without reshuffling it;
+failures retain the confirmed value and show localized feedback. Gallery card
+long-press and More actions open the same read-only metadata sheet as the details
+page, with no rating editor in that sheet.
 
 The fullscreen image viewer supports:
 

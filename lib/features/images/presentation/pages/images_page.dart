@@ -46,6 +46,7 @@ class ImagesPage extends ConsumerStatefulWidget {
   const ImagesPage({
     super.key,
     this.title,
+    this.showAppBarTitle = true,
     this.topContent,
     this.scrollController,
     this.onRefresh,
@@ -53,6 +54,9 @@ class ImagesPage extends ConsumerStatefulWidget {
 
   /// Optional title used when the image browser is embedded in another page.
   final String? title;
+
+  /// Embedding detail pages can omit the heading without losing toolbar actions.
+  final bool showAppBarTitle;
 
   /// Optional content shown above the image grid.
   final Widget? topContent;
@@ -366,6 +370,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     return ListPageScaffold<entity.Image>(
       title: widget.title ?? context.l10n.images_title,
+      showAppBarTitle: widget.showAppBarTitle,
       titleTextStyle: widget.title == null
           ? null
           : Theme.of(context).appBarTheme.titleTextStyle,

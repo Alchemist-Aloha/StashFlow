@@ -119,6 +119,12 @@ class GalleryDetailsBottomSheet extends StatelessWidget {
                     label: context.l10n.galleries_field_id,
                     value: gallery.id,
                   ),
+                  if (gallery.path?.trim().isNotEmpty == true)
+                    _MetaRow(
+                      label: context.l10n.galleries_field_path,
+                      value: gallery.path!,
+                      selectable: true,
+                    ),
                   if (gallery.code?.trim().isNotEmpty == true)
                     _MetaRow(
                       label: context.l10n.gallery_code_title,
@@ -174,6 +180,31 @@ class GalleryDetailsBottomSheet extends StatelessWidget {
                 ],
               ),
             ),
+            if (gallery.coverPath?.trim().isNotEmpty == true ||
+                (gallery.coverWidth != null &&
+                    gallery.coverHeight != null)) ...[
+              SizedBox(height: dims.spacingMedium),
+              _SectionCard(
+                title: context.l10n.scene_info_technical,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (gallery.coverWidth != null &&
+                        gallery.coverHeight != null)
+                      _MetaRow(
+                        label: context.l10n.common_resolution,
+                        value: '${gallery.coverWidth} x ${gallery.coverHeight}',
+                      ),
+                    if (gallery.coverPath?.trim().isNotEmpty == true)
+                      _MetaRow(
+                        label: context.l10n.scene_info_screenshot,
+                        value: gallery.coverPath!,
+                        selectable: true,
+                      ),
+                  ],
+                ),
+              ),
+            ],
             if (gallery.filePaths.isNotEmpty) ...[
               SizedBox(height: dims.spacingMedium),
               _SectionCard(

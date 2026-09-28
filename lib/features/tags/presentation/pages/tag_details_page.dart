@@ -61,7 +61,7 @@ class TagDetailsPage extends ConsumerWidget {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.details_tag)),
+      appBar: AppBar(),
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomTag(context, ref),

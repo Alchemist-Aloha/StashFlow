@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -87,6 +88,29 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
     ]);
   }
 
+  Future<void> _updateRating(Gallery gallery, int rating) async {
+    try {
+      final repository = ref.read(galleryRepositoryProvider);
+      await repository.updateGalleryRating(gallery.id, rating);
+      final updatedGallery = await repository.getGalleryById(
+        gallery.id,
+        refresh: true,
+      );
+      if (!mounted) return;
+      ref
+          .read(galleryListProvider.notifier)
+          .updateGalleryInList(updatedGallery);
+      ref.invalidate(galleryDetailsProvider(gallery.id));
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.details_failed_update_rating('$error')),
+        ),
+      );
+    }
+  }
+
   void _expandDetails() {
     if (!_detailsCollapsed) return;
     setState(() => _detailsCollapsed = false);
@@ -98,6 +122,7 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
 
     return ImagesPage(
       title: context.l10n.details_gallery,
+      showAppBarTitle: false,
       topContent: AnimatedSize(
         duration: const Duration(milliseconds: 200),
         alignment: Alignment.topCenter,
@@ -107,10 +132,12 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
                   key: const Key('gallery_details_collapsed'),
                   gallery: gallery,
                   onExpand: _expandDetails,
+                  onRatingSelected: (rating) => _updateRating(gallery, rating),
                 )
               : _CompactGalleryDetails(
                   key: const Key('gallery_details_expanded'),
                   gallery: gallery,
+                  onRatingSelected: (rating) => _updateRating(gallery, rating),
                 ),
           loading: () => const LinearProgressIndicator(),
           error: (error, stack) => ErrorStateView(
@@ -130,11 +157,13 @@ class _CollapsedGalleryDetails extends StatelessWidget {
   const _CollapsedGalleryDetails({
     required this.gallery,
     required this.onExpand,
+    required this.onRatingSelected,
     super.key,
   });
 
   final Gallery gallery;
   final VoidCallback onExpand;
+  final ValueChanged<int> onRatingSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +172,6 @@ class _CollapsedGalleryDetails extends StatelessWidget {
     final subtitle = [
       if (gallery.studioName?.trim().isNotEmpty == true) gallery.studioName!,
       if (gallery.date?.trim().isNotEmpty == true) gallery.date!,
-      '${gallery.imageCount ?? 0} ${context.l10n.images_title}',
     ].join(' • ');
 
     return Padding(
@@ -195,10 +223,25 @@ class _CollapsedGalleryDetails extends StatelessWidget {
                         color: colors.onSurfaceVariant,
                       ),
                     ),
+                    SizedBox(height: dims.spacingSmall * 0.25),
+                    Text(
+                      '${gallery.imageCount ?? 0} ${context.l10n.images_title}',
+                      key: const Key('gallery_image_count'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
               ),
               SizedBox(width: dims.spacingSmall),
+              RatingButton(
+                key: const Key('gallery_action_rating'),
+                rating100: gallery.rating100,
+                onRatingSelected: onRatingSelected,
+              ),
               IconButton.filledTonal(
                 tooltip: context.l10n.details_show_more,
                 onPressed: onExpand,
@@ -213,9 +256,14 @@ class _CollapsedGalleryDetails extends StatelessWidget {
 }
 
 class _CompactGalleryDetails extends StatelessWidget {
-  const _CompactGalleryDetails({required this.gallery, super.key});
+  const _CompactGalleryDetails({
+    required this.gallery,
+    required this.onRatingSelected,
+    super.key,
+  });
 
   final Gallery gallery;
+  final ValueChanged<int> onRatingSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -249,94 +297,118 @@ class _CompactGalleryDetails extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _GalleryCover(
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final cover = _GalleryCover(
                     gallery: gallery,
                     size: coverSize,
                     cornerRadius: dims.spacingMedium,
-                  ),
-                  SizedBox(width: dims.spacingMedium),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          gallery.displayName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.headlineSmall?.copyWith(
-                            color: colors.onSurface,
-                            fontWeight: FontWeight.w700,
-                            height: 1.05,
-                            letterSpacing: -0.5,
-                          ),
+                  );
+                  final identity = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        gallery.displayName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.headlineSmall?.copyWith(
+                          color: colors.onSurface,
+                          fontWeight: FontWeight.w700,
+                          height: 1.05,
+                          letterSpacing: -0.5,
                         ),
-                        if (gallery.studioName?.trim().isNotEmpty == true) ...[
-                          SizedBox(height: dims.spacingSmall * 0.5),
-                          TextButton(
-                            key: const Key('gallery_studio_link'),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              alignment: Alignment.centerLeft,
-                            ),
-                            onPressed: gallery.studioId == null
-                                ? null
-                                : () => context.push(
-                                    '/studios/studio/${gallery.studioId}',
-                                  ),
-                            child: Text(
-                              gallery.studioName!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: context.textTheme.titleMedium?.copyWith(
-                                color: gallery.studioId == null
-                                    ? colors.onSurfaceVariant
-                                    : colors.primary,
-                                fontWeight: FontWeight.w500,
-                              ),
+                      ),
+                      if (gallery.studioName?.trim().isNotEmpty == true) ...[
+                        SizedBox(height: dims.spacingSmall * 0.5),
+                        TextButton(
+                          key: const Key('gallery_studio_link'),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            alignment: Alignment.centerLeft,
+                          ),
+                          onPressed: gallery.studioId == null
+                              ? null
+                              : () => context.push(
+                                  '/studios/studio/${gallery.studioId}',
+                                ),
+                          child: Text(
+                            gallery.studioName!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.textTheme.titleMedium?.copyWith(
+                              color: gallery.studioId == null
+                                  ? colors.onSurfaceVariant
+                                  : colors.primary,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ],
-                        SizedBox(height: dims.spacingSmall),
-                        Wrap(
-                          spacing: dims.spacingSmall,
-                          runSpacing: dims.spacingSmall * 0.5,
-                          children: [
-                            if (gallery.date?.trim().isNotEmpty == true)
-                              _metadataBadge(
-                                context,
-                                icon: Icons.calendar_today_rounded,
-                                label: gallery.date!,
-                              ),
-                            if (gallery.rating100 != null)
-                              _metadataBadge(
-                                context,
-                                icon: Icons.star_rounded,
-                                label: (gallery.rating100! / 20)
-                                    .toStringAsFixed(1),
-                                iconColor: context.colors.ratingColor,
-                              ),
-                            _metadataBadge(
-                              context,
-                              icon: Icons.image_rounded,
-                              label: '${gallery.imageCount ?? 0}',
-                            ),
-                          ],
                         ),
                       ],
+                      SizedBox(height: dims.spacingSmall),
+                      SizedBox(
+                        key: const Key('gallery_image_count'),
+                        child: _metadataBadge(
+                          context,
+                          icon: Icons.image_rounded,
+                          label: '${gallery.imageCount ?? 0}',
+                        ),
+                      ),
+                    ],
+                  );
+                  final stackIdentity =
+                      constraints.maxWidth <
+                      coverSize + dims.buttonHeight * 3 + dims.spacingMedium;
+                  if (stackIdentity) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        cover,
+                        SizedBox(height: dims.spacingMedium),
+                        identity,
+                      ],
+                    );
+                  }
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      cover,
+                      SizedBox(width: dims.spacingMedium),
+                      Expanded(child: identity),
+                    ],
+                  );
+                },
+              ),
+              SizedBox(height: dims.spacingSmall),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: dims.spacingSmall,
+                runSpacing: dims.spacingSmall * 0.5,
+                children: [
+                  if (gallery.date?.trim().isNotEmpty == true)
+                    _metadataBadge(
+                      context,
+                      icon: Icons.calendar_today_rounded,
+                      label: gallery.date!,
                     ),
-                  ),
-                  SizedBox(width: dims.spacingSmall),
-                  IconButton.filledTonal(
-                    key: const Key('gallery_action_info'),
-                    tooltip: context.l10n.common_more,
-                    onPressed: () =>
-                        GalleryDetailsBottomSheet.show(context, gallery),
-                    icon: const Icon(Icons.info_outline_rounded),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RatingButton(
+                        key: const Key('gallery_action_rating'),
+                        rating100: gallery.rating100,
+                        onRatingSelected: onRatingSelected,
+                      ),
+                      SizedBox(width: dims.spacingSmall),
+                      IconButton(
+                        key: const Key('gallery_action_info'),
+                        tooltip: context.l10n.common_details,
+                        onPressed: () =>
+                            GalleryDetailsBottomSheet.show(context, gallery),
+                        icon: const Icon(Icons.info_outline_rounded),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -398,11 +470,10 @@ class _CompactGalleryDetails extends StatelessWidget {
     BuildContext context, {
     required IconData icon,
     required String label,
-    Color? iconColor,
   }) {
     return Chip(
       visualDensity: VisualDensity.compact,
-      avatar: Icon(icon, size: 16, color: iconColor),
+      avatar: Icon(icon, size: 16),
       label: Text(label, style: context.textTheme.bodySmall),
     );
   }

@@ -82,7 +82,6 @@ class PerformerDetailsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.details_performer),
         actions: [
           performerAsync.maybeWhen(
             data: (performer) => IconButton(
