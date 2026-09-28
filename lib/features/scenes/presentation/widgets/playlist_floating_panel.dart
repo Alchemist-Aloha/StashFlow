@@ -1,10 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/frosted_surface.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene.dart';
@@ -126,104 +125,96 @@ class _PlaylistFloatingPanelState extends ConsumerState<PlaylistFloatingPanel> {
     final dims = context.dimensions;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-      child: Container(
-        width: 360 * dims.fontSizeFactor,
-        height: 520 * dims.fontSizeFactor,
-        margin: EdgeInsets.all(dims.spacingLarge),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withValues(alpha: 0.4),
-              blurRadius: 24,
-              offset: const Offset(0, 8),
-            ),
-          ],
-          border: Border.all(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _PlaylistHeader(count: scenes.length),
-              Expanded(
-                child: scenes.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No playlist items',
-                          style: context.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      )
-                    : ListView.builder(
-                        controller: _scrollController,
-                        padding: EdgeInsets.fromLTRB(
-                          dims.spacingMedium,
-                          dims.spacingSmall,
-                          dims.spacingMedium,
-                          dims.spacingSmall,
-                        ),
-                        itemCount: scenes.length + (_isPaging ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index >= scenes.length) {
-                            return Padding(
-                              padding: EdgeInsets.all(dims.spacingMedium),
-                              child: const Center(
-                                child: SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
+    final panelRadius = BorderRadius.circular(AppTheme.radiusExtraLarge);
 
-                          final scene = scenes[index];
-                          final isActive = index == currentIndex;
-                          return _PlaylistItem(
-                            key: isActive
-                                ? _activeItemKey
-                                : ValueKey<String>('playlist_item_${scene.id}'),
-                            scene: scene,
-                            index: index,
-                            isActive: isActive,
-                            focusNode: isActive ? _activeItemFocusNode : null,
-                            onTap: () => _openScene(queueId, index, scene.id),
-                          );
-                        },
-                      ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  dims.spacingMedium,
-                  0,
-                  dims.spacingMedium,
-                  dims.spacingMedium,
-                ),
-                child: Text(
-                  playlistPagingTargetForQueueId(queueId).supportsPaging
-                      ? 'Scroll to load more'
-                      : 'Queue follows the current source',
-                  textAlign: TextAlign.center,
-                  style: context.textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ],
-          ),
+    return FrostedSurface(
+      width: 360 * dims.fontSizeFactor,
+      height: 520 * dims.fontSizeFactor,
+      margin: EdgeInsets.all(dims.spacingLarge),
+      borderRadius: panelRadius,
+      tint: colorScheme.surfaceContainerHigh,
+      border: Border.all(
+        color: colorScheme.outlineVariant.withValues(
+          alpha: AppTheme.frostedHairlineAlpha,
         ),
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: colorScheme.shadow.withValues(alpha: 0.4),
+          blurRadius: 24,
+          offset: const Offset(0, 8),
+        ),
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _PlaylistHeader(count: scenes.length),
+          Expanded(
+            child: scenes.isEmpty
+                ? Center(
+                    child: Text(
+                      'No playlist items',
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    controller: _scrollController,
+                    padding: EdgeInsets.fromLTRB(
+                      dims.spacingMedium,
+                      dims.spacingSmall,
+                      dims.spacingMedium,
+                      dims.spacingSmall,
+                    ),
+                    itemCount: scenes.length + (_isPaging ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index >= scenes.length) {
+                        return Padding(
+                          padding: EdgeInsets.all(dims.spacingMedium),
+                          child: const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                        );
+                      }
+
+                      final scene = scenes[index];
+                      final isActive = index == currentIndex;
+                      return _PlaylistItem(
+                        key: isActive
+                            ? _activeItemKey
+                            : ValueKey<String>('playlist_item_${scene.id}'),
+                        scene: scene,
+                        index: index,
+                        isActive: isActive,
+                        focusNode: isActive ? _activeItemFocusNode : null,
+                        onTap: () => _openScene(queueId, index, scene.id),
+                      );
+                    },
+                  ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              dims.spacingMedium,
+              0,
+              dims.spacingMedium,
+              dims.spacingMedium,
+            ),
+            child: Text(
+              playlistPagingTargetForQueueId(queueId).supportsPaging
+                  ? 'Scroll to load more'
+                  : 'Queue follows the current source',
+              textAlign: TextAlign.center,
+              style: context.textTheme.labelMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

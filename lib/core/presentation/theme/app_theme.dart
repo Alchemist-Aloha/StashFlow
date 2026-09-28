@@ -220,6 +220,23 @@ class AppTheme {
   /// Corner radius for major surface areas.
   static const radiusExtraLarge = 28.0;
 
+  /// Backdrop blur radius for frosted chrome over app surfaces.
+  ///
+  /// Media-backed chrome (fullscreen images, video overlays) scales this up
+  /// deliberately, because it sits over photography rather than UI.
+  static const frostedBlurSigma = 4.0;
+
+  /// Alpha of the surface tint on frosted chrome.
+  ///
+  /// Chosen against the worst backdrop a bar can meet — a pure white thumbnail
+  /// behind a dark header — where it still holds the title at 5.7:1 while
+  /// leaving enough of the backdrop visible for the blur to read as glass.
+  /// Raising this toward opaque hides the blur; lowering it puts text at risk.
+  static const frostedChromeAlpha = 0.72;
+
+  /// Alpha of the hairline on a frosted surface.
+  static const frostedHairlineAlpha = 0.5;
+
   /// Builds a [ThemeData] instance based on the provided [brightness] and [seedColor].
   ///
   /// Configures Material 3, custom component themes (AppBars, Cards, Buttons),

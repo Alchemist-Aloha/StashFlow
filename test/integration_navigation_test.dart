@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
 import 'package:stash_app_flutter/features/groups/data/repositories/graphql_group_repository.dart';
@@ -631,6 +632,10 @@ void main() {
     // 1. Test Mobile (NavigationBar)
     tester.view.physicalSize = const Size(400, 800);
     tester.view.devicePixelRatio = 1.0;
+    tester.view.padding = const FakeViewPadding(bottom: 24);
+    tester.view.viewPadding = const FakeViewPadding(bottom: 24);
+    addTearDown(tester.view.resetPadding);
+    addTearDown(tester.view.resetViewPadding);
     addTearDown(() => tester.view.resetPhysicalSize());
 
     Future<void> pumpApp() async {
@@ -661,6 +666,17 @@ void main() {
     await pumpApp();
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.byType(NavigationRail), findsNothing);
+
+    // System navigation padding belongs to the shell bar, not to the sheets
+    // opened by its nested feature navigator.
+    final barTop = tester.getRect(find.byType(NavigationBar)).top;
+    for (final icon in [Icons.sort, Icons.filter_list]) {
+      await tester.tap(find.byIcon(icon).first);
+      await tester.pumpAndSettle();
+      expect(tester.getRect(find.byType(FrostedPanel)).bottom, barTop);
+      Navigator.of(tester.element(find.byType(FrostedPanel))).pop();
+      await tester.pumpAndSettle();
+    }
 
     // 2. Test Tablet (NavigationRail)
     tester.view.physicalSize = const Size(1200, 800);

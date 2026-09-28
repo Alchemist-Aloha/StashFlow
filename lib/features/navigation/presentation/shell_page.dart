@@ -393,13 +393,34 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         )
         .toList();
 
+    // The mini player floats over the library instead of pushing it: content
+    // runs behind the frosted band (that is what its blur is for) and pages
+    // reserve the band's height as bottom inset through the media query, so
+    // nothing ends up permanently hidden under the glass.
+    final miniPlayerVisible = !hideMiniPlayer && activeSceneId != null;
+
     Widget bodyContent = Stack(
       children: [
         Positioned.fill(
-          bottom: (!hideMiniPlayer && activeSceneId != null) ? 66.0 : 0.0,
-          child: RepaintBoundary(child: navigationShell),
+          child: Builder(
+            builder: (bodyContext) {
+              // The scaffold has already consumed the system bottom inset in
+              // its navigation bar. Preserve the body's remaining safe area.
+              final mediaQuery = MediaQuery.of(bodyContext);
+              return MediaQuery(
+                data: miniPlayerVisible
+                    ? mediaQuery.copyWith(
+                        padding: mediaQuery.padding.copyWith(
+                          bottom: mediaQuery.padding.bottom + MiniPlayer.height,
+                        ),
+                      )
+                    : mediaQuery,
+                child: RepaintBoundary(child: navigationShell),
+              );
+            },
+          ),
         ),
-        if (!hideMiniPlayer && activeSceneId != null)
+        if (miniPlayerVisible)
           const Positioned(left: 0, right: 0, bottom: 0, child: MiniPlayer()),
       ],
     );

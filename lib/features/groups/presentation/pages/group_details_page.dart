@@ -62,6 +62,11 @@ class GroupDetailsPage extends ConsumerWidget {
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
+            // Content passes behind the frosted mini player; this inset keeps
+            // the last rows reachable while the player is visible.
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.paddingOf(context).bottom,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

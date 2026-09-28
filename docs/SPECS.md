@@ -64,12 +64,22 @@ sheets, saved-filter UI, `StashImage`, and common state views.
 - Card titles use the already scaled `context.dimensions.cardTitleFontSize` once.
 - Use capability and available-width checks instead of assuming mobile behavior
   from a platform name.
+- Translucent surfaces use the shared `FrostedSurface` recipe rather than
+  hand-rolled `BackdropFilter` + `Container` pairs, and apply it only where
+  content passes behind the surface.
+- A surface that floats over scrolling content must publish its height as an
+  inset (scroll padding, or `MediaQuery` bottom padding) so no content is
+  permanently hidden behind it.
+- Floating list actions and pull-up panels clear the mini-player inset. Pages
+  inherit the shell body's remaining safe area; system padding already consumed
+  by the navigation bar must not be restored below their content or sheets.
 
 Canonical implementation:
 
 - `lib/core/presentation/theme/app_theme.dart`
 - `lib/core/presentation/providers/layout_settings_provider.dart`
 - `lib/core/utils/responsive.dart`
+- `lib/core/presentation/widgets/frosted_surface.dart`
 
 ### Theme personalization
 

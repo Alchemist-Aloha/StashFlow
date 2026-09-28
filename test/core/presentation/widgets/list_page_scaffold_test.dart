@@ -7,6 +7,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/frosted_surface.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -16,6 +17,52 @@ import '../../../helpers/test_helpers.dart';
 
 void main() {
   group('ListPageScaffold', () {
+    for (final bottomInset in [0.0, 66.0]) {
+      testWidgets('action pill clears bottom inset $bottomInset', (
+        tester,
+      ) async {
+        await pumpTestWidget(
+          tester,
+          child: Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(padding: EdgeInsets.only(bottom: bottomInset)),
+              child: ListPageScaffold<int>(
+                title: 'Test Title',
+                searchHint: 'Search...',
+                onSearchChanged: (_) {},
+                provider: const AsyncValue.data([1]),
+                itemBuilder: (_, item, _, _) => Text('Item $item'),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final pill = find.ancestor(
+          of: find.byIcon(Icons.filter_list),
+          matching: find.byType(FrostedSurface),
+        );
+        final page = find.byType(ListPageScaffold<int>);
+        expect(
+          tester.getRect(pill).bottom,
+          tester.getRect(page).bottom - bottomInset - 16,
+        );
+        expect(tester.getRect(pill).center.dx, tester.getRect(page).center.dx);
+        expect(
+          tester.getSize(pill).width,
+          lessThan(tester.getSize(page).width),
+        );
+      });
+    }
+
     test('avoids layout-driven paging and duplicate repaint boundaries', () {
       final source = File(
         'lib/core/presentation/widgets/list_page_scaffold.dart',
@@ -85,6 +132,56 @@ void main() {
       await tester.drag(find.byType(ListView).first, const Offset(0, 100));
       await tester.pumpAndSettle();
       expect(tester.widget<AnimatedSlide>(slide).offset, Offset.zero);
+    });
+
+    testWidgets('frosts the app bar and lets rows scroll behind it', (
+      WidgetTester tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({'auto_hide_top_app_bar': true});
+      final prefs = await SharedPreferences.getInstance();
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: Builder(
+          builder: (context) => MediaQuery(
+            // The shell publishes the mini player band as a bottom inset.
+            data: MediaQuery.of(
+              context,
+            ).copyWith(padding: const EdgeInsets.only(bottom: 66)),
+            child: ListPageScaffold<int>(
+              title: 'Test Title',
+              searchHint: 'Search...',
+              onSearchChanged: (_) {},
+              provider: AsyncValue.data(List.generate(30, (index) => index)),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+              ),
+              itemBuilder: (context, item, mw, mh) =>
+                  SizedBox(height: 80, child: Text('Item $item')),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The header is glass: a real backdrop blur sits behind the bar.
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('top-app-bar-slide')),
+          matching: find.byType(BackdropFilter),
+        ),
+        findsOneWidget,
+      );
+
+      // Rows travel behind the header: the bar height is scroll padding rather
+      // than a box offset, so the viewport still reaches the screen edge and
+      // the frosted bar has artwork to frost. The floating band's height is
+      // reserved at the other end so no row ends up stuck under it.
+      final grid = tester.widget<GridView>(find.byType(GridView).first);
+      final resolved = grid.padding!.resolve(TextDirection.ltr);
+      expect(resolved.top, kToolbarHeight);
+      expect(resolved.bottom, 66);
     });
 
     testWidgets('shows empty state correctly', (WidgetTester tester) async {

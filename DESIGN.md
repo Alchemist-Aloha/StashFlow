@@ -147,7 +147,7 @@ cinema: dark, prepared, nothing on the walls that isn't the film.
 Material 3 supplies the motion and state vocabulary (ripples, indicators, container
 steps), and the app constrains it hard. The whole system is one user-replaceable
 seed colour, one spacing scale multiplied by the user's font-size factor, four
-corner radii, and one frosted overlay panel. Depth is tonal rather than shadowed:
+corner radii, and one frosted-glass recipe. Depth is tonal rather than shadowed:
 surfaces step from `surfaceContainerHigh` (fields, chips) to
 `surfaceContainerHighest` (cards), so a card already reads as lifted at elevation 0.
 Because a personal library is browsed at 2 a.m. as often as at a desk, dark and
@@ -161,11 +161,11 @@ grows as one system when the user scales text.
 
 **Key Characteristics:**
 - One seed colour drives every tint. Nothing else in the palette is authored except the True Black steps and the rating amber.
-- Depth is tonal: elevation 0 on bars and cards, container steps carry the lift.
+- Depth is tonal at rest: elevation 0 on bars and cards, container steps carry the lift; frosted glass carries whatever overlaps content.
 - Cinematic and unfussy: filled actions, borderless fields, shadowless cards, one accent action per surface.
 - Everything scales through `fontSizeFactor` — spacing, icon sizes, and every type step together.
 - Cards are artwork-first: a full-bleed thumbnail band under a 60% black metadata scrim, with title and studio beneath.
-- Frosted translucency is the sanctioned depth mechanism for anything that floats over content.
+- Frosted glass (`FrostedSurface`) is the depth mechanism for anything that floats over content: the pinned app bar, the mini player, overlay panels, fullscreen image chrome, and player controls. The bottom navigation bar stays flat, because nothing passes behind it.
 
 ## Colors
 
@@ -252,27 +252,37 @@ never relies on hairline borders to separate content.
 The system is **tonal first and translucent second**. Bars and cards are flat at
 elevation 0; lift is expressed by stepping up the neutral container ladder
 (`surface` → `surfaceContainerHigh` → `surfaceContainerHighest`), so a card reads
-as above the page without a shadow. There are exactly two deliberate exceptions:
-the app bar picks up Material's `scrolledUnderElevation` of 4 as a transient state
-when content scrolls beneath it, and the frosted overlay panel uses a real 24px
-shadow plus a 4px backdrop blur.
+as above the page without a shadow.
 
-**The invited direction is more translucency, not more shadow.** Frosted
-translucency is the sanctioned depth mechanism for anything that floats over
-content — today that is the bottom-sheet panel (`FrostedPanel`) carrying filters,
-rating, scene info, and saved-filter dialogs. Future floating surfaces (headers,
-the mini player, hover chrome) are expected to follow that pattern rather than
-invent new shadows; cards and app bars remain flat and tonal until they are
-converted deliberately, not by accident.
+Translucency handles the other case: a surface that content passes behind. Where
+rows, artwork, or video genuinely run underneath, the surface is glass — a
+backdrop blur with a translucent tint and a hairline. Every one of them is built
+from the single `FrostedSurface` recipe (`AppTheme.frostedBlurSigma`,
+`AppTheme.frostedChromeAlpha`, `AppTheme.frostedHairlineAlpha`), so blur, tint,
+and edge cannot drift apart between surfaces.
+
+| Surface | Treatment |
+| --- | --- |
+| Pinned app bar (list pages) | `surface` at 72%, 4px blur, 1px bottom hairline. The list carries the bar height as scroll padding, so artwork passes behind the glass; the M3 scroll lift is switched off — the glass *is* the elevation. |
+| Floating action pill over the grid | `surfaceVariant` at 72%, 4px blur, 32px radius, 8px soft shadow. |
+| Mini player band | `surface` at 72%, 4px blur, 1px top hairline, 10px soft shadow. The shell publishes its 66px height (`AppTheme.miniPlayerHeight`) as bottom inset, so the last row always scrolls clear of it. |
+| Overlay panels (filters, rating, scene info, saved filters, playlist) | `surfaceContainerHigh`, 4px blur, 1px hairline, the one authored `0 8px 24px` shadow. |
+| Fullscreen image chrome | Stronger 10–12px blur, because the backdrop is full-bleed photography rather than UI. |
+| Video player chrome (seek bubble, time pills, gesture feedback) | A black scrim at 55% with 4px blur, so white player type holds over any frame. The black tint is deliberate: this chrome must read over video, not over the app's own surfaces. |
+| Bottom navigation bar | **Deliberately flat opaque.** It owns a Scaffold slot and nothing passes behind it; glass with an empty backdrop is decoration. Use `surface` and the container steps. |
+| Cards, fields, chips, sort bars | Flat tonal. They sit in flow and push content instead of overlapping it. |
 
 ### Shadow Vocabulary
-- **Frosted panel** (`box-shadow: 0 8px 24px` at 40% of the scheme shadow, over `backdrop-filter: blur(4px)`): the only authored shadow in the system. Use it for panels that float over content, never for inline cards.
-- **Scrolled app bar** (`elevation 4`, Material's `scrolledUnderElevation`): a state, not a resting style.
+- **Frosted panel** (`box-shadow: 0 8px 24px` at 40% of the scheme shadow, over `backdrop-filter: blur(4px)`): the one authored panel shadow. Panels that float over content, never inline cards.
+- **Floating chrome** (mini player `0 2px 10px` at 10%, action pill `0 4px 8px` at 20%): short, soft, and bottom-biased — enough to separate glass from the artwork behind it, never a bevel.
+- **Blur scale**: 4px over app surfaces, 10–12px over photography. Anything else is a new recipe and needs a reason.
 
 ### Named Rules
 **The Flat-By-Default Rule.** If a surface is at rest and does not float over content, its elevation is 0. Depth is a container step.
 
-**The Frosted-For-Floating Rule.** Anything that overlays content is frosted: `surfaceContainerHigh` body, 4px blur, 1px `outlineVariant` at 50%, and the panel shadow. Any new overlay that ships flat-opaque is a regression.
+**The Frosted-For-Floating Rule.** Anything that overlays content is frosted, and the tint stays translucent enough for the backdrop to read through it: `surfaceContainerHigh` for panels, `surface` or `surfaceVariant` at 72% for chrome. A hand-rolled `BackdropFilter` plus `Container` pair is a regression, and an opaque tint over a blur is a `Container` with a GPU bill.
+
+**The Pass-Behind Rule.** Glass is only earned when content actually travels behind the surface. A surface that pushes content away — the bottom navigation bar, cards in a grid, a sort bar — stays flat and tonal. Blur with an empty backdrop is decoration and is a bug, not a style.
 
 ## Shapes
 
@@ -340,12 +350,15 @@ readable over any artwork behind it — this is the reason the blur exists.
 - **Do** keep one accent action per surface. The accent is a signal, not decoration — when everything is teal, nothing is.
 - **Do** verify light, dark, and True Black for every new surface: measured pairs in this system range from 5.0:1 (`primary` on a card, light) to 17.4:1 (`onSurface` on a True Black card).
 - **Do** keep the thumbnail scrim at 60% black and full-width; it is the only thing making white metadata legible over arbitrary artwork.
-- **Do** route every new floating or overlay surface through `FrostedPanel`.
+- **Do** route every new floating or overlay surface through `FrostedSurface` (`FrostedPanel` for overlay panels), and give it a backdrop that actually passes behind it.
+- **Do** keep frosted tints translucent (`AppTheme.frostedChromeAlpha`, 72%) so the backdrop reads through the glass, and let the blur carry the legibility instead of darkening the tint. Measured worst case (a pure white thumbnail behind a dark-theme header) is 5.7:1 for the bar title; 0.82 would buy 8.4:1 and hide the blur.
 - **Do** stay on the four radius tokens (8 / 12 / 16 / 28) and the three-step spacing scale.
 
 ### Don't:
 - **Don't** hardcode a colour. Every tint derives from the seed; the only sanctioned literals are the True Black steps (`#000000`, `#121212`, `#1A1A1A`, `#424242`, `#212121`, `#BDBDBD`) and the rating amber.
-- **Don't** add shadows to cards, app bars, list rows, or inline headers.
+- **Don't** add shadows to cards, app bars, list rows, or inline headers. The frosted app bar separates with a hairline, not a shadow.
+- **Don't** frost a surface that content never travels behind (the bottom navigation bar, cards in a grid): `BackdropFilter` with an empty backdrop costs GPU for nothing.
+- **Don't** hand-roll `BackdropFilter` + `Container` when `FrostedSurface` exists, and don't change the blur per screen without a photography-backed reason.
 - **Don't** use the rating amber as text. On light surfaces `#FFA000` measures 1.94:1 against `surface` and 1.67:1 on a field fill — it is an icon-and-value colour, always paired with a visible label.
 - **Don't** rely on True Black separators to carry state or meaning: `#424242` on black is 2.09:1 and `#212121` is lower still. They are decorative hairlines.
 - **Don't** add borders to chips or text fields — the filled treatment is the norm and the focus border is the only authored edge.
