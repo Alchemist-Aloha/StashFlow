@@ -3,32 +3,32 @@ name: "StashFlow"
 description: "The Private Screening Room — a Material 3 client for a self-hosted Stash media library."
 colors:
   teal-seed: "#0F766E"
-  primary-light: "#1C6962"
-  primary-dark: "#9CD1C9"
+  primary-light: "#006A63"
+  primary-dark: "#81D5CB"
   on-primary-light: "#FFFFFF"
   on-primary-dark: "#003733"
-  primary-container-light: "#A8F0E7"
-  primary-container-dark: "#184F4A"
-  on-primary-container-light: "#00201D"
-  on-primary-container-dark: "#B7EDE5"
+  primary-container-light: "#9DF2E7"
+  primary-container-dark: "#00504A"
+  on-primary-container-light: "#00504A"
+  on-primary-container-dark: "#9DF2E7"
   secondary-container-light: "#CCE8E4"
   secondary-container-dark: "#324B48"
-  surface-light: "#F6FAF8"
-  surface-dark: "#0F1414"
-  surface-container-high-light: "#E5E9E7"
-  surface-container-high-dark: "#262B2A"
-  surface-container-highest-light: "#DFE3E2"
-  surface-container-highest-dark: "#313635"
-  on-surface-light: "#181D1C"
-  on-surface-dark: "#DFE3E2"
-  on-surface-variant-light: "#3E4947"
-  on-surface-variant-dark: "#BDC9C6"
-  outline-light: "#6E7977"
-  outline-dark: "#889391"
-  outline-variant-light: "#BDC9C6"
-  outline-variant-dark: "#3E4947"
-  error-light: "#A73736"
-  error-dark: "#FFB3AE"
+  surface-light: "#F4FBF8"
+  surface-dark: "#0E1514"
+  surface-container-high-light: "#E3EAE7"
+  surface-container-high-dark: "#252B2A"
+  surface-container-highest-light: "#DDE4E2"
+  surface-container-highest-dark: "#303635"
+  on-surface-light: "#161D1C"
+  on-surface-dark: "#DDE4E2"
+  on-surface-variant-light: "#3F4947"
+  on-surface-variant-dark: "#BEC9C6"
+  outline-light: "#6F7977"
+  outline-dark: "#899391"
+  outline-variant-light: "#BEC9C6"
+  outline-variant-dark: "#3F4947"
+  error-light: "#BA1A1A"
+  error-dark: "#FFB4AB"
   true-black-surface: "#000000"
   true-black-lift: "#121212"
   true-black-card: "#1A1A1A"
@@ -74,6 +74,7 @@ typography:
     lineHeight: 1.2
     letterSpacing: "0.3px"
 rounded:
+  none: "0px"
   sm: "8px"
   md: "12px"
   lg: "16px"
@@ -129,6 +130,21 @@ components:
   panel-frosted:
     backgroundColor: "{colors.surface-container-high-dark}"
     rounded: "{rounded.xl}"
+  chrome-app-bar-frosted:
+    backgroundColor: "{colors.surface-dark}"
+    rounded: "{rounded.none}"
+    height: "56px"
+    width: "100%"
+  chrome-mini-player:
+    backgroundColor: "{colors.surface-dark}"
+    rounded: "{rounded.none}"
+    height: "66px"
+    width: "100%"
+  chrome-player-chip:
+    backgroundColor: "{colors.media-scrim}"
+    textColor: "{colors.on-surface-dark}"
+    rounded: "{rounded.lg}"
+    padding: "12px 16px"
 ---
 # Design System: StashFlow
 
@@ -139,7 +155,8 @@ components:
 StashFlow is a material surface laid over a library the user already owns. There is
 no storefront to sell, no onboarding story to dramatize: the room should recede so
 the artwork can be the event. Chrome is deliberately quiet — app bars carry no
-elevation tint, cards carry no drop shadow, and the single accent colour appears
+elevation tint (the pinned bar separates with glass and a hairline, not a lift),
+cards carry no drop shadow, and the single accent colour appears
 only where it carries meaning (a selected filter, the current destination, the one
 primary action of a sheet). A StashFlow screen should read as a well-run private
 cinema: dark, prepared, nothing on the walls that isn't the film.
@@ -178,23 +195,24 @@ cooler than a red one without a single hardcoded surface.
 
 ### Primary
 - **Deep Harbour Teal** (`#0F766E`): the seed and the only colour the user replaces. It is stored as `app_theme_seed_color` and defaults to teal; every Primary row below is derived from it at runtime by `ColorScheme.fromSeed`. It appears as text and icons where the accent must *speak* (studio names on cards, links, active sort direction) and as fill only for a surface's one primary action.
-- **Primary Light / Primary Dark** (`#1C6962` / `#9CD1C9`): the accent as rendered in each theme. Filled buttons, the focus border of a focused field, selected filter text.
-- **Primary Container Light / Dark** (`#A8F0E7` / `#184F4A`): the fill behind a selected chip, the selected segment, the mobile navigation bar indicator, and the floating action button. Never used as a large page background.
-- **On Primary** (`#FFFFFF` light, `#003733` dark) and **On Primary Container** (`#00201D` / `#B7EDE5`): the only text colours permitted on the fills above.
+- **Primary Light / Primary Dark** (`#006A63` / `#81D5CB`): the accent as rendered in each theme. Filled buttons, the focus border of a focused field, selected filter text.
+- **Primary Container Light / Dark** (`#9DF2E7` / `#00504A`): the fill behind a selected chip, the selected segment, the mobile navigation bar indicator, and the floating action button. Never used as a large page background.
+- **On Primary** (`#FFFFFF` light, `#003733` dark) and **On Primary Container** (`#00504A` / `#9DF2E7`): the only text colours permitted on the fills above.
 
 ### Secondary
 - **Secondary Container Light / Dark** (`#CCE8E4` / `#324B48`): deliberately narrow. It is the *desktop* navigation rail's selection indicator (the rail overrides the theme's default) and the shape behind secondary emphasis. It is not an alternate accent.
 
 ### Neutral
-- **Surface Light / Dark** (`#F6FAF8` / `#0F1414`): the scaffold, app bar, and sheet base. The accent's tint is visible in both, which is why surfaces must never be replaced with pure grey.
-- **Surface Container High Light / Dark** (`#E5E9E7` / `#262B2A`): fields, chips, and the frosted panel's body — anything that sits *on* the base surface.
-- **Surface Container Highest Light / Dark** (`#DFE3E2` / `#313635`): cards and the standard `Card` theme. This is the top of the tonal ladder in normal themes.
-- **On Surface** (`#181D1C` / `#DFE3E2`): body text, titles, and icons.
-- **On Surface Variant** (`#3E4947` / `#BDC9C6`): metadata, helper text, empty-state copy — 7.2:1 on a card in both themes.
-- **Outline / Outline Variant** (`#6E7977` / `#889391`; `#BDC9C6` / `#3E4947`): outlined-button borders, dividers, and the frosted panel's 1px hairline. Outline Variant is decorative only.
+- **Surface Light / Dark** (`#F4FBF8` / `#0E1514`): the scaffold and sheet base, and the tint behind every frosted bar (that colour at 72%). The accent's tint is visible in both, which is why surfaces must never be replaced with pure grey.
+- **Surface Container High Light / Dark** (`#E3EAE7` / `#252B2A`): fields, chips, and the frosted panel's body — anything that sits *on* the base surface.
+- **Surface Container Highest Light / Dark** (`#DDE4E2` / `#303635`): cards and the standard `Card` theme. This is the top of the tonal ladder in normal themes.
+- **On Surface** (`#161D1C` / `#DDE4E2`): body text, titles, and icons.
+- **On Surface Variant** (`#3F4947` / `#BEC9C6`): metadata, helper text, empty-state copy — 7.2:1 on a card in both themes.
+- **Outline / Outline Variant** (`#6F7977` / `#899391`; `#BEC9C6` / `#3F4947`): outlined-button borders, dividers, and the frosted panel's 1px hairline. Outline Variant is decorative only.
 - **True Black Surface / Lift / Card** (`#000000` / `#121212` / `#1A1A1A`): the AMOLED overrides applied to `surface`, `surfaceContainerHigh`, and `surfaceContainerHighest`. The tonal ladder survives; only its floor moves to black.
 - **True Black Outline / Outline Variant** (`#424242` / `#212121`) and **True Black On Surface Variant** (`#BDBDBD`): the matching borders and secondary ink.
 - **Rating Amber Light / Dark** (`#FFA000` / `#FFD54F`): reserved for the star/rating icon and its numeric value. It is the only saturated colour that is not derived from the seed.
+- **Error Light / Dark** (`#BA1A1A` / `#FFB4AB`): destructive actions and failure states — the delete action on an edit page, the error state view, and failure text. It never tints a neutral and never appears on a neutral fill; it is the one role that exists to interrupt.
 - **Media Scrim** (`rgba(0, 0, 0, 0.6)`): the band behind thumbnail metadata (resolution, performer count, rating, duration) in white.
 
 ### Named Rules
@@ -249,8 +267,9 @@ never relies on hairline borders to separate content.
 
 ## Elevation & Depth
 
-The system is **tonal first and translucent second**. Bars and cards are flat at
-elevation 0; lift is expressed by stepping up the neutral container ladder
+The system is **tonal first and translucent second**. The bar and the cards sit at
+elevation 0 — no drop shadow, no M3 elevation tint; lift is expressed by stepping up
+the neutral container ladder
 (`surface` → `surfaceContainerHigh` → `surfaceContainerHighest`), so a card reads
 as above the page without a shadow.
 
@@ -265,7 +284,7 @@ and edge cannot drift apart between surfaces.
 | --- | --- |
 | Pinned app bar (list pages) | `surface` at 72%, 4px blur, 1px bottom hairline. The list carries the bar height as scroll padding, so artwork passes behind the glass; the M3 scroll lift is switched off — the glass *is* the elevation. |
 | Floating action pill over the grid | `surfaceVariant` at 72%, 4px blur, 32px radius, 8px soft shadow. |
-| Mini player band | `surface` at 72%, 4px blur, 1px top hairline, 10px soft shadow. The shell publishes its 66px height (`AppTheme.miniPlayerHeight`) as bottom inset, so the last row always scrolls clear of it. |
+| Mini player band | `surface` at 72%, 4px blur, 1px top hairline, 10px soft shadow. The shell publishes its 66px height (`MiniPlayer.height`) as bottom inset, so the last row always scrolls clear of it. |
 | Overlay panels (filters, rating, scene info, saved filters, playlist) | `surfaceContainerHigh`, 4px blur, 1px hairline, the one authored `0 8px 24px` shadow. |
 | Fullscreen image chrome | Stronger 10–12px blur, because the backdrop is full-bleed photography rather than UI. |
 | Video player chrome (seek bubble, time pills, gesture feedback) | A black scrim at 55% with 4px blur, so white player type holds over any frame. The black tint is deliberate: this chrome must read over video, not over the app's own surfaces. |
@@ -286,15 +305,16 @@ and edge cannot drift apart between surfaces.
 
 ## Shapes
 
-Corners are soft and consistent: **8px** for small elements (chips, filter pills, the tappable page-title area), **12px** for cards, fields, buttons, and the navigation rail indicator, **16px** for large modal-like blocks, and **28px** (the extra-large radius) for the frosted panel and sheet top corners. Nothing in the interface is square except the 32px icon-button hit area around a compact `more_vert`.
+Corners are soft and consistent: **8px** for small elements (chips, filter pills, the tappable page-title area), **12px** for cards, fields, buttons, and the navigation rail indicator, **16px** for large modal-like blocks, and **28px** (the extra-large radius) for the frosted panel and sheet top corners. Two geometries sit outside the token ladder deliberately: **full-bleed media chrome** (the fullscreen image bars, the tagger and dedup tool panels) rounds at 20–24px, where a 12px corner would look mean against a photograph, and **pills** (the floating action pill at 32px, player time chips and switch tracks at 999px) are fully rounded because the shape is the affordance. Nothing in the interface is square except the 32px icon-button hit area around a compact `more_vert`.
 
 Borders are rare and intentional. Chips and text fields use `BorderSide.none` and
 rely on fill; the only rules in the interface are outlined-button borders, the 1px
-rail divider, the frosted panel hairline, and the 2px accent border on a focused
-field. Thumbnails are full-bleed and clipped with `Clip.antiAlias` at the card's
-12px radius; circles are reserved for user identity (performer avatars, the colour
-swatches in Appearance), never for actions. Media geometry is always a rectangle
-with a real aspect ratio — the system does not crop performer faces into shapes.
+rail divider, the frosted hairline (panel border, app-bar bottom edge, mini-player
+top edge), and the 2px accent border on a focused field. Thumbnails are full-bleed
+and clipped with `Clip.antiAlias` at the card's 12px radius; circles are reserved for
+user identity (performer avatars, the colour swatches in Appearance), never for
+actions. Media geometry is always a rectangle with a real aspect ratio — the system
+does not crop performer faces into shapes.
 
 ## Components
 
@@ -329,18 +349,25 @@ surface gets one accent action at most.
 ### Navigation
 - **Mobile:** bottom `NavigationBar`, 72px tall, labels always shown, `primaryContainer` indicator behind the selected destination; unselected icons use `onSurfaceVariant`, selected use `onPrimaryContainer`.
 - **Desktop / tablet:** `NavigationRail` with selected-only labels and a `secondaryContainer` indicator at 12px radius, plus a 1px vertical divider against the body. The rail deliberately uses the secondary container while the bar uses the primary container — the two are not interchangeable.
-- **App bar:** flat at `surface`, left-aligned bold title with −0.5px tracking; actions are icon buttons (sort, filter, refresh-on-desktop) each with a tooltip, and search opens the anchor view. Re-tapping the active destination scrolls its list to top rather than pushing a route.
-- **Mini player:** a 66px pinned band above the navigation bar that shares the shell's tonal surface; it is expected to move to the frosted treatment when it is next touched.
+- **App bar:** frosted glass over `surface` at 72% with a 1px bottom `outlineVariant` hairline, and no scroll lift — the glass *is* the elevation. Left-aligned bold title with −0.5px tracking; actions are icon buttons (sort, filter, refresh-on-desktop) each with a tooltip, and search opens the anchor view. The list below carries the bar height as scroll padding, so artwork travels behind the glass. Re-tapping the active destination scrolls its list to top rather than pushing a route.
+- **Mini player:** a 66px frosted band above the navigation bar (`MiniPlayer.height`), `surface` at 72% with a 1px top hairline and a 10px soft shadow. The shell publishes its height as a bottom inset, so rows run behind the band while the last row still scrolls clear of it.
 
-### Frosted Panel (signature)
-The overlay primitive: `FrostedPanel` wraps a transparent modal sheet in a
-`surfaceContainerHigh` body, a 4px `backdrop-filter` blur, a 1px `outlineVariant`
-hairline at 50%, the extra-large 28px radius, and the system's only shadow. It caps
-at 88% of viewport height and hosts filters, sort, rating, scene info, and
-saved-filter dialogs. Its composition is fixed: bold `headlineSmall` header with an
-optional "Reset" text button, scrolling body, and a full-width filled action with a
-text-button dismiss below it. Because the panel is translucent, its contents must be
-readable over any artwork behind it — this is the reason the blur exists.
+### Frosted Surface (signature)
+One recipe, declared once. `FrostedSurface` clips its own bounds, blurs the backdrop
+(`AppTheme.frostedBlurSigma`, 4px), fills with a translucent tint, and closes with a
+1px hairline; the caller supplies only the tint and the corner. `FrostedPanel` wraps a
+transparent modal sheet in it — `surfaceContainerHigh` body, the extra-large 28px
+radius, the system's only shadow — and caps at 88% of viewport height to host
+filters, sort, rating, scene info, and saved-filter dialogs. Its composition is
+fixed: bold `headlineSmall` header with an optional "Reset" text button, scrolling
+body, and a full-width filled action with a text-button dismiss below it.
+
+The same widget carries the pinned app bar, the mini-player band, the floating action
+pill over the grid, and the video player's seek bubble, time chips, and gesture
+bubble — the player's instances tint black rather than `surface`, because they read
+over footage rather than over the app. Because every one of them is translucent, its
+contents must stay legible over any artwork behind it: this is the reason the blur
+exists, and why a frosted surface only ships where content actually passes behind it.
 
 ## Do's and Don'ts
 
@@ -351,8 +378,8 @@ readable over any artwork behind it — this is the reason the blur exists.
 - **Do** verify light, dark, and True Black for every new surface: measured pairs in this system range from 5.0:1 (`primary` on a card, light) to 17.4:1 (`onSurface` on a True Black card).
 - **Do** keep the thumbnail scrim at 60% black and full-width; it is the only thing making white metadata legible over arbitrary artwork.
 - **Do** route every new floating or overlay surface through `FrostedSurface` (`FrostedPanel` for overlay panels), and give it a backdrop that actually passes behind it.
-- **Do** keep frosted tints translucent (`AppTheme.frostedChromeAlpha`, 72%) so the backdrop reads through the glass, and let the blur carry the legibility instead of darkening the tint. Measured worst case (a pure white thumbnail behind a dark-theme header) is 5.7:1 for the bar title; 0.82 would buy 8.4:1 and hide the blur.
-- **Do** stay on the four radius tokens (8 / 12 / 16 / 28) and the three-step spacing scale.
+- **Do** keep frosted tints translucent (`AppTheme.frostedChromeAlpha`, 72%) so the backdrop reads through the glass, and let the blur carry the legibility instead of darkening the tint. Measured worst case (a pure white thumbnail behind a dark-theme header) is 5.7:1 for the bar title; 0.82 would buy 8.3:1 and hide the blur.
+- **Do** keep blocks and containers on the four radius tokens (8 / 12 / 16 / 28) and gaps on the three-step spacing scale; only pills and full-bleed media chrome leave the ladder, and only for the reasons in Shapes.
 
 ### Don't:
 - **Don't** hardcode a colour. Every tint derives from the seed; the only sanctioned literals are the True Black steps (`#000000`, `#121212`, `#1A1A1A`, `#424242`, `#212121`, `#BDBDBD`) and the rating amber.
