@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
-import '../../../../core/presentation/widgets/rating_bottom_sheet.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/image.dart' as entity;
-import '../providers/image_list_provider.dart';
 import 'image_details_bottom_sheet.dart';
 
-class ImageCard extends ConsumerWidget {
+class ImageCard extends StatelessWidget {
   const ImageCard.skeleton({
     this.onTap,
     this.memCacheWidth,
@@ -41,37 +37,8 @@ class ImageCard extends ConsumerWidget {
   /// Optional focus node used to restore keyboard focus after fullscreen.
   final FocusNode? focusNode;
 
-  Future<void> _showDetails(BuildContext context, WidgetRef ref) async {
-    await RatingBottomSheet.show(
-      context,
-      initialRating: image.rating100 ?? 0,
-      title: context.l10n.details_image,
-      subtitle: ImageDetailsContent.displayTitle(image),
-      detailsWidget: ImageDetailsContent(image: image),
-      onRatingSelected: (rating) async {
-        try {
-          await ref
-              .read(imageRepositoryProvider)
-              .updateImageRating(image.id, rating);
-          ref
-              .read(imageListProvider.notifier)
-              .updateImageInList(image.copyWith(rating100: rating));
-        } catch (error) {
-          if (!context.mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                context.l10n.details_failed_update_rating(error.toString()),
-              ),
-            ),
-          );
-        }
-      },
-    );
-  }
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final double aspectRatio =
         (image.files.isNotEmpty &&
             image.files.first.width > 0 &&
@@ -90,7 +57,7 @@ class ImageCard extends ConsumerWidget {
           onTap: onTap ?? () => context.push('/galleries/images/${image.id}'),
           onLongPress: image.id == 'skeleton'
               ? null
-              : () => _showDetails(context, ref),
+              : () => ImageDetailsBottomSheet.show(context, image),
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           child: Card(
             margin: EdgeInsets.zero,

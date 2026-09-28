@@ -259,6 +259,11 @@ void main() {
       tester.getTopLeft(info).dx,
       greaterThan(tester.getTopRight(rating).dx),
     );
+    expect(tester.getCenter(count).dy, closeTo(tester.getCenter(info).dy, 0.1));
+    expect(
+      tester.getTopLeft(count).dx,
+      greaterThan(tester.getTopRight(info).dx),
+    );
     expect(find.text('Performer One'), findsOneWidget);
     // Metadata chip icons are sized by the shared chip recipe.
     expect(tester.widget<Icon>(find.byIcon(Icons.image_rounded)).size, 16);

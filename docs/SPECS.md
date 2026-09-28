@@ -308,8 +308,9 @@ value, with localized feedback on failure.
 Interactive rating entry points share `RatingButton` and `RatingPicker`. A single
 star opens a popup editor with five stars, fractional-rating selection, Clear,
 and Apply/Cancel. Ratings use the server's 0–100 scale; cancelling leaves the
-confirmed rating unchanged. Image metadata panels use the same compact button,
-and fullscreen image rating retains its image/gallery target selector.
+confirmed rating unchanged. Image metadata panels, including card long-press
+details, are read-only and omit rating controls. Fullscreen image rating retains
+its image/gallery target selector.
 
 Scene rating and metadata edits go through the scene repository. Successful
 mutations update or invalidate both details and affected lists. Failed mutations
@@ -324,9 +325,9 @@ Gallery Details exposes the shared single-star rating button in both its expande
 and collapsed headers, including for unrated galleries. The expanded section
 fills the available content width, retaining scaled theme padding. Both headers
 show the title and metadata without a cover thumbnail beside the title. The unfilled
-details button sits beside the rating button;
-image count appears on its own line below the studio name (or title when no
-studio is available). Confirmed rating changes
+details button sits beside the rating button, with the image count immediately
+after it in the expanded header's action row, wrapping when space is limited.
+Confirmed rating changes
 refresh gallery details and update the gallery list without reshuffling it;
 failures retain the confirmed value and show localized feedback. Gallery card
 long-press and More actions open the same read-only metadata sheet as the details

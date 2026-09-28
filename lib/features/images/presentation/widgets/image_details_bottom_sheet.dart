@@ -75,7 +75,7 @@ class ImageDetailsBottomSheet extends StatelessWidget {
   }
 }
 
-/// Metadata sections shared by the information-only and rating sheets.
+/// Metadata sections used by image details sheets.
 class ImageDetailsContent extends StatelessWidget {
   const ImageDetailsContent({required this.image, super.key});
 

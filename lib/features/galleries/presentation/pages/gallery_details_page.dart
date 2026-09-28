@@ -333,15 +333,6 @@ class _CompactGalleryDetails extends StatelessWidget {
                         ),
                       ),
                     ],
-                    SizedBox(height: dims.spacingSmall),
-                    SizedBox(
-                      key: const Key('gallery_image_count'),
-                      child: _metadataBadge(
-                        context,
-                        icon: Icons.image_rounded,
-                        label: '${gallery.imageCount ?? 0}',
-                      ),
-                    ),
                   ],
                 ),
                 SizedBox(height: dims.spacingSmall),
@@ -373,6 +364,14 @@ class _CompactGalleryDetails extends StatelessWidget {
                           icon: const Icon(Icons.info_outline_rounded),
                         ),
                       ],
+                    ),
+                    SizedBox(
+                      key: const Key('gallery_image_count'),
+                      child: _metadataBadge(
+                        context,
+                        icon: Icons.image_rounded,
+                        label: '${gallery.imageCount ?? 0}',
+                      ),
                     ),
                   ],
                 ),
