@@ -19,6 +19,7 @@ import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../domain/entities/scene_title_utils.dart';
@@ -884,20 +885,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     Widget child, {
     Key? key,
   }) {
-    return Card(
+    return SectionPanel(
       key: key,
-      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
-      elevation: 0,
-      color: Theme.of(
-        context,
-      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
-        child: child,
-      ),
+      margin: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
+      child: child,
     );
   }
 
@@ -1026,13 +1017,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 Text(
                   ' • ',
                   style: context.textTheme.titleMedium?.copyWith(
-                    color: context.colors.onSurface.withValues(alpha: 0.5),
+                    color: context.colors.onSurfaceVariant,
                   ),
                 ),
               Text(
                 scene.date.year.toString(),
                 style: context.textTheme.titleMedium?.copyWith(
-                  color: context.colors.onSurface.withValues(alpha: 0.6),
+                  color: context.colors.onSurfaceVariant,
                 ),
               ),
             ],
@@ -1269,27 +1260,17 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                context.l10n.common_details,
-                style: context.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              if (canExpandDetails)
-                TextButton(
-                  onPressed: () {
+          SectionHeader(
+            title: context.l10n.common_details,
+            actionLabel: _detailsExpanded
+                ? context.l10n.details_show_less
+                : context.l10n.details_show_more,
+            onViewAll: canExpandDetails
+                ? () {
                     setState(() => _detailsExpanded = !_detailsExpanded);
-                  },
-                  child: Text(
-                    _detailsExpanded
-                        ? context.l10n.details_show_less
-                        : context.l10n.details_show_more,
-                  ),
-                ),
-            ],
+                  }
+                : null,
+            padding: EdgeInsets.zero,
           ),
           const SizedBox(height: AppTheme.spacingSmall),
           Text(
@@ -1297,7 +1278,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             maxLines: _detailsExpanded ? null : _collapsedDetailsLines,
             overflow: _detailsExpanded ? null : TextOverflow.ellipsis,
             style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colors.onSurface.withValues(alpha: 0.8),
+              color: context.colors.onSurfaceVariant,
             ),
           ),
         ],
@@ -1323,27 +1304,17 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                context.l10n.details_tags,
-                style: context.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              if (canExpandTags)
-                TextButton(
-                  onPressed: () {
+          SectionHeader(
+            title: context.l10n.details_tags,
+            actionLabel: _tagsExpanded
+                ? context.l10n.details_show_less
+                : context.l10n.details_show_more,
+            onViewAll: canExpandTags
+                ? () {
                     setState(() => _tagsExpanded = !_tagsExpanded);
-                  },
-                  child: Text(
-                    _tagsExpanded
-                        ? context.l10n.details_show_less
-                        : context.l10n.details_show_more,
-                  ),
-                ),
-            ],
+                  }
+                : null,
+            padding: EdgeInsets.zero,
           ),
           const SizedBox(height: AppTheme.spacingSmall),
           AnimatedSize(
@@ -1364,8 +1335,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           scene.tagNames[index],
                           style: context.textTheme.bodySmall,
                         ),
-                        backgroundColor: context.colors.surfaceVariant,
-                        side: BorderSide.none,
                         visualDensity: VisualDensity.compact,
                         onPressed: () {
                           if (index < scene.tagIds.length) {
@@ -1394,11 +1363,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.l10n.scenes_page_markers_tooltip,
-            style: context.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+          SectionHeader(
+            title: context.l10n.scenes_page_markers_tooltip,
+            padding: EdgeInsets.zero,
           ),
           const SizedBox(height: AppTheme.spacingSmall),
           Column(
@@ -1506,28 +1473,17 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                context.l10n.performers_title,
-                style: context.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: context.colors.onSurface,
-                ),
-              ),
-              const Spacer(),
-              if (canExpandPerformers)
-                TextButton(
-                  onPressed: () {
+          SectionHeader(
+            title: context.l10n.performers_title,
+            actionLabel: _performersExpanded
+                ? context.l10n.details_show_less
+                : context.l10n.details_show_more,
+            onViewAll: canExpandPerformers
+                ? () {
                     setState(() => _performersExpanded = !_performersExpanded);
-                  },
-                  child: Text(
-                    _performersExpanded
-                        ? context.l10n.details_show_less
-                        : context.l10n.details_show_more,
-                  ),
-                ),
-            ],
+                  }
+                : null,
+            padding: EdgeInsets.zero,
           ),
           const SizedBox(height: AppTheme.spacingSmall),
           ListView.separated(
@@ -1718,8 +1674,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             )
           : null,
       label: Text(label, style: context.textTheme.bodySmall),
-      backgroundColor: context.colors.surfaceVariant,
-      side: BorderSide.none,
       visualDensity: VisualDensity.compact,
     );
   }

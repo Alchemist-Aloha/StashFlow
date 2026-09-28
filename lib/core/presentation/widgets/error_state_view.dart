@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/l10n_extensions.dart';
 import '../theme/app_theme.dart';
 
 class ErrorStateView extends StatelessWidget {
   const ErrorStateView({
     required this.message,
     this.onRetry,
-    this.retryLabel = 'Retry',
+    this.retryLabel,
     super.key,
   });
 
   final String message;
   final VoidCallback? onRetry;
-  final String retryLabel;
+
+  /// Overrides the retry button label. Localised by default.
+  final String? retryLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class ErrorStateView extends StatelessWidget {
             Icon(
               Icons.error_outline,
               size: 48 * fontSizeFactor,
-              color: colors?.error ?? Colors.redAccent,
+              color: colors?.error ?? theme.colorScheme.error,
             ),
             SizedBox(height: spacingSmall * 1.5),
             Text(
@@ -45,7 +48,10 @@ class ErrorStateView extends StatelessWidget {
             ),
             if (onRetry != null) ...[
               SizedBox(height: spacingLarge),
-              FilledButton.tonal(onPressed: onRetry, child: Text(retryLabel)),
+              FilledButton.tonal(
+                onPressed: onRetry,
+                child: Text(retryLabel ?? context.l10n.common_retry),
+              ),
             ],
           ],
         ),

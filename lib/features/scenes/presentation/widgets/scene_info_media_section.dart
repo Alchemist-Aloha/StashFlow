@@ -11,6 +11,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene.dart';
@@ -180,56 +181,37 @@ class _SceneInfoMediaSectionState extends ConsumerState<SceneInfoMediaSection> {
         _previewAvailability == _PreviewAvailability.unavailable;
     final showCover = coverUrl != null && _mode == _SceneInfoMediaMode.cover;
 
-    return Container(
+    return SectionPanel(
       key: const Key('scene_info_media_section'),
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(
-          context,
-        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(12),
-      ),
+      title: context.l10n.preview,
+      titleTrailing: hasBoth && !previewUnavailable
+          ? SegmentedButton<_SceneInfoMediaMode>(
+              key: const Key('scene_info_media_toggle'),
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(
+                  value: _SceneInfoMediaMode.cover,
+                  label: Text(context.l10n.scene_info_cover),
+                  icon: const Icon(Icons.image_outlined),
+                ),
+                ButtonSegment(
+                  value: _SceneInfoMediaMode.preview,
+                  label: Text(context.l10n.preview),
+                  icon: const Icon(Icons.play_circle_outline),
+                ),
+              ],
+              selected: {_mode},
+              onSelectionChanged: (selection) {
+                setState(() {
+                  _mode = selection.single;
+                  _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
+                });
+              },
+            )
+          : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  context.l10n.preview,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-                ),
-              ),
-              if (hasBoth && !previewUnavailable)
-                SegmentedButton<_SceneInfoMediaMode>(
-                  key: const Key('scene_info_media_toggle'),
-                  showSelectedIcon: false,
-                  segments: [
-                    ButtonSegment(
-                      value: _SceneInfoMediaMode.cover,
-                      label: Text(context.l10n.scene_info_cover),
-                      icon: const Icon(Icons.image_outlined),
-                    ),
-                    ButtonSegment(
-                      value: _SceneInfoMediaMode.preview,
-                      label: Text(context.l10n.preview),
-                      icon: const Icon(Icons.play_circle_outline),
-                    ),
-                  ],
-                  selected: {_mode},
-                  onSelectionChanged: (selection) {
-                    setState(() {
-                      _mode = selection.single;
-                      _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
-                    });
-                  },
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: ColoredBox(

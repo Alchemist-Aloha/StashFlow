@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_video_player.dart';
@@ -246,9 +247,23 @@ void main() {
       ),
       findsOneWidget,
     );
+    // Both blocks are the system's section panel, so the header surface and
+    // the details surface cannot drift apart.
+    expect(tester.widget<SectionPanel>(header), isA<SectionPanel>());
+    expect(tester.widget<SectionPanel>(details), isA<SectionPanel>());
+    BoxDecoration panelDecoration(Finder finder) =>
+        tester
+                .widget<Container>(
+                  find
+                      .descendant(of: finder, matching: find.byType(Container))
+                      .first,
+                )
+                .decoration!
+            as BoxDecoration;
+    expect(panelDecoration(header).color, panelDecoration(details).color);
     expect(
-      tester.widget<Card>(header).color,
-      tester.widget<Card>(details).color,
+      panelDecoration(header).borderRadius,
+      panelDecoration(details).borderRadius,
     );
   });
 

@@ -11,6 +11,7 @@ import '../../utils/responsive.dart';
 import '../providers/desktop_capabilities_provider.dart';
 import 'error_state_view.dart';
 import 'frosted_surface.dart';
+import 'section_header.dart';
 import '../../utils/pagination.dart';
 import '../../data/preferences/search_history_provider.dart';
 import '../../../features/scenes/presentation/widgets/scene_card.dart';
@@ -326,39 +327,21 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                         return Column(
                           children: [
                             if (history.isNotEmpty)
-                              Padding(
+                              SectionHeader(
+                                title: context.l10n.recent_searches,
+                                actionLabel: context.l10n.common_clear_history,
+                                onViewAll: () {
+                                  ref
+                                      .read(
+                                        searchHistoryProvider(
+                                          _historyKey,
+                                        ).notifier,
+                                      )
+                                      .clearAll();
+                                },
                                 padding: EdgeInsets.symmetric(
                                   horizontal: context.dimensions.spacingMedium,
                                   vertical: context.dimensions.spacingSmall,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      context.l10n.recent_searches,
-                                      style: context.textTheme.titleSmall
-                                          ?.copyWith(
-                                            color: context.colors.onSurface
-                                                .withValues(alpha: 0.7),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        ref
-                                            .read(
-                                              searchHistoryProvider(
-                                                _historyKey,
-                                              ).notifier,
-                                            )
-                                            .clearAll();
-                                      },
-                                      child: Text(
-                                        context.l10n.common_clear_history,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
                             ...history.map((item) {
@@ -539,10 +522,11 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                     widget.emptyMessage == 'No items found'
                                         ? context.l10n.common_no_items
                                         : widget.emptyMessage,
+                                    textAlign: TextAlign.center,
                                     style: context.textTheme.bodyMedium
                                         ?.copyWith(
-                                          color: context.colors.onSurface
-                                              .withValues(alpha: 0.7),
+                                          color:
+                                              context.colors.onSurfaceVariant,
                                         ),
                                   ),
                                 ),
@@ -746,7 +730,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.shadow.withValues(alpha: 0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),

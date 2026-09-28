@@ -65,7 +65,8 @@ void main() {
       greaterThan(tester.getTopLeft(find.text('Gallery One')).dy),
     );
     expect(find.text('Performer One'), findsOneWidget);
-    expect(tester.widget<Icon>(find.byIcon(Icons.image_rounded)).size, isNull);
+    // Metadata chip icons are sized by the shared chip recipe.
+    expect(tester.widget<Icon>(find.byIcon(Icons.image_rounded)).size, 16);
     expect(find.byIcon(Icons.sort), findsOneWidget);
     expect(find.byIcon(Icons.filter_list), findsOneWidget);
     expect(find.byIcon(Icons.bookmarks_outlined), findsOneWidget);

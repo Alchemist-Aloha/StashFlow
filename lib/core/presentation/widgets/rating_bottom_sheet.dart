@@ -46,20 +46,10 @@ class RatingBottomSheet extends StatelessWidget {
       subtitle: subtitle,
       detailsWidget: detailsWidget,
     );
-    if (detailsWidget != null) {
-      return showFrostedPanelBottomSheet<void>(
-        context: context,
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-        ),
-        builder: (_) => sheet,
-      );
-    }
-    return showModalBottomSheet<void>(
+    return showFrostedPanelBottomSheet<void>(
       context: context,
-      backgroundColor: context.colors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.88,
       ),
       builder: (_) => sheet,
     );
@@ -69,88 +59,57 @@ class RatingBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final dims = context.dimensions;
-    if (detailsWidget != null) {
-      return SafeArea(
-        top: false,
-        child: FrostedPanel(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(AppTheme.radiusExtraLarge),
-          ),
-          child: ListView(
-            shrinkWrap: true,
-            padding: EdgeInsets.all(dims.spacingLarge),
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: context.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+    return SafeArea(
+      top: false,
+      child: FrostedPanel(
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppTheme.radiusExtraLarge),
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.all(dims.spacingLarge),
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: context.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
-                        if (subtitle != null) ...[
-                          SizedBox(height: dims.spacingSmall),
-                          Text(
-                            subtitle!,
-                            style: context.textTheme.bodyMedium,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                      ),
+                      if (subtitle != null) ...[
+                        SizedBox(height: dims.spacingSmall),
+                        Text(
+                          subtitle!,
+                          style: context.textTheme.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
-                    ),
+                    ],
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    tooltip: l10n.common_close,
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-              SizedBox(height: dims.spacingMedium),
-              ..._buildRatingControls(context, dims, l10n),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  tooltip: l10n.common_close,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+            SizedBox(height: dims.spacingMedium),
+            ..._buildRatingControls(context, dims, l10n),
+            if (detailsWidget != null) ...[
               SizedBox(height: dims.spacingMedium),
               detailsWidget!,
             ],
-          ),
-        ),
-      );
-    }
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: dims.spacingLarge,
-          horizontal: dims.spacingMedium,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: _buildContent(context, dims, l10n),
+          ],
         ),
       ),
     );
-  }
-
-  List<Widget> _buildContent(
-    BuildContext context,
-    AppDimensions dims,
-    AppLocalizations l10n,
-  ) {
-    return [
-      Text(
-        title,
-        style: context.textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      SizedBox(height: dims.spacingLarge),
-      ..._buildRatingControls(context, dims, l10n),
-    ];
   }
 
   List<Widget> _buildRatingControls(
@@ -169,7 +128,7 @@ class RatingBottomSheet extends StatelessWidget {
             icon: Icon(
               isSelected ? Icons.star : Icons.star_border,
               size: 48 * dims.fontSizeFactor,
-              color: Colors.amber,
+              color: context.colors.ratingColor,
             ),
             onPressed: () {
               onRatingSelected(starValue);

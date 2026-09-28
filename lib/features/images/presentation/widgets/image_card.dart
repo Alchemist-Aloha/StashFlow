@@ -120,15 +120,17 @@ class ImageCard extends ConsumerWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(150),
-                          borderRadius: BorderRadius.circular(4),
+                          color: Colors.black.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusSmall,
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.star,
-                              color: Colors.amber,
+                              color: context.colors.ratingColor,
                               size: 10,
                             ),
                             const SizedBox(width: 2),

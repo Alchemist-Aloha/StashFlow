@@ -210,10 +210,7 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.save),
             tooltip: context.l10n.common_save,

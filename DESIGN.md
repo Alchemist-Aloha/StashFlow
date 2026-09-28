@@ -119,6 +119,10 @@ components:
   card-scene:
     backgroundColor: "{colors.surface-container-highest-dark}"
     rounded: "{rounded.md}"
+  panel-section:
+    backgroundColor: "{colors.surface-container-highest-dark}"
+    rounded: "{rounded.lg}"
+    padding: "16px"
   nav-bar-indicator:
     backgroundColor: "{colors.primary-container-dark}"
     rounded: "{rounded.xl}"
@@ -207,7 +211,7 @@ cooler than a red one without a single hardcoded surface.
 - **Surface Container High Light / Dark** (`#E3EAE7` / `#252B2A`): fields, chips, and the frosted panel's body — anything that sits *on* the base surface.
 - **Surface Container Highest Light / Dark** (`#DDE4E2` / `#303635`): cards and the standard `Card` theme. This is the top of the tonal ladder in normal themes.
 - **On Surface** (`#161D1C` / `#DDE4E2`): body text, titles, and icons.
-- **On Surface Variant** (`#3F4947` / `#BEC9C6`): metadata, helper text, empty-state copy — 7.2:1 on a card in both themes.
+- **On Surface Variant** (`#3F4947` / `#BEC9C6`): metadata, helper text, empty-state copy, and the description or synopsis prose inside a section panel — 7.2:1 on a card in both themes. A panel's heading is the strong element, so the prose under it is secondary ink; body-strength `onSurface` is for prose that *is* the page's content.
 - **Outline / Outline Variant** (`#6F7977` / `#899391`; `#BEC9C6` / `#3F4947`): outlined-button borders, dividers, and the frosted panel's 1px hairline. Outline Variant is decorative only.
 - **True Black Surface / Lift / Card** (`#000000` / `#121212` / `#1A1A1A`): the AMOLED overrides applied to `surface`, `surfaceContainerHigh`, and `surfaceContainerHighest`. The tonal ladder survives; only its floor moves to black.
 - **True Black Outline / Outline Variant** (`#424242` / `#212121`) and **True Black On Surface Variant** (`#BDBDBD`): the matching borders and secondary ink.
@@ -305,7 +309,7 @@ and edge cannot drift apart between surfaces.
 
 ## Shapes
 
-Corners are soft and consistent: **8px** for small elements (chips, filter pills, the tappable page-title area), **12px** for cards, fields, buttons, and the navigation rail indicator, **16px** for large modal-like blocks, and **28px** (the extra-large radius) for the frosted panel and sheet top corners. Two geometries sit outside the token ladder deliberately: **full-bleed media chrome** (the fullscreen image bars, the tagger and dedup tool panels) rounds at 20–24px, where a 12px corner would look mean against a photograph, and **pills** (the floating action pill at 32px, player time chips and switch tracks at 999px) are fully rounded because the shape is the affordance. Nothing in the interface is square except the 32px icon-button hit area around a compact `more_vert`.
+Corners are soft and consistent: **8px** for small elements (chips, filter pills, over-thumbnail badges, the tappable page-title area), **12px** for cards, fields, buttons, and the navigation rail indicator, **16px** for section panels and other large in-flow blocks, and **28px** (the extra-large radius) for the frosted panel and sheet top corners — nothing else in the interface uses 28px. Two geometries sit outside the token ladder deliberately: **full-bleed media chrome** (the fullscreen image bars, the tagger and dedup tool panels) rounds at 20–24px, where a 12px corner would look mean against a photograph, and **pills** (the floating action pill at 32px, player time chips and switch tracks at 999px) are fully rounded because the shape is the affordance. Nothing in the interface is square except the 32px icon-button hit area around a compact `more_vert`.
 
 Borders are rare and intentional. Chips and text fields use `BorderSide.none` and
 rely on fill; the only rules in the interface are outlined-button borders, the 1px
@@ -331,15 +335,21 @@ surface gets one accent action at most.
 
 ### Chips
 - **Style:** 8px radius, `surfaceContainerHigh` fill, no border at all (`BorderSide.none`). A chip is a small tile, not an outline.
-- **State:** unselected chips carry `onSurface` at label size; selection swaps to the accent container pair and stays the same shape and size, so selection changes colour, never geometry. Dismissible criterion chips inside filter sheets keep the chip's own delete affordance and text-scale with everything else.
+- **State:** unselected chips carry `onSurface` at label size; selection swaps to `primaryContainer` / `onPrimaryContainer` and stays the same shape and size, so selection changes colour, never geometry. `chipTheme` owns that pair for every chip family, so a filter panel must not restate it. Dismissible criterion chips inside filter sheets keep the chip's own delete affordance and text-scale with everything else.
+- **Over-thumbnail badges** (rating, image count, marker range) are the exception to the chip fill: they sit on artwork, so they use `media-scrim` at 60% with `ratingColor` for the star and the 8px small radius. The gallery, image, and marker cards share one recipe; a badge is never restyled on its own.
 
 ### Cards / Containers
-- **Corner Style:** 12px, clipped with `Clip.antiAlias` so artwork cannot square the corners.
-- **Background:** scene and media cards use the accent container at 30% opacity over the base surface — a barely-there tint that lets a wall of thumbnails stay calm. The generic `Card` theme uses `surfaceContainerHighest` at elevation 0.
-- **Shadow Strategy:** none; see Elevation & Depth. Depth comes from the tint and the thumbnail's own contrast.
+- **Corner Style:** 12px for media cards, clipped with `Clip.antiAlias` so artwork cannot square the corners; 16px for a section panel.
+- **Background:** scene and media cards use the accent container at 30% opacity over the base surface — a barely-there tint that lets a wall of thumbnails stay calm. A section panel is `surfaceContainerHighest` flat, with no tint and no alpha. The generic `Card` theme uses `surfaceContainerHighest` at elevation 0.
+- **Shadow Strategy:** none; see Elevation & Depth. Depth comes from the container step and the thumbnail's own contrast.
 - **Border:** none. Cards are never outlined.
-- **Internal Padding:** 12px all round in list mode; 8px horizontal / 4px vertical under a grid thumbnail; 4px/2px for the metadata overlay band.
+- **Internal Padding:** 12px all round in list mode; 8px horizontal / 4px vertical under a grid thumbnail; 4px/2px for the metadata overlay band; `spacingMedium` inside a section panel.
 - **Composition:** a full-bleed thumbnail band (16:9 in grid, source ratio clamped 0.5–2.5 in list), a `media-scrim` metadata strip at its bottom edge (white micro/label type, 10px or 12px icons), then title (bold, `cardTitleFontSize`, max 2 lines, ellipsised), studio·year in accent label, and an optional performer avatar row with a `+N` overflow.
+
+### Section Panel
+One recipe, declared once, for content grouped *inside* a page: a detail page's controls and metadata, a sheet's info block, a settings group. `SectionPanel` supplies the `surfaceContainerHighest` fill, the 16px radius, `spacingMedium` padding, an optional bold `titleMedium` heading in `onSurface` with an optional trailing action, and an optional whole-panel tap target.
+
+A panel is never tinted with the accent and never carries a shadow or a border — it is a quiet neutral block whose lift is the container step. Its heading uses the same voice as a standalone section header, so the two cannot drift apart. A caller supplies content, a title, and a trailing action; it does not supply styling, and it must not re-implement the recipe locally.
 
 ### Inputs / Fields
 - **Style:** filled with `surfaceContainerHigh`, no border, 12px radius, content padding 16px / 8px. Search lives in a `SearchAnchor` view rather than an inline expanding field.
@@ -348,8 +358,9 @@ surface gets one accent action at most.
 
 ### Navigation
 - **Mobile:** bottom `NavigationBar`, 72px tall, labels always shown, `primaryContainer` indicator behind the selected destination; unselected icons use `onSurfaceVariant`, selected use `onPrimaryContainer`.
-- **Desktop / tablet:** `NavigationRail` with selected-only labels and a `secondaryContainer` indicator at 12px radius, plus a 1px vertical divider against the body. The rail deliberately uses the secondary container while the bar uses the primary container — the two are not interchangeable.
+- **Desktop / tablet:** `NavigationRail` with selected-only labels and a `secondaryContainer` indicator at 12px radius with `onSecondaryContainer` icons, plus a 1px vertical divider against the body. The rail deliberately uses the secondary container while the bar uses the primary container — the two are not interchangeable, and `navigationRailTheme` owns both the colour and the shape.
 - **App bar:** frosted glass over `surface` at 72% with a 1px bottom `outlineVariant` hairline, and no scroll lift — the glass *is* the elevation. Left-aligned bold title with −0.5px tracking; actions are icon buttons (sort, filter, refresh-on-desktop) each with a tooltip, and search opens the anchor view. The list below carries the bar height as scroll padding, so artwork travels behind the glass. Re-tapping the active destination scrolls its list to top rather than pushing a route.
+- **Plain app bar (detail, edit, settings, tool pages):** flat `surface`, elevation 0, **no** scroll-under tint, and the same bold −0.5px-tracked `titleLarge` as the frosted list header. `appBarTheme` owns that title style, so a page must not restate it. Only the list header is frosted; a page that pushes its content instead of letting it travel behind the bar stays flat.
 - **Mini player:** a 66px frosted band above the navigation bar (`MiniPlayer.height`), `surface` at 72% with a 1px top hairline and a 10px soft shadow. The shell publishes its height as a bottom inset, so rows run behind the band while the last row still scrolls clear of it.
 
 ### Frosted Surface (signature)
@@ -380,9 +391,13 @@ exists, and why a frosted surface only ships where content actually passes behin
 - **Do** route every new floating or overlay surface through `FrostedSurface` (`FrostedPanel` for overlay panels), and give it a backdrop that actually passes behind it.
 - **Do** keep frosted tints translucent (`AppTheme.frostedChromeAlpha`, 72%) so the backdrop reads through the glass, and let the blur carry the legibility instead of darkening the tint. Measured worst case (a pure white thumbnail behind a dark-theme header) is 5.7:1 for the bar title; 0.82 would buy 8.3:1 and hide the blur.
 - **Do** keep blocks and containers on the four radius tokens (8 / 12 / 16 / 28) and gaps on the three-step spacing scale; only pills and full-bleed media chrome leave the ladder, and only for the reasons in Shapes.
+- **Do** group in-page content with `SectionPanel` and head it with `SectionHeader` (or the panel's own `title`); both read their colour, radius, and heading style from the system, so a grouped block looks the same on a detail page, in a sheet, and in settings.
 
 ### Don't:
 - **Don't** hardcode a colour. Every tint derives from the seed; the only sanctioned literals are the True Black steps (`#000000`, `#121212`, `#1A1A1A`, `#424242`, `#212121`, `#BDBDBD`) and the rating amber.
+- **Don't** hand-roll a grouped block. A local `Card`/`Container` carrying its own fill, radius, border, and title style is the drift this system exists to prevent; the theme-level recipe and `SectionPanel` are the only places that decide those values.
+- **Don't** restate a token the theme already supplies at the call site — chip fill and selection, app-bar title style, or a panel's surface. A redundant override is how two identical surfaces silently drift apart.
+- **Don't** signal a status with a hue outside the palette. There is no green: a good or reachable state uses `primary` (icon and value) or `secondaryContainer` / `onSecondaryContainer` (a banner), and `error` remains the only role that interrupts.
 - **Don't** add shadows to cards, app bars, list rows, or inline headers. The frosted app bar separates with a hairline, not a shadow.
 - **Don't** frost a surface that content never travels behind (the bottom navigation bar, cards in a grid): `BackdropFilter` with an empty backdrop costs GPU for nothing.
 - **Don't** hand-roll `BackdropFilter` + `Container` when `FrostedSurface` exists, and don't change the blur per screen without a photography-backed reason.

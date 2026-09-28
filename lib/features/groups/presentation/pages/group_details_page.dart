@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
@@ -18,19 +19,9 @@ class GroupDetailsPage extends ConsumerWidget {
   const GroupDetailsPage({required this.groupId, super.key});
 
   Widget _buildSectionContainer(BuildContext context, Widget child) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
-      elevation: 0,
-      color: Theme.of(
-        context,
-      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
-        child: child,
-      ),
+    return SectionPanel(
+      margin: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
+      child: child,
     );
   }
 
@@ -133,9 +124,7 @@ class GroupDetailsPage extends ConsumerWidget {
                               Text(
                                 group.synopsis!,
                                 style: context.textTheme.bodyMedium?.copyWith(
-                                  color: context.colors.onSurface.withValues(
-                                    alpha: 0.8,
-                                  ),
+                                  color: context.colors.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -195,9 +184,7 @@ class GroupDetailsPage extends ConsumerWidget {
                               error: (err, stack) => Text(
                                 context.l10n.common_error(err.toString()),
                                 style: context.textTheme.bodyMedium?.copyWith(
-                                  color: context.colors.onSurface.withValues(
-                                    alpha: 0.7,
-                                  ),
+                                  color: context.colors.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -235,8 +222,6 @@ class GroupDetailsPage extends ConsumerWidget {
             )
           : null,
       label: Text(label, style: context.textTheme.bodySmall),
-      backgroundColor: context.colors.surfaceVariant,
-      side: BorderSide.none,
       visualDensity: VisualDensity.compact,
     );
   }

@@ -6,6 +6,7 @@ import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/rating_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/studio_performer_info_sections.dart';
 import '../providers/gallery_list_provider.dart';
 import '../../domain/entities/gallery.dart';
@@ -321,13 +322,17 @@ class GalleryCard extends ConsumerWidget {
                 vertical: isGrid ? 1 : 2,
               ),
               decoration: BoxDecoration(
-                color: Colors.black.withAlpha(200),
-                borderRadius: BorderRadius.circular(isGrid ? 2 : 4),
+                color: Colors.black.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.star, color: Colors.amber, size: isGrid ? 10 : 14),
+                  Icon(
+                    Icons.star,
+                    color: context.colors.ratingColor,
+                    size: isGrid ? 10 : 14,
+                  ),
                   SizedBox(width: isGrid ? 2 : 4),
                   Text(
                     (gallery.rating100! / 20).toStringAsFixed(1),
@@ -351,8 +356,8 @@ class GalleryCard extends ConsumerWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.black.withAlpha(200),
-                borderRadius: BorderRadius.circular(2),
+                color: Colors.black.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
               ),
               child: isGrid
                   ? Text(
@@ -473,41 +478,8 @@ class _SectionCard extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(
-          alpha: 0.45,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          child,
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      SectionPanel(title: title, child: child);
 }
 
 class _MetaRow extends StatelessWidget {

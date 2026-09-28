@@ -12,7 +12,9 @@ import '../providers/performer_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
 
+import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
@@ -26,19 +28,9 @@ class PerformerDetailsPage extends ConsumerWidget {
   const PerformerDetailsPage({required this.performerId, super.key});
 
   Widget _buildSectionContainer(BuildContext context, Widget child) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
-      elevation: 0,
-      color: Theme.of(
-        context,
-      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
-        child: child,
-      ),
+    return SectionPanel(
+      margin: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
+      child: child,
     );
   }
 
@@ -232,9 +224,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                           Text(
                             performer.disambiguation!,
                             style: context.textTheme.titleMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.6,
-                              ),
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         if (performer.aliasList.isNotEmpty) ...[
@@ -242,9 +232,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                           Text(
                             performer.aliasList.join(', '),
                             style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.8,
-                              ),
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -293,9 +281,6 @@ class PerformerDetailsPage extends ConsumerWidget {
                                           performer.tagNames[index],
                                           style: context.textTheme.bodySmall,
                                         ),
-                                        backgroundColor:
-                                            context.colors.surfaceVariant,
-                                        side: BorderSide.none,
                                         visualDensity: VisualDensity.compact,
                                         onPressed: () {
                                           if (index < performer.tagIds.length) {
@@ -425,9 +410,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                 Text(
                                   performer.details!,
                                   style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurface.withValues(
-                                      alpha: 0.8,
-                                    ),
+                                    color: context.colors.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -487,9 +470,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                 error: (err, stack) => Text(
                                   context.l10n.common_error(err.toString()),
                                   style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurface.withValues(
-                                      alpha: 0.7,
-                                    ),
+                                    color: context.colors.onSurfaceVariant,
                                   ),
                                 ),
                               ),
@@ -537,9 +518,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                               err.toString(),
                             ),
                             style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.7,
-                              ),
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -552,8 +531,10 @@ class PerformerDetailsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) =>
-            Center(child: Text(context.l10n.common_error(err.toString()))),
+        error: (err, stack) => ErrorStateView(
+          message: context.l10n.common_error(err.toString()),
+          onRetry: () => ref.invalidate(performerDetailsProvider(performerId)),
+        ),
       ),
     );
   }
@@ -562,8 +543,6 @@ class PerformerDetailsPage extends ConsumerWidget {
     if (label.isEmpty) return const SizedBox.shrink();
     return Chip(
       label: Text(label, style: context.textTheme.bodySmall),
-      backgroundColor: context.colors.surfaceVariant,
-      side: BorderSide.none,
       visualDensity: VisualDensity.compact,
     );
   }

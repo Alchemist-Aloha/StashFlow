@@ -97,28 +97,30 @@ class AppColors extends ThemeExtension<AppColors> {
   }
 
   /// Provides default fallback colors for cases where the theme extension is missing.
+  ///
+  /// Derived from the same seed as the real theme, so the fallback can never
+  /// drift into a second palette of hand-picked Material baseline neutrals.
   static AppColors fallback(Brightness brightness) {
-    final isDark = brightness == Brightness.dark;
+    final scheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFF0F766E),
+      brightness: brightness,
+    );
     return AppColors(
-      surface: isDark ? const Color(0xFF1C1B1F) : const Color(0xFFFBFCFD),
-      onSurface: isDark ? const Color(0xFFE6E1E5) : const Color(0xFF1C1B1F),
-      primary: const Color(0xFF0F766E),
-      onPrimary: Colors.white,
-      secondary: const Color(0xFF0F766E).withAlpha(128),
-      onSecondary: Colors.white,
-      error: const Color(0xFFB3261E),
-      onError: Colors.white,
-      surfaceVariant: isDark
-          ? const Color(0xFF49454F)
-          : const Color(0xFFE7E0EC),
-      onSurfaceVariant: isDark
-          ? const Color(0xFFCAC4D0)
-          : const Color(0xFF49454F),
-      outline: isDark ? const Color(0xFF938F99) : const Color(0xFF79747E),
-      cardBackground: isDark
-          ? const Color(0xFF2B2930)
-          : const Color(0xFFF3EDF7),
-      ratingColor: isDark ? Colors.amber.shade300 : Colors.amber.shade700,
+      surface: scheme.surface,
+      onSurface: scheme.onSurface,
+      primary: scheme.primary,
+      onPrimary: scheme.onPrimary,
+      secondary: scheme.secondary,
+      onSecondary: scheme.onSecondary,
+      error: scheme.error,
+      onError: scheme.onError,
+      surfaceVariant: scheme.surfaceContainerHigh,
+      onSurfaceVariant: scheme.onSurfaceVariant,
+      outline: scheme.outline,
+      cardBackground: scheme.surfaceContainerHighest,
+      ratingColor: brightness == Brightness.dark
+          ? Colors.amber.shade300
+          : Colors.amber.shade700,
     );
   }
 }
@@ -275,9 +277,11 @@ class AppTheme {
         surfaceContainerLowest: Colors.black,
         surfaceContainerHigh: const Color(0xFF121212), // Subtle lift
         surfaceContainerHighest: const Color(0xFF1A1A1A), // Card/Input lift
-        onSurfaceVariant: Colors.grey.shade400,
-        outline: Colors.grey.shade800,
-        outlineVariant: Colors.grey.shade900,
+        // The documented True Black steps, spelled as the literals DESIGN.md
+        // sanctions rather than the nearest Material grey shades.
+        onSurfaceVariant: const Color(0xFFBDBDBD),
+        outline: const Color(0xFF424242),
+        outlineVariant: const Color(0xFF212121),
       );
     }
 
@@ -308,7 +312,22 @@ class AppTheme {
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
+        // Depth belongs to the frosted list-page header alone; a plain bar must
+        // never gain the M3 scroll-under tint, which would read as an authored
+        // elevation the system does not have.
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         centerTitle: false,
+        // One app-bar voice for the whole app: the list-page header's bold,
+        // tightly tracked title, so a detail, settings, or tool page does not
+        // render its title in a different weight from the list it was opened
+        // from. AppBar does not apply `foregroundColor` on top of this style,
+        // so the colour is authored here.
+        titleTextStyle: baseTextTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          letterSpacing: -0.5,
+          color: colorScheme.onSurface,
+        ),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -324,6 +343,19 @@ class AppTheme {
         ),
         backgroundColor: colorScheme.surfaceContainerHigh,
         side: BorderSide.none,
+        // Selection swaps the chip to the accent container pair and leaves its
+        // geometry alone, so a selected filter reads as the same tile in the
+        // accent colour rather than as a different control.
+        selectedColor: colorScheme.primaryContainer,
+        secondarySelectedColor: colorScheme.primaryContainer,
+        labelStyle: baseTextTheme.labelLarge?.copyWith(
+          color: colorScheme.onSurface,
+        ),
+        secondaryLabelStyle: baseTextTheme.labelLarge?.copyWith(
+          color: colorScheme.onPrimaryContainer,
+        ),
+        checkmarkColor: colorScheme.onPrimaryContainer,
+        iconTheme: IconThemeData(color: colorScheme.onSurfaceVariant),
       ),
       navigationBarTheme: NavigationBarThemeData(
         elevation: 0,
@@ -338,14 +370,25 @@ class AppTheme {
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: colorScheme.surface,
-        indicatorColor: colorScheme.primaryContainer,
-        selectedIconTheme: IconThemeData(color: colorScheme.onPrimaryContainer),
+        // The rail deliberately uses the secondary container while the bottom
+        // bar uses the primary container; the two are not interchangeable.
+        indicatorColor: colorScheme.secondaryContainer,
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+        ),
+        selectedIconTheme: IconThemeData(
+          color: colorScheme.onSecondaryContainer,
+        ),
         unselectedIconTheme: IconThemeData(color: colorScheme.onSurfaceVariant),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: colorScheme.inverseSurface,
-        contentTextStyle: TextStyle(color: colorScheme.onInverseSurface),
+        // Must be a real type role, not a bare colour: a style with no size
+        // would opt snackbar copy out of the font-size factor.
+        contentTextStyle: baseTextTheme.bodyMedium?.copyWith(
+          color: colorScheme.onInverseSurface,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusSmall),
         ),

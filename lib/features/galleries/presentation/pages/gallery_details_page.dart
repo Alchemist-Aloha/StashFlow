@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../images/presentation/pages/images_page.dart';
@@ -156,7 +157,7 @@ class _CollapsedGalleryDetails extends StatelessWidget {
         color: colors.surfaceContainerHigh,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(dims.spacingLarge),
+          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
           side: BorderSide(
             color: colors.outlineVariant.withValues(alpha: 0.55),
           ),
@@ -233,7 +234,7 @@ class _CompactGalleryDetails extends StatelessWidget {
         color: colors.surfaceContainerLow,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(dims.spacingLarge),
+          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
           side: BorderSide(
             color: colors.outlineVariant.withValues(alpha: 0.55),
           ),
@@ -267,7 +268,7 @@ class _CompactGalleryDetails extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: context.textTheme.headlineSmall?.copyWith(
                             color: colors.onSurface,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w700,
                             height: 1.05,
                             letterSpacing: -0.5,
                           ),
@@ -357,12 +358,9 @@ class _CompactGalleryDetails extends StatelessWidget {
               ],
               if (gallery.performerNames.isNotEmpty) ...[
                 SizedBox(height: dims.spacingMedium),
-                Text(
-                  context.l10n.performers_title,
-                  style: context.textTheme.labelLarge?.copyWith(
-                    color: colors.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                  ),
+                SectionHeader(
+                  title: context.l10n.performers_title,
+                  padding: EdgeInsets.zero,
                 ),
                 SizedBox(height: dims.spacingSmall),
                 SingleChildScrollView(
@@ -375,7 +373,7 @@ class _CompactGalleryDetails extends StatelessWidget {
                         index++
                       ) ...[
                         if (index > 0) SizedBox(width: dims.spacingSmall),
-                        ActionChip.elevated(
+                        ActionChip(
                           avatar: _performerAvatar(context, index),
                           label: Text(gallery.performerNames[index]),
                           onPressed: index < gallery.performerIds.length
@@ -402,23 +400,10 @@ class _CompactGalleryDetails extends StatelessWidget {
     required String label,
     Color? iconColor,
   }) {
-    final dims = context.dimensions;
-    final colors = Theme.of(context).colorScheme;
     return Chip(
       visualDensity: VisualDensity.compact,
-      side: BorderSide.none,
-      backgroundColor: colors.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(dims.spacingSmall),
-      ),
-      avatar: Icon(icon, color: iconColor ?? colors.onSurfaceVariant),
-      label: Text(
-        label,
-        style: context.textTheme.labelMedium?.copyWith(
-          color: colors.onSurfaceVariant,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      avatar: Icon(icon, size: 16, color: iconColor),
+      label: Text(label, style: context.textTheme.bodySmall),
     );
   }
 

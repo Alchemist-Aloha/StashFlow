@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene.dart';
+import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../providers/scene_details_provider.dart';
 import '../widgets/scene_info_media_section.dart';
@@ -73,9 +75,11 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
     return SafeArea(
       top: false,
       child: FrostedPanel(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppTheme.radiusExtraLarge),
+        ),
         child: ListView(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(context.dimensions.spacingLarge),
           children: [
             Row(
               children: [
@@ -85,11 +89,11 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                     children: [
                       Text(
                         context.l10n.details_scene,
-                        style: theme.textTheme.titleLarge?.copyWith(
+                        style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: context.dimensions.spacingSmall / 2),
                       Text(
                         scene.title,
                         style: theme.textTheme.bodyMedium,
@@ -106,10 +110,10 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.dimensions.spacingSmall * 1.5),
             if (SceneInfoMediaSection.isVisibleFor(scene)) ...[
               SceneInfoMediaSection(scene: scene),
-              const SizedBox(height: 12),
+              SizedBox(height: context.dimensions.spacingSmall * 1.5),
             ],
             Wrap(
               spacing: 8,
@@ -147,7 +151,7 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                   ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             if ((scene.studioName ?? '').trim().isNotEmpty)
               _SectionCard(
                 title: context.l10n.studios_title,
@@ -392,42 +396,8 @@ class _SectionCard extends StatelessWidget {
   final Widget? trailing;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(
-          alpha: 0.45,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              if (trailing != null) ...[trailing!],
-            ],
-          ),
-          const SizedBox(height: 8),
-          child,
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      SectionPanel(title: title, titleTrailing: trailing, child: child);
 }
 
 class _InfoChip extends StatelessWidget {
@@ -440,7 +410,7 @@ class _InfoChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       avatar: Icon(icon, size: 16),
-      label: Text(text),
+      label: Text(text, style: context.textTheme.bodySmall),
       visualDensity: VisualDensity.compact,
     );
   }

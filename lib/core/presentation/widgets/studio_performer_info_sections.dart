@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../data/graphql/media_headers_provider.dart';
 import '../theme/app_theme.dart';
 import '../../utils/l10n_extensions.dart';
+import 'section_panel.dart';
 import 'stash_image.dart';
 
 /// Scene-style studio and performer sections for entity details sheets.
@@ -135,32 +136,6 @@ class _InfoSectionCard extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    final dims = context.dimensions;
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(dims.spacingMedium),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(dims.spacingMedium),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.35),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: context.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: dims.spacingSmall),
-          Material(color: Colors.transparent, child: child),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      SectionPanel(title: title, child: child);
 }

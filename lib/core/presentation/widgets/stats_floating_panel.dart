@@ -295,7 +295,7 @@ class StatsFloatingPanel extends ConsumerWidget {
         title.toUpperCase(),
         style: context.textTheme.labelSmall?.copyWith(
           color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.w800,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

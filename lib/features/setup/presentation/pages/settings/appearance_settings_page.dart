@@ -286,9 +286,9 @@ class _AppearanceSettingsPageState
 
     showModalBottomSheet<void>(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(32 * context.dimensions.fontSizeFactor),
+          top: Radius.circular(AppTheme.radiusExtraLarge),
         ),
       ),
       builder: (context) {

@@ -272,7 +272,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       ),
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(context.dimensions.spacingLarge),
           child: Form(
             key: _formKey,
             child: Column(
@@ -335,7 +335,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                     decoration: BoxDecoration(
                       color: _testResult!.startsWith('Error')
                           ? Theme.of(context).colorScheme.errorContainer
-                          : Colors.green.withValues(alpha: 0.1),
+                          : Theme.of(context).colorScheme.secondaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -343,7 +343,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                       style: context.textTheme.bodyMedium?.copyWith(
                         color: _testResult!.startsWith('Error')
                             ? Theme.of(context).colorScheme.onErrorContainer
-                            : Colors.green[800],
+                            : Theme.of(
+                                context,
+                              ).colorScheme.onSecondaryContainer,
                       ),
                     ),
                   ),

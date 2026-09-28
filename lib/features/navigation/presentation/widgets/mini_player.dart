@@ -60,6 +60,7 @@ class _MiniPlayerState extends ConsumerState<MiniPlayer> {
 
     final displayTitle = activeScene.displayTitle;
     final showLiveVideo = useActualSceneVideo && videoController != null;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Semantics(
       button: true,
@@ -73,14 +74,14 @@ class _MiniPlayerState extends ConsumerState<MiniPlayer> {
         ),
         border: Border(
           top: BorderSide(
-            color: Theme.of(context).colorScheme.outlineVariant.withValues(
+            color: colorScheme.outlineVariant.withValues(
               alpha: AppTheme.frostedHairlineAlpha,
             ),
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
