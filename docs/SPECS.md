@@ -487,7 +487,11 @@ presentation that was active before entering.
   `window_manager` applies to every window in the shared engine on Windows, so
   the main window's minimum is enforced by the Windows runner instead.
 - Android PiP is entered through the system window and can only be left by the
-  user. Desktop PiP is an ordinary window: `P` toggles it, and its minimal
+  user. While active, its system parameters follow decoder display-ratio changes
+  (including metadata arrival, rotation, and auto-play-next) without re-entering
+  PiP. Ratios are clamped within Android's supported 1:2.39–2.39:1 range; missing
+  or invalid metadata retains the last valid ratio. Desktop PiP is an ordinary
+  window: `P` toggles it, and its minimal
   controls expose previous, play/pause, next, seeking, and exit-PiP actions.
 - Desktop window placement is best-effort. In particular, Wayland compositors
   choose window positions and may ignore always-on-top requests, so the PiP

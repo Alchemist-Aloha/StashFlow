@@ -24,20 +24,6 @@ double sanitizeDesktopPipAspectRatio(double? aspectRatio) {
   return aspectRatio.clamp(0.25, 4.0).toDouble();
 }
 
-/// Decoder display ratio, corrected for non-square pixels and rotation.
-/// Returns null until usable display metadata is available.
-double? desktopPipDisplayAspectRatio(VideoParams params) {
-  double? ratio;
-  if ((params.dw ?? 0) > 0 && (params.dh ?? 0) > 0) {
-    ratio = params.dw! / params.dh!;
-  } else {
-    ratio = params.aspect;
-  }
-  if (ratio == null || !ratio.isFinite || ratio <= 0) return null;
-  if ((params.rotate ?? 0) % 180 == 90) ratio = 1 / ratio;
-  return sanitizeDesktopPipAspectRatio(ratio);
-}
-
 Size desktopPipWindowSize(double? aspectRatio) {
   final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
   const height = 300.0;
@@ -170,11 +156,10 @@ class DesktopPipWindowSession {
     if (_opening) return false;
     _opening = true;
 
-    final ratio =
-        desktopPipDisplayAspectRatio(
-          source.controller.player.state.videoParams,
-        ) ??
-        sanitizeDesktopPipAspectRatio(aspectRatio);
+    final ratio = sanitizeDesktopPipAspectRatio(
+      pipDisplayAspectRatio(source.controller.player.state.videoParams) ??
+          aspectRatio,
+    );
     final minimumSize = desktopPipMinimumSize(ratio);
     try {
       final viewId = await openWindow(
@@ -245,9 +230,10 @@ class DesktopPipWindowSession {
     unawaited(_videoParamsSubscription?.cancel());
     final controller = source.controller;
     void update(VideoParams params) {
-      final ratio = desktopPipDisplayAspectRatio(params);
+      final displayRatio = pipDisplayAspectRatio(params);
       final viewId = _viewId;
-      if (ratio == null || viewId == null) return;
+      if (displayRatio == null || viewId == null) return;
+      final ratio = sanitizeDesktopPipAspectRatio(displayRatio);
       // Serialize native changes so late metadata cannot race a scene switch.
       _geometryUpdate = _geometryUpdate
           .then((_) async {

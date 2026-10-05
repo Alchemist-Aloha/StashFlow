@@ -23,6 +23,8 @@ void main() {
     late StreamController<Duration> duration2;
     late StreamController<bool> completed2;
     late StreamController<String> error2;
+    late StreamController<mk.VideoParams> videoParams1;
+    late StreamController<mk.VideoParams> videoParams2;
 
     setUp(() {
       player1 = MockPlayer();
@@ -40,6 +42,8 @@ void main() {
       duration2 = StreamController<Duration>.broadcast();
       completed2 = StreamController<bool>.broadcast();
       error2 = StreamController<String>.broadcast();
+      videoParams1 = StreamController<mk.VideoParams>.broadcast();
+      videoParams2 = StreamController<mk.VideoParams>.broadcast();
 
       when(player1.stream).thenReturn(
         _CustomPlayerStream(
@@ -48,6 +52,7 @@ void main() {
           position1.stream,
           duration1.stream,
           error1.stream,
+          videoParams1.stream,
         ),
       );
       when(player2.stream).thenReturn(
@@ -57,6 +62,7 @@ void main() {
           position2.stream,
           duration2.stream,
           error2.stream,
+          videoParams2.stream,
         ),
       );
       when(controller1.player).thenReturn(player1);
@@ -74,6 +80,8 @@ void main() {
       await duration2.close();
       await completed2.close();
       await error2.close();
+      await videoParams1.close();
+      await videoParams2.close();
     });
 
     test('bindPlayerStreams forwards tick and completed callbacks', () async {
@@ -92,10 +100,11 @@ void main() {
       );
 
       playing1.add(true);
+      videoParams1.add(const mk.VideoParams(dw: 1920, dh: 1080, rotate: 90));
       completed1.add(true);
       await Future<void>.delayed(Duration.zero);
 
-      expect(ticks, 1);
+      expect(ticks, 2);
       expect(completed, 1);
     });
 
@@ -246,7 +255,7 @@ class _CustomPlayerStream extends Mock implements mk.PlayerStream {
   @override
   Stream<mk.AudioParams> get audioParams => const Stream.empty();
   @override
-  Stream<mk.VideoParams> get videoParams => const Stream.empty();
+  final Stream<mk.VideoParams> videoParams;
   @override
   Stream<int?> get width => const Stream.empty();
   @override
@@ -272,5 +281,6 @@ class _CustomPlayerStream extends Mock implements mk.PlayerStream {
     this.position,
     this.duration,
     this.error,
+    this.videoParams,
   );
 }

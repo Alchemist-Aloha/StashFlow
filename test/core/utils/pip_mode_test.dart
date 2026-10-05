@@ -9,6 +9,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const windowManagerChannel = MethodChannel('window_manager');
+  const pipChannel = MethodChannel('stash_app_flutter/pip');
+  final pipCalls = <MethodCall>[];
   final mainWindowCalls = <MethodCall>[];
 
   setUp(() {
@@ -16,6 +18,12 @@ void main() {
     PipMode.isInPipMode.value = false;
     PipMode.clearWindowedHandlers();
     mainWindowCalls.clear();
+    pipCalls.clear();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(pipChannel, (call) async {
+          pipCalls.add(call);
+          return true;
+        });
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(windowManagerChannel, (call) async {
           mainWindowCalls.add(call);
@@ -29,6 +37,8 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(windowManagerChannel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(pipChannel, null);
   });
 
   test(
@@ -106,6 +116,60 @@ void main() {
     PipMode.windowedWindowClosed();
 
     expect(PipMode.isInPipMode.value, isFalse);
+  });
+
+  test(
+    'Android PiP updates portrait and landscape without re-entering',
+    () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      PipMode.isInPipMode.value = true;
+      expect(await PipMode.updateAspectRatio(9 / 16), isTrue);
+      expect(await PipMode.updateAspectRatio(16 / 9), isTrue);
+      expect(
+        pipCalls.map((call) => call.method),
+        everyElement('updatePictureInPictureAspectRatio'),
+      );
+      expect(pipCalls.first.arguments, {'numerator': 563, 'denominator': 1000});
+      expect(pipCalls.last.arguments, {'numerator': 1778, 'denominator': 1000});
+      expect(PipMode.isInPipMode.value, isTrue);
+    },
+  );
+
+  test(
+    'Android initial and updated ratios stay inside system limits',
+    () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      expect(await PipMode.enterIfAvailable(aspectRatio: 0.01), isTrue);
+      expect(pipCalls.last.arguments, {'numerator': 419, 'denominator': 1000});
+      PipMode.isInPipMode.value = true;
+      expect(await PipMode.updateAspectRatio(100), isTrue);
+      expect(pipCalls.last.arguments, {'numerator': 2390, 'denominator': 1000});
+    },
+  );
+
+  test('Android ignores missing metadata and updates outside PiP', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    expect(await PipMode.updateAspectRatio(1), isFalse);
+    PipMode.isInPipMode.value = true;
+    for (final ratio in [null, 0.0, -1.0, double.nan, double.infinity]) {
+      expect(await PipMode.updateAspectRatio(ratio), isFalse);
+    }
+    expect(pipCalls, isEmpty);
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    expect(await PipMode.updateAspectRatio(1), isFalse);
+    expect(pipCalls, isEmpty);
+  });
+
+  test('Android update failure preserves PiP state', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    PipMode.isInPipMode.value = true;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          pipChannel,
+          (_) async => throw PlatformException(code: 'unavailable'),
+        );
+    expect(await PipMode.updateAspectRatio(1), isFalse);
+    expect(PipMode.isInPipMode.value, isTrue);
   });
 
   test('desktop PiP size follows a sanitized aspect ratio', () {

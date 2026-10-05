@@ -8,6 +8,7 @@ import 'package:mockito/mockito.dart';
 import 'package:multiview_desktop/multiview_desktop.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/desktop_pip_window.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+import 'package:stash_app_flutter/core/utils/pip_mode.dart';
 
 class _FakeVideoController extends Mock implements VideoController {
   _FakeVideoController(this.fakePlayer);
@@ -213,37 +214,31 @@ void main() {
 
   test('PiP follows decoder display dimensions rather than encoded pixels', () {
     expect(
-      desktopPipDisplayAspectRatio(
+      pipDisplayAspectRatio(
         const mk.VideoParams(w: 720, h: 480, dw: 853, dh: 480),
       ),
       closeTo(853 / 480, 0.001),
     );
+    expect(pipDisplayAspectRatio(const mk.VideoParams(dw: 1080, dh: 1080)), 1);
     expect(
-      desktopPipDisplayAspectRatio(const mk.VideoParams(dw: 1080, dh: 1080)),
-      1,
-    );
-    expect(
-      desktopPipDisplayAspectRatio(
+      pipDisplayAspectRatio(
         const mk.VideoParams(dw: 1920, dh: 1080, rotate: 90),
       ),
       9 / 16,
     );
     expect(
-      desktopPipDisplayAspectRatio(
+      pipDisplayAspectRatio(
         const mk.VideoParams(dw: 1920, dh: 1080, rotate: 270),
       ),
       9 / 16,
     );
     expect(
-      desktopPipDisplayAspectRatio(
+      pipDisplayAspectRatio(
         const mk.VideoParams(dw: 1920, dh: 1080, rotate: 180),
       ),
       16 / 9,
     );
-    expect(
-      desktopPipDisplayAspectRatio(const mk.VideoParams(aspect: 4 / 3)),
-      4 / 3,
-    );
+    expect(pipDisplayAspectRatio(const mk.VideoParams(aspect: 4 / 3)), 4 / 3);
   });
 
   test(
@@ -257,7 +252,7 @@ void main() {
         const mk.VideoParams(aspect: double.infinity),
         const mk.VideoParams(aspect: -1),
       ]) {
-        expect(desktopPipDisplayAspectRatio(params), isNull);
+        expect(pipDisplayAspectRatio(params), isNull);
       }
     },
   );

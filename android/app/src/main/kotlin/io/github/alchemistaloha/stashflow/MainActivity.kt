@@ -34,6 +34,11 @@ open class MainActivity : AudioServiceActivity() {
 					val denominator = call.argument<Int>("denominator") ?: 1
 					result.success(enterPipMode(numerator, denominator))
 				}
+				"updatePictureInPictureAspectRatio" -> {
+					val numerator = call.argument<Int>("numerator") ?: 0
+					val denominator = call.argument<Int>("denominator") ?: 0
+					result.success(updatePipAspectRatio(numerator, denominator))
+				}
 				"getPrimaryAbi" -> {
 					result.success(Build.SUPPORTED_ABIS.firstOrNull())
 				}
@@ -87,13 +92,32 @@ open class MainActivity : AudioServiceActivity() {
 			return false
 		}
 		return try {
-			val builder = PictureInPictureParams.Builder()
-			val aspectRatio = Rational(numerator, denominator)
-			builder.setAspectRatio(aspectRatio)
-			enterPictureInPictureMode(builder.build())
+			enterPictureInPictureMode(pipParams(numerator, denominator))
 		} catch (_: Throwable) {
 			false
 		}
+	}
+
+	internal fun updatePipAspectRatio(numerator: Int, denominator: Int): Boolean {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !isInPictureInPictureMode) {
+			return false
+		}
+		return try {
+			setPictureInPictureParams(pipParams(numerator, denominator))
+			true
+		} catch (_: Throwable) {
+			false
+		}
+	}
+
+	@android.annotation.TargetApi(Build.VERSION_CODES.O)
+	private fun pipParams(numerator: Int, denominator: Int): PictureInPictureParams {
+		require(numerator > 0 && denominator > 0)
+		val ratio = numerator.toDouble() / denominator
+		require(ratio in (1.0 / 2.39)..2.39)
+		return PictureInPictureParams.Builder()
+			.setAspectRatio(Rational(numerator, denominator))
+			.build()
 	}
 
 	internal fun applyRecentsScreenshotPolicy() {
