@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/navigation_customization_page.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_tabs_provider.dart';
+import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 
 import '../../../../../helpers/test_helpers.dart';
 
@@ -36,6 +37,7 @@ void main() {
             find.byKey(const ValueKey('groups')),
             100,
           );
+          expect(find.byType(SettingsPanelCard), findsOneWidget);
           expect(find.byKey(const ValueKey('groups')), findsOneWidget);
           expect(tester.takeException(), isNull);
         },

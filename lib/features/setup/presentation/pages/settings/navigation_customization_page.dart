@@ -21,6 +21,7 @@ class NavigationCustomizationPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SettingsSectionCard(
+              wrapInPanel: false,
               title: context.l10n.settings_interface_customize_tabs,
               subtitle: context.l10n.settings_interface_customize_tabs_subtitle,
               child: const SizedBox.shrink(),

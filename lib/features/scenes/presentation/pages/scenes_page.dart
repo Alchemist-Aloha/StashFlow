@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../navigation/presentation/current_route_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
@@ -91,6 +92,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   final _returnedSceneFocusNode = FocusNode(debugLabel: 'returned_scene');
   GlobalKey _focusedSceneKey = GlobalKey();
   String? _focusedSceneId;
+  String? _lastRoutePath;
+  bool _restoreFocusPending = false;
 
   @override
   void dispose() {
@@ -104,9 +107,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   }) {
     if (previousIsTiktok != true || isTiktok || !mounted) return;
 
-    final currentPath = GoRouter.of(
-      context,
-    ).routeInformationProvider.value.uri.path;
+    final currentPath = GoRouter.of(context).state.uri.path;
     if (currentPath != '/scenes') return;
 
     final playerState = ref.read(playerStateProvider);
@@ -275,7 +276,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
     _lastRandomSceneId = randomScene.id;
     await context.push<void>('/scenes/scene/${randomScene.id}', extra: true);
-    if (mounted) _restoreSceneFocus();
   }
 
   Future<void> _openScene(Scene scene, int index, int itemCount) async {
@@ -290,7 +290,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           .setIndex(index, queueId: PlaybackQueueIds.main);
     }
     await context.push<void>('/scenes/scene/${scene.id}', extra: true);
-    if (mounted) _restoreSceneFocus();
   }
 
   void _restoreSceneFocus() {
@@ -520,8 +519,27 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     // on every rendered list item during scroll.
     // Impact: Avoids GC pressure and reduces scroll stuttering.
     final router = GoRouter.of(context);
-    final currentPath = router.routeInformationProvider.value.uri.path;
-    final isAtRoot = currentPath == '/scenes';
+    final currentPath = ref.watch(currentRouteUriProvider(router)).path;
+    final rootPath = GoRouterState.of(context).matchedLocation;
+    final isAtRoot = currentPath == rootPath;
+    if (isAtRoot && _lastRoutePath != null && _lastRoutePath != rootPath) {
+      _restoreFocusPending = true;
+    }
+    _lastRoutePath = currentPath;
+    if (!isAtRoot || isTiktokLayout) _restoreFocusPending = false;
+    if (_restoreFocusPending &&
+        !scenesAsync.isLoading &&
+        scenesAsync.hasValue) {
+      _restoreFocusPending = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted ||
+            router.state.uri.path != rootPath ||
+            ref.read(sceneTiktokLayoutProvider)) {
+          return;
+        }
+        _restoreSceneFocus();
+      });
+    }
     final sceneActions = <Widget>[
       Stack(
         children: [

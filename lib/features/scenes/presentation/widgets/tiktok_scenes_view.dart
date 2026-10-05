@@ -8,6 +8,7 @@ import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../navigation/presentation/current_route_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../domain/entities/scene.dart';
@@ -169,8 +170,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       if (!mounted || !_pageController.hasClients) return;
       final global = ref.read(playerStateProvider);
       if (global.activeScene == null || global.startupLatencyMs == null) return;
-      if (GoRouter.of(context).routeInformationProvider.value.uri.path !=
-              '/scenes' ||
+      if (GoRouter.of(context).state.uri.path != '/scenes' ||
           global.isInPipMode ||
           global.viewMode == PlayerViewMode.fullscreen) {
         return;
@@ -199,7 +199,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
     // Safety check: only manage if we are likely the active view
     final router = GoRouter.of(context);
-    final currentPath = router.routeInformationProvider.value.uri.path;
+    final currentPath = router.state.uri.path;
     // We only take over if we are at the root scenes page (TikTok feed)
     if (currentPath != '/scenes') return;
     final globalPlayer = ref.read(playerStateProvider);
@@ -336,8 +336,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         if (!mounted) return;
         final global = ref.read(playerStateProvider);
         // Hidden feed controllers must not compete with global navigation.
-        if (GoRouter.of(context).routeInformationProvider.value.uri.path !=
-                '/scenes' ||
+        if (GoRouter.of(context).state.uri.path != '/scenes' ||
             !global.completionHandledByFeed ||
             global.videoController != controller ||
             global.playEndBehavior != VideoEndBehavior.next) {
@@ -471,8 +470,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     // Why: Looking up the router via InheritedWidget causes redundant O(1) traversals
     // on every rendered list item during scroll.
     // Impact: Avoids GC pressure and reduces scroll stuttering.
-    final router = GoRouter.of(context);
-    final currentPath = router.routeInformationProvider.value.uri.path;
+    final currentPath = ref
+        .watch(currentRouteUriProvider(GoRouter.of(context)))
+        .path;
     final isAtRoot = currentPath == '/scenes';
     final feedVisible =
         isAtRoot &&

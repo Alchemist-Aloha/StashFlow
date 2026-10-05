@@ -179,6 +179,153 @@ void main() {
       messenger.setMockMethodCallHandler(SystemChannels.platform, null);
     },
   );
+  testWidgets('system Back returns the retained feed to the playing scene', (
+    tester,
+  ) async {
+    const wakeChannel =
+        'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle';
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMessageHandler(
+      wakeChannel,
+      (_) async => const StandardMessageCodec().encodeMessage([null]),
+    );
+    messenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (_) async => null,
+    );
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+      messenger.setMockMessageHandler(wakeChannel, null);
+      messenger.setMockMethodCallHandler(SystemChannels.platform, null);
+    });
+    Future<void> settle() async {
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    final scenes = [
+      for (final id in ['first', 'middle', 'last']) _FeedScene(id),
+    ];
+    final player = _FeedState(scenes.first);
+    await pumpTestWidget(
+      tester,
+      child: const Text('start'),
+      overrides: [
+        sceneListProvider.overrideWith(() => _FeedScenes(scenes)),
+        playerStateProvider.overrideWith(() => player),
+        streamResolverProvider.overrideWithValue((_) async => null),
+      ],
+      routes: [
+        GoRoute(
+          path: '/scenes',
+          builder: (_, _) => const TiktokScenesView(),
+          routes: [
+            GoRoute(
+              path: 'scene/:id',
+              builder: (context, route) => Consumer(
+                builder: (context, ref, _) {
+                  final global = ref.watch(playerStateProvider);
+                  final fullscreen =
+                      global.viewMode == PlayerViewMode.fullscreen;
+                  return PopScope(
+                    canPop: !fullscreen,
+                    onPopInvokedWithResult: (didPop, _) {
+                      if (didPop || !fullscreen) return;
+                      // Match details' fullscreen Back handling: exit and
+                      // synchronize the details route to the active scene.
+                      player.show(
+                        global.activeScene!,
+                        mode: PlayerViewMode.inline,
+                      );
+                      GoRouter.of(
+                        context,
+                      ).go('/scenes/scene/${global.activeScene!.id}');
+                    },
+                    child: Scaffold(
+                      appBar: AppBar(
+                        leading: BackButton(
+                          onPressed: () => GoRouter.of(context).pop(),
+                        ),
+                      ),
+                      body: Text('details ${route.pathParameters['id']}'),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+    final context = tester.element(find.text('start'));
+    final container = ProviderScope.containerOf(context);
+    container.read(playbackQueueProvider.notifier).setSequence(scenes, 0);
+    final router = GoRouter.of(context);
+    router.go('/scenes');
+    await settle();
+    final feedState = tester.state(find.byType(TiktokScenesView));
+    double? page() => tester
+        .widget<PageView>(find.byType(PageView, skipOffstage: false))
+        .controller!
+        .page;
+    expect(page(), 0);
+    router.go('/scenes/scene/first');
+    player.show(scenes.first, mode: PlayerViewMode.fullscreen);
+    await settle();
+    player.show(scenes.last, mode: PlayerViewMode.fullscreen);
+    await settle();
+    expect(
+      page(),
+      0,
+      reason: 'the covered feed must not follow fullscreen navigation',
+    );
+    await tester.binding.handlePopRoute();
+    await settle();
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      '/scenes/scene/last',
+    );
+    expect(page(), 0);
+    // No player-state change accompanies this second system Back.
+    await tester.binding.handlePopRoute();
+    await settle();
+    expect(router.routeInformationProvider.value.uri.path, '/scenes');
+    expect(tester.state(find.byType(TiktokScenesView)), same(feedState));
+    expect(page(), 2);
+    expect(container.read(playbackQueueProvider).currentIndex, 2);
+
+    for (final systemBack in [true, false]) {
+      player.show(scenes.first, mode: PlayerViewMode.inline);
+      await settle();
+      expect(page(), 0);
+      router.push('/scenes/scene/first');
+      await settle();
+      player.show(scenes.last, mode: PlayerViewMode.inline);
+      router.pushReplacement('/scenes/scene/last');
+      await settle();
+      expect(router.state.uri.path, '/scenes/scene/last');
+      expect(page(), 0, reason: 'details owns playback until Back');
+      if (systemBack) {
+        await tester.binding.handlePopRoute();
+      } else {
+        await tester.tap(find.byType(BackButton));
+      }
+      await settle();
+      expect(router.state.uri.path, '/scenes');
+      expect(tester.state(find.byType(TiktokScenesView)), same(feedState));
+      expect(
+        page(),
+        2,
+        reason: 'details next → ${systemBack ? 'system' : 'button'} Back',
+      );
+      expect(container.read(playbackQueueProvider).currentIndex, 2);
+    }
+  });
+
   test(
     'feed navigation pauses all inactive players in both directions and at the last item',
     () {
