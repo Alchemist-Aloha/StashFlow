@@ -84,8 +84,11 @@ set_target_properties(${BINARY_NAME}
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
-# multiview_desktop 2.0.2 sets two unused globals; keep other warnings fatal.
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+# Clang 23 added this warning group; older Clang versions reject the option.
+# multiview_desktop 2.0.2 sets two unused globals, so keep those non-fatal only
+# when the compiler supports the warning group.
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND
+   CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 23)
   target_compile_options(multiview_desktop_plugin PRIVATE
     -Wno-error=unused-but-set-global)
 endif()
