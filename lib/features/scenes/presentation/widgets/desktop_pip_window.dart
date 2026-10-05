@@ -44,6 +44,76 @@ Size desktopPipWindowSize(double? aspectRatio) {
   return Size(height * ratio, height);
 }
 
+/// Integer client dimensions that preserve the user's height when video changes.
+Size desktopPipResizeSize(Size current, double aspectRatio) {
+  final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
+  final minimum = desktopPipMinimumSize(ratio);
+  final height = current.height.clamp(minimum.height, 50000).ceilToDouble();
+  return Size((height * ratio).roundToDouble(), height);
+}
+
+/// Applies a video ratio to the native client area, not GTK's decorated frame.
+/// Wayland ignores ordinary GTK resize requests; briefly equal min/max hints
+/// request the new dimensions, then restore free resizing after confirmation.
+Future<void> applyDesktopPipWindowAspectRatio(
+  MultiViewDesktop window,
+  double ratio, {
+  required bool isWayland,
+  Size? initialSize,
+}) async {
+  if (!await window.setAspectRatio(0)) {
+    throw StateError('Could not unlock PiP aspect ratio');
+  }
+  final minimum = desktopPipMinimumSize(ratio);
+  if (!window.setMinimumSize(minimum)) {
+    throw StateError('Could not set PiP minimum size');
+  }
+  if (isWayland) {
+    final target = desktopPipResizeSize(initialSize ?? window.getSize(), ratio);
+    final maximum = window.getMaximumSize();
+    final observer = _PipResizeObserver(window, target);
+    WidgetsBinding.instance.addObserver(observer);
+    var locked = false;
+    try {
+      if (!window.setMaximumSize(target) ||
+          !window.setMinimumSize(target) ||
+          !await window.setSize(target)) {
+        throw StateError('Could not resize Wayland PiP window');
+      }
+      observer.didChangeMetrics();
+      await observer.resized.future.timeout(const Duration(seconds: 2));
+    } finally {
+      WidgetsBinding.instance.removeObserver(observer);
+      window.setMinimumSize(minimum);
+      window.setMaximumSize(maximum);
+      locked = await window.setAspectRatio(ratio);
+    }
+    if (!locked) throw StateError('Could not lock PiP aspect ratio');
+    return;
+  }
+  if (!await window.setAspectRatio(ratio)) {
+    throw StateError('Could not lock PiP aspect ratio');
+  }
+}
+
+class _PipResizeObserver extends WidgetsBindingObserver {
+  _PipResizeObserver(this.window, this.target);
+
+  final MultiViewDesktop window;
+  final Size target;
+  final resized = Completer<void>();
+
+  @override
+  void didChangeMetrics() {
+    final size = window.getSize();
+    if (!resized.isCompleted &&
+        (size.width - target.width).abs() < 1 &&
+        (size.height - target.height).abs() < 1) {
+      resized.complete();
+    }
+  }
+}
+
 /// Smallest window size the PiP window can be resized to.
 ///
 /// The minimum follows [aspectRatio] so it never conflicts with the window's
@@ -136,7 +206,15 @@ class DesktopPipWindowSession {
       _viewId = viewId;
 
       final window = MultiViewDesktop.fromId(viewId);
-      await window.setAspectRatio(ratio);
+      if (Platform.isLinux) window.setAsFrameless();
+      await applyDesktopPipWindowAspectRatio(
+        window,
+        ratio,
+        isWayland:
+            Platform.isLinux &&
+            Platform.environment.containsKey('WAYLAND_DISPLAY'),
+        initialSize: desktopPipWindowSize(ratio),
+      );
       _aspectRatio = ratio;
       _watchVideoParams(_source.value ?? source);
       if (Platform.isMacOS) {
@@ -179,16 +257,14 @@ class DesktopPipWindowSession {
               return;
             }
             final window = MultiViewDesktop.fromId(viewId);
-            // The plugin refuses minimum-size changes while an aspect lock is set.
-            if (!await window.setAspectRatio(0)) {
-              throw StateError('Could not unlock PiP aspect ratio');
-            }
-            if (_viewId != viewId) return;
             _aspectRatio = null;
-            if (!window.setMinimumSize(desktopPipMinimumSize(ratio)) ||
-                !await window.setAspectRatio(ratio)) {
-              throw StateError('Could not update PiP aspect ratio');
-            }
+            await applyDesktopPipWindowAspectRatio(
+              window,
+              ratio,
+              isWayland:
+                  Platform.isLinux &&
+                  Platform.environment.containsKey('WAYLAND_DISPLAY'),
+            );
             if (_viewId == viewId) _aspectRatio = ratio;
           })
           .catchError((Object error) {

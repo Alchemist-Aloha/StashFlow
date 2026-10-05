@@ -491,7 +491,16 @@ presentation that was active before entering.
   controls expose previous, play/pause, next, seeking, and exit-PiP actions.
 - Desktop window placement is best-effort. In particular, Wayland compositors
   choose window positions and may ignore always-on-top requests, so the PiP
-  window may open where the compositor decides and can be dragged.
+  window may open where the compositor decides and can be dragged. Hyprland
+  rules for `Picture-in-Picture — StashFlow` should float and pin the window
+  without imposing a monitor-derived `size`: a generic PiP size rule overrides
+  the video's requested proportions. GTK aspect hints and later client resize
+  requests are also compositor-dependent on Wayland. The Linux runner removes
+  PiP-only GTK decoration margins so the window dimensions describe the video
+  client area. On Wayland, video-ratio changes briefly request equal minimum
+  and maximum dimensions, wait for native resize confirmation, then restore
+  free resizing and the ratio lock. Hyprland's `keep_aspect_ratio` rule preserves
+  those proportions during edge dragging without a forced initial `size`.
 
 ### Casting
 

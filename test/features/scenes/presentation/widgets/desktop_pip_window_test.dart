@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:mockito/mockito.dart';
+import 'package:multiview_desktop/multiview_desktop.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/desktop_pip_window.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
@@ -37,7 +40,99 @@ class _FakePlayerStream extends Fake implements mk.PlayerStream {
   Stream<Duration> get duration => const Stream<Duration>.empty();
 }
 
+class _FakePipWindow extends Mock implements MultiViewDesktop {
+  Size size = const Size(300, 533);
+  Size minimum = const Size(120, 214);
+  Size maximum = const Size(50000, 50000);
+  Size? requestedSize;
+  double ratio = 9 / 16;
+
+  @override
+  Size getSize() => size;
+
+  @override
+  Size getMaximumSize() => maximum;
+
+  @override
+  bool setMinimumSize(Size value) {
+    assert(ratio == 0, 'size constraints require an unlocked ratio');
+    minimum = value;
+    return true;
+  }
+
+  @override
+  bool setMaximumSize(Size value) {
+    assert(ratio == 0, 'size constraints require an unlocked ratio');
+    maximum = value;
+    return true;
+  }
+
+  @override
+  Future<bool> setAspectRatio(double value) async {
+    ratio = value;
+    return true;
+  }
+
+  @override
+  Future<bool> setSize(Size value, {AnimationSettings? animation}) async {
+    requestedSize = value;
+    // Wayland confirms the actual size later through a metrics event.
+    return true;
+  }
+}
+
 void main() {
+  testWidgets('Wayland PiP waits for resize then restores resizable bounds', (
+    tester,
+  ) async {
+    final window = _FakePipWindow();
+    final update = applyDesktopPipWindowAspectRatio(
+      window,
+      16 / 9,
+      isWayland: true,
+    );
+    await tester.pump();
+    expect(window.requestedSize, const Size(948, 533));
+    expect(window.minimum, window.requestedSize);
+    expect(window.maximum, window.requestedSize);
+    expect(window.ratio, 0);
+
+    window.size = window.requestedSize!;
+    tester.binding.handleMetricsChanged();
+    await update;
+    expect(window.minimum, desktopPipMinimumSize(16 / 9));
+    expect(window.maximum, const Size(50000, 50000));
+    expect(window.ratio, 16 / 9);
+  });
+
+  testWidgets('Wayland timeout restores resizing and ratio lock', (
+    tester,
+  ) async {
+    final window = _FakePipWindow();
+    final update = applyDesktopPipWindowAspectRatio(window, 1, isWayland: true);
+    final failure = expectLater(update, throwsA(isA<TimeoutException>()));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
+    await failure;
+    expect(window.minimum, desktopPipMinimumSize(1));
+    expect(window.maximum, const Size(50000, 50000));
+    expect(window.ratio, 1);
+  });
+
+  test('PiP integer sizing avoids truncating portrait width', () {
+    expect(
+      desktopPipResizeSize(const Size(168.75, 300), 9 / 16),
+      const Size(169, 300),
+    );
+    expect(
+      desktopPipResizeSize(const Size(169, 300), 16 / 9),
+      const Size(533, 300),
+    );
+    expect(
+      desktopPipResizeSize(const Size(1, 1), 9 / 16),
+      const Size(120, 214),
+    );
+  });
   testWidgets('PiP transport seeks and exposes previous and next actions', (
     tester,
   ) async {
