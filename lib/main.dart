@@ -17,9 +17,9 @@ import 'core/data/preferences/shared_preferences_provider.dart';
 import 'core/utils/app_log_store.dart';
 import 'core/utils/pip_mode.dart';
 import 'core/utils/media_handler.dart';
+import 'core/utils/root_app_runner.dart' as root_app_runner;
 import 'package:audio_service/audio_service.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:multiview_desktop/multiview_desktop.dart' as mvd;
 import 'package:window_manager/window_manager.dart';
 
 import 'core/presentation/theme/app_theme.dart';
@@ -173,16 +173,7 @@ Future<void> main() async {
   }
 }
 
-void _runRootApp(Widget app) {
-  if (!kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.windows ||
-          defaultTargetPlatform == TargetPlatform.linux ||
-          defaultTargetPlatform == TargetPlatform.macOS)) {
-    mvd.runMultiApp(home: (context, viewId) => app);
-    return;
-  }
-  runApp(app);
-}
+void _runRootApp(Widget app) => root_app_runner.runRootApp(app);
 
 Future<void> _attachPersistentGraphqlStore(
   DeferredGraphqlStore deferredStore,

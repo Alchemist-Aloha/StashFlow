@@ -10,6 +10,7 @@ import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../providers/playback_queue_provider.dart';
 import '../providers/player_playlist_paging.dart';
+import '../providers/scene_list_provider.dart';
 
 class PlaylistFloatingPanel extends ConsumerStatefulWidget {
   const PlaylistFloatingPanel({super.key});
@@ -112,8 +113,10 @@ class _PlaylistFloatingPanelState extends ConsumerState<PlaylistFloatingPanel> {
 
   void _openScene(String queueId, int index, String sceneId) {
     ref.read(playbackQueueProvider.notifier).setIndex(index, queueId: queueId);
+    ref.read(sceneListRandomReturnProvider.notifier).reset();
     Navigator.of(context).pop();
-    context.push('/scenes/scene/$sceneId', extra: true);
+    // Playlist hops share one details destination above the scene list/feed.
+    context.go('/scenes/scene/$sceneId', extra: true);
   }
 
   @override

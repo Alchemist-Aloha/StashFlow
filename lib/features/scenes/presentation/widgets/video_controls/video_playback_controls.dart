@@ -162,6 +162,7 @@ class VideoPlaybackControls extends ConsumerWidget {
     required this.onSpeedTap,
     required this.isSpeedSliderVisible,
     this.onStopCast,
+    this.transportControls,
   });
 
   final VideoController controller;
@@ -179,6 +180,9 @@ class VideoPlaybackControls extends ConsumerWidget {
   final VoidCallback onSpeedTap;
   final bool isSpeedSliderVisible;
   final VoidCallback? onStopCast;
+
+  /// Desktop/web transport shown to the left of the utility controls.
+  final Widget? transportControls;
 
   static const _playbackSpeeds = <double>[
     0.25,
@@ -219,9 +223,12 @@ class VideoPlaybackControls extends ConsumerWidget {
           child: ConstrainedBox(
             constraints: BoxConstraints(minWidth: constraints.maxWidth),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: transportControls == null
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                ?transportControls,
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

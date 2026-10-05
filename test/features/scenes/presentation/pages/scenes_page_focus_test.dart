@@ -111,6 +111,68 @@ void main() {
     );
   }
 
+  testWidgets('system Back restores list position after details replacement', (
+    tester,
+  ) async {
+    final scenes = List.generate(40, _scene);
+    final repository = MockGraphQLSceneRepository()..withData(scenes);
+    await pumpTestWidget(
+      tester,
+      child: const Text('start'),
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(repository),
+        playerStateProvider.overrideWith(_FocusPlayerState.new),
+      ],
+      routes: [
+        GoRoute(
+          path: '/scenes',
+          builder: (_, _) =>
+              const HeroMode(enabled: false, child: ScenesPage()),
+          routes: [
+            GoRoute(
+              path: 'scene/:id',
+              builder: (_, state) => Consumer(
+                builder: (_, ref, _) {
+                  ref.watch(playerStateProvider);
+                  return Scaffold(
+                    body: Text('details ${state.pathParameters['id']}'),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+    final context = tester.element(find.text('start'));
+    final container = ProviderScope.containerOf(context);
+    final router = GoRouter.of(context);
+    router.go('/scenes');
+    await tester.pumpAndSettle();
+    final listState = tester.state(find.byType(ScenesPage));
+    await tester.tap(find.byType(SceneCard).first);
+    await tester.pumpAndSettle();
+    final player =
+        container.read(playerStateProvider.notifier) as _FocusPlayerState;
+    player.setActiveScene(scenes[30]);
+    // Fullscreen exit can replace the original pushed details route.
+    router.go('/scenes/scene/30');
+    await tester.pumpAndSettle();
+    player.setActiveScene(scenes[35]);
+    router.pushReplacement('/scenes/scene/35');
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/scenes');
+    expect(tester.state(find.byType(ScenesPage)), same(listState));
+    final card = find.byWidgetPredicate(
+      (widget) => widget is SceneCard && widget.scene.id == '35',
+    );
+    expect(card, findsOneWidget);
+    expect(tester.widget<SceneCard>(card).focusNode?.hasFocus, isTrue);
+    expect(Scrollable.of(tester.element(card)).position.pixels, greaterThan(0));
+  });
+
   testWidgets('returning from details focuses the last played scene', (
     tester,
   ) async {

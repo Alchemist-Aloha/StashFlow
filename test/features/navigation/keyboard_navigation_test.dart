@@ -31,6 +31,53 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
+  for (final width in [500.0, 1200.0]) {
+    testWidgets('single visible tab works at width $width', (tester) async {
+      tester.view.physicalSize = Size(width, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [
+          playerStateProvider.overrideWith(MockPlayerState.new),
+          navigationTabsProvider.overrideWith(
+            () => MockNavigationTabsNotifier([
+              const NavigationTab(type: NavigationTabType.performers),
+            ]),
+          ),
+        ],
+        child: Consumer(
+          builder: (context, ref, _) => MaterialApp.router(
+            routerConfig: ref.watch(routerProvider),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      if (width < 600) {
+        await tester.tap(find.widgetWithText(ListTile, 'Performers'));
+      } else {
+        await tester.tap(
+          find.descendant(
+            of: find.byType(NavigationRail),
+            matching: find.text('Performers'),
+          ),
+        );
+      }
+      await tester.pumpAndSettle();
+      final context = tester.element(find.byType(MaterialApp).last);
+      final container = ProviderScope.containerOf(context);
+      expect(
+        container.read(routerProvider).routeInformationProvider.value.uri.path,
+        '/performers',
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('keyboard shortcuts navigate directly and wrap between tabs', (
     WidgetTester tester,
   ) async {

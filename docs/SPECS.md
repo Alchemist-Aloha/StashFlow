@@ -390,16 +390,37 @@ Responsibilities:
 - `GlobalFullscreenOverlay` owns overlay visibility and platform fullscreen
   effects while rendering the active global scene.
 - `TransformableVideoSurface` owns pinch zoom and free rotation.
+- Feed page changes pause every inactive cached player, even while the next
+  controller is loading. Feed completion is edge-deduplicated and owns auto-next
+  only while its promoted session is visible; details, fullscreen, and PiP use
+  global completion instead. Returning from global playback synchronizes the
+  feed to the active scene after startup is ready, without restarting its decoder
+  or resuming user-paused playback. Feed visibility uses the committed top route,
+  not a retained parent route or browser URL, and reacts to both system Back and
+  toolbar Back after fullscreen or details-route replacement.
+- Feed title taps hide the metadata, action buttons, scrubbing bar, and overlay
+  gradients. The next video tap restores these overlays without playing or
+  pausing; subsequent video taps retain normal play/pause behavior. Visibility
+  is shared across feed pages and remains manually controlled, with no timed
+  auto-hide. Subtitles and playback continue independently of overlay visibility.
+- Scene grid/list returns restore scroll position and keyboard focus to the
+  active scene (or the saved playlist item for random returns). Restoration is
+  driven by returning to the list route, waits for list data, and must not depend
+  on the original details push completing: next-scene navigation can replace it.
+- A feed pool lends its active controller to the global session. On pool
+  unmount or eviction of the shared controller, lifetime ownership transfers to
+  the global session so the surviving
+  decoder is eventually disposed, not leaked or disposed during the handoff.
 
 The UI talks directly to media-kit state. Do not restore the removed
 video-player compatibility adapters or route-owned fullscreen player.
 Inline and fullscreen player utility buttons share the same overlay treatment
 at the top and bottom; mirrored edge gradients keep them legible over video.
-The centered transport group has no shared backdrop or drop shadow.
+The transport group has no shared backdrop or drop shadow.
 Playback settings offer a horizontal slider from 1 to 10 seconds in one-second
-steps for the player controls' auto-hide delay. One second is the default for
-existing installs. The selected delay applies to inline and fullscreen controls
-while video is playing; paused controls remain visible. The preference is
+steps for the player controls' auto-hide delay. Two seconds is the default when
+no valid preference is saved; existing saved delays are preserved. The selected
+delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
 included in configuration backups.
 
 ### Native video output and decoding
@@ -431,16 +452,30 @@ Queue invariants:
 - Fresh query state replaces the relevant sequence; pagination appends to it.
 - Selecting a scene activates the queue that supplied it.
 - Next/previous uses the active queue order.
-- Play and queue navigation sit at the center of the video, separate from the
-  bottom seek and utility controls. When either queue direction is available,
-  both navigation buttons stay visible; the unavailable direction is disabled
+- Playlist selection keeps one scene-details destination above the scene list
+  or feed, clearing older scene-details history. Repeated playlist selections
+  must return to the list/feed with one Back action after fullscreen exits,
+  while retaining the selected queue and restoring active-scene focus.
+- On desktop and web, play and queue navigation sit at the bottom left below
+  the progress bar, with utility controls to the right, in both inline and
+  fullscreen players. Mobile keeps transport centered over the video, separate
+  from the bottom seek and utility controls. When either queue direction is
+  available, both navigation buttons stay visible; the unavailable direction is disabled
   so play remains anchored between them. Navigation buttons have transparent
   backgrounds while play retains the primary filled treatment.
 - Queue indices stay synchronized with TikTok swipes and direct scene changes.
 - A failed stream resolution/open must not leave the active scene and queue
-  index disagreeing.
+  index disagreeing. Successful navigation commits the target scene by ID to
+  the queue that supplied it, without overwriting a newly selected queue.
 - End-of-list behavior follows the user's playback-end setting and must not
   navigate repeatedly.
+- Best-effort prewarming probes the scene after the active video, not the queue
+  index before a navigation transaction commits. Feed decoder preloading does
+  not also require a network probe. Stale resolutions and stopped sessions must
+  not restart probes. Requests are cancellable during connection/header/body
+  phases, limited to a 2 MB body budget even when Range is ignored, and bounded
+  to five seconds. Prewarming does not cache video bytes for the decoder or
+  guarantee gapless playback.
 
 Do not collapse contextual queues into one global sequence or reintroduce the
 removed manual-queue design.
@@ -487,9 +522,17 @@ presentation that was active before entering.
   `window_manager` applies to every window in the shared engine on Windows, so
   the main window's minimum is enforced by the Windows runner instead.
 - Android PiP is entered through the system window and can only be left by the
-  user. While active, its system parameters follow decoder display-ratio changes
+  user. Preparing Android PiP's video-only presentation and displaying PiP must
+  not change the activity's screen orientation. Fullscreen orientation policy
+  resumes only after PiP exit; failed entry restores the previous presentation.
+  Foreground entry hands off after a prepared video-only frame with controls
+  hidden, rather than a fixed delay, a fullscreen slide, or an immersive-mode
+  resize. PiP-only presentation also skips the fullscreen return slide.
+  Background entry must not wait for suspended rendering; foreground frame
+  preparation has a bounded fallback if rendering stops during a lifecycle change.
+  While active, its system parameters follow decoder display-ratio changes
   (including metadata arrival, rotation, and auto-play-next) without re-entering
-  PiP. Ratios are clamped within Android's supported 1:2.39–2.39:1 range; missing
+  PiP. Entry's initial ratio must not be resent unchanged. Ratios are clamped within Android's supported 1:2.39–2.39:1 range; missing
   or invalid metadata retains the last valid ratio. Desktop PiP is an ordinary
   window: `P` toggles it, and its minimal
   controls expose previous, play/pause, next, seeking, and exit-PiP actions.

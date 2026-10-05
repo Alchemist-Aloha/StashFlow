@@ -140,6 +140,11 @@ void main() {
     () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       expect(await PipMode.enterIfAvailable(aspectRatio: 0.01), isTrue);
+      expect(
+        PipMode.isInPipMode.value,
+        isTrue,
+        reason: 'publish success before a delayed native callback',
+      );
       expect(pipCalls.last.arguments, {'numerator': 419, 'denominator': 1000});
       PipMode.isInPipMode.value = true;
       expect(await PipMode.updateAspectRatio(100), isTrue);

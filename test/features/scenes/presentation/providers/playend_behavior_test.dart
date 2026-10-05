@@ -19,10 +19,12 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/player_view_mode.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/data/services/cast_service.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_prewarmer.dart';
 import 'package:stash_app_flutter/core/utils/media_handler.dart';
 import 'package:stash_app_flutter/main.dart' as app;
 
@@ -78,6 +80,7 @@ void main() {
           (scene) => pendingResolution?.future ?? Future.value(resolvedChoice),
         ),
         castServiceProvider.overrideWith(_FakeAppCastService.new),
+        streamPrewarmerProvider.overrideWith(_RecordingPrewarmer.new),
       ],
     );
   });
@@ -118,67 +121,352 @@ void main() {
     );
   }
 
-  test(
-    'Android PiP follows metadata and replacement without repeated updates',
-    () async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      const channel = MethodChannel('stash_app_flutter/pip');
-      final calls = <MethodCall>[];
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (call) async {
-            calls.add(call);
-            return true;
-          });
-      addTearDown(() {
-        PipMode.isInPipMode.value = false;
-        debugDefaultTargetPlatformOverride = null;
+  for (final enterThroughApp in [false, true]) {
+    test(
+      'Android PiP follows metadata and replacement without repeated updates (app entry: $enterThroughApp)',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        const channel = MethodChannel('stash_app_flutter/pip');
+        final calls = <MethodCall>[];
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-            .setMockMethodCallHandler(channel, null);
-      });
+            .setMockMethodCallHandler(channel, (call) async {
+              calls.add(call);
+              return true;
+            });
+        addTearDown(() {
+          PipMode.isInPipMode.value = false;
+          debugDefaultTargetPlatformOverride = null;
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, null);
+        });
+        final notifier = container.read(playerStateProvider.notifier);
+        when(mockPlayer.state).thenReturn(
+          PlayerStateData(
+            videoParams: const mk.VideoParams(dw: 1080, dh: 1920),
+          ),
+        );
+        await notifier.attachController(
+          createTestScene('portrait'),
+          mockPlayer,
+          mockVideoController,
+        );
+        if (enterThroughApp) {
+          notifier.didChangeAppLifecycleState(AppLifecycleState.paused);
+          expect(await notifier.requestEnterPip(), isTrue);
+        } else {
+          PipMode.isInPipMode.value = true;
+        }
+        await Future<void>.delayed(Duration.zero);
+        expect(
+          calls.single.method,
+          enterThroughApp
+              ? 'enterPictureInPicture'
+              : 'updatePictureInPictureAspectRatio',
+        );
+        expect(calls.single.arguments, {'numerator': 563, 'denominator': 1000});
+
+        positionStream.add(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        expect(calls, hasLength(1));
+
+        final nextPlayer = MockPlayer();
+        final nextController = MockVideoController();
+        when(nextPlayer.stream).thenReturn(mockPlayer.stream);
+        when(nextController.player).thenReturn(nextPlayer);
+        when(nextPlayer.state).thenReturn(PlayerStateData());
+        await notifier.attachController(
+          createTestScene('next'),
+          nextPlayer,
+          nextController,
+        );
+        positionStream.add(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        expect(
+          calls,
+          hasLength(1),
+          reason: 'unknown dimensions retain the previous ratio',
+        );
+
+        when(nextPlayer.state).thenReturn(
+          PlayerStateData(
+            videoParams: const mk.VideoParams(dw: 1920, dh: 1080),
+          ),
+        );
+        positionStream.add(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        expect(calls, hasLength(2));
+        expect(calls.last.arguments, {'numerator': 1778, 'denominator': 1000});
+        expect(container.read(playerStateProvider).isInPipMode, isTrue);
+      },
+    );
+  }
+
+  for (final next in [true, false]) {
+    test(
+      'queue ${next ? 'next' : 'previous'} prewarms the scene after the new active scene',
+      () async {
+        final scenes = [for (var i = 1; i <= 4; i++) createTestScene('$i')];
+        final queue = container.read(playbackQueueProvider.notifier);
+        queue.setSequence(scenes, next ? 0 : 2);
+        resolvedChoice = const StreamChoice(
+          url: 'https://example.test/stream.mp4',
+          mimeType: 'video/mp4',
+        );
+        final notifier = container.read(playerStateProvider.notifier);
+        await notifier.attachController(
+          scenes[next ? 0 : 2],
+          mockPlayer,
+          mockVideoController,
+        );
+        await Future<void>.delayed(Duration.zero);
+        final prewarmer =
+            container.read(streamPrewarmerProvider.notifier)
+                as _RecordingPrewarmer;
+        prewarmer.warmed.clear();
+        if (next) {
+          expect(await notifier.playNext(), isTrue);
+        } else {
+          await notifier.playPrevious();
+        }
+        await Future<void>.delayed(Duration.zero);
+        expect(container.read(playerStateProvider).activeScene?.id, '2');
+        expect(prewarmer.warmed, ['3']);
+      },
+    );
+  }
+
+  test(
+    'same-controller TikTok handoff transfers completion without restarting playback',
+    () async {
+      final scenes = [createTestScene('1'), createTestScene('2')];
+      container.read(playbackQueueProvider.notifier).setSequence(scenes, 0);
+      resolvedChoice = const StreamChoice(
+        url: 'https://example.test/2.mp4',
+        mimeType: 'video/mp4',
+      );
       final notifier = container.read(playerStateProvider.notifier);
-      when(mockPlayer.state).thenReturn(
-        PlayerStateData(videoParams: const mk.VideoParams(dw: 1080, dh: 1920)),
+      await notifier.attachController(
+        scenes.first,
+        mockPlayer,
+        mockVideoController,
+        streamSource: 'tiktok-promotion',
       );
       await notifier.attachController(
-        createTestScene('portrait'),
+        scenes.first,
+        mockPlayer,
+        mockVideoController,
+        streamSource: 'tiktok-handoff',
+      );
+      expect(
+        container.read(playerStateProvider).streamSource,
+        'tiktok-handoff',
+      );
+      expect(
+        container.read(playerStateProvider).viewMode,
+        PlayerViewMode.inline,
+      );
+      verifyNever(mockPlayer.pause());
+      verifyNever(mockPlayer.dispose());
+      final navigation = <String>[];
+      container.listen(
+        playerStateProvider.select((s) => s.navigationReplacementPath),
+        (_, path) {
+          if (path != null) navigation.add(path);
+        },
+      );
+      notifier.setPlayEndBehavior(VideoEndBehavior.next);
+      completedStream.add(true);
+      completedStream.add(true);
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      expect(container.read(playbackQueueProvider).currentIndex, 1);
+      expect(container.read(playerStateProvider).activeScene?.id, '2');
+      expect(navigation, ['/scenes/scene/2']);
+    },
+  );
+
+  for (final presentation in ['feed', 'inline', 'fullscreen', 'pip']) {
+    test(
+      'promoted TikTok completion belongs to the visible $presentation presentation',
+      () async {
+        final scenes = [createTestScene('1'), createTestScene('2')];
+        container.read(playbackQueueProvider.notifier).setSequence(scenes, 0);
+        resolvedChoice = const StreamChoice(
+          url: 'https://example.test/2.mp4',
+          mimeType: 'video/mp4',
+        );
+        final notifier = container.read(playerStateProvider.notifier);
+        await notifier.attachController(
+          scenes.first,
+          mockPlayer,
+          mockVideoController,
+          streamSource: 'tiktok-promotion',
+        );
+        if (presentation == 'pip') {
+          PipMode.isInPipMode.value = true;
+          addTearDown(() => PipMode.isInPipMode.value = false);
+        } else if (presentation != 'feed') {
+          notifier.setViewMode(
+            presentation == 'fullscreen'
+                ? PlayerViewMode.fullscreen
+                : PlayerViewMode.inline,
+          );
+          if (presentation == 'fullscreen') notifier.setFullScreen(true);
+        }
+        notifier.setPlayEndBehavior(VideoEndBehavior.next);
+        completedStream.add(true);
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        expect(
+          container.read(playerStateProvider).activeScene?.id,
+          presentation == 'feed' ? '1' : '2',
+        );
+        expect(
+          container.read(playbackQueueProvider).currentIndex,
+          presentation == 'feed' ? 0 : 1,
+        );
+        if (presentation == 'fullscreen') {
+          expect(container.read(playerStateProvider).isFullScreen, isTrue);
+        }
+        if (presentation == 'pip') {
+          expect(container.read(playerStateProvider).isInPipMode, isTrue);
+        }
+      },
+    );
+  }
+
+  test(
+    'stale URL resolutions do not restart prewarming after scene change or stop',
+    () async {
+      final scenes = [for (var i = 1; i <= 3; i++) createTestScene('$i')];
+      container.read(playbackQueueProvider.notifier).setSequence(scenes, 0);
+      pendingResolution = Completer<StreamChoice?>();
+      final notifier = container.read(playerStateProvider.notifier);
+      await notifier.attachController(
+        scenes.first,
         mockPlayer,
         mockVideoController,
       );
-      PipMode.isInPipMode.value = true;
-      await Future<void>.delayed(Duration.zero);
-      expect(calls.single.method, 'updatePictureInPictureAspectRatio');
-      expect(calls.single.arguments, {'numerator': 563, 'denominator': 1000});
-
-      positionStream.add(Duration.zero);
-      await Future<void>.delayed(Duration.zero);
-      expect(calls, hasLength(1));
-
-      final nextPlayer = MockPlayer();
-      final nextController = MockVideoController();
-      when(nextPlayer.stream).thenReturn(mockPlayer.stream);
-      when(nextController.player).thenReturn(nextPlayer);
-      when(nextPlayer.state).thenReturn(PlayerStateData());
       await notifier.attachController(
-        createTestScene('next'),
-        nextPlayer,
-        nextController,
+        scenes[1],
+        mockPlayer,
+        mockVideoController,
       );
-      positionStream.add(Duration.zero);
+      pendingResolution!.complete(
+        const StreamChoice(
+          url: 'https://example.test/stream.mp4',
+          mimeType: 'video/mp4',
+        ),
+      );
       await Future<void>.delayed(Duration.zero);
-      expect(
-        calls,
-        hasLength(1),
-        reason: 'unknown dimensions retain the previous ratio',
+      final prewarmer =
+          container.read(streamPrewarmerProvider.notifier)
+              as _RecordingPrewarmer;
+      expect(prewarmer.warmed, ['3']);
+      prewarmer.warmed.clear();
+      pendingResolution = Completer<StreamChoice?>();
+      await notifier.attachController(
+        scenes.first,
+        mockPlayer,
+        mockVideoController,
       );
+      notifier.stop();
+      pendingResolution!.complete(
+        const StreamChoice(
+          url: 'https://example.test/stream.mp4',
+          mimeType: 'video/mp4',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(prewarmer.warmed, isEmpty);
+    },
+  );
 
-      when(nextPlayer.state).thenReturn(
-        PlayerStateData(videoParams: const mk.VideoParams(dw: 1920, dh: 1080)),
+  for (final next in [true, false]) {
+    test(
+      'in-flight ${next ? 'next' : 'previous'} commits to its original queue without corrupting a newly selected queue',
+      () async {
+        final scenes = [for (var i = 1; i <= 3; i++) createTestScene('$i')];
+        final queue = container.read(playbackQueueProvider.notifier);
+        queue.setSequence(scenes, next ? 0 : 2);
+        pendingResolution = Completer<StreamChoice?>();
+        final notifier = container.read(playerStateProvider.notifier);
+        await notifier.attachController(
+          scenes[next ? 0 : 2],
+          mockPlayer,
+          mockVideoController,
+        );
+        final navigation = next ? notifier.playNext() : notifier.playPrevious();
+        // The same target can be selected from another contextual queue while
+        // native startup is pending. Its position need not match the old queue.
+        queue.setSequence([scenes[1], scenes.first], 0, queueId: 'other');
+        pendingResolution!.complete(
+          const StreamChoice(
+            url: 'https://example.test/2.mp4',
+            mimeType: 'video/mp4',
+          ),
+        );
+        await navigation;
+        expect(container.read(playerStateProvider).activeScene?.id, '2');
+        expect(queue.state.activeQueueId, 'other');
+        expect(queue.state.currentIndex, 0);
+        expect(queue.state.queues[PlaybackQueueIds.main]!.currentIndex, 1);
+      },
+    );
+  }
+
+  test(
+    'rapid mixed transport commands start only one queue transition',
+    () async {
+      final scenes = [for (var i = 1; i <= 3; i++) createTestScene('$i')];
+      final queue = container.read(playbackQueueProvider.notifier);
+      queue.setSequence(scenes, 1);
+      pendingResolution = Completer<StreamChoice?>();
+      final notifier = container.read(playerStateProvider.notifier);
+      await notifier.attachController(
+        scenes[1],
+        mockPlayer,
+        mockVideoController,
       );
-      positionStream.add(Duration.zero);
-      await Future<void>.delayed(Duration.zero);
-      expect(calls, hasLength(2));
-      expect(calls.last.arguments, {'numerator': 1778, 'denominator': 1000});
+      final next = notifier.playNext();
+      expect(await notifier.playNext(), isFalse);
+      await notifier.playPrevious();
+      expect(queue.state.currentIndex, 1);
+      expect(container.read(playerStateProvider).activeScene?.id, '2');
+      pendingResolution!.complete(
+        const StreamChoice(
+          url: 'https://example.test/3.mp4',
+          mimeType: 'video/mp4',
+        ),
+      );
+      expect(await next, isTrue);
+      expect(queue.state.currentIndex, 2);
+      expect(container.read(playerStateProvider).activeScene?.id, '3');
+    },
+  );
+
+  test(
+    'PiP takes over an already completed feed frame without losing auto-next',
+    () async {
+      final scenes = [createTestScene('1'), createTestScene('2')];
+      container.read(playbackQueueProvider.notifier).setSequence(scenes, 0);
+      resolvedChoice = const StreamChoice(
+        url: 'https://example.test/2.mp4',
+        mimeType: 'video/mp4',
+      );
+      when(mockPlayer.state).thenReturn(mk.PlayerState(completed: true));
+      final notifier = container.read(playerStateProvider.notifier);
+      await notifier.attachController(
+        scenes.first,
+        mockPlayer,
+        mockVideoController,
+        streamSource: 'tiktok-promotion',
+      );
+      notifier.setPlayEndBehavior(VideoEndBehavior.next);
+      PipMode.isInPipMode.value = true;
+      addTearDown(() => PipMode.isInPipMode.value = false);
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      expect(container.read(playerStateProvider).activeScene?.id, '2');
       expect(container.read(playerStateProvider).isInPipMode, isTrue);
+      expect(container.read(playbackQueueProvider).currentIndex, 1);
     },
   );
 
@@ -647,6 +935,24 @@ void main() {
       expect(container.read(playerStateProvider).activeScene?.id, '2');
     },
   );
+}
+
+class _RecordingPrewarmer extends StreamPrewarmer {
+  final warmed = <String>[];
+
+  @override
+  void build() {}
+
+  @override
+  Future<void> prewarm(
+    Scene scene,
+    String url, {
+    Map<String, String>? headers,
+    int rangeBytes = 2 * 1024 * 1024,
+  }) async => warmed.add(scene.id);
+
+  @override
+  void cancelAllExcept(Set<String> sceneIds) {}
 }
 
 class _FakeAppCastService extends AppCastService {

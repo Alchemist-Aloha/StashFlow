@@ -22,7 +22,8 @@ import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
 import 'player_view_mode.dart';
 import 'player_settings.dart';
-import '../widgets/desktop_pip_window.dart';
+import '../widgets/desktop_pip_window_stub.dart'
+    if (dart.library.io) '../widgets/desktop_pip_window.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
 import '../../../../core/data/auth/auth_provider.dart';
@@ -190,7 +191,7 @@ class GlobalPlayerState {
     this.playEndBehavior = VideoEndBehavior.stop,
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = false,
-    this.controlsAutoHideSeconds = 1,
+    this.controlsAutoHideSeconds = 2,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
@@ -207,6 +208,13 @@ class GlobalPlayerState {
     this.fullscreenPhase = FullscreenPhase.inline,
     this.navigationReplacementPath,
   });
+
+  /// The feed owns completion only while its promoted session is shown there.
+  /// Inline, fullscreen, and PiP completion belongs to the global player.
+  bool get completionHandledByFeed =>
+      streamSource == 'tiktok-promotion' &&
+      viewMode == PlayerViewMode.tiktok &&
+      !isInPipMode;
 
   /// Creates a copy of the state with updated fields.
   /// Use [clearActive] to explicitly reset the active scene and controller.
@@ -378,6 +386,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   bool _backgroundRecoveryInFlight = false;
   DateTime? _backgroundEnteredAt;
   int _playSceneGeneration = 0;
+  int _queuePrewarmGeneration = 0;
   static const Duration _backgroundPauseGraceWindow = Duration(seconds: 2);
 
   @override
@@ -560,6 +569,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
 
     state = state.copyWith(isInPipMode: nextInPip);
+    // A feed auto-scroll may still be animating when PiP takes ownership.
+    // Resume its pending end action instead of freezing the completed frame.
+    if (nextInPip &&
+        !wasInPip &&
+        state.playEndBehavior == VideoEndBehavior.next &&
+        state.player?.state.completed == true) {
+      final sceneId = state.activeScene?.id;
+      if (sceneId != null) unawaited(_applyVideoEndBehavior(sceneId));
+    }
   }
 
   /// Fetches the scene cover image with proper auth headers and updates
@@ -769,6 +787,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     unawaited(_settingsStore.saveSubtitleTextAlignment(value));
   }
 
+  /// Whether the video-only presentation is being prepared for PiP entry.
+  /// Mobile fullscreen must defer orientation changes until this request ends.
+  bool get isPreparingPip => _pipRequestInFlight;
+
   Future<bool> requestEnterPip({double? aspectRatio}) async {
     final now = DateTime.now();
     final elapsedSinceLast = _lastPipRequestAt == null
@@ -780,6 +802,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       return false;
     }
 
+    final previousPresentation = state;
+    var entered = false;
     _pipRequestInFlight = true;
     _lastPipRequestAt = now;
     try {
@@ -788,21 +812,48 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (PipMode.isWindowed) {
         // The windowed PiP window renders the player UI itself, so the app must
         // not switch the window to OS fullscreen first.
-        return await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
+        entered = await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
+        return entered;
       }
-      if (!state.isFullScreen) {
+      // TikTok also needs the global video-only surface for Android's transition.
+      if (!state.isFullScreen || state.viewMode == PlayerViewMode.tiktok) {
         requestEnterFullscreen();
-        await Future<void>.delayed(const Duration(milliseconds: 150));
+      } else {
+        // Rebuild controls so they disappear before Android captures the surface.
+        state = state.copyWith();
       }
+      if (_appLifecycleState == AppLifecycleState.resumed ||
+          _appLifecycleState == AppLifecycleState.inactive) {
+        // One prepared frame is enough. A lifecycle change can suspend frames,
+        // so never let background PiP wait indefinitely for the renderer.
+        await WidgetsBinding.instance.endOfFrame.timeout(
+          const Duration(milliseconds: 100),
+          onTimeout: () {},
+        );
+      }
+      if (!ref.mounted) return false;
       final player = state.player;
       final displayRatio = player == null
           ? null
           : pipDisplayAspectRatio(player.state.videoParams);
-      return await PipMode.enterIfAvailable(
+      // Entry already supplies this ratio; don't resend it during the animation.
+      _lastAndroidPipRatio = displayRatio;
+      entered = await PipMode.enterIfAvailable(
         aspectRatio: displayRatio ?? aspectRatio,
       );
+      return entered;
     } finally {
       _pipRequestInFlight = false;
+      if (!entered && ref.mounted) {
+        _lastAndroidPipRatio = null;
+        _fullscreenBeforePip = null;
+        _viewModeBeforePip = null;
+        state = state.copyWith(
+          isFullScreen: previousPresentation.isFullScreen,
+          viewMode: previousPresentation.viewMode,
+          fullscreenPhase: previousPresentation.fullscreenPhase,
+        );
+      }
     }
   }
 
@@ -963,7 +1014,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   void requestEnterFullscreen() {
     state = state.copyWith(
       isFullScreen: true,
-      viewMode: state.viewMode == PlayerViewMode.tiktok
+      viewMode: !_pipRequestInFlight && state.viewMode == PlayerViewMode.tiktok
           ? PlayerViewMode.tiktok
           : PlayerViewMode.fullscreen,
       fullscreenPhase: FullscreenPhase.entering,
@@ -979,6 +1030,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   void markFullscreenEntered() {
+    // A failed PiP request or an exit can cancel entry before its async work ends.
+    if (state.fullscreenPhase != FullscreenPhase.entering) return;
     state = state.copyWith(
       isFullScreen: true,
       fullscreenPhase: state.viewMode == PlayerViewMode.tiktok
@@ -988,6 +1041,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   void markFullscreenExited() {
+    // PiP may already have restored inline/TikTok presentation before UI cleanup.
+    if (state.fullscreenPhase != FullscreenPhase.exiting) return;
     state = state.copyWith(
       isFullScreen: false,
       viewMode: PlayerViewMode.inline,
@@ -1062,14 +1117,22 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
   }
 
-  /// Proactively resolve and warm the stream URLs for the next several scenes
-  /// in the playback queue to ensure near-instant startup when navigating.
+  /// Best-effort network warmup for the scene after the active video.
+  /// This does not prepare a decoder or cache bytes for playback.
   void _prewarmQueue() {
+    final generation = ++_queuePrewarmGeneration;
     final queue = ref.read(playbackQueueProvider);
-    final currentIndex = queue.currentIndex;
     final sequence = queue.sequence;
-
-    if (currentIndex == -1 || sequence.isEmpty) return;
+    // Navigation commits the queue index after playback starts. Warm from the
+    // active scene, not the still-uncommitted index of the previous scene.
+    final currentIndex = sequence.indexWhere(
+      (s) => s.id == state.activeScene?.id,
+    );
+    final prewarmer = ref.read(streamPrewarmerProvider.notifier);
+    if (currentIndex == -1 || state.completionHandledByFeed) {
+      prewarmer.cancelAllExcept({});
+      return;
+    }
 
     // Keep prewarming conservative: one next-scene probe preserves quick
     // sequential navigation without competing heavily with active playback.
@@ -1082,7 +1145,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       nextScenes.add(sequence[i]);
     }
 
-    final prewarmer = ref.read(streamPrewarmerProvider.notifier);
     final resolver = ref.read(streamResolverProvider);
     final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
 
@@ -1094,7 +1156,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       unawaited(() async {
         // Resolve URL (hits cache if already resolved)
         final choice = await resolver(scene);
-        if (choice != null) {
+        if (choice != null &&
+            ref.mounted &&
+            generation == _queuePrewarmGeneration) {
           // Perform network-level prewarming
           await prewarmer.prewarm(scene, choice.url, headers: mediaHeaders);
         }
@@ -1460,10 +1524,37 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       source: 'player_provider',
     );
 
-    // If already active, just reuse
+    final nextViewMode = streamSource == 'tiktok-promotion'
+        ? PlayerViewMode.tiktok
+        : streamSource == 'tiktok-handoff' &&
+              state.viewMode == PlayerViewMode.tiktok
+        ? (state.isFullScreen
+              ? PlayerViewMode.fullscreen
+              : PlayerViewMode.inline)
+        : state.viewMode;
+    final nextPhase = nextViewMode == PlayerViewMode.tiktok
+        ? FullscreenPhase.tiktok
+        : state.fullscreenPhase == FullscreenPhase.tiktok
+        ? (state.isFullScreen
+              ? FullscreenPhase.fullscreen
+              : FullscreenPhase.inline)
+        : state.fullscreenPhase;
+
+    // Reuse the decoder, but still transfer presentation/completion ownership.
     if (state.activeScene?.id == scene.id &&
         state.player == player &&
         state.videoController == controller) {
+      if (streamSource == 'tiktok-promotion') {
+        _sessionController.adoptBorrowedSession(player, controller);
+      }
+      state = state.copyWith(
+        streamSource: streamSource,
+        streamMimeType: streamMimeType,
+        streamLabel: streamLabel,
+        viewMode: nextViewMode,
+        fullscreenPhase: nextPhase,
+      );
+      _prewarmQueue();
       return;
     }
 
@@ -1483,9 +1574,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     _lastIsPlaying = null;
     _sessionController.adoptBorrowedSession(player, controller);
 
-    final isTiktokHandoff =
-        streamSource == 'tiktok-handoff' || streamSource == 'tiktok-promotion';
-
     state = state.copyWith(
       activeScene: scene,
       player: player,
@@ -1493,7 +1581,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       isPlaying: player.state.playing,
       isFullScreen: state.isFullScreen, // Preserve fullscreen
       isInPipMode: state.isInPipMode, // Preserve PiP
-      viewMode: isTiktokHandoff ? PlayerViewMode.tiktok : state.viewMode,
+      viewMode: nextViewMode,
+      fullscreenPhase: nextPhase,
       streamMimeType: streamMimeType,
       streamLabel: streamLabel,
       streamSource: streamSource,
@@ -1534,6 +1623,16 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
     // Prepare for the next scene in the queue
     _prewarmQueue();
+  }
+
+  /// Current session controller for lifetime handoffs; unlike rendered state,
+  /// this is current even when disposal happens before the next widget build.
+  VideoController? get currentVideoController => _sessionController.controller;
+
+  /// Keeps the active borrowed decoder alive when its feed pool unmounts, and
+  /// makes the global session responsible for its eventual disposal.
+  void takeControllerOwnership(VideoController controller) {
+    _sessionController.takeOwnership(controller);
   }
 
   void togglePlayPause() {
@@ -1773,7 +1872,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   Future<void> seek(Duration position) => _seekFromMediaNotification(position);
 
   void stop({bool dismissNotification = true}) {
+    _queuePrewarmGeneration++;
     if (ref.mounted) {
+      ref.read(streamPrewarmerProvider.notifier).cancelAllExcept({});
       final castState = ref.read(castServiceProvider);
       if (castState.isCasting) {
         unawaited(ref.read(castServiceProvider.notifier).stopCasting());
@@ -2020,7 +2121,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         if (state.player == completedPlayer) await completedPlayer?.play();
         return;
       case VideoEndBehavior.next:
-        if (state.streamSource == 'tiktok-promotion') {
+        if (state.completionHandledByFeed) {
           // TikTok view handles its own "next" behavior by scrolling the PageView.
           // We don't want to call playNext() here because it would create a new player.
           AppLogStore.instance.add(
@@ -2066,6 +2167,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       // not be mistaken for playback that actually lives in the mini player.
       final startedInMiniPlayer = _isMiniPlayerVisible;
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
+      final queueId = queueNotifier.state.activeQueueId;
       final target = findQueuePlaybackTarget(
         queueState: queueNotifier.state,
         delta: 1,
@@ -2088,7 +2190,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
 
       if (state.activeScene?.id == target.scene.id) {
-        queueNotifier.setIndex(target.targetIndex);
+        queueNotifier.findAndSetIndex(target.scene.id, queueId: queueId);
         // Trigger navigation synchronization so background details match active scene.
         // Skip for TikTok mode (its PageView handles navigation) and when
         // playback started in the mini player, which must keep playing in place.
@@ -2114,6 +2216,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     try {
       final startedInMiniPlayer = _isMiniPlayerVisible;
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
+      final queueId = queueNotifier.state.activeQueueId;
       final target = findQueuePlaybackTarget(
         queueState: queueNotifier.state,
         delta: -1,
@@ -2136,7 +2239,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
 
       if (state.activeScene?.id == target.scene.id) {
-        queueNotifier.setIndex(target.targetIndex);
+        queueNotifier.findAndSetIndex(target.scene.id, queueId: queueId);
         // Trigger navigation synchronization.
         // Skip for TikTok mode (its PageView handles navigation) and when
         // playback started in the mini player, which must keep playing in place.

@@ -3,6 +3,22 @@ import 'dart:async';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
+/// Reports each completion edge once, shared by global and feed sessions.
+StreamSubscription<bool> listenToPlaybackCompletion(
+  Stream<bool> stream,
+  void Function() onCompleted,
+) {
+  var handled = false;
+  return stream.listen((completed) {
+    if (!completed) {
+      handled = false;
+    } else if (!handled) {
+      handled = true;
+      onCompleted();
+    }
+  });
+}
+
 class PlaybackSession {
   final Player player;
   final VideoController controller;
@@ -43,6 +59,14 @@ class PlaybackSessionController {
     _isUsingBorrowedController = true;
   }
 
+  /// Takes lifetime ownership when the pool that lent this controller unmounts.
+  /// A stale pool cannot change ownership of a replacement session.
+  void takeOwnership(VideoController controller) {
+    if (identical(_videoControllerRef, controller)) {
+      _isUsingBorrowedController = false;
+    }
+  }
+
   Future<void> bindPlayerStreams(
     Player player, {
     required void Function() onTick,
@@ -54,16 +78,8 @@ class PlaybackSessionController {
     _subscriptions.add(player.stream.playing.listen((_) => onTick()));
     _subscriptions.add(player.stream.position.listen((_) => onTick()));
     _subscriptions.add(player.stream.duration.listen((_) => onTick()));
-    var completionHandled = false;
     _subscriptions.add(
-      player.stream.completed.listen((completed) {
-        if (!completed) {
-          completionHandled = false;
-        } else if (!completionHandled) {
-          completionHandled = true;
-          onCompleted();
-        }
-      }),
+      listenToPlaybackCompletion(player.stream.completed, onCompleted),
     );
     _subscriptions.add(player.stream.buffering.listen((_) => onTick()));
     _subscriptions.add(player.stream.width.listen((_) => onTick()));

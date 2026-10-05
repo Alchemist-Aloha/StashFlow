@@ -224,23 +224,6 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     return null;
   }
 
-  String _getTabLabel(NavigationTabType type) {
-    switch (type) {
-      case NavigationTabType.scenes:
-        return context.l10n.nav_scenes;
-      case NavigationTabType.performers:
-        return context.l10n.nav_performers;
-      case NavigationTabType.studios:
-        return context.l10n.nav_studios;
-      case NavigationTabType.tags:
-        return context.l10n.nav_tags;
-      case NavigationTabType.galleries:
-        return context.l10n.nav_galleries;
-      case NavigationTabType.groups:
-        return context.l10n.groups_title;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_enableDeferredStartupChecks) {
@@ -378,7 +361,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         .map(
           (t) => NavigationDestination(
             icon: Icon(t.type.icon),
-            label: _getTabLabel(t.type),
+            label: t.type.localizedLabel(context),
           ),
         )
         .toList();
@@ -387,7 +370,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         .map(
           (t) => NavigationRailDestination(
             icon: Icon(t.type.icon),
-            label: Text(_getTabLabel(t.type)),
+            label: Text(t.type.localizedLabel(context)),
           ),
         )
         .toList();
@@ -563,14 +546,22 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: NavigationBar(
-                        selectedIndex: currentUiIndex,
-                        destinations: navigationDestinations,
-                        onDestinationSelected: onDestinationSelected,
-                        labelBehavior:
-                            NavigationDestinationLabelBehavior.alwaysShow,
-                        height: 72,
-                      ),
+                      child: visibleTabs.length == 1
+                          ? ListTile(
+                              leading: Icon(visibleTabs.single.type.icon),
+                              title: Text(
+                                visibleTabs.single.type.localizedLabel(context),
+                              ),
+                              onTap: () => onDestinationSelected(0),
+                            )
+                          : NavigationBar(
+                              selectedIndex: currentUiIndex,
+                              destinations: navigationDestinations,
+                              onDestinationSelected: onDestinationSelected,
+                              labelBehavior:
+                                  NavigationDestinationLabelBehavior.alwaysShow,
+                              height: 72,
+                            ),
                     ),
                   ],
                 ),

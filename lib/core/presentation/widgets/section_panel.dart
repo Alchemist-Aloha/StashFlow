@@ -59,30 +59,33 @@ class SectionPanel extends StatelessWidget {
 
     final body = Padding(
       padding: padding ?? EdgeInsets.all(dims.spacingMedium),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (title != null) ...[
-            Row(
+      // A headerless panel must pass bounded height through to scrollables.
+      child: title == null
+          ? child
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: Text(
-                    title!,
-                    style: context.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colors.onSurface,
-                    ),
+                if (title != null) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title!,
+                          style: context.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                      ),
+                      ?titleTrailing,
+                    ],
                   ),
-                ),
-                ?titleTrailing,
+                  SizedBox(height: dims.spacingSmall),
+                ],
+                child,
               ],
             ),
-            SizedBox(height: dims.spacingSmall),
-          ],
-          child,
-        ],
-      ),
     );
 
     return Container(

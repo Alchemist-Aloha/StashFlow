@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 
 /// Represents a main navigation tab in the application.
 enum NavigationTabType {
@@ -17,6 +18,16 @@ enum NavigationTabType {
   final IconData icon;
 
   const NavigationTabType(this.id, this.label, this.icon);
+
+  /// The localized destination name shared by navigation and its settings.
+  String localizedLabel(BuildContext context) => switch (this) {
+    scenes => context.l10n.nav_scenes,
+    performers => context.l10n.nav_performers,
+    studios => context.l10n.nav_studios,
+    tags => context.l10n.nav_tags,
+    galleries => context.l10n.nav_galleries,
+    groups => context.l10n.groups_title,
+  };
 
   static NavigationTabType fromId(String id) {
     return NavigationTabType.values.firstWhere(
@@ -66,13 +77,18 @@ class NavigationTabsNotifier extends Notifier<List<NavigationTab>> {
 
   List<NavigationTab> _normalizeTabs(List<NavigationTab> tabs) {
     final tabsByType = {for (final tab in tabs) tab.type: tab};
-    return NavigationTabType.values
-        .map(
-          (type) =>
-              tabsByType[type] ??
-              NavigationTab(type: type, visible: _defaultVisibilityFor(type)),
-        )
-        .toList();
+    // Map insertion order preserves saved ordering while removing duplicates.
+    for (final type in NavigationTabType.values) {
+      tabsByType.putIfAbsent(
+        type,
+        () => NavigationTab(type: type, visible: _defaultVisibilityFor(type)),
+      );
+    }
+    final normalized = tabsByType.values.toList();
+    if (!normalized.any((tab) => tab.visible)) {
+      normalized[0] = normalized[0].copyWith(visible: true);
+    }
+    return normalized;
   }
 
   @override

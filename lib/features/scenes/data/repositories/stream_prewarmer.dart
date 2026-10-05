@@ -15,7 +15,7 @@ part 'stream_prewarmer.g.dart';
 /// 3. Prime the network path for the upcoming media data.
 @Riverpod(keepAlive: true)
 class StreamPrewarmer extends _$StreamPrewarmer {
-  final Map<String, StreamSubscription<List<int>>> _activeRequests = {};
+  final Map<String, _PrewarmRequest> _activeRequests = {};
   HttpClient? _client;
 
   @override
@@ -32,7 +32,9 @@ class StreamPrewarmer extends _$StreamPrewarmer {
       for (final sub in _activeRequests.values) {
         sub.cancel();
       }
+      _activeRequests.clear();
       _client?.close(force: true);
+      _client = null;
     });
   }
 
@@ -49,6 +51,18 @@ class StreamPrewarmer extends _$StreamPrewarmer {
     if (kIsWeb) return;
     if (_client == null) return;
     if (_activeRequests.containsKey(scene.id)) return;
+    final operation = _PrewarmRequest();
+    _activeRequests[scene.id] = operation;
+    // Bound connect, headers, and body together, including stalled servers.
+    operation.timeout = Timer(const Duration(seconds: 5), () {
+      if (identical(_activeRequests[scene.id], operation)) cancel(scene.id);
+    });
+    void finish() {
+      operation.timeout?.cancel();
+      if (identical(_activeRequests[scene.id], operation)) {
+        _activeRequests.remove(scene.id);
+      }
+    }
 
     AppLogStore.instance.add(
       'StreamPrewarmer: prewarming scene=${scene.id} url=$url',
@@ -57,30 +71,44 @@ class StreamPrewarmer extends _$StreamPrewarmer {
 
     try {
       final request = await _client!.getUrl(Uri.parse(url));
+      if (!identical(_activeRequests[scene.id], operation)) {
+        request.abort();
+        return;
+      }
+      operation.request = request;
       headers?.forEach((k, v) => request.headers.add(k, v));
 
       // Request only the first chunk to minimize bandwidth usage while warming the pipe.
       request.headers.add(HttpHeaders.rangeHeader, 'bytes=0-${rangeBytes - 1}');
 
       final response = await request.close();
-
-      // We MUST consume the response stream to ensure the connection is fully
-      // utilized and can be returned to the pool for reuse.
-      // Stored in _activeRequests and cancelled when this provider is disposed.
-      // ignore: cancel_subscriptions
-      final subscription = response.listen(
+      if (!identical(_activeRequests[scene.id], operation)) {
+        request.abort();
+        return;
+      }
+      var receivedBytes = 0;
+      // Drain compliant responses to preserve keep-alive, but enforce the
+      // budget ourselves when a server ignores Range or sends a chunked body.
+      operation.subscription = response.listen(
         (data) {
-          // Data is discarded; we only care about the side effects of the request.
+          if (!identical(_activeRequests[scene.id], operation)) return;
+          receivedBytes += data.length;
+          if (receivedBytes >= rangeBytes &&
+              response.contentLength != rangeBytes) {
+            cancel(scene.id);
+          }
         },
         onDone: () {
-          _activeRequests.remove(scene.id);
+          if (!identical(_activeRequests[scene.id], operation)) return;
+          finish();
           AppLogStore.instance.add(
             'StreamPrewarmer: prewarm completed for scene=${scene.id}',
             source: 'stream_prewarmer',
           );
         },
         onError: (Object e) {
-          _activeRequests.remove(scene.id);
+          if (!identical(_activeRequests[scene.id], operation)) return;
+          finish();
           AppLogStore.instance.add(
             'StreamPrewarmer: prewarm error for scene=${scene.id}: $e',
             source: 'stream_prewarmer',
@@ -88,9 +116,9 @@ class StreamPrewarmer extends _$StreamPrewarmer {
         },
         cancelOnError: true,
       );
-
-      _activeRequests[scene.id] = subscription;
     } catch (e) {
+      if (!identical(_activeRequests[scene.id], operation)) return;
+      finish();
       AppLogStore.instance.add(
         'StreamPrewarmer: prewarm exception for scene=${scene.id}: $e',
         source: 'stream_prewarmer',
@@ -100,9 +128,9 @@ class StreamPrewarmer extends _$StreamPrewarmer {
 
   /// Cancels any active prewarm request for the given [sceneId].
   void cancel(String sceneId) {
-    if (_activeRequests.containsKey(sceneId)) {
-      _activeRequests[sceneId]?.cancel();
-      _activeRequests.remove(sceneId);
+    final operation = _activeRequests.remove(sceneId);
+    if (operation != null) {
+      operation.cancel();
       AppLogStore.instance.add(
         'StreamPrewarmer: cancelled prewarm for scene=$sceneId',
         source: 'stream_prewarmer',
@@ -120,5 +148,17 @@ class StreamPrewarmer extends _$StreamPrewarmer {
     for (final id in idsToCancel) {
       cancel(id);
     }
+  }
+}
+
+class _PrewarmRequest {
+  HttpClientRequest? request;
+  StreamSubscription<List<int>>? subscription;
+  Timer? timeout;
+
+  void cancel() {
+    timeout?.cancel();
+    request?.abort();
+    unawaited(subscription?.cancel());
   }
 }

@@ -2,18 +2,21 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../navigation/presentation/current_route_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../providers/player_view_mode.dart';
 import '../providers/player_settings.dart';
+import '../providers/playback_queue_provider.dart';
+import '../providers/playback_session_controller.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
@@ -37,6 +40,38 @@ class FullScreenMode extends Notifier<bool> {
 final fullScreenModeProvider = NotifierProvider<FullScreenMode, bool>(
   FullScreenMode.new,
 );
+
+/// Pauses inactive feed controllers even when the visible one is still loading.
+/// Page changes start the active controller; handoffs can preserve user pause
+/// with [playCurrent]. Both paths apply the current loop policy.
+void syncTiktokPlayback(
+  Map<String, VideoController> controllers,
+  String currentSceneId,
+  VideoEndBehavior endBehavior, {
+  bool playCurrent = true,
+}) {
+  final current = controllers[currentSceneId];
+  _pauseInactiveControllers(controllers, current);
+  if (current != null) {
+    final player = current.player;
+    final mode = endBehavior == VideoEndBehavior.loop
+        ? PlaylistMode.loop
+        : PlaylistMode.none;
+    if (player.state.playlistMode != mode) player.setPlaylistMode(mode);
+    if (playCurrent && !player.state.playing) player.play();
+  }
+}
+
+void _pauseInactiveControllers(
+  Map<String, VideoController> controllers,
+  VideoController? current,
+) {
+  for (final controller in controllers.values) {
+    if (controller != current && controller.player.state.playing) {
+      controller.player.pause();
+    }
+  }
+}
 
 /// A vertical-scrolling "TikTok-style" view for discovering scenes.
 ///
@@ -73,8 +108,12 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   /// Initialization futures to prevent redundant setup calls.
   final Map<String, Future<void>> _initFutures = {};
+  final Map<String, StreamSubscription<bool>> _completionSubscriptions = {};
 
-  VideoController? _lastKnownGlobalController;
+  PlayerState? _globalNotifier;
+  bool _feedWasVisible = false;
+  bool _showFeedUi = true;
+  bool _globalSyncQueued = false;
   bool _allowMainPageGravityOrientation = true;
 
   @override
@@ -87,12 +126,17 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   void dispose() {
     _manageTimer?.cancel();
     _pageController.dispose();
+    for (final subscription in _completionSubscriptions.values) {
+      unawaited(subscription.cancel());
+    }
+    _completionSubscriptions.clear();
 
-    final globalController = _lastKnownGlobalController;
     for (final id in _controllers.keys) {
+      final globalController = _globalNotifier?.currentVideoController;
       if (_controllers[id] != globalController) {
         _players[id]?.dispose();
       } else {
+        _globalNotifier?.takeControllerOwnership(_controllers[id]!);
         AppLogStore.instance.add(
           'TiktokScenesView: skipping dispose of promoted player in dispose()',
           source: 'TiktokScenesView',
@@ -119,6 +163,35 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   Timer? _manageTimer;
 
+  void _queueGlobalPlaybackSync() {
+    if (_globalSyncQueued) return;
+    _globalSyncQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _globalSyncQueued = false;
+      if (!mounted || !_pageController.hasClients) return;
+      final global = ref.read(playerStateProvider);
+      if (global.activeScene == null || global.startupLatencyMs == null) return;
+      if (GoRouter.of(context).state.uri.path != '/scenes' ||
+          global.isInPipMode ||
+          global.viewMode == PlayerViewMode.fullscreen) {
+        return;
+      }
+      final scenes = ref.read(sceneListProvider).value;
+      if (scenes == null || scenes.isEmpty) return;
+      final activeIndex = scenes.indexWhere(
+        (scene) => scene.id == global.activeScene?.id,
+      );
+      final index = activeIndex >= 0
+          ? activeIndex
+          : _currentIndex.clamp(0, scenes.length - 1);
+      if (index != _currentIndex || _pageController.page?.round() != index) {
+        setState(() => _currentIndex = index);
+        _pageController.jumpToPage(index);
+      }
+      unawaited(_manageControllers());
+    });
+  }
+
   Future<void> _manageControllers() async {
     if (!mounted) return;
 
@@ -127,12 +200,25 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
     // Safety check: only manage if we are likely the active view
     final router = GoRouter.of(context);
-    final currentPath = router.routeInformationProvider.value.uri.path;
+    final currentPath = router.state.uri.path;
     // We only take over if we are at the root scenes page (TikTok feed)
     if (currentPath != '/scenes') return;
+    final globalPlayer = ref.read(playerStateProvider);
+    if (globalPlayer.isInPipMode ||
+        globalPlayer.viewMode == PlayerViewMode.fullscreen ||
+        (globalPlayer.player != null &&
+            globalPlayer.startupLatencyMs == null)) {
+      return;
+    }
 
     final scenes = scenesAsync.value!;
     if (scenes.isEmpty) return;
+    if (_currentIndex >= scenes.length) {
+      _queueGlobalPlaybackSync();
+      return;
+    }
+    final currentSceneId = scenes[_currentIndex].id;
+    _pauseInactiveControllers(_controllers, _controllers[currentSceneId]);
 
     // Load next page if nearing the end
     if (_currentIndex >= scenes.length - 2) {
@@ -153,7 +239,14 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         .where((id) => !idsInWindow.contains(id))
         .toList();
     for (final id in idsToRemove) {
-      _players[id]?.dispose();
+      unawaited(_completionSubscriptions.remove(id)?.cancel());
+      final controller = _controllers[id];
+      if (controller == globalPlayer.videoController) {
+        // The global session must release its live texture before disposal.
+        _globalNotifier?.takeControllerOwnership(controller!);
+      } else {
+        _players[id]?.dispose();
+      }
       _players.remove(id);
       _controllers.remove(id);
       _initFutures.remove(id);
@@ -169,10 +262,15 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     }
 
     // Handle global player synchronization for the active scene
-    final currentSceneId = scenes[_currentIndex].id;
     final activeTikTokController = _controllers[currentSceneId];
     final playerNotifier = ref.read(playerStateProvider.notifier);
-    final globalPlayer = ref.read(playerStateProvider);
+    final queue = ref.read(playbackQueueProvider);
+    if (queue.activeQueueId != PlaybackQueueIds.main ||
+        queue.currentIndex != _currentIndex) {
+      ref
+          .read(playbackQueueProvider.notifier)
+          .setIndex(_currentIndex, queueId: PlaybackQueueIds.main);
+    }
 
     // 1. If global player is already playing this scene, it might be returning from DetailsPage.
     // In this case, we don't want to stop it! We want to take its controller into our pool.
@@ -191,17 +289,21 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       final oldPlayer = _players[currentSceneId];
       _controllers[currentSceneId] = globalPlayer.videoController!;
       _players[currentSceneId] = globalPlayer.videoController!.player;
+      _bindFeedCompletion(scenes[_currentIndex], globalPlayer.videoController!);
 
       // Important: don't dispose if it was the same controller, but we checked != above
       if (oldLocal != null && oldLocal != globalPlayer.videoController) {
         oldPlayer?.dispose();
       }
     }
-    // 2. Otherwise, if global player is idle or playing something else,
-    // promote our local active controller to global so DetailsPage/MiniPlayer can use it.
-    else if (globalPlayer.activeScene?.id != currentSceneId &&
-        activeTikTokController != null &&
-        activeTikTokController.player.state.playlist.medias.isNotEmpty) {
+    // Promote the active controller, or reclaim feed ownership on return from
+    // details/PiP even when the decoder is already shared.
+    final currentController = _controllers[currentSceneId];
+    if (currentController != null &&
+        currentController.player.state.playlist.medias.isNotEmpty &&
+        (globalPlayer.activeScene?.id != currentSceneId ||
+            globalPlayer.videoController != currentController ||
+            !globalPlayer.completionHandledByFeed)) {
       AppLogStore.instance.add(
         'TiktokScenesView: promoting local controller to global for $currentSceneId',
         source: 'TiktokScenesView',
@@ -209,42 +311,58 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       unawaited(
         playerNotifier.attachController(
           scenes[_currentIndex],
-          activeTikTokController.player,
-          activeTikTokController,
+          currentController.player,
+          currentController,
           streamSource: 'tiktok-promotion',
         ),
       );
     }
 
-    // Play current, pause others
-    for (final entry in _controllers.entries) {
-      final id = entry.key;
-      final controller = entry.value;
-      if (id == currentSceneId) {
-        final endBehavior = ref.read(playerStateProvider).playEndBehavior;
-        final targetMode = endBehavior == VideoEndBehavior.loop
-            ? PlaylistMode.loop
-            : PlaylistMode.none;
-        if (controller.player.state.playlistMode != targetMode) {
-          controller.player.setPlaylistMode(targetMode);
-        }
+    syncTiktokPlayback(
+      _controllers,
+      currentSceneId,
+      ref.read(playerStateProvider).playEndBehavior,
+      playCurrent:
+          !(globalPlayer.videoController == _controllers[currentSceneId] &&
+              globalPlayer.activeScene?.id == currentSceneId &&
+              globalPlayer.player?.state.playing == false),
+    );
+  }
 
-        if (!controller.player.state.playing) {
-          controller.player.play();
+  void _bindFeedCompletion(Scene scene, VideoController controller) {
+    unawaited(_completionSubscriptions.remove(scene.id)?.cancel());
+    _completionSubscriptions[scene.id] = listenToPlaybackCompletion(
+      controller.player.stream.completed,
+      () {
+        if (!mounted) return;
+        final global = ref.read(playerStateProvider);
+        // Hidden feed controllers must not compete with global navigation.
+        if (GoRouter.of(context).state.uri.path != '/scenes' ||
+            !global.completionHandledByFeed ||
+            global.videoController != controller ||
+            global.playEndBehavior != VideoEndBehavior.next) {
+          return;
         }
-      } else {
-        if (controller.player.state.playing) {
-          controller.player.pause();
+        final scenes = ref.read(sceneListProvider).value;
+        if (scenes == null ||
+            _currentIndex >= scenes.length - 1 ||
+            scenes[_currentIndex].id != scene.id) {
+          return;
         }
-      }
-    }
+        _pageController.animateToPage(
+          _currentIndex + 1,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      },
+    );
   }
 
   Future<void> _initializeController(Scene scene) async {
     try {
       final resolver = ref.read(streamResolverProvider);
       final choice = await resolver(scene);
-      if (choice == null) return;
+      if (choice == null || !mounted) return;
 
       final headers = ref.read(mediaPlaybackHeadersProvider);
 
@@ -311,32 +429,8 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
             : PlaylistMode.none,
       );
 
-      player.stream.completed.listen((completed) {
-        if (completed && mounted) {
-          final behavior = ref.read(playerStateProvider).playEndBehavior;
-          if (behavior == VideoEndBehavior.next) {
-            final scenesAsync = ref.read(sceneListProvider);
-            if (scenesAsync.hasValue) {
-              final scenes = scenesAsync.value!;
-              if (_currentIndex < scenes.length &&
-                  scenes[_currentIndex].id == scene.id) {
-                // It's the current one, scroll to next if possible
-                if (_currentIndex < scenes.length - 1) {
-                  AppLogStore.instance.add(
-                    'TiktokScenesView: auto-scrolling to next scene due to end behavior',
-                    source: 'TiktokScenesView',
-                  );
-                  _pageController.animateToPage(
-                    _currentIndex + 1,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                  );
-                }
-              }
-            }
-          }
-        }
-      });
+      if (!mounted || _controllers[scene.id] != controller) return;
+      _bindFeedCompletion(scene, controller);
 
       if (mounted) {
         setState(() {}); // Trigger rebuild to show the first frame
@@ -346,7 +440,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           final scenes = scenesAsync.value!;
           if (_currentIndex < scenes.length &&
               scenes[_currentIndex].id == scene.id) {
-            player.play();
+            unawaited(_manageControllers());
           }
         }
       }
@@ -359,8 +453,13 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   @override
   Widget build(BuildContext context) {
-    _lastKnownGlobalController = ref.watch(
-      playerStateProvider.select((state) => state.videoController),
+    _globalNotifier = ref.read(playerStateProvider.notifier);
+    ref.listen(
+      playerStateProvider.select(
+        (s) =>
+            (s.activeScene?.id, s.viewMode, s.isInPipMode, s.startupLatencyMs),
+      ),
+      (_, _) => _queueGlobalPlaybackSync(),
     );
     _allowMainPageGravityOrientation = ref.watch(
       mainPageGravityOrientationProvider,
@@ -372,9 +471,27 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     // Why: Looking up the router via InheritedWidget causes redundant O(1) traversals
     // on every rendered list item during scroll.
     // Impact: Avoids GC pressure and reduces scroll stuttering.
-    final router = GoRouter.of(context);
-    final currentPath = router.routeInformationProvider.value.uri.path;
+    final currentPath = ref
+        .watch(currentRouteUriProvider(GoRouter.of(context)))
+        .path;
     final isAtRoot = currentPath == '/scenes';
+    final feedVisible =
+        isAtRoot &&
+        !scenesAsync.isLoading &&
+        scenesAsync.hasValue &&
+        !playerState.isInPipMode &&
+        playerState.viewMode != PlayerViewMode.fullscreen;
+    if (feedVisible && !_feedWasVisible) _queueGlobalPlaybackSync();
+    if (!feedVisible && _feedWasVisible) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _pauseInactiveControllers(
+          _controllers,
+          ref.read(playerStateProvider).videoController,
+        );
+      });
+    }
+    _feedWasVisible = feedVisible;
 
     return scenesAsync.when(
       data: (scenes) {
@@ -405,22 +522,18 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
             controller: _pageController,
             scrollDirection: Axis.vertical,
             onPageChanged: (index) {
+              if (!feedVisible) return;
               // Immediately update current index for UI responsiveness
               if (index != _currentIndex) {
                 setState(() {
                   _currentIndex = index;
                 });
 
-                // Immediately try to play the NEW current if we already have its controller
-                final newSceneId = scenes[index].id;
-                final existingController = _controllers[newSceneId];
-                if (existingController != null) {
-                  existingController.player.play();
-                  // Pause the previous one immediately
-                  final prevSceneId =
-                      scenes[index > _currentIndex ? index - 1 : index + 1].id;
-                  _controllers[prevSceneId]?.player.pause();
-                }
+                syncTiktokPlayback(
+                  _controllers,
+                  scenes[index].id,
+                  ref.read(playerStateProvider).playEndBehavior,
+                );
               }
             },
             itemCount: scenes.length,
@@ -438,6 +551,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
               }
 
               return TiktokSceneItem(
+                showFeedUi: _showFeedUi,
+                onFeedUiVisibilityChanged: (visible) =>
+                    setState(() => _showFeedUi = visible),
                 scene: scene,
                 controller: controller,
                 actions: widget.actions,
@@ -460,8 +576,14 @@ class TiktokSceneItem extends ConsumerStatefulWidget {
   final List<Widget> actions;
   final bool useHero;
 
+  /// Manual overlay visibility shared across the feed's scene pages.
+  final bool showFeedUi;
+  final ValueChanged<bool> onFeedUiVisibilityChanged;
+
   const TiktokSceneItem({
     required this.scene,
+    required this.showFeedUi,
+    required this.onFeedUiVisibilityChanged,
     this.controller,
     this.actions = const [],
     this.useHero = true,
@@ -677,6 +799,15 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         streamLabel: choice?.label,
         streamSource: 'tiktok-handoff',
       );
+    } else {
+      // Promotion already shared this decoder; transfer ownership without
+      // resolving or opening the stream again.
+      await playerNotifier.attachController(
+        widget.scene,
+        controller.player,
+        controller,
+        streamSource: 'tiktok-handoff',
+      );
     }
   }
 
@@ -765,40 +896,52 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                 children: [
                   // TikTok touch area
                   Positioned.fill(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (controller.player.state.playing) {
-                          controller.player.pause();
-                        } else {
-                          controller.player.play();
-                        }
-                      },
-                      onLongPressStart: (_) {
-                        _originalSpeed = controller.player.state.rate;
-                        _currentSpeed = 5.0;
-                        controller.player.setRate(_currentSpeed);
-                        setState(() => _isSpeedingUp = true);
-                      },
-                      onLongPressMoveUpdate: (details) {
-                        final dy = details.localOffsetFromOrigin.dy;
-                        if (dy < 0) {
-                          // Increase speed up to 20x
-                          final extraSpeed = (-dy / 10).clamp(0, 15);
-                          final newSpeed = 5.0 + extraSpeed;
-                          if (newSpeed != _currentSpeed) {
-                            setState(() => _currentSpeed = newSpeed);
-                            controller.player.setRate(_currentSpeed);
+                    child: Semantics(
+                      button: !widget.showFeedUi,
+                      label: widget.showFeedUi
+                          ? null
+                          : context.l10n.common_show,
+                      child: GestureDetector(
+                        key: const ValueKey('feed_video_touch_area'),
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (!widget.showFeedUi) {
+                            widget.onFeedUiVisibilityChanged(true);
+                            return;
                           }
-                        }
-                      },
-                      onLongPressEnd: (_) {
-                        controller.player.setRate(_originalSpeed);
-                        setState(() => _isSpeedingUp = false);
-                      },
+                          if (controller.player.state.playing) {
+                            controller.player.pause();
+                          } else {
+                            controller.player.play();
+                          }
+                        },
+                        onLongPressStart: (_) {
+                          _originalSpeed = controller.player.state.rate;
+                          _currentSpeed = 5.0;
+                          controller.player.setRate(_currentSpeed);
+                          setState(() => _isSpeedingUp = true);
+                        },
+                        onLongPressMoveUpdate: (details) {
+                          final dy = details.localOffsetFromOrigin.dy;
+                          if (dy < 0) {
+                            // Increase speed up to 20x
+                            final extraSpeed = (-dy / 10).clamp(0, 15);
+                            final newSpeed = 5.0 + extraSpeed;
+                            if (newSpeed != _currentSpeed) {
+                              setState(() => _currentSpeed = newSpeed);
+                              controller.player.setRate(_currentSpeed);
+                            }
+                          }
+                        },
+                        onLongPressEnd: (_) {
+                          controller.player.setRate(_originalSpeed);
+                          setState(() => _isSpeedingUp = false);
+                        },
+                      ),
                     ),
                   ),
 
-                  if (_isSpeedingUp)
+                  if (_isSpeedingUp && widget.showFeedUi)
                     Positioned(
                       top: 50,
                       left: 0,
@@ -836,242 +979,277 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                     ),
 
                   // Gradient overlay
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 300,
-                    child: IgnorePointer(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.8),
-                              Colors.transparent,
-                            ],
+                  if (widget.showFeedUi)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: 300,
+                      child: IgnorePointer(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.8),
+                                Colors.transparent,
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
 
                   // Metadata and Buttons in a RepaintBoundary
-                  Positioned.fill(
-                    child: RepaintBoundary(
-                      child: Stack(
-                        children: [
-                          // Metadata overlay
-                          Positioned(
-                            bottom: 20,
-                            left: 16,
-                            right: 80, // Space for right buttons
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.scene.displayTitle,
-                                  style: context.textTheme.headlineSmall
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: context.fontSizes.xLarge,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                if (widget.scene.studioName != null &&
-                                    widget.scene.studioName!.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
+                  if (widget.showFeedUi)
+                    Positioned.fill(
+                      child: RepaintBoundary(
+                        child: Stack(
+                          children: [
+                            // Metadata overlay
+                            Positioned(
+                              bottom: 20,
+                              left: 16,
+                              right: 80, // Space for right buttons
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Tooltip(
-                                    message: context.l10n.details_studio,
+                                    message: context.l10n.common_hide,
                                     child: Material(
-                                      color: Colors.transparent,
-                                      clipBehavior: Clip.antiAlias,
-                                      borderRadius: BorderRadius.circular(4),
+                                      type: MaterialType.transparency,
                                       child: InkWell(
-                                        onTap: () {
-                                          if (widget.scene.studioId != null) {
-                                            context.push(
-                                              '/studios/studio/${widget.scene.studioId}',
-                                            );
-                                          }
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 2.0,
-                                            vertical: 1.0,
+                                        onTap: () => widget
+                                            .onFeedUiVisibilityChanged(false),
+                                        child: ConstrainedBox(
+                                          constraints: BoxConstraints(
+                                            minHeight: context
+                                                .dimensions
+                                                .buttonHeight
+                                                .clamp(48.0, double.infinity),
                                           ),
-                                          child: Text(
-                                            widget.scene.studioName!,
-                                            style: context.textTheme.bodyMedium
-                                                ?.copyWith(
-                                                  color: Colors.white,
-                                                  fontSize:
-                                                      context.fontSizes.body,
-                                                  fontWeight: FontWeight.w500,
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                ),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            widthFactor: 1,
+                                            heightFactor: 1,
+                                            child: Text(
+                                              widget.scene.displayTitle,
+                                              style: context
+                                                  .textTheme
+                                                  .headlineSmall
+                                                  ?.copyWith(
+                                                    color: Colors.white,
+                                                    fontSize: context
+                                                        .fontSizes
+                                                        .xLarge,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                                const SizedBox(height: 8),
-                                Text(
-                                  widget.scene.date.toString().split(' ')[0],
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: Colors.white70,
-                                    fontSize: context.fontSizes.body,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Right side buttons
-                          Positioned(
-                            bottom: 20,
-                            right: 8,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                FeedActionMenu(actions: widget.actions),
-                                SizedBox(
-                                  height: context.dimensions.spacingSmall,
-                                ),
-                                Column(
-                                  children: [
-                                    RatingButton(
-                                      rating100: _localRating,
-                                      showValue: false,
-                                      onPressed: _showRatingPicker,
-                                      style: IconButton.styleFrom(
-                                        foregroundColor: Colors.white,
+                                  if (widget.scene.studioName != null &&
+                                      widget.scene.studioName!.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Tooltip(
+                                      message: context.l10n.details_studio,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        clipBehavior: Clip.antiAlias,
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: InkWell(
+                                          onTap: () {
+                                            if (widget.scene.studioId != null) {
+                                              context.push(
+                                                '/studios/studio/${widget.scene.studioId}',
+                                              );
+                                            }
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 2.0,
+                                              vertical: 1.0,
+                                            ),
+                                            child: Text(
+                                              widget.scene.studioName!,
+                                              style: context
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        context.fontSizes.body,
+                                                    fontWeight: FontWeight.w500,
+                                                    decoration: TextDecoration
+                                                        .underline,
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      (_localRating ?? 0) > 0
-                                          ? (_localRating! / 20)
-                                                .toStringAsFixed(1)
-                                          : '-',
-                                      style: context.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: Colors.white,
-                                            fontSize: context.fontSizes.regular,
-                                          ),
-                                    ),
                                   ],
-                                ),
-                                const SizedBox(height: 16),
-                                _OverlayButton(
-                                  icon: Icons.fullscreen,
-                                  tooltip:
-                                      context.l10n.common_toggle_fullscreen,
-                                  onTap: _toggleFullScreen,
-                                ),
-                                const SizedBox(height: 16),
-                                _OverlayButton(
-                                  icon: Icons.info_outline,
-                                  tooltip: context.l10n.details_scene,
-                                  onTap: () async {
-                                    await _handoffToGlobalPlayer();
-                                    if (context.mounted) {
-                                      context.push(
-                                        '/scenes/scene/${widget.scene.id}',
-                                      );
-                                    }
-                                  },
-                                ),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    widget.scene.date.toString().split(' ')[0],
+                                    style: context.textTheme.bodyMedium
+                                        ?.copyWith(
+                                          color: Colors.white70,
+                                          fontSize: context.fontSizes.body,
+                                        ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+
+                            // Right side buttons
+                            Positioned(
+                              bottom: 20,
+                              right: 8,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  FeedActionMenu(actions: widget.actions),
+                                  SizedBox(
+                                    height: context.dimensions.spacingSmall,
+                                  ),
+                                  Column(
+                                    children: [
+                                      RatingButton(
+                                        rating100: _localRating,
+                                        showValue: false,
+                                        onPressed: _showRatingPicker,
+                                        style: IconButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        (_localRating ?? 0) > 0
+                                            ? (_localRating! / 20)
+                                                  .toStringAsFixed(1)
+                                            : '-',
+                                        style: context.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color: Colors.white,
+                                              fontSize:
+                                                  context.fontSizes.regular,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _OverlayButton(
+                                    icon: Icons.fullscreen,
+                                    tooltip:
+                                        context.l10n.common_toggle_fullscreen,
+                                    onTap: _toggleFullScreen,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _OverlayButton(
+                                    icon: Icons.info_outline,
+                                    tooltip: context.l10n.details_scene,
+                                    onTap: () async {
+                                      await _handoffToGlobalPlayer();
+                                      if (context.mounted) {
+                                        context.push(
+                                          '/scenes/scene/${widget.scene.id}',
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
                   // Progress Bar in its own RepaintBoundary to isolate slider updates
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: RepaintBoundary(
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          trackHeight: 4,
-                          thumbShape: const RoundSliderThumbShape(
-                            enabledThumbRadius: 6,
-                            elevation: 2,
-                            pressedElevation: 4,
+                  if (widget.showFeedUi)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: RepaintBoundary(
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            trackHeight: 4,
+                            thumbShape: const RoundSliderThumbShape(
+                              enabledThumbRadius: 6,
+                              elevation: 2,
+                              pressedElevation: 4,
+                            ),
+                            overlayShape: SliderComponentShape.noOverlay,
+                            activeTrackColor: Colors.white,
+                            inactiveTrackColor: Colors.white.withValues(
+                              alpha: 0.3,
+                            ),
+                            thumbColor: Colors.white,
+                            trackShape: const RectangularSliderTrackShape(),
                           ),
-                          overlayShape: SliderComponentShape.noOverlay,
-                          activeTrackColor: Colors.white,
-                          inactiveTrackColor: Colors.white.withValues(
-                            alpha: 0.3,
-                          ),
-                          thumbColor: Colors.white,
-                          trackShape: const RectangularSliderTrackShape(),
-                        ),
-                        child: SizedBox(
-                          height: 24, // Larger tap target
-                          child: StreamBuilder<Duration>(
-                            stream: controller.player.stream.position,
-                            builder: (context, snapshot) {
-                              final duration = controller
-                                  .player
-                                  .state
-                                  .duration
-                                  .inMilliseconds
-                                  .toDouble();
-                              final position = _isScrubbing
-                                  ? _scrubMs
-                                  : (snapshot.data?.inMilliseconds.toDouble() ??
-                                        controller
-                                            .player
-                                            .state
-                                            .position
-                                            .inMilliseconds
-                                            .toDouble());
-                              return Slider(
-                                value: position.clamp(0.0, duration),
-                                max: duration > 0 ? duration : 1.0,
-                                onChangeStart: (val) {
-                                  _wasPlayingBeforeScrub =
-                                      controller.player.state.playing;
-                                  setState(() {
-                                    _isScrubbing = true;
-                                    _scrubMs = val;
-                                  });
-                                },
-                                onChanged: (val) {
-                                  setState(() {
-                                    _scrubMs = val;
-                                  });
-                                },
-                                onChangeEnd: (val) {
-                                  controller.player.seek(
-                                    Duration(milliseconds: val.toInt()),
-                                  );
-                                  if (_wasPlayingBeforeScrub &&
-                                      !controller.player.state.playing) {
-                                    controller.player.play();
-                                  }
-                                  setState(() {
-                                    _isScrubbing = false;
-                                  });
-                                },
-                              );
-                            },
+                          child: SizedBox(
+                            height: 24, // Larger tap target
+                            child: StreamBuilder<Duration>(
+                              stream: controller.player.stream.position,
+                              builder: (context, snapshot) {
+                                final duration = controller
+                                    .player
+                                    .state
+                                    .duration
+                                    .inMilliseconds
+                                    .toDouble();
+                                final position = _isScrubbing
+                                    ? _scrubMs
+                                    : (snapshot.data?.inMilliseconds
+                                              .toDouble() ??
+                                          controller
+                                              .player
+                                              .state
+                                              .position
+                                              .inMilliseconds
+                                              .toDouble());
+                                return Slider(
+                                  value: position.clamp(0.0, duration),
+                                  max: duration > 0 ? duration : 1.0,
+                                  onChangeStart: (val) {
+                                    _wasPlayingBeforeScrub =
+                                        controller.player.state.playing;
+                                    setState(() {
+                                      _isScrubbing = true;
+                                      _scrubMs = val;
+                                    });
+                                  },
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _scrubMs = val;
+                                    });
+                                  },
+                                  onChangeEnd: (val) {
+                                    controller.player.seek(
+                                      Duration(milliseconds: val.toInt()),
+                                    );
+                                    if (_wasPlayingBeforeScrub &&
+                                        !controller.player.state.playing) {
+                                      controller.player.play();
+                                    }
+                                    setState(() {
+                                      _isScrubbing = false;
+                                    });
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

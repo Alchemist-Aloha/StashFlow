@@ -28,7 +28,7 @@ class PlayerSettings {
     this.playEndBehaviorName = 'stop',
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = false,
-    this.controlsAutoHideSeconds = 1,
+    this.controlsAutoHideSeconds = 2,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
@@ -128,7 +128,7 @@ class PlayerSettingsStore {
           controlsAutoHideValue is int &&
               isValidControlsAutoHideSeconds(controlsAutoHideValue)
           ? controlsAutoHideValue
-          : 1,
+          : 2,
       enableBackgroundPlayback:
           prefs.getBool(enableBackgroundPlaybackKey) ?? false,
       enableNativePip: prefs.getBool(enableNativePipKey) ?? false,

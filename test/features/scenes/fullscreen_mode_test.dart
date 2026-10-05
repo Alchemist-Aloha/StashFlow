@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
@@ -11,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:stash_app_flutter/core/utils/app_log_store.dart';
+import 'package:stash_app_flutter/core/utils/pip_mode.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_view_mode.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/global_fullscreen_overlay.dart';
@@ -97,6 +99,17 @@ class _OrientationPlayerState extends PlayerState {
   void showScene(Scene scene) {
     state = state.copyWith(activeScene: scene);
   }
+}
+
+class _PipOrientationPlayerState extends PlayerState {
+  _PipOrientationPlayerState(this.scene);
+
+  final Scene scene;
+
+  @override
+  GlobalPlayerState build() => super.build().copyWith(activeScene: scene);
+
+  void showScene(Scene scene) => state = state.copyWith(activeScene: scene);
 }
 
 void main() {
@@ -194,6 +207,349 @@ void main() {
     expect(controllerFile.existsSync(), isFalse);
     expect(cmakeSource, isNot(contains('windows_fullscreen_controller')));
   });
+
+  testWidgets(
+    'Android PiP prepares video without rotating before native confirmation',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      try {
+        PipMode.isInPipMode.value = false;
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.display.size = const Size(400, 800);
+        const pipChannel = MethodChannel('stash_app_flutter/pip');
+        final confirmation = Completer<bool>();
+        final orientations = <List<String>>[];
+        var immersiveRequests = 0;
+        var entryRequested = false;
+        late DateTime requestStartedAt;
+        Duration? entryLatency;
+        addTearDown(() {
+          PipMode.isInPipMode.value = false;
+          debugDefaultTargetPlatformOverride = null;
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+          tester.view.display.resetSize();
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(pipChannel, null);
+        });
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+              if (call.method == 'SystemChrome.setPreferredOrientations') {
+                orientations.add((call.arguments as List).cast<String>());
+              }
+              if (call.method == 'SystemChrome.setEnabledSystemUIMode' &&
+                  call.arguments == 'SystemUiMode.immersiveSticky') {
+                immersiveRequests++;
+              }
+              return null;
+            });
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(pipChannel, (call) {
+              entryRequested = true;
+              entryLatency = tester.binding.clock.now().difference(
+                requestStartedAt,
+              );
+              return confirmation.future;
+            });
+        final landscapeScene = testScene.copyWith(
+          files: [
+            const SceneFile(
+              format: 'mp4',
+              width: 1920,
+              height: 1080,
+              videoCodec: null,
+              audioCodec: null,
+              bitRate: null,
+              duration: 60,
+              frameRate: null,
+            ),
+          ],
+        );
+        await prefs.setBool('main_page_gravity_orientation', false);
+        final playerState = _PipOrientationPlayerState(landscapeScene);
+        await pumpTestWidget(
+          tester,
+          prefs: prefs,
+          overrides: [playerStateProvider.overrideWith(() => playerState)],
+          child: const GlobalFullscreenOverlay(),
+        );
+        requestStartedAt = tester.binding.clock.now();
+        final entry = playerState.requestEnterPip(aspectRatio: 16 / 9);
+        for (var frame = 0; frame < 20 && !entryRequested; frame++) {
+          await tester.pump(const Duration(milliseconds: 16));
+        }
+        expect(entryRequested, isTrue);
+        expect(playerState.isPreparingPip, isTrue);
+        expect(
+          find.byKey(const ValueKey('global_fullscreen_overlay_slide')),
+          findsOneWidget,
+        );
+        expect(orientations, isEmpty);
+        expect(immersiveRequests, 0);
+        expect(
+          tester
+              .widget<SlideTransition>(
+                find.byKey(const ValueKey('global_fullscreen_overlay_slide')),
+              )
+              .position
+              .value,
+          Offset.zero,
+          reason:
+              'Android should capture a fully visible video, not a half-finished slide',
+        );
+
+        // No native mode-change notification: the method reply closes that gap.
+        confirmation.complete(true);
+        expect(await entry, isTrue);
+        expect(
+          entryLatency,
+          lessThanOrEqualTo(const Duration(milliseconds: 33)),
+          reason: 'PiP must wait for a frame, not a fixed 150ms timer',
+        );
+        await tester.pump(const Duration(milliseconds: 400));
+        expect(playerState.isPreparingPip, isFalse);
+        expect(PipMode.isInPipMode.value, isTrue);
+        expect(orientations, isEmpty);
+
+        playerState.showScene(landscapeScene.copyWith(id: 'next'));
+        tester.view.physicalSize = const Size(300, 180);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 50));
+        expect(
+          orientations,
+          isEmpty,
+          reason: 'metadata/metrics in PiP must not rotate the activity',
+        );
+
+        PipMode.isInPipMode.value = false;
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 16));
+        expect(
+          find.byKey(const ValueKey('global_fullscreen_overlay_slide')),
+          findsNothing,
+          reason: 'PiP return must not add another 300ms slide',
+        );
+        expect(orientations.last, contains('DeviceOrientation.portraitUp'));
+        expect(
+          orientations.expand((values) => values),
+          isNot(contains('DeviceOrientation.landscapeLeft')),
+        );
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+  );
+
+  for (final previousMode in [
+    PlayerViewMode.fullscreen,
+    PlayerViewMode.tiktok,
+  ]) {
+    testWidgets(
+      'PiP prepares a complete frame from $previousMode and restores it',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        const pipChannel = MethodChannel('stash_app_flutter/pip');
+        try {
+          PipMode.isInPipMode.value = false;
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(pipChannel, (call) async => true);
+          final playerState = _PipOrientationPlayerState(testScene);
+          await pumpTestWidget(
+            tester,
+            prefs: prefs,
+            overrides: [playerStateProvider.overrideWith(() => playerState)],
+            child: const GlobalFullscreenOverlay(),
+          );
+          if (previousMode == PlayerViewMode.tiktok) {
+            playerState.setViewMode(previousMode);
+            playerState.setFullScreen(true);
+          } else {
+            playerState.requestEnterFullscreen();
+          }
+          await tester.pump(); // The ordinary fullscreen slide has just begun.
+          final entry = playerState.requestEnterPip(aspectRatio: 16 / 9);
+          await tester.pump(const Duration(milliseconds: 16));
+          expect(await entry, isTrue);
+          final slide = find.byKey(
+            const ValueKey('global_fullscreen_overlay_slide'),
+          );
+          expect(
+            tester.widget<SlideTransition>(slide).position.value,
+            Offset.zero,
+          );
+          final container = ProviderScope.containerOf(tester.element(slide));
+          expect(
+            container.read(playerStateProvider).viewMode,
+            PlayerViewMode.fullscreen,
+          );
+          expect(
+            container.read(playerStateProvider).fullscreenPhase,
+            FullscreenPhase.fullscreen,
+          );
+
+          PipMode.isInPipMode.value = false;
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 16));
+          expect(container.read(playerStateProvider).viewMode, previousMode);
+          expect(container.read(playerStateProvider).isFullScreen, isTrue);
+          if (previousMode == PlayerViewMode.tiktok) {
+            expect(slide, findsNothing);
+          } else {
+            expect(slide, findsOneWidget);
+            playerState.requestExitFullscreen();
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 16));
+            expect(
+              slide,
+              findsOneWidget,
+              reason: 'Ordinary fullscreen still uses its normal exit slide',
+            );
+            await tester.pump(const Duration(milliseconds: 400));
+            expect(slide, findsNothing);
+          }
+        } finally {
+          PipMode.isInPipMode.value = false;
+          debugDefaultTargetPlatformOverride = null;
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(pipChannel, null);
+        }
+      },
+    );
+  }
+
+  for (final lifecycle in [
+    AppLifecycleState.hidden,
+    AppLifecycleState.paused,
+  ]) {
+    testWidgets('Android PiP does not wait for frames while $lifecycle', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      const pipChannel = MethodChannel('stash_app_flutter/pip');
+      try {
+        PipMode.isInPipMode.value = false;
+        var entryRequested = false;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(pipChannel, (call) async {
+              entryRequested = true;
+              return true;
+            });
+        final playerState = _PipOrientationPlayerState(testScene);
+        await pumpTestWidget(
+          tester,
+          prefs: prefs,
+          overrides: [playerStateProvider.overrideWith(() => playerState)],
+          child: const GlobalFullscreenOverlay(),
+        );
+        playerState.requestEnterFullscreen();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
+        playerState.didChangeAppLifecycleState(lifecycle);
+        final entry = playerState.requestEnterPip(aspectRatio: 16 / 9);
+        await tester
+            .idle(); // Flush the channel without rendering another frame.
+        expect(entryRequested, isTrue);
+        expect(await entry, isTrue);
+        expect(playerState.isPreparingPip, isFalse);
+      } finally {
+        PipMode.isInPipMode.value = false;
+        debugDefaultTargetPlatformOverride = null;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(pipChannel, null);
+      }
+    });
+  }
+
+  testWidgets('Android PiP frame preparation is bounded when the app pauses', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    const pipChannel = MethodChannel('stash_app_flutter/pip');
+    try {
+      PipMode.isInPipMode.value = false;
+      var entryRequested = false;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(pipChannel, (call) async {
+            entryRequested = true;
+            return true;
+          });
+      final playerState = _PipOrientationPlayerState(testScene);
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [playerStateProvider.overrideWith(() => playerState)],
+        child: const GlobalFullscreenOverlay(),
+      );
+      final entry = playerState.requestEnterPip(aspectRatio: 16 / 9);
+      for (final lifecycle in [
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(lifecycle);
+      }
+      expect(tester.binding.framesEnabled, isFalse);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(entryRequested, isTrue);
+      expect(await entry, isTrue);
+      expect(playerState.isPreparingPip, isFalse);
+    } finally {
+      for (final lifecycle in [
+        AppLifecycleState.hidden,
+        AppLifecycleState.inactive,
+        AppLifecycleState.resumed,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(lifecycle);
+      }
+      PipMode.isInPipMode.value = false;
+      debugDefaultTargetPlatformOverride = null;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(pipChannel, null);
+      await tester.pump();
+    }
+  });
+
+  testWidgets(
+    'failed Android PiP restores inline state without a fullscreen slide',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      try {
+        PipMode.isInPipMode.value = false;
+        const pipChannel = MethodChannel('stash_app_flutter/pip');
+        addTearDown(() {
+          debugDefaultTargetPlatformOverride = null;
+          PipMode.isInPipMode.value = false;
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(pipChannel, null);
+        });
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(pipChannel, (_) async => false);
+        final playerState = _PipOrientationPlayerState(testScene);
+        await pumpTestWidget(
+          tester,
+          prefs: prefs,
+          overrides: [playerStateProvider.overrideWith(() => playerState)],
+          child: const GlobalFullscreenOverlay(),
+        );
+        final entry = playerState.requestEnterPip(aspectRatio: 16 / 9);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 16));
+        expect(await entry, isFalse);
+        await tester.pump();
+        final context = tester.element(find.byType(GlobalFullscreenOverlay));
+        final state = ProviderScope.containerOf(
+          context,
+        ).read(playerStateProvider);
+        expect(state.isInPipMode, isFalse);
+        expect(state.isFullScreen, isFalse);
+        expect(state.fullscreenPhase, FullscreenPhase.inline);
+        expect(playerState.isPreparingPip, isFalse);
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+  );
 
   testWidgets('fullscreen follows media orientation on phones', (tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;

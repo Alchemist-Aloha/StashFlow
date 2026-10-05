@@ -21,6 +21,7 @@ class NavigationCustomizationPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SettingsSectionCard(
+              wrapInPanel: false,
               title: context.l10n.settings_interface_customize_tabs,
               subtitle: context.l10n.settings_interface_customize_tabs_subtitle,
               child: const SizedBox.shrink(),
@@ -28,26 +29,40 @@ class NavigationCustomizationPage extends ConsumerWidget {
             Expanded(
               child: SettingsPanelCard(
                 child: ReorderableListView(
+                  buildDefaultDragHandles: false,
                   onReorderItem: (oldIndex, newIndex) {
                     ref
                         .read(navigationTabsProvider.notifier)
                         .reorder(oldIndex, newIndex);
                   },
                   children: [
-                    for (final tab in tabs)
+                    for (var index = 0; index < tabs.length; index++)
                       ListTile(
-                        key: ValueKey(tab.type.id),
-                        leading: Icon(
-                          Icons.drag_handle,
-                          size: 24 * context.dimensions.fontSizeFactor,
+                        key: ValueKey(tabs[index].type.id),
+                        leading: ReorderableDragStartListener(
+                          index: index,
+                          child: SizedBox(
+                            width: context.dimensions.buttonHeight.clamp(
+                              48.0,
+                              double.infinity,
+                            ),
+                            height: context.dimensions.buttonHeight.clamp(
+                              48.0,
+                              double.infinity,
+                            ),
+                            child: Icon(
+                              Icons.drag_handle,
+                              size: 24 * context.dimensions.fontSizeFactor,
+                            ),
+                          ),
                         ),
-                        title: Text(tab.type.label),
+                        title: Text(tabs[index].type.localizedLabel(context)),
                         trailing: Switch.adaptive(
-                          value: tab.visible,
+                          value: tabs[index].visible,
                           onChanged: (value) {
                             ref
                                 .read(navigationTabsProvider.notifier)
-                                .toggleTab(tab.type, value);
+                                .toggleTab(tabs[index].type, value);
                           },
                         ),
                       ),
