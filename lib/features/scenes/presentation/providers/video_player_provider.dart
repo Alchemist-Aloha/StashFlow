@@ -769,6 +769,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     unawaited(_settingsStore.saveSubtitleTextAlignment(value));
   }
 
+  /// Whether the video-only presentation is being prepared for PiP entry.
+  /// Mobile fullscreen must defer orientation changes until this request ends.
+  bool get isPreparingPip => _pipRequestInFlight;
+
   Future<bool> requestEnterPip({double? aspectRatio}) async {
     final now = DateTime.now();
     final elapsedSinceLast = _lastPipRequestAt == null
@@ -780,6 +784,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       return false;
     }
 
+    final previousPresentation = state;
+    var entered = false;
     _pipRequestInFlight = true;
     _lastPipRequestAt = now;
     try {
@@ -788,7 +794,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (PipMode.isWindowed) {
         // The windowed PiP window renders the player UI itself, so the app must
         // not switch the window to OS fullscreen first.
-        return await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
+        entered = await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
+        return entered;
       }
       if (!state.isFullScreen) {
         requestEnterFullscreen();
@@ -798,11 +805,21 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       final displayRatio = player == null
           ? null
           : pipDisplayAspectRatio(player.state.videoParams);
-      return await PipMode.enterIfAvailable(
+      entered = await PipMode.enterIfAvailable(
         aspectRatio: displayRatio ?? aspectRatio,
       );
+      return entered;
     } finally {
       _pipRequestInFlight = false;
+      if (!entered && ref.mounted) {
+        _fullscreenBeforePip = null;
+        _viewModeBeforePip = null;
+        state = state.copyWith(
+          isFullScreen: previousPresentation.isFullScreen,
+          viewMode: previousPresentation.viewMode,
+          fullscreenPhase: previousPresentation.fullscreenPhase,
+        );
+      }
     }
   }
 
@@ -979,6 +996,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   void markFullscreenEntered() {
+    // A failed PiP request or an exit can cancel entry before its async work ends.
+    if (state.fullscreenPhase != FullscreenPhase.entering) return;
     state = state.copyWith(
       isFullScreen: true,
       fullscreenPhase: state.viewMode == PlayerViewMode.tiktok

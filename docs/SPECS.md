@@ -487,7 +487,10 @@ presentation that was active before entering.
   `window_manager` applies to every window in the shared engine on Windows, so
   the main window's minimum is enforced by the Windows runner instead.
 - Android PiP is entered through the system window and can only be left by the
-  user. While active, its system parameters follow decoder display-ratio changes
+  user. Preparing Android PiP's video-only presentation and displaying PiP must
+  not change the activity's screen orientation. Fullscreen orientation policy
+  resumes only after PiP exit; failed entry restores the previous presentation.
+  While active, its system parameters follow decoder display-ratio changes
   (including metadata arrival, rotation, and auto-play-next) without re-entering
   PiP. Ratios are clamped within Android's supported 1:2.39–2.39:1 range; missing
   or invalid metadata retains the last valid ratio. Desktop PiP is an ordinary

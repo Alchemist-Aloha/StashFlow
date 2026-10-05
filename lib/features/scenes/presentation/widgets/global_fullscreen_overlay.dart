@@ -113,7 +113,13 @@ class _GlobalFullscreenOverlayState
   Future<void> _syncFullscreenOrientation() async {
     if (!mounted || kIsWeb || _usesDesktopFullscreen) return;
 
-    final phase = ref.read(playerStateProvider).fullscreenPhase;
+    final state = ref.read(playerStateProvider);
+    // Preparing the video-only PiP surface must not rotate the full activity.
+    if (state.isInPipMode ||
+        ref.read(playerStateProvider.notifier).isPreparingPip) {
+      return;
+    }
+    final phase = state.fullscreenPhase;
     if (phase != FullscreenPhase.entering &&
         phase != FullscreenPhase.fullscreen) {
       return;
@@ -122,7 +128,6 @@ class _GlobalFullscreenOverlayState
     final view = View.maybeOf(context);
     if (view == null) return;
 
-    final state = ref.read(playerStateProvider);
     final isPhone =
         view.display.size.shortestSide / view.display.devicePixelRatio <
         Responsive.mobileBreakpoint;
@@ -396,6 +401,7 @@ class _GlobalFullscreenOverlayState
           fileWidth: file?.width,
           fileHeight: file?.height,
           gravity: state.videoGravityOrientation,
+          inPip: state.isInPipMode,
         );
       }),
       (_, _) => unawaited(_queueOrientationSync()),

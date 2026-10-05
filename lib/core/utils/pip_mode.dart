@@ -107,7 +107,11 @@ class PipMode {
         'enterPictureInPicture',
         args,
       );
-      return result ?? false;
+      final entered = result ?? false;
+      // The native mode-change callback can arrive after this method reply.
+      // Publish success now so orientation stays suppressed between the two.
+      if (entered) isInPipMode.value = true;
+      return entered;
     } catch (_) {
       return false;
     }
