@@ -797,14 +797,29 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         entered = await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
         return entered;
       }
-      if (!state.isFullScreen) {
+      // TikTok also needs the global video-only surface for Android's transition.
+      if (!state.isFullScreen || state.viewMode == PlayerViewMode.tiktok) {
         requestEnterFullscreen();
-        await Future<void>.delayed(const Duration(milliseconds: 150));
+      } else {
+        // Rebuild controls so they disappear before Android captures the surface.
+        state = state.copyWith();
       }
+      if (_appLifecycleState == AppLifecycleState.resumed ||
+          _appLifecycleState == AppLifecycleState.inactive) {
+        // One prepared frame is enough. A lifecycle change can suspend frames,
+        // so never let background PiP wait indefinitely for the renderer.
+        await WidgetsBinding.instance.endOfFrame.timeout(
+          const Duration(milliseconds: 100),
+          onTimeout: () {},
+        );
+      }
+      if (!ref.mounted) return false;
       final player = state.player;
       final displayRatio = player == null
           ? null
           : pipDisplayAspectRatio(player.state.videoParams);
+      // Entry already supplies this ratio; don't resend it during the animation.
+      _lastAndroidPipRatio = displayRatio;
       entered = await PipMode.enterIfAvailable(
         aspectRatio: displayRatio ?? aspectRatio,
       );
@@ -812,6 +827,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     } finally {
       _pipRequestInFlight = false;
       if (!entered && ref.mounted) {
+        _lastAndroidPipRatio = null;
         _fullscreenBeforePip = null;
         _viewModeBeforePip = null;
         state = state.copyWith(
@@ -980,7 +996,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   void requestEnterFullscreen() {
     state = state.copyWith(
       isFullScreen: true,
-      viewMode: state.viewMode == PlayerViewMode.tiktok
+      viewMode: !_pipRequestInFlight && state.viewMode == PlayerViewMode.tiktok
           ? PlayerViewMode.tiktok
           : PlayerViewMode.fullscreen,
       fullscreenPhase: FullscreenPhase.entering,
@@ -1007,6 +1023,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   void markFullscreenExited() {
+    // PiP may already have restored inline/TikTok presentation before UI cleanup.
+    if (state.fullscreenPhase != FullscreenPhase.exiting) return;
     state = state.copyWith(
       isFullScreen: false,
       viewMode: PlayerViewMode.inline,

@@ -118,69 +118,85 @@ void main() {
     );
   }
 
-  test(
-    'Android PiP follows metadata and replacement without repeated updates',
-    () async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-      const channel = MethodChannel('stash_app_flutter/pip');
-      final calls = <MethodCall>[];
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (call) async {
-            calls.add(call);
-            return true;
-          });
-      addTearDown(() {
-        PipMode.isInPipMode.value = false;
-        debugDefaultTargetPlatformOverride = null;
+  for (final enterThroughApp in [false, true]) {
+    test(
+      'Android PiP follows metadata and replacement without repeated updates (app entry: $enterThroughApp)',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        const channel = MethodChannel('stash_app_flutter/pip');
+        final calls = <MethodCall>[];
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-            .setMockMethodCallHandler(channel, null);
-      });
-      final notifier = container.read(playerStateProvider.notifier);
-      when(mockPlayer.state).thenReturn(
-        PlayerStateData(videoParams: const mk.VideoParams(dw: 1080, dh: 1920)),
-      );
-      await notifier.attachController(
-        createTestScene('portrait'),
-        mockPlayer,
-        mockVideoController,
-      );
-      PipMode.isInPipMode.value = true;
-      await Future<void>.delayed(Duration.zero);
-      expect(calls.single.method, 'updatePictureInPictureAspectRatio');
-      expect(calls.single.arguments, {'numerator': 563, 'denominator': 1000});
+            .setMockMethodCallHandler(channel, (call) async {
+              calls.add(call);
+              return true;
+            });
+        addTearDown(() {
+          PipMode.isInPipMode.value = false;
+          debugDefaultTargetPlatformOverride = null;
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, null);
+        });
+        final notifier = container.read(playerStateProvider.notifier);
+        when(mockPlayer.state).thenReturn(
+          PlayerStateData(
+            videoParams: const mk.VideoParams(dw: 1080, dh: 1920),
+          ),
+        );
+        await notifier.attachController(
+          createTestScene('portrait'),
+          mockPlayer,
+          mockVideoController,
+        );
+        if (enterThroughApp) {
+          notifier.didChangeAppLifecycleState(AppLifecycleState.paused);
+          expect(await notifier.requestEnterPip(), isTrue);
+        } else {
+          PipMode.isInPipMode.value = true;
+        }
+        await Future<void>.delayed(Duration.zero);
+        expect(
+          calls.single.method,
+          enterThroughApp
+              ? 'enterPictureInPicture'
+              : 'updatePictureInPictureAspectRatio',
+        );
+        expect(calls.single.arguments, {'numerator': 563, 'denominator': 1000});
 
-      positionStream.add(Duration.zero);
-      await Future<void>.delayed(Duration.zero);
-      expect(calls, hasLength(1));
+        positionStream.add(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        expect(calls, hasLength(1));
 
-      final nextPlayer = MockPlayer();
-      final nextController = MockVideoController();
-      when(nextPlayer.stream).thenReturn(mockPlayer.stream);
-      when(nextController.player).thenReturn(nextPlayer);
-      when(nextPlayer.state).thenReturn(PlayerStateData());
-      await notifier.attachController(
-        createTestScene('next'),
-        nextPlayer,
-        nextController,
-      );
-      positionStream.add(Duration.zero);
-      await Future<void>.delayed(Duration.zero);
-      expect(
-        calls,
-        hasLength(1),
-        reason: 'unknown dimensions retain the previous ratio',
-      );
+        final nextPlayer = MockPlayer();
+        final nextController = MockVideoController();
+        when(nextPlayer.stream).thenReturn(mockPlayer.stream);
+        when(nextController.player).thenReturn(nextPlayer);
+        when(nextPlayer.state).thenReturn(PlayerStateData());
+        await notifier.attachController(
+          createTestScene('next'),
+          nextPlayer,
+          nextController,
+        );
+        positionStream.add(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        expect(
+          calls,
+          hasLength(1),
+          reason: 'unknown dimensions retain the previous ratio',
+        );
 
-      when(nextPlayer.state).thenReturn(
-        PlayerStateData(videoParams: const mk.VideoParams(dw: 1920, dh: 1080)),
-      );
-      positionStream.add(Duration.zero);
-      await Future<void>.delayed(Duration.zero);
-      expect(calls, hasLength(2));
-      expect(calls.last.arguments, {'numerator': 1778, 'denominator': 1000});
-      expect(container.read(playerStateProvider).isInPipMode, isTrue);
-    },
-  );
+        when(nextPlayer.state).thenReturn(
+          PlayerStateData(
+            videoParams: const mk.VideoParams(dw: 1920, dh: 1080),
+          ),
+        );
+        positionStream.add(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        expect(calls, hasLength(2));
+        expect(calls.last.arguments, {'numerator': 1778, 'denominator': 1000});
+        expect(container.read(playerStateProvider).isInPipMode, isTrue);
+      },
+    );
+  }
 
   test('background playback off pauses an active player', () async {
     final notifier = container.read(playerStateProvider.notifier);

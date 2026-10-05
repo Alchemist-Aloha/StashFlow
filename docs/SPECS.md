@@ -490,9 +490,14 @@ presentation that was active before entering.
   user. Preparing Android PiP's video-only presentation and displaying PiP must
   not change the activity's screen orientation. Fullscreen orientation policy
   resumes only after PiP exit; failed entry restores the previous presentation.
+  Foreground entry hands off after a prepared video-only frame with controls
+  hidden, rather than a fixed delay, a fullscreen slide, or an immersive-mode
+  resize. PiP-only presentation also skips the fullscreen return slide.
+  Background entry must not wait for suspended rendering; foreground frame
+  preparation has a bounded fallback if rendering stops during a lifecycle change.
   While active, its system parameters follow decoder display-ratio changes
   (including metadata arrival, rotation, and auto-play-next) without re-entering
-  PiP. Ratios are clamped within Android's supported 1:2.39–2.39:1 range; missing
+  PiP. Entry's initial ratio must not be resent unchanged. Ratios are clamped within Android's supported 1:2.39–2.39:1 range; missing
   or invalid metadata retains the last valid ratio. Desktop PiP is an ordinary
   window: `P` toggles it, and its minimal
   controls expose previous, play/pause, next, seeking, and exit-PiP actions.

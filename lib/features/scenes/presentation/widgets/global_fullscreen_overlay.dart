@@ -32,6 +32,7 @@ class _GlobalFullscreenOverlayState
   late Animation<Offset> _offsetAnimation;
   bool _isVisible = false;
   bool _isAnimating = false;
+  bool _pipOnlyPresentation = false;
   Future<void> _orientationSync = Future<void>.value();
   List<DeviceOrientation>? _lastFullscreenOrientations;
 
@@ -193,13 +194,21 @@ class _GlobalFullscreenOverlayState
         'GlobalFullscreenOverlay: showing overlay',
         source: 'GlobalFullscreenOverlay',
       );
+      _pipOnlyPresentation = ref
+          .read(playerStateProvider.notifier)
+          .isPreparingPip;
       setState(() {
         _isVisible = true;
-        _isAnimating = true;
+        _isAnimating = !_pipOnlyPresentation;
       });
-      _animationController.forward().then((_) {
-        if (mounted) setState(() => _isAnimating = false);
-      });
+      if (_pipOnlyPresentation) {
+        // Android owns the PiP animation; don't stack a fullscreen slide on it.
+        _animationController.value = 1;
+      } else {
+        _animationController.forward().then((_) {
+          if (mounted) setState(() => _isAnimating = false);
+        });
+      }
       _enterFullScreen().then((_) {
         if (mounted) {
           ref.read(playerStateProvider.notifier).markFullscreenEntered();
@@ -216,6 +225,8 @@ class _GlobalFullscreenOverlayState
   }
 
   Future<void> _enterFullScreen() async {
+    // PiP needs a video-only Flutter frame, not a separate immersive-mode resize.
+    if (_pipOnlyPresentation) return;
     final playerState = ref.read(playerStateProvider);
     final controller = playerState.videoController;
     final wasPlaying = playerState.player?.state.playing ?? false;
@@ -260,12 +271,17 @@ class _GlobalFullscreenOverlayState
       await _exitFullScreen();
       if (!mounted) return;
 
-      await _animationController.reverse();
+      if (_pipOnlyPresentation) {
+        _animationController.value = 0;
+      } else {
+        await _animationController.reverse();
+      }
       if (!mounted) return;
 
       setState(() {
         _isVisible = false;
         _isAnimating = false;
+        _pipOnlyPresentation = false;
       });
       ref.read(playerStateProvider.notifier).markFullscreenExited();
     } catch (error, stackTrace) {
@@ -388,6 +404,22 @@ class _GlobalFullscreenOverlayState
             next == FullscreenPhase.entering ||
             next == FullscreenPhase.fullscreen;
         _onFullScreenChanged(shouldShow);
+      },
+    );
+    ref.listen(
+      playerStateProvider.select(
+        (_) => ref.read(playerStateProvider.notifier).isPreparingPip,
+      ),
+      (_, preparing) {
+        if (preparing &&
+            _isVisible &&
+            _isAnimating &&
+            ref.read(playerStateProvider).fullscreenPhase !=
+                FullscreenPhase.exiting) {
+          // A PiP tap can arrive before the ordinary fullscreen slide finishes.
+          _animationController.value = 1;
+          setState(() => _isAnimating = false);
+        }
       },
     );
     ref.listen(

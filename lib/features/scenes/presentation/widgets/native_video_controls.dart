@@ -867,11 +867,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
 
     final colorScheme = Theme.of(context).colorScheme;
     final playerState = ref.watch(playerStateProvider);
-    final castState = ref.watch(castServiceProvider);
-
-    if (playerState.isInPipMode) {
+    if (playerState.isInPipMode ||
+        ref.read(playerStateProvider.notifier).isPreparingPip) {
       return const SizedBox.shrink();
     }
+    final castState = ref.watch(castServiceProvider);
 
     final value = widget.controller.player.state;
     final duration = value.duration;

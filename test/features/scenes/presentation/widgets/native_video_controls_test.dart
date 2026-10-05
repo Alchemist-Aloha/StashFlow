@@ -64,10 +64,18 @@ class MockVttService implements VttService {
 }
 
 class ActivePlayerState extends PlayerState {
-  ActivePlayerState(this.scene, {this.controlsAutoHideSeconds = 1});
+  ActivePlayerState(
+    this.scene, {
+    this.controlsAutoHideSeconds = 1,
+    this.preparingPip = false,
+  });
 
   final Scene scene;
   final int controlsAutoHideSeconds;
+  final bool preparingPip;
+
+  @override
+  bool get isPreparingPip => preparingPip;
 
   @override
   GlobalPlayerState build() => GlobalPlayerState(
@@ -229,6 +237,15 @@ void main() {
       ),
       findsNothing,
     );
+  });
+
+  testWidgets('hides controls before Android captures the PiP transition', (
+    tester,
+  ) async {
+    await _pumpControls(tester, scene: _buildScene(), preparingPip: true);
+    expect(find.byType(NativeVideoControls), findsOneWidget);
+    expect(find.byKey(const Key('video_play_pause_button')), findsNothing);
+    expect(find.byType(VideoProgressBar), findsNothing);
   });
 
   testWidgets('queue navigation keeps play centered at either end', (
@@ -682,6 +699,7 @@ Future<void> _pumpControls(
   bool showControls = true,
   bool isPlaying = false,
   int controlsAutoHideSeconds = 1,
+  bool preparingPip = false,
   bool useDoubleTapSeek = true,
   VoidCallback? onInlineBack,
   VoidCallback? onFullScreenToggle,
@@ -700,6 +718,7 @@ Future<void> _pumpControls(
           () => ActivePlayerState(
             scene,
             controlsAutoHideSeconds: controlsAutoHideSeconds,
+            preparingPip: preparingPip,
           ),
         ),
       ],
