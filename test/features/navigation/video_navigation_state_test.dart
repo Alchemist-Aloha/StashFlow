@@ -15,6 +15,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/player_
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/playlist_floating_panel.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/global_fullscreen_overlay.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/tiktok_scenes_view.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -63,7 +64,7 @@ class _NavigationPlayer extends PlayerState {
     int? prewarmLatencyMs,
     Duration? initialPosition,
     bool force = false,
-  }) async => show(scene);
+  }) async => show(scene, pip: state.isInPipMode);
 
   void show(Scene scene, {bool pip = false}) {
     state = state.copyWith(
@@ -89,6 +90,8 @@ void main() {
       'fullscreen',
       'pip',
       'playlist',
+      'playlist-stacked',
+      'playlist-contextual',
       'random',
       'random-empty',
       'random-single',
@@ -96,6 +99,10 @@ void main() {
       'mixed-components',
       'contextual-next',
       'offscreen-playlist',
+      'chain-fullscreen-playlist-pip',
+      'chain-random-playlist-reopen',
+      'chain-playlist-dismiss-boundaries',
+      'chain-fullscreen-random-playlist',
     ]) {
       final offscreen = transition == 'offscreen-playlist';
       final destinationIndex = offscreen ? 59 : 2;
@@ -187,6 +194,9 @@ void main() {
               find.byType(TiktokScenesView),
               feed ? findsOneWidget : findsNothing,
             );
+            final controllerBefore = container
+                .read(playerStateProvider)
+                .videoController;
             final queue = container.read(playbackQueueProvider.notifier);
             queue.setIndex(0, queueId: PlaybackQueueIds.main);
             final listBefore = container.read(sceneListProvider).requireValue;
@@ -214,10 +224,15 @@ void main() {
             expect(find.byType(SceneDetailsPage), findsOneWidget);
             expect(container.read(playbackQueueProvider).currentIndex, 0);
 
-            Future<void> back() async {
+            Future<void> back({bool? useSystem}) async {
               resolvePlayback = false;
-              if (systemBack) {
+              if (useSystem ?? systemBack) {
                 await tester.binding.handlePopRoute();
+              } else if (container.read(playerStateProvider).isFullScreen) {
+                final tooltip = AppLocalizations.of(
+                  tester.element(find.byType(SceneDetailsPage)),
+                )!.common_exit_fullscreen;
+                await tester.tap(find.byTooltip(tooltip).last);
               } else {
                 await tester.tap(
                   find.byKey(const Key('inline_video_back_button')),
@@ -232,7 +247,200 @@ void main() {
               await _settle(tester);
             }
 
-            if (transition == 'title-swipe' ||
+            if (transition.startsWith('chain-')) {
+              void expectScene(String id, int index) {
+                expect(router.state.uri.path, '/scenes/scene/$id');
+                expect(container.read(playerStateProvider).activeScene?.id, id);
+                expect(
+                  container.read(playbackQueueProvider).currentIndex,
+                  index,
+                );
+                expect(
+                  container.read(playerStateProvider).videoController,
+                  same(controllerBefore),
+                );
+                expect(
+                  container.read(playbackQueueProvider).activeQueueId,
+                  PlaybackQueueIds.main,
+                );
+                if (feed) {
+                  expect(feedPage(), 0, reason: 'covered feed must stay put');
+                }
+              }
+
+              Future<void> navigate(bool next, String id, int index) async {
+                resolvePlayback = true;
+                if (next) {
+                  await player.playNext();
+                } else {
+                  await player.playPrevious();
+                }
+                await _settle(tester);
+                expectScene(id, index);
+              }
+
+              Future<void> openPlaylist() async {
+                final fullscreen = container
+                    .read(playerStateProvider)
+                    .isFullScreen;
+                if (fullscreen) {
+                  await tester.tap(
+                    find.descendant(
+                      of: find.byType(GlobalFullscreenOverlay),
+                      matching: find.byKey(
+                        const Key('fullscreen_playlist_button'),
+                      ),
+                    ),
+                  );
+                } else {
+                  // An inactive details placeholder has no playlist control.
+                  PlaylistFloatingPanel.show(
+                    tester.element(find.byType(SceneDetailsPage)),
+                  );
+                }
+                await _settle(tester);
+                expect(find.byType(PlaylistFloatingPanel), findsOneWidget);
+              }
+
+              Future<void> selectPlaylist(int index) async {
+                resolvePlayback = false;
+                await openPlaylist();
+                await tester.tap(
+                  find.byKey(ValueKey<String>('playlist_item_$index')),
+                );
+                await _settle(tester);
+                player.show(scenes[index]);
+                await _settle(tester);
+                expect(find.byType(PlaylistFloatingPanel), findsNothing);
+                expect(container.read(sceneListRandomReturnProvider), isFalse);
+                expectScene('$index', index);
+              }
+
+              Future<void> randomLast() async {
+                resolvePlayback = false;
+                repository.findScenesResponses.insert(0, [scenes.last]);
+                if (container.read(playerStateProvider).isFullScreen) {
+                  await tester.tap(
+                    find.descendant(
+                      of: find.byType(GlobalFullscreenOverlay),
+                      matching: find.byKey(
+                        const Key('fullscreen_random_scene_button'),
+                      ),
+                    ),
+                  );
+                } else {
+                  final tooltip = AppLocalizations.of(
+                    tester.element(find.byType(SceneDetailsPage)),
+                  )!.random_scene;
+                  await tester.tap(find.byTooltip(tooltip).last);
+                }
+                await _settle(tester);
+                player.show(scenes.last);
+                await _settle(tester);
+                expectScene('2', 0);
+                expect(container.read(sceneListRandomReturnProvider), isTrue);
+              }
+
+              Future<void> enterFullscreen() async {
+                player.setViewMode(PlayerViewMode.fullscreen);
+                player.requestEnterFullscreen();
+                await _settle(tester);
+                expect(
+                  container.read(playerStateProvider).fullscreenPhase,
+                  FullscreenPhase.fullscreen,
+                );
+              }
+
+              if (transition == 'chain-fullscreen-playlist-pip') {
+                await enterFullscreen();
+                await navigate(true, '1', 1);
+                await selectPlaylist(2);
+                await navigate(false, '1', 1);
+                await back(useSystem: !systemBack);
+                expectScene('1', 1);
+                expect(
+                  container.read(playerStateProvider).isFullScreen,
+                  isFalse,
+                );
+                player.show(scenes[1], pip: true);
+                await navigate(true, '2', 2);
+                expect(
+                  container.read(playerStateProvider).isInPipMode,
+                  isTrue,
+                  reason: 'queue navigation must preserve PiP presentation',
+                );
+                expectScene('2', 2);
+                player.show(scenes.last);
+                await _settle(tester);
+              } else if (transition == 'chain-random-playlist-reopen') {
+                await randomLast();
+                await back(useSystem: !systemBack);
+                expect(router.state.uri.path, '/scenes/scene/0');
+                expect(
+                  container.read(playerStateProvider).activeScene?.id,
+                  '2',
+                );
+                await selectPlaylist(1);
+                await navigate(true, '2', 2);
+                await back(useSystem: !systemBack);
+                expect(router.state.uri.path, '/scenes');
+                if (feed) {
+                  expect(feedPage(), 2);
+                  expect(
+                    tester.state(find.byType(TiktokScenesView)),
+                    same(feedState),
+                  );
+                  router.push('/scenes/scene/2', extra: true);
+                } else {
+                  final card = tester
+                      .widgetList<SceneCard>(find.byType(SceneCard))
+                      .firstWhere((card) => card.scene.id == '2');
+                  expect(card.focusNode!.hasFocus, isTrue);
+                  card.onTap!();
+                }
+                await _settle(tester);
+                expect(router.state.uri.path, '/scenes/scene/2');
+                await swipe(150);
+                expect(router.state.uri.path, '/scenes/scene/1');
+                await swipe(-150);
+                expect(router.state.uri.path, '/scenes/scene/2');
+              } else if (transition == 'chain-playlist-dismiss-boundaries') {
+                for (final dismissWithSystem in [systemBack, !systemBack]) {
+                  await openPlaylist();
+                  if (dismissWithSystem) {
+                    await tester.binding.handlePopRoute();
+                  } else {
+                    await tester.tap(
+                      find.descendant(
+                        of: find.byType(PlaylistFloatingPanel),
+                        matching: find.byIcon(Icons.close_rounded),
+                      ),
+                    );
+                  }
+                  await _settle(tester);
+                  expect(find.byType(PlaylistFloatingPanel), findsNothing);
+                  expectScene('0', 0);
+                }
+                await navigate(false, '0', 0);
+                await navigate(true, '1', 1);
+                await navigate(true, '2', 2);
+                await navigate(true, '2', 2);
+                await navigate(false, '1', 1);
+                await selectPlaylist(2);
+              } else {
+                await enterFullscreen();
+                await randomLast();
+                await back(useSystem: !systemBack);
+                expectScene('2', 0);
+                expect(
+                  container.read(playerStateProvider).isFullScreen,
+                  isFalse,
+                );
+                await selectPlaylist(1);
+                await selectPlaylist(2);
+              }
+              resolvePlayback = false;
+            } else if (transition == 'title-swipe' ||
                 transition == 'mixed-components') {
               await swipe(-150);
               expect(router.state.uri.path, '/scenes/scene/1');
@@ -265,8 +473,6 @@ void main() {
               if (transition == 'mixed-components') {
                 await back();
                 expect(router.state.uri.path, '/scenes/scene/2');
-                await back();
-                expect(router.state.uri.path, '/scenes/scene/1');
               }
             } else if (transition == 'contextual-next') {
               const contextualId = 'scene:0:more-from-studio:test';
@@ -305,8 +511,7 @@ void main() {
               queue.findAndSetIndex('2');
               await _settle(tester);
               if (feed) expect(feedPage(), 0);
-              await tester.binding.handlePopRoute();
-              await _settle(tester);
+              await back();
               expect(container.read(playerStateProvider).isFullScreen, isFalse);
               expect(
                 container.read(playerStateProvider).fullscreenPhase,
@@ -326,7 +531,21 @@ void main() {
               await _settle(tester);
               expect(router.state.uri.path, '/scenes/scene/0');
               expect(container.read(playerStateProvider).isInPipMode, isFalse);
-            } else if (transition == 'playlist' || offscreen) {
+            } else if (transition.startsWith('playlist') || offscreen) {
+              if (transition == 'playlist-contextual') {
+                queue.setSequence(
+                  [scenes[0], scenes[2], scenes[1]],
+                  0,
+                  queueId: 'scene:0:more-from-studio:test',
+                );
+                container
+                    .read(sceneListRandomReturnProvider.notifier)
+                    .markRandom();
+              }
+              if (transition == 'playlist-stacked') {
+                router.push('/scenes/scene/1', extra: true);
+                await _settle(tester);
+              }
               PlaylistFloatingPanel.show(
                 tester.element(find.byType(SceneDetailsPage)),
               );
@@ -358,9 +577,25 @@ void main() {
               );
               expect(
                 container.read(playbackQueueProvider).currentIndex,
-                destinationIndex,
+                transition == 'playlist-contextual' ? 1 : destinationIndex,
               );
+              expect(container.read(sceneListRandomReturnProvider), isFalse);
               player.show(scenes.last);
+              if (!offscreen) {
+                for (final scene in [scenes[0], scenes[1], scenes[2]]) {
+                  PlaylistFloatingPanel.show(
+                    tester.element(find.byType(SceneDetailsPage)),
+                  );
+                  await _settle(tester);
+                  await tester.tap(
+                    find.byKey(ValueKey<String>('playlist_item_${scene.id}')),
+                  );
+                  await _settle(tester);
+                  expect(router.state.uri.path, '/scenes/scene/${scene.id}');
+                  expect(find.byType(PlaylistFloatingPanel), findsNothing);
+                  player.show(scene);
+                }
+              }
             } else if (transition.startsWith('random')) {
               final callsBefore = repository.findSceneCalls.length;
               repository.findScenesResponses.insertAll(0, [
@@ -412,10 +647,8 @@ void main() {
                 ..add([]);
             }
 
-            // Playlist and random push a second details route, not a new list.
-            if (transition == 'playlist' ||
-                transition == 'random' ||
-                offscreen) {
+            // Random retains history; playlist selection clears scene history.
+            if (transition == 'random') {
               await back();
               expect(router.state.uri.path, '/scenes/scene/0');
             }
@@ -427,7 +660,9 @@ void main() {
               orderedEquals(listBefore),
             );
             final retained = container.read(playbackQueueProvider);
-            final contextual = transition == 'contextual-next';
+            final contextual =
+                transition == 'contextual-next' ||
+                transition == 'playlist-contextual';
             expect(
               retained.activeQueueId,
               contextual && !feed
@@ -448,6 +683,10 @@ void main() {
             }
             expect(container.read(playerStateProvider).isFullScreen, isFalse);
             expect(container.read(playerStateProvider).isInPipMode, isFalse);
+            expect(
+              container.read(playerStateProvider).videoController,
+              same(controllerBefore),
+            );
             expect(
               container.read(playerStateProvider).activeScene?.id,
               changesScene ? '2' : '0',
