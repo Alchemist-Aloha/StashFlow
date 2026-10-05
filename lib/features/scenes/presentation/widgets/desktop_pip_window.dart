@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:media_kit/media_kit.dart' show VideoParams;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:multiview_desktop/multiview_desktop.dart';
 
@@ -27,6 +28,76 @@ Size desktopPipWindowSize(double? aspectRatio) {
   final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
   const height = 300.0;
   return Size(height * ratio, height);
+}
+
+/// Integer client dimensions that preserve the user's height when video changes.
+Size desktopPipResizeSize(Size current, double aspectRatio) {
+  final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
+  final minimum = desktopPipMinimumSize(ratio);
+  final height = current.height.clamp(minimum.height, 50000).ceilToDouble();
+  return Size((height * ratio).roundToDouble(), height);
+}
+
+/// Applies a video ratio to the native client area, not GTK's decorated frame.
+/// Wayland ignores ordinary GTK resize requests; briefly equal min/max hints
+/// request the new dimensions, then restore free resizing after confirmation.
+Future<void> applyDesktopPipWindowAspectRatio(
+  MultiViewDesktop window,
+  double ratio, {
+  required bool isWayland,
+  Size? initialSize,
+}) async {
+  if (!await window.setAspectRatio(0)) {
+    throw StateError('Could not unlock PiP aspect ratio');
+  }
+  final minimum = desktopPipMinimumSize(ratio);
+  if (!window.setMinimumSize(minimum)) {
+    throw StateError('Could not set PiP minimum size');
+  }
+  if (isWayland) {
+    final target = desktopPipResizeSize(initialSize ?? window.getSize(), ratio);
+    final maximum = window.getMaximumSize();
+    final observer = _PipResizeObserver(window, target);
+    WidgetsBinding.instance.addObserver(observer);
+    var locked = false;
+    try {
+      if (!window.setMaximumSize(target) ||
+          !window.setMinimumSize(target) ||
+          !await window.setSize(target)) {
+        throw StateError('Could not resize Wayland PiP window');
+      }
+      observer.didChangeMetrics();
+      await observer.resized.future.timeout(const Duration(seconds: 2));
+    } finally {
+      WidgetsBinding.instance.removeObserver(observer);
+      window.setMinimumSize(minimum);
+      window.setMaximumSize(maximum);
+      locked = await window.setAspectRatio(ratio);
+    }
+    if (!locked) throw StateError('Could not lock PiP aspect ratio');
+    return;
+  }
+  if (!await window.setAspectRatio(ratio)) {
+    throw StateError('Could not lock PiP aspect ratio');
+  }
+}
+
+class _PipResizeObserver extends WidgetsBindingObserver {
+  _PipResizeObserver(this.window, this.target);
+
+  final MultiViewDesktop window;
+  final Size target;
+  final resized = Completer<void>();
+
+  @override
+  void didChangeMetrics() {
+    final size = window.getSize();
+    if (!resized.isCompleted &&
+        (size.width - target.width).abs() < 1 &&
+        (size.height - target.height).abs() < 1) {
+      resized.complete();
+    }
+  }
 }
 
 /// Smallest window size the PiP window can be resized to.
@@ -63,6 +134,9 @@ class DesktopPipWindowSession {
 
   static int? _viewId;
   static bool _opening = false;
+  static StreamSubscription<VideoParams>? _videoParamsSubscription;
+  static double? _aspectRatio;
+  static Future<void> _geometryUpdate = Future<void>.value();
   static final ValueNotifier<DesktopPipPlaybackSource?> _source =
       ValueNotifier<DesktopPipPlaybackSource?>(null);
 
@@ -74,12 +148,18 @@ class DesktopPipWindowSession {
     required Future<void> Function() onPrevious,
     required Future<void> Function() onNext,
   }) async {
+    if (_viewId != null) {
+      updateSource(source);
+      return true;
+    }
     _source.value = source;
-    if (_viewId != null) return true;
     if (_opening) return false;
     _opening = true;
 
-    final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
+    final ratio = sanitizeDesktopPipAspectRatio(
+      pipDisplayAspectRatio(source.controller.player.state.videoParams) ??
+          aspectRatio,
+    );
     final minimumSize = desktopPipMinimumSize(ratio);
     try {
       final viewId = await openWindow(
@@ -111,19 +191,27 @@ class DesktopPipWindowSession {
       _viewId = viewId;
 
       final window = MultiViewDesktop.fromId(viewId);
-      await window.setAspectRatio(ratio);
+      if (Platform.isLinux) window.setAsFrameless();
+      await applyDesktopPipWindowAspectRatio(
+        window,
+        ratio,
+        isWayland:
+            Platform.isLinux &&
+            Platform.environment.containsKey('WAYLAND_DISPLAY'),
+        initialSize: desktopPipWindowSize(ratio),
+      );
+      _aspectRatio = ratio;
+      _watchVideoParams(_source.value ?? source);
       if (Platform.isMacOS) {
-        await window.macos.hideFromCollection(true);
-        await window.macos.setVisibleOnAllWorkspaces(
-          true,
-          visibleOnFullScreen: true,
-        );
+        window.macos.hideFromCollection(true);
+        window.macos.setVisibleOnAllWorkspaces(true, visibleOnFullScreen: true);
       } else {
-        await window.hideCurrentAppTabFromTaskbar(true);
+        window.hideCurrentAppTabFromTaskbar(true);
       }
       return true;
     } catch (_) {
       _viewId = null;
+      _stopWatchingVideoParams();
       _source.value = null;
       return false;
     } finally {
@@ -132,7 +220,54 @@ class DesktopPipWindowSession {
   }
 
   static void updateSource(DesktopPipPlaybackSource source) {
-    if (_viewId != null) _source.value = source;
+    if (_viewId == null) return;
+    final controllerChanged = _source.value?.controller != source.controller;
+    _source.value = source;
+    if (controllerChanged && !_opening) _watchVideoParams(source);
+  }
+
+  static void _watchVideoParams(DesktopPipPlaybackSource source) {
+    unawaited(_videoParamsSubscription?.cancel());
+    final controller = source.controller;
+    void update(VideoParams params) {
+      final displayRatio = pipDisplayAspectRatio(params);
+      final viewId = _viewId;
+      if (displayRatio == null || viewId == null) return;
+      final ratio = sanitizeDesktopPipAspectRatio(displayRatio);
+      // Serialize native changes so late metadata cannot race a scene switch.
+      _geometryUpdate = _geometryUpdate
+          .then((_) async {
+            if (_viewId != viewId ||
+                _source.value?.controller != controller ||
+                _aspectRatio == ratio) {
+              return;
+            }
+            final window = MultiViewDesktop.fromId(viewId);
+            _aspectRatio = null;
+            await applyDesktopPipWindowAspectRatio(
+              window,
+              ratio,
+              isWayland:
+                  Platform.isLinux &&
+                  Platform.environment.containsKey('WAYLAND_DISPLAY'),
+            );
+            if (_viewId == viewId) _aspectRatio = ratio;
+          })
+          .catchError((Object error) {
+            debugPrint('Desktop PiP aspect ratio update failed: $error');
+          });
+    }
+
+    _videoParamsSubscription = controller.player.stream.videoParams.listen(
+      update,
+    );
+    update(controller.player.state.videoParams);
+  }
+
+  static void _stopWatchingVideoParams() {
+    unawaited(_videoParamsSubscription?.cancel());
+    _videoParamsSubscription = null;
+    _aspectRatio = null;
   }
 
   static Future<bool> close() async {
@@ -145,6 +280,7 @@ class DesktopPipWindowSession {
   static void _handleClosed(int viewId) {
     if (_viewId != viewId) return;
     _viewId = null;
+    _stopWatchingVideoParams();
     _source.value = null;
     scheduleMicrotask(PipMode.windowedWindowClosed);
   }
@@ -226,7 +362,7 @@ class _DesktopPipPlayerWindowState extends State<_DesktopPipPlayerWindow> {
           behavior: HitTestBehavior.opaque,
           onDoubleTap: () => unawaited(_exitPip()),
           onPanStart: (_) =>
-              unawaited(MultiViewDesktop.fromId(widget.viewId).startDragging()),
+              MultiViewDesktop.fromId(widget.viewId).startDragging(),
           child: Video(
             key: ValueKey(controller),
             controller: controller,

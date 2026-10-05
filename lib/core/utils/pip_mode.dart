@@ -1,11 +1,23 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:media_kit/media_kit.dart' show VideoParams;
 
 /// Minimum window size the desktop layouts are designed around.
 const Size kDesktopMinimumWindowSize = Size(800, 600);
+
+/// Decoder display ratio, corrected for non-square pixels and rotation.
+/// Returns null until usable display metadata is available.
+double? pipDisplayAspectRatio(VideoParams params) {
+  double? ratio;
+  if ((params.dw ?? 0) > 0 && (params.dh ?? 0) > 0) {
+    ratio = params.dw! / params.dh!;
+  } else {
+    ratio = params.aspect;
+  }
+  if (ratio == null || !ratio.isFinite || ratio <= 0) return null;
+  return (params.rotate ?? 0) % 180 == 90 ? 1 / ratio : ratio;
+}
 
 typedef DesktopPipEnter = Future<bool> Function(double? aspectRatio);
 typedef DesktopPipExit = Future<bool> Function();
@@ -27,7 +39,9 @@ class PipMode {
   static DesktopPipExit? _windowedExit;
 
   /// Whether PiP is available on the current platform.
-  static bool get isSupported => isWindowed || (!kIsWeb && Platform.isAndroid);
+  static bool get isSupported =>
+      isWindowed ||
+      (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
 
   /// Whether the app can close its PiP window programmatically.
   static bool get canExit => isWindowed;
@@ -84,15 +98,10 @@ class PipMode {
       }
     }
 
-    if (kIsWeb || !Platform.isAndroid) return false;
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return false;
     try {
-      final Map<String, dynamic> args = {};
-      if (aspectRatio != null) {
-        // Android permits aspect ratios from 0.418 through 2.39.
-        aspectRatio = aspectRatio.clamp(0.418, 2.39).toDouble();
-        args['numerator'] = (aspectRatio * 1000).toInt();
-        args['denominator'] = 1000;
-      }
+      final args = _androidAspectRatioArguments(aspectRatio ?? 16 / 9);
+      if (args == null) return false;
 
       final result = await _channel.invokeMethod<bool>(
         'enterPictureInPicture',
@@ -102,6 +111,37 @@ class PipMode {
     } catch (_) {
       return false;
     }
+  }
+
+  /// Updates Android's existing system PiP window without re-entering PiP.
+  /// Invalid/missing metadata leaves its last known ratio unchanged.
+  static Future<bool> updateAspectRatio(double? aspectRatio) async {
+    if (kIsWeb ||
+        defaultTargetPlatform != TargetPlatform.android ||
+        !isInPipMode.value) {
+      return false;
+    }
+    final args = _androidAspectRatioArguments(aspectRatio);
+    if (args == null) return false;
+    try {
+      return await _channel.invokeMethod<bool>(
+            'updatePictureInPictureAspectRatio',
+            args,
+          ) ??
+          false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Map<String, int>? _androidAspectRatioArguments(double? ratio) {
+    if (ratio == null || !ratio.isFinite || ratio <= 0) return null;
+    // Rounding must stay inside Android's inclusive [1/2.39, 2.39] range.
+    final numerator = (ratio.clamp(1 / 2.39, 2.39) * 1000).round().clamp(
+      419,
+      2390,
+    );
+    return {'numerator': numerator, 'denominator': 1000};
   }
 
   /// Closes the application-managed desktop PiP window.

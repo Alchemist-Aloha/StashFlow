@@ -16,6 +16,31 @@ struct _MyApplication {
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
+// PiP's dimensions must describe its video client area, not GTK CSD margins.
+static void configure_pip_window(GObject* object, GParamSpec*, gpointer) {
+  GtkWindow* window = GTK_WINDOW(object);
+  if (g_strcmp0(gtk_window_get_title(window),
+                "Picture-in-Picture — StashFlow") != 0) {
+    return;
+  }
+  gtk_window_set_decorated(window, FALSE);
+  g_autoptr(GtkCssProvider) provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_data(
+      provider,
+      "window, window.csd, decoration, decoration:backdrop {"
+      " margin: 0; padding: 0; border: none; box-shadow: none; }",
+      -1, nullptr);
+  gtk_style_context_add_provider(
+      gtk_widget_get_style_context(GTK_WIDGET(window)),
+      GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+}
+
+static void on_window_added(GtkApplication*, GtkWindow* window, gpointer) {
+  g_signal_connect(window, "notify::title", G_CALLBACK(configure_pip_window),
+                   nullptr);
+  configure_pip_window(G_OBJECT(window), nullptr, nullptr);
+}
+
 // Called when first Flutter frame received.
 static void first_frame_cb(MyApplication* self, FlView* view) {
   gtk_widget_show(gtk_widget_get_toplevel(GTK_WIDGET(view)));
@@ -25,6 +50,8 @@ static void first_frame_cb(MyApplication* self, FlView* view) {
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
   multiview_desktop_linux_runner_install(GTK_APPLICATION(application));
+  g_signal_connect(application, "window-added", G_CALLBACK(on_window_added),
+                   nullptr);
   GtkWindow* window =
       GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
 

@@ -68,6 +68,7 @@ class PlaybackSessionController {
     _subscriptions.add(player.stream.buffering.listen((_) => onTick()));
     _subscriptions.add(player.stream.width.listen((_) => onTick()));
     _subscriptions.add(player.stream.height.listen((_) => onTick()));
+    _subscriptions.add(player.stream.videoParams.listen((_) => onTick()));
     _subscriptions.add(
       player.stream.error.listen((error) {
         onError(error);

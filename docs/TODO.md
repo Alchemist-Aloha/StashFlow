@@ -1,8 +1,5 @@
 # Plan
 
-- hide dedup name line below performer name if it is empty 
-- diagnose not smooth transition animation for filter/sort panel
-
 # Future Improvements
 
 - Add avif support

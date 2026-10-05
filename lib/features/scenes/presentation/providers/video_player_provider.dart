@@ -369,6 +369,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   bool? _fullscreenBeforePip;
   PlayerViewMode? _viewModeBeforePip;
   bool _pipRequestInFlight = false;
+  double? _lastAndroidPipRatio;
   DateTime? _lastPipRequestAt;
   static const Duration _pipRequestCooldown = Duration(milliseconds: 700);
   AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
@@ -531,6 +532,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   void _onPipModeChanged() {
     final nextInPip = PipMode.isInPipMode.value;
     final wasInPip = state.isInPipMode;
+    if (!nextInPip) {
+      _lastAndroidPipRatio = null;
+    } else {
+      _updateAndroidPipAspectRatio();
+    }
 
     if (wasInPip && !nextInPip) {
       final restoreFullscreen = _fullscreenBeforePip;
@@ -788,10 +794,35 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         requestEnterFullscreen();
         await Future<void>.delayed(const Duration(milliseconds: 150));
       }
-      return await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
+      final player = state.player;
+      final displayRatio = player == null
+          ? null
+          : pipDisplayAspectRatio(player.state.videoParams);
+      return await PipMode.enterIfAvailable(
+        aspectRatio: displayRatio ?? aspectRatio,
+      );
     } finally {
       _pipRequestInFlight = false;
     }
+  }
+
+  void _updateAndroidPipAspectRatio() {
+    if (PipMode.isWindowed || !PipMode.isInPipMode.value) return;
+    final player = state.player;
+    if (player == null) return;
+    final ratio = pipDisplayAspectRatio(player.state.videoParams);
+    if (ratio == null || ratio == _lastAndroidPipRatio) return;
+    _lastAndroidPipRatio = ratio;
+    unawaited(
+      PipMode.updateAspectRatio(ratio).then((updated) {
+        if (ref.mounted &&
+            state.player == player &&
+            !updated &&
+            _lastAndroidPipRatio == ratio) {
+          _lastAndroidPipRatio = null;
+        }
+      }),
+    );
   }
 
   Future<bool> _openDesktopPipWindow(double? aspectRatio) async {
@@ -1840,6 +1871,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
     final player = state.player;
     if (player != null) {
+      _updateAndroidPipAspectRatio();
       final activeSceneId = state.activeScene?.id;
       final isInitialized = player.state.width != null;
       if (activeSceneId != null &&

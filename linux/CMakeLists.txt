@@ -84,6 +84,12 @@ set_target_properties(${BINARY_NAME}
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
+# multiview_desktop 2.0.2 sets two unused globals; keep other warnings fatal.
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options(multiview_desktop_plugin PRIVATE
+    -Wno-error=unused-but-set-global)
+endif()
+
 
 # === Installation ===
 # By default, "installing" just makes a relocatable bundle in the build

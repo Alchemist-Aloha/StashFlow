@@ -478,17 +478,33 @@ presentation that was active before entering.
   omitted from the taskbar, dock window collection, or equivalent. Closing it
   leaves the main window geometry and decoration untouched, and stopping
   playback also closes it so no empty player is left behind.
-- The desktop PiP window is locked to the active video's aspect ratio and can
-  be resized freely down to a small minimum, so the minimum never inflates the
-  short side of portrait or ultra-wide videos. A minimum size set through
+- The desktop PiP window follows the decoder's display aspect ratio (including
+  pixel-aspect correction and rotation), updating its lock and minimum size when
+  metadata arrives or the active playback controller changes. Missing metadata
+  must not overwrite a known ratio with the initial fallback. It can be resized
+  freely down to a small minimum, so the minimum never inflates the short side
+  of portrait or ultra-wide videos. A minimum size set through
   `window_manager` applies to every window in the shared engine on Windows, so
   the main window's minimum is enforced by the Windows runner instead.
 - Android PiP is entered through the system window and can only be left by the
-  user. Desktop PiP is an ordinary window: `P` toggles it, and its minimal
+  user. While active, its system parameters follow decoder display-ratio changes
+  (including metadata arrival, rotation, and auto-play-next) without re-entering
+  PiP. Ratios are clamped within Android's supported 1:2.39–2.39:1 range; missing
+  or invalid metadata retains the last valid ratio. Desktop PiP is an ordinary
+  window: `P` toggles it, and its minimal
   controls expose previous, play/pause, next, seeking, and exit-PiP actions.
 - Desktop window placement is best-effort. In particular, Wayland compositors
   choose window positions and may ignore always-on-top requests, so the PiP
-  window may open where the compositor decides and can be dragged.
+  window may open where the compositor decides and can be dragged. Hyprland
+  rules for `Picture-in-Picture — StashFlow` should float and pin the window
+  without imposing a monitor-derived `size`: a generic PiP size rule overrides
+  the video's requested proportions. GTK aspect hints and later client resize
+  requests are also compositor-dependent on Wayland. The Linux runner removes
+  PiP-only GTK decoration margins so the window dimensions describe the video
+  client area. On Wayland, video-ratio changes briefly request equal minimum
+  and maximum dimensions, wait for native resize confirmation, then restore
+  free resizing and the ratio lock. Hyprland's `keep_aspect_ratio` rule preserves
+  those proportions during edge dragging without a forced initial `size`.
 
 ### Casting
 
