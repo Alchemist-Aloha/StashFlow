@@ -452,6 +452,10 @@ Queue invariants:
 - Fresh query state replaces the relevant sequence; pagination appends to it.
 - Selecting a scene activates the queue that supplied it.
 - Next/previous uses the active queue order.
+- Playlist selection keeps one scene-details destination above the scene list
+  or feed, clearing older scene-details history. Repeated playlist selections
+  must return to the list/feed with one Back action after fullscreen exits,
+  while retaining the selected queue and restoring active-scene focus.
 - Play and queue navigation sit at the center of the video, separate from the
   bottom seek and utility controls. When either queue direction is available,
   both navigation buttons stay visible; the unavailable direction is disabled
