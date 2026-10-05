@@ -398,6 +398,11 @@ Responsibilities:
   or resuming user-paused playback. Feed visibility uses the committed top route,
   not a retained parent route or browser URL, and reacts to both system Back and
   toolbar Back after fullscreen or details-route replacement.
+- Feed title taps hide the metadata, action buttons, scrubbing bar, and overlay
+  gradients. The next video tap restores these overlays without playing or
+  pausing; subsequent video taps retain normal play/pause behavior. Visibility
+  is shared across feed pages and remains manually controlled, with no timed
+  auto-hide. Subtitles and playback continue independently of overlay visibility.
 - Scene grid/list returns restore scroll position and keyboard focus to the
   active scene (or the saved playlist item for random returns). Restoration is
   driven by returning to the list route, waits for list data, and must not depend

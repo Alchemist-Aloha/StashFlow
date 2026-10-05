@@ -112,6 +112,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   PlayerState? _globalNotifier;
   bool _feedWasVisible = false;
+  bool _showFeedUi = true;
   bool _globalSyncQueued = false;
   bool _allowMainPageGravityOrientation = true;
 
@@ -550,6 +551,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
               }
 
               return TiktokSceneItem(
+                showFeedUi: _showFeedUi,
+                onFeedUiVisibilityChanged: (visible) =>
+                    setState(() => _showFeedUi = visible),
                 scene: scene,
                 controller: controller,
                 actions: widget.actions,
@@ -572,8 +576,14 @@ class TiktokSceneItem extends ConsumerStatefulWidget {
   final List<Widget> actions;
   final bool useHero;
 
+  /// Manual overlay visibility shared across the feed's scene pages.
+  final bool showFeedUi;
+  final ValueChanged<bool> onFeedUiVisibilityChanged;
+
   const TiktokSceneItem({
     required this.scene,
+    required this.showFeedUi,
+    required this.onFeedUiVisibilityChanged,
     this.controller,
     this.actions = const [],
     this.useHero = true,
@@ -886,40 +896,52 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                 children: [
                   // TikTok touch area
                   Positioned.fill(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (controller.player.state.playing) {
-                          controller.player.pause();
-                        } else {
-                          controller.player.play();
-                        }
-                      },
-                      onLongPressStart: (_) {
-                        _originalSpeed = controller.player.state.rate;
-                        _currentSpeed = 5.0;
-                        controller.player.setRate(_currentSpeed);
-                        setState(() => _isSpeedingUp = true);
-                      },
-                      onLongPressMoveUpdate: (details) {
-                        final dy = details.localOffsetFromOrigin.dy;
-                        if (dy < 0) {
-                          // Increase speed up to 20x
-                          final extraSpeed = (-dy / 10).clamp(0, 15);
-                          final newSpeed = 5.0 + extraSpeed;
-                          if (newSpeed != _currentSpeed) {
-                            setState(() => _currentSpeed = newSpeed);
-                            controller.player.setRate(_currentSpeed);
+                    child: Semantics(
+                      button: !widget.showFeedUi,
+                      label: widget.showFeedUi
+                          ? null
+                          : context.l10n.common_show,
+                      child: GestureDetector(
+                        key: const ValueKey('feed_video_touch_area'),
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (!widget.showFeedUi) {
+                            widget.onFeedUiVisibilityChanged(true);
+                            return;
                           }
-                        }
-                      },
-                      onLongPressEnd: (_) {
-                        controller.player.setRate(_originalSpeed);
-                        setState(() => _isSpeedingUp = false);
-                      },
+                          if (controller.player.state.playing) {
+                            controller.player.pause();
+                          } else {
+                            controller.player.play();
+                          }
+                        },
+                        onLongPressStart: (_) {
+                          _originalSpeed = controller.player.state.rate;
+                          _currentSpeed = 5.0;
+                          controller.player.setRate(_currentSpeed);
+                          setState(() => _isSpeedingUp = true);
+                        },
+                        onLongPressMoveUpdate: (details) {
+                          final dy = details.localOffsetFromOrigin.dy;
+                          if (dy < 0) {
+                            // Increase speed up to 20x
+                            final extraSpeed = (-dy / 10).clamp(0, 15);
+                            final newSpeed = 5.0 + extraSpeed;
+                            if (newSpeed != _currentSpeed) {
+                              setState(() => _currentSpeed = newSpeed);
+                              controller.player.setRate(_currentSpeed);
+                            }
+                          }
+                        },
+                        onLongPressEnd: (_) {
+                          controller.player.setRate(_originalSpeed);
+                          setState(() => _isSpeedingUp = false);
+                        },
+                      ),
                     ),
                   ),
 
-                  if (_isSpeedingUp)
+                  if (_isSpeedingUp && widget.showFeedUi)
                     Positioned(
                       top: 50,
                       left: 0,
@@ -957,242 +979,277 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                     ),
 
                   // Gradient overlay
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 300,
-                    child: IgnorePointer(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.8),
-                              Colors.transparent,
-                            ],
+                  if (widget.showFeedUi)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: 300,
+                      child: IgnorePointer(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.8),
+                                Colors.transparent,
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
 
                   // Metadata and Buttons in a RepaintBoundary
-                  Positioned.fill(
-                    child: RepaintBoundary(
-                      child: Stack(
-                        children: [
-                          // Metadata overlay
-                          Positioned(
-                            bottom: 20,
-                            left: 16,
-                            right: 80, // Space for right buttons
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.scene.displayTitle,
-                                  style: context.textTheme.headlineSmall
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: context.fontSizes.xLarge,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                if (widget.scene.studioName != null &&
-                                    widget.scene.studioName!.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
+                  if (widget.showFeedUi)
+                    Positioned.fill(
+                      child: RepaintBoundary(
+                        child: Stack(
+                          children: [
+                            // Metadata overlay
+                            Positioned(
+                              bottom: 20,
+                              left: 16,
+                              right: 80, // Space for right buttons
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Tooltip(
-                                    message: context.l10n.details_studio,
+                                    message: context.l10n.common_hide,
                                     child: Material(
-                                      color: Colors.transparent,
-                                      clipBehavior: Clip.antiAlias,
-                                      borderRadius: BorderRadius.circular(4),
+                                      type: MaterialType.transparency,
                                       child: InkWell(
-                                        onTap: () {
-                                          if (widget.scene.studioId != null) {
-                                            context.push(
-                                              '/studios/studio/${widget.scene.studioId}',
-                                            );
-                                          }
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 2.0,
-                                            vertical: 1.0,
+                                        onTap: () => widget
+                                            .onFeedUiVisibilityChanged(false),
+                                        child: ConstrainedBox(
+                                          constraints: BoxConstraints(
+                                            minHeight: context
+                                                .dimensions
+                                                .buttonHeight
+                                                .clamp(48.0, double.infinity),
                                           ),
-                                          child: Text(
-                                            widget.scene.studioName!,
-                                            style: context.textTheme.bodyMedium
-                                                ?.copyWith(
-                                                  color: Colors.white,
-                                                  fontSize:
-                                                      context.fontSizes.body,
-                                                  fontWeight: FontWeight.w500,
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                ),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            widthFactor: 1,
+                                            heightFactor: 1,
+                                            child: Text(
+                                              widget.scene.displayTitle,
+                                              style: context
+                                                  .textTheme
+                                                  .headlineSmall
+                                                  ?.copyWith(
+                                                    color: Colors.white,
+                                                    fontSize: context
+                                                        .fontSizes
+                                                        .xLarge,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                                const SizedBox(height: 8),
-                                Text(
-                                  widget.scene.date.toString().split(' ')[0],
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: Colors.white70,
-                                    fontSize: context.fontSizes.body,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Right side buttons
-                          Positioned(
-                            bottom: 20,
-                            right: 8,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                FeedActionMenu(actions: widget.actions),
-                                SizedBox(
-                                  height: context.dimensions.spacingSmall,
-                                ),
-                                Column(
-                                  children: [
-                                    RatingButton(
-                                      rating100: _localRating,
-                                      showValue: false,
-                                      onPressed: _showRatingPicker,
-                                      style: IconButton.styleFrom(
-                                        foregroundColor: Colors.white,
+                                  if (widget.scene.studioName != null &&
+                                      widget.scene.studioName!.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Tooltip(
+                                      message: context.l10n.details_studio,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        clipBehavior: Clip.antiAlias,
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: InkWell(
+                                          onTap: () {
+                                            if (widget.scene.studioId != null) {
+                                              context.push(
+                                                '/studios/studio/${widget.scene.studioId}',
+                                              );
+                                            }
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 2.0,
+                                              vertical: 1.0,
+                                            ),
+                                            child: Text(
+                                              widget.scene.studioName!,
+                                              style: context
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        context.fontSizes.body,
+                                                    fontWeight: FontWeight.w500,
+                                                    decoration: TextDecoration
+                                                        .underline,
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      (_localRating ?? 0) > 0
-                                          ? (_localRating! / 20)
-                                                .toStringAsFixed(1)
-                                          : '-',
-                                      style: context.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: Colors.white,
-                                            fontSize: context.fontSizes.regular,
-                                          ),
-                                    ),
                                   ],
-                                ),
-                                const SizedBox(height: 16),
-                                _OverlayButton(
-                                  icon: Icons.fullscreen,
-                                  tooltip:
-                                      context.l10n.common_toggle_fullscreen,
-                                  onTap: _toggleFullScreen,
-                                ),
-                                const SizedBox(height: 16),
-                                _OverlayButton(
-                                  icon: Icons.info_outline,
-                                  tooltip: context.l10n.details_scene,
-                                  onTap: () async {
-                                    await _handoffToGlobalPlayer();
-                                    if (context.mounted) {
-                                      context.push(
-                                        '/scenes/scene/${widget.scene.id}',
-                                      );
-                                    }
-                                  },
-                                ),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    widget.scene.date.toString().split(' ')[0],
+                                    style: context.textTheme.bodyMedium
+                                        ?.copyWith(
+                                          color: Colors.white70,
+                                          fontSize: context.fontSizes.body,
+                                        ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+
+                            // Right side buttons
+                            Positioned(
+                              bottom: 20,
+                              right: 8,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  FeedActionMenu(actions: widget.actions),
+                                  SizedBox(
+                                    height: context.dimensions.spacingSmall,
+                                  ),
+                                  Column(
+                                    children: [
+                                      RatingButton(
+                                        rating100: _localRating,
+                                        showValue: false,
+                                        onPressed: _showRatingPicker,
+                                        style: IconButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        (_localRating ?? 0) > 0
+                                            ? (_localRating! / 20)
+                                                  .toStringAsFixed(1)
+                                            : '-',
+                                        style: context.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color: Colors.white,
+                                              fontSize:
+                                                  context.fontSizes.regular,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _OverlayButton(
+                                    icon: Icons.fullscreen,
+                                    tooltip:
+                                        context.l10n.common_toggle_fullscreen,
+                                    onTap: _toggleFullScreen,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _OverlayButton(
+                                    icon: Icons.info_outline,
+                                    tooltip: context.l10n.details_scene,
+                                    onTap: () async {
+                                      await _handoffToGlobalPlayer();
+                                      if (context.mounted) {
+                                        context.push(
+                                          '/scenes/scene/${widget.scene.id}',
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
                   // Progress Bar in its own RepaintBoundary to isolate slider updates
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: RepaintBoundary(
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          trackHeight: 4,
-                          thumbShape: const RoundSliderThumbShape(
-                            enabledThumbRadius: 6,
-                            elevation: 2,
-                            pressedElevation: 4,
+                  if (widget.showFeedUi)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: RepaintBoundary(
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            trackHeight: 4,
+                            thumbShape: const RoundSliderThumbShape(
+                              enabledThumbRadius: 6,
+                              elevation: 2,
+                              pressedElevation: 4,
+                            ),
+                            overlayShape: SliderComponentShape.noOverlay,
+                            activeTrackColor: Colors.white,
+                            inactiveTrackColor: Colors.white.withValues(
+                              alpha: 0.3,
+                            ),
+                            thumbColor: Colors.white,
+                            trackShape: const RectangularSliderTrackShape(),
                           ),
-                          overlayShape: SliderComponentShape.noOverlay,
-                          activeTrackColor: Colors.white,
-                          inactiveTrackColor: Colors.white.withValues(
-                            alpha: 0.3,
-                          ),
-                          thumbColor: Colors.white,
-                          trackShape: const RectangularSliderTrackShape(),
-                        ),
-                        child: SizedBox(
-                          height: 24, // Larger tap target
-                          child: StreamBuilder<Duration>(
-                            stream: controller.player.stream.position,
-                            builder: (context, snapshot) {
-                              final duration = controller
-                                  .player
-                                  .state
-                                  .duration
-                                  .inMilliseconds
-                                  .toDouble();
-                              final position = _isScrubbing
-                                  ? _scrubMs
-                                  : (snapshot.data?.inMilliseconds.toDouble() ??
-                                        controller
-                                            .player
-                                            .state
-                                            .position
-                                            .inMilliseconds
-                                            .toDouble());
-                              return Slider(
-                                value: position.clamp(0.0, duration),
-                                max: duration > 0 ? duration : 1.0,
-                                onChangeStart: (val) {
-                                  _wasPlayingBeforeScrub =
-                                      controller.player.state.playing;
-                                  setState(() {
-                                    _isScrubbing = true;
-                                    _scrubMs = val;
-                                  });
-                                },
-                                onChanged: (val) {
-                                  setState(() {
-                                    _scrubMs = val;
-                                  });
-                                },
-                                onChangeEnd: (val) {
-                                  controller.player.seek(
-                                    Duration(milliseconds: val.toInt()),
-                                  );
-                                  if (_wasPlayingBeforeScrub &&
-                                      !controller.player.state.playing) {
-                                    controller.player.play();
-                                  }
-                                  setState(() {
-                                    _isScrubbing = false;
-                                  });
-                                },
-                              );
-                            },
+                          child: SizedBox(
+                            height: 24, // Larger tap target
+                            child: StreamBuilder<Duration>(
+                              stream: controller.player.stream.position,
+                              builder: (context, snapshot) {
+                                final duration = controller
+                                    .player
+                                    .state
+                                    .duration
+                                    .inMilliseconds
+                                    .toDouble();
+                                final position = _isScrubbing
+                                    ? _scrubMs
+                                    : (snapshot.data?.inMilliseconds
+                                              .toDouble() ??
+                                          controller
+                                              .player
+                                              .state
+                                              .position
+                                              .inMilliseconds
+                                              .toDouble());
+                                return Slider(
+                                  value: position.clamp(0.0, duration),
+                                  max: duration > 0 ? duration : 1.0,
+                                  onChangeStart: (val) {
+                                    _wasPlayingBeforeScrub =
+                                        controller.player.state.playing;
+                                    setState(() {
+                                      _isScrubbing = true;
+                                      _scrubMs = val;
+                                    });
+                                  },
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _scrubMs = val;
+                                    });
+                                  },
+                                  onChangeEnd: (val) {
+                                    controller.player.seek(
+                                      Duration(milliseconds: val.toInt()),
+                                    );
+                                    if (_wasPlayingBeforeScrub &&
+                                        !controller.player.state.playing) {
+                                      controller.player.play();
+                                    }
+                                    setState(() {
+                                      _isScrubbing = false;
+                                    });
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

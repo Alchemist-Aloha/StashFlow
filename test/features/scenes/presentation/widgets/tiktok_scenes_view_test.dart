@@ -57,6 +57,53 @@ class _FeedScene extends Fake implements Scene {
   int get rating100 => 0;
 }
 
+class _UiFeedScene extends _FeedScene {
+  _UiFeedScene([super.id = 'feed-ui']);
+  @override
+  String get title => 'Feed title';
+  @override
+  String? get path => null;
+  @override
+  ScenePaths get paths =>
+      const ScenePaths(screenshot: null, preview: null, stream: null);
+  @override
+  String? get studioName => null;
+  @override
+  DateTime get date => DateTime(2024, 1, 1);
+}
+
+class _UiFeedStream extends Fake implements mk.PlayerStream {
+  @override
+  Stream<bool> get playing => const Stream.empty();
+  @override
+  Stream<int> get width => const Stream.empty();
+  @override
+  Stream<int> get height => const Stream.empty();
+  @override
+  Stream<Duration> get position => const Stream.empty();
+  @override
+  Stream<List<String>> get subtitle => const Stream.empty();
+}
+
+class _UiFeedPlayer extends _FeedPlayer {
+  @override
+  mk.PlayerStream get stream => _UiFeedStream();
+  @override
+  mk.PlayerState get state => mk.PlayerState(
+    playing: playing,
+    width: 1920,
+    height: 1080,
+    playlist: mk.Playlist([mk.Media('https://example.test/feed.mp4')]),
+  );
+}
+
+class _UiFeedController extends _FeedController {
+  _UiFeedController(super.player);
+  final _notifier = ValueNotifier<PlatformVideoController?>(null);
+  @override
+  ValueNotifier<PlatformVideoController?> get notifier => _notifier;
+}
+
 class _FeedScenes extends SceneList {
   _FeedScenes(this.scenes);
   final List<Scene> scenes;
@@ -431,6 +478,91 @@ void main() {
       final isFullScreenAfterSetFalse = container.read(fullScreenModeProvider);
       expect(isFullScreenAfterSetFalse, isFalse);
     });
+  });
+
+  testWidgets('title hides feed UI and video restores it before play/pause', (
+    tester,
+  ) async {
+    var scene = _UiFeedScene();
+    var showFeedUi = true;
+    late StateSetter rebuild;
+    final player = _UiFeedPlayer()..playing = false;
+    final controller = _UiFeedController(player);
+    await pumpTestWidget(
+      tester,
+      overrides: [playerStateProvider.overrideWith(() => _FeedState(scene))],
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          rebuild = setState;
+          return Scaffold(
+            body: TiktokSceneItem(
+              scene: scene,
+              controller: controller,
+              useHero: false,
+              showFeedUi: showFeedUi,
+              onFeedUiVisibilityChanged: (visible) =>
+                  setState(() => showFeedUi = visible),
+            ),
+          );
+        },
+      ),
+    );
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+      controller.notifier.dispose();
+    });
+    await tester.pump(const Duration(milliseconds: 500));
+    final video = find.byKey(const ValueKey('feed_video_touch_area'));
+    player.playing = true;
+    await tester.tap(find.text('Feed title'));
+    await tester.pump();
+    expect(find.text('Feed title'), findsNothing);
+    expect(find.byType(FeedActionMenu), findsNothing);
+    expect(find.byType(Slider), findsNothing);
+    expect(player.pauseCalls, 0, reason: 'title must not pause the video');
+    rebuild(() => scene = _UiFeedScene('next-feed-ui'));
+    await tester.pump();
+    expect(
+      find.text('Feed title'),
+      findsNothing,
+      reason: 'scene changes preserve manual visibility',
+    );
+    await tester.pump(const Duration(seconds: 10));
+    expect(find.text('Feed title'), findsNothing);
+    await tester.tap(video);
+    await tester.pump();
+    expect(find.text('Feed title'), findsOneWidget);
+    expect(find.byType(FeedActionMenu), findsOneWidget);
+    expect(find.byType(Slider), findsOneWidget);
+    expect(
+      player.pauseCalls,
+      0,
+      reason: 'revealing UI takes priority over pause',
+    );
+    await tester.pump(const Duration(seconds: 10));
+    expect(
+      find.text('Feed title'),
+      findsOneWidget,
+      reason: 'no auto-hide timer',
+    );
+    await tester.tap(video);
+    await tester.pump();
+    expect(player.pauseCalls, 1);
+    expect(player.playing, isFalse);
+    await tester.tap(find.text('Feed title'));
+    await tester.pump();
+    await tester.tap(video);
+    await tester.pump();
+    expect(
+      player.playCalls,
+      0,
+      reason: 'revealing UI must also preserve paused playback',
+    );
+    await tester.tap(video);
+    await tester.pump();
+    expect(player.playCalls, 1);
+    expect(player.playing, isTrue);
   });
 
   testWidgets('feed action chevron expands and collapses actions', (
