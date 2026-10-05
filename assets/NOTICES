@@ -2972,6 +2972,7 @@ shared_preferences
 shared_preferences_android
 shared_preferences_foundation
 shared_preferences_platform_interface
+url_launcher
 url_launcher_android
 url_launcher_ios
 url_launcher_linux
@@ -7026,7 +7027,6 @@ plugin_platform_interface
 shared_preferences_linux
 shared_preferences_web
 shared_preferences_windows
-url_launcher
 url_launcher_platform_interface
 xdg_directories
 
@@ -27820,7 +27820,7 @@ petitparser
 
 The MIT License
 
-Copyright (c) 2006-2024 Lukas Renggli.
+Copyright (c) 2006-2026 Lukas Renggli.
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
