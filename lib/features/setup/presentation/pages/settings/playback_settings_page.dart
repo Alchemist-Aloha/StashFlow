@@ -33,7 +33,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
   bool _useDoubleTapSeek = false;
-  int _controlsAutoHideSeconds = 1;
+  int _controlsAutoHideSeconds = 2;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
   bool _videoGravityOrientation = true;

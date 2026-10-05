@@ -904,6 +904,36 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
         !_feedbackVisible;
 
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
+    final transportControls = IgnorePointer(
+      ignoring: !showTransportControls,
+      child: ExcludeFocus(
+        excluding: !showTransportControls,
+        child: AnimatedOpacity(
+          opacity: showTransportControls ? 1 : 0,
+          duration: const Duration(milliseconds: 180),
+          child: VideoTransportControls(
+            isPlaying: effectivePlaying,
+            isFullScreen: isFullScreen,
+            previousScene: previousScene,
+            nextScene: nextScene,
+            onPlayPause: () {
+              if (effectivePlaying) {
+                _pause();
+              } else {
+                _play();
+              }
+            },
+            onSkipPrevious: () {
+              ref.read(playerStateProvider.notifier).playPrevious();
+            },
+            onSkipNext: () {
+              ref.read(playerStateProvider.notifier).playNext();
+            },
+            onInteract: _showControlsTemporarily,
+          ),
+        ),
+      ),
+    );
     final keybinds = ref.watch(keybindsProvider);
 
     final bindings = _getBindings(keybinds);
@@ -1423,44 +1453,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                     ),
                   ),
 
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      ignoring: !showTransportControls,
-                      child: ExcludeFocus(
-                        excluding: !showTransportControls,
-                        child: AnimatedOpacity(
-                          opacity: showTransportControls ? 1 : 0,
-                          duration: const Duration(milliseconds: 180),
-                          child: Center(
-                            child: VideoTransportControls(
-                              isPlaying: effectivePlaying,
-                              isFullScreen: isFullScreen,
-                              previousScene: previousScene,
-                              nextScene: nextScene,
-                              onPlayPause: () {
-                                if (effectivePlaying) {
-                                  _pause();
-                                } else {
-                                  _play();
-                                }
-                              },
-                              onSkipPrevious: () {
-                                ref
-                                    .read(playerStateProvider.notifier)
-                                    .playPrevious();
-                              },
-                              onSkipNext: () {
-                                ref
-                                    .read(playerStateProvider.notifier)
-                                    .playNext();
-                              },
-                              onInteract: _showControlsTemporarily,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  if (!isDesktop)
+                    Positioned.fill(child: Center(child: transportControls)),
 
                   // Bottom Control Bar
                   Align(
@@ -1597,6 +1591,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                     ),
                                     SizedBox(height: compact ? 1 : 2),
                                     VideoPlaybackControls(
+                                      transportControls: isDesktop
+                                          ? transportControls
+                                          : null,
                                       controller: widget.controller,
                                       scene: widget.scene,
                                       playbackSpeed: playbackSpeed,

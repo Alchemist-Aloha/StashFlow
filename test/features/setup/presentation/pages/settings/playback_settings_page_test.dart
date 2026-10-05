@@ -360,7 +360,7 @@ void main() {
     final title = find.text('Player controls auto-hide delay');
     await tester.ensureVisible(title);
     await tester.pumpAndSettle();
-    expect(find.text('1s'), findsOneWidget);
+    expect(find.text('2s'), findsOneWidget);
     final sliderFinder = find.byType(Slider).first;
     final slider = tester.widget<Slider>(sliderFinder);
     expect(slider.min, 1);

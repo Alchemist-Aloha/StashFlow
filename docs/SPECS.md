@@ -416,11 +416,11 @@ The UI talks directly to media-kit state. Do not restore the removed
 video-player compatibility adapters or route-owned fullscreen player.
 Inline and fullscreen player utility buttons share the same overlay treatment
 at the top and bottom; mirrored edge gradients keep them legible over video.
-The centered transport group has no shared backdrop or drop shadow.
+The transport group has no shared backdrop or drop shadow.
 Playback settings offer a horizontal slider from 1 to 10 seconds in one-second
-steps for the player controls' auto-hide delay. One second is the default for
-existing installs. The selected delay applies to inline and fullscreen controls
-while video is playing; paused controls remain visible. The preference is
+steps for the player controls' auto-hide delay. Two seconds is the default when
+no valid preference is saved; existing saved delays are preserved. The selected
+delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
 included in configuration backups.
 
 ### Native video output and decoding
@@ -456,9 +456,11 @@ Queue invariants:
   or feed, clearing older scene-details history. Repeated playlist selections
   must return to the list/feed with one Back action after fullscreen exits,
   while retaining the selected queue and restoring active-scene focus.
-- Play and queue navigation sit at the center of the video, separate from the
-  bottom seek and utility controls. When either queue direction is available,
-  both navigation buttons stay visible; the unavailable direction is disabled
+- On desktop and web, play and queue navigation sit at the bottom left below
+  the progress bar, with utility controls to the right, in both inline and
+  fullscreen players. Mobile keeps transport centered over the video, separate
+  from the bottom seek and utility controls. When either queue direction is
+  available, both navigation buttons stay visible; the unavailable direction is disabled
   so play remains anchored between them. Navigation buttons have transparent
   backgrounds while play retains the primary filled treatment.
 - Queue indices stay synchronized with TikTok swipes and direct scene changes.

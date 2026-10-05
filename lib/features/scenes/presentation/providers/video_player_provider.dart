@@ -190,7 +190,7 @@ class GlobalPlayerState {
     this.playEndBehavior = VideoEndBehavior.stop,
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = false,
-    this.controlsAutoHideSeconds = 1,
+    this.controlsAutoHideSeconds = 2,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,

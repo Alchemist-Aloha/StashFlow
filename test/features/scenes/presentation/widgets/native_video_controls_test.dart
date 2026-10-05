@@ -20,6 +20,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/scrubbing
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_progress_bar.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_playback_controls.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 
 class FakePlayer extends Mock implements mk.Player {
   FakePlayer({this.isPlaying = false});
@@ -66,7 +67,7 @@ class MockVttService implements VttService {
 class ActivePlayerState extends PlayerState {
   ActivePlayerState(
     this.scene, {
-    this.controlsAutoHideSeconds = 1,
+    this.controlsAutoHideSeconds = 2,
     this.preparingPip = false,
   });
 
@@ -337,6 +338,71 @@ void main() {
     expect(transport.overlaps(bottomControls), isFalse);
   });
 
+  for (final fullscreen in [false, true]) {
+    for (final scale in [0.8, 1.0, 1.5]) {
+      testWidgets(
+        'desktop/web transport is bottom left (fullscreen=$fullscreen, scale=$scale)',
+        (tester) async {
+          tester.view.physicalSize = const Size(640, 360);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          final first = _buildScene();
+          await _pumpControls(
+            tester,
+            scene: first,
+            isDesktop: true,
+            scale: scale,
+            onFullScreenToggle: () {},
+          );
+          final container = ProviderScope.containerOf(
+            tester.element(find.byType(NativeVideoControls)),
+          );
+          container.read(playbackQueueProvider.notifier).setSequence([
+            first,
+            _buildScene(id: 'next_scene_id'),
+          ], 0);
+          container
+              .read(playerStateProvider.notifier)
+              .setFullScreen(fullscreen);
+          await tester.pump();
+
+          final transportFinder = find.byKey(
+            const Key('video_transport_controls'),
+          );
+          expect(transportFinder, findsOneWidget);
+          expect(
+            find.ancestor(
+              of: transportFinder,
+              matching: find.byType(VideoPlaybackControls),
+            ),
+            findsOneWidget,
+          );
+          final transport = tester.getRect(transportFinder);
+          final progress = tester.getRect(find.byType(VideoProgressBar));
+          final player = tester.getRect(find.byType(NativeVideoControls));
+          expect(transport.top, greaterThanOrEqualTo(progress.bottom));
+          expect(transport.left, lessThan(player.left + 20));
+          final play = find.byKey(const Key('video_play_pause_button'));
+          final playCenter = tester.getCenter(play);
+          expect(
+            tester.getCenter(find.byIcon(Icons.skip_previous_rounded)).dx,
+            lessThan(playCenter.dx),
+          );
+          expect(
+            tester.getCenter(find.byIcon(Icons.skip_next_rounded)).dx,
+            greaterThan(playCenter.dx),
+          );
+
+          container.read(playbackQueueProvider.notifier).setIndex(1);
+          await tester.pump();
+          expect(tester.getCenter(play), playCenter);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
   testWidgets('can render without visible controls', (tester) async {
     final scene = _buildScene();
     await _pumpControls(tester, scene: scene, showControls: false);
@@ -479,7 +545,7 @@ void main() {
 
     expect(backPressed, isTrue);
 
-    await tester.pump(const Duration(milliseconds: 1100));
+    await tester.pump(const Duration(milliseconds: 2100));
 
     expect(
       find.byKey(const Key('inline_video_back_button')).hitTestable(),
@@ -698,7 +764,9 @@ Future<void> _pumpControls(
   required Scene scene,
   bool showControls = true,
   bool isPlaying = false,
-  int controlsAutoHideSeconds = 1,
+  int controlsAutoHideSeconds = 2,
+  bool isDesktop = false,
+  double scale = 1,
   bool preparingPip = false,
   bool useDoubleTapSeek = true,
   VoidCallback? onInlineBack,
@@ -712,6 +780,7 @@ Future<void> _pumpControls(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        desktopCapabilitiesProvider.overrideWithValue(isDesktop),
         sharedPreferencesProvider.overrideWithValue(mockPrefs),
         vttServiceProvider.overrideWithValue(MockVttService()),
         playerStateProvider.overrideWith(
@@ -723,7 +792,11 @@ Future<void> _pumpControls(
         ),
       ],
       child: MaterialApp(
-        theme: AppTheme.lightTheme,
+        theme: AppTheme.buildTheme(
+          Brightness.light,
+          Colors.teal,
+          fontSizeFactor: scale,
+        ),
         darkTheme: AppTheme.darkTheme,
         home: Scaffold(
           body: NativeVideoControls(
