@@ -14,9 +14,11 @@
 
 ## 📋 Browsing and Navigation
 
-- Scene masonry grids keep their card placement when returning from playback, while restoring focus to the opened scene.
-- Navigation customization now has dedicated drag handles with larger touch targets and translated tab names.
-- Custom tab order and visibility persist across restarts. Settings keep at least one tab visible, and compact navigation works when only one tab is enabled.
+- Scene lists restore focus and scroll position to the active scene when returning from playback, including when next/previous navigation replaces the details route. Random returns keep the originating playlist item selected.
+- Playlist selections replace the current scene-details destination instead of stacking another page, so Back returns to the scene list or feed after one step, even after several playlist hops.
+- Feed playback now synchronizes to the active scene after returning from details, fullscreen, or PiP, while keeping user-paused playback paused. Inactive cached videos pause as you swipe between scenes.
+- In the feed, tap a scene title to hide playback overlays; tap the video once to bring them back without changing playback. The choice stays in effect until changed.
+- Navigation customization now has dedicated drag handles with larger touch targets and translated tab names. Custom tab order and visibility persist across restarts, settings keep at least one tab visible, and compact navigation remains usable with one tab enabled.
 
 ## 🔧 Maintenance
 
