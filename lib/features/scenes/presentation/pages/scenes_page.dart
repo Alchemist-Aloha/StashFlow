@@ -619,18 +619,20 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         final index = sceneIndexMap[scene.id] ?? -1;
         final focused = scene.id == _focusedSceneId;
 
-        return SceneCard(
-          key: focused
-              ? _focusedSceneKey
-              : ValueKey<String>('scene_card_${scene.id}'),
-          scene: scene,
-          isGrid: isGridView,
-          useMasonry: isGridView,
-          memCacheWidth: memCacheWidth,
-          memCacheHeight: memCacheHeight,
-          useHero: isAtRoot,
-          focusNode: focused ? _returnedSceneFocusNode : null,
-          onTap: () => _openScene(scene, index, scenes.length),
+        // Keep masonry parent data when the return-focus target changes key.
+        return SizedBox(
+          key: ValueKey<String>('scene_card_${scene.id}'),
+          child: SceneCard(
+            key: focused ? _focusedSceneKey : null,
+            scene: scene,
+            isGrid: isGridView,
+            useMasonry: isGridView,
+            memCacheWidth: memCacheWidth,
+            memCacheHeight: memCacheHeight,
+            useHero: isAtRoot,
+            focusNode: focused ? _returnedSceneFocusNode : null,
+            onTap: () => _openScene(scene, index, scenes.length),
+          ),
         );
       },
       floatingActionButton: (randomNavigationEnabled && !isTiktokLayout)

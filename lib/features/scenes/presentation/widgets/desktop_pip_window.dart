@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:media_kit/media_kit.dart' show VideoParams;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:multiview_desktop/multiview_desktop.dart';
 
@@ -21,6 +22,20 @@ double sanitizeDesktopPipAspectRatio(double? aspectRatio) {
     return _defaultAspectRatio;
   }
   return aspectRatio.clamp(0.25, 4.0).toDouble();
+}
+
+/// Decoder display ratio, corrected for non-square pixels and rotation.
+/// Returns null until usable display metadata is available.
+double? desktopPipDisplayAspectRatio(VideoParams params) {
+  double? ratio;
+  if ((params.dw ?? 0) > 0 && (params.dh ?? 0) > 0) {
+    ratio = params.dw! / params.dh!;
+  } else {
+    ratio = params.aspect;
+  }
+  if (ratio == null || !ratio.isFinite || ratio <= 0) return null;
+  if ((params.rotate ?? 0) % 180 == 90) ratio = 1 / ratio;
+  return sanitizeDesktopPipAspectRatio(ratio);
 }
 
 Size desktopPipWindowSize(double? aspectRatio) {
@@ -63,6 +78,9 @@ class DesktopPipWindowSession {
 
   static int? _viewId;
   static bool _opening = false;
+  static StreamSubscription<VideoParams>? _videoParamsSubscription;
+  static double? _aspectRatio;
+  static Future<void> _geometryUpdate = Future<void>.value();
   static final ValueNotifier<DesktopPipPlaybackSource?> _source =
       ValueNotifier<DesktopPipPlaybackSource?>(null);
 
@@ -74,12 +92,19 @@ class DesktopPipWindowSession {
     required Future<void> Function() onPrevious,
     required Future<void> Function() onNext,
   }) async {
+    if (_viewId != null) {
+      updateSource(source);
+      return true;
+    }
     _source.value = source;
-    if (_viewId != null) return true;
     if (_opening) return false;
     _opening = true;
 
-    final ratio = sanitizeDesktopPipAspectRatio(aspectRatio);
+    final ratio =
+        desktopPipDisplayAspectRatio(
+          source.controller.player.state.videoParams,
+        ) ??
+        sanitizeDesktopPipAspectRatio(aspectRatio);
     final minimumSize = desktopPipMinimumSize(ratio);
     try {
       final viewId = await openWindow(
@@ -112,18 +137,18 @@ class DesktopPipWindowSession {
 
       final window = MultiViewDesktop.fromId(viewId);
       await window.setAspectRatio(ratio);
+      _aspectRatio = ratio;
+      _watchVideoParams(_source.value ?? source);
       if (Platform.isMacOS) {
-        await window.macos.hideFromCollection(true);
-        await window.macos.setVisibleOnAllWorkspaces(
-          true,
-          visibleOnFullScreen: true,
-        );
+        window.macos.hideFromCollection(true);
+        window.macos.setVisibleOnAllWorkspaces(true, visibleOnFullScreen: true);
       } else {
-        await window.hideCurrentAppTabFromTaskbar(true);
+        window.hideCurrentAppTabFromTaskbar(true);
       }
       return true;
     } catch (_) {
       _viewId = null;
+      _stopWatchingVideoParams();
       _source.value = null;
       return false;
     } finally {
@@ -132,7 +157,55 @@ class DesktopPipWindowSession {
   }
 
   static void updateSource(DesktopPipPlaybackSource source) {
-    if (_viewId != null) _source.value = source;
+    if (_viewId == null) return;
+    final controllerChanged = _source.value?.controller != source.controller;
+    _source.value = source;
+    if (controllerChanged && !_opening) _watchVideoParams(source);
+  }
+
+  static void _watchVideoParams(DesktopPipPlaybackSource source) {
+    unawaited(_videoParamsSubscription?.cancel());
+    final controller = source.controller;
+    void update(VideoParams params) {
+      final ratio = desktopPipDisplayAspectRatio(params);
+      final viewId = _viewId;
+      if (ratio == null || viewId == null) return;
+      // Serialize native changes so late metadata cannot race a scene switch.
+      _geometryUpdate = _geometryUpdate
+          .then((_) async {
+            if (_viewId != viewId ||
+                _source.value?.controller != controller ||
+                _aspectRatio == ratio) {
+              return;
+            }
+            final window = MultiViewDesktop.fromId(viewId);
+            // The plugin refuses minimum-size changes while an aspect lock is set.
+            if (!await window.setAspectRatio(0)) {
+              throw StateError('Could not unlock PiP aspect ratio');
+            }
+            if (_viewId != viewId) return;
+            _aspectRatio = null;
+            if (!window.setMinimumSize(desktopPipMinimumSize(ratio)) ||
+                !await window.setAspectRatio(ratio)) {
+              throw StateError('Could not update PiP aspect ratio');
+            }
+            if (_viewId == viewId) _aspectRatio = ratio;
+          })
+          .catchError((Object error) {
+            debugPrint('Desktop PiP aspect ratio update failed: $error');
+          });
+    }
+
+    _videoParamsSubscription = controller.player.stream.videoParams.listen(
+      update,
+    );
+    update(controller.player.state.videoParams);
+  }
+
+  static void _stopWatchingVideoParams() {
+    unawaited(_videoParamsSubscription?.cancel());
+    _videoParamsSubscription = null;
+    _aspectRatio = null;
   }
 
   static Future<bool> close() async {
@@ -145,6 +218,7 @@ class DesktopPipWindowSession {
   static void _handleClosed(int viewId) {
     if (_viewId != viewId) return;
     _viewId = null;
+    _stopWatchingVideoParams();
     _source.value = null;
     scheduleMicrotask(PipMode.windowedWindowClosed);
   }
@@ -226,7 +300,7 @@ class _DesktopPipPlayerWindowState extends State<_DesktopPipPlayerWindow> {
           behavior: HitTestBehavior.opaque,
           onDoubleTap: () => unawaited(_exitPip()),
           onPanStart: (_) =>
-              unawaited(MultiViewDesktop.fromId(widget.viewId).startDragging()),
+              MultiViewDesktop.fromId(widget.viewId).startDragging(),
           child: Video(
             key: ValueKey(controller),
             controller: controller,

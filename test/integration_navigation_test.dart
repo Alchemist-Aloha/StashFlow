@@ -462,6 +462,99 @@ void main() {
     expect(find.text('Zebra Scene'), findsOneWidget);
   });
 
+  testWidgets(
+    'Integration: returning to a square scene preserves masonry placement',
+    (tester) async {
+      tester.view.physicalSize = const Size(800, 600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final scenes = List.generate(
+        100,
+        (index) =>
+            createTestScene(id: '$index', title: 'Scene $index').copyWith(
+              files: [
+                const SceneFile(
+                  format: null,
+                  width: 1080,
+                  height: 1080,
+                  videoCodec: null,
+                  audioCodec: null,
+                  bitRate: null,
+                  duration: null,
+                  frameRate: null,
+                ),
+              ],
+            ),
+      );
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(
+            LocalMockGraphQLSceneRepository(scenes),
+          ),
+          sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
+          sceneGridLayoutProvider.overrideWith(MockSceneGridLayoutTrue.new),
+        ],
+        child: Consumer(
+          builder: (context, ref, _) => MaterialApp.router(
+            routerConfig: ref.watch(routerProvider),
+            theme: AppTheme.darkTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final grid = tester.widget<MasonryGridView>(find.byType(MasonryGridView));
+      final controller = grid.controller!;
+      controller.jumpTo(6000);
+      await tester.pumpAndSettle();
+
+      final cards = tester
+          .widgetList<SceneCard>(find.byType(SceneCard))
+          .toList();
+      final target = cards.first;
+      final before = <String, Offset>{
+        for (final card in cards)
+          card.scene.id:
+              tester.getTopLeft(
+                find.byKey(ValueKey('scene_card_${card.scene.id}')),
+              ) +
+              Offset(0, controller.offset),
+      };
+      final targetRenderObject = tester.renderObject(
+        find.byKey(ValueKey('scene_card_${target.scene.id}')),
+      );
+      target.onTap!();
+      await tester.pumpAndSettle();
+      final details = find.byType(SceneDetailsPage);
+      expect(details, findsOneWidget);
+      Navigator.of(tester.element(details)).pop();
+      await tester.pumpAndSettle();
+
+      final targetFinder = find.byKey(
+        ValueKey('scene_card_${target.scene.id}'),
+      );
+      expect(tester.renderObject(targetFinder), same(targetRenderObject));
+      final returnedCard = tester.widget<SceneCard>(
+        find.descendant(of: targetFinder, matching: find.byType(SceneCard)),
+      );
+      expect(returnedCard.focusNode!.hasFocus, isTrue);
+      for (final entry in before.entries) {
+        final finder = find.byKey(ValueKey('scene_card_${entry.key}'));
+        if (finder.evaluate().isNotEmpty) {
+          final after =
+              tester.getTopLeft(finder) + Offset(0, controller.offset);
+          expect(after.dx, closeTo(entry.value.dx, 0.01));
+          expect(after.dy, closeTo(entry.value.dy, 0.01));
+        }
+      }
+    },
+  );
+
   testWidgets('Integration: scene card preference opens fullscreen overlay', (
     WidgetTester tester,
   ) async {

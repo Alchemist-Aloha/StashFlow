@@ -478,9 +478,12 @@ presentation that was active before entering.
   omitted from the taskbar, dock window collection, or equivalent. Closing it
   leaves the main window geometry and decoration untouched, and stopping
   playback also closes it so no empty player is left behind.
-- The desktop PiP window is locked to the active video's aspect ratio and can
-  be resized freely down to a small minimum, so the minimum never inflates the
-  short side of portrait or ultra-wide videos. A minimum size set through
+- The desktop PiP window follows the decoder's display aspect ratio (including
+  pixel-aspect correction and rotation), updating its lock and minimum size when
+  metadata arrives or the active playback controller changes. Missing metadata
+  must not overwrite a known ratio with the initial fallback. It can be resized
+  freely down to a small minimum, so the minimum never inflates the short side
+  of portrait or ultra-wide videos. A minimum size set through
   `window_manager` applies to every window in the shared engine on Windows, so
   the main window's minimum is enforced by the Windows runner instead.
 - Android PiP is entered through the system window and can only be left by the
