@@ -22,7 +22,8 @@ import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
 import 'player_view_mode.dart';
 import 'player_settings.dart';
-import '../widgets/desktop_pip_window.dart';
+import '../widgets/desktop_pip_window_stub.dart'
+    if (dart.library.io) '../widgets/desktop_pip_window.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
 import '../../../../core/data/auth/auth_provider.dart';
