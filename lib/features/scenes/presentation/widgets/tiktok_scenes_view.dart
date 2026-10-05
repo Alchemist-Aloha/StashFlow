@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +14,8 @@ import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../providers/player_view_mode.dart';
 import '../providers/player_settings.dart';
+import '../providers/playback_queue_provider.dart';
+import '../providers/playback_session_controller.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
@@ -37,6 +39,38 @@ class FullScreenMode extends Notifier<bool> {
 final fullScreenModeProvider = NotifierProvider<FullScreenMode, bool>(
   FullScreenMode.new,
 );
+
+/// Pauses inactive feed controllers even when the visible one is still loading.
+/// Page changes start the active controller; handoffs can preserve user pause
+/// with [playCurrent]. Both paths apply the current loop policy.
+void syncTiktokPlayback(
+  Map<String, VideoController> controllers,
+  String currentSceneId,
+  VideoEndBehavior endBehavior, {
+  bool playCurrent = true,
+}) {
+  final current = controllers[currentSceneId];
+  _pauseInactiveControllers(controllers, current);
+  if (current != null) {
+    final player = current.player;
+    final mode = endBehavior == VideoEndBehavior.loop
+        ? PlaylistMode.loop
+        : PlaylistMode.none;
+    if (player.state.playlistMode != mode) player.setPlaylistMode(mode);
+    if (playCurrent && !player.state.playing) player.play();
+  }
+}
+
+void _pauseInactiveControllers(
+  Map<String, VideoController> controllers,
+  VideoController? current,
+) {
+  for (final controller in controllers.values) {
+    if (controller != current && controller.player.state.playing) {
+      controller.player.pause();
+    }
+  }
+}
 
 /// A vertical-scrolling "TikTok-style" view for discovering scenes.
 ///
@@ -73,8 +107,11 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   /// Initialization futures to prevent redundant setup calls.
   final Map<String, Future<void>> _initFutures = {};
+  final Map<String, StreamSubscription<bool>> _completionSubscriptions = {};
 
-  VideoController? _lastKnownGlobalController;
+  PlayerState? _globalNotifier;
+  bool _feedWasVisible = false;
+  bool _globalSyncQueued = false;
   bool _allowMainPageGravityOrientation = true;
 
   @override
@@ -87,12 +124,17 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   void dispose() {
     _manageTimer?.cancel();
     _pageController.dispose();
+    for (final subscription in _completionSubscriptions.values) {
+      unawaited(subscription.cancel());
+    }
+    _completionSubscriptions.clear();
 
-    final globalController = _lastKnownGlobalController;
     for (final id in _controllers.keys) {
+      final globalController = _globalNotifier?.currentVideoController;
       if (_controllers[id] != globalController) {
         _players[id]?.dispose();
       } else {
+        _globalNotifier?.takeControllerOwnership(_controllers[id]!);
         AppLogStore.instance.add(
           'TiktokScenesView: skipping dispose of promoted player in dispose()',
           source: 'TiktokScenesView',
@@ -119,6 +161,36 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   Timer? _manageTimer;
 
+  void _queueGlobalPlaybackSync() {
+    if (_globalSyncQueued) return;
+    _globalSyncQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _globalSyncQueued = false;
+      if (!mounted || !_pageController.hasClients) return;
+      final global = ref.read(playerStateProvider);
+      if (global.activeScene == null || global.startupLatencyMs == null) return;
+      if (GoRouter.of(context).routeInformationProvider.value.uri.path !=
+              '/scenes' ||
+          global.isInPipMode ||
+          global.viewMode == PlayerViewMode.fullscreen) {
+        return;
+      }
+      final scenes = ref.read(sceneListProvider).value;
+      if (scenes == null || scenes.isEmpty) return;
+      final activeIndex = scenes.indexWhere(
+        (scene) => scene.id == global.activeScene?.id,
+      );
+      final index = activeIndex >= 0
+          ? activeIndex
+          : _currentIndex.clamp(0, scenes.length - 1);
+      if (index != _currentIndex || _pageController.page?.round() != index) {
+        setState(() => _currentIndex = index);
+        _pageController.jumpToPage(index);
+      }
+      unawaited(_manageControllers());
+    });
+  }
+
   Future<void> _manageControllers() async {
     if (!mounted) return;
 
@@ -130,9 +202,22 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     final currentPath = router.routeInformationProvider.value.uri.path;
     // We only take over if we are at the root scenes page (TikTok feed)
     if (currentPath != '/scenes') return;
+    final globalPlayer = ref.read(playerStateProvider);
+    if (globalPlayer.isInPipMode ||
+        globalPlayer.viewMode == PlayerViewMode.fullscreen ||
+        (globalPlayer.player != null &&
+            globalPlayer.startupLatencyMs == null)) {
+      return;
+    }
 
     final scenes = scenesAsync.value!;
     if (scenes.isEmpty) return;
+    if (_currentIndex >= scenes.length) {
+      _queueGlobalPlaybackSync();
+      return;
+    }
+    final currentSceneId = scenes[_currentIndex].id;
+    _pauseInactiveControllers(_controllers, _controllers[currentSceneId]);
 
     // Load next page if nearing the end
     if (_currentIndex >= scenes.length - 2) {
@@ -153,7 +238,14 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         .where((id) => !idsInWindow.contains(id))
         .toList();
     for (final id in idsToRemove) {
-      _players[id]?.dispose();
+      unawaited(_completionSubscriptions.remove(id)?.cancel());
+      final controller = _controllers[id];
+      if (controller == globalPlayer.videoController) {
+        // The global session must release its live texture before disposal.
+        _globalNotifier?.takeControllerOwnership(controller!);
+      } else {
+        _players[id]?.dispose();
+      }
       _players.remove(id);
       _controllers.remove(id);
       _initFutures.remove(id);
@@ -169,10 +261,15 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     }
 
     // Handle global player synchronization for the active scene
-    final currentSceneId = scenes[_currentIndex].id;
     final activeTikTokController = _controllers[currentSceneId];
     final playerNotifier = ref.read(playerStateProvider.notifier);
-    final globalPlayer = ref.read(playerStateProvider);
+    final queue = ref.read(playbackQueueProvider);
+    if (queue.activeQueueId != PlaybackQueueIds.main ||
+        queue.currentIndex != _currentIndex) {
+      ref
+          .read(playbackQueueProvider.notifier)
+          .setIndex(_currentIndex, queueId: PlaybackQueueIds.main);
+    }
 
     // 1. If global player is already playing this scene, it might be returning from DetailsPage.
     // In this case, we don't want to stop it! We want to take its controller into our pool.
@@ -191,17 +288,21 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       final oldPlayer = _players[currentSceneId];
       _controllers[currentSceneId] = globalPlayer.videoController!;
       _players[currentSceneId] = globalPlayer.videoController!.player;
+      _bindFeedCompletion(scenes[_currentIndex], globalPlayer.videoController!);
 
       // Important: don't dispose if it was the same controller, but we checked != above
       if (oldLocal != null && oldLocal != globalPlayer.videoController) {
         oldPlayer?.dispose();
       }
     }
-    // 2. Otherwise, if global player is idle or playing something else,
-    // promote our local active controller to global so DetailsPage/MiniPlayer can use it.
-    else if (globalPlayer.activeScene?.id != currentSceneId &&
-        activeTikTokController != null &&
-        activeTikTokController.player.state.playlist.medias.isNotEmpty) {
+    // Promote the active controller, or reclaim feed ownership on return from
+    // details/PiP even when the decoder is already shared.
+    final currentController = _controllers[currentSceneId];
+    if (currentController != null &&
+        currentController.player.state.playlist.medias.isNotEmpty &&
+        (globalPlayer.activeScene?.id != currentSceneId ||
+            globalPlayer.videoController != currentController ||
+            !globalPlayer.completionHandledByFeed)) {
       AppLogStore.instance.add(
         'TiktokScenesView: promoting local controller to global for $currentSceneId',
         source: 'TiktokScenesView',
@@ -209,42 +310,59 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       unawaited(
         playerNotifier.attachController(
           scenes[_currentIndex],
-          activeTikTokController.player,
-          activeTikTokController,
+          currentController.player,
+          currentController,
           streamSource: 'tiktok-promotion',
         ),
       );
     }
 
-    // Play current, pause others
-    for (final entry in _controllers.entries) {
-      final id = entry.key;
-      final controller = entry.value;
-      if (id == currentSceneId) {
-        final endBehavior = ref.read(playerStateProvider).playEndBehavior;
-        final targetMode = endBehavior == VideoEndBehavior.loop
-            ? PlaylistMode.loop
-            : PlaylistMode.none;
-        if (controller.player.state.playlistMode != targetMode) {
-          controller.player.setPlaylistMode(targetMode);
-        }
+    syncTiktokPlayback(
+      _controllers,
+      currentSceneId,
+      ref.read(playerStateProvider).playEndBehavior,
+      playCurrent:
+          !(globalPlayer.videoController == _controllers[currentSceneId] &&
+              globalPlayer.activeScene?.id == currentSceneId &&
+              globalPlayer.player?.state.playing == false),
+    );
+  }
 
-        if (!controller.player.state.playing) {
-          controller.player.play();
+  void _bindFeedCompletion(Scene scene, VideoController controller) {
+    unawaited(_completionSubscriptions.remove(scene.id)?.cancel());
+    _completionSubscriptions[scene.id] = listenToPlaybackCompletion(
+      controller.player.stream.completed,
+      () {
+        if (!mounted) return;
+        final global = ref.read(playerStateProvider);
+        // Hidden feed controllers must not compete with global navigation.
+        if (GoRouter.of(context).routeInformationProvider.value.uri.path !=
+                '/scenes' ||
+            !global.completionHandledByFeed ||
+            global.videoController != controller ||
+            global.playEndBehavior != VideoEndBehavior.next) {
+          return;
         }
-      } else {
-        if (controller.player.state.playing) {
-          controller.player.pause();
+        final scenes = ref.read(sceneListProvider).value;
+        if (scenes == null ||
+            _currentIndex >= scenes.length - 1 ||
+            scenes[_currentIndex].id != scene.id) {
+          return;
         }
-      }
-    }
+        _pageController.animateToPage(
+          _currentIndex + 1,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      },
+    );
   }
 
   Future<void> _initializeController(Scene scene) async {
     try {
       final resolver = ref.read(streamResolverProvider);
       final choice = await resolver(scene);
-      if (choice == null) return;
+      if (choice == null || !mounted) return;
 
       final headers = ref.read(mediaPlaybackHeadersProvider);
 
@@ -311,32 +429,8 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
             : PlaylistMode.none,
       );
 
-      player.stream.completed.listen((completed) {
-        if (completed && mounted) {
-          final behavior = ref.read(playerStateProvider).playEndBehavior;
-          if (behavior == VideoEndBehavior.next) {
-            final scenesAsync = ref.read(sceneListProvider);
-            if (scenesAsync.hasValue) {
-              final scenes = scenesAsync.value!;
-              if (_currentIndex < scenes.length &&
-                  scenes[_currentIndex].id == scene.id) {
-                // It's the current one, scroll to next if possible
-                if (_currentIndex < scenes.length - 1) {
-                  AppLogStore.instance.add(
-                    'TiktokScenesView: auto-scrolling to next scene due to end behavior',
-                    source: 'TiktokScenesView',
-                  );
-                  _pageController.animateToPage(
-                    _currentIndex + 1,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                  );
-                }
-              }
-            }
-          }
-        }
-      });
+      if (!mounted || _controllers[scene.id] != controller) return;
+      _bindFeedCompletion(scene, controller);
 
       if (mounted) {
         setState(() {}); // Trigger rebuild to show the first frame
@@ -346,7 +440,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           final scenes = scenesAsync.value!;
           if (_currentIndex < scenes.length &&
               scenes[_currentIndex].id == scene.id) {
-            player.play();
+            unawaited(_manageControllers());
           }
         }
       }
@@ -359,8 +453,13 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   @override
   Widget build(BuildContext context) {
-    _lastKnownGlobalController = ref.watch(
-      playerStateProvider.select((state) => state.videoController),
+    _globalNotifier = ref.read(playerStateProvider.notifier);
+    ref.listen(
+      playerStateProvider.select(
+        (s) =>
+            (s.activeScene?.id, s.viewMode, s.isInPipMode, s.startupLatencyMs),
+      ),
+      (_, _) => _queueGlobalPlaybackSync(),
     );
     _allowMainPageGravityOrientation = ref.watch(
       mainPageGravityOrientationProvider,
@@ -375,6 +474,23 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     final router = GoRouter.of(context);
     final currentPath = router.routeInformationProvider.value.uri.path;
     final isAtRoot = currentPath == '/scenes';
+    final feedVisible =
+        isAtRoot &&
+        !scenesAsync.isLoading &&
+        scenesAsync.hasValue &&
+        !playerState.isInPipMode &&
+        playerState.viewMode != PlayerViewMode.fullscreen;
+    if (feedVisible && !_feedWasVisible) _queueGlobalPlaybackSync();
+    if (!feedVisible && _feedWasVisible) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _pauseInactiveControllers(
+          _controllers,
+          ref.read(playerStateProvider).videoController,
+        );
+      });
+    }
+    _feedWasVisible = feedVisible;
 
     return scenesAsync.when(
       data: (scenes) {
@@ -405,22 +521,18 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
             controller: _pageController,
             scrollDirection: Axis.vertical,
             onPageChanged: (index) {
+              if (!feedVisible) return;
               // Immediately update current index for UI responsiveness
               if (index != _currentIndex) {
                 setState(() {
                   _currentIndex = index;
                 });
 
-                // Immediately try to play the NEW current if we already have its controller
-                final newSceneId = scenes[index].id;
-                final existingController = _controllers[newSceneId];
-                if (existingController != null) {
-                  existingController.player.play();
-                  // Pause the previous one immediately
-                  final prevSceneId =
-                      scenes[index > _currentIndex ? index - 1 : index + 1].id;
-                  _controllers[prevSceneId]?.player.pause();
-                }
+                syncTiktokPlayback(
+                  _controllers,
+                  scenes[index].id,
+                  ref.read(playerStateProvider).playEndBehavior,
+                );
               }
             },
             itemCount: scenes.length,
@@ -675,6 +787,15 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         controller,
         streamMimeType: choice?.mimeType,
         streamLabel: choice?.label,
+        streamSource: 'tiktok-handoff',
+      );
+    } else {
+      // Promotion already shared this decoder; transfer ownership without
+      // resolving or opening the stream again.
+      await playerNotifier.attachController(
+        widget.scene,
+        controller.player,
+        controller,
         streamSource: 'tiktok-handoff',
       );
     }

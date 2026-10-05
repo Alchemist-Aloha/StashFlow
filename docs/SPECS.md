@@ -390,6 +390,16 @@ Responsibilities:
 - `GlobalFullscreenOverlay` owns overlay visibility and platform fullscreen
   effects while rendering the active global scene.
 - `TransformableVideoSurface` owns pinch zoom and free rotation.
+- Feed page changes pause every inactive cached player, even while the next
+  controller is loading. Feed completion is edge-deduplicated and owns auto-next
+  only while its promoted session is visible; details, fullscreen, and PiP use
+  global completion instead. Returning from global playback synchronizes the
+  feed to the active scene after startup is ready, without restarting its decoder
+  or resuming user-paused playback.
+- A feed pool lends its active controller to the global session. On pool
+  unmount or eviction of the shared controller, lifetime ownership transfers to
+  the global session so the surviving
+  decoder is eventually disposed, not leaked or disposed during the handoff.
 
 The UI talks directly to media-kit state. Do not restore the removed
 video-player compatibility adapters or route-owned fullscreen player.
@@ -438,9 +448,17 @@ Queue invariants:
   backgrounds while play retains the primary filled treatment.
 - Queue indices stay synchronized with TikTok swipes and direct scene changes.
 - A failed stream resolution/open must not leave the active scene and queue
-  index disagreeing.
+  index disagreeing. Successful navigation commits the target scene by ID to
+  the queue that supplied it, without overwriting a newly selected queue.
 - End-of-list behavior follows the user's playback-end setting and must not
   navigate repeatedly.
+- Best-effort prewarming probes the scene after the active video, not the queue
+  index before a navigation transaction commits. Feed decoder preloading does
+  not also require a network probe. Stale resolutions and stopped sessions must
+  not restart probes. Requests are cancellable during connection/header/body
+  phases, limited to a 2 MB body budget even when Range is ignored, and bounded
+  to five seconds. Prewarming does not cache video bytes for the decoder or
+  guarantee gapless playback.
 
 Do not collapse contextual queues into one global sequence or reintroduce the
 removed manual-queue design.
