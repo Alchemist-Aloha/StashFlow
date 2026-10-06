@@ -753,7 +753,11 @@ Mobile and desktop images derive from existing repository screenshots. Desktop
 website images are WebP conversions of the full original captures, without
 cropping or resizing. Device frames preserve the original image proportions.
 The website uses self-hosted variable Manrope with system fallback for unsupported
-scripts. Its tool showcase covers filtering and sorting with saved defaults.
+scripts. Its screenshot-matched palette pairs a plum-black hero and orchid display
+type with blush-white showcases. The orchid download finale uses plum labels and
+a dark primary action. Wide layouts enlarge the device composition and stagger
+the filtering/sorting tool showcases; narrow layouts retain a stacked sequence.
+The tool showcase covers filtering and sorting with saved defaults.
 CSS-only motion coordinates the hero devices and screenshot changes; supported
 browsers also animate the desktop device with scroll. Reduced-motion preferences
 remove movement, and unsupported scroll-animation browsers retain static content.

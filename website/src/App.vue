@@ -19,7 +19,7 @@ defineProps({
     <section class="hero" aria-labelledby="hero-title">
       <h1 id="hero-title">{{ copy.heroTitle }}</h1>
       <p class="hero-lead">{{ copy.heroLead }}</p>
-      <div class="actions"><a class="button" href="https://github.com/Alchemist-Aloha/StashFlow/releases/latest">{{ copy.download }}</a><a class="text-link" href="#mobile">{{ copy.explore }} <span aria-hidden="true">›</span></a></div>
+      <div class="actions"><a class="button" href="https://github.com/Alchemist-Aloha/StashFlow/releases/latest">{{ copy.download }}</a><a class="text-link" href="#mobile">{{ copy.explore }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
       <div class="hero-devices">
         <div class="laptop">
           <div class="laptop-screen"><img :src="`${assetPrefix}/assets/scenes_desktop.webp`" width="1918" height="1046" :alt="copy.desktopBrowse" fetchpriority="high"></div>
@@ -61,10 +61,10 @@ defineProps({
     <section class="download-section" id="download" aria-labelledby="download-title">
       <img class="download-icon" :src="`${assetPrefix}/assets/icon.png`" width="88" height="88" alt="" loading="lazy">
       <h2 id="download-title">{{ copy.startTitle }}</h2><p>{{ copy.startCopy }}</p>
-      <div class="actions"><a class="button" href="https://github.com/Alchemist-Aloha/StashFlow/releases/latest">{{ copy.releases }}</a><a class="text-link" href="https://alchemist-aloha.github.io/StashFlow/">{{ copy.demo }} <span aria-hidden="true">↗</span></a></div>
+      <div class="actions"><a class="button" href="https://github.com/Alchemist-Aloha/StashFlow/releases/latest">{{ copy.releases }}</a><a class="text-link" href="https://alchemist-aloha.github.io/StashFlow/">{{ copy.demo }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>
       <p class="availability">Android · Windows · macOS · Linux</p>
       <p class="download-note">{{ copy.serverNote }}<br>{{ copy.demoNote }}</p>
     </section>
   </main>
-  <footer><div class="footer-top"><a class="brand" href="#main">StashFlow</a><a href="https://github.com/Alchemist-Aloha/StashFlow">{{ copy.source }} <span aria-hidden="true">↗</span></a><details class="languages"><summary>{{ copy.language }}</summary><nav :aria-label="copy.language"><a v-for="(label, target) in locales" :key="target" :href="target === 'en' ? `${assetPrefix}/index.html` : `${assetPrefix}/${target}/index.html`" :lang="target.replaceAll('_', '-')" :hreflang="target.replaceAll('_', '-')" :aria-current="target === locale ? 'page' : undefined">{{ label }}</a></nav></details></div><p>StashFlow · GPL-3.0</p></footer>
+  <footer><div class="footer-top"><a class="brand" href="#main">StashFlow</a><a href="https://github.com/Alchemist-Aloha/StashFlow">{{ copy.source }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></a><details class="languages"><summary>{{ copy.language }} <svg class="language-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary><nav :aria-label="copy.language"><a v-for="(label, target) in locales" :key="target" :href="target === 'en' ? `${assetPrefix}/index.html` : `${assetPrefix}/${target}/index.html`" :lang="target.replaceAll('_', '-')" :hreflang="target.replaceAll('_', '-')" :aria-current="target === locale ? 'page' : undefined">{{ label }}</a></nav></details></div><p>StashFlow · GPL-3.0</p></footer>
 </template>
