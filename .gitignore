@@ -1,75 +1,32 @@
-# Miscellaneous
-**/*.g.dart
-**/generated*.*
-**/Generated*.*
-**/*.freezed.dart
-**/*.mocks.dart
-**/*.graphql.dart
-.hermes/
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-.env
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
-.worktrees/
-
-.gemini/
-gha-creds-*.json
-android/key.properties
-android/upload-keystore.jks
-
-.vscode/
-# Git worktrees
-.worktrees/
-Caddyfile
-perf/
-
-docs/superpowers/plans/
-stash/
+node_modules/
 dist/
+.ssr/
+__pycache__/
+*.pyc
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+.vscode/
+.idea/
+.worktrees/
+
+# Local agent tools and reference checkouts are not part of the website branch.
+.agents/
+.pi/
 .impeccable/
 .codex/
 .hermes/
-.pi/
-.agents/
-website/node_modules/
-website/.ssr/
+stash/
+
+# Existing ignored application artifacts can remain local after branch cleanup.
+.dart_tool/
+.flutter-plugins-dependencies
+build/
+android/
+linux/
+macos/
+windows/
+lib/
+test/

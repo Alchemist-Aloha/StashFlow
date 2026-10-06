@@ -1,7 +1,0 @@
-display_name: StashFlow
-icon: asset/stashfluttericon.png
-categories:
-  - Video
-  - AudioVideo
-generic_name: Stash client
-startup_notify: true

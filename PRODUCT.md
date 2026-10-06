@@ -4,68 +4,56 @@
 
 ## Platform
 
-adaptive
+web
 
 ## Users
 
-People who run a personal Stash server and use StashFlow to browse, play, and
-manage their media library across devices.
+People with a personal Stash server who want to understand StashFlow and choose
+a native release or try the separately hosted web demo.
 
 ## Product Purpose
 
-StashFlow is a client for a user's Stash server. It makes the same library
-available for discovery, playback, and management on different device sizes and
-input methods.
+This website introduces StashFlow, a multi-platform client for browsing,
+playing, and managing a Stash library. It is not the client itself.
 
 ## Positioning
 
-The product is a multi-platform Stash client with native playback and library
-management. The web build is a limited demo because browser authentication and
-codec support constrain it.
+A device-led product introduction grounded in real application screenshots,
+with clear download links and honest platform and web-demo limitations.
 
 ## Operating Context
 
-- Users connect to their own Stash server and can switch between saved server
-  profiles.
-- Current application targets are Android and desktop (Windows, macOS, Linux).
-  The web build is available as a demo. This checkout has no iOS app target.
-- Touch, mouse, keyboard, and available screen width affect navigation and
-  controls. Designs must work across the current device classes rather than
-  assume one screen size or input method.
+- Visitors browse on phones, tablets, and desktops with touch, mouse, or keyboard.
+- Pages are pre-rendered for 11 locales and work on static hosts and subpaths.
+- Application releases and the web demo are external destinations; this branch
+  does not contain or build the Flutter application.
 
 ## Capabilities and Constraints
 
-- Library browsing covers scenes, markers, images, galleries, performers,
-  studios, tags, and groups, with search, filters, sorting, and saved defaults.
-- Playback includes contextual queues, subtitles, background audio, PiP, and
-  casting where the platform supports them.
-- Users can edit metadata and entity associations, manage server profiles, and
-  configure appearance, playback, storage, security, and navigation.
-- Server credentials and app-lock secrets belong in secure storage. Switching
-  profiles must not expose data from another server.
-- The interface is localized through ARB files. Current behavior and
-  verification contracts are documented in `docs/SPECS.md`.
+- Explain mobile browsing, playback, metadata editing, desktop support, filtering,
+  and sorting with saved defaults through existing screenshots.
+- Link to the main application repository, latest release, and web demo.
+- Preserve localized ARB copy and usable content/navigation without JavaScript.
+- Explain that a Stash server is required and there is no iOS application target.
+- Verify sample media artwork publication rights before public deployment.
 
 ## Brand Commitments
 
-The product name is StashFlow. Existing logo and screenshots are under `asset/`.
+The product name is StashFlow. Screenshots, logo, and self-hosted Manrope are
+under assets/. DESIGN.md records the plum, orchid, and blush visual world.
 
 ## Evidence on Hand
 
-`README.md` describes supported platforms and user-facing features;
-`docs/SPECS.md` defines current product and accessibility contracts. Screenshots
-of core flows are in `asset/`.
+README.md describes development and asset provenance; docs/SPECS.md defines the
+website's current behavior and verification contracts.
 
 ## Product Principles
 
-- Keep the Stash library usable across supported devices and input methods.
-- Preserve list, filter, and playback context as users move through the library.
-- Protect server-bound data and credentials when profiles change.
-- Make controls understandable through localization, accessible states, and
-  responsive behavior.
+- Let the real interface introduce the product.
+- Make the next action clear without inventing claims or metrics.
+- Preserve screenshot framing, localized navigation, and accessible controls.
 
 ## Accessibility & Inclusion
 
-The interface must support dynamic scaling, readable contrast, keyboard focus,
-screen-reader labels, and touch targets at supported scale extremes. Every
-user-visible string must use the supported localization files.
+Support visible keyboard focus, screen-reader names, readable contrast,
+44px control targets, responsive layouts, zoom, and reduced motion.

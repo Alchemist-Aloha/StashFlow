@@ -1,5 +1,0 @@
-query GetVersion {
-  version {
-    version
-  }
-}

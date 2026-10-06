@@ -1,86 +1,79 @@
-![StashFlow — Your Stash library, everywhere](asset/github_social_preview.png)
+# StashFlow introduction website
 
-# StashFlow
+A standalone Vue 3 product website for StashFlow. This branch contains the
+website only; the application and its web demo are separate projects.
+Vite builds and pre-renders every locale, then Vue hydrates the pages in the
+browser. Content, screenshot radios, and language links work without JavaScript.
 
-A modern, multi-platform client for your [**Stash server**](https://github.com/stashapp/stash). Built for fast browsing, playback, and library management across **Android**, **Desktop** (Windows, macOS, Linux), and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
+Requires Node.js 20.19+ or 22.12+, npm, and Python 3 for static checks.
 
-The app is primarily tested on Android and Windows. The web build is best treated as a demo because browser restrictions limit authentication and playback behavior. For the full experience, use a native build.
+## Development and deployment
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.37.0-green.svg)](pubspec.yaml)
+From the repository root:
 
-## 📸 Screenshots
-
-<p align="center">
-   <img src="asset/scenes.jpg" alt="Scenes feed" width="220" />
-   <img src="asset/scene_details.jpg" alt="Scene details playback" width="220" />
-   <img src="asset/edit_scene.jpg" alt="Scene details editor" width="220" />
-
-</p>
-<p align="center">
-   <img src="asset/scene_filter.jpg" alt="Scenes filter" width="220" />
-   <img src="asset/scene_sort.jpg" alt="Scenes sort" width="220" />
-   <img src="asset/library_stats.jpg" alt="Library stats" width="220" />
-</p>
-
-## ✨ Key Features
-
-- 📱 **Cross-platform** support for Android, desktop, and web.
-- 🧭 **Flexible navigation** with customizable primary tabs and responsive layouts.
-- 🎬 **Playback tools** including queue continuity, autoplay next, PiP, background audio, cast support, and subtitle controls.
-- 🖼️ **Media browsing** for scenes, markers, images, galleries, performers, studios, tags, and groups.
-- 🔎 **Filtering and sorting** with saved per-page defaults and server-side presets.
-- 🛠️ **Editing and scraping** for scene metadata, entity associations, and match merging.
-- ⚙️ **Settings coverage** for server profiles, interface, playback, storage, security, keybinds, and developer options.
-- 🌐 **Localized UI** with multiple supported languages.
-
-## 🚀 Getting Started
-
-### 📱 Android
-
-1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
-2. **Connect:** Open the app ➔ Settings ➔ Enter your credentials.
-
-### 💻 Desktop (Windows, macOS, Linux)
-
-1. **Download:** Download the appropriate installer for your OS from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
-2. **Setup:** Install and launch ➔ Enter your credentials in Settings.
-
-### 🌐 Web
-
-1. **Access:** Visit the [Live Web App Demo](https://alchemist-aloha.github.io/StashFlow/) or host your own build.
-2. **Note on Limitations:** The web version serves primarily as a **demo**.
-   - **Authentication:** Only **API Key** login is supported due to browser CORS restrictions.
-   - **Playback:** Video playback is limited by browser codec support.
-   - **Recommendation:** Use the **Android** or **Desktop** versions for the complete feature set and optimal performance.
-
----
-
-## 🤓 For Developers
-
-### Build
-
-Build the project for the platform you need:
-
-```bash
-# Get dependencies
-flutter pub get
-
-# Regenerate code (GraphQL & Notifiers)
-dart run build_runner build
-
-# Build flutter app
-flutter build apk --debug --split-per-abi
-flutter build windows --debug
-flutter build linux --debug
+```sh
+npm ci
+npm run dev
+# Preview the production output:
+npm run build
+npm run preview
 ```
 
-## 📚 Internal Docs
+Development: http://localhost:5173. Production preview: http://localhost:4173.
+English is the default; localized pages keep paths such as `/de/index.html`.
+Deploy the **contents of `dist/`** to any static host, including a subdirectory.
+This branch has no application release or deployment workflows.
 
-For more info, see:
+## Source files
 
-- [Project wiki page](https://github.com/Alchemist-Aloha/StashFlow/wiki)
+- `src/App.vue`: page composition and native controls.
+- `styles.css`: responsive layout, screenshot-matched palette, and CSS motion.
+- `l10n/site_*.arb`: copy for all 11 locales; Chinese fallback matches Simplified Chinese.
+- `assets/`: shipped screenshots, icon, self-hosted font, and asset licenses.
+- [DESIGN.md](DESIGN.md): visual direction.
+- [docs/SPECS.md](docs/SPECS.md): behavior and deployment contracts.
 
-## Star History
+The hero shows desktop browsing; the desktop section shows playback and details.
+Device frames preserve full screenshot proportions, including window chrome.
+Mobile images show existing captures, not claims about the current client theme.
+Screenshots contain sample media artwork; verify publication rights before
+deploying publicly.
 
-[![Star History Chart](https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=date&legend=top-left&sealed_token=-dM9LAAxJfmmhjKbl6dn9cJ3ez3GPvSQDOpcgDH7o2hb6TfhoVlEW-h9rPlJAkdrEI9-kWn9c-Z-fZ-5BtvxHJRvyti_DNHquqvrLqRAB4MI2MM4jpw3bQ)](https://www.star-history.com/?repos=Alchemist-Aloha%2FStashFlow&type=date&legend=top-left)
+## Asset provenance
+
+Shipped images derive from original StashFlow application assets, not stock or
+generated imagery. The original files are not included in this website-only
+branch. The filenames below record their source in the application repository:
+
+| Shipped asset under `assets/` | Original application asset |
+| --- | --- |
+| `icon.png` | `asset/stashfluttericon.png`, resized to 128px |
+| `scenes.webp` | `asset/scenes.jpg` |
+| `scene_details.webp` | `asset/scene_details.jpg` |
+| `edit_scene.webp` | `asset/edit_scene.jpg` |
+| `scene_filter.webp` | `asset/scene_filter.jpg` |
+| `scene_sort.webp` | `asset/scene_sort.jpg` |
+| `scenes_desktop.webp` | `asset/stashflow_scenes_desktop.png` |
+| `scene_details_desktop.webp` | `asset/stashflow_scene_details_desktop.png` |
+
+Mobile conversions use a maximum width of 540px and WebP quality 85.
+Desktop conversions use WebP quality 88 without cropping or resizing.
+
+Manrope is self-hosted in `assets/fonts/Manrope.ttf`, with its SIL Open Font
+License in `assets/fonts/OFL.txt`. System fonts cover unsupported scripts.
+The header's GitHub mark comes from
+[Primer Octicons](https://github.com/primer/octicons/blob/main/icons/mark-github-16.svg);
+its MIT license is in `assets/octicons-LICENSE.txt`.
+The website's license is [GPL-3.0](LICENSE).
+
+## Verification
+
+```sh
+npm test
+git diff --check
+```
+
+Tests build all locales and check catalog coverage, hydration payload escaping,
+local links/assets, and the Chinese fallback. Browser verification should cover
+phone and desktop widths, localized expansion, keyboard navigation, contrast,
+zoom, reduced motion, and deployment under a subpath.
