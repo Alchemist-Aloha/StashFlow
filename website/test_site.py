@@ -1,12 +1,16 @@
 """Dependency-free checks for generated pages, locale coverage, and local URLs."""
 
 import json
+import subprocess
 import unittest
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from build import CATALOGS, DIST, LOCALES, build
+ROOT = Path(__file__).resolve().parent
+CATALOGS = ROOT.parent / "lib" / "l10n" / "website"
+DIST = ROOT / "dist"
+LOCALES = [path.stem.removeprefix("site_") for path in sorted(CATALOGS.glob("site_*.arb"))]
 
 
 class Page(HTMLParser):
@@ -37,7 +41,7 @@ class Page(HTMLParser):
 
 class SiteTest(unittest.TestCase):
     def test_all_locales_and_local_links(self):
-        build()
+        subprocess.run(["npm", "run", "build"], cwd=ROOT, check=True)
         for locale in LOCALES:
             with self.subTest(locale=locale):
                 path = DIST / "index.html" if locale == "en" else DIST / locale / "index.html"
@@ -46,11 +50,20 @@ class SiteTest(unittest.TestCase):
                 page.feed(source)
                 self.assertEqual(page.lang, locale.replace("_", "-"))
                 self.assertEqual(page.radios, 3)
+                self.assertIn('id="app"', source)
+                data = source.split('<script id="site-data" type="application/json">', 1)[1].split("</script>", 1)[0]
+                props = json.loads(data)
+                self.assertEqual(props["locale"], locale)
+                catalog = json.loads((CATALOGS / f"site_{locale}.arb").read_text(encoding="utf-8"))
+                self.assertEqual(props["copy"]["heroTitle"], catalog["heroTitle"])
+                self.assertNotIn("__SITE_DATA__", source)
+                self.assertNotIn("__TITLE__", source)
+                self.assertIn('type="module"', source)
                 self.assertIn("/assets/scenes_desktop.webp", source)
                 self.assertIn("/assets/scene_details_desktop.webp", source)
                 self.assertIn("/assets/scene_sort.webp", source)
                 self.assertNotIn("library_stats.webp", source)
-                self.assertIn("/assets/fonts/Manrope.ttf", source)
+                self.assertRegex(source, r'rel="preload" href="[^"]*/assets/Manrope-[^"]+\.ttf"')
                 self.assertNotIn('class="placeholder"', source)
                 self.assertIn('aria-current="page"', source)
                 self.assertIn("https://github.com/Alchemist-Aloha/StashFlow/releases/latest", source)

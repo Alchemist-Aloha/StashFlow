@@ -1,23 +1,31 @@
 # StashFlow introduction website
 
 A standalone, Apple-inspired product page. It does not replace the Flutter web
-demo or change the application's design system. No npm packages or build tools
-are required; Python 3 builds the static HTML.
+demo or change the application's design system. Vue 3 components are built with
+Vite and pre-rendered for every locale, then hydrated in the browser. Content,
+screenshot radios, and language links remain usable without JavaScript.
+Node.js 20.19+ or 22.12+ and npm are required; Python 3 runs the static checks.
 
 ## Preview
 
 From the repository root:
 
 ```sh
-python3 website/build.py
-python3 -m http.server 8080 --directory website/dist
+npm --prefix website ci
+npm --prefix website run dev
+# Or preview the production output:
+npm --prefix website run build
+npm --prefix website run preview
 ```
 
-Open http://localhost:8080. Deploy the **contents of `website/dist/`** to any
-static host, including a subdirectory. No deployment workflow is changed here.
+Open http://localhost:5173 for development or http://localhost:4173 for preview.
+Localized pages retain their paths, for example `/de/index.html`.
+Deploy the **contents of `website/dist/`** to any static host, including a
+subdirectory. No deployment workflow is changed here.
 
 ## Content and screenshots
 
+- Edit the page in `website/src/App.vue` and its styles in `website/styles.css`.
 - Edit copy in `lib/l10n/website/site_*.arb`, not in generated HTML.
 - English is the default. The footer links to all supported localized pages.
 - The site's isolated ARB catalogs do not add marketing copy to the Flutter app.
@@ -66,10 +74,10 @@ Its MIT license is included in `assets/octicons-LICENSE.txt`.
 ## Checks
 
 ```sh
-python3 -m unittest discover -s website -p 'test_*.py'
+npm --prefix website test
 ```
 
 The check builds every locale, checks local links/assets and translation
-coverage, and verifies the Chinese fallback. Browser checks should cover phone
-and desktop widths, keyboard navigation of the screenshot radios and language
-menu, and reduced-motion preferences.
+coverage, hydration payloads, and the Chinese fallback. Browser checks should
+cover phone and desktop widths, keyboard navigation of the screenshot radios
+and language menu, and reduced-motion preferences.

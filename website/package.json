@@ -1,0 +1,19 @@
+{
+  "name": "stashflow-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "node build.js",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --test test_page.js && python3 -m unittest discover -s . -p 'test_*.py'"
+  },
+  "dependencies": {
+    "vue": "^3.5.0",
+    "@vue/server-renderer": "^3.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.0",
+    "vite": "^7.0.0"
+  }
+}

@@ -1,7 +1,9 @@
 # Introduction website design
 
 Scope: the standalone website only. Mode: Persuade. The Flutter application
-retains its existing Material 3 design and demo deployment.
+retains its existing Material 3 design and demo deployment. Vue 3 renders and
+hydrates the existing page composition; the port preserves its CSS, imagery,
+copy, native radios, and disclosure interactions.
 
 ## Direction contract
 
@@ -56,6 +58,6 @@ Chromium captures are local verification artifacts, not physical-device screensh
 
 Detector findings about the root app's palette/type/radius scale do not apply
 to this separate website. The thick rounded border finding describes laptop
-hardware chrome, not a decorated card. The template's unresolved stylesheet
-path caused a spurious flat-type warning; the rendered hierarchy was checked
-in the browser. No generated HTML carries this development contract.
+hardware chrome, not a decorated card. The former HTML template's unresolved
+stylesheet path caused a spurious flat-type warning; the rendered hierarchy was
+checked in the browser. No generated HTML carries this development contract.

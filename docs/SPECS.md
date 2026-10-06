@@ -737,9 +737,13 @@ interaction where browser security permits it.
 ### Introduction website
 
 The standalone product introduction lives in `website/`, separately from the
-Flutter web demo. `python3 website/build.py` produces deployable static pages in
-`website/dist/` without external build dependencies. Relative asset and locale
-links must work when hosted at a subpath. Existing demo deployment is unchanged.
+Flutter web demo. Vue 3 components use Vite and build-time server rendering;
+`npm --prefix website ci` installs the locked dependencies and
+`npm --prefix website run build` produces pre-rendered pages in `website/dist/`.
+The browser hydrates each page with its validated ARB copy. Core content,
+screenshot radios, and locale navigation remain usable without JavaScript.
+Relative asset and locale links must work when hosted at a subpath. Existing
+demo deployment is unchanged.
 The top bar links directly to the GitHub repository alongside the download action.
 
 Website copy uses isolated ARB catalogs in `lib/l10n/website/` with all supported
