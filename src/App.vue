@@ -11,8 +11,8 @@ defineProps({
   <a class="skip-link" href="#main">{{ copy.skip }}</a>
   <header class="site-header">
     <nav class="navigation" :aria-label="copy.overview">
-      <a class="brand" href="#main"><img :src="`${assetPrefix}/assets/icon.png`" width="30" height="30" alt="">StashFlow</a>
-      <div class="nav-links"><a href="#mobile">{{ copy.mobile }}</a><a href="#desktop">{{ copy.desktop }}</a></div><a class="button small repo-button" href="https://github.com/Alchemist-Aloha/StashFlow" :aria-label="copy.source" :title="copy.source"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg></a><a class="button small" href="#download">{{ copy.download }}</a>
+      <a class="brand" href="#main" aria-label="StashFlow"><img :src="`${assetPrefix}/assets/icon.png`" width="30" height="30" alt=""><span class="brand-name">StashFlow</span></a>
+      <a class="repo-link" href="https://github.com/Alchemist-Aloha/StashFlow" :aria-label="copy.source" :title="copy.source"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg></a><a class="button small" href="#download">{{ copy.download }}</a>
     </nav>
   </header>
   <main id="main">
@@ -33,9 +33,14 @@ defineProps({
     <section class="mobile-showcase" id="mobile" aria-labelledby="mobile-title">
       <div class="section-heading"><h2 id="mobile-title">{{ copy.mobileTitle }}</h2><p>{{ copy.mobileLead }}</p></div>
       <fieldset class="showcase"><legend class="sr-only">{{ copy.mobile }}</legend>
-        <input type="radio" name="showcase" id="browse" checked><label for="browse">{{ copy.browse }}</label>
-        <input type="radio" name="showcase" id="play"><label for="play">{{ copy.play }}</label>
-        <input type="radio" name="showcase" id="refine"><label for="refine">{{ copy.refine }}</label>
+        <input type="radio" name="showcase" id="browse" checked>
+        <input type="radio" name="showcase" id="play">
+        <input type="radio" name="showcase" id="refine">
+        <div class="showcase-controls">
+          <label for="browse">{{ copy.browse }}</label>
+          <label for="play">{{ copy.play }}</label>
+          <label for="refine">{{ copy.refine }}</label>
+        </div>
         <div class="showcase-panels">
           <figure class="showcase-panel browse-panel"><div class="phone"><img :src="`${assetPrefix}/assets/scenes.webp`" width="540" height="1170" :alt="copy.browse" loading="lazy"></div><figcaption><h3>{{ copy.browse }}</h3><p>{{ copy.browseCopy }}</p></figcaption></figure>
           <figure class="showcase-panel play-panel"><div class="phone"><img :src="`${assetPrefix}/assets/scene_details.webp`" width="438" height="947" :alt="copy.play" loading="lazy"></div><figcaption><h3>{{ copy.play }}</h3><p>{{ copy.playCopy }}</p></figcaption></figure>
@@ -53,8 +58,8 @@ defineProps({
     <section class="tools" aria-labelledby="tools-title">
       <h2 id="tools-title">{{ copy.toolsTitle }}</h2>
       <div class="tool-grid">
-        <article class="tool"><div class="tool-copy"><h3>{{ copy.filterTitle }}</h3><p>{{ copy.filterCopy }}</p></div><div class="screenshot-crop"><img :src="`${assetPrefix}/assets/scene_filter.webp`" width="540" height="1170" :alt="copy.filterTitle" loading="lazy"></div></article>
-        <article class="tool"><div class="tool-copy"><h3>{{ copy.sortTitle }}</h3><p>{{ copy.sortCopy }}</p></div><div class="screenshot-crop"><img :src="`${assetPrefix}/assets/scene_sort.webp`" width="540" height="1170" :alt="copy.sortTitle" loading="lazy"></div></article>
+        <article class="tool"><div class="screenshot-crop"><img :src="`${assetPrefix}/assets/scene_filter.webp`" width="540" height="1170" :alt="copy.filterTitle" loading="lazy"></div><div class="tool-copy"><h3>{{ copy.filterTitle }}</h3><p>{{ copy.filterCopy }}</p></div></article>
+        <article class="tool"><div class="screenshot-crop"><img :src="`${assetPrefix}/assets/scene_sort.webp`" width="540" height="1170" :alt="copy.sortTitle" loading="lazy"></div><div class="tool-copy"><h3>{{ copy.sortTitle }}</h3><p>{{ copy.sortCopy }}</p></div></article>
       </div>
     </section>
 

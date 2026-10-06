@@ -20,9 +20,10 @@ lets the existing orchid accent own a full section, with plum type and a dark
 primary action. Self-hosted variable Manrope
 honors the requested font, with system fallback for unsupported scripts. Fluid
 38–96px hero type at weight 800, 36–68px section type (up to 96px for the
-download finale), and 18–23px supporting copy. Pill actions with defined borders and quiet press feedback, plum-tinted device
-frames, hairline separators, and offset soft device shadows. Tool imagery sits
-on softly rounded lavender stages rather than feature cards.
+control showcase and download finale), and 18–23px supporting copy. Pill actions with defined borders and quiet press feedback, plum-tinted device
+frames, hairline separators, and offset soft device shadows. The control showcase
+uses the hero's plum-black and orchid language: large unboxed screenshots lead,
+with quieter captions below rather than pale image cards.
 
 **STORY:** Understand that StashFlow connects to an existing Stash server, explore
 mobile browsing/playback/editing, see desktop support, then download a native
@@ -45,29 +46,44 @@ review was not run; implementation and visual verification were performed in-thr
 
 ## Interaction and adaptation
 
-The focal entrance assembles the same library across devices: the laptop settles
-into a front-on view as the phone moves into its companion position, within 900ms.
-The desktop laptop expands into its reading position with native CSS scroll-driven
-animation where supported; other browsers show the steady final composition.
-Screenshot changes use a short screen-mask transition and a quiet caption fade.
-Actions give press feedback and exploration arrows move toward their destination.
-No loops, scroll listeners, or animation dependencies are used. Reduced motion
-removes spatial effects while retaining immediate selection and color feedback.
-Screenshot browsing uses native radio inputs:
-keyboard arrows choose a panel, visible labels work by touch and pointer.
-The plum-black sticky header continues the hero surface. Its brand and category
-links have 44px minimum target heights, padded hover states, and orchid focus
-rings. It pairs a compact outlined GitHub logo link with the primary download
-action; the icon link’s accessible name and tooltip reuse localized source-link
-copy. Narrow navigation uses two columns in source order, allowing translated
-category labels and download copy to wrap without hiding links. The footer uses native disclosure for language links, a drawn chevron that
+The focal entrance assembles the same library across devices: a brief headline
+shutter introduces the composition, the laptop turns from a foreshortened view,
+and the phone travels out from its companion screen into place. The bounded
+sequence finishes within 920ms; copy and actions never wait for it.
+The desktop laptop opens into its front-on reading position with native CSS
+scroll-driven perspective. Tool screenshots similarly turn toward the reader
+as their controls enter view, finishing with full, uncropped framing. Browsers
+without scroll-animation support show the steady final compositions.
+Screenshot selection triggers a 400ms directional screen wipe and a quiet
+240ms caption fade. Rapid keyboard selection interrupts the old panel immediately.
+Actions give press feedback; pointer hover lifts primary actions by only 2px,
+while exploration/external arrows follow their actual direction.
+No loops, scroll listeners, permanent compositor hints, or animation dependencies
+are used. Perspective transforms and bounded clip masks carry the motion without
+animating layout or large-area blur. Reduced motion removes spatial effects while
+retaining immediate selection and color feedback.
+Screenshot browsing uses native radio inputs within one fieldset. Browse, Play,
+and Refine form an equal-width segmented capsule on the lavender surface, with
+an orchid selected segment, stable label weight, and a distinct focus ring.
+Keyboard arrows choose a panel; visible labels work by touch and pointer, even
+without JavaScript. Controls, phone, and caption use a tighter shared measure
+and balanced spacing without changing the screenshot framing or wipe motion.
+The solid plum-black sticky header has just three destinations: home, GitHub,
+and download. Duplicate mobile/desktop section links are removed; the hero
+exploration action and normal page scrolling still introduce those sections.
+The unboxed GitHub icon is secondary to the single orchid download action.
+No header blur or button shadow competes with the product imagery. Navigation
+stays on one row; narrow screens show the brand mark without the wordmark while
+retaining its accessible name. Every target is at least 44px with orchid focus
+rings; the GitHub name and tooltip reuse localized source-link copy. The footer uses native disclosure for language links, a drawn chevron that
 reflects its open state, and comfortably padded menu rows. Directional links
 use consistent stroke SVG arrows rather than font-dependent glyphs. Controls have visible
 focus, 44px minimum target heights, and no dependency on JavaScript.
 
 Large layouts pair a larger phone with feature copy; narrow layouts stack them.
-Tool screenshots are staggered on wide layouts to break the equal-card rhythm;
-small screens restore a straight reading sequence. Tool screenshots and the
+The control section is a full-width dark interlude with orchid display type.
+Larger filter/sort screenshots lead their captions, staggered on wide layouts
+to break the equal-card rhythm; small screens restore a straight reading sequence. Tool screenshots and the
 mobile showcase preserve full source framing. Responsive verification covers 320, 390, 768, and 1440px across every locale.
 Chromium captures are local verification artifacts, not physical-device screenshots.
 

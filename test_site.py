@@ -50,6 +50,9 @@ class SiteTest(unittest.TestCase):
                 page.feed(source)
                 self.assertEqual(page.lang, locale.replace("_", "-"))
                 self.assertEqual(page.radios, 3)
+                self.assertIn('class="showcase-controls"', source)
+                for choice in ("browse", "play", "refine"):
+                    self.assertIn(f'for="{choice}"', source)
                 self.assertIn('id="app"', source)
                 data = source.split('<script id="site-data" type="application/json">', 1)[1].split("</script>", 1)[0]
                 props = json.loads(data)
@@ -68,9 +71,12 @@ class SiteTest(unittest.TestCase):
                 self.assertIn('aria-current="page"', source)
                 self.assertIn("https://github.com/Alchemist-Aloha/StashFlow/releases/latest", source)
                 header = source.split("</header>", 1)[0]
-                self.assertIn('class="button small repo-button"', header)
+                self.assertIn('class="repo-link"', header)
+                self.assertNotIn('class="nav-links"', header)
+                self.assertIn('href="#download"', header)
+                self.assertIn('aria-label="StashFlow"', header)
                 self.assertIn('href="https://github.com/Alchemist-Aloha/StashFlow"', header)
-                repo_button = header.split('class="button small repo-button"', 1)[1].split('</a>', 1)[0]
+                repo_button = header.split('class="repo-link"', 1)[1].split('</a>', 1)[0]
                 self.assertIn('aria-label="', repo_button)
                 self.assertIn('title="', repo_button)
                 self.assertIn('<svg ', repo_button)

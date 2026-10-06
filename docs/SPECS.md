@@ -25,19 +25,33 @@ fallback for unsupported scripts; asset licenses remain with their files.
 
 The screenshot-matched palette pairs a plum-black hero and orchid display type
 with blush-white showcases. The orchid download finale uses plum labels and a
-dark primary action. Wide layouts enlarge the device composition and stagger
-the filtering/sorting showcases; narrow layouts retain a stacked sequence.
-Filtering and sorting copy includes saved defaults.
+dark primary action. The control section is a full-width plum-black interlude
+with orchid display type and larger, unboxed filter/sort screenshots above their
+captions. Wide layouts stagger those screenshots; narrow layouts retain a stacked
+sequence. Filtering and sorting copy includes saved defaults.
 
-The plum-black sticky top bar links to mobile and desktop sections, the main
-application GitHub repository, and the download section. It keeps every link
-visible, with a source-ordered two-column layout on narrow screens, wrapping
-localized labels and 44px minimum touch targets. Anchor offsets must accommodate
-the localized header height.
+The mobile showcase groups Browse, Play, and Refine as equal-width segments in
+one fieldset, using native radio inputs and associated labels. Selected, hover,
+and keyboard focus states remain distinct; label weight and segment widths stay
+stable when switching. Long localized labels wrap rather than clip. All segments
+are at least 48px tall, and selection works without JavaScript. The phone/caption layout preserves full screenshot framing.
 
-CSS-only motion coordinates the hero devices and screenshot changes; supported
-browsers also animate the desktop device on scroll. Reduced-motion preferences
-remove movement; unsupported browsers retain static content.
+The solid plum-black sticky top bar contains home, the main application GitHub
+repository, and one download action. It uses a single row with an unboxed GitHub
+icon; narrow screens show the brand mark instead of the wordmark, retaining its
+accessible name. Duplicate section links are omitted; the hero exploration action
+and page scrolling provide access to the mobile/desktop content. Keep 44px minimum
+touch targets, visible focus, and anchor offsets that accommodate localized copy.
+
+CSS-only motion stages a bounded hero sequence (at most 920ms): the headline
+opens, the laptop turns front-on, and the phone moves into its companion position.
+Actions remain immediately usable. Screenshot selection uses a 400ms screen wipe
+and 240ms caption fade; rapid selection interrupts the prior panel. Supported
+browsers use native scroll timelines to open the desktop device and turn tool
+screenshots toward their final, fully framed reading positions. There are no
+loops, scroll listeners, motion dependencies, or animated layout dimensions.
+Reduced-motion preferences remove movement; unsupported scroll-animation browsers
+retain static devices and screenshots.
 [../DESIGN.md](../DESIGN.md) records the visual direction.
 
 ## Verification
