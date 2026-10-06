@@ -24,8 +24,26 @@ the original image proportions. Variable Manrope is self-hosted with system
 fallback for unsupported scripts; asset licenses remain with their files.
 
 The screenshot-matched palette pairs a plum-black hero and orchid display type
-with blush-white showcases. The orchid download finale uses plum labels and a
-dark primary action. The control section is a full-width plum-black interlude
+with blush-white showcases. The orchid download finale uses plum labels and
+organized platform downloads. Both the sticky header and hero's Get StashFlow
+actions navigate to the download finale, not directly to GitHub. `downloads.json`
+records the published release version and every downloadable asset, grouped by
+platform, architecture, and package format (including the self-hosted web ZIP).
+Links are pre-rendered and work without JavaScript or a GitHub API request.
+Only published architectures are offered; do not invent unsupported builds.
+After hydration, the latest-release API response replaces both version labels and
+the complete download list atomically, using actual uploaded assets and their
+validated GitHub URLs—not guessed filenames or substituted version strings.
+New supported architectures/formats appear automatically; removed assets and
+empty platform groups disappear. Recognized package formats are APK, EXE, ZIP,
+DEB, RPM, DMG, PKG, MSI, MSIX, AppImage, pkg.tar.zst, tar.gz, and tar.xz.
+Asset filenames follow StashFlow-<version>-<platform>-<architecture>.<format>
+(without an architecture for web). Checksums, incomplete uploads, unknown formats,
+and unsafe URLs are omitted. A release with no recognized assets shows a localized
+message and the View releases link. Invalid or unavailable API responses preserve
+the bundled version and links together. No rebuild is needed for live updates;
+JavaScript-disabled visitors receive the bundled snapshot.
+The control section is a full-width plum-black interlude
 with orchid display type and larger, unboxed filter/sort screenshots above their
 captions. Wide layouts stagger those screenshots; narrow layouts retain a stacked
 sequence. Filtering and sorting copy includes saved defaults.
@@ -38,7 +56,13 @@ are at least 48px tall, and selection works without JavaScript. The phone/captio
 
 The solid plum-black sticky top bar contains home, the main application GitHub
 repository, and one download action. It uses a single row with an unboxed GitHub
-icon; narrow screens show the brand mark instead of the wordmark, retaining its
+icon beside a two-line repository name and release tag. After hydration, two
+GitHub API requests refresh those labels once, with an eight-second timeout and
+cancellation on unmount. Offline, rate-limited, malformed, or missing responses
+retain the bundled repository name/release independently. The release response
+updates both the header tag and download directory from the same reactive value. Long metadata is visually
+ellipsized but remains available in the link's accessible name and tooltip.
+Narrow screens show the brand mark instead of the wordmark, retaining its
 accessible name. Duplicate section links are omitted; the hero exploration action
 and page scrolling provide access to the mobile/desktop content. Keep 44px minimum
 touch targets, visible focus, and anchor offsets that accommodate localized copy.

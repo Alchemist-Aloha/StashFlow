@@ -16,8 +16,11 @@ with dark plum labels. Muted mauve copy and lavender-tinted tool surfaces connec
 the light sections to the app captures. The hero commits to plum-black with
 orchid display type and an enlarged laptop/phone composition. The light mobile
 showcase provides a deliberate release from that opening. The download finale
-lets the existing orchid accent own a full section, with plum type and a dark
-primary action. Self-hosted variable Manrope
+lets the existing orchid accent own a full section, with plum type and an organized
+download directory. Flat platform groups use hairline separators, architecture
+and format labels, and drawn download arrows rather than a wall of cards. The
+published version and releases link stay visible, with the web package separated
+from native builds. Self-hosted variable Manrope
 honors the requested font, with system fallback for unsupported scripts. Fluid
 38–96px hero type at weight 800, 36–68px section type (up to 96px for the
 control showcase and download finale), and 18–23px supporting copy. Pill actions with defined borders and quiet press feedback, plum-tinted device
@@ -30,7 +33,7 @@ mobile browsing/playback/editing, see desktop support, then download a native
 release. Explain web-demo limitations and the lack of an iOS target.
 
 **FIRST VIEWPORT:** Centered orchid two-line headline on plum-black, short
-supporting copy, release and exploration actions, then a wider desktop library
+supporting copy, download and exploration actions, then a wider desktop library
 composition beside a larger mobile screen.
 The desktop section shows real scene playback and details. Filter and sort
 screenshots show concrete library controls, including saved sort defaults.
@@ -71,7 +74,12 @@ and balanced spacing without changing the screenshot framing or wipe motion.
 The solid plum-black sticky header has just three destinations: home, GitHub,
 and download. Duplicate mobile/desktop section links are removed; the hero
 exploration action and normal page scrolling still introduce those sections.
-The unboxed GitHub icon is secondary to the single orchid download action.
+The unboxed GitHub icon and compact two-line repository name/release tag are
+secondary to the single orchid download action. Metadata refreshes from GitHub
+on arrival, updating the download version and actual asset links from the same
+release response. Unavailable responses retain the bundled snapshot; a valid
+release without downloadable packages shows a localized message. Long names/tags truncate
+visually without changing the header's height or losing their accessible names.
 No header blur or button shadow competes with the product imagery. Navigation
 stays on one row; narrow screens show the brand mark without the wordmark while
 retaining its accessible name. Every target is at least 44px with orchid focus

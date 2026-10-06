@@ -1,4 +1,35 @@
 <script setup>
+import { onMounted, onUnmounted, ref } from 'vue'
+import bundledRelease from '../downloads.json'
+import { loadRepositoryInfo } from './repository.js'
+
+const repositoryName = ref('StashFlow')
+const releaseBase = `https://github.com/Alchemist-Aloha/StashFlow/releases/download/v${bundledRelease.version}`
+const release = ref({
+  tag: `v${bundledRelease.version}`,
+  platforms: bundledRelease.platforms.map(platform => ({
+    ...platform,
+    packages: platform.packages.map(pkg => ({ ...pkg, url: `${releaseBase}/${pkg.file}` })),
+  })),
+})
+const request = new AbortController()
+let requestTimeout
+let active = true
+
+onMounted(async () => {
+  requestTimeout = setTimeout(() => request.abort(), 8000)
+  const [name, latestRelease] = await loadRepositoryInfo(request.signal)
+  clearTimeout(requestTimeout)
+  if (!active) return
+  if (name) repositoryName.value = name
+  if (latestRelease) release.value = latestRelease
+})
+onUnmounted(() => {
+  active = false
+  clearTimeout(requestTimeout)
+  request.abort()
+})
+
 defineProps({
   copy: { type: Object, required: true },
   locale: { type: String, required: true },
@@ -12,14 +43,14 @@ defineProps({
   <header class="site-header">
     <nav class="navigation" :aria-label="copy.overview">
       <a class="brand" href="#main" aria-label="StashFlow"><img :src="`${assetPrefix}/assets/icon.png`" width="30" height="30" alt=""><span class="brand-name">StashFlow</span></a>
-      <a class="repo-link" href="https://github.com/Alchemist-Aloha/StashFlow" :aria-label="copy.source" :title="copy.source"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg></a><a class="button small" href="#download">{{ copy.download }}</a>
+      <a class="repo-link" href="https://github.com/Alchemist-Aloha/StashFlow" :aria-label="`${copy.source}: ${repositoryName} ${release.tag}`" :title="`${repositoryName} ${release.tag}`"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg><span class="repo-info"><span class="repo-name">{{ repositoryName }}</span><span class="repo-version">{{ release.tag }}</span></span></a><a class="button small" href="#download">{{ copy.download }}</a>
     </nav>
   </header>
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
       <h1 id="hero-title">{{ copy.heroTitle }}</h1>
       <p class="hero-lead">{{ copy.heroLead }}</p>
-      <div class="actions"><a class="button" href="https://github.com/Alchemist-Aloha/StashFlow/releases/latest">{{ copy.download }}</a><a class="text-link" href="#mobile">{{ copy.explore }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
+      <div class="actions"><a class="button" href="#download">{{ copy.download }}</a><a class="text-link" href="#mobile">{{ copy.explore }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
       <div class="hero-devices">
         <div class="laptop">
           <div class="laptop-screen"><img :src="`${assetPrefix}/assets/scenes_desktop.webp`" width="1918" height="1046" :alt="copy.desktopBrowse" fetchpriority="high"></div>
@@ -66,8 +97,22 @@ defineProps({
     <section class="download-section" id="download" aria-labelledby="download-title">
       <img class="download-icon" :src="`${assetPrefix}/assets/icon.png`" width="88" height="88" alt="" loading="lazy">
       <h2 id="download-title">{{ copy.startTitle }}</h2><p>{{ copy.startCopy }}</p>
-      <div class="actions"><a class="button" href="https://github.com/Alchemist-Aloha/StashFlow/releases/latest">{{ copy.releases }}</a><a class="text-link" href="https://alchemist-aloha.github.io/StashFlow/">{{ copy.demo }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>
-      <p class="availability">Android · Windows · macOS · Linux</p>
+      <p class="download-version">{{ release.tag }} · <a href="https://github.com/Alchemist-Aloha/StashFlow/releases/latest">{{ copy.releases }}</a></p>
+      <p v-if="!release.platforms.length" class="download-note">{{ copy.downloadsUnavailable }}</p>
+      <div v-else class="download-grid">
+        <div v-for="platform in release.platforms" :key="platform.id" class="download-platform" :class="{ 'web-platform': platform.id === 'web' }">
+          <h3 :id="`download-${platform.id}`">{{ platform.id === 'web' ? copy.web : platform.name }}</h3>
+          <ul :aria-labelledby="`download-${platform.id}`">
+            <li v-for="pkg in platform.packages" :key="pkg.file">
+              <a :href="pkg.url" :aria-label="`${copy.download}: ${platform.id === 'web' ? copy.web : platform.name}, ${pkg.architecture || copy.webPackage}, ${pkg.format}`">
+                <span class="package-label"><span>{{ pkg.architecture || copy.webPackage }}</span><span class="package-format">{{ pkg.format }}</span></span>
+                <svg class="package-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="actions"><a class="text-link" href="https://alchemist-aloha.github.io/StashFlow/">{{ copy.demo }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>
       <p class="download-note">{{ copy.serverNote }}<br>{{ copy.demoNote }}</p>
     </section>
   </main>

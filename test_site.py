@@ -70,6 +70,19 @@ class SiteTest(unittest.TestCase):
                 self.assertNotIn('class="placeholder"', source)
                 self.assertIn('aria-current="page"', source)
                 self.assertIn("https://github.com/Alchemist-Aloha/StashFlow/releases/latest", source)
+                hero = source.split('class="hero"', 1)[1].split("</section>", 1)[0]
+                self.assertIn('class="button" href="#download"', hero)
+                self.assertNotIn("/releases/latest", hero)
+                release = json.loads((ROOT / "downloads.json").read_text())
+                self.assertEqual([p["id"] for p in release["platforms"]],
+                                 ["android", "windows", "macos", "linux", "web"])
+                self.assertEqual(sum(len(p["packages"]) for p in release["platforms"]), 11)
+                for platform in release["platforms"]:
+                    self.assertIn(f'id="download-{platform["id"]}"', source)
+                    for package in platform["packages"]:
+                        filename = package["file"]
+                        self.assertTrue(filename.startswith(f'StashFlow-{release["version"]}-{platform["id"]}'))
+                        self.assertIn(f'https://github.com/Alchemist-Aloha/StashFlow/releases/download/v{release["version"]}/{filename}', page.urls)
                 header = source.split("</header>", 1)[0]
                 self.assertIn('class="repo-link"', header)
                 self.assertNotIn('class="nav-links"', header)

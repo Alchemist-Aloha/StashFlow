@@ -42,14 +42,19 @@ section { scroll-margin-top: 20px; }
 .skip-link:focus { top: 12px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .site-header { position: sticky; top: 0; z-index: 10; background: var(--dark); color: var(--paper); border-bottom: 1px solid #3b323e; --focus: var(--accent-soft); }
-.navigation { max-width: 1120px; min-height: 68px; margin: auto; padding: 12px 28px; display: grid; grid-template-columns: minmax(44px, 1fr) 44px auto; align-items: center; gap: 12px; }
+.navigation { max-width: 1120px; min-height: 68px; margin: auto; padding: 12px 28px; display: grid; grid-template-columns: minmax(44px, 1fr) minmax(0, 220px) auto; align-items: center; gap: 12px; }
 .navigation .brand { min-width: 44px; min-height: 44px; justify-self: start; }
 .navigation .brand:hover { text-decoration: none; color: var(--accent-soft); }
 .navigation .brand img { flex-shrink: 0; }
 .navigation > .button { max-width: 100%; text-align: center; border-color: var(--accent-soft); box-shadow: none; }
 .navigation > .button:hover { box-shadow: none; }
-.repo-link { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; color: var(--paper); }
-.repo-link:hover { color: var(--accent-soft); }
+.repo-link { display: inline-flex; align-items: center; justify-self: end; gap: 10px; min-width: 44px; max-width: 100%; min-height: 44px; color: var(--paper); }
+.repo-link > svg { flex-shrink: 0; }
+.repo-link:hover { color: var(--accent-soft); text-decoration: none; }
+.repo-info { display: grid; gap: 2px; min-width: 0; line-height: 1.3; }
+.repo-name, .repo-version { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.repo-name { font-size: 14px; font-weight: 700; }
+.repo-version { font-size: 12px; color: var(--dark-muted); font-variant-numeric: tabular-nums; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; letter-spacing: -.025em; }
 .brand img { border-radius: 7px; }
 .button { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 12px 26px; border: 1px solid var(--accent); border-radius: 50px; color: var(--on-accent); background: var(--accent-soft); font-size: 17px; font-weight: 700; box-shadow: 0 4px 10px -6px #32163740; transition: background .2s ease, box-shadow .2s ease, transform .2s cubic-bezier(.16, 1, .3, 1); }
@@ -112,12 +117,25 @@ h2 { font-size: clamp(36px, 4.8vw, 68px); line-height: 1.06; letter-spacing: -.0
 .screenshot-crop img { width: 340px; align-self: flex-start; border: 6px solid #3b323e; border-radius: 24px; box-shadow: 0 18px 30px -18px #32163766; }
 .download-section { text-align: center; padding: 104px 24px 96px; background: var(--accent-soft); color: var(--on-accent); }
 .download-section h2 { max-width: 1100px; margin: auto; font-size: clamp(36px, 6.7vw, 96px); }
-.download-section .button { color: var(--paper); background: var(--on-accent); border-color: var(--on-accent); }
-.download-section .button:hover { background: var(--accent); }
 .download-section .text-link { color: var(--on-accent); }
 .download-icon { margin: 0 auto 28px; border-radius: 20px; box-shadow: 0 12px 24px -12px #0008; }
-.download-section > p:not(.availability, .download-note) { max-width: 630px; margin: 24px auto; color: var(--on-accent); font-size: 21px; line-height: 1.5; }
-.availability { font-size: 14px; color: var(--on-accent); margin-top: 30px; }
+.download-section > p:not(.download-version, .download-note) { max-width: 630px; margin: 24px auto; color: var(--on-accent); font-size: 21px; line-height: 1.5; }
+.download-version { margin-top: 24px; font-size: 14px; overflow-wrap: anywhere; }
+.download-version a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; }
+.download-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; max-width: 1064px; margin: 40px auto; text-align: left; }
+.download-platform { min-width: 0; border-top: 1px solid var(--accent); padding-top: 24px; }
+.download-platform h3 { font-size: 22px; line-height: 1.2; letter-spacing: -.025em; margin-bottom: 12px; }
+.download-platform ul { list-style: none; margin: 0; padding: 0; }
+.download-platform a { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 12px 8px; border-radius: 8px; font-size: 15px; font-weight: 700; line-height: 1.4; }
+.download-platform a:hover { background: var(--accent-hover); text-decoration: none; }
+.download-platform a:is(:hover, :focus-visible) .package-label > span:first-child { text-decoration: underline; }
+.package-label { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.package-format { font-size: 12px; font-weight: 500; }
+.package-arrow { width: 18px; height: 18px; flex-shrink: 0; }
+.download-platform.web-platform { grid-column: 1 / -1; display: flex; align-items: center; gap: 32px; }
+.download-platform.web-platform h3 { margin-bottom: 0; }
+.download-platform.web-platform ul { flex: 1; max-width: 420px; }
+@media (max-width: 1100px) { .download-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .download-note { max-width: 700px; font-size: 13px; line-height: 1.7; margin: 18px auto 0; color: var(--on-accent); }
 footer { border-top: 1px solid var(--line); max-width: 1064px; padding: 30px 0; margin: 0 auto; font-size: 13px; color: var(--muted); }
 .footer-top { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; margin-bottom: 28px; }
@@ -185,7 +203,9 @@ footer .link-arrow { width: 16px; height: 16px; }
 }
 @media (max-width: 1100px) { footer { margin: 0 28px; } }
 @media (max-width: 700px) {
-  .navigation { padding: 12px 18px; gap: 8px; }
+  .navigation { padding: 12px 18px; gap: 8px; grid-template-columns: 44px minmax(44px, 1fr) auto; }
+  .repo-link { justify-self: stretch; gap: 8px; }
+  .repo-name { font-size: 12px; }
   .navigation .brand { justify-content: center; }
   .navigation .brand-name { display: none; }
   .brand { font-size: 18px; }
@@ -212,6 +232,9 @@ footer .link-arrow { width: 16px; height: 16px; }
   .tool-copy { padding-top: 24px; }
   .screenshot-crop { padding: 0 18px 32px; }
   .download-section { padding-top: 76px; padding-bottom: 60px; }
+  .download-grid { grid-template-columns: 1fr; gap: 24px; margin: 32px auto; max-width: 420px; }
+  .download-platform.web-platform { display: block; }
+  .download-platform.web-platform h3 { margin-bottom: 12px; }
   footer { margin: 0 24px; }
   .footer-top { gap: 8px 20px; }
   .languages { margin-left: auto; }

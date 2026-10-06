@@ -1,0 +1,90 @@
+{
+  "version": "1.36.0",
+  "platforms": [
+    {
+      "id": "android",
+      "name": "Android",
+      "packages": [
+        {
+          "architecture": "ARM64",
+          "format": "APK",
+          "file": "StashFlow-1.36.0-android-arm64-v8a.apk"
+        },
+        {
+          "architecture": "ARMv7",
+          "format": "APK",
+          "file": "StashFlow-1.36.0-android-armeabi-v7a.apk"
+        },
+        {
+          "architecture": "x86_64",
+          "format": "APK",
+          "file": "StashFlow-1.36.0-android-x86_64.apk"
+        }
+      ]
+    },
+    {
+      "id": "windows",
+      "name": "Windows",
+      "packages": [
+        {
+          "architecture": "x64",
+          "format": "EXE",
+          "file": "StashFlow-1.36.0-windows-x64.exe"
+        },
+        {
+          "architecture": "x64",
+          "format": "ZIP",
+          "file": "StashFlow-1.36.0-windows-x64.zip"
+        }
+      ]
+    },
+    {
+      "id": "macos",
+      "name": "macOS",
+      "packages": [
+        {
+          "architecture": "ARM64",
+          "format": "ZIP",
+          "file": "StashFlow-1.36.0-macos-arm64.zip"
+        }
+      ]
+    },
+    {
+      "id": "linux",
+      "name": "Linux",
+      "packages": [
+        {
+          "architecture": "x64",
+          "format": "AppImage",
+          "file": "StashFlow-1.36.0-linux-x64.AppImage"
+        },
+        {
+          "architecture": "x64",
+          "format": "Deb",
+          "file": "StashFlow-1.36.0-linux-x64.deb"
+        },
+        {
+          "architecture": "x64",
+          "format": "Pacman",
+          "file": "StashFlow-1.36.0-linux-x64.pkg.tar.zst"
+        },
+        {
+          "architecture": "x64",
+          "format": "ZIP",
+          "file": "StashFlow-1.36.0-linux-x64.zip"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "name": "Web",
+      "packages": [
+        {
+          "architecture": "",
+          "format": "ZIP",
+          "file": "StashFlow-1.36.0-web.zip"
+        }
+      ]
+    }
+  ]
+}
