@@ -101,6 +101,10 @@ Canonical implementation:
 
 The app supports light/dark/system theme modes, a persisted Material seed color,
 and a True Black option for dark themes. Theme changes apply without restart.
+Custom primary colors open a full-spectrum hue/saturation/brightness dialog with
+synchronized hex input (6-digit RGB or 8-digit ARGB, optionally prefixed by `#`).
+Apply persists the selected color; canceling does not change the active theme.
+Invalid hex input disables Apply and displays localized guidance.
 Appearance also offers System, Serif, Monospace, Manrope, Outfit, Space
 Grotesk, Inter, Lora, and JetBrains Mono font families. The six named families
 are bundled under the SIL Open Font License; missing glyphs use platform

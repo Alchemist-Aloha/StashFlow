@@ -11,6 +11,7 @@ import 'package:stash_app_flutter/core/presentation/providers/layout_settings_pr
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import '../../widgets/settings_page_shell.dart';
+import '../../widgets/theme_color_picker_dialog.dart';
 
 class AppearanceSettingsPage extends ConsumerStatefulWidget {
   const AppearanceSettingsPage({super.key});
@@ -31,10 +32,7 @@ class _AppearanceSettingsPageState
     Color(0xFF4CAF50), // Green
   ];
 
-  final _customHexController = TextEditingController();
-  final _customHexFocusNode = FocusNode();
   Color _seedColor = const Color(0xFF0F766E);
-  bool _forceShowCustom = false;
   ThemeMode _themeMode = ThemeMode.system;
   bool _loading = true;
 
@@ -51,15 +49,6 @@ class _AppearanceSettingsPageState
     _themeMode = themeMode;
     _seedColor = seedColor;
 
-    if (!_presetColors.contains(seedColor)) {
-      _customHexController.text = seedColor
-          .toARGB32()
-          .toUnsigned(32)
-          .toRadixString(16)
-          .padLeft(8, '0')
-          .toUpperCase();
-    }
-
     setState(() => _loading = false);
   }
 
@@ -69,18 +58,8 @@ class _AppearanceSettingsPageState
   }
 
   Future<void> _saveThemeColor(Color color) async {
-    setState(() {
-      _seedColor = color;
-      _forceShowCustom = false;
-    });
+    setState(() => _seedColor = color);
     await ref.read(appThemeColorProvider.notifier).setThemeColor(color);
-  }
-
-  @override
-  void dispose() {
-    _customHexController.dispose();
-    _customHexFocusNode.dispose();
-    super.dispose();
   }
 
   @override
@@ -395,113 +374,89 @@ class _AppearanceSettingsPageState
     );
   }
 
-  Widget _buildColorSelector() {
-    final isCustom = _forceShowCustom || !_presetColors.contains(_seedColor);
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildColorSelector() => Wrap(
+    spacing: context.dimensions.spacingSmall,
+    runSpacing: context.dimensions.spacingSmall,
+    children: [
+      ..._presetColors.map(_buildColorSwatch),
+      _buildColorSwatch(null),
+    ],
+  );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Wrap(
-          spacing: context.dimensions.spacingSmall,
-          runSpacing: context.dimensions.spacingSmall,
-          children: [
-            ..._presetColors.map(_buildColorSwatch),
-            _buildColorSwatch(null),
-          ],
-        ),
-        if (isCustom) ...[
-          SizedBox(height: context.dimensions.spacingMedium),
-          TextField(
-            textInputAction: TextInputAction.next,
-            controller: _customHexController,
-            focusNode: _customHexFocusNode,
-            decoration: InputDecoration(
-              labelText: l10n.settings_appearance_custom_hex,
-              hintText: context.l10n.common_hint_hex,
-              prefixText: '#',
-              helperText: l10n.settings_appearance_custom_hex_helper,
-            ),
-            maxLength: 8,
-            onChanged: (value) {
-              if (value.length == 8) {
-                final colorValue = int.tryParse(value, radix: 16);
-                if (colorValue != null) {
-                  _seedColor = Color(colorValue);
-                  ref
-                      .read(appThemeColorProvider.notifier)
-                      .setThemeColor(_seedColor);
-                }
-              }
-            },
-          ),
-        ],
-      ],
+  Future<void> _showCustomColorPicker() async {
+    final color = await showDialog<Color>(
+      context: context,
+      builder: (context) => ThemeColorPickerDialog(initialColor: _seedColor),
     );
+    if (!mounted || color == null) return;
+    await _saveThemeColor(color);
   }
 
   Widget _buildColorSwatch(Color? color) {
     final isSelected = color == null
-        ? (_forceShowCustom || !_presetColors.contains(_seedColor))
-        : (_seedColor == color && !_forceShowCustom);
+        ? !_presetColors.contains(_seedColor)
+        : _seedColor == color;
     final displayColor = color ?? _seedColor;
 
-    return Padding(
-      padding: EdgeInsets.only(right: context.dimensions.spacingSmall),
-      child: InkWell(
-        onTap: () {
-          if (color != null) {
-            _saveThemeColor(color);
-          } else {
-            setState(() {
-              _forceShowCustom = true;
-              if (_customHexController.text.isEmpty) {
-                _customHexController.text = _seedColor
-                    .toARGB32()
-                    .toUnsigned(32)
-                    .toRadixString(16)
-                    .padLeft(8, '0')
-                    .toUpperCase();
-              }
-            });
-            _customHexFocusNode.requestFocus();
-          }
-        },
-        borderRadius: BorderRadius.circular(
-          20 * context.dimensions.fontSizeFactor,
-        ),
-        child: Container(
-          width: 40 * context.dimensions.fontSizeFactor,
-          height: 40 * context.dimensions.fontSizeFactor,
-          decoration: BoxDecoration(
-            color: displayColor,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: isSelected
-                  ? Theme.of(context).colorScheme.onSurface
-                  : Theme.of(
-                      context,
-                    ).colorScheme.outline.withValues(alpha: 0.2),
-              width: isSelected ? 3 : 1,
-            ),
+    return Semantics(
+      label: color == null
+          ? context.l10n.settings_appearance_custom_hex
+          : '#${color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}',
+      selected: isSelected,
+      button: true,
+      child: Padding(
+        padding: EdgeInsets.only(right: context.dimensions.spacingSmall),
+        child: InkWell(
+          key: color == null ? const Key('custom-theme-color') : null,
+          onTap: () {
+            if (color != null) {
+              _saveThemeColor(color);
+            } else {
+              _showCustomColorPicker();
+            }
+          },
+          borderRadius: BorderRadius.circular(
+            20 * context.dimensions.fontSizeFactor,
           ),
-          child: color == null && !isSelected
-              ? Icon(
-                  Icons.palette_outlined,
-                  size: 20 * context.dimensions.fontSizeFactor,
-                  color: displayColor.computeLuminance() > 0.5
-                      ? Colors.black
-                      : Colors.white,
-                )
-              : isSelected
-              ? Icon(
-                  Icons.check,
-                  size: 20 * context.dimensions.fontSizeFactor,
-                  color: displayColor.computeLuminance() > 0.5
-                      ? Colors.black
-                      : Colors.white,
-                )
-              : null,
+          child: Container(
+            width: context.dimensions.buttonHeight.clamp(
+              kMinInteractiveDimension,
+              double.infinity,
+            ),
+            height: context.dimensions.buttonHeight.clamp(
+              kMinInteractiveDimension,
+              double.infinity,
+            ),
+            decoration: BoxDecoration(
+              color: displayColor,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isSelected
+                    ? Theme.of(context).colorScheme.onSurface
+                    : Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.2),
+                width: isSelected ? 3 : 1,
+              ),
+            ),
+            child: color == null && !isSelected
+                ? Icon(
+                    Icons.palette_outlined,
+                    size: 20 * context.dimensions.fontSizeFactor,
+                    color: displayColor.computeLuminance() > 0.5
+                        ? Colors.black
+                        : Colors.white,
+                  )
+                : isSelected
+                ? Icon(
+                    Icons.check,
+                    size: 20 * context.dimensions.fontSizeFactor,
+                    color: displayColor.computeLuminance() > 0.5
+                        ? Colors.black
+                        : Colors.white,
+                  )
+                : null,
+          ),
         ),
       ),
     );

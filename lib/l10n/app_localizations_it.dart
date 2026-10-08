@@ -1263,8 +1263,17 @@ class AppLocalizationsIt extends AppLocalizations {
       'Colore Esadecimale Personalizzato';
 
   @override
+  String get settings_appearance_color_hue => 'Tonalità';
+
+  @override
+  String get settings_appearance_color_saturation => 'Saturazione';
+
+  @override
+  String get settings_appearance_color_brightness => 'Luminosità';
+
+  @override
   String get settings_appearance_custom_hex_helper =>
-      'Inserisci un codice esadecimale ARGB a 8 cifre';
+      'Inserisci un codice esadecimale RGB a 6 cifre o ARGB a 8 cifre';
 
   @override
   String get settings_appearance_font_family => 'Carattere';

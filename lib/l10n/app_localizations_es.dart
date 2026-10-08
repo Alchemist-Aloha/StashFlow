@@ -1269,8 +1269,17 @@ class AppLocalizationsEs extends AppLocalizations {
       'Color hexadecimal personalizado';
 
   @override
+  String get settings_appearance_color_hue => 'Tono';
+
+  @override
+  String get settings_appearance_color_saturation => 'Saturación';
+
+  @override
+  String get settings_appearance_color_brightness => 'Brillo';
+
+  @override
   String get settings_appearance_custom_hex_helper =>
-      'Introduce un código hexadecimal ARGB de 8 dígitos';
+      'Introduce un código hex RGB de 6 dígitos o ARGB de 8 dígitos';
 
   @override
   String get settings_appearance_font_family => 'Fuente';

@@ -1259,8 +1259,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_appearance_custom_hex => 'Benutzerdefinierte Hex-Farbe';
 
   @override
+  String get settings_appearance_color_hue => 'Farbton';
+
+  @override
+  String get settings_appearance_color_saturation => 'Sättigung';
+
+  @override
+  String get settings_appearance_color_brightness => 'Helligkeit';
+
+  @override
   String get settings_appearance_custom_hex_helper =>
-      'Geben Sie einen 8-stelligen ARGB-Hex-Code ein';
+      '6-stelligen RGB- oder 8-stelligen ARGB-Hexcode eingeben';
 
   @override
   String get settings_appearance_font_family => 'Schriftart';

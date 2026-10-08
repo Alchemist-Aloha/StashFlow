@@ -1234,7 +1234,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_appearance_custom_hex => '사용자 정의 헥스 색상';
 
   @override
-  String get settings_appearance_custom_hex_helper => '8자리 ARGB 헥스 코드를 입력하세요';
+  String get settings_appearance_color_hue => '색조';
+
+  @override
+  String get settings_appearance_color_saturation => '채도';
+
+  @override
+  String get settings_appearance_color_brightness => '명도';
+
+  @override
+  String get settings_appearance_custom_hex_helper =>
+      '6자리 RGB 또는 8자리 ARGB 16진수 코드를 입력하세요';
 
   @override
   String get settings_appearance_font_family => '글꼴';
