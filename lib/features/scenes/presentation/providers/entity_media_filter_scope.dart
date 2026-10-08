@@ -186,12 +186,22 @@ class EntityMediaGrid extends _$EntityMediaGrid {
   int _currentPage = 1;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  int _requestGeneration = 0;
   EntityMediaFilterKind? _kind;
   String? _entityId;
 
   @override
   FutureOr<List<Scene>> build(EntityMediaFilterKind kind, String entityId) {
     ref.keepAlive();
+    ref.watch(entityMediaSearchQueryProvider(kind));
+    final sortConfig = ref.watch(entityMediaSortProvider(kind));
+    ref.watch(entityMediaFilterStateProvider(kind));
+    ref.watch(entityMediaOrganizedOnlyProvider(kind));
+    if (sortConfig.sort == 'random') {
+      ref.watch(entityMediaRandomSeedProvider(kind));
+    }
+    _requestGeneration++;
+    _isLoadingMore = false;
     _kind = kind;
     _entityId = entityId;
     _currentPage = 1;
@@ -233,10 +243,15 @@ class EntityMediaGrid extends _$EntityMediaGrid {
   Future<void> fetchNextPage() async {
     final kind = _kind;
     final entityId = _entityId;
-    if (_isLoadingMore || !_hasMore || kind == null || entityId == null) {
+    if (_isLoadingMore ||
+        !_hasMore ||
+        state.isLoading ||
+        kind == null ||
+        entityId == null) {
       return;
     }
 
+    final generation = _requestGeneration;
     _isLoadingMore = true;
     try {
       final nextPage = _currentPage + 1;
@@ -246,6 +261,8 @@ class EntityMediaGrid extends _$EntityMediaGrid {
         page: nextPage,
       );
 
+      if (!ref.mounted || generation != _requestGeneration) return;
+
       if (nextItems.isEmpty) {
         _hasMore = false;
       } else {
@@ -253,7 +270,7 @@ class EntityMediaGrid extends _$EntityMediaGrid {
         state = AsyncData([...(state.value ?? <Scene>[]), ...nextItems]);
       }
     } finally {
-      _isLoadingMore = false;
+      if (generation == _requestGeneration) _isLoadingMore = false;
     }
   }
 

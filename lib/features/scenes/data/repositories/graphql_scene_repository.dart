@@ -119,6 +119,7 @@ class GraphQLSceneRepository {
                 .map(
                   (f) => SceneFile(
                     format: null,
+                    size: f.size,
                     width: f.width,
                     height: f.height,
                     videoCodec: null,
@@ -370,6 +371,7 @@ class GraphQLSceneRepository {
           .map(
             (f) => SceneFile(
               format: f.format,
+              size: f.size,
               width: f.width,
               height: f.height,
               videoCodec: f.video_codec,

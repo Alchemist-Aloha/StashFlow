@@ -27,7 +27,23 @@ void main() {
                 'resume_time': null,
                 'play_count': 0,
                 'play_duration': null,
-                'files': const <dynamic>[],
+                'files': [
+                  {
+                    '__typename': 'VideoFile',
+                    'path': '/scene.mp4',
+                    'basename': 'scene.mp4',
+                    'format': 'mp4',
+                    'video_codec': 'h264',
+                    'audio_codec': 'aac',
+                    'bit_rate': 5000000,
+                    'frame_rate': 30.0,
+                    'size': 3221225472,
+                    'duration': 120.0,
+                    'width': 1920,
+                    'height': 1080,
+                    'fingerprints': const <dynamic>[],
+                  },
+                ],
                 'paths': {
                   '__typename': 'ScenePathsType',
                   'screenshot': null,
@@ -82,6 +98,7 @@ void main() {
       );
 
       expect(scenes.single.performerBirthdates, ['2000-12-31']);
+      expect(scenes.single.files.single.size, 3221225472);
       expect(client.lastQueryVariables?['scene_filter']['phash_distance'], {
         'value': 'abc123',
         'modifier': 'EQUALS',
@@ -101,6 +118,15 @@ void main() {
       expect(filter['is_missing'], 'studio');
       expect(filter['stash_id_endpoint']['stash_id'], 'stash-1');
       expect(filter['custom_fields'].single['field'], 'source');
+
+      final sceneData = Map<String, dynamic>.from(
+        client.queryData['findScenes']['scenes'].single as Map,
+      );
+      client.queryData['findScene'] = sceneData;
+      final details = await GraphQLSceneRepository(
+        client,
+      ).getSceneById('scene-1');
+      expect(details.files.single.size, 3221225472);
     });
 
     test(

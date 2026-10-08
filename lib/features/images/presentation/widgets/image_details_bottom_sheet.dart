@@ -5,6 +5,7 @@ import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/studio_performer_info_sections.dart';
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/utils/format_bytes.dart';
 import '../../domain/entities/image.dart' as entity;
 
 /// Displays image metadata in the shared frosted details-sheet layout.
@@ -27,48 +28,50 @@ class ImageDetailsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dims = context.dimensions;
-    return SafeArea(
-      top: false,
-      child: FrostedPanel(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppTheme.radiusExtraLarge),
-        ),
-        child: ListView(
-          shrinkWrap: true,
-          padding: EdgeInsets.all(dims.spacingLarge),
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.details_image,
-                        style: context.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+    return SelectionArea(
+      child: SafeArea(
+        top: false,
+        child: FrostedPanel(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppTheme.radiusExtraLarge),
+          ),
+          child: ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.all(dims.spacingLarge),
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.details_image,
+                          style: context.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: dims.spacingSmall),
-                      Text(
-                        ImageDetailsContent.displayTitle(image),
-                        style: context.textTheme.bodyMedium,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                        SizedBox(height: dims.spacingSmall),
+                        Text(
+                          ImageDetailsContent.displayTitle(image),
+                          style: context.textTheme.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close_rounded),
-                  tooltip: context.l10n.common_close,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            ),
-            SizedBox(height: dims.spacingMedium),
-            ImageDetailsContent(image: image),
-          ],
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    tooltip: context.l10n.common_close,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+              SizedBox(height: dims.spacingMedium),
+              ImageDetailsContent(image: image),
+            ],
+          ),
         ),
       ),
     );
@@ -143,6 +146,10 @@ class ImageDetailsContent extends StatelessWidget {
               _MetaRow(
                 label: context.l10n.common_resolution,
                 value: file == null ? '--' : '${file.width} x ${file.height}',
+              ),
+              _MetaRow(
+                label: context.l10n.sort_filesize,
+                value: file?.size != null ? formatBytes(file!.size!) : '--',
               ),
               _MetaRow(
                 label: context.l10n.scene_info_original_file_path,

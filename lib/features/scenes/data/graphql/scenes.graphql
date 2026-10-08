@@ -11,6 +11,7 @@ fragment SlimSceneData on Scene {
   play_duration
   files {
     path
+    size
     duration
     width
     height

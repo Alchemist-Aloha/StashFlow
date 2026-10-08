@@ -210,7 +210,9 @@ List invariants:
 
 Each feature owns a typed filter entity and maps it to the server's criteria in
 its repository. Filter UI edits a temporary value and commits only on Apply;
-canceling a sheet must not mutate the active query.
+canceling a sheet must not mutate the active query. Applying sort or filters
+refreshes the results automatically, including scoped entity media grids, and
+resets pagination without appending responses from the previous query.
 
 Sort/filter sheets must:
 
@@ -275,7 +277,9 @@ reliable when scrubbing is unavailable.
 ### Scene details
 
 Scene details combine identity, playback, metadata, related media, and editing
-without duplicating repository state.
+without duplicating repository state. The scene information panel opened from
+card long-press or details shows the primary file's size in its technical
+metadata, using readable byte units or a placeholder when unavailable.
 
 Layout contract:
 
@@ -325,7 +329,10 @@ Interactive rating entry points share `RatingButton` and `RatingPicker`. A singl
 star opens a popup editor with five stars, fractional-rating selection, Clear,
 and Apply/Cancel. Ratings use the server's 0–100 scale; cancelling leaves the
 confirmed rating unchanged. Image metadata panels, including card long-press
-details, are read-only and omit rating controls. Fullscreen image rating retains
+details, are read-only and omit rating controls. Scene, image, and gallery
+metadata panels support text selection and copying. Image panels show the
+primary visual file's size in readable byte units, or a placeholder when
+unavailable. Fullscreen image rating retains
 its image/gallery target selector.
 
 Scene rating and metadata edits go through the scene repository. Successful

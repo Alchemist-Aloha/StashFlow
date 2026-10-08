@@ -31,6 +31,7 @@ abstract class ImageFile with _$ImageFile {
     required int width,
     required int height,
     required String path,
+    int? size,
   }) = _ImageFile;
 
   factory ImageFile.fromJson(Map<String, dynamic> json) =>

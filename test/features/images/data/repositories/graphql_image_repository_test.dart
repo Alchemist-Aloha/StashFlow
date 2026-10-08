@@ -54,6 +54,7 @@ void main() {
                   'width': 100,
                   'height': 100,
                   'path': '/path/to/img.jpg',
+                  'size': 1572864,
                   '__typename': 'ImageFile',
                 },
               ],
@@ -99,6 +100,7 @@ void main() {
       expect(result.length, 1);
       expect(result.first.id, '1');
       expect(result.first.title, 'Test Image');
+      expect(result.first.files.single.size, 1572864);
       expect(result.first.paths.thumbnail, 'http://localhost:9999/thumb.jpg');
       expect(result.first.studioName, 'Studio One');
       expect(result.first.performerNames, ['Performer One']);
@@ -192,7 +194,8 @@ void main() {
               'width': 100,
               'height': 100,
               'path': '/path/to/img.jpg',
-              '__typename': 'ImageFile',
+              'size': 3221225472,
+              '__typename': 'VideoFile',
             },
           ],
           'paths': {
@@ -225,6 +228,7 @@ void main() {
       expect(result, isA<Image>());
       expect(result.id, '1');
       expect(result.title, 'Test Image');
+      expect(result.files.single.size, 3221225472);
       expect(result.paths.thumbnail, 'http://localhost:9999/thumb.jpg');
     });
 
