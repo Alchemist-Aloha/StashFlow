@@ -221,7 +221,12 @@ Sort/filter sheets must:
 - show the active-filter count accurately;
 - support reset and persisted defaults where offered;
 - preserve search, sort direction, and feature-specific criteria together;
-- use shared filter widgets when their semantics match.
+- use shared filter widgets when their semantics match;
+- use `FilterField` for consistently start-aligned labels, scaled outer spacing,
+  and label-to-control gaps across text, numeric, chip, and entity criteria;
+- use full-width `FilterDropdown` controls with the same scalable decoration
+  and minimum touch height; place value inputs below operators so long localized
+  options and large UI scales do not squeeze or overflow adjacent controls.
 
 Do not force every entity into the Scene filter shape. Performer, studio, tag,
 group, image, gallery, scene, and marker criteria remain feature-specific.

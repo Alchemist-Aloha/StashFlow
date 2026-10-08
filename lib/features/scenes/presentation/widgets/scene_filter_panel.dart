@@ -501,13 +501,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildDuplicatedFilter() {
     final options = ['phash', 'stash_id', 'title', 'url'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.scenes_duplicated,
       children: [
-        Text(
-          context.l10n.scenes_duplicated,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: options.map((opt) {
@@ -544,13 +540,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
   }
 
   Widget _buildRatingFilter() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.galleries_min_rating,
       children: [
-        Text(
-          context.l10n.galleries_min_rating,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: [
@@ -597,13 +589,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
   }
 
   Widget _buildOrganizedFilter() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.common_organized,
       children: [
-        Text(
-          context.l10n.common_organized,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: OrganizedFilter.values.map((option) {
@@ -627,10 +615,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     bool? value,
     ValueChanged<bool?> onChanged,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: label,
       children: [
-        Text(label, style: context.textTheme.labelLarge),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: [
@@ -669,13 +656,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       'STANDARD_HD': context.l10n.resolution_filter_standard_hd,
       'STANDARD': context.l10n.resolution_filter_standard,
     };
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.images_resolution_title,
       children: [
-        Text(
-          context.l10n.images_resolution_title,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: resolutions.map((res) {
@@ -710,13 +693,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildOrientationFilter() {
     final orientations = ['LANDSCAPE', 'PORTRAIT', 'SQUARE'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.common_orientation,
       children: [
-        Text(
-          context.l10n.common_orientation,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: orientations.map((ori) {

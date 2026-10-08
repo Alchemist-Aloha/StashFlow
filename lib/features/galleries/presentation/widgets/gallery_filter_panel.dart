@@ -276,13 +276,9 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     return FilterSection(
       title: context.l10n.filter_group_media_info,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        FilterField(
+          label: context.l10n.common_resolution,
           children: [
-            Text(
-              context.l10n.common_resolution,
-              style: context.textTheme.labelLarge,
-            ),
             Wrap(
               spacing: context.dimensions.spacingSmall / 2,
               children: resolutions.map((resolution) {
@@ -412,13 +408,9 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
   }
 
   Widget _buildRatingFilter() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.galleries_min_rating,
       children: [
-        Text(
-          context.l10n.galleries_min_rating,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: 4,
           children: [
@@ -465,13 +457,9 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
   }
 
   Widget _buildOrganizedFilter() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.common_organized,
       children: [
-        Text(
-          context.l10n.common_organized,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: OrganizedFilter.values.map((option) {
@@ -495,10 +483,9 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     bool? value,
     ValueChanged<bool?> onChanged,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: label,
       children: [
-        Text(label, style: context.textTheme.labelLarge),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: [

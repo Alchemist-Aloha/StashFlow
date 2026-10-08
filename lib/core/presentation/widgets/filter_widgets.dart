@@ -95,6 +95,66 @@ List<DropdownMenuItem<CriterionModifier>> _buildModifierItems(
       .toList(growable: false);
 }
 
+/// Shared label, spacing, and start alignment for every filter control.
+class FilterField extends StatelessWidget {
+  const FilterField({required this.label, required this.children, super.key});
+
+  final String label;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: context.dimensions.spacingSmall,
+      children: [
+        Text(
+          label,
+          style: context.textTheme.labelLarge,
+          textAlign: TextAlign.start,
+        ),
+        ...children,
+      ],
+    ),
+  );
+}
+
+/// Full-width filter dropdown with scalable field and menu sizing.
+class FilterDropdown<T> extends StatelessWidget {
+  const FilterDropdown({
+    required this.value,
+    required this.items,
+    required this.onChanged,
+    super.key,
+  });
+
+  final T? value;
+  final List<DropdownMenuItem<T>> items;
+  final ValueChanged<T?>? onChanged;
+
+  @override
+  Widget build(BuildContext context) => DropdownButtonFormField<T>(
+    initialValue: value,
+    isExpanded: true,
+    itemHeight: null,
+    decoration: InputDecoration(
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: context.dimensions.spacingMedium,
+        vertical: context.dimensions.spacingSmall,
+      ),
+      constraints: BoxConstraints(
+        minHeight: context.dimensions.buttonHeight.clamp(
+          kMinInteractiveDimension,
+          double.infinity,
+        ),
+      ),
+    ),
+    items: items,
+    onChanged: onChanged,
+  );
+}
+
 class FilterSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
@@ -112,6 +172,10 @@ class FilterSection extends StatelessWidget {
     return ExpansionTile(
       title: Text(title, style: context.textTheme.titleMedium),
       initiallyExpanded: initiallyExpanded,
+      expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+      tilePadding: EdgeInsets.symmetric(
+        horizontal: context.dimensions.spacingMedium,
+      ),
       childrenPadding: EdgeInsets.symmetric(
         horizontal: context.dimensions.spacingMedium,
       ),
@@ -135,18 +199,22 @@ class MissingFieldCriterionInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String?>(
-      initialValue: value,
-      decoration: InputDecoration(labelText: context.l10n.auto_missing_field),
-      items: [
-        DropdownMenuItem<String?>(
-          value: null,
-          child: Text(context.l10n.common_none),
+    return FilterField(
+      label: context.l10n.auto_missing_field,
+      children: [
+        FilterDropdown<String?>(
+          value: value,
+          items: [
+            DropdownMenuItem<String?>(
+              value: null,
+              child: Text(context.l10n.common_none),
+            ),
+            for (final field in fields)
+              DropdownMenuItem<String?>(value: field, child: Text(field)),
+          ],
+          onChanged: onChanged,
         ),
-        for (final field in fields)
-          DropdownMenuItem<String?>(value: field, child: Text(field)),
       ],
-      onChanged: onChanged,
     );
   }
 }
@@ -173,54 +241,33 @@ class SelectionCriterionInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final canPickValues = !_isNullaryModifier(modifier);
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: context.textTheme.labelLarge),
-          Row(
+    return FilterField(
+      label: label,
+      children: [
+        FilterDropdown<CriterionModifier>(
+          value: modifier,
+          onChanged: (next) {
+            if (next != null) onModifierChanged(next);
+          },
+          items: _buildModifierItems(context, _selectionCriterionModifiers),
+        ),
+        if (canPickValues)
+          Wrap(
+            spacing: context.dimensions.spacingSmall / 2,
             children: [
-              Expanded(
-                child: DropdownButton<CriterionModifier>(
-                  isExpanded: true,
-                  value: modifier,
-                  onChanged: (next) {
-                    if (next != null) {
-                      onModifierChanged(next);
-                    }
-                  },
-                  items: _buildModifierItems(
-                    context,
-                    _selectionCriterionModifiers,
-                  ),
+              IconButton(
+                tooltip: context.l10n.common_add,
+                icon: Icon(
+                  Icons.add_circle_outline,
+                  size: 24 * context.dimensions.fontSizeFactor,
                 ),
+                onPressed: onAddPressed,
               ),
-              if (canPickValues) ...[
-                SizedBox(width: context.dimensions.spacingSmall),
-                IconButton(
-                  tooltip: context.l10n.common_add,
-                  icon: Icon(
-                    Icons.add_circle_outline,
-                    size: 24 * context.dimensions.fontSizeFactor,
-                  ),
-                  onPressed: onAddPressed,
-                ),
-              ],
+              for (final id in selectedIds)
+                Chip(label: Text(id), onDeleted: () => onRemoveId(id)),
             ],
           ),
-          if (canPickValues && selectedIds.isNotEmpty)
-            Wrap(
-              spacing: context.dimensions.spacingSmall / 2,
-              children: selectedIds
-                  .map(
-                    (id) =>
-                        Chip(label: Text(id), onDeleted: () => onRemoveId(id)),
-                  )
-                  .toList(growable: false),
-            ),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -243,85 +290,69 @@ class IntCriterionInput extends StatelessWidget {
     final showPrimaryValue = !_isNullaryModifier(modifier);
     final showSecondaryValue = _usesSecondaryValue(modifier);
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: context.textTheme.labelLarge),
-          Row(
-            children: [
-              DropdownButton<CriterionModifier>(
-                value: modifier,
-                onChanged: (mod) {
-                  if (mod != null) {
-                    onChanged(
-                      IntCriterion(
-                        value: value?.value ?? 0,
-                        value2: _usesSecondaryValue(mod) ? value?.value2 : null,
-                        modifier: mod,
-                      ),
-                    );
-                  }
-                },
-                items: _buildModifierItems(context, _intCriterionModifiers),
-              ),
-              if (showPrimaryValue) ...[
-                SizedBox(width: context.dimensions.spacingSmall),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('int-primary-$label-$modifier'),
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.number,
-                    initialValue: value?.value.toString() ?? '',
-                    decoration: InputDecoration(
-                      hintText: context.l10n.filter_value,
-                    ),
-                    onChanged: (val) {
-                      final intVal = int.tryParse(val);
-                      if (intVal != null) {
-                        onChanged(
-                          IntCriterion(
-                            value: intVal,
-                            value2: value?.value2,
-                            modifier: modifier,
-                          ),
-                        );
-                      }
-                    },
-                  ),
+    return FilterField(
+      label: label,
+      children: [
+        FilterDropdown<CriterionModifier>(
+          value: modifier,
+          onChanged: (mod) {
+            if (mod != null) {
+              onChanged(
+                IntCriterion(
+                  value: value?.value ?? 0,
+                  value2: _usesSecondaryValue(mod) ? value?.value2 : null,
+                  modifier: mod,
                 ),
-              ],
-              if (showSecondaryValue) ...[
-                SizedBox(width: context.dimensions.spacingSmall),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('int-secondary-$label-$modifier'),
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.number,
-                    initialValue: value?.value2?.toString() ?? '',
-                    decoration: InputDecoration(
-                      hintText: context.l10n.filter_value_secondary,
-                    ),
-                    onChanged: (val) {
-                      final intVal = int.tryParse(val);
-                      if (intVal != null) {
-                        onChanged(
-                          IntCriterion(
-                            value: value?.value ?? 0,
-                            value2: intVal,
-                            modifier: modifier,
-                          ),
-                        );
-                      }
-                    },
+              );
+            }
+          },
+          items: _buildModifierItems(context, _intCriterionModifiers),
+        ),
+        if (showPrimaryValue) ...[
+          TextFormField(
+            key: ValueKey('int-primary-$label-$modifier'),
+            textInputAction: TextInputAction.next,
+            keyboardType: TextInputType.number,
+            initialValue: value?.value.toString() ?? '',
+            decoration: InputDecoration(hintText: context.l10n.filter_value),
+            onChanged: (val) {
+              final intVal = int.tryParse(val);
+              if (intVal != null) {
+                onChanged(
+                  IntCriterion(
+                    value: intVal,
+                    value2: value?.value2,
+                    modifier: modifier,
                   ),
-                ),
-              ],
-            ],
+                );
+              }
+            },
           ),
         ],
-      ),
+        if (showSecondaryValue) ...[
+          TextFormField(
+            key: ValueKey('int-secondary-$label-$modifier'),
+            textInputAction: TextInputAction.next,
+            keyboardType: TextInputType.number,
+            initialValue: value?.value2?.toString() ?? '',
+            decoration: InputDecoration(
+              hintText: context.l10n.filter_value_secondary,
+            ),
+            onChanged: (val) {
+              final intVal = int.tryParse(val);
+              if (intVal != null) {
+                onChanged(
+                  IntCriterion(
+                    value: value?.value ?? 0,
+                    value2: intVal,
+                    modifier: modifier,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+      ],
     );
   }
 }
@@ -349,66 +380,47 @@ class MultiCriterionInput<T> extends StatelessWidget {
     final modifier = value?.modifier ?? CriterionModifier.includes;
     final showSelections = !_isNullaryModifier(modifier);
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: context.textTheme.labelLarge),
-          Row(
+    return FilterField(
+      label: label,
+      children: [
+        FilterDropdown<CriterionModifier>(
+          value: modifier,
+          onChanged: (mod) {
+            if (mod != null) {
+              onChanged(
+                MultiCriterion(value: value?.value ?? [], modifier: mod),
+              );
+            }
+          },
+          items: _buildModifierItems(context, _selectionCriterionModifiers),
+        ),
+        if (showSelections) ...[
+          Wrap(
+            spacing: context.dimensions.spacingSmall / 2,
             children: [
-              DropdownButton<CriterionModifier>(
-                value: modifier,
-                onChanged: (mod) {
-                  if (mod != null) {
-                    onChanged(
-                      MultiCriterion(value: value?.value ?? [], modifier: mod),
-                    );
-                  }
+              IconButton(
+                tooltip: context.l10n.common_add,
+                icon: const Icon(Icons.add_circle_outline),
+                onPressed: () async {
+                  // Show picker and update.
                 },
-                items: _buildModifierItems(
-                  context,
-                  _selectionCriterionModifiers,
+              ),
+              ...?value?.value.map(
+                (id) => Chip(
+                  label: Text(id),
+                  onDeleted: () {
+                    final newValue = List<String>.from(value?.value ?? []);
+                    newValue.remove(id);
+                    onChanged(
+                      MultiCriterion(value: newValue, modifier: modifier),
+                    );
+                  },
                 ),
               ),
-              if (showSelections) ...[
-                SizedBox(width: context.dimensions.spacingSmall),
-                Expanded(
-                  child: Wrap(
-                    spacing: context.dimensions.spacingSmall / 2,
-                    children: [
-                      IconButton(
-                        tooltip: context.l10n.common_add,
-                        icon: const Icon(Icons.add_circle_outline),
-                        onPressed: () async {
-                          // Show picker and update.
-                        },
-                      ),
-                      ...?value?.value.map(
-                        (id) => Chip(
-                          label: Text(id),
-                          onDeleted: () {
-                            final newValue = List<String>.from(
-                              value?.value ?? [],
-                            );
-                            newValue.remove(id);
-                            onChanged(
-                              MultiCriterion(
-                                value: newValue,
-                                modifier: modifier,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
             ],
           ),
         ],
-      ),
+      ],
     );
   }
 }
@@ -429,55 +441,39 @@ class StringCriterionInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final modifier = value?.modifier ?? CriterionModifier.equals;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: context.textTheme.labelLarge),
-          Row(
-            children: [
-              DropdownButton<CriterionModifier>(
-                value: modifier,
-                onChanged: (mod) {
-                  if (mod != null) {
-                    if (_isNullaryModifier(mod)) {
-                      onChanged(StringCriterion(value: '', modifier: mod));
-                    } else {
-                      onChanged(
-                        StringCriterion(
-                          value: value?.value ?? '',
-                          modifier: mod,
-                        ),
-                      );
-                    }
-                  }
-                },
-                items: _buildModifierItems(context, _stringCriterionModifiers),
-              ),
-              SizedBox(width: context.dimensions.spacingSmall),
-              if (!_isNullaryModifier(modifier))
-                Expanded(
-                  child: TextFormField(
-                    textInputAction: TextInputAction.next,
-                    initialValue: value?.value ?? '',
-                    decoration: InputDecoration(
-                      hintText: context.l10n.filter_value,
-                    ),
-                    onChanged: (val) {
-                      onChanged(
-                        StringCriterion(
-                          value: val,
-                          modifier: value?.modifier ?? CriterionModifier.equals,
-                        ),
-                      );
-                    },
-                  ),
+    return FilterField(
+      label: label,
+      children: [
+        FilterDropdown<CriterionModifier>(
+          value: modifier,
+          onChanged: (mod) {
+            if (mod != null) {
+              if (_isNullaryModifier(mod)) {
+                onChanged(StringCriterion(value: '', modifier: mod));
+              } else {
+                onChanged(
+                  StringCriterion(value: value?.value ?? '', modifier: mod),
+                );
+              }
+            }
+          },
+          items: _buildModifierItems(context, _stringCriterionModifiers),
+        ),
+        if (!_isNullaryModifier(modifier))
+          TextFormField(
+            textInputAction: TextInputAction.next,
+            initialValue: value?.value ?? '',
+            decoration: InputDecoration(hintText: context.l10n.filter_value),
+            onChanged: (val) {
+              onChanged(
+                StringCriterion(
+                  value: val,
+                  modifier: value?.modifier ?? CriterionModifier.equals,
                 ),
-            ],
+              );
+            },
           ),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -500,83 +496,67 @@ class DateCriterionInput extends StatelessWidget {
     final showPrimaryValue = !_isNullaryModifier(modifier);
     final showSecondaryValue = _usesSecondaryValue(modifier);
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: context.textTheme.labelLarge),
-          Row(
-            children: [
-              DropdownButton<CriterionModifier>(
-                value: modifier,
-                onChanged: (mod) {
-                  if (mod != null) {
-                    if (_isNullaryModifier(mod)) {
-                      onChanged(DateCriterion(value: '', modifier: mod));
-                    } else {
-                      onChanged(
-                        DateCriterion(
-                          value: value?.value ?? '',
-                          value2: _usesSecondaryValue(mod)
-                              ? value?.value2
-                              : null,
-                          modifier: mod,
-                        ),
-                      );
-                    }
-                  }
-                },
-                items: _buildModifierItems(context, _dateCriterionModifiers),
-              ),
-              if (showPrimaryValue) ...[
-                SizedBox(width: context.dimensions.spacingSmall),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('date-primary-$label-$modifier'),
-                    textInputAction: TextInputAction.next,
-                    initialValue: value?.value ?? '',
-                    decoration: InputDecoration(
-                      hintText: context.l10n.common_hint_date,
-                    ),
-                    onChanged: (val) {
-                      onChanged(
-                        DateCriterion(
-                          value: val,
-                          value2: value?.value2,
-                          modifier: value?.modifier ?? CriterionModifier.equals,
-                        ),
-                      );
-                    },
+    return FilterField(
+      label: label,
+      children: [
+        FilterDropdown<CriterionModifier>(
+          value: modifier,
+          onChanged: (mod) {
+            if (mod != null) {
+              if (_isNullaryModifier(mod)) {
+                onChanged(DateCriterion(value: '', modifier: mod));
+              } else {
+                onChanged(
+                  DateCriterion(
+                    value: value?.value ?? '',
+                    value2: _usesSecondaryValue(mod) ? value?.value2 : null,
+                    modifier: mod,
                   ),
+                );
+              }
+            }
+          },
+          items: _buildModifierItems(context, _dateCriterionModifiers),
+        ),
+        if (showPrimaryValue) ...[
+          TextFormField(
+            key: ValueKey('date-primary-$label-$modifier'),
+            textInputAction: TextInputAction.next,
+            initialValue: value?.value ?? '',
+            decoration: InputDecoration(
+              hintText: context.l10n.common_hint_date,
+            ),
+            onChanged: (val) {
+              onChanged(
+                DateCriterion(
+                  value: val,
+                  value2: value?.value2,
+                  modifier: value?.modifier ?? CriterionModifier.equals,
                 ),
-              ],
-              if (showSecondaryValue) ...[
-                SizedBox(width: context.dimensions.spacingSmall),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('date-secondary-$label-$modifier'),
-                    textInputAction: TextInputAction.next,
-                    initialValue: value?.value2 ?? '',
-                    decoration: InputDecoration(
-                      hintText: context.l10n.filter_value_secondary,
-                    ),
-                    onChanged: (val) {
-                      onChanged(
-                        DateCriterion(
-                          value: value?.value ?? '',
-                          value2: val,
-                          modifier: modifier,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ],
+              );
+            },
           ),
         ],
-      ),
+        if (showSecondaryValue) ...[
+          TextFormField(
+            key: ValueKey('date-secondary-$label-$modifier'),
+            textInputAction: TextInputAction.next,
+            initialValue: value?.value2 ?? '',
+            decoration: InputDecoration(
+              hintText: context.l10n.filter_value_secondary,
+            ),
+            onChanged: (val) {
+              onChanged(
+                DateCriterion(
+                  value: value?.value ?? '',
+                  value2: val,
+                  modifier: modifier,
+                ),
+              );
+            },
+          ),
+        ],
+      ],
     );
   }
 }
@@ -604,71 +584,66 @@ class HierarchicalIdCriterionInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final modifier = value?.modifier ?? CriterionModifier.includes;
     final enabled = !_isNullaryModifier(modifier);
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: context.textTheme.labelLarge),
-          DropdownButton<CriterionModifier>(
-            isExpanded: true,
-            value: modifier,
-            items: _buildModifierItems(context, _selectionCriterionModifiers),
-            onChanged: (next) {
-              if (next == null) return;
-              onChanged(
-                HierarchicalMultiCriterion(
-                  value: value?.value ?? const [],
-                  excludes: value?.excludes ?? const [],
-                  depth: value?.depth ?? 0,
-                  modifier: next,
-                ),
-              );
-            },
+    return FilterField(
+      label: label,
+      children: [
+        FilterDropdown<CriterionModifier>(
+          value: modifier,
+          items: _buildModifierItems(context, _selectionCriterionModifiers),
+          onChanged: (next) {
+            if (next == null) return;
+            onChanged(
+              HierarchicalMultiCriterion(
+                value: value?.value ?? const [],
+                excludes: value?.excludes ?? const [],
+                depth: value?.depth ?? 0,
+                modifier: next,
+              ),
+            );
+          },
+        ),
+        if (enabled) ...[
+          TextFormField(
+            initialValue: value?.value.join(', '),
+            decoration: InputDecoration(labelText: context.l10n.filter_ids),
+            onChanged: (text) => onChanged(
+              HierarchicalMultiCriterion(
+                value: _ids(text),
+                excludes: value?.excludes ?? const [],
+                depth: value?.depth ?? 0,
+                modifier: modifier,
+              ),
+            ),
           ),
-          if (enabled) ...[
-            TextFormField(
-              initialValue: value?.value.join(', '),
-              decoration: InputDecoration(labelText: context.l10n.filter_ids),
-              onChanged: (text) => onChanged(
-                HierarchicalMultiCriterion(
-                  value: _ids(text),
-                  excludes: value?.excludes ?? const [],
-                  depth: value?.depth ?? 0,
-                  modifier: modifier,
-                ),
+          TextFormField(
+            initialValue: value?.excludes.join(', '),
+            decoration: InputDecoration(
+              labelText: context.l10n.filter_excluded_ids,
+            ),
+            onChanged: (text) => onChanged(
+              HierarchicalMultiCriterion(
+                value: value?.value ?? const [],
+                excludes: _ids(text),
+                depth: value?.depth ?? 0,
+                modifier: modifier,
               ),
             ),
-            TextFormField(
-              initialValue: value?.excludes.join(', '),
-              decoration: InputDecoration(
-                labelText: context.l10n.filter_excluded_ids,
-              ),
-              onChanged: (text) => onChanged(
-                HierarchicalMultiCriterion(
-                  value: value?.value ?? const [],
-                  excludes: _ids(text),
-                  depth: value?.depth ?? 0,
-                  modifier: modifier,
-                ),
-              ),
-            ),
-            TextFormField(
-              initialValue: value?.depth.toString() ?? '0',
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: context.l10n.filter_depth),
-              onChanged: (text) => onChanged(
-                HierarchicalMultiCriterion(
-                  value: value?.value ?? const [],
-                  excludes: value?.excludes ?? const [],
-                  depth: int.tryParse(text) ?? 0,
-                  modifier: modifier,
-                ),
+          ),
+          TextFormField(
+            initialValue: value?.depth.toString() ?? '0',
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: context.l10n.filter_depth),
+            onChanged: (text) => onChanged(
+              HierarchicalMultiCriterion(
+                value: value?.value ?? const [],
+                excludes: value?.excludes ?? const [],
+                depth: int.tryParse(text) ?? 0,
+                modifier: modifier,
               ),
             ),
-          ],
+          ),
         ],
-      ),
+      ],
     );
   }
 }
@@ -690,72 +665,64 @@ class PhashCriterionInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final modifier = value?.modifier ?? CriterionModifier.equals;
     final enabled = !_isNullaryModifier(modifier);
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: context.textTheme.labelLarge),
-          DropdownButton<CriterionModifier>(
-            isExpanded: true,
-            value: modifier,
-            items: _buildModifierItems(context, const [
-              CriterionModifier.equals,
-              CriterionModifier.notEquals,
-              CriterionModifier.isNull,
-              CriterionModifier.notNull,
-            ]),
-            onChanged: (next) {
-              if (next != null) {
-                onChanged(
+    return FilterField(
+      label: label,
+      children: [
+        FilterDropdown<CriterionModifier>(
+          value: modifier,
+          items: _buildModifierItems(context, const [
+            CriterionModifier.equals,
+            CriterionModifier.notEquals,
+            CriterionModifier.isNull,
+            CriterionModifier.notNull,
+          ]),
+          onChanged: (next) {
+            if (next != null) {
+              onChanged(
+                PhashCriterion(
+                  value: value?.value ?? '',
+                  distance: value?.distance,
+                  modifier: next,
+                ),
+              );
+            }
+          },
+        ),
+        if (enabled)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                initialValue: value?.value,
+                decoration: InputDecoration(
+                  labelText: context.l10n.filter_value,
+                ),
+                onChanged: (text) => onChanged(
+                  PhashCriterion(
+                    value: text,
+                    distance: value?.distance,
+                    modifier: modifier,
+                  ),
+                ),
+              ),
+              SizedBox(height: context.dimensions.spacingSmall),
+              TextFormField(
+                initialValue: value?.distance?.toString(),
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: context.l10n.filter_distance,
+                ),
+                onChanged: (text) => onChanged(
                   PhashCriterion(
                     value: value?.value ?? '',
-                    distance: value?.distance,
-                    modifier: next,
+                    distance: int.tryParse(text),
+                    modifier: modifier,
                   ),
-                );
-              }
-            },
+                ),
+              ),
+            ],
           ),
-          if (enabled)
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    initialValue: value?.value,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.filter_value,
-                    ),
-                    onChanged: (text) => onChanged(
-                      PhashCriterion(
-                        value: text,
-                        distance: value?.distance,
-                        modifier: modifier,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: context.dimensions.spacingSmall),
-                Expanded(
-                  child: TextFormField(
-                    initialValue: value?.distance?.toString(),
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.filter_distance,
-                    ),
-                    onChanged: (text) => onChanged(
-                      PhashCriterion(
-                        value: value?.value ?? '',
-                        distance: int.tryParse(text),
-                        modifier: modifier,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -775,66 +742,58 @@ class StashIdCriterionInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final modifier = value?.modifier ?? CriterionModifier.equals;
     final enabled = !_isNullaryModifier(modifier);
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.common_stash_id,
-            style: context.textTheme.labelLarge,
-          ),
-          DropdownButton<CriterionModifier>(
-            isExpanded: true,
-            value: modifier,
-            items: _buildModifierItems(context, const [
-              CriterionModifier.equals,
-              CriterionModifier.notEquals,
-              CriterionModifier.isNull,
-              CriterionModifier.notNull,
-            ]),
-            onChanged: (next) {
-              if (next != null) {
-                onChanged(
-                  StashIdCriterion(
-                    endpoint: value?.endpoint ?? '',
-                    stashId: value?.stashId ?? '',
-                    modifier: next,
-                  ),
-                );
-              }
-            },
-          ),
-          if (enabled) ...[
-            TextFormField(
-              initialValue: value?.endpoint,
-              decoration: InputDecoration(
-                labelText: context.l10n.filter_endpoint,
-              ),
-              onChanged: (text) => onChanged(
-                StashIdCriterion(
-                  endpoint: text,
-                  stashId: value?.stashId ?? '',
-                  modifier: modifier,
-                ),
-              ),
-            ),
-            TextFormField(
-              initialValue: value?.stashId,
-              decoration: InputDecoration(
-                labelText: context.l10n.common_stash_id,
-              ),
-              onChanged: (text) => onChanged(
+    return FilterField(
+      label: context.l10n.common_stash_id,
+      children: [
+        FilterDropdown<CriterionModifier>(
+          value: modifier,
+          items: _buildModifierItems(context, const [
+            CriterionModifier.equals,
+            CriterionModifier.notEquals,
+            CriterionModifier.isNull,
+            CriterionModifier.notNull,
+          ]),
+          onChanged: (next) {
+            if (next != null) {
+              onChanged(
                 StashIdCriterion(
                   endpoint: value?.endpoint ?? '',
-                  stashId: text,
-                  modifier: modifier,
+                  stashId: value?.stashId ?? '',
+                  modifier: next,
                 ),
+              );
+            }
+          },
+        ),
+        if (enabled) ...[
+          TextFormField(
+            initialValue: value?.endpoint,
+            decoration: InputDecoration(
+              labelText: context.l10n.filter_endpoint,
+            ),
+            onChanged: (text) => onChanged(
+              StashIdCriterion(
+                endpoint: text,
+                stashId: value?.stashId ?? '',
+                modifier: modifier,
               ),
             ),
-          ],
+          ),
+          TextFormField(
+            initialValue: value?.stashId,
+            decoration: InputDecoration(
+              labelText: context.l10n.common_stash_id,
+            ),
+            onChanged: (text) => onChanged(
+              StashIdCriterion(
+                endpoint: value?.endpoint ?? '',
+                stashId: text,
+                modifier: modifier,
+              ),
+            ),
+          ),
         ],
-      ),
+      ],
     );
   }
 }
@@ -852,42 +811,30 @@ class CustomFieldsCriterionInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  context.l10n.filter_custom_fields,
-                  style: context.textTheme.labelLarge,
-                ),
-              ),
-              IconButton(
-                tooltip: context.l10n.common_add,
-                onPressed: () => onChanged([
-                  ...value,
-                  const CustomFieldCriterion(field: ''),
-                ]),
-                icon: const Icon(Icons.add_circle_outline),
-              ),
-            ],
+    return FilterField(
+      label: context.l10n.filter_custom_fields,
+      children: [
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: IconButton(
+            tooltip: context.l10n.common_add,
+            onPressed: () =>
+                onChanged([...value, const CustomFieldCriterion(field: '')]),
+            icon: const Icon(Icons.add_circle_outline),
           ),
-          for (var index = 0; index < value.length; index++)
-            _CustomFieldCriterionRow(
-              key: ValueKey('custom-field-$index-${value[index].field}'),
-              value: value[index],
-              onChanged: (next) {
-                final updated = [...value];
-                updated[index] = next;
-                onChanged(updated);
-              },
-              onRemove: () => onChanged([...value]..removeAt(index)),
-            ),
-        ],
-      ),
+        ),
+        for (var index = 0; index < value.length; index++)
+          _CustomFieldCriterionRow(
+            key: ValueKey('custom-field-$index-${value[index].field}'),
+            value: value[index],
+            onChanged: (next) {
+              final updated = [...value];
+              updated[index] = next;
+              onChanged(updated);
+            },
+            onRemove: () => onChanged([...value]..removeAt(index)),
+          ),
+      ],
     );
   }
 }
@@ -942,9 +889,8 @@ class _CustomFieldCriterionRow extends StatelessWidget {
               ),
             ),
           ),
-          DropdownButtonFormField<CriterionModifier>(
-            initialValue: value.modifier,
-            isExpanded: true,
+          FilterDropdown<CriterionModifier>(
+            value: value.modifier,
             items: _buildModifierItems(context, _stringCriterionModifiers),
             onChanged: (next) {
               if (next != null) onChanged(value.copyWith(modifier: next));

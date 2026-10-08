@@ -72,26 +72,28 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
       title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
-        DropdownButtonFormField<String?>(
-          initialValue: _tempFilter.isMissingField,
-          decoration: InputDecoration(
-            labelText: context.l10n.auto_missing_field,
-          ),
-          items: [
-            DropdownMenuItem<String?>(
-              value: null,
-              child: Text(context.l10n.common_none),
-            ),
-            ...missingFields.map(
-              (entry) => DropdownMenuItem<String?>(
-                value: entry.$1,
-                child: Text(entry.$2),
+        FilterField(
+          label: context.l10n.auto_missing_field,
+          children: [
+            FilterDropdown<String?>(
+              value: _tempFilter.isMissingField,
+              items: [
+                DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text(context.l10n.common_none),
+                ),
+                ...missingFields.map(
+                  (entry) => DropdownMenuItem<String?>(
+                    value: entry.$1,
+                    child: Text(entry.$2),
+                  ),
+                ),
+              ],
+              onChanged: (value) => setState(
+                () => _tempFilter = _tempFilter.copyWith(isMissingField: value),
               ),
             ),
           ],
-          onChanged: (value) => setState(
-            () => _tempFilter = _tempFilter.copyWith(isMissingField: value),
-          ),
         ),
         IntCriterionInput(
           label: context.l10n.common_rating,

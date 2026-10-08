@@ -75,26 +75,28 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
             () => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: value),
           ),
         ),
-        DropdownButtonFormField<String?>(
-          initialValue: _tempFilter.isMissingField,
-          decoration: InputDecoration(
-            labelText: context.l10n.auto_missing_field,
-          ),
-          items: [
-            DropdownMenuItem<String?>(
-              value: null,
-              child: Text(context.l10n.common_none),
-            ),
-            ...missingFields.map(
-              (entry) => DropdownMenuItem<String?>(
-                value: entry.$1,
-                child: Text(entry.$2),
+        FilterField(
+          label: context.l10n.auto_missing_field,
+          children: [
+            FilterDropdown<String?>(
+              value: _tempFilter.isMissingField,
+              items: [
+                DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text(context.l10n.common_none),
+                ),
+                ...missingFields.map(
+                  (entry) => DropdownMenuItem<String?>(
+                    value: entry.$1,
+                    child: Text(entry.$2),
+                  ),
+                ),
+              ],
+              onChanged: (value) => setState(
+                () => _tempFilter = _tempFilter.copyWith(isMissingField: value),
               ),
             ),
           ],
-          onChanged: (value) => setState(
-            () => _tempFilter = _tempFilter.copyWith(isMissingField: value),
-          ),
         ),
       ],
     );
@@ -269,10 +271,9 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
     bool? value,
     ValueChanged<bool?> onChanged,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: label,
       children: [
-        Text(label, style: context.textTheme.labelLarge),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: [
