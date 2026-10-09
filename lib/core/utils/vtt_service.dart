@@ -47,7 +47,7 @@ class VttService {
       return await request;
     } finally {
       if (identical(_inFlight[effectiveUrl], request)) {
-        _inFlight.remove(effectiveUrl);
+        final _ = _inFlight.remove(effectiveUrl);
       }
     }
   }

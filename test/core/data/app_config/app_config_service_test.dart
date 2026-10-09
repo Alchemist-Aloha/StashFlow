@@ -94,6 +94,7 @@ void main() {
     expect(service.preferences.getString('active_server_profile_id'), 'new');
     expect(
       (jsonDecode(service.preferences.getString('server_profiles')!) as List)
+          .cast<Map<String, dynamic>>()
           .single['allowSelfSignedCertificates'],
       true,
     );

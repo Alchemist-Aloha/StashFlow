@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +31,7 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
   void _closeAndNavigate(String route) {
     final router = GoRouter.of(context);
     Navigator.of(context).pop();
-    router.push(route);
+    unawaited(router.push(route));
   }
 
   String _formatDuration(double? seconds) {

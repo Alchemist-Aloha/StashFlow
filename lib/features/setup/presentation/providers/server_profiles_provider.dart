@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
@@ -26,7 +28,7 @@ class ServerProfiles extends _$ServerProfiles {
           authMode: _getLegacyAuthMode(),
         );
 
-        Future.microtask(() => _migrateCredentials(profile));
+        unawaited(Future.microtask(() => _migrateCredentials(profile)));
         return [profile];
       }
       return [];

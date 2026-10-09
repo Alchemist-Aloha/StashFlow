@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -64,7 +66,7 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
                     value: _showVideoDebugInfo,
                     onChanged: (value) {
                       setState(() => _showVideoDebugInfo = value);
-                      _saveSetting(_showVideoDebugInfoKey, value);
+                      unawaited(_saveSetting(_showVideoDebugInfoKey, value));
                       ref
                           .read(playerStateProvider.notifier)
                           .setShowVideoDebugInfo(value);
@@ -79,7 +81,7 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
                     value: _enableDebugLogging,
                     onChanged: (value) {
                       setState(() => _enableDebugLogging = value);
-                      _saveSetting(_enableDebugLoggingKey, value);
+                      unawaited(_saveSetting(_enableDebugLoggingKey, value));
                       AppLogStore.instance.isEnabled = value;
                     },
                   ),

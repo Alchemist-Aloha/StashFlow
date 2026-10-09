@@ -171,12 +171,24 @@ void main() {
         }),
       );
       final filter = request.variables['image_filter'] as Map<String, dynamic>;
-      expect(filter['code']['value'], 'IMG-1');
-      expect(filter['photographer']['value'], 'Alice');
-      expect(filter['phash_distance']['distance'], 3);
-      expect(filter['files_filter']['parent_folder']['value'], ['folder-1']);
+      expect((filter['code'] as Map<String, dynamic>)['value'], 'IMG-1');
+      expect(
+        (filter['photographer'] as Map<String, dynamic>)['value'],
+        'Alice',
+      );
+      expect((filter['phash_distance'] as Map<String, dynamic>)['distance'], 3);
+      expect(
+        ((filter['files_filter'] as Map<String, dynamic>)['parent_folder']
+            as Map<String, dynamic>)['value'],
+        ['folder-1'],
+      );
       expect(filter['is_missing'], 'rating');
-      expect(filter['custom_fields'].single['field'], 'source');
+      expect(
+        (filter['custom_fields'] as List)
+            .cast<Map<String, dynamic>>()
+            .single['field'],
+        'source',
+      );
     });
 
     test('getImageById returns an image on success', () async {

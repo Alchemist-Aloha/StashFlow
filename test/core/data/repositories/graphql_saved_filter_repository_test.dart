@@ -102,9 +102,15 @@ void main() {
       );
 
       expect(saved['id'], '6');
-      expect(client.lastMutationVariables!['input']['mode'], 'TAGS');
       expect(
-        client.lastMutationVariables!['input']['object_filter']['favorite'],
+        (client.lastMutationVariables!['input']
+            as Map<String, dynamic>)['mode'],
+        'TAGS',
+      );
+      expect(
+        ((client.lastMutationVariables!['input']
+                as Map<String, dynamic>)['object_filter']
+            as Map<String, dynamic>)['favorite'],
         true,
       );
     });

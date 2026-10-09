@@ -102,7 +102,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     // Prewarm the stream if this scene is not yet active.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _startPlaybackIfNeeded(force: widget.autoPlayOnMount);
+      unawaited(_startPlaybackIfNeeded(force: widget.autoPlayOnMount));
     });
   }
 
@@ -116,7 +116,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        _startPlaybackIfNeeded(force: widget.autoPlayOnMount);
+        unawaited(_startPlaybackIfNeeded(force: widget.autoPlayOnMount));
       });
       return;
     }
@@ -124,7 +124,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     if (!oldWidget.autoPlayOnMount && widget.autoPlayOnMount) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        _startPlaybackIfNeeded(force: true);
+        unawaited(_startPlaybackIfNeeded(force: true));
       });
     }
   }
@@ -155,7 +155,8 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       if (!ref.read(castServiceProvider).isCasting &&
           playerState.player != null &&
           !playerState.player!.state.playing) {
-        playerState.player!.play();
+        await playerState.player!.play();
+        if (!mounted) return;
       }
       _enterPreferredFullscreenIfNeeded();
       return;
@@ -377,7 +378,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     if (!mounted || randomScene == null) return;
 
     final router = GoRouter.of(context);
-    router.push('/scenes/scene/${randomScene.id}', extra: true);
+    unawaited(router.push('/scenes/scene/${randomScene.id}', extra: true));
   }
 
   void _goBack() {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -46,7 +48,7 @@ class TagDetailsPage extends ConsumerWidget {
       return;
     }
 
-    context.push('/tags/tag/${randomTag.id}');
+    unawaited(context.push('/tags/tag/${randomTag.id}'));
   }
 
   @override
@@ -279,7 +281,9 @@ class TagDetailsPage extends ConsumerWidget {
                                             imageFilterStateProvider.notifier,
                                           )
                                           .setGalleryId(gallery.id);
-                                      context.push('/galleries/images');
+                                      unawaited(
+                                        context.push('/galleries/images'),
+                                      );
                                     },
                                   ),
                                 ],

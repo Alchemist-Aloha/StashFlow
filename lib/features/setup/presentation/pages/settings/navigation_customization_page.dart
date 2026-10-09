@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
@@ -31,9 +33,11 @@ class NavigationCustomizationPage extends ConsumerWidget {
                 child: ReorderableListView(
                   buildDefaultDragHandles: false,
                   onReorderItem: (oldIndex, newIndex) {
-                    ref
-                        .read(navigationTabsProvider.notifier)
-                        .reorder(oldIndex, newIndex);
+                    unawaited(
+                      ref
+                          .read(navigationTabsProvider.notifier)
+                          .reorder(oldIndex, newIndex),
+                    );
                   },
                   children: [
                     for (var index = 0; index < tabs.length; index++)
@@ -60,9 +64,11 @@ class NavigationCustomizationPage extends ConsumerWidget {
                         trailing: Switch.adaptive(
                           value: tabs[index].visible,
                           onChanged: (value) {
-                            ref
-                                .read(navigationTabsProvider.notifier)
-                                .toggleTab(tabs[index].type, value);
+                            unawaited(
+                              ref
+                                  .read(navigationTabsProvider.notifier)
+                                  .toggleTab(tabs[index].type, value),
+                            );
                           },
                         ),
                       ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -252,7 +254,7 @@ class GalleryCard extends ConsumerWidget {
 
   void _openDetails(BuildContext context, WidgetRef ref) {
     ref.read(imageFilterStateProvider.notifier).setGalleryId(gallery.id);
-    context.push('/galleries/gallery/${gallery.id}');
+    unawaited(context.push('/galleries/gallery/${gallery.id}'));
   }
 
   Widget _buildThumbnail(BuildContext context, double? aspectRatio) {

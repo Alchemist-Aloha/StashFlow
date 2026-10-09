@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1105,7 +1107,7 @@ void main() {
       ),
     );
     await tester.pump(const Duration(seconds: 1));
-    router.push('/scenes/scene/${deletedScene.id}');
+    unawaited(router.push('/scenes/scene/${deletedScene.id}'));
     await tester.pumpAndSettle();
 
     await openSceneActions(tester);

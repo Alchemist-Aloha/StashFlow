@@ -241,34 +241,38 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   }
 
   void _showSortPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => ListSortBottomSheet<_ImageSortOption>(
-        title: context.l10n.images_sort_title,
-        options: _ImageSortOption.values,
-        initialOption: _sortOption,
-        initialDescending: _sortDescending,
-        resetOption: _ImageSortOption.path,
-        resetDescending: false,
-        optionLabel: _sortOptionLabel,
-        onApply: (option, descending) {
-          setState(() {
-            _sortOption = option;
-            _sortDescending = descending;
-          });
-          _applyServerSort();
-        },
-        onSaveDefault: () =>
-            ref.read(imageSortProvider.notifier).saveAsDefault(),
-        saveDefaultSuccessMessage: context.l10n.images_sort_saved,
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => ListSortBottomSheet<_ImageSortOption>(
+          title: context.l10n.images_sort_title,
+          options: _ImageSortOption.values,
+          initialOption: _sortOption,
+          initialDescending: _sortDescending,
+          resetOption: _ImageSortOption.path,
+          resetDescending: false,
+          optionLabel: _sortOptionLabel,
+          onApply: (option, descending) {
+            setState(() {
+              _sortOption = option;
+              _sortDescending = descending;
+            });
+            _applyServerSort();
+          },
+          onSaveDefault: () =>
+              ref.read(imageSortProvider.notifier).saveAsDefault(),
+          saveDefaultSuccessMessage: context.l10n.images_sort_saved,
+        ),
       ),
     );
   }
 
   void _showFilterPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => const ImageFilterPanel(),
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => const ImageFilterPanel(),
+      ),
     );
   }
 
@@ -284,49 +288,51 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       organized: organizedFilter.toBool() ?? filterState.filter.organized,
     );
 
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => SavedFilterDialog<ImageSavedFilterConfig>(
-        searchQuery: ref.read(imageSearchQueryProvider),
-        sort: sortConfig.sort,
-        descending: sortConfig.descending,
-        activeFilterCount: _activeFilterCount(effectiveFilter),
-        defaultSortLabel: 'path',
-        saveSuccessMessage: context.l10n.saved_item('Image filter'),
-        loadPresets: () => ref
-            .read(savedFilterRepositoryProvider)
-            .findAll(
-              mode: 'IMAGES',
-              fromRaw: (raw) => ImageSavedFilterConfig.fromServerPayload(
-                id: raw['id'] as String,
-                name: raw['name'] as String,
-                findFilter: raw['find_filter'],
-                objectFilter: raw['object_filter'],
-              ),
-            ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => SavedFilterDialog<ImageSavedFilterConfig>(
+          searchQuery: ref.read(imageSearchQueryProvider),
+          sort: sortConfig.sort,
+          descending: sortConfig.descending,
+          activeFilterCount: _activeFilterCount(effectiveFilter),
+          defaultSortLabel: 'path',
+          saveSuccessMessage: context.l10n.saved_item('Image filter'),
+          loadPresets: () => ref
               .read(savedFilterRepositoryProvider)
-              .save(
-                input: ImageSavedFilterConfig(
-                  id: existingId,
-                  name: name,
-                  searchQuery: ref.read(imageSearchQueryProvider),
-                  sort: sortConfig.sort,
-                  descending: sortConfig.descending,
-                  filter: effectiveFilter,
-                ).toSaveInput(),
+              .findAll(
+                mode: 'IMAGES',
                 fromRaw: (raw) => ImageSavedFilterConfig.fromServerPayload(
                   id: raw['id'] as String,
                   name: raw['name'] as String,
                   findFilter: raw['find_filter'],
                   objectFilter: raw['object_filter'],
                 ),
-              );
-        },
-        deletePreset: (id) =>
-            ref.read(savedFilterRepositoryProvider).delete(id: id),
-        onLoad: _applySavedFilterConfig,
+              ),
+          savePreset: ({required String name, String? existingId}) {
+            return ref
+                .read(savedFilterRepositoryProvider)
+                .save(
+                  input: ImageSavedFilterConfig(
+                    id: existingId,
+                    name: name,
+                    searchQuery: ref.read(imageSearchQueryProvider),
+                    sort: sortConfig.sort,
+                    descending: sortConfig.descending,
+                    filter: effectiveFilter,
+                  ).toSaveInput(),
+                  fromRaw: (raw) => ImageSavedFilterConfig.fromServerPayload(
+                    id: raw['id'] as String,
+                    name: raw['name'] as String,
+                    findFilter: raw['find_filter'],
+                    objectFilter: raw['object_filter'],
+                  ),
+                );
+          },
+          deletePreset: (id) =>
+              ref.read(savedFilterRepositoryProvider).delete(id: id),
+          onLoad: _applySavedFilterConfig,
+        ),
       ),
     );
   }

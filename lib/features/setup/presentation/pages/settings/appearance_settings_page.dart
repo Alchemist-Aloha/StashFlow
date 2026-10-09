@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +44,7 @@ class _AppearanceSettingsPageState
     _load();
   }
 
-  Future<void> _load() async {
+  void _load() {
     final themeMode = ref.read(appThemeModeProvider);
     final seedColor = ref.read(appThemeColorProvider);
 
@@ -145,7 +147,7 @@ class _AppearanceSettingsPageState
                             ],
                             selected: {_themeMode},
                             onSelectionChanged: (selection) {
-                              _saveThemeMode(selection.first);
+                              unawaited(_saveThemeMode(selection.first));
                             },
                           ),
                         ),
@@ -157,9 +159,11 @@ class _AppearanceSettingsPageState
                           ),
                           value: ref.watch(trueBlackEnabledProvider),
                           onChanged: (value) {
-                            ref
-                                .read(trueBlackEnabledProvider.notifier)
-                                .set(value);
+                            unawaited(
+                              ref
+                                  .read(trueBlackEnabledProvider.notifier)
+                                  .set(value),
+                            );
                           },
                         ),
                       ],
@@ -238,9 +242,11 @@ class _AppearanceSettingsPageState
                       ],
                       onChanged: (family) {
                         if (family != null) {
-                          ref
-                              .read(appFontFamilyProvider.notifier)
-                              .setFontFamily(family);
+                          unawaited(
+                            ref
+                                .read(appFontFamilyProvider.notifier)
+                                .setFontFamily(family),
+                          );
                         }
                       },
                     ),
@@ -263,69 +269,71 @@ class _AppearanceSettingsPageState
         .getString(appLanguagePreferenceKey);
     final languageEntries = supportedLanguages.entries.toList(growable: false);
 
-    showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppTheme.radiusExtraLarge),
+    unawaited(
+      showModalBottomSheet<void>(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppTheme.radiusExtraLarge),
+          ),
         ),
-      ),
-      builder: (context) {
-        final textTheme = context.textTheme;
-        final fontSizeFactor = context.dimensions.fontSizeFactor;
+        builder: (context) {
+          final textTheme = context.textTheme;
+          final fontSizeFactor = context.dimensions.fontSizeFactor;
 
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: context.dimensions.spacingMedium),
-              Container(
-                width: 32 * context.dimensions.fontSizeFactor,
-                height: 4 * context.dimensions.fontSizeFactor,
-                decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(
-                    2 * context.dimensions.fontSizeFactor,
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: context.dimensions.spacingMedium),
+                Container(
+                  width: 32 * context.dimensions.fontSizeFactor,
+                  height: 4 * context.dimensions.fontSizeFactor,
+                  decoration: BoxDecoration(
+                    color: colorScheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(
+                      2 * context.dimensions.fontSizeFactor,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: context.dimensions.spacingMedium),
-              Flexible(
-                child: ListView.builder(
-                  itemCount: languageEntries.length,
-                  itemBuilder: (context, index) {
-                    final entry = languageEntries[index];
-                    final isSelected = entry.key == currentLanguageKey;
-                    return ListTile(
-                      leading: Icon(
-                        isSelected
-                            ? Icons.check_circle_rounded
-                            : Icons.circle_outlined,
-                        color: isSelected ? colorScheme.primary : null,
-                        size: 24 * fontSizeFactor,
-                      ),
-                      title: Text(
-                        entry.key == null
-                            ? context.l10n.settings_appearance_theme_system
-                            : entry.value,
-                        style: textTheme.bodyLarge?.copyWith(
-                          fontWeight: isSelected ? FontWeight.bold : null,
+                SizedBox(height: context.dimensions.spacingMedium),
+                Flexible(
+                  child: ListView.builder(
+                    itemCount: languageEntries.length,
+                    itemBuilder: (context, index) {
+                      final entry = languageEntries[index];
+                      final isSelected = entry.key == currentLanguageKey;
+                      return ListTile(
+                        leading: Icon(
+                          isSelected
+                              ? Icons.check_circle_rounded
+                              : Icons.circle_outlined,
+                          color: isSelected ? colorScheme.primary : null,
+                          size: 24 * fontSizeFactor,
                         ),
-                      ),
-                      onTap: () async {
-                        await ref
-                            .read(appLanguageProvider.notifier)
-                            .setLanguage(entry.key);
-                        if (context.mounted) Navigator.pop(context);
-                      },
-                    );
-                  },
+                        title: Text(
+                          entry.key == null
+                              ? context.l10n.settings_appearance_theme_system
+                              : entry.value,
+                          style: textTheme.bodyLarge?.copyWith(
+                            fontWeight: isSelected ? FontWeight.bold : null,
+                          ),
+                        ),
+                        onTap: () async {
+                          await ref
+                              .read(appLanguageProvider.notifier)
+                              .setLanguage(entry.key);
+                          if (context.mounted) Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -367,7 +375,7 @@ class _AppearanceSettingsPageState
           divisions: 14,
           label: context.l10n.common_percent((value * 100).toInt()),
           onChanged: (val) {
-            ref.read(appGlobalScaleProvider.notifier).set(val);
+            unawaited(ref.read(appGlobalScaleProvider.notifier).set(val));
           },
         ),
       ],
@@ -410,9 +418,9 @@ class _AppearanceSettingsPageState
           key: color == null ? const Key('custom-theme-color') : null,
           onTap: () {
             if (color != null) {
-              _saveThemeColor(color);
+              unawaited(_saveThemeColor(color));
             } else {
-              _showCustomColorPicker();
+              unawaited(_showCustomColorPicker());
             }
           },
           borderRadius: BorderRadius.circular(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
@@ -78,10 +80,12 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
   }
 
   void _showProfileDrawer([ServerProfile? profile]) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => ServerProfileDrawer(profile: profile),
+    unawaited(
+      showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => ServerProfileDrawer(profile: profile),
+      ),
     );
   }
 
@@ -96,7 +100,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
 
         final profile = ref.read(activeProfileProvider);
         if (profile != null && profile.authMode == AuthMode.password) {
-          ref.read(authProvider.notifier).login();
+          await ref.read(authProvider.notifier).login();
         }
       }
     });

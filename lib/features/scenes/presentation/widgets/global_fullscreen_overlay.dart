@@ -74,7 +74,7 @@ class _GlobalFullscreenOverlayState
     WidgetsBinding.instance.removeObserver(this);
     _animationController.dispose();
     for (final sub in _subscriptions) {
-      sub.cancel();
+      unawaited(sub.cancel());
     }
     super.dispose();
   }
@@ -205,15 +205,19 @@ class _GlobalFullscreenOverlayState
         // Android owns the PiP animation; don't stack a fullscreen slide on it.
         _animationController.value = 1;
       } else {
-        _animationController.forward().then((_) {
-          if (mounted) setState(() => _isAnimating = false);
-        });
+        unawaited(
+          _animationController.forward().then((_) {
+            if (mounted) setState(() => _isAnimating = false);
+          }),
+        );
       }
-      _enterFullScreen().then((_) {
-        if (mounted) {
-          ref.read(playerStateProvider.notifier).markFullscreenEntered();
-        }
-      });
+      unawaited(
+        _enterFullScreen().then((_) {
+          if (mounted) {
+            ref.read(playerStateProvider.notifier).markFullscreenEntered();
+          }
+        }),
+      );
     } else if (!isFullScreen && _isVisible) {
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: hiding overlay',
@@ -392,7 +396,9 @@ class _GlobalFullscreenOverlayState
       return;
     }
 
-    GoRouter.of(context).push('/scenes/scene/${randomScene.id}', extra: true);
+    unawaited(
+      GoRouter.of(context).push('/scenes/scene/${randomScene.id}', extra: true),
+    );
   }
 
   @override
@@ -461,7 +467,7 @@ class _GlobalFullscreenOverlayState
     if (controller != _currentListenedController) {
       if (_currentListenedController != null) {
         for (final sub in _subscriptions) {
-          sub.cancel();
+          unawaited(sub.cancel());
         }
         _subscriptions.clear();
       }

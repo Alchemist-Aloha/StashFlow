@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -45,10 +47,12 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
           ? scenes.length
           : StashImage.defaultPrefetchDistance;
       for (var i = 0; i < initialCount; i++) {
-        StashImage.prefetch(
-          context,
-          imageUrl: scenes[i].paths.screenshot,
-          memCacheWidth: (effectiveItemWidth * 2).toInt(),
+        unawaited(
+          StashImage.prefetch(
+            context,
+            imageUrl: scenes[i].paths.screenshot,
+            memCacheWidth: (effectiveItemWidth * 2).toInt(),
+          ),
         );
       }
     });
@@ -104,18 +108,22 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
           for (var i = 1; i <= kPrefetchDistance; i++) {
             final ahead = visibleIndex + i;
             if (ahead < scenes.length) {
-              StashImage.prefetch(
-                context,
-                imageUrl: scenes[ahead].paths.screenshot,
-                memCacheWidth: (effectiveItemWidth * 2).toInt(),
+              unawaited(
+                StashImage.prefetch(
+                  context,
+                  imageUrl: scenes[ahead].paths.screenshot,
+                  memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                ),
               );
             }
             final behind = visibleIndex - i;
             if (behind >= 0) {
-              StashImage.prefetch(
-                context,
-                imageUrl: scenes[behind].paths.screenshot,
-                memCacheWidth: (effectiveItemWidth * 2).toInt(),
+              unawaited(
+                StashImage.prefetch(
+                  context,
+                  imageUrl: scenes[behind].paths.screenshot,
+                  memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                ),
               );
             }
           }

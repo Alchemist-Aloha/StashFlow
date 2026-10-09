@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -259,7 +261,7 @@ class KeybindsNotifier extends Notifier<Keybinds> {
 
   @override
   Keybinds build() {
-    _load();
+    unawaited(_load());
     return Keybinds(Keybinds.defaultBinds);
   }
 

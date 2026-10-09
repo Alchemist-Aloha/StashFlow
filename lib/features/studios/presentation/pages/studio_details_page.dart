@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -48,7 +50,7 @@ class StudioDetailsPage extends ConsumerWidget {
       return;
     }
 
-    context.push('/studios/studio/${randomStudio.id}');
+    unawaited(context.push('/studios/studio/${randomStudio.id}'));
   }
 
   Future<void> _updateRating(
@@ -347,7 +349,9 @@ class StudioDetailsPage extends ConsumerWidget {
                                             imageFilterStateProvider.notifier,
                                           )
                                           .setGalleryId(gallery.id);
-                                      context.push('/galleries/images');
+                                      unawaited(
+                                        context.push('/galleries/images'),
+                                      );
                                     },
                                   ),
                                 ],

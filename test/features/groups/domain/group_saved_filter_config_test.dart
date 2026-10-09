@@ -34,30 +34,47 @@ void main() {
     );
 
     final input = config.toSaveInput();
+    final objectFilter = input['object_filter'] as Map<String, dynamic>;
+    final findFilter = input['find_filter'] as Map<String, dynamic>;
 
     expect(input['mode'], 'GROUPS');
-    expect(input['find_filter']['direction'], 'ASC');
-    expect(input['object_filter']['is_missing']['value'], 'director');
-    expect(input['object_filter']['sub_group_count']['value']['value'], 2);
-    expect(input['object_filter']['containing_groups']['value']['items'], [
-      {'id': 'group-2', 'label': 'group-2'},
-    ]);
-    expect(input['object_filter']['performers']['value']['excluded'], [
-      {'id': 'performer-2', 'label': 'performer-2'},
-    ]);
-    expect(input['object_filter']['created_at'], {
+    expect(findFilter['direction'], 'ASC');
+    expect(
+      (objectFilter['is_missing'] as Map<String, dynamic>)['value'],
+      'director',
+    );
+    expect(
+      ((objectFilter['sub_group_count'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['value'],
+      2,
+    );
+    expect(
+      ((objectFilter['containing_groups'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['items'],
+      [
+        {'id': 'group-2', 'label': 'group-2'},
+      ],
+    );
+    expect(
+      ((objectFilter['performers'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['excluded'],
+      [
+        {'id': 'performer-2', 'label': 'performer-2'},
+      ],
+    );
+    expect(objectFilter['created_at'], {
       'value': {'value': '2026-01-01', 'value2': '2026-01-31'},
       'modifier': 'BETWEEN',
     });
     expect(
-      input['object_filter']['sub_group_count']['modifier'],
+      (objectFilter['sub_group_count'] as Map<String, dynamic>)['modifier'],
       'GREATER_THAN',
     );
 
     final loaded = GroupSavedFilterConfig.fromServerPayload(
       id: '1',
       name: 'Missing directors',
-      objectFilter: input['object_filter'],
+      objectFilter: objectFilter,
     );
     expect(loaded.filter.isMissingField, 'director');
     expect(loaded.filter.containingGroups?.value, ['group-2']);

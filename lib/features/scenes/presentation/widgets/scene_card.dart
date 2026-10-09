@@ -191,13 +191,15 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
   /// Displays a custom scene info sheet for navigation actions.
   void _showMenu(BuildContext context, WidgetRef ref) {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      useRootNavigator: true,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        useRootNavigator: true,
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+        ),
+        builder: (context) => SceneInfoPage(scene: widget.scene),
       ),
-      builder: (context) => SceneInfoPage(scene: widget.scene),
     );
   }
 
@@ -277,7 +279,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                   }
                   // Stretch the cover to 1:2 and crop its center inside the
                   // native 1:1 frame without changing masonry layout bounds.
-                  // Replace with official aspect ratio from server if supported in the future. 
+                  // Replace with official aspect ratio from server if supported in the future.
                   return ClipRect(
                     child: Transform.scale(scaleY: 2, child: child),
                   );

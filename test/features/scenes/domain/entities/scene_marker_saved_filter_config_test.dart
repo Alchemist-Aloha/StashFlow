@@ -23,24 +23,41 @@ void main() {
     );
 
     final input = config.toSaveInput();
+    final findFilter = input['find_filter'] as Map<String, dynamic>;
     final objectFilter = input['object_filter'] as Map<String, dynamic>;
 
     expect(input['mode'], 'SCENE_MARKERS');
     expect(input['name'], 'Markers preset');
-    expect(input['find_filter']['q'], 'beat');
-    expect(input['find_filter']['sort'], 'seconds');
-    expect(input['find_filter']['direction'], 'ASC');
-    expect(objectFilter['tags']['value']['items'], [
-      {'id': 'tag-1', 'label': 'tag-1'},
-    ]);
-    expect(objectFilter['scene_tags']['value']['items'], [
-      {'id': 'scene-tag-1', 'label': 'scene-tag-1'},
-    ]);
-    expect(objectFilter['scenes']['value'], [
+    expect(findFilter['q'], 'beat');
+    expect(findFilter['sort'], 'seconds');
+    expect(findFilter['direction'], 'ASC');
+    expect(
+      ((objectFilter['tags'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['items'],
+      [
+        {'id': 'tag-1', 'label': 'tag-1'},
+      ],
+    );
+    expect(
+      ((objectFilter['scene_tags'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['items'],
+      [
+        {'id': 'scene-tag-1', 'label': 'scene-tag-1'},
+      ],
+    );
+    expect((objectFilter['scenes'] as Map<String, dynamic>)['value'], [
       {'id': 'scene-1', 'label': 'scene-1'},
     ]);
-    expect(objectFilter['duration']['value']['value'], 30);
-    expect(objectFilter['scene_date']['value']['value'], '2024-06-01');
+    expect(
+      ((objectFilter['duration'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['value'],
+      30,
+    );
+    expect(
+      ((objectFilter['scene_date'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['value'],
+      '2024-06-01',
+    );
   });
 
   test('scene marker saved filter loads server keys into local filter', () {

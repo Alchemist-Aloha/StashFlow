@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,15 +57,17 @@ void main() {
               builder: (context) => Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (_) => SceneSavedFilterDialog(
-                        searchQuery: 'clip',
-                        sort: 'rating',
-                        descending: true,
-                        filter: SceneFilter.empty(),
-                        onLoad: (_) {},
+                    unawaited(
+                      showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => SceneSavedFilterDialog(
+                          searchQuery: 'clip',
+                          sort: 'rating',
+                          descending: true,
+                          filter: SceneFilter.empty(),
+                          onLoad: (_) {},
+                        ),
                       ),
                     );
                   },
@@ -111,9 +115,9 @@ void main() {
     final input =
         client.lastMutationVariables!['input'] as Map<String, dynamic>;
     expect(input['name'], 'Favorites');
-    expect(input['find_filter']['q'], 'clip');
-    expect(input['find_filter']['sort'], 'rating');
-    expect(input['find_filter']['direction'], 'DESC');
+    expect((input['find_filter'] as Map<String, dynamic>)['q'], 'clip');
+    expect((input['find_filter'] as Map<String, dynamic>)['sort'], 'rating');
+    expect((input['find_filter'] as Map<String, dynamic>)['direction'], 'DESC');
     expect(find.text('Saved Scene filter'), findsOneWidget);
   });
 
@@ -167,15 +171,17 @@ void main() {
                 builder: (context) => Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      showModalBottomSheet<void>(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (_) => SceneSavedFilterDialog(
-                          searchQuery: 'clip',
-                          sort: 'rating',
-                          descending: true,
-                          filter: SceneFilter.empty(),
-                          onLoad: (_) {},
+                      unawaited(
+                        showModalBottomSheet<void>(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (_) => SceneSavedFilterDialog(
+                            searchQuery: 'clip',
+                            sort: 'rating',
+                            descending: true,
+                            filter: SceneFilter.empty(),
+                            onLoad: (_) {},
+                          ),
                         ),
                       );
                     },
@@ -273,15 +279,17 @@ void main() {
               builder: (context) => Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (_) => SceneSavedFilterDialog(
-                        searchQuery: 'clip',
-                        sort: 'rating',
-                        descending: true,
-                        filter: SceneFilter.empty(),
-                        onLoad: (_) {},
+                    unawaited(
+                      showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => SceneSavedFilterDialog(
+                          searchQuery: 'clip',
+                          sort: 'rating',
+                          descending: true,
+                          filter: SceneFilter.empty(),
+                          onLoad: (_) {},
+                        ),
                       ),
                     );
                   },

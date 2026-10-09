@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -97,34 +99,38 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
   }
 
   void _showSortPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => ListSortBottomSheet<_MarkerSortField>(
-        title: context.l10n.sort_markers_title,
-        options: _MarkerSortField.values,
-        initialOption: _sortField,
-        initialDescending: _sortDescending,
-        resetOption: _MarkerSortField.createdAt,
-        resetDescending: true,
-        optionLabel: (field) => _sortLabel(context, field),
-        onApply: (field, descending) {
-          setState(() {
-            _sortField = field;
-            _sortDescending = descending;
-          });
-          _applySort();
-        },
-        onSaveDefault: () =>
-            ref.read(sceneMarkerSortProvider.notifier).saveAsDefault(),
-        saveDefaultSuccessMessage: 'Marker sort saved as default',
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => ListSortBottomSheet<_MarkerSortField>(
+          title: context.l10n.sort_markers_title,
+          options: _MarkerSortField.values,
+          initialOption: _sortField,
+          initialDescending: _sortDescending,
+          resetOption: _MarkerSortField.createdAt,
+          resetDescending: true,
+          optionLabel: (field) => _sortLabel(context, field),
+          onApply: (field, descending) {
+            setState(() {
+              _sortField = field;
+              _sortDescending = descending;
+            });
+            _applySort();
+          },
+          onSaveDefault: () =>
+              ref.read(sceneMarkerSortProvider.notifier).saveAsDefault(),
+          saveDefaultSuccessMessage: 'Marker sort saved as default',
+        ),
       ),
     );
   }
 
   void _showFilterPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => const SceneMarkerFilterPanel(),
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => const SceneMarkerFilterPanel(),
+      ),
     );
   }
 
@@ -132,37 +138,39 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
     final sortConfig = ref.read(sceneMarkerSortProvider);
     final filter = ref.read(sceneMarkerFilterStateProvider);
 
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => SavedFilterDialog<SceneMarkerSavedFilterConfig>(
-        searchQuery: ref.read(sceneMarkerSearchQueryProvider),
-        sort: sortConfig.sort,
-        descending: sortConfig.descending,
-        activeFilterCount: activeFilterCount(filter.toJson()),
-        defaultSortLabel: 'created_at',
-        saveSuccessMessage: context.l10n.saved_item('Marker filter'),
-        loadPresets: () => ref
-            .read(savedFilterRepositoryProvider)
-            .findAll(
-              mode: 'SCENE_MARKERS',
-              fromRaw: SceneMarkerSavedFilterConfig.fromRaw,
-            ),
-        savePreset: ({required String name, String? existingId}) => ref
-            .read(savedFilterRepositoryProvider)
-            .save(
-              input: SceneMarkerSavedFilterConfig(
-                id: existingId,
-                name: name,
-                searchQuery: ref.read(sceneMarkerSearchQueryProvider),
-                sort: sortConfig.sort,
-                descending: sortConfig.descending,
-                filter: filter,
-              ).toSaveInput(),
-              fromRaw: SceneMarkerSavedFilterConfig.fromRaw,
-            ),
-        deletePreset: (id) =>
-            ref.read(savedFilterRepositoryProvider).delete(id: id),
-        onLoad: _applySavedFilterConfig,
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => SavedFilterDialog<SceneMarkerSavedFilterConfig>(
+          searchQuery: ref.read(sceneMarkerSearchQueryProvider),
+          sort: sortConfig.sort,
+          descending: sortConfig.descending,
+          activeFilterCount: activeFilterCount(filter.toJson()),
+          defaultSortLabel: 'created_at',
+          saveSuccessMessage: context.l10n.saved_item('Marker filter'),
+          loadPresets: () => ref
+              .read(savedFilterRepositoryProvider)
+              .findAll(
+                mode: 'SCENE_MARKERS',
+                fromRaw: SceneMarkerSavedFilterConfig.fromRaw,
+              ),
+          savePreset: ({required String name, String? existingId}) => ref
+              .read(savedFilterRepositoryProvider)
+              .save(
+                input: SceneMarkerSavedFilterConfig(
+                  id: existingId,
+                  name: name,
+                  searchQuery: ref.read(sceneMarkerSearchQueryProvider),
+                  sort: sortConfig.sort,
+                  descending: sortConfig.descending,
+                  filter: filter,
+                ).toSaveInput(),
+                fromRaw: SceneMarkerSavedFilterConfig.fromRaw,
+              ),
+          deletePreset: (id) =>
+              ref.read(savedFilterRepositoryProvider).delete(id: id),
+          onLoad: _applySavedFilterConfig,
+        ),
       ),
     );
   }

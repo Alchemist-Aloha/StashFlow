@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -149,6 +151,8 @@ class StartupUpdateCheck extends _$StartupUpdateCheck {
   /// Marks the update check as performed.
   void markChecked() {
     final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setInt(_lastCheckKey, DateTime.now().millisecondsSinceEpoch);
+    unawaited(
+      prefs.setInt(_lastCheckKey, DateTime.now().millisecondsSinceEpoch),
+    );
   }
 }

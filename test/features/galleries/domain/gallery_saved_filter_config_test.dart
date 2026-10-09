@@ -57,9 +57,9 @@ void main() {
       const IntCriterion(value: 10, modifier: CriterionModifier.greaterThan),
     );
 
-    final saved = config.toSaveInput()['object_filter'];
-    expect(saved['is_zip']['value'], 'true');
-    expect(saved['scenes']['value'], [
+    final saved = config.toSaveInput()['object_filter'] as Map<String, dynamic>;
+    expect((saved['is_zip'] as Map<String, dynamic>)['value'], 'true');
+    expect((saved['scenes'] as Map<String, dynamic>)['value'], [
       {'id': 'scene-1', 'label': 'scene-1'},
     ]);
   });

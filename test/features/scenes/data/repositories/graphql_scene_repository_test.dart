@@ -99,28 +99,52 @@ void main() {
 
       expect(scenes.single.performerBirthdates, ['2000-12-31']);
       expect(scenes.single.files.single.size, 3221225472);
-      expect(client.lastQueryVariables?['scene_filter']['phash_distance'], {
-        'value': 'abc123',
-        'modifier': 'EQUALS',
-        'distance': 4,
-      });
-      expect(client.lastQueryVariables?['scene_filter']['tags'], {
-        'value': ['tag-1'],
-        'modifier': 'INCLUDES',
-        'depth': 2,
-        'excludes': ['tag-2'],
-      });
-      final filter = client.lastQueryVariables?['scene_filter'];
-      expect(filter['title']['value'], 'Example');
-      expect(filter['production_date']['value'], '2026-09-01');
-      expect(filter['files_filter']['parent_folder']['value'], ['folder-1']);
+      expect(
+        (client.lastQueryVariables?['scene_filter']
+            as Map<String, dynamic>)['phash_distance'],
+        {'value': 'abc123', 'modifier': 'EQUALS', 'distance': 4},
+      );
+      expect(
+        (client.lastQueryVariables?['scene_filter']
+            as Map<String, dynamic>)['tags'],
+        {
+          'value': ['tag-1'],
+          'modifier': 'INCLUDES',
+          'depth': 2,
+          'excludes': ['tag-2'],
+        },
+      );
+      final filter =
+          client.lastQueryVariables?['scene_filter'] as Map<String, dynamic>;
+      expect((filter['title'] as Map<String, dynamic>)['value'], 'Example');
+      expect(
+        (filter['production_date'] as Map<String, dynamic>)['value'],
+        '2026-09-01',
+      );
+      expect(
+        ((filter['files_filter'] as Map<String, dynamic>)['parent_folder']
+            as Map<String, dynamic>)['value'],
+        ['folder-1'],
+      );
       expect(filter['performer_favorite'], isTrue);
       expect(filter['is_missing'], 'studio');
-      expect(filter['stash_id_endpoint']['stash_id'], 'stash-1');
-      expect(filter['custom_fields'].single['field'], 'source');
+      expect(
+        (filter['stash_id_endpoint'] as Map<String, dynamic>)['stash_id'],
+        'stash-1',
+      );
+      expect(
+        (filter['custom_fields'] as List)
+            .cast<Map<String, dynamic>>()
+            .single['field'],
+        'source',
+      );
 
       final sceneData = Map<String, dynamic>.from(
-        client.queryData['findScenes']['scenes'].single as Map,
+        ((client.queryData['findScenes'] as Map<String, dynamic>)['scenes']
+                    as List)
+                .cast<Map<String, dynamic>>()
+                .single
+            as Map,
       );
       client.queryData['findScene'] = sceneData;
       final details = await GraphQLSceneRepository(
@@ -172,7 +196,10 @@ void main() {
           seconds: 12.5,
         );
 
-        expect(client.lastQueryVariables?['filter']['q'], 'Opening beat');
+        expect(
+          (client.lastQueryVariables?['filter'] as Map<String, dynamic>)['q'],
+          'Opening beat',
+        );
         final input =
             client.lastMutationVariables?['input'] as Map<String, dynamic>;
         expect(input['scene_id'], 'scene-1');

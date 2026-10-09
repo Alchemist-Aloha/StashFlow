@@ -349,10 +349,10 @@ void main() {
       player.show(scenes.first, mode: PlayerViewMode.inline);
       await settle();
       expect(page(), 0);
-      router.push('/scenes/scene/first');
+      unawaited(router.push('/scenes/scene/first'));
       await settle();
       player.show(scenes.last, mode: PlayerViewMode.inline);
-      router.pushReplacement('/scenes/scene/last');
+      unawaited(router.pushReplacement('/scenes/scene/last'));
       await settle();
       expect(router.state.uri.path, '/scenes/scene/last');
       expect(page(), 0, reason: 'details owns playback until Back');

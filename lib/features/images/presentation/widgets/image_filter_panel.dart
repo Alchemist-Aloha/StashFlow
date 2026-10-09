@@ -514,14 +514,19 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
   Widget _buildEntityFilter<T>(
     String label,
     String providerType,
-    dynamic criterion,
-    ValueChanged<dynamic> onChanged,
+    Object? criterion,
+    ValueChanged<Object?> onChanged,
     bool isHierarchical,
   ) {
-    final selectedIds =
-        (criterion?.value as List<dynamic>?)?.cast<String>() ?? <String>[];
-    final modifier =
-        criterion?.modifier as CriterionModifier? ?? CriterionModifier.includes;
+    final (selectedIds, modifier) = switch (criterion) {
+      MultiCriterion(:final value, :final modifier) => (value, modifier),
+      HierarchicalMultiCriterion(:final value, :final modifier) => (
+        value,
+        modifier,
+      ),
+      null => (<String>[], CriterionModifier.includes),
+      _ => throw ArgumentError.value(criterion, 'criterion'),
+    };
 
     return SelectionCriterionInput(
       label: label,

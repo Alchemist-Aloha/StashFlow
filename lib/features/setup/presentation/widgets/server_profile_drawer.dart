@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -50,7 +52,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         _authMode == AuthMode.basic || _authMode == AuthMode.bearer;
 
     if (widget.profile != null) {
-      _loadCredentials();
+      unawaited(_loadCredentials());
     }
   }
 

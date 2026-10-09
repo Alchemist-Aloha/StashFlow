@@ -131,9 +131,11 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
     } else if (!playerState.isBuffering && _showBufferingSpinner) {
       _bufferingDisplayTimer?.cancel();
       _bufferingDisplayTimer = null;
-      Future.microtask(() {
-        if (mounted) setState(() => _showBufferingSpinner = false);
-      });
+      unawaited(
+        Future.microtask(() {
+          if (mounted) setState(() => _showBufferingSpinner = false);
+        }),
+      );
     } else if (!playerState.isBuffering) {
       _bufferingDisplayTimer?.cancel();
       _bufferingDisplayTimer = null;

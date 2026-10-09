@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -171,10 +173,12 @@ void main() {
       0,
     );
 
-    showDialog<void>(
-      context: tester.element(find.byType(NavigationRail)),
-      builder: (context) =>
-          const AlertDialog(content: TextField(autofocus: true)),
+    unawaited(
+      showDialog<void>(
+        context: tester.element(find.byType(NavigationRail)),
+        builder: (context) =>
+            const AlertDialog(content: TextField(autofocus: true)),
+      ),
     );
     await tester.pumpAndSettle();
     await tester.sendKeyDownEvent(LogicalKeyboardKey.control);

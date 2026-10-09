@@ -654,8 +654,10 @@ class _FakeCastSession extends dc.CastSession {
     lastLoadedMedia = media;
     stateMachine.forceState(dc.SessionState.loading);
     if (loadMediaCalls >= playbackStartsOnLoadAttempt) {
-      Future<void>.microtask(
-        () => stateMachine.forceState(dc.SessionState.playing),
+      unawaited(
+        Future<void>.microtask(
+          () => stateMachine.forceState(dc.SessionState.playing),
+        ),
       );
     }
   }

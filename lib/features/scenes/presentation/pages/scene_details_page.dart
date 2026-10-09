@@ -302,17 +302,19 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       return;
     }
 
-    context.push('/scenes/scene/${randomScene.id}', extra: true);
+    unawaited(context.push('/scenes/scene/${randomScene.id}', extra: true));
   }
 
   void _showSceneDetailsSheet(Scene scene) {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      useRootNavigator: true,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        useRootNavigator: true,
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+        ),
+        builder: (context) => SceneInfoPage(scene: scene),
       ),
-      builder: (context) => SceneInfoPage(scene: scene),
     );
   }
 
@@ -1166,14 +1168,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     if (!mounted) return;
     switch (action) {
       case 'marker':
-        _showAddMarkerDialog(
+        await _showAddMarkerDialog(
           scene,
           markerSeconds: _currentMarkerSeconds(scene),
         );
       case 'edit':
-        context.push('/scenes/scene/${scene.id}/edit', extra: scene);
+        unawaited(context.push('/scenes/scene/${scene.id}/edit', extra: scene));
       case 'delete':
-        _showDeleteSceneDialog(scene);
+        await _showDeleteSceneDialog(scene);
       case 'refresh':
         await ref.read(sceneDetailsProvider(scene.id).notifier).refresh();
         if (mounted) _invalidateSceneListUnlessRandom();
@@ -1435,7 +1437,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         visualDensity: VisualDensity.compact,
                         onPressed: () {
                           if (index < scene.tagIds.length) {
-                            context.push('/tags/tag/${scene.tagIds[index]}');
+                            unawaited(
+                              context.push('/tags/tag/${scene.tagIds[index]}'),
+                            );
                           }
                         },
                       ),
@@ -1628,8 +1632,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   if (performerIndex < scene.performerIds.length) {
-                    context.push(
-                      '/performers/performer/${scene.performerIds[performerIndex]}',
+                    unawaited(
+                      context.push(
+                        '/performers/performer/${scene.performerIds[performerIndex]}',
+                      ),
                     );
                   }
                 },

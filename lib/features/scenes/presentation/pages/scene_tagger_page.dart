@@ -97,7 +97,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     _presetsFuture = ref
         .read(savedFilterRepositoryProvider)
         .findAll(mode: 'SCENES', fromRaw: SceneSavedFilterConfig.fromRaw);
-    Future.microtask(_loadScenes);
+    unawaited(Future.microtask(_loadScenes));
   }
 
   @override
@@ -172,7 +172,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _page = 1;
     }
     if (_mode == _TaggerMode.currentPage) {
-      _loadScenes();
+      unawaited(_loadScenes());
     } else {
       _clearRandomModeList();
     }
@@ -181,7 +181,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   void _goToPage(int page) {
     if (_loadingScenes || page < 1 || page > _totalPages) return;
     setState(() => _page = page);
-    _loadScenes();
+    unawaited(_loadScenes());
   }
 
   int get _totalPages {
@@ -647,7 +647,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                   }
                 });
                 if (_mode == _TaggerMode.currentPage) {
-                  _loadScenes();
+                  unawaited(_loadScenes());
                 }
               },
             ),

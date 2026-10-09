@@ -80,7 +80,8 @@ void main() {
       );
       await tester.pumpAndSettle();
       final saved =
-          jsonDecode(prefs.getString('navigation_tabs_config')!) as List;
+          (jsonDecode(prefs.getString('navigation_tabs_config')!) as List)
+              .cast<Map<String, dynamic>>();
       expect(saved.first['id'], isNot('scenes'));
       expect(
         saved.singleWhere((tab) => tab['id'] == 'scenes')['visible'],

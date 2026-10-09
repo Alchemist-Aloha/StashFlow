@@ -150,16 +150,16 @@ class AppCastService extends Notifier<CastState> {
 
     ref.onDispose(() {
       logCastProcess('CastService: disposing');
-      _subscription?.cancel();
-      _sessionSubscription?.cancel();
-      _positionSubscription?.cancel();
-      _durationSubscription?.cancel();
-      _stateSubscription?.cancel();
+      unawaited(_subscription?.cancel());
+      unawaited(_sessionSubscription?.cancel());
+      unawaited(_positionSubscription?.cancel());
+      unawaited(_durationSubscription?.cancel());
+      unawaited(_stateSubscription?.cancel());
       _stopRemotePollWatchdog();
       _resumeVerifyTimer?.cancel();
       _positionFloorTimer?.cancel();
       _dlnaPollClient?.close();
-      _castService.dispose();
+      unawaited(_castService.dispose());
     });
 
     return CastState();
@@ -169,7 +169,7 @@ class AppCastService extends Notifier<CastState> {
 
   void startDiscovery() {
     logCastProcess('CastService: start discovery');
-    _subscription?.cancel();
+    unawaited(_subscription?.cancel());
     state = state.copyWith(discoveredDevices: []);
     _subscription = _castService
         .startDiscovery(timeout: const Duration(seconds: 15))
@@ -191,7 +191,7 @@ class AppCastService extends Notifier<CastState> {
 
   void stopDiscovery() {
     logCastProcess('CastService: stop discovery');
-    _subscription?.cancel();
+    unawaited(_subscription?.cancel());
     _castService.stopDiscovery();
     state = state.copyWith(discoveredDevices: []);
   }

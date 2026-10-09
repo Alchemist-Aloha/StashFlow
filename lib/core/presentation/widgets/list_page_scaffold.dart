@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent, ScrollDirection;
 import 'package:flutter/services.dart';
@@ -262,7 +264,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                   borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                   child: InkWell(
                     onLongPress: () {
-                      HapticFeedback.lightImpact();
+                      unawaited(HapticFeedback.lightImpact());
                       StatsFloatingPanel.show(context);
                     },
                     child: Padding(
@@ -315,9 +317,11 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 });
                 widget.onSearchChanged(text);
                 if (text.isNotEmpty) {
-                  ref
-                      .read(searchHistoryProvider(_historyKey).notifier)
-                      .addQuery(text);
+                  unawaited(
+                    ref
+                        .read(searchHistoryProvider(_historyKey).notifier)
+                        .addQuery(text),
+                  );
                 }
               }
             },
@@ -348,13 +352,15 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                 title: context.l10n.recent_searches,
                                 actionLabel: context.l10n.common_clear_history,
                                 onViewAll: () {
-                                  ref
-                                      .read(
-                                        searchHistoryProvider(
-                                          _historyKey,
-                                        ).notifier,
-                                      )
-                                      .clearAll();
+                                  unawaited(
+                                    ref
+                                        .read(
+                                          searchHistoryProvider(
+                                            _historyKey,
+                                          ).notifier,
+                                        )
+                                        .clearAll(),
+                                  );
                                 },
                                 padding: EdgeInsets.symmetric(
                                   horizontal: context.dimensions.spacingMedium,
@@ -369,13 +375,15 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                   tooltip: context.l10n.common_close,
                                   icon: const Icon(Icons.close),
                                   onPressed: () {
-                                    ref
-                                        .read(
-                                          searchHistoryProvider(
-                                            _historyKey,
-                                          ).notifier,
-                                        )
-                                        .removeQuery(item);
+                                    unawaited(
+                                      ref
+                                          .read(
+                                            searchHistoryProvider(
+                                              _historyKey,
+                                            ).notifier,
+                                          )
+                                          .removeQuery(item),
+                                    );
                                   },
                                 ),
                                 onTap: () {
@@ -460,7 +468,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                   widget.scrollController!.position.pixels <= 0 &&
                   pointerSignal.kind == PointerDeviceKind.trackpad &&
                   pointerSignal.scrollDelta.dy < -50) {
-                widget.onRefresh!();
+                unawaited(widget.onRefresh!());
               }
             }
           },

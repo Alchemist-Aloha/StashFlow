@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -43,11 +45,14 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
           ? galleries.length
           : StashImage.defaultPrefetchDistance;
       for (var i = 0; i < initialCount; i++) {
-        StashImage.prefetch(
-          context,
-          imageUrl:
-              galleries[i].coverPath ?? '/gallery/${galleries[i].id}/thumbnail',
-          memCacheWidth: (effectiveItemWidth * 2).toInt(),
+        unawaited(
+          StashImage.prefetch(
+            context,
+            imageUrl:
+                galleries[i].coverPath ??
+                '/gallery/${galleries[i].id}/thumbnail',
+            memCacheWidth: (effectiveItemWidth * 2).toInt(),
+          ),
         );
       }
     });
@@ -100,22 +105,26 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
           for (var i = 1; i <= kPrefetchDistance; i++) {
             final ahead = visibleIndex + i;
             if (ahead < galleries.length) {
-              StashImage.prefetch(
-                context,
-                imageUrl:
-                    galleries[ahead].coverPath ??
-                    '/gallery/${galleries[ahead].id}/thumbnail',
-                memCacheWidth: (effectiveItemWidth * 2).toInt(),
+              unawaited(
+                StashImage.prefetch(
+                  context,
+                  imageUrl:
+                      galleries[ahead].coverPath ??
+                      '/gallery/${galleries[ahead].id}/thumbnail',
+                  memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                ),
               );
             }
             final behind = visibleIndex - i;
             if (behind >= 0) {
-              StashImage.prefetch(
-                context,
-                imageUrl:
-                    galleries[behind].coverPath ??
-                    '/gallery/${galleries[behind].id}/thumbnail',
-                memCacheWidth: (effectiveItemWidth * 2).toInt(),
+              unawaited(
+                StashImage.prefetch(
+                  context,
+                  imageUrl:
+                      galleries[behind].coverPath ??
+                      '/gallery/${galleries[behind].id}/thumbnail',
+                  memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                ),
               );
             }
           }

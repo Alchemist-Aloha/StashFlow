@@ -85,7 +85,7 @@ class Gallery {
     String? path;
     final files = json['files'] as List<dynamic>?;
     if (files != null && files.isNotEmpty) {
-      path = files.first['path']?.toString();
+      path = (files.first as Map<String, dynamic>)['path']?.toString();
     }
 
     final paths = json['paths'] as Map<String, dynamic>?;
@@ -97,8 +97,9 @@ class Gallery {
     if (cover != null) {
       final visualFiles = cover['visual_files'] as List<dynamic>?;
       if (visualFiles != null && visualFiles.isNotEmpty) {
-        coverWidth = visualFiles.first['width'] as int?;
-        coverHeight = visualFiles.first['height'] as int?;
+        final file = visualFiles.first as Map<String, dynamic>;
+        coverWidth = file['width'] as int?;
+        coverHeight = file['height'] as int?;
       }
     }
 

@@ -57,8 +57,10 @@ void syncTiktokPlayback(
     final mode = endBehavior == VideoEndBehavior.loop
         ? PlaylistMode.loop
         : PlaylistMode.none;
-    if (player.state.playlistMode != mode) player.setPlaylistMode(mode);
-    if (playCurrent && !player.state.playing) player.play();
+    if (player.state.playlistMode != mode) {
+      unawaited(player.setPlaylistMode(mode));
+    }
+    if (playCurrent && !player.state.playing) unawaited(player.play());
   }
 }
 
@@ -68,7 +70,7 @@ void _pauseInactiveControllers(
 ) {
   for (final controller in controllers.values) {
     if (controller != current && controller.player.state.playing) {
-      controller.player.pause();
+      unawaited(controller.player.pause());
     }
   }
 }
@@ -119,7 +121,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   @override
   void initState() {
     super.initState();
-    WakelockPlus.enable();
+    unawaited(WakelockPlus.enable());
   }
 
   @override
@@ -134,7 +136,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     for (final id in _controllers.keys) {
       final globalController = _globalNotifier?.currentVideoController;
       if (_controllers[id] != globalController) {
-        _players[id]?.dispose();
+        unawaited(_players[id]?.dispose());
       } else {
         _globalNotifier?.takeControllerOwnership(_controllers[id]!);
         AppLogStore.instance.add(
@@ -145,18 +147,20 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     }
     _players.clear();
     _controllers.clear();
-    WakelockPlus.disable();
+    unawaited(WakelockPlus.disable());
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setPreferredOrientations(
-      _allowMainPageGravityOrientation
-          ? [
-              DeviceOrientation.portraitUp,
-              DeviceOrientation.portraitDown,
-              DeviceOrientation.landscapeLeft,
-              DeviceOrientation.landscapeRight,
-            ]
-          : [DeviceOrientation.portraitUp],
+    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
+    unawaited(
+      SystemChrome.setPreferredOrientations(
+        _allowMainPageGravityOrientation
+            ? [
+                DeviceOrientation.portraitUp,
+                DeviceOrientation.portraitDown,
+                DeviceOrientation.landscapeLeft,
+                DeviceOrientation.landscapeRight,
+              ]
+            : [DeviceOrientation.portraitUp],
+      ),
     );
     super.dispose();
   }
@@ -222,7 +226,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
     // Load next page if nearing the end
     if (_currentIndex >= scenes.length - 2) {
-      ref.read(sceneListProvider.notifier).fetchNextPage();
+      unawaited(ref.read(sceneListProvider.notifier).fetchNextPage());
     }
 
     // Window size: current-1 to current+1 (reduced from +2 to save CPU/RAM)
@@ -245,11 +249,11 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         // The global session must release its live texture before disposal.
         _globalNotifier?.takeControllerOwnership(controller!);
       } else {
-        _players[id]?.dispose();
+        unawaited(_players[id]?.dispose());
       }
       _players.remove(id);
       _controllers.remove(id);
-      _initFutures.remove(id);
+      final _ = _initFutures.remove(id);
     }
 
     // Initialize missing controllers inside the window
@@ -293,7 +297,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
       // Important: don't dispose if it was the same controller, but we checked != above
       if (oldLocal != null && oldLocal != globalPlayer.videoController) {
-        oldPlayer?.dispose();
+        unawaited(oldPlayer?.dispose());
       }
     }
     // Promote the active controller, or reclaim feed ownership on return from
@@ -412,7 +416,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         late StreamSubscription<dynamic> subscription;
         subscription = player.stream.duration.listen((duration) async {
           if (duration.inSeconds > 0) {
-            subscription.cancel();
+            await subscription.cancel();
             final randomOffset =
                 Random().nextDouble() * 0.9 * duration.inSeconds;
             await player.seek(
@@ -503,7 +507,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         if (_controllers.isEmpty && _initFutures.isEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
-            _manageControllers();
+            unawaited(_manageControllers());
           });
         }
 
@@ -513,7 +517,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
               // Only trigger full management when scrolling has completely stopped.
               _manageTimer?.cancel();
               _manageTimer = Timer(const Duration(milliseconds: 50), () {
-                if (mounted) _manageControllers();
+                if (mounted) unawaited(_manageControllers());
               });
             }
             return false;
@@ -627,7 +631,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
 
   @override
   void dispose() {
-    _playingSub?.cancel();
+    unawaited(_playingSub?.cancel());
     _stopActivityTracking();
     super.dispose();
   }
@@ -642,7 +646,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
       });
     }
     if (oldWidget.controller != widget.controller) {
-      _playingSub?.cancel();
+      unawaited(_playingSub?.cancel());
       _stopActivityTracking();
 
       _playingSub = widget.controller?.player.stream.playing.listen(
@@ -670,7 +674,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
 
     _periodicSaveTimer?.cancel();
     _periodicSaveTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      _saveActivity();
+      unawaited(_saveActivity());
     });
   }
 
@@ -687,7 +691,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
     }
 
     if (_accumulatedDuration > 0) {
-      _saveActivity();
+      unawaited(_saveActivity());
     }
   }
 
@@ -747,10 +751,12 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   }
 
   void _showRatingPicker() {
-    RatingDialog.show(
-      context,
-      initialRating: _localRating ?? 0,
-      onRatingSelected: (value) => unawaited(_updateSceneRating(value)),
+    unawaited(
+      RatingDialog.show(
+        context,
+        initialRating: _localRating ?? 0,
+        onRatingSelected: (value) => unawaited(_updateSceneRating(value)),
+      ),
     );
   }
 
@@ -910,15 +916,15 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                             return;
                           }
                           if (controller.player.state.playing) {
-                            controller.player.pause();
+                            unawaited(controller.player.pause());
                           } else {
-                            controller.player.play();
+                            unawaited(controller.player.play());
                           }
                         },
                         onLongPressStart: (_) {
                           _originalSpeed = controller.player.state.rate;
                           _currentSpeed = 5.0;
-                          controller.player.setRate(_currentSpeed);
+                          unawaited(controller.player.setRate(_currentSpeed));
                           setState(() => _isSpeedingUp = true);
                         },
                         onLongPressMoveUpdate: (details) {
@@ -929,12 +935,14 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                             final newSpeed = 5.0 + extraSpeed;
                             if (newSpeed != _currentSpeed) {
                               setState(() => _currentSpeed = newSpeed);
-                              controller.player.setRate(_currentSpeed);
+                              unawaited(
+                                controller.player.setRate(_currentSpeed),
+                              );
                             }
                           }
                         },
                         onLongPressEnd: (_) {
-                          controller.player.setRate(_originalSpeed);
+                          unawaited(controller.player.setRate(_originalSpeed));
                           setState(() => _isSpeedingUp = false);
                         },
                       ),
@@ -1065,8 +1073,10 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                         child: InkWell(
                                           onTap: () {
                                             if (widget.scene.studioId != null) {
-                                              context.push(
-                                                '/studios/studio/${widget.scene.studioId}',
+                                              unawaited(
+                                                context.push(
+                                                  '/studios/studio/${widget.scene.studioId}',
+                                                ),
                                               );
                                             }
                                           },
@@ -1157,8 +1167,10 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                     onTap: () async {
                                       await _handoffToGlobalPlayer();
                                       if (context.mounted) {
-                                        context.push(
-                                          '/scenes/scene/${widget.scene.id}',
+                                        unawaited(
+                                          context.push(
+                                            '/scenes/scene/${widget.scene.id}',
+                                          ),
                                         );
                                       }
                                     },
@@ -1232,12 +1244,14 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                     });
                                   },
                                   onChangeEnd: (val) {
-                                    controller.player.seek(
-                                      Duration(milliseconds: val.toInt()),
+                                    unawaited(
+                                      controller.player.seek(
+                                        Duration(milliseconds: val.toInt()),
+                                      ),
                                     );
                                     if (_wasPlayingBeforeScrub &&
                                         !controller.player.state.playing) {
-                                      controller.player.play();
+                                      unawaited(controller.player.play());
                                     }
                                     setState(() {
                                       _isScrubbing = false;

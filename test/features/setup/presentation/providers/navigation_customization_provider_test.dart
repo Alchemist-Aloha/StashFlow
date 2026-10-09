@@ -5,6 +5,20 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
 
 void main() {
+  test('random navigation defaults on and its save can be awaited', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    expect(container.read(randomNavigationEnabledProvider), isTrue);
+    await container.read(randomNavigationEnabledProvider.notifier).set(false);
+    expect(container.read(randomNavigationEnabledProvider), isFalse);
+    expect(prefs.getBool('show_random_navigation'), isFalse);
+  });
+
   test('top app bar auto-hide defaults off and persists updates', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -33,7 +47,7 @@ void main() {
 
       expect(container.read(sceneRandomRespectActiveFilterProvider), isTrue);
 
-      container
+      await container
           .read(sceneRandomRespectActiveFilterProvider.notifier)
           .set(false);
 

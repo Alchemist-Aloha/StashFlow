@@ -1088,11 +1088,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
   void _replaceRoute(String path) {
     state = state.copyWith(navigationReplacementPath: path);
-    Future.microtask(() {
-      if (ref.mounted) {
-        state = state.copyWith(clearNavigationReplacement: true);
-      }
-    });
+    unawaited(
+      Future.microtask(() {
+        if (ref.mounted) {
+          state = state.copyWith(clearNavigationReplacement: true);
+        }
+      }),
+    );
   }
 
   Future<void> setVolume(double volume) async {
@@ -1639,13 +1641,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     final player = state.player;
     if (player != null) {
       if (player.state.playing) {
-        player.pause();
+        unawaited(player.pause());
         state = state.copyWith(isPlaying: false);
         if (!isTestMode) {
           unawaited(WakelockPlus.disable());
         }
       } else {
-        player.play();
+        unawaited(player.play());
         state = state.copyWith(isPlaying: true);
         if (!isTestMode) {
           unawaited(WakelockPlus.enable());
@@ -1658,7 +1660,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     final player = state.player;
     if (player == null || player.state.playing) return;
     _backgroundRecoverySuppressed = false;
-    player.play();
+    unawaited(player.play());
     state = state.copyWith(isPlaying: true);
     if (!isTestMode) {
       unawaited(WakelockPlus.enable());
@@ -1673,7 +1675,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         suppressBackgroundRecovery) {
       _backgroundRecoverySuppressed = true;
     }
-    player.pause();
+    unawaited(player.pause());
     state = state.copyWith(isPlaying: false);
     if (!isTestMode) {
       unawaited(WakelockPlus.disable());
@@ -1735,7 +1737,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
             'PlayerState: background keepalive resume attempt=${attempt + 1}',
             source: 'player_provider',
           );
-          player.play();
+          await player.play();
         } else {
           return;
         }

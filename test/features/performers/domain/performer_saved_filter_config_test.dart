@@ -24,17 +24,23 @@ void main() {
       );
 
       final input = config.toSaveInput();
+      final objectFilter = input['object_filter'] as Map<String, dynamic>;
+      final findFilter = input['find_filter'] as Map<String, dynamic>;
 
       expect(input['mode'], 'PERFORMERS');
-      expect(input['find_filter']['q'], 'alice');
-      expect(input['find_filter']['sort'], 'rating');
-      expect(input['find_filter']['direction'], 'DESC');
-      expect(input['object_filter']['filter_favorites'], {
+      expect(findFilter['q'], 'alice');
+      expect(findFilter['sort'], 'rating');
+      expect(findFilter['direction'], 'DESC');
+      expect(objectFilter['filter_favorites'], {
         'value': 'true',
         'modifier': 'EQUALS',
       });
-      expect(input['object_filter']['rating100']['value']['value'], 80);
-      expect(input['object_filter']['tags']['value'], {
+      expect(
+        ((objectFilter['rating100'] as Map<String, dynamic>)['value']
+            as Map<String, dynamic>)['value'],
+        80,
+      );
+      expect((objectFilter['tags'] as Map<String, dynamic>)['value'], {
         'items': [
           {'id': 'tag-1', 'label': 'tag-1'},
         ],
@@ -47,7 +53,7 @@ void main() {
       final loaded = PerformerSavedFilterConfig.fromServerPayload(
         id: '1',
         name: 'Favorites',
-        objectFilter: input['object_filter'],
+        objectFilter: objectFilter,
       );
       expect(loaded.filter.favorite, isTrue);
       expect(loaded.filter.tags?.value, ['tag-1']);

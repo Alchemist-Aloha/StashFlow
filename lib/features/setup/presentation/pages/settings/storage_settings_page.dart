@@ -210,13 +210,13 @@ class StorageSettingsPage extends ConsumerWidget {
                         child: Text(context.l10n.settings_storage_unlimited),
                       ),
                     ],
-                    onChanged: (v) {
+                    onChanged: (v) async {
                       if (v != null) {
-                        prefs.setInt('max_image_cache_size_mb', v);
+                        await prefs.setInt('max_image_cache_size_mb', v);
+                        if (!context.mounted) return;
                         ref.invalidate(maxImageCacheSizeProvider);
-                        service.enforceImageCacheLimit(v).then((_) {
-                          ref.invalidate(cacheSizesProvider);
-                        });
+                        await service.enforceImageCacheLimit(v);
+                        if (context.mounted) ref.invalidate(cacheSizesProvider);
                       }
                     },
                   ),
@@ -244,13 +244,13 @@ class StorageSettingsPage extends ConsumerWidget {
                         child: Text(context.l10n.settings_storage_unlimited),
                       ),
                     ],
-                    onChanged: (v) {
+                    onChanged: (v) async {
                       if (v != null) {
-                        prefs.setInt('max_video_cache_size_mb', v);
+                        await prefs.setInt('max_video_cache_size_mb', v);
+                        if (!context.mounted) return;
                         ref.invalidate(maxVideoCacheSizeProvider);
-                        service.enforceVideoCacheLimit(v).then((_) {
-                          ref.invalidate(cacheSizesProvider);
-                        });
+                        await service.enforceVideoCacheLimit(v);
+                        if (context.mounted) ref.invalidate(cacheSizesProvider);
                       }
                     },
                   ),

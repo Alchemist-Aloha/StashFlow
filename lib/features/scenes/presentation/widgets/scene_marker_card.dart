@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -42,9 +44,11 @@ class SceneMarkerCard extends StatelessWidget {
   }
 
   void _openMarker(BuildContext context) {
-    context.push(
-      '/scenes/scene/${marker.sceneId}?t=${marker.seconds}',
-      extra: true,
+    unawaited(
+      context.push(
+        '/scenes/scene/${marker.sceneId}?t=${marker.seconds}',
+        extra: true,
+      ),
     );
   }
 

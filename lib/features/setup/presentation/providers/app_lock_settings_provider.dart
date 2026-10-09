@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/data/preferences/secure_storage_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -39,7 +41,7 @@ class AppLockSettingsNotifier extends Notifier<AppLockSettings> {
 
   @override
   AppLockSettings build() {
-    _load();
+    unawaited(_load());
     return const AppLockSettings();
   }
 

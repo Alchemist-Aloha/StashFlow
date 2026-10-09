@@ -154,11 +154,21 @@ void main() {
       );
       final filter =
           request.variables['gallery_filter'] as Map<String, dynamic>;
-      expect(filter['code']['value'], 'GAL-1');
-      expect(filter['photographer']['value'], 'Alice');
-      expect(filter['parent_folder']['value'], ['folder-1']);
+      expect((filter['code'] as Map<String, dynamic>)['value'], 'GAL-1');
+      expect(
+        (filter['photographer'] as Map<String, dynamic>)['value'],
+        'Alice',
+      );
+      expect((filter['parent_folder'] as Map<String, dynamic>)['value'], [
+        'folder-1',
+      ]);
       expect(filter['is_missing'], 'rating');
-      expect(filter['custom_fields'].single['field'], 'source');
+      expect(
+        (filter['custom_fields'] as List)
+            .cast<Map<String, dynamic>>()
+            .single['field'],
+        'source',
+      );
       expect(
         ((request.variables['gallery_filter'] as Map<String, dynamic>)
                 .cast<String, dynamic>()['performers']

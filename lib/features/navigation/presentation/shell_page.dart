@@ -126,63 +126,68 @@ class _ShellPageState extends ConsumerState<ShellPage> {
   }
 
   void _showUpdateDialog(UpdateInfo updateInfo) {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: Text(context.l10n.common_update_available),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(context.l10n.update_available(updateInfo.latestVersion)),
-            const SizedBox(height: 12),
-            Text(
-              context
-                  .l10n
-                  .would_you_like_to_visit_the_release_page_to_download_it,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              ref.read(startupUpdateCheckProvider.notifier).markChecked();
-              Navigator.pop(context);
-            },
-            child: Text(context.l10n.common_later),
+    unawaited(
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: Text(context.l10n.common_update_available),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(context.l10n.update_available(updateInfo.latestVersion)),
+              const SizedBox(height: 12),
+              Text(
+                context
+                    .l10n
+                    .would_you_like_to_visit_the_release_page_to_download_it,
+              ),
+            ],
           ),
-          if (!kIsWeb &&
-              Platform.isAndroid &&
-              updateInfo.androidApkUrl != null &&
-              updateInfo.androidApkUrl!.isNotEmpty)
+          actions: [
             TextButton(
+              onPressed: () {
+                ref.read(startupUpdateCheckProvider.notifier).markChecked();
+                Navigator.pop(context);
+              },
+              child: Text(context.l10n.common_later),
+            ),
+            if (!kIsWeb &&
+                Platform.isAndroid &&
+                updateInfo.androidApkUrl != null &&
+                updateInfo.androidApkUrl!.isNotEmpty)
+              TextButton(
+                onPressed: () async {
+                  final url = Uri.parse(updateInfo.androidApkUrl!);
+                  try {
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(
+                        url,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }
+                  } catch (_) {}
+                },
+                child: Text(context.l10n.common_download),
+              ),
+            FilledButton(
               onPressed: () async {
-                final url = Uri.parse(updateInfo.androidApkUrl!);
+                final url = Uri.parse(updateInfo.releaseUrl);
                 try {
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url, mode: LaunchMode.externalApplication);
                   }
                 } catch (_) {}
-              },
-              child: Text(context.l10n.common_download),
-            ),
-          FilledButton(
-            onPressed: () async {
-              final url = Uri.parse(updateInfo.releaseUrl);
-              try {
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                if (context.mounted) {
+                  ref.read(startupUpdateCheckProvider.notifier).markChecked();
+                  Navigator.pop(context);
                 }
-              } catch (_) {}
-              if (context.mounted) {
-                ref.read(startupUpdateCheckProvider.notifier).markChecked();
-                Navigator.pop(context);
-              }
-            },
-            child: Text(context.l10n.common_release_details),
-          ),
-        ],
+              },
+              child: Text(context.l10n.common_release_details),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -192,21 +197,23 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     final serverUrl = ref.read(serverUrlProvider);
     if (serverUrl.isEmpty && !_dialogShown && mounted) {
       _dialogShown = true;
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: Text(context.l10n.common_setup_required),
-          content: Text(context.l10n.to_get_started_configure_stash_server),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                context.push('/settings/server');
-              },
-              child: Text(context.l10n.common_configure_now),
-            ),
-          ],
+      unawaited(
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: Text(context.l10n.common_setup_required),
+            content: Text(context.l10n.to_get_started_configure_stash_server),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  unawaited(context.push('/settings/server'));
+                },
+                child: Text(context.l10n.common_configure_now),
+              ),
+            ],
+          ),
         ),
       );
     }

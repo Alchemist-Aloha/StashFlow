@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -48,7 +50,7 @@ class PerformerDetailsPage extends ConsumerWidget {
       return;
     }
 
-    context.push('/performers/performer/${randomPerformer.id}');
+    unawaited(context.push('/performers/performer/${randomPerformer.id}'));
   }
 
   int? _calculateAge(String? birthdate) {
@@ -317,8 +319,10 @@ class PerformerDetailsPage extends ConsumerWidget {
                                         visualDensity: VisualDensity.compact,
                                         onPressed: () {
                                           if (index < performer.tagIds.length) {
-                                            context.push(
-                                              '/tags/tag/${performer.tagIds[index]}',
+                                            unawaited(
+                                              context.push(
+                                                '/tags/tag/${performer.tagIds[index]}',
+                                              ),
                                             );
                                           }
                                         },
@@ -535,7 +539,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                                             imageFilterStateProvider.notifier,
                                           )
                                           .setGalleryId(gallery.id);
-                                      context.push('/galleries/images');
+                                      unawaited(
+                                        context.push('/galleries/images'),
+                                      );
                                     },
                                   ),
                                 ],

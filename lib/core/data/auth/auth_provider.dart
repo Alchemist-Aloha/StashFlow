@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -79,7 +81,7 @@ class AuthProvider extends Notifier<AuthState> {
   @override
   AuthState build() {
     final profile = ref.watch(activeProfileProvider);
-    _hydrateForProfile(profile);
+    unawaited(_hydrateForProfile(profile));
     return const AuthState.initial();
   }
 

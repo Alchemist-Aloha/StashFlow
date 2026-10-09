@@ -186,7 +186,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     _warmAdjacentFiles(items, index, headers);
 
     if (index >= items.length - 5) {
-      ref.read(imageListProvider.notifier).fetchNextPage();
+      unawaited(ref.read(imageListProvider.notifier).fetchNextPage());
     }
   }
 
@@ -220,10 +220,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           : itemCount - 1;
     }
 
-    _pageController.animateToPage(
-      targetIndex,
-      duration: _slideshowTransition,
-      curve: Curves.easeInOutCubic,
+    unawaited(
+      _pageController.animateToPage(
+        targetIndex,
+        duration: _slideshowTransition,
+        curve: Curves.easeInOutCubic,
+      ),
     );
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -159,7 +161,7 @@ void main() {
     router.go('/scenes/scene/30');
     await tester.pumpAndSettle();
     player.setActiveScene(scenes[35]);
-    router.pushReplacement('/scenes/scene/35');
+    unawaited(router.pushReplacement('/scenes/scene/35'));
     await tester.pumpAndSettle();
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();

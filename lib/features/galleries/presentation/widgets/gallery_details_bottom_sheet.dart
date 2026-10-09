@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -28,7 +30,7 @@ class GalleryDetailsBottomSheet extends StatelessWidget {
   void _closeAndNavigate(BuildContext context, String route) {
     final router = GoRouter.of(context);
     Navigator.of(context).pop();
-    router.push(route);
+    unawaited(router.push(route));
   }
 
   @override

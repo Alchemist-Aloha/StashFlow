@@ -42,18 +42,20 @@ void main() {
       );
 
       final input = config.toSaveInput();
+      final objectFilter = input['object_filter'] as Map<String, dynamic>;
+      final findFilter = input['find_filter'] as Map<String, dynamic>;
 
       expect(input['name'], 'Favorites');
       expect(input['mode'], 'SCENES');
-      expect(input['find_filter']['q'], 'studio search');
-      expect(input['find_filter']['sort'], 'rating');
-      expect(input['find_filter']['direction'], 'DESC');
-      expect(input['find_filter']['per_page'], 60);
-      expect(input['object_filter']['rating100'], {
+      expect(findFilter['q'], 'studio search');
+      expect(findFilter['sort'], 'rating');
+      expect(findFilter['direction'], 'DESC');
+      expect(findFilter['per_page'], 60);
+      expect(objectFilter['rating100'], {
         'value': {'value': 80},
         'modifier': 'GREATER_THAN',
       });
-      expect(input['object_filter']['tags'], {
+      expect(objectFilter['tags'], {
         'modifier': 'INCLUDES',
         'value': {
           'items': [
@@ -66,40 +68,51 @@ void main() {
           'depth': 2,
         },
       });
-      expect(input['object_filter']['organized'], {
+      expect(objectFilter['organized'], {
         'value': 'true',
         'modifier': 'EQUALS',
       });
-      expect(input['object_filter']['o_counter'], {
+      expect(objectFilter['o_counter'], {
         'value': {'value': 2},
         'modifier': 'EQUALS',
       });
-      expect(input['object_filter'], isNot(contains('oCounter')));
-      expect(input['object_filter']['phash_distance'], {
+      expect(objectFilter, isNot(contains('oCounter')));
+      expect(objectFilter['phash_distance'], {
         'modifier': 'EQUALS',
         'value': {'value': 'abc123', 'distance': 4},
       });
-      expect(input['object_filter']['duplicated'], {
+      expect(objectFilter['duplicated'], {
         'modifier': 'EQUALS',
         'value': {'phash': true, 'title': true},
       });
       expect(
-        input['object_filter']['production_date']['value']['value'],
+        ((objectFilter['production_date'] as Map<String, dynamic>)['value']
+            as Map<String, dynamic>)['value'],
         '2026-09-01',
       );
-      expect(input['object_filter']['folder']['value']['items'], [
-        {'id': 'folder-1', 'label': 'folder-1'},
-      ]);
-      expect(input['object_filter']['performer_favorite']['value'], 'true');
-      expect(input['object_filter']['is_missing']['value'], 'studio');
-      expect(input['object_filter']['stash_id_endpoint'], {
+      expect(
+        ((objectFilter['folder'] as Map<String, dynamic>)['value']
+            as Map<String, dynamic>)['items'],
+        [
+          {'id': 'folder-1', 'label': 'folder-1'},
+        ],
+      );
+      expect(
+        (objectFilter['performer_favorite'] as Map<String, dynamic>)['value'],
+        'true',
+      );
+      expect(
+        (objectFilter['is_missing'] as Map<String, dynamic>)['value'],
+        'studio',
+      );
+      expect(objectFilter['stash_id_endpoint'], {
         'modifier': 'EQUALS',
         'value': {
           'endpoint': 'https://stashdb.org/graphql',
           'stashID': 'stash-1',
         },
       });
-      expect(input['object_filter']['custom_fields'], [
+      expect(objectFilter['custom_fields'], [
         {
           'field': 'source',
           'value': ['archive'],

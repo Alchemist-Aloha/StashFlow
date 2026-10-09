@@ -156,7 +156,7 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
       ),
       errorWidget: (context, url, error) {
         // Kick off async cleanup + retry; show the standard error UI immediately.
-        _handleError();
+        unawaited(_handleError());
         return _buildError(context);
       },
     );

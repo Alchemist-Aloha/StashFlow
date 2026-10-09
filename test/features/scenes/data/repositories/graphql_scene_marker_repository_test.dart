@@ -78,28 +78,62 @@ void main() {
         ),
       );
 
-      final findFilter = client.lastQueryVariables?['filter'];
+      final findFilter =
+          client.lastQueryVariables?['filter'] as Map<String, dynamic>;
       expect(findFilter['q'], 'beat');
       expect(findFilter['page'], 2);
       expect(findFilter['per_page'], 30);
       expect(findFilter['sort'], 'seconds');
       expect(findFilter['direction'], 'ASC');
 
-      final markerFilter = client.lastQueryVariables?['scene_marker_filter'];
-      expect(markerFilter['tags']['value'], ['t1']);
-      expect(markerFilter['scene_tags']['value'], ['scene-tag-1']);
-      expect(markerFilter['performers']['value'], ['p1']);
-      expect(markerFilter['scenes']['value'], ['s1']);
-      expect(markerFilter['duration']['value'], 30.0);
-      expect(markerFilter['duration']['value2'], 90.0);
-      expect(markerFilter['duration']['modifier'], 'BETWEEN');
-      expect(markerFilter['created_at']['value'], '2024-01-01');
-      expect(markerFilter['created_at']['modifier'], 'GREATER_THAN');
-      expect(markerFilter['updated_at']['value'], '2024-02-01');
-      expect(markerFilter['updated_at']['modifier'], 'LESS_THAN');
-      expect(markerFilter['scene_date']['value'], '2023-01-01');
-      expect(markerFilter['scene_created_at']['value'], '2023-02-01');
-      expect(markerFilter['scene_updated_at']['value'], '2023-03-01');
+      final markerFilter =
+          client.lastQueryVariables?['scene_marker_filter']
+              as Map<String, dynamic>;
+      expect((markerFilter['tags'] as Map<String, dynamic>)['value'], ['t1']);
+      expect((markerFilter['scene_tags'] as Map<String, dynamic>)['value'], [
+        'scene-tag-1',
+      ]);
+      expect((markerFilter['performers'] as Map<String, dynamic>)['value'], [
+        'p1',
+      ]);
+      expect((markerFilter['scenes'] as Map<String, dynamic>)['value'], ['s1']);
+      expect((markerFilter['duration'] as Map<String, dynamic>)['value'], 30.0);
+      expect(
+        (markerFilter['duration'] as Map<String, dynamic>)['value2'],
+        90.0,
+      );
+      expect(
+        (markerFilter['duration'] as Map<String, dynamic>)['modifier'],
+        'BETWEEN',
+      );
+      expect(
+        (markerFilter['created_at'] as Map<String, dynamic>)['value'],
+        '2024-01-01',
+      );
+      expect(
+        (markerFilter['created_at'] as Map<String, dynamic>)['modifier'],
+        'GREATER_THAN',
+      );
+      expect(
+        (markerFilter['updated_at'] as Map<String, dynamic>)['value'],
+        '2024-02-01',
+      );
+      expect(
+        (markerFilter['updated_at'] as Map<String, dynamic>)['modifier'],
+        'LESS_THAN',
+      );
+      expect(
+        (markerFilter['scene_date'] as Map<String, dynamic>)['value'],
+        '2023-01-01',
+      );
+      expect(
+        (markerFilter['scene_created_at'] as Map<String, dynamic>)['value'],
+        '2023-02-01',
+      );
+      expect(
+        (markerFilter['scene_updated_at'] as Map<String, dynamic>)['value'],
+        '2023-03-01',
+      );
 
       expect(markers, hasLength(1));
       expect(markers.single.id, 'm1');
