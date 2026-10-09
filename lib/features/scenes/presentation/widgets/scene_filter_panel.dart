@@ -743,6 +743,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return SelectionCriterionInput(
       label: label,
       selectedIds: selectedIds,
+      providerType: providerType,
       modifier: modifier,
       onModifierChanged: (next) {
         onChanged(

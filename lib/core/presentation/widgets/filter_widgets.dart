@@ -1,5 +1,12 @@
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../features/performers/presentation/providers/performer_details_provider.dart';
+import '../../../features/tags/presentation/providers/tag_details_provider.dart';
+import '../../../features/studios/presentation/providers/studio_details_provider.dart';
+import '../../../features/groups/presentation/providers/group_details_provider.dart';
+import '../../../features/scenes/presentation/providers/scene_details_provider.dart';
+import '../../../features/galleries/presentation/providers/gallery_details_provider.dart';
 import '../theme/app_theme.dart';
 import '../../domain/entities/criterion.dart';
 
@@ -219,10 +226,12 @@ class MissingFieldCriterionInput extends StatelessWidget {
   }
 }
 
-class SelectionCriterionInput extends StatelessWidget {
+/// Displays entity names while retaining IDs as criterion and removal values.
+class SelectionCriterionInput extends ConsumerWidget {
   const SelectionCriterionInput({
     required this.label,
     required this.selectedIds,
+    required this.providerType,
     required this.modifier,
     required this.onModifierChanged,
     required this.onAddPressed,
@@ -232,13 +241,14 @@ class SelectionCriterionInput extends StatelessWidget {
 
   final String label;
   final List<String> selectedIds;
+  final String providerType;
   final CriterionModifier modifier;
   final ValueChanged<CriterionModifier> onModifierChanged;
   final VoidCallback onAddPressed;
   final ValueChanged<String> onRemoveId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final canPickValues = !_isNullaryModifier(modifier);
 
     return FilterField(
@@ -264,11 +274,27 @@ class SelectionCriterionInput extends StatelessWidget {
                 onPressed: onAddPressed,
               ),
               for (final id in selectedIds)
-                Chip(label: Text(id), onDeleted: () => onRemoveId(id)),
+                Chip(
+                  label: Text(_entityLabel(ref, id)),
+                  onDeleted: () => onRemoveId(id),
+                ),
             ],
           ),
       ],
     );
+  }
+
+  String _entityLabel(WidgetRef ref, String id) {
+    final name = switch (providerType) {
+      'performer' => ref.watch(performerDetailsProvider(id)).value?.name,
+      'tag' => ref.watch(tagDetailsProvider(id)).value?.name,
+      'studio' => ref.watch(studioDetailsProvider(id)).value?.name,
+      'group' => ref.watch(groupDetailsProvider(id)).value?.name,
+      'scene' => ref.watch(sceneDetailsProvider(id)).value?.title,
+      'gallery' => ref.watch(galleryDetailsProvider(id)).value?.displayName,
+      _ => null,
+    };
+    return name == null || name.trim().isEmpty ? id : name;
   }
 }
 

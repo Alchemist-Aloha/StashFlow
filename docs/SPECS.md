@@ -226,6 +226,8 @@ Sort/filter sheets must:
 - support reset and persisted defaults where offered;
 - preserve search, sort direction, and feature-specific criteria together;
 - use shared filter widgets when their semantics match;
+- display names (or media titles) for selected entity criteria, including restored
+  filters; retain IDs for queries/removal and as a fallback if a name is unavailable;
 - use `FilterField` for consistently start-aligned labels, scaled outer spacing,
   and label-to-control gaps across text, numeric, chip, and entity criteria;
 - use full-width `FilterDropdown` controls with the same scalable decoration

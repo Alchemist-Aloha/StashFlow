@@ -526,6 +526,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
     return SelectionCriterionInput(
       label: label,
       selectedIds: selectedIds,
+      providerType: providerType,
       modifier: modifier,
       onModifierChanged: (next) {
         onChanged(

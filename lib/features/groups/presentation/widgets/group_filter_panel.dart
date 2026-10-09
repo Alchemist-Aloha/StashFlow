@@ -312,6 +312,7 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
     return SelectionCriterionInput(
       label: label,
       selectedIds: selectedIds,
+      providerType: providerType,
       modifier: modifier,
       onModifierChanged: (next) => onChanged(
         _buildEntityCriterion(

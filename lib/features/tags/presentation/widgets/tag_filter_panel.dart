@@ -315,6 +315,7 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
     return SelectionCriterionInput(
       label: label,
       selectedIds: selectedIds,
+      providerType: 'tag',
       modifier: modifier,
       onModifierChanged: (next) => onChanged(
         HierarchicalMultiCriterion(value: selectedIds, modifier: next),

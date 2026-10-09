@@ -568,6 +568,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
     return SelectionCriterionInput(
       label: label,
       selectedIds: selectedIds,
+      providerType: providerType,
       modifier: modifier,
       onModifierChanged: (next) {
         onChanged(

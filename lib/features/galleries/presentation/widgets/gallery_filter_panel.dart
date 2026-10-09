@@ -531,6 +531,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     return SelectionCriterionInput(
       label: label,
       selectedIds: selectedIds,
+      providerType: providerType,
       modifier: modifier,
       onModifierChanged: (next) {
         onChanged(
