@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -398,7 +399,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     final playerState = ref.watch(playerStateProvider);
     final controller = playerState.videoController;
 
-    final aspectRatio = _effectiveAspectRatio(controller);
+    final aspectRatio = math.min(_effectiveAspectRatio(controller), 16 / 9);
 
     // If this player isn't active, show a placeholder with a play button.
     if (playerState.activeScene?.id != widget.scene.id) {
@@ -419,9 +420,10 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
             child: Stack(
               fit: StackFit.expand,
               children: [
+                const ColoredBox(color: Colors.black),
                 StashImage(
                   imageUrl: widget.scene.paths.screenshot,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 ),
                 const ColoredBox(color: Color(0x99000000)),
                 Center(

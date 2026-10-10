@@ -399,6 +399,11 @@ Responsibilities:
 
 - `video_player_provider.dart` owns session lifecycle and global player state.
 - `SceneVideoPlayer` decides when an inline scene may acquire playback.
+  Inline containers are no wider than 16:9, including placeholders and loading
+  states; narrower video ratios retain their existing sizing. Video and scene
+  screenshots use contain fit against black, so wider content fits the player
+  width without cropping and has black bars above and below. Fullscreen, feed,
+  and PiP sizing are unchanged.
 - Inactive inline players show the scene screenshot through `StashImage`, with
   a readable control scrim and the normal missing/failed-image fallback.
 - Inactive inline placeholders keep the Back control in the active inline
