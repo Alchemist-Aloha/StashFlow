@@ -86,7 +86,8 @@ class ImageFilterState extends _$ImageFilterState {
             jsonDecode(jsonString) as Map<String, dynamic>,
           ),
         );
-      } catch (_) {
+      } on Object catch (_) {
+        // Malformed stored data can also fail with a cast error.
         // Fall through to the empty default for corrupt legacy preferences.
       }
     }

@@ -209,7 +209,8 @@ class DesktopPipWindowSession {
         window.hideCurrentAppTabFromTaskbar(true);
       }
       return true;
-    } catch (_) {
+    } on Object catch (_) {
+      // Playback recovery must also handle non-Exception plugin failures.
       _viewId = null;
       _stopWatchingVideoParams();
       _source.value = null;

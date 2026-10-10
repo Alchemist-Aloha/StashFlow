@@ -161,7 +161,7 @@ class _SceneDeduplicationPageState
           content: Text(context.l10n.deleted_n_scenes(requestedIds.length)),
         ),
       );
-    } catch (error) {
+    } on Exception catch (error) {
       if (!mounted) return;
       if (deletedIds.isNotEmpty) _reconcileDeletedScenes(deletedIds);
       ScaffoldMessenger.of(context).showSnackBar(

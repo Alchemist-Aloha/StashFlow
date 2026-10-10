@@ -53,7 +53,7 @@ class SupportSettingsPage extends ConsumerWidget {
                                       mode: LaunchMode.externalApplication,
                                     );
                                   }
-                                } catch (_) {}
+                                } on Exception catch (_) {}
                               },
                             ),
                           ),
@@ -90,7 +90,7 @@ class SupportSettingsPage extends ConsumerWidget {
                                   mode: LaunchMode.externalApplication,
                                 );
                               }
-                            } catch (_) {}
+                            } on Exception catch (_) {}
                           },
                         ),
                         loading: () => SettingsActionCard(
@@ -136,7 +136,7 @@ class SupportSettingsPage extends ConsumerWidget {
                             );
                           }
                         }
-                      } catch (e) {
+                      } on Exception catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -179,7 +179,7 @@ class SupportSettingsPage extends ConsumerWidget {
                             );
                           }
                         }
-                      } catch (e) {
+                      } on Exception catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

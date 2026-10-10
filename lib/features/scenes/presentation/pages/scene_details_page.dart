@@ -418,7 +418,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             if (dialogContext.mounted) {
                               Navigator.of(dialogContext).pop(true);
                             }
-                          } catch (e) {
+                          } on Exception catch (e) {
                             setDialogState(() => isDeleting = false);
                             if (dialogContext.mounted) {
                               ScaffoldMessenger.of(dialogContext).showSnackBar(
@@ -499,7 +499,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           SnackBar(content: Text(context.l10n.scene_details_marker_created)),
         );
       }
-    } catch (e) {
+    } on Object catch (e) {
+      // This operation also reports invalid results through StateError.
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -555,7 +556,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           SnackBar(content: Text(context.l10n.scene_details_marker_deleted)),
         );
       }
-    } catch (e) {
+    } on Object catch (e) {
+      // This operation also reports invalid results through StateError.
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -688,7 +690,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           SnackBar(content: Text(context.l10n.gallery_error(message))),
         );
       }
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.failed_to_save(e.toString()))),
@@ -1104,7 +1106,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       if (!mounted) return;
       ref.invalidate(sceneDetailsProvider(scene.id));
       _invalidateSceneListUnlessRandom();
-    } catch (e) {
+    } on Exception catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1225,7 +1227,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           ),
                         );
                       }
-                    } catch (e) {
+                    } on Exception catch (e) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

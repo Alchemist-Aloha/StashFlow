@@ -278,7 +278,8 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
           messenger.showSnackBar(
             SnackBar(content: Text(l10n.cast_casting_to(device.name))),
           );
-        } catch (e) {
+        } on Object catch (e) {
+          // This operation also reports invalid results through StateError.
           logCastProcess(
             'CastSelectionSheet: pairing failed: $e',
             source: 'cast_selection_sheet',
@@ -296,7 +297,8 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       } else if (localWasPlaying) {
         playerStateNotifier.play();
       }
-    } catch (e) {
+    } on Object catch (e) {
+      // This operation also reports invalid results through StateError.
       logCastProcess(
         'CastSelectionSheet: cast failed: $e',
         source: 'cast_selection_sheet',

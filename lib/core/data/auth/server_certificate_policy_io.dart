@@ -52,7 +52,8 @@ class _ServerCertificateOverrides extends HttpOverrides {
         if (profile.id == activeId) return profile;
       }
       return profiles.first;
-    } catch (_) {
+    } on Object catch (_) {
+      // Malformed stored data can also fail with a cast error.
       return null;
     }
   }

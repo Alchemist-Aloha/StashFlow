@@ -424,7 +424,8 @@ class _SceneInfoPreviewPlayerState
         Media(effectiveUrl, httpHeaders: effectiveHeaders),
         play: widget.autoplay,
       );
-    } catch (_) {
+    } on Object catch (_) {
+      // Playback recovery must also handle non-Exception plugin failures.
       _reportUnavailable();
     } finally {
       if (mounted) {

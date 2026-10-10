@@ -267,7 +267,8 @@ class AuthProvider extends Notifier<AuthState> {
       );
 
       return cookieHeader.isNotEmpty;
-    } catch (error) {
+    } on Object catch (error) {
+      // Auth recovery must also handle storage and provider failures.
       state = state.copyWith(
         loginStatus: AuthLoginStatus.error,
         errorMessage: 'Login failed: $error',
@@ -287,7 +288,8 @@ class AuthProvider extends Notifier<AuthState> {
       try {
         final service = await ref.read(authServiceProvider.future);
         await service.logout(graphqlEndpoint: Uri.parse(endpoint));
-      } catch (_) {
+      } on Object catch (_) {
+        // Auth recovery must also handle storage and provider failures.
         // Always clear local auth state even if endpoint call fails.
       }
     }
@@ -337,7 +339,8 @@ class AuthProvider extends Notifier<AuthState> {
     try {
       final service = await ref.read(authServiceProvider.future);
       return await service.cookieHeaderFor(requestUri: Uri.parse(endpoint));
-    } catch (_) {
+    } on Object catch (_) {
+      // Auth recovery must also handle storage and provider failures.
       return '';
     }
   }

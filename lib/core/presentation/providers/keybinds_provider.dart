@@ -272,7 +272,9 @@ class KeybindsNotifier extends Notifier<Keybinds> {
     if (jsonStr != null && revision == _revision) {
       try {
         state = Keybinds.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
-      } catch (_) {}
+      } on Object catch (_) {
+        // Malformed stored data can also fail with a cast error.
+      }
     }
   }
 

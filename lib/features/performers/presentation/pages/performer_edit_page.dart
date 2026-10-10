@@ -305,7 +305,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
           _scrapedImage = merged.images.first;
         }
       });
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -364,7 +364,8 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
         ref.invalidate(performerDetailsProvider(widget.performer.id));
         Navigator.of(context).pop(true);
       }
-    } catch (e) {
+    } on Object catch (e) {
+      // This operation also reports invalid results through StateError.
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(

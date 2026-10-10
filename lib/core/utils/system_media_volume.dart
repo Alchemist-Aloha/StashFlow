@@ -19,7 +19,7 @@ class SystemMediaVolume {
         'adjustMediaVolume',
         <String, double>{'delta': delta},
       );
-    } catch (_) {
+    } on Exception catch (_) {
       return null;
     }
   }

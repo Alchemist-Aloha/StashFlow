@@ -611,7 +611,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     for (final path in _notificationArtTempPaths) {
       try {
         File(path).deleteSync();
-      } catch (_) {
+      } on FileSystemException catch (_) {
         // Best-effort cleanup; ignore failures.
       }
     }
@@ -684,7 +684,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (!_isCurrentNotificationRequest(scene, generation)) {
         try {
           await downloadedFile.delete();
-        } catch (_) {
+        } on FileSystemException catch (_) {
           // Best-effort cleanup for stale downloads.
         }
         return;
@@ -698,11 +698,12 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         thumbnailUri: Uri.file(downloadedFile.path).toString(),
       );
       return;
-    } catch (e) {
+    } on Object catch (e) {
+      // Playback recovery must also handle non-Exception plugin failures.
       if (tempFile != null) {
         try {
           await tempFile.delete();
-        } catch (_) {
+        } on FileSystemException catch (_) {
           // Best-effort cleanup; ignore failures.
         }
       }
@@ -968,7 +969,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           );
           await player.setSubtitleTrack(targetTrack);
         }
-      } catch (e) {
+      } on Object catch (e) {
+        // Playback recovery must also handle non-Exception plugin failures.
         AppLogStore.instance.add('Failed to switch track: $e');
       }
     }
@@ -1482,7 +1484,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
                 localResumePosition: initialPosition ?? Duration.zero,
                 localWasPlaying: castBeforeStart.localWasPlaying,
               );
-        } catch (e) {
+        } on Object catch (e) {
+          // Playback recovery must also handle non-Exception plugin failures.
           AppLogStore.instance.add(
             'PlayerState: failed to switch cast to scene ${scene.id}: $e',
             source: 'player_provider',
@@ -1494,7 +1497,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
       // Prepare for the next scene in the queue
       _prewarmQueue();
-    } catch (e) {
+    } on Object catch (e) {
+      // Playback recovery must also handle non-Exception plugin failures.
       debugPrint('Error initializing video player: $e');
       AppLogStore.instance.add(
         'provider initialize error scene=${scene.id} error=$e',

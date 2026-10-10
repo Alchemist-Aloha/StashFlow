@@ -64,7 +64,7 @@ class PerformerDetailsPage extends ConsumerWidget {
         age--;
       }
       return age;
-    } catch (_) {
+    } on FormatException catch (_) {
       return null;
     }
   }
@@ -228,7 +228,8 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     performerDetailsProvider(performer.id),
                                   );
                                   ref.invalidate(performerListProvider);
-                                } catch (e) {
+                                } on Object catch (e) {
+                                  // This operation also reports invalid results through StateError.
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
@@ -266,7 +267,8 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     performerDetailsProvider(performer.id),
                                   );
                                   ref.invalidate(performerListProvider);
-                                } catch (error) {
+                                } on Object catch (error) {
+                                  // This operation also reports invalid results through StateError.
                                   if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -378,7 +380,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                                 );
                                               }
                                             }
-                                          } catch (e) {
+                                          } on Exception catch (e) {
                                             if (context.mounted) {
                                               ScaffoldMessenger.of(
                                                 context,

@@ -101,7 +101,7 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
           .read(galleryListProvider.notifier)
           .updateGalleryInList(updatedGallery);
       ref.invalidate(galleryDetailsProvider(gallery.id));
-    } catch (error) {
+    } on Exception catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

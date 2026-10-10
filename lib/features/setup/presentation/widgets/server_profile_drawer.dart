@@ -158,7 +158,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       setState(() {
         _testResult = result;
       });
-    } catch (e) {
+    } on Exception catch (e) {
       if (!mounted) return;
       setState(() {
         _testResult = 'Error: $e';

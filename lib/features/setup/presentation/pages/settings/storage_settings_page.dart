@@ -63,7 +63,8 @@ class StorageSettingsPage extends ConsumerWidget {
                                       ),
                                     ),
                                   );
-                                } catch (e) {
+                                } on Object catch (e) {
+                                  // This operation also reports invalid results through StateError.
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -111,7 +112,8 @@ class StorageSettingsPage extends ConsumerWidget {
                                       ),
                                     ),
                                   );
-                                } catch (e) {
+                                } on Object catch (e) {
+                                  // This operation also reports invalid results through StateError.
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -159,7 +161,8 @@ class StorageSettingsPage extends ConsumerWidget {
                                       ),
                                     ),
                                   );
-                                } catch (e) {
+                                } on Object catch (e) {
+                                  // This operation also reports invalid results through StateError.
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -402,7 +405,7 @@ class _AppConfigBackupSectionState
     setState(() => _busy = true);
     try {
       await operation();
-    } catch (_) {
+    } on Exception catch (_) {
       if (mounted) _message(context.l10n.settings_config_invalid);
     } finally {
       if (mounted) setState(() => _busy = false);

@@ -73,7 +73,7 @@ class PlaybackActivityTracker {
             _refreshSceneDetails(sceneId);
           }
           _log('PlayerState play count incremented for scene=$sceneId');
-        } catch (e) {
+        } on Exception catch (e) {
           debugPrint('Failed to increment play count: $e');
         }
       });
@@ -153,7 +153,7 @@ class PlaybackActivityTracker {
       if (_isMounted()) {
         _refreshSceneDetails(effectiveSceneId);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Failed to save scene activity: $e');
     }
   }

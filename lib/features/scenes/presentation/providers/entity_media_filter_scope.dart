@@ -91,7 +91,8 @@ class EntityMediaFilterState extends _$EntityMediaFilterState {
         return SceneFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } catch (_) {
+      } on Object catch (_) {
+        // Malformed stored data can also fail with a cast error.
         return SceneFilter.empty();
       }
     }

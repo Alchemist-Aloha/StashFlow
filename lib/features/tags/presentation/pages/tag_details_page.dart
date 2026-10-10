@@ -157,7 +157,8 @@ class TagDetailsPage extends ConsumerWidget {
                                       .setTagFavorite(tag.id, !tag.favorite);
                                   ref.invalidate(tagDetailsProvider(tag.id));
                                   ref.invalidate(tagListProvider);
-                                } catch (e) {
+                                } on Object catch (e) {
+                                  // This operation also reports invalid results through StateError.
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(

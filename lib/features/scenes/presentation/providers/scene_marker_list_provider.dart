@@ -64,7 +64,8 @@ class SceneMarkerFilterState extends _$SceneMarkerFilterState {
         return SceneMarkerFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } catch (_) {
+      } on Object catch (_) {
+        // Malformed stored data can also fail with a cast error.
         return const SceneMarkerFilter();
       }
     }
@@ -145,7 +146,7 @@ class SceneMarkerList extends _$SceneMarkerList {
         _hasMore = false;
       }
       state = AsyncData([...currentMarkers, ...nextMarkers]);
-    } catch (error, stackTrace) {
+    } on Exception catch (error, stackTrace) {
       if (generation != _requestGeneration) return;
       _currentPage--;
       state = AsyncError(error, stackTrace);

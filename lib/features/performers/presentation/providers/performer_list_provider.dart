@@ -73,7 +73,8 @@ class PerformerFilterState extends _$PerformerFilterState {
         return domain.PerformerFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } catch (_) {
+      } on Object catch (_) {
+        // Malformed stored data can also fail with a cast error.
         return domain.PerformerFilter.empty();
       }
     }
@@ -196,7 +197,7 @@ class PerformerList extends _$PerformerList {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextPerformers]);
       }
-    } catch (e) {
+    } on Exception {
       // In a real app, you might want to show a snackbar for error during pagination
     } finally {
       if (generation == _requestGeneration) _isLoadingMore = false;

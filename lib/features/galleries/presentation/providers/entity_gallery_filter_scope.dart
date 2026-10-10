@@ -145,7 +145,8 @@ class EntityGalleryFilterState extends _$EntityGalleryFilterState {
         return GalleryFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } catch (_) {
+      } on Object catch (_) {
+        // Malformed stored data can also fail with a cast error.
         return GalleryFilter.empty();
       }
     }

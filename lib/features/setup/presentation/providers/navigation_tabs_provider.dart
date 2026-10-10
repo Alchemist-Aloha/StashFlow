@@ -107,7 +107,8 @@ class NavigationTabsNotifier extends Notifier<List<NavigationTab>> {
             .map((j) => NavigationTab.fromJson(j as Map<String, dynamic>))
             .toList(),
       );
-    } catch (_) {
+    } on Object catch (_) {
+      // Malformed stored data can also fail with a cast error.
       return _defaultTabs();
     }
   }

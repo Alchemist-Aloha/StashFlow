@@ -68,7 +68,7 @@ class PreviewAvailabilityService {
       // Only a definitive "gone" response hides the preview. Any other status
       // keeps it available so auth or method quirks never remove a valid entry.
       return response.statusCode != 404 && response.statusCode != 410;
-    } catch (_) {
+    } on Exception catch (_) {
       // A failed probe must not hide a preview that might still play.
       return true;
     } finally {

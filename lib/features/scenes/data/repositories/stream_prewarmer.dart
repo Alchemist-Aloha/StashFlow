@@ -116,7 +116,7 @@ class StreamPrewarmer extends _$StreamPrewarmer {
         },
         cancelOnError: true,
       );
-    } catch (e) {
+    } on Exception catch (e) {
       if (!identical(_activeRequests[scene.id], operation)) return;
       finish();
       AppLogStore.instance.add(

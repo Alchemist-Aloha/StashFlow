@@ -319,7 +319,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           _selectedStudioName = merged.studio!.name;
         }
       });
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -341,7 +341,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           SnackBar(content: Text(context.l10n.scenes_phash_started)),
         );
       }
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -395,7 +395,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           );
         }
       }
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(

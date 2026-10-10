@@ -42,7 +42,9 @@ class DesktopFullscreen {
     } catch (error, stackTrace) {
       try {
         await _restoreMaximizedWindow();
-      } catch (_) {}
+      } on Object {
+        // Restoration must not mask the original transition failure.
+      }
       Error.throwWithStackTrace(error, stackTrace);
     }
   }
@@ -104,7 +106,9 @@ class DesktopFullscreen {
     while (_activeTransition != null) {
       try {
         await _activeTransition;
-      } catch (_) {}
+      } on Object {
+        // A failed transition must not block the next attempt.
+      }
     }
 
     final current = operation();

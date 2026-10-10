@@ -167,7 +167,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                         mode: LaunchMode.externalApplication,
                       );
                     }
-                  } catch (_) {}
+                  } on Exception catch (_) {}
                 },
                 child: Text(context.l10n.common_download),
               ),
@@ -178,7 +178,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url, mode: LaunchMode.externalApplication);
                   }
-                } catch (_) {}
+                } on Exception catch (_) {}
                 if (context.mounted) {
                   ref.read(startupUpdateCheckProvider.notifier).markChecked();
                   Navigator.pop(context);

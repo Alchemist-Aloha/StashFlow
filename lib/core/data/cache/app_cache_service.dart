@@ -42,7 +42,7 @@ class AppCacheService {
     final dirs = <Directory>{await _temporaryDirectoryProvider()};
     try {
       dirs.add(await _applicationCacheDirectoryProvider());
-    } catch (_) {
+    } on Exception catch (_) {
       // Some platforms may not expose an application cache directory.
     }
     return dirs.toList();
@@ -125,7 +125,7 @@ class AppCacheService {
           bytes += await entity.length();
         }
       }
-    } catch (_) {}
+    } on FileSystemException catch (_) {}
 
     debugPrint(
       'AppCacheService: Database cache size: $bytes bytes in ${hiveDir.path}',
@@ -173,7 +173,8 @@ class AppCacheService {
         'deleted=${_formatBytes(beforeBytes - afterBytes)} '
         'manualErrors=${manualErrors.length}',
       );
-    } catch (e) {
+    } on Object catch (e) {
+      // Cache libraries can report non-Exception cleanup failures.
       debugPrint('AppCacheService: Error clearing image cache: $e');
       errors.add(e);
     }
@@ -230,7 +231,7 @@ class AppCacheService {
       try {
         await hiveDir.delete(recursive: true);
         debugPrint('AppCacheService: stash_graphql_cache deleted');
-      } catch (e) {
+      } on FileSystemException catch (e) {
         debugPrint('AppCacheService: Error deleting stash_graphql_cache: $e');
         errors.add(e);
       }
@@ -255,7 +256,7 @@ class AppCacheService {
         await oldHiveDir.delete(recursive: true);
         debugPrint('AppCacheService: legacy stash_hive deleted');
       }
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('AppCacheService: Error cleaning legacy hive files: $e');
       errors.add(e);
     }
@@ -378,7 +379,7 @@ int _calculateCacheSizeSync(List<String> dirPaths, {Set<String>? extensions}) {
         if (!_matchesExtension(entity.path, extensions)) continue;
         size += entity.lengthSync();
       }
-    } catch (_) {
+    } on FileSystemException catch (_) {
       // Best-effort cache accounting: continue with remaining directories.
     }
   }
@@ -394,7 +395,7 @@ List<Object> _clearDirectoriesSync(List<String> dirPaths) {
       for (final entity in dir.listSync(followLinks: false)) {
         entity.deleteSync(recursive: true);
       }
-    } catch (e) {
+    } on FileSystemException catch (e) {
       errors.add(e);
     }
   }
@@ -415,7 +416,7 @@ List<Object> _deleteFilesSync(
           entity.deleteSync();
         }
       }
-    } catch (e) {
+    } on FileSystemException catch (e) {
       errors.add(e);
     }
   }
@@ -447,7 +448,7 @@ _CacheLimitEnforcementResult _enforceCacheLimitSync(
         ));
         totalBytes += length;
       }
-    } catch (_) {
+    } on FileSystemException catch (_) {
       // Best-effort trimming: continue with remaining directories.
       scanErrors++;
     }
@@ -475,7 +476,7 @@ _CacheLimitEnforcementResult _enforceCacheLimitSync(
       File(file.path).deleteSync();
       deletedBytes += file.size;
       deletedFiles++;
-    } catch (_) {
+    } on FileSystemException catch (_) {
       // Ignore individual deletion failures and continue.
       deleteErrors++;
     }

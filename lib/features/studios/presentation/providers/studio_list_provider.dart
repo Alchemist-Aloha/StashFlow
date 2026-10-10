@@ -68,7 +68,8 @@ class StudioFilterState extends _$StudioFilterState {
         return domain.StudioFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } catch (_) {
+      } on Object catch (_) {
+        // Malformed stored data can also fail with a cast error.
         return domain.StudioFilter.empty();
       }
     }

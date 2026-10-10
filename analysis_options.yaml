@@ -20,7 +20,7 @@ analyzer:
     
 linter:
   rules:
-    avoid_print: false
+    avoid_print: true
     prefer_single_quotes: true
     always_declare_return_types: true
     avoid_empty_else: true
@@ -38,3 +38,6 @@ linter:
     discarded_futures: true
     avoid_dynamic_calls: true
     avoid_catching_errors: true
+    avoid_void_async: true
+    exhaustive_cases: true
+    avoid_catches_without_on_clauses: true

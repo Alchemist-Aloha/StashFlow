@@ -67,7 +67,8 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(widget.saveSuccessMessage)));
-    } catch (error) {
+    } on Object catch (error) {
+      // This operation also reports invalid results through StateError.
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -125,7 +126,8 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(context.l10n.preset_deleted)));
-    } catch (error) {
+    } on Object catch (error) {
+      // This operation also reports invalid results through StateError.
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

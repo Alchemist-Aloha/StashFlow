@@ -100,7 +100,7 @@ class _GlobalFullscreenOverlayState
     _orientationSync = _orientationSync.then((_) async {
       try {
         await _syncFullscreenOrientation();
-      } catch (error, stackTrace) {
+      } on Exception catch (error, stackTrace) {
         AppLogStore.instance.add(
           'GlobalFullscreenOverlay: error syncing fullscreen orientation: '
           '$error\n$stackTrace',
@@ -262,7 +262,8 @@ class _GlobalFullscreenOverlayState
           });
         }
       }
-    } catch (e) {
+    } on Object catch (e) {
+      // Animation and playback failures must not escape this UI boundary.
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: error entering fullscreen: $e',
         source: 'GlobalFullscreenOverlay',
@@ -288,7 +289,8 @@ class _GlobalFullscreenOverlayState
         _pipOnlyPresentation = false;
       });
       ref.read(playerStateProvider.notifier).markFullscreenExited();
-    } catch (error, stackTrace) {
+    } on Object catch (error, stackTrace) {
+      // Animation cancellation must leave fullscreen retryable.
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: error exiting fullscreen: '
         '$error\n$stackTrace',
@@ -358,7 +360,8 @@ class _GlobalFullscreenOverlayState
           !controller.player.state.playing) {
         await controller.player.play();
       }
-    } catch (error, stackTrace) {
+    } on Object catch (error, stackTrace) {
+      // Player StateError must not roll back an already completed exit.
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: error resuming playback after fullscreen '
         'exit: $error\n$stackTrace',

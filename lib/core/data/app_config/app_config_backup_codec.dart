@@ -116,7 +116,8 @@ final class AppConfigBackupCodec {
       rethrow;
     } on FormatException {
       throw const AppConfigFormatException(AppConfigFormatError.invalidJson);
-    } catch (_) {
+    } on Object catch (_) {
+      // Malformed stored data can also fail with a cast error.
       throw const AppConfigFormatException(AppConfigFormatError.invalidData);
     }
   }
@@ -237,7 +238,8 @@ final class AppConfigBackupCodec {
     }
     try {
       return value.cast<String, dynamic>();
-    } catch (_) {
+    } on Object catch (_) {
+      // Malformed stored data can also fail with a cast error.
       throw const AppConfigFormatException(AppConfigFormatError.invalidData);
     }
   }

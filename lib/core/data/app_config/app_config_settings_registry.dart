@@ -283,7 +283,7 @@ final class AppConfigSettingsRegistry {
         try {
           final decoded = jsonDecode(value as String);
           return expectList ? decoded is List : decoded is Map;
-        } catch (_) {
+        } on FormatException catch (_) {
           return false;
         }
       });

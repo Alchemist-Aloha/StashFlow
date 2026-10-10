@@ -783,9 +783,12 @@ Changes should select focused coverage from these areas:
 
 `analysis_options.yaml` extends Flutter lints with strict typing, explicit future
 handling (`unawaited_futures` and `discarded_futures`), `avoid_dynamic_calls`, and
-`avoid_catching_errors`. Await work whose completion matters; use `unawaited()`
-only for intentional background work, preserving its error handling. Access JSON
-through typed maps/lists rather than dynamic member calls.
+`avoid_catching_errors`, `avoid_print`, `avoid_void_async`, `exhaustive_cases`, and
+`avoid_catches_without_on_clauses`. Await work whose completion matters; use
+`unawaited()` only for intentional background work, preserving its error handling.
+Prefer typed exception catches. Intentional recovery boundaries that must also
+handle cast, storage, or native-plugin errors use documented `on Object` catches.
+Access JSON through typed maps/lists rather than dynamic member calls.
 
 For documentation-only edits, run structural/link checks and `git diff --check`.
 For code changes, run the narrowest relevant tests first, then broaden according

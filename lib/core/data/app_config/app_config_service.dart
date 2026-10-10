@@ -102,14 +102,16 @@ final class AppConfigService {
       await _setOptionalString(_activeProfileKey, backup.activeServerProfileId);
       await _clearSecrets(profileIds);
       await _writeCredentials(backup.credentials);
-    } catch (_) {
+    } on Object catch (_) {
+      // Storage failures include StateError; rollback must still run.
       var rolledBack = true;
       try {
         await _settingsRegistry.replace(preferences, oldSettings);
         await _setOptionalString(_profilesKey, oldProfilesJson);
         await _setOptionalString(_activeProfileKey, oldActiveId);
         await _restoreSecrets(oldSecrets);
-      } catch (_) {
+      } on Object catch (_) {
+        // Storage failures include StateError; rollback must still run.
         rolledBack = false;
       }
       throw AppConfigReplaceException(rolledBack: rolledBack);
@@ -136,7 +138,8 @@ final class AppConfigService {
             );
           })
           .toList(growable: false);
-    } catch (_) {
+    } on Object catch (_) {
+      // Malformed profiles can also fail with a cast error.
       throw const AppConfigFormatException(AppConfigFormatError.invalidData);
     }
   }

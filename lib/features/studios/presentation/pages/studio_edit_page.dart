@@ -133,7 +133,7 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
         if (merged.url != null) _urlController.text = merged.url!;
         if (merged.image != null) _scrapedImage = merged.image;
       });
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -167,7 +167,7 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
         ref.invalidate(studioDetailsProvider(widget.studio.id));
         Navigator.of(context).pop(true);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(

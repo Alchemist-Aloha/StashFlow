@@ -99,7 +99,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               defaultTargetPlatform == TargetPlatform.macOS)) {
         await DesktopFullscreen.instance.enter();
       }
-    } catch (_) {}
+    } on Exception catch (_) {}
   }
 
   void _exitFullScreen() {
@@ -109,7 +109,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   Future<void> _performExitFullScreen() async {
     try {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    } catch (error, stackTrace) {
+    } on Exception catch (error, stackTrace) {
       AppLogStore.instance.add(
         'ImageFullscreenPage: error restoring system UI: '
         '$error\n$stackTrace',
@@ -123,7 +123,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
             defaultTargetPlatform == TargetPlatform.macOS)) {
       try {
         await DesktopFullscreen.instance.exit();
-      } catch (error, stackTrace) {
+      } on Exception catch (error, stackTrace) {
         AppLogStore.instance.add(
           'ImageFullscreenPage: error exiting fullscreen: '
           '$error\n$stackTrace',
@@ -404,7 +404,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           SnackBar(content: Text(context.l10n.gallery_error(message))),
         );
       }
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Save error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -558,7 +558,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
             .read(galleryRepositoryProvider)
             .getGalleryById(galleryId, refresh: true);
         rating = gallery.rating100 ?? 0;
-      } catch (_) {
+      } on Exception catch (_) {
         rating = 0;
       }
     }
@@ -604,7 +604,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                               .read(galleryRepositoryProvider)
                               .getGalleryById(galleryId, refresh: true);
                           nextRating = gallery.rating100 ?? 0;
-                        } catch (_) {
+                        } on Exception catch (_) {
                           nextRating = 0;
                         }
                       }
@@ -686,7 +686,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           ),
         ),
       );
-    } catch (e) {
+    } on Exception catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

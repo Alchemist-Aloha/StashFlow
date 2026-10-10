@@ -139,7 +139,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
         _scenes = scenePage.scenes;
         _totalSceneCount = scenePage.totalCount;
       });
-    } catch (error) {
+    } on Exception catch (error) {
       if (!mounted) return;
       setState(() {
         _loadError = error.toString();
@@ -226,7 +226,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           _selectedMatchIndexes[scene.id] = 0;
           _scrapedCount += 1;
         });
-      } catch (error) {
+      } on Exception catch (error) {
         if (!mounted) return;
         setState(() {
           _results[scene.id] = _TaggerResult.error(error.toString());
@@ -283,7 +283,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 _selectedMatchIndexes[scene.id] = 0;
               }
             });
-          } catch (error) {
+          } on Exception {
             if (!mounted) return;
             setState(() {
               _scrapedCount += 1;
@@ -293,7 +293,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
 
         page += 1;
       }
-    } catch (error) {
+    } on Exception catch (error) {
       if (!mounted) return;
       setState(() {
         _loadError = error.toString();
@@ -362,7 +362,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.saved_item(scene.title))),
       );
-    } catch (error) {
+    } on Exception catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.failed_to_save(error.toString()))),
@@ -1634,7 +1634,8 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
         Media(effectiveStreamUrl, httpHeaders: effectiveHeaders),
         play: true,
       );
-    } catch (error) {
+    } on Object catch (error) {
+      // Playback recovery must also handle non-Exception plugin failures.
       _error = error.toString();
     } finally {
       if (mounted) {

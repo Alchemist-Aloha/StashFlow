@@ -115,7 +115,7 @@ class AuthService {
     final logoutUri = _resolveEndpoint(graphqlEndpoint, 'logout');
     try {
       await _dio.getUri<dynamic>(logoutUri);
-    } catch (_) {
+    } on DioException catch (_) {
       // Best effort endpoint call; always clear local cookie state.
     }
 

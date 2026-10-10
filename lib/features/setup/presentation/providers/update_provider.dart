@@ -100,7 +100,8 @@ class AppUpdate extends _$AppUpdate {
           }
         }
       }
-    } catch (e) {
+    } on Object {
+      // Malformed release metadata can also fail with a cast error.
       return null;
     }
     return null;
@@ -121,7 +122,7 @@ class AppUpdate extends _$AppUpdate {
       if (assets is! List) return null;
 
       return resolveAndroidApkUrlForAbi(assets, primaryAbi);
-    } catch (_) {}
+    } on Exception catch (_) {}
 
     return null;
   }

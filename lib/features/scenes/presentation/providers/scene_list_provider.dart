@@ -85,7 +85,8 @@ class SceneFilterState extends _$SceneFilterState {
         return SceneFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } catch (_) {
+      } on Object catch (_) {
+        // Malformed stored data can also fail with a cast error.
         return SceneFilter.empty();
       }
     }
@@ -304,7 +305,7 @@ class SceneList extends _$SceneList {
             .read(playbackQueueProvider.notifier)
             .updateSequence(nextScenes, queueId: PlaybackQueueIds.main);
       }
-    } catch (e) {
+    } on Exception {
       // In a real app, you might want to show a snackbar for error during pagination
     } finally {
       if (generation == _requestGeneration) _isLoadingMore = false;

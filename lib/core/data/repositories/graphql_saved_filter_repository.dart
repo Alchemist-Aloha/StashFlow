@@ -81,7 +81,8 @@ class GraphQLSavedFilterRepository {
     for (final raw in filters.whereType<Map<String, dynamic>>()) {
       try {
         decoded.add(fromRaw(raw));
-      } catch (error, stackTrace) {
+      } on Object catch (error, stackTrace) {
+        // Malformed stored data can also fail with a cast error.
         developer.log(
           'Skipping invalid saved filter ${raw['id'] ?? '<unknown>'}',
           name: 'GraphQLSavedFilterRepository',

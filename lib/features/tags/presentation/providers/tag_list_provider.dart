@@ -72,7 +72,8 @@ class TagListFilterNotifier extends Notifier<TagFilter> {
     if (raw != null && raw.isNotEmpty) {
       try {
         return TagFilter.fromJson(jsonDecode(raw) as Map<String, dynamic>);
-      } catch (_) {
+      } on Object catch (_) {
+        // Malformed stored data can also fail with a cast error.
         // Fall through to the legacy favorites-only preference.
       }
     }

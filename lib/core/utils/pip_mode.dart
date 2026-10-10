@@ -93,7 +93,7 @@ class PipMode {
         final entered = await enter(aspectRatio);
         if (entered) isInPipMode.value = true;
         return entered;
-      } catch (_) {
+      } on Exception catch (_) {
         return false;
       }
     }
@@ -112,7 +112,7 @@ class PipMode {
       // Publish success now so orientation stays suppressed between the two.
       if (entered) isInPipMode.value = true;
       return entered;
-    } catch (_) {
+    } on Exception catch (_) {
       return false;
     }
   }
@@ -133,7 +133,7 @@ class PipMode {
             args,
           ) ??
           false;
-    } catch (_) {
+    } on Exception catch (_) {
       return false;
     }
   }
@@ -157,7 +157,7 @@ class PipMode {
       final exited = await exit();
       if (exited) isInPipMode.value = false;
       return exited;
-    } catch (_) {
+    } on Exception catch (_) {
       return false;
     }
   }

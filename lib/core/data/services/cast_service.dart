@@ -422,7 +422,8 @@ class AppCastService extends Notifier<CastState> {
       logCastProcess(
         'CastService: polled DLNA renderer device=${session.device.name} position=$position state=$transportState',
       );
-    } catch (e) {
+    } on Object catch (e) {
+      // Playback recovery must also handle non-Exception plugin failures.
       logCastProcess(
         'CastService: DLNA renderer poll failed device=${session.device.name}: $e',
       );
@@ -478,7 +479,8 @@ class AppCastService extends Notifier<CastState> {
       );
       try {
         await session.disconnect();
-      } catch (e) {
+      } on Object catch (e) {
+        // Playback recovery must also handle non-Exception plugin failures.
         logCastProcess(
           'CastService: error disconnecting previous media device=${session.device.name}: $e',
         );
@@ -531,7 +533,8 @@ class AppCastService extends Notifier<CastState> {
       );
       try {
         await session.disconnect();
-      } catch (e) {
+      } on Object catch (e) {
+        // Playback recovery must also handle non-Exception plugin failures.
         logCastProcess(
           'CastService: error disconnecting session device=${session.device.name}: $e',
         );
@@ -632,7 +635,8 @@ class AppCastService extends Notifier<CastState> {
     _holdPositionFloor(position);
     try {
       await session.loadMedia(_mediaAt(media, position));
-    } catch (e) {
+    } on Object catch (e) {
+      // Playback recovery must also handle non-Exception plugin failures.
       logCastProcess(
         'CastService: re-point failed device=${session.device.name}: $e',
       );

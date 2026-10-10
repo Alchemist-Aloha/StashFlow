@@ -18,7 +18,9 @@ Future<void> enterWebFullScreen() async {
   if (element != null) {
     try {
       element.requestFullscreen();
-    } catch (_) {}
+    } on Object catch (_) {
+      // JavaScript can throw values that are not Dart exceptions.
+    }
   }
 }
 
@@ -26,6 +28,8 @@ Future<void> exitWebFullScreen() async {
   if (_document.fullscreenElement != null) {
     try {
       _document.exitFullscreen();
-    } catch (_) {}
+    } on Object catch (_) {
+      // JavaScript can throw values that are not Dart exceptions.
+    }
   }
 }

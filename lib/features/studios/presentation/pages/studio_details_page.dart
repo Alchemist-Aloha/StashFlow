@@ -69,7 +69,8 @@ class StudioDetailsPage extends ConsumerWidget {
       if (!context.mounted) return;
       ref.invalidate(studioDetailsProvider(studio.id));
       ref.invalidate(studioListProvider);
-    } catch (error) {
+    } on Object catch (error) {
+      // This operation also reports invalid results through StateError.
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -200,7 +201,8 @@ class StudioDetailsPage extends ConsumerWidget {
                                     studioDetailsProvider(studio.id),
                                   );
                                   ref.invalidate(studioListProvider);
-                                } catch (e) {
+                                } on Object catch (e) {
+                                  // This operation also reports invalid results through StateError.
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(

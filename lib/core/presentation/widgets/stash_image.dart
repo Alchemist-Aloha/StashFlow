@@ -100,7 +100,7 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
       if (cacheManager != null) {
         await cacheManager.removeFile(imageUrl);
       }
-    } catch (_) {}
+    } on Exception catch (_) {}
 
     // Small delay to avoid tight retry loops and allow cache manager state to settle.
     await Future<void>.delayed(const Duration(milliseconds: 150));
@@ -307,7 +307,7 @@ class StashImage extends ConsumerWidget {
       }
 
       await precacheImage(provider, context);
-    } catch (_) {
+    } on Exception catch (_) {
       // A visible image load can retry through the normal widget path.
     } finally {
       if (acquiredSlot) _releasePrefetchSlot();

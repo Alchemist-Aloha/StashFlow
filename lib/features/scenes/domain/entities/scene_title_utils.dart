@@ -54,7 +54,8 @@ String? getFilestem(String? rawPath) {
 String _safeDecodeComponent(String value) {
   try {
     return Uri.decodeComponent(value);
-  } catch (_) {
+  } on Object catch (_) {
+    // Malformed URI escapes can also throw ArgumentError.
     return value;
   }
 }
