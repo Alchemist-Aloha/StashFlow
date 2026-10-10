@@ -49,6 +49,10 @@ class MockPlayerState extends PlayerState {
     state = state.copyWith(activeScene: scene, isPlaying: true);
   }
 
+  void setVideoSize(int width, int height) {
+    state = state.copyWith(videoWidth: width, videoHeight: height);
+  }
+
   @override
   void requestEnterFullscreen() {
     fullscreenEntryRequests++;
@@ -171,6 +175,13 @@ void main() {
     expect(find.byKey(const Key('inline_video_back_button')), findsOneWidget);
     final sceneImage = tester.widget<StashImage>(find.byType(StashImage));
     expect(sceneImage.imageUrl, testScene.paths.screenshot);
+    expect(sceneImage.fit, BoxFit.contain);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is ColoredBox && widget.color == Colors.black,
+      ),
+      findsOneWidget,
+    );
     expect(
       find.byWidgetPredicate(
         (widget) =>
@@ -187,6 +198,81 @@ void main() {
       findsOneWidget,
     );
   });
+
+  for (final active in [false, true]) {
+    for (final (width, height, expectedRatio) in [
+      (2560, 1080, 16 / 9),
+      (1920, 1080, 16 / 9),
+      (1440, 1080, 4 / 3),
+      (1080, 1920, 9 / 16),
+    ]) {
+      testWidgets(
+        'inline ratio caps at 16:9 ($width x $height, active=$active)',
+        (tester) async {
+          final scene = testScene.copyWith(
+            files: [
+              SceneFile(
+                format: null,
+                width: width,
+                height: height,
+                videoCodec: null,
+                audioCodec: null,
+                bitRate: null,
+                duration: null,
+                frameRate: null,
+              ),
+            ],
+          );
+          MockPlayerState.initialActiveScene = active ? scene : null;
+          await tester.pumpWidget(
+            ProviderScope(
+              overrides: [
+                sharedPreferencesProvider.overrideWithValue(prefs),
+                playerStateProvider.overrideWith(MockPlayerState.new),
+                streamResolverProvider.overrideWithValue(
+                  mockNullStreamResolver,
+                ),
+                streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
+                mediaHeadersProvider.overrideWithValue(const {}),
+              ],
+              child: MaterialApp(
+                theme: AppTheme.darkTheme,
+                home: Scaffold(
+                  body: SingleChildScrollView(
+                    child: SceneVideoPlayer(scene: scene),
+                  ),
+                ),
+              ),
+            ),
+          );
+          await tester.pump();
+
+          final ratioFinder = find.descendant(
+            of: find.byType(SceneVideoPlayer),
+            matching: find.byType(AspectRatio),
+          );
+          expect(
+            tester.widget<AspectRatio>(ratioFinder).aspectRatio,
+            expectedRatio,
+          );
+          final size = tester.getSize(ratioFinder);
+          expect(size.height, closeTo(size.width / expectedRatio, 0.001));
+
+          final container = ProviderScope.containerOf(
+            tester.element(find.byType(SceneVideoPlayer)),
+          );
+          (container.read(playerStateProvider.notifier) as MockPlayerState)
+              .setVideoSize(width, height);
+          await tester.pump();
+          expect(
+            tester.widget<AspectRatio>(ratioFinder).aspectRatio,
+            expectedRatio,
+          );
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
 
   testWidgets(
     'inactive inline back button uses the active control position and pops',

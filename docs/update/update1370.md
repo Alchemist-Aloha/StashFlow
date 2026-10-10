@@ -1,5 +1,9 @@
 # StashFlow v1.37.0
 
+## 🎨 Appearance
+
+- Custom theme colors now have a full-spectrum picker with hue, saturation, and brightness sliders, a color preview, and hexadecimal input. Apply saves the color; Cancel leaves the current theme unchanged.
+
 ## 📱 Android Picture-in-Picture
 
 - PiP now follows the video's display proportions, including rotated videos and aspect-ratio changes when auto-play-next starts another scene. The existing PiP window updates without closing and reopening.
@@ -11,6 +15,7 @@
 - PiP follows the current video's display proportions as playback starts or switches scenes, retaining the last known ratio while the next video's dimensions load.
 - Improved aspect-ratio resizing for floating PiP windows on Wayland, including Hyprland. Scene changes preserve the window's height where possible, and manual resizing keeps the video ratio locked.
 - Removed extra Linux window decoration margins around PiP and updated compatibility with the desktop window plugin.
+- Updated desktop startup handling to support floating PiP windows.
 
 ## 📋 Browsing and Navigation
 
@@ -20,6 +25,20 @@
 - In the feed, tap a scene title to hide playback overlays; tap the video once to bring them back without changing playback. The choice stays in effect until changed.
 - Navigation customization now has dedicated drag handles with larger touch targets and translated tab names. Custom tab order and visibility persist across restarts, settings keep at least one tab visible, and compact navigation remains usable with one tab enabled.
 
-## 🔧 Maintenance
+## 🔎 Filters and Details
 
+- Filter panels now use consistent full-width controls and spacing for narrow layouts and larger text.
+- Selected entity filters display names instead of only IDs, with an ID fallback when a name is unavailable.
+- Scene and image details now show readable file sizes. Text in scene, image, and gallery metadata panels can be selected and copied.
+
+## 🎬 Playback
+
+- Inline players are now no wider than 16:9. Wider videos and scene screenshots fit the player width without cropping, with black bars above and below; portrait and fullscreen sizing are unchanged.
+- Player controls now stay visible for two seconds by default; existing custom auto-hide settings are preserved.
+- Stream preloading stops stalled requests and limits downloads when servers ignore byte-range requests.
+
+## 🛠️ Diagnostics and Compatibility
+
+- Debug logs now capture previously silent failures, including background cache cleanup. New error entries record failure types and stack traces without copying potentially sensitive error messages.
+- Improved Linux build compatibility with Clang 23.
 - Updated image caching, routing, platform integration, and UI dependencies.

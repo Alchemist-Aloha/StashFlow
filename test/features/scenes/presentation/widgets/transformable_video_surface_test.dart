@@ -84,6 +84,42 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  testWidgets('wide video fits inline width with vertical letterboxing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: 400,
+              height: 225,
+              child: TransformableVideoSurface(
+                controller: ManualMockVideoController(),
+                aspectRatio: 2560 / 1080,
+                fontSize: 16,
+                bottomRatio: 0.1,
+                constraints: const BoxConstraints.tightFor(
+                  width: 400,
+                  height: 225,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final player = tester.getRect(find.byType(TransformableVideoSurface));
+    final video = tester.getRect(find.byType(Video));
+    expect(video.width, player.width);
+    expect(video.height, closeTo(400 * 1080 / 2560, 0.001));
+    expect(video.center, player.center);
+    expect(video.top, greaterThan(player.top));
+    expect(video.bottom, lessThan(player.bottom));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'TransformableVideoSurface applies transformation on scale gesture',
     (tester) async {
