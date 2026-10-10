@@ -788,6 +788,12 @@ handling (`unawaited_futures` and `discarded_futures`), `avoid_dynamic_calls`, a
 `unawaited()` only for intentional background work, preserving its error handling.
 Prefer typed exception catches. Intentional recovery boundaries that must also
 handle cast, storage, or native-plugin errors use documented `on Object` catches.
+Caught failures are recorded through `AppLogStore` when debug logging is enabled,
+including recovery and cleanup paths. `addError` records the operation, exception
+type, and stack trace, not raw exception payloads that can contain credentials,
+authenticated URLs, or backup data. Cache workers forward their bounded log
+entries to the main isolate so failures appear in the in-app log viewer. Native
+Android recovery failures use the platform logger with their stack traces.
 Access JSON through typed maps/lists rather than dynamic member calls.
 
 For documentation-only edits, run structural/link checks and `git diff --check`.

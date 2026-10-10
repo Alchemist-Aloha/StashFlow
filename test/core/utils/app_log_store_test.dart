@@ -2,6 +2,57 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 
 void main() {
+  group('AppLogStore error logging', () {
+    final logger = AppLogStore.instance;
+
+    setUp(() {
+      logger
+        ..clear()
+        ..isEnabled = true;
+    });
+    tearDown(() {
+      logger
+        ..isEnabled = false
+        ..clear();
+    });
+
+    test(
+      'records operation, type, source, and original stack without secrets',
+      () {
+        final revision = logger.revision.value;
+        final error = StateError('password=super-secret-value');
+        final stack = StackTrace.fromString('original failure location');
+
+        logger.addError(
+          'Restore configuration',
+          error,
+          stack,
+          source: 'config',
+        );
+
+        final entry = logger.entries.single;
+        expect(entry.source, 'config');
+        expect(
+          entry.message,
+          contains('Restore configuration failed (StateError)'),
+        );
+        expect(entry.message, contains('original failure location'));
+        expect(entry.message, isNot(contains('super-secret-value')));
+        expect(logger.revision.value, revision + 1);
+      },
+    );
+
+    test('does not record errors when logging is disabled', () {
+      logger.isEnabled = false;
+      final revision = logger.revision.value;
+
+      logger.addError('Login', Exception('secret'), StackTrace.current);
+
+      expect(logger.entries, isEmpty);
+      expect(logger.revision.value, revision);
+    });
+  });
+
   group('AppLogEntry', () {
     test('instantiates correctly with all fields', () {
       final timestamp = DateTime(2023, 10, 27, 14, 30, 45, 123);

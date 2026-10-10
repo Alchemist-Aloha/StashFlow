@@ -448,11 +448,14 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           }
         }
       }
-    } on Object catch (e) {
-      // Playback recovery must also handle non-Exception plugin failures.
-      debugPrint(
-        'Error initializing tiktok controller for scene ${scene.id}: $e',
+    } on Object catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'initializeController',
+        e,
+        stackTrace,
+        source: 'tiktok_scenes_view',
       );
+      // Playback recovery must also handle non-Exception plugin failures.
     }
   }
 
@@ -725,8 +728,13 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
           ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh(),
         );
       }
-    } on Exception catch (e) {
-      debugPrint('TikTok failed to save scene activity: $e');
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'saveActivity',
+        e,
+        stackTrace,
+        source: 'tiktok_scenes_view',
+      );
     }
   }
 
@@ -745,8 +753,13 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
             ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh(),
           );
         }
-      } on Exception catch (e) {
-        debugPrint('Failed to increment play count: $e');
+      } on Exception catch (e, stackTrace) {
+        AppLogStore.instance.addError(
+          'startPlayCountTimer',
+          e,
+          stackTrace,
+          source: 'tiktok_scenes_view',
+        );
       }
     });
   }
@@ -769,7 +782,13 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
       if (!mounted) return;
       setState(() => _localRating = value);
       ref.invalidate(sceneListProvider);
-    } on Exception catch (error) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'updateSceneRating',
+        error,
+        stackTrace,
+        source: 'tiktok_scenes_view',
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

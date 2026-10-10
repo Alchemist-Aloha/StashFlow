@@ -4,6 +4,7 @@ import '../../domain/entities/saved_filter_config.dart';
 import '../../utils/l10n_extensions.dart';
 import '../theme/app_theme.dart';
 import 'bottom_sheet_panel_chrome.dart';
+import '../../utils/app_log_store.dart';
 
 class SavedFilterDialog<T extends SavedFilterConfig<dynamic>>
     extends StatefulWidget {
@@ -67,7 +68,13 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(widget.saveSuccessMessage)));
-    } on Object catch (error) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'save',
+        error,
+        stackTrace,
+        source: 'saved_filter_dialog',
+      );
       // This operation also reports invalid results through StateError.
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +133,13 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(context.l10n.preset_deleted)));
-    } on Object catch (error) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'promptDelete',
+        error,
+        stackTrace,
+        source: 'saved_filter_dialog',
+      );
       // This operation also reports invalid results through StateError.
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 typedef ResumePositionProvider = Duration Function();
 
@@ -73,8 +73,13 @@ class PlaybackActivityTracker {
             _refreshSceneDetails(sceneId);
           }
           _log('PlayerState play count incremented for scene=$sceneId');
-        } on Exception catch (e) {
-          debugPrint('Failed to increment play count: $e');
+        } on Exception catch (e, stackTrace) {
+          AppLogStore.instance.addError(
+            'start',
+            e,
+            stackTrace,
+            source: 'playback_activity_tracker',
+          );
         }
       });
     }
@@ -153,8 +158,13 @@ class PlaybackActivityTracker {
       if (_isMounted()) {
         _refreshSceneDetails(effectiveSceneId);
       }
-    } on Exception catch (e) {
-      debugPrint('Failed to save scene activity: $e');
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'saveActivity',
+        e,
+        stackTrace,
+        source: 'playback_activity_tracker',
+      );
     }
   }
 }

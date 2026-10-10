@@ -8,6 +8,7 @@ import '../../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../../core/data/app_config/app_config_providers.dart';
 import '../../widgets/settings_page_shell.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
+import '../../../../../core/utils/app_log_store.dart';
 
 class StorageSettingsPage extends ConsumerWidget {
   const StorageSettingsPage({super.key});
@@ -63,7 +64,13 @@ class StorageSettingsPage extends ConsumerWidget {
                                       ),
                                     ),
                                   );
-                                } on Object catch (e) {
+                                } on Object catch (e, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    e,
+                                    stackTrace,
+                                    source: 'storage_settings_page',
+                                  );
                                   // This operation also reports invalid results through StateError.
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
@@ -112,7 +119,13 @@ class StorageSettingsPage extends ConsumerWidget {
                                       ),
                                     ),
                                   );
-                                } on Object catch (e) {
+                                } on Object catch (e, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    e,
+                                    stackTrace,
+                                    source: 'storage_settings_page',
+                                  );
                                   // This operation also reports invalid results through StateError.
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
@@ -161,7 +174,13 @@ class StorageSettingsPage extends ConsumerWidget {
                                       ),
                                     ),
                                   );
-                                } on Object catch (e) {
+                                } on Object catch (e, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    e,
+                                    stackTrace,
+                                    source: 'storage_settings_page',
+                                  );
                                   // This operation also reports invalid results through StateError.
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
@@ -405,7 +424,13 @@ class _AppConfigBackupSectionState
     setState(() => _busy = true);
     try {
       await operation();
-    } on Exception catch (_) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'run',
+        error,
+        stackTrace,
+        source: 'storage_settings_page',
+      );
       if (mounted) _message(context.l10n.settings_config_invalid);
     } finally {
       if (mounted) setState(() => _busy = false);

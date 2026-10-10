@@ -99,7 +99,14 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               defaultTargetPlatform == TargetPlatform.macOS)) {
         await DesktopFullscreen.instance.enter();
       }
-    } on Exception catch (_) {}
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'enterFullScreen',
+        error,
+        stackTrace,
+        source: 'image_fullscreen_page',
+      );
+    }
   }
 
   void _exitFullScreen() {
@@ -390,7 +397,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           context,
         ).showSnackBar(SnackBar(content: Text(context.l10n.saved_to_album)));
       }
-    } on GalException catch (e) {
+    } on GalException catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'saveImageToGallery',
+        e,
+        stackTrace,
+        source: 'image_fullscreen_page',
+      );
       final message = switch (e.type) {
         GalExceptionType.accessDenied =>
           'Permission to access the gallery is denied.',
@@ -398,14 +411,20 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         GalExceptionType.notSupportedFormat => 'Unsupported file format.',
         GalExceptionType.unexpected => 'An unexpected error has occurred.',
       };
-      debugPrint('GalException final failure: ${e.type.name}');
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.gallery_error(message))),
         );
       }
-    } on Exception catch (e) {
-      debugPrint('Save error: $e');
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'saveImageToGallery',
+        e,
+        stackTrace,
+        source: 'image_fullscreen_page',
+      );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.failed_to_save(e.toString()))),
@@ -558,7 +577,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
             .read(galleryRepositoryProvider)
             .getGalleryById(galleryId, refresh: true);
         rating = gallery.rating100 ?? 0;
-      } on Exception catch (_) {
+      } on Exception catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'showRatingDialog',
+          error,
+          stackTrace,
+          source: 'image_fullscreen_page',
+        );
         rating = 0;
       }
     }
@@ -604,7 +629,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                               .read(galleryRepositoryProvider)
                               .getGalleryById(galleryId, refresh: true);
                           nextRating = gallery.rating100 ?? 0;
-                        } on Exception catch (_) {
+                        } on Exception catch (error, stackTrace) {
+                          AppLogStore.instance.addError(
+                            'showRatingDialog',
+                            error,
+                            stackTrace,
+                            source: 'image_fullscreen_page',
+                          );
                           nextRating = 0;
                         }
                       }
@@ -686,7 +717,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           ),
         ),
       );
-    } on Exception catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'showRatingDialog',
+        e,
+        stackTrace,
+        source: 'image_fullscreen_page',
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

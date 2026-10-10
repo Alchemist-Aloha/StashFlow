@@ -9,6 +9,7 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'performer_list_provider.g.dart';
 
@@ -73,7 +74,13 @@ class PerformerFilterState extends _$PerformerFilterState {
         return domain.PerformerFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } on Object catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'build',
+          error,
+          stackTrace,
+          source: 'performer_list_provider',
+        );
         // Malformed stored data can also fail with a cast error.
         return domain.PerformerFilter.empty();
       }
@@ -197,7 +204,13 @@ class PerformerList extends _$PerformerList {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextPerformers]);
       }
-    } on Exception {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'fetchNextPage',
+        error,
+        stackTrace,
+        source: 'performer_list_provider',
+      );
       // In a real app, you might want to show a snackbar for error during pagination
     } finally {
       if (generation == _requestGeneration) _isLoadingMore = false;

@@ -18,6 +18,7 @@ import '../../domain/entities/scene.dart';
 import '../../data/repositories/preview_availability_service.dart';
 import '../providers/player_settings.dart';
 import 'scene_cover_fullscreen_viewer.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 typedef SceneInfoMediaBuilder =
     Widget Function(BuildContext context, Scene scene);
@@ -140,7 +141,13 @@ class _SceneInfoMediaSectionState extends ConsumerState<SceneInfoMediaSection> {
               if (!available) _fallBackFromUnavailablePreview();
             });
           })
-          .catchError((Object _) {
+          .catchError((Object error, StackTrace stackTrace) {
+            AppLogStore.instance.addError(
+              'Verify preview availability',
+              error,
+              stackTrace,
+              source: 'scene_info_media_section',
+            );
             if (!mounted || generation != _availabilityGeneration) return;
             setState(
               () => _previewAvailability = _PreviewAvailability.available,
@@ -424,7 +431,13 @@ class _SceneInfoPreviewPlayerState
         Media(effectiveUrl, httpHeaders: effectiveHeaders),
         play: widget.autoplay,
       );
-    } on Object catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'initialize',
+        error,
+        stackTrace,
+        source: 'scene_info_media_section',
+      );
       // Playback recovery must also handle non-Exception plugin failures.
       _reportUnavailable();
     } finally {

@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+import 'app_log_store.dart';
 
 @JS('document')
 external _Document get _document;
@@ -18,7 +19,13 @@ Future<void> enterWebFullScreen() async {
   if (element != null) {
     try {
       element.requestFullscreen();
-    } on Object catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'enterWebFullScreen',
+        error,
+        stackTrace,
+        source: 'web_helper_web',
+      );
       // JavaScript can throw values that are not Dart exceptions.
     }
   }
@@ -28,7 +35,13 @@ Future<void> exitWebFullScreen() async {
   if (_document.fullscreenElement != null) {
     try {
       _document.exitFullscreen();
-    } on Object catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'exitWebFullScreen',
+        error,
+        stackTrace,
+        source: 'web_helper_web',
+      );
       // JavaScript can throw values that are not Dart exceptions.
     }
   }

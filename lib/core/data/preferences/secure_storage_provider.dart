@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../utils/app_log_store.dart';
 
 abstract interface class AppSecureStorageStore {
   Future<String?> read({required String key});
@@ -28,7 +29,13 @@ class AppSecureStorage implements AppSecureStorageStore {
   Future<String?> read({required String key}) async {
     try {
       return await _secureStorage.read(key: key);
-    } on PlatformException catch (e) {
+    } on PlatformException catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'read',
+        e,
+        stackTrace,
+        source: 'secure_storage_provider',
+      );
       if (!_shouldFallback(e)) rethrow;
       final prefs = await _resolvePrefs();
       return prefs?.getString('$_fallbackPrefix$key');
@@ -43,7 +50,13 @@ class AppSecureStorage implements AppSecureStorageStore {
     try {
       await _secureStorage.write(key: key, value: value);
       return;
-    } on PlatformException catch (e) {
+    } on PlatformException catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'write',
+        e,
+        stackTrace,
+        source: 'secure_storage_provider',
+      );
       if (!_shouldFallback(e)) rethrow;
       final prefs = await _resolvePrefs();
       await prefs?.setString('$_fallbackPrefix$key', value);
@@ -54,7 +67,13 @@ class AppSecureStorage implements AppSecureStorageStore {
   Future<void> delete({required String key}) async {
     try {
       await _secureStorage.delete(key: key);
-    } on PlatformException catch (e) {
+    } on PlatformException catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'delete',
+        e,
+        stackTrace,
+        source: 'secure_storage_provider',
+      );
       if (!_shouldFallback(e)) rethrow;
     }
     final prefs = await _resolvePrefs();

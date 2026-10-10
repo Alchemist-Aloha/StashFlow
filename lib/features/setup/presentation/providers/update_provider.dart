@@ -10,6 +10,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../domain/entities/update_info.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'update_provider.g.dart';
 
@@ -86,7 +87,13 @@ class AppUpdate extends _$AppUpdate {
             releaseNotes: data['body'] as String?,
             androidApkUrl: androidApkUrl,
           );
-        } on FormatException {
+        } on FormatException catch (error, stackTrace) {
+          AppLogStore.instance.addError(
+            'build',
+            error,
+            stackTrace,
+            source: 'update_provider',
+          );
           if (cleanLatestTag != currentVersionStr) {
             final androidApkUrl = await _resolveAndroidApkUrl(data);
             return UpdateInfo(
@@ -100,7 +107,13 @@ class AppUpdate extends _$AppUpdate {
           }
         }
       }
-    } on Object {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'build',
+        error,
+        stackTrace,
+        source: 'update_provider',
+      );
       // Malformed release metadata can also fail with a cast error.
       return null;
     }
@@ -122,7 +135,14 @@ class AppUpdate extends _$AppUpdate {
       if (assets is! List) return null;
 
       return resolveAndroidApkUrlForAbi(assets, primaryAbi);
-    } on Exception catch (_) {}
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'resolveAndroidApkUrl',
+        error,
+        stackTrace,
+        source: 'update_provider',
+      );
+    }
 
     return null;
   }

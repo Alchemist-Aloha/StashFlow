@@ -6,6 +6,7 @@ import 'package:dio/io.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../features/setup/domain/models/server_profile.dart';
+import '../../utils/app_log_store.dart';
 
 bool acceptsServerCertificate(ServerProfile? profile, String host, int port) {
   if (profile?.allowSelfSignedCertificates != true) return false;
@@ -52,7 +53,13 @@ class _ServerCertificateOverrides extends HttpOverrides {
         if (profile.id == activeId) return profile;
       }
       return profiles.first;
-    } on Object catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'activeProfile',
+        error,
+        stackTrace,
+        source: 'server_certificate_policy_io',
+      );
       // Malformed stored data can also fail with a cast error.
       return null;
     }

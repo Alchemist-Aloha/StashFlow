@@ -8,6 +8,7 @@ import '../../../../core/domain/entities/filter_options.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import 'scene_list_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'entity_media_filter_scope.g.dart';
 
@@ -91,7 +92,13 @@ class EntityMediaFilterState extends _$EntityMediaFilterState {
         return SceneFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } on Object catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'build',
+          error,
+          stackTrace,
+          source: 'entity_media_filter_scope',
+        );
         // Malformed stored data can also fail with a cast error.
         return SceneFilter.empty();
       }

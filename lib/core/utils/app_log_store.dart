@@ -73,6 +73,23 @@ class AppLogStore {
     revision.value++;
   }
 
+  /// Records a failed operation without exposing exception payloads.
+  ///
+  /// Raw exception text may contain credentials, authenticated URLs, or backup
+  /// data. Record the operation, error type, and stack instead.
+  void addError(
+    String operation,
+    Object error,
+    StackTrace stackTrace, {
+    String source = 'app',
+  }) {
+    if (!isEnabled) return;
+    add(
+      '$operation failed (${error.runtimeType})\n$stackTrace',
+      source: source,
+    );
+  }
+
   /// Clears all logs from the store.
   void clear() {
     _entries.clear();

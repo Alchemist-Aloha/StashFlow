@@ -10,6 +10,7 @@ import '../preferences/secure_storage_provider.dart';
 import '../preferences/shared_preferences_provider.dart';
 import 'auth_mode.dart';
 import 'auth_service.dart';
+import '../../utils/app_log_store.dart';
 
 enum AuthLoginStatus { loggedOut, loggingIn, loggedIn, error }
 
@@ -267,7 +268,13 @@ class AuthProvider extends Notifier<AuthState> {
       );
 
       return cookieHeader.isNotEmpty;
-    } on Object catch (error) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'login',
+        error,
+        stackTrace,
+        source: 'auth_provider',
+      );
       // Auth recovery must also handle storage and provider failures.
       state = state.copyWith(
         loginStatus: AuthLoginStatus.error,
@@ -288,7 +295,13 @@ class AuthProvider extends Notifier<AuthState> {
       try {
         final service = await ref.read(authServiceProvider.future);
         await service.logout(graphqlEndpoint: Uri.parse(endpoint));
-      } on Object catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'logout',
+          error,
+          stackTrace,
+          source: 'auth_provider',
+        );
         // Auth recovery must also handle storage and provider failures.
         // Always clear local auth state even if endpoint call fails.
       }
@@ -339,7 +352,13 @@ class AuthProvider extends Notifier<AuthState> {
     try {
       final service = await ref.read(authServiceProvider.future);
       return await service.cookieHeaderFor(requestUri: Uri.parse(endpoint));
-    } on Object catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'refreshCookieHeaderForProfile',
+        error,
+        stackTrace,
+        source: 'auth_provider',
+      );
       // Auth recovery must also handle storage and provider failures.
       return '';
     }

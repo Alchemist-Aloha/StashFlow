@@ -25,6 +25,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_str
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
 import '../../domain/entities/studio.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class StudioDetailsPage extends ConsumerWidget {
   final String studioId;
@@ -69,7 +70,13 @@ class StudioDetailsPage extends ConsumerWidget {
       if (!context.mounted) return;
       ref.invalidate(studioDetailsProvider(studio.id));
       ref.invalidate(studioListProvider);
-    } on Object catch (error) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'updateRating',
+        error,
+        stackTrace,
+        source: 'studio_details_page',
+      );
       // This operation also reports invalid results through StateError.
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -201,7 +208,13 @@ class StudioDetailsPage extends ConsumerWidget {
                                     studioDetailsProvider(studio.id),
                                   );
                                   ref.invalidate(studioListProvider);
-                                } on Object catch (e) {
+                                } on Object catch (e, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    e,
+                                    stackTrace,
+                                    source: 'studio_details_page',
+                                  );
                                   // This operation also reports invalid results through StateError.
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(

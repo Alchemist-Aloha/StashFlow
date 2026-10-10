@@ -24,6 +24,7 @@ import '../../setup/presentation/providers/update_provider.dart';
 import '../../setup/domain/entities/update_info.dart';
 import 'widgets/mini_player.dart';
 import '../../scenes/presentation/widgets/global_fullscreen_overlay.dart';
+import '../../../core/utils/app_log_store.dart';
 
 class ShellPage extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -167,7 +168,14 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                         mode: LaunchMode.externalApplication,
                       );
                     }
-                  } on Exception catch (_) {}
+                  } on Exception catch (error, stackTrace) {
+                    AppLogStore.instance.addError(
+                      'showUpdateDialog',
+                      error,
+                      stackTrace,
+                      source: 'shell_page',
+                    );
+                  }
                 },
                 child: Text(context.l10n.common_download),
               ),
@@ -178,7 +186,14 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url, mode: LaunchMode.externalApplication);
                   }
-                } on Exception catch (_) {}
+                } on Exception catch (error, stackTrace) {
+                  AppLogStore.instance.addError(
+                    'showUpdateDialog',
+                    error,
+                    stackTrace,
+                    source: 'shell_page',
+                  );
+                }
                 if (context.mounted) {
                   ref.read(startupUpdateCheckProvider.notifier).markChecked();
                   Navigator.pop(context);

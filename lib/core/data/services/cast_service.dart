@@ -257,7 +257,13 @@ class AppCastService extends Notifier<CastState> {
           .first
           .timeout(timeout);
       return true;
-    } on TimeoutException {
+    } on TimeoutException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'waitForPlaybackConfirmation',
+        error,
+        stackTrace,
+        source: 'cast_service',
+      );
       return _isPlaybackConfirmed(session.state);
     }
   }

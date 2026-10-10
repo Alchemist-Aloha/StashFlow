@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 import 'package:extended_image/extended_image.dart' as extended_image;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import '../../presentation/widgets/stash_image.dart';
+import '../../utils/app_log_store.dart';
 
 final appCacheServiceProvider = Provider<AppCacheService>((ref) {
   return AppCacheService();
@@ -42,7 +43,13 @@ class AppCacheService {
     final dirs = <Directory>{await _temporaryDirectoryProvider()};
     try {
       dirs.add(await _applicationCacheDirectoryProvider());
-    } on Exception catch (_) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'cacheRootDirs',
+        error,
+        stackTrace,
+        source: 'app_cache_service',
+      );
       // Some platforms may not expose an application cache directory.
     }
     return dirs.toList();
@@ -125,7 +132,14 @@ class AppCacheService {
           bytes += await entity.length();
         }
       }
-    } on FileSystemException catch (_) {}
+    } on FileSystemException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'getDatabaseCacheSizeMb',
+        error,
+        stackTrace,
+        source: 'app_cache_service',
+      );
+    }
 
     debugPrint(
       'AppCacheService: Database cache size: $bytes bytes in ${hiveDir.path}',
@@ -173,9 +187,15 @@ class AppCacheService {
         'deleted=${_formatBytes(beforeBytes - afterBytes)} '
         'manualErrors=${manualErrors.length}',
       );
-    } on Object catch (e) {
+    } on Object catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'clearImageCache',
+        e,
+        stackTrace,
+        source: 'app_cache_service',
+      );
       // Cache libraries can report non-Exception cleanup failures.
-      debugPrint('AppCacheService: Error clearing image cache: $e');
+
       errors.add(e);
     }
     if (errors.isNotEmpty) {
@@ -231,8 +251,14 @@ class AppCacheService {
       try {
         await hiveDir.delete(recursive: true);
         debugPrint('AppCacheService: stash_graphql_cache deleted');
-      } on FileSystemException catch (e) {
-        debugPrint('AppCacheService: Error deleting stash_graphql_cache: $e');
+      } on FileSystemException catch (e, stackTrace) {
+        AppLogStore.instance.addError(
+          'clearDatabaseCache',
+          e,
+          stackTrace,
+          source: 'app_cache_service',
+        );
+
         errors.add(e);
       }
     }
@@ -256,8 +282,14 @@ class AppCacheService {
         await oldHiveDir.delete(recursive: true);
         debugPrint('AppCacheService: legacy stash_hive deleted');
       }
-    } on Exception catch (e) {
-      debugPrint('AppCacheService: Error cleaning legacy hive files: $e');
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'clearDatabaseCache',
+        e,
+        stackTrace,
+        source: 'app_cache_service',
+      );
+
       errors.add(e);
     }
     if (errors.isNotEmpty) {
@@ -334,24 +366,40 @@ String _formatBytes(int bytes) {
   return '${clamped}B/${mb.toStringAsFixed(2)}MB';
 }
 
+// Worker isolates have separate log stores; forward their bounded entries back.
+Future<T> _runCacheTask<T>(T Function() task) async {
+  final loggingEnabled = AppLogStore.instance.isEnabled;
+  final (result, entries) = await Isolate.run(() {
+    final logger = AppLogStore.instance..isEnabled = loggingEnabled;
+    final result = task();
+    return (result, logger.entries.toList());
+  });
+  for (final entry in entries) {
+    AppLogStore.instance.add(entry.message, source: entry.source);
+  }
+  return result;
+}
+
 Future<int> _calculateCacheSizeInBackground(
   List<String> dirPaths, {
   Set<String>? extensions,
 }) {
-  return Isolate.run(
+  return _runCacheTask(
     () => _calculateCacheSizeSync(dirPaths, extensions: extensions),
   );
 }
 
 Future<List<Object>> _clearDirectoriesInBackground(List<String> dirPaths) {
-  return Isolate.run(() => _clearDirectoriesSync(dirPaths));
+  return _runCacheTask(() => _clearDirectoriesSync(dirPaths));
 }
 
 Future<List<Object>> _deleteFilesInBackground(
   List<String> dirPaths, {
   required Set<String> extensions,
 }) {
-  return Isolate.run(() => _deleteFilesSync(dirPaths, extensions: extensions));
+  return _runCacheTask(
+    () => _deleteFilesSync(dirPaths, extensions: extensions),
+  );
 }
 
 Future<_CacheLimitEnforcementResult> _enforceCacheLimitInBackground(
@@ -359,7 +407,7 @@ Future<_CacheLimitEnforcementResult> _enforceCacheLimitInBackground(
   required int maxBytes,
   required Set<String>? extensions,
 }) {
-  return Isolate.run(
+  return _runCacheTask(
     () => _enforceCacheLimitSync(
       dirPaths,
       maxBytes: maxBytes,
@@ -379,7 +427,13 @@ int _calculateCacheSizeSync(List<String> dirPaths, {Set<String>? extensions}) {
         if (!_matchesExtension(entity.path, extensions)) continue;
         size += entity.lengthSync();
       }
-    } on FileSystemException catch (_) {
+    } on FileSystemException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'calculateCacheSizeSync',
+        error,
+        stackTrace,
+        source: 'app_cache_service',
+      );
       // Best-effort cache accounting: continue with remaining directories.
     }
   }
@@ -395,7 +449,13 @@ List<Object> _clearDirectoriesSync(List<String> dirPaths) {
       for (final entity in dir.listSync(followLinks: false)) {
         entity.deleteSync(recursive: true);
       }
-    } on FileSystemException catch (e) {
+    } on FileSystemException catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'clearDirectoriesSync',
+        e,
+        stackTrace,
+        source: 'app_cache_service',
+      );
       errors.add(e);
     }
   }
@@ -416,7 +476,13 @@ List<Object> _deleteFilesSync(
           entity.deleteSync();
         }
       }
-    } on FileSystemException catch (e) {
+    } on FileSystemException catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'deleteFilesSync',
+        e,
+        stackTrace,
+        source: 'app_cache_service',
+      );
       errors.add(e);
     }
   }
@@ -448,7 +514,13 @@ _CacheLimitEnforcementResult _enforceCacheLimitSync(
         ));
         totalBytes += length;
       }
-    } on FileSystemException catch (_) {
+    } on FileSystemException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'enforceCacheLimitSync',
+        error,
+        stackTrace,
+        source: 'app_cache_service',
+      );
       // Best-effort trimming: continue with remaining directories.
       scanErrors++;
     }
@@ -476,7 +548,13 @@ _CacheLimitEnforcementResult _enforceCacheLimitSync(
       File(file.path).deleteSync();
       deletedBytes += file.size;
       deletedFiles++;
-    } on FileSystemException catch (_) {
+    } on FileSystemException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'enforceCacheLimitSync',
+        error,
+        stackTrace,
+        source: 'app_cache_service',
+      );
       // Ignore individual deletion failures and continue.
       deleteErrors++;
     }

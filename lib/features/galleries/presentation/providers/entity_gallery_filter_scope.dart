@@ -9,6 +9,7 @@ import '../../../images/domain/entities/image_filter.dart';
 import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
 import 'gallery_list_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'entity_gallery_filter_scope.g.dart';
 
@@ -145,7 +146,13 @@ class EntityGalleryFilterState extends _$EntityGalleryFilterState {
         return GalleryFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } on Object catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'build',
+          error,
+          stackTrace,
+          source: 'entity_gallery_filter_scope',
+        );
         // Malformed stored data can also fail with a cast error.
         return GalleryFilter.empty();
       }

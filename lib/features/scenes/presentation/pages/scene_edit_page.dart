@@ -16,6 +16,7 @@ import '../widgets/enhanced_scrape_dialog.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_tag.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 /// A page for editing scene metadata.
 class SceneEditPage extends ConsumerStatefulWidget {
@@ -319,7 +320,13 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           _selectedStudioName = merged.studio!.name;
         }
       });
-    } on Exception catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'scrape',
+        e,
+        stackTrace,
+        source: 'scene_edit_page',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -341,7 +348,13 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           SnackBar(content: Text(context.l10n.scenes_phash_started)),
         );
       }
-    } on Exception catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'generatePhash',
+        e,
+        stackTrace,
+        source: 'scene_edit_page',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -395,7 +408,13 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           );
         }
       }
-    } on Exception catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'save',
+        e,
+        stackTrace,
+        source: 'scene_edit_page',
+      );
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(

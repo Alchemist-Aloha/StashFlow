@@ -611,7 +611,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     for (final path in _notificationArtTempPaths) {
       try {
         File(path).deleteSync();
-      } on FileSystemException catch (_) {
+      } on FileSystemException catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'cleanupNotificationArt',
+          error,
+          stackTrace,
+          source: 'video_player_provider',
+        );
         // Best-effort cleanup; ignore failures.
       }
     }
@@ -684,7 +690,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (!_isCurrentNotificationRequest(scene, generation)) {
         try {
           await downloadedFile.delete();
-        } on FileSystemException catch (_) {
+        } on FileSystemException catch (error, stackTrace) {
+          AppLogStore.instance.addError(
+            'fetchAndUpdateArt',
+            error,
+            stackTrace,
+            source: 'video_player_provider',
+          );
           // Best-effort cleanup for stale downloads.
         }
         return;
@@ -703,7 +715,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       if (tempFile != null) {
         try {
           await tempFile.delete();
-        } on FileSystemException catch (_) {
+        } on FileSystemException catch (error, stackTrace) {
+          AppLogStore.instance.addError(
+            'fetchAndUpdateArt',
+            error,
+            stackTrace,
+            source: 'video_player_provider',
+          );
           // Best-effort cleanup; ignore failures.
         }
       }

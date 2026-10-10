@@ -1,4 +1,5 @@
 import 'scene.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 const Set<String> kGenericSceneFallbackNames = {
   'stream',
@@ -54,7 +55,13 @@ String? getFilestem(String? rawPath) {
 String _safeDecodeComponent(String value) {
   try {
     return Uri.decodeComponent(value);
-  } on Object catch (_) {
+  } on Object catch (error, stackTrace) {
+    AppLogStore.instance.addError(
+      'safeDecodeComponent',
+      error,
+      stackTrace,
+      source: 'scene_title_utils',
+    );
     // Malformed URI escapes can also throw ArgumentError.
     return value;
   }

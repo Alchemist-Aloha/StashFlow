@@ -10,6 +10,7 @@ import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'gallery_list_provider.g.dart';
 
@@ -69,7 +70,13 @@ class GalleryFilterState extends _$GalleryFilterState {
         return GalleryFilter.fromJson(
           jsonDecode(jsonStr) as Map<String, dynamic>,
         );
-      } on Object catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'build',
+          error,
+          stackTrace,
+          source: 'gallery_list_provider',
+        );
         // Malformed stored data can also fail with a cast error.
         return GalleryFilter.empty();
       }

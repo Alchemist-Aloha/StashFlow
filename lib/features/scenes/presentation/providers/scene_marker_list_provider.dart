@@ -8,6 +8,7 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../data/repositories/graphql_scene_marker_repository.dart';
 import '../../domain/entities/scene_marker.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'scene_marker_list_provider.g.dart';
 
@@ -64,7 +65,13 @@ class SceneMarkerFilterState extends _$SceneMarkerFilterState {
         return SceneMarkerFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } on Object catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'build',
+          error,
+          stackTrace,
+          source: 'scene_marker_list_provider',
+        );
         // Malformed stored data can also fail with a cast error.
         return const SceneMarkerFilter();
       }
@@ -147,6 +154,12 @@ class SceneMarkerList extends _$SceneMarkerList {
       }
       state = AsyncData([...currentMarkers, ...nextMarkers]);
     } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'fetchNextPage',
+        error,
+        stackTrace,
+        source: 'scene_marker_list_provider',
+      );
       if (generation != _requestGeneration) return;
       _currentPage--;
       state = AsyncError(error, stackTrace);

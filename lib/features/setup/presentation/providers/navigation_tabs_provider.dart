@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 /// Represents a main navigation tab in the application.
 enum NavigationTabType {
@@ -107,7 +108,13 @@ class NavigationTabsNotifier extends Notifier<List<NavigationTab>> {
             .map((j) => NavigationTab.fromJson(j as Map<String, dynamic>))
             .toList(),
       );
-    } on Object catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'build',
+        error,
+        stackTrace,
+        source: 'navigation_tabs_provider',
+      );
       // Malformed stored data can also fail with a cast error.
       return _defaultTabs();
     }

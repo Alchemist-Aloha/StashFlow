@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'app_log_store.dart';
 
 /// Controls Android's system media volume.
 class SystemMediaVolume {
@@ -19,7 +20,13 @@ class SystemMediaVolume {
         'adjustMediaVolume',
         <String, double>{'delta': delta},
       );
-    } on Exception catch (_) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'adjustMediaVolume',
+        error,
+        stackTrace,
+        source: 'system_media_volume',
+      );
       return null;
     }
   }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/data/cache/app_cache_service.dart';
+import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 
 void main() {
   group('AppCacheService cache limit enforcement', () {
@@ -35,6 +36,44 @@ void main() {
         await docsRoot.delete(recursive: true);
       }
     });
+
+    test(
+      'forwards filesystem failures from cache workers to the app logger',
+      () async {
+        final logger = AppLogStore.instance
+          ..clear()
+          ..isEnabled = true;
+        final blocked = Directory('${tempRoot.path}/video')..createSync();
+        try {
+          expect(
+            (await Process.run('chmod', ['000', blocked.path])).exitCode,
+            0,
+          );
+
+          expect(blocked.listSync, throwsA(isA<FileSystemException>()));
+          expect(await service.getVideoCacheSizeMb(), 0);
+
+          expect(
+            logger.entries.any(
+              (entry) =>
+                  entry.source == 'app_cache_service' &&
+                  entry.message.contains('calculateCacheSizeSync failed') &&
+                  entry.message.contains('_calculateCacheSizeSync'),
+            ),
+            isTrue,
+            reason: logger.entries.map((entry) => entry.message).join('\n'),
+          );
+        } finally {
+          await Process.run('chmod', ['700', blocked.path]);
+          logger
+            ..isEnabled = false
+            ..clear();
+        }
+      },
+      skip:
+          !Platform.isLinux ||
+          Process.runSync('id', ['-u']).stdout.toString().trim() == '0',
+    );
 
     test('enforceImageCacheLimit trims oldest files when over max', () async {
       final cacheDir = Directory('${tempRoot.path}/cache')

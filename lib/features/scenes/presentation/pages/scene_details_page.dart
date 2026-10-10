@@ -418,7 +418,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             if (dialogContext.mounted) {
                               Navigator.of(dialogContext).pop(true);
                             }
-                          } on Exception catch (e) {
+                          } on Exception catch (e, stackTrace) {
+                            AppLogStore.instance.addError(
+                              'showDeleteSceneDialog',
+                              e,
+                              stackTrace,
+                              source: 'scene_details_page',
+                            );
                             setDialogState(() => isDeleting = false);
                             if (dialogContext.mounted) {
                               ScaffoldMessenger.of(dialogContext).showSnackBar(
@@ -499,7 +505,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           SnackBar(content: Text(context.l10n.scene_details_marker_created)),
         );
       }
-    } on Object catch (e) {
+    } on Object catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'showAddMarkerDialog',
+        e,
+        stackTrace,
+        source: 'scene_details_page',
+      );
       // This operation also reports invalid results through StateError.
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -556,7 +568,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           SnackBar(content: Text(context.l10n.scene_details_marker_deleted)),
         );
       }
-    } on Object catch (e) {
+    } on Object catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'showDeleteMarkerDialog',
+        e,
+        stackTrace,
+        source: 'scene_details_page',
+      );
       // This operation also reports invalid results through StateError.
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -677,7 +695,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           context,
         ).showSnackBar(SnackBar(content: Text(context.l10n.saved_to_album)));
       }
-    } on GalException catch (e) {
+    } on GalException catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'saveVideoToGallery',
+        e,
+        stackTrace,
+        source: 'scene_details_page',
+      );
       final message = switch (e.type) {
         GalExceptionType.accessDenied =>
           'Permission to access the gallery is denied.',
@@ -690,7 +714,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           SnackBar(content: Text(context.l10n.gallery_error(message))),
         );
       }
-    } on Exception catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'saveVideoToGallery',
+        e,
+        stackTrace,
+        source: 'scene_details_page',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.failed_to_save(e.toString()))),
@@ -1106,7 +1136,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       if (!mounted) return;
       ref.invalidate(sceneDetailsProvider(scene.id));
       _invalidateSceneListUnlessRandom();
-    } on Exception catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'updateRating',
+        e,
+        stackTrace,
+        source: 'scene_details_page',
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1227,7 +1263,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           ),
                         );
                       }
-                    } on Exception catch (e) {
+                    } on Exception catch (e, stackTrace) {
+                      AppLogStore.instance.addError(
+                        'buildActions',
+                        e,
+                        stackTrace,
+                        source: 'scene_details_page',
+                      );
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

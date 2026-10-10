@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../utils/app_log_store.dart';
 
 enum KeybindContext { global, video, image }
 
@@ -227,7 +228,13 @@ class Keybinds {
             Map<String, dynamic>.from(saved),
           );
           continue;
-        } on FormatException {
+        } on FormatException catch (error, stackTrace) {
+          AppLogStore.instance.addError(
+            'callback',
+            error,
+            stackTrace,
+            source: 'keybinds_provider',
+          );
           // Fall through to this action's default without losing other binds.
         }
       }
@@ -272,7 +279,13 @@ class KeybindsNotifier extends Notifier<Keybinds> {
     if (jsonStr != null && revision == _revision) {
       try {
         state = Keybinds.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
-      } on Object catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'load',
+          error,
+          stackTrace,
+          source: 'keybinds_provider',
+        );
         // Malformed stored data can also fail with a cast error.
       }
     }

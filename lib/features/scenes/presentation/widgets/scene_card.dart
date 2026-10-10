@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/app_log_store.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -182,7 +183,13 @@ class _SceneCardState extends ConsumerState<SceneCard> {
               }
             });
           })
-          .catchError((Object _) {
+          .catchError((Object error, StackTrace stackTrace) {
+            AppLogStore.instance.addError(
+              'Verify VTT availability',
+              error,
+              stackTrace,
+              source: 'scene_card',
+            );
             if (!mounted || widget.scene.paths.vtt?.trim() != vttUrl) return;
             _markVttUnavailable();
           }),

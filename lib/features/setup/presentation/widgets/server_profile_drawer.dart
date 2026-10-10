@@ -11,6 +11,7 @@ import '../../domain/models/server_profile.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/connection_provider.dart';
 import '../providers/server_profiles_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class ServerProfileDrawer extends ConsumerStatefulWidget {
   final ServerProfile? profile;
@@ -158,7 +159,13 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       setState(() {
         _testResult = result;
       });
-    } on Exception catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'testConnection',
+        e,
+        stackTrace,
+        source: 'server_profile_drawer',
+      );
       if (!mounted) return;
       setState(() {
         _testResult = 'Error: $e';

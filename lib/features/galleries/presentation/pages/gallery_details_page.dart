@@ -14,6 +14,7 @@ import '../../domain/entities/gallery.dart';
 import '../providers/gallery_details_provider.dart';
 import '../providers/gallery_list_provider.dart';
 import '../widgets/gallery_details_bottom_sheet.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 /// Browses a gallery's images with compact, scroll-collapsing gallery details.
 class GalleryDetailsPage extends ConsumerStatefulWidget {
@@ -101,7 +102,13 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
           .read(galleryListProvider.notifier)
           .updateGalleryInList(updatedGallery);
       ref.invalidate(galleryDetailsProvider(gallery.id));
-    } on Exception catch (error) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'updateRating',
+        error,
+        stackTrace,
+        source: 'gallery_details_page',
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
