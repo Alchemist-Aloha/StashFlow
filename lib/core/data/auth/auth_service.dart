@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../../../features/setup/domain/models/server_profile.dart';
 import 'server_certificate_policy.dart';
+import '../../utils/app_log_store.dart';
 
 class AuthService {
   AuthService({required Dio dio, required this.cookieJar}) : _dio = dio;
@@ -88,11 +89,13 @@ class AuthService {
         ),
       );
       debugPrint('AuthService: Login response status: ${response.statusCode}');
-    } on DioException catch (e) {
-      debugPrint('AuthService: Login failed with DioException: ${e.message}');
-      if (e.response != null) {
-        debugPrint('AuthService: Error response body: ${e.response?.data}');
-      }
+    } on DioException catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'login',
+        e,
+        stackTrace,
+        source: 'auth_service',
+      );
       return false;
     }
 
@@ -115,7 +118,13 @@ class AuthService {
     final logoutUri = _resolveEndpoint(graphqlEndpoint, 'logout');
     try {
       await _dio.getUri<dynamic>(logoutUri);
-    } catch (_) {
+    } on DioException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'logout',
+        error,
+        stackTrace,
+        source: 'auth_service',
+      );
       // Best effort endpoint call; always clear local cookie state.
     }
 

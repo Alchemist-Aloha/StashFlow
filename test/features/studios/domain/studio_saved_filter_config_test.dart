@@ -46,9 +46,9 @@ void main() {
       const IntCriterion(value: 2, modifier: CriterionModifier.greaterThan),
     );
 
-    final saved = config.toSaveInput()['object_filter'];
-    expect(saved['organized']['value'], 'true');
-    expect(saved['parents']['value'], [
+    final saved = config.toSaveInput()['object_filter'] as Map<String, dynamic>;
+    expect((saved['organized'] as Map<String, dynamic>)['value'], 'true');
+    expect((saved['parents'] as Map<String, dynamic>)['value'], [
       {'id': 'studio-1', 'label': 'studio-1'},
     ]);
   });

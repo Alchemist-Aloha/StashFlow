@@ -9,6 +9,7 @@ import '../../domain/entities/studio.dart';
 import '../providers/studio_details_provider.dart';
 import '../providers/studio_list_provider.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class StudioEditPage extends ConsumerStatefulWidget {
   final Studio studio;
@@ -133,7 +134,13 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
         if (merged.url != null) _urlController.text = merged.url!;
         if (merged.image != null) _scrapedImage = merged.image;
       });
-    } catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'scrape',
+        e,
+        stackTrace,
+        source: 'studio_edit_page',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -167,7 +174,13 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
         ref.invalidate(studioDetailsProvider(widget.studio.id));
         Navigator.of(context).pop(true);
       }
-    } catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'save',
+        e,
+        stackTrace,
+        source: 'studio_edit_page',
+      );
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(

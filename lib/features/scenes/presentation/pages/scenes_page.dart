@@ -403,35 +403,39 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   /// Displays the sort selection bottom sheet.
   void _showSortPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => ListSortBottomSheet<_SceneSortField>(
-        title: context.l10n.sort_scenes,
-        options: _SceneSortField.values,
-        initialOption: _sortField,
-        initialDescending: _sortDescending,
-        resetOption: _SceneSortField.date,
-        resetDescending: true,
-        optionLabel: _sortFieldLabel,
-        onApply: (field, descending) {
-          setState(() {
-            _sortField = field;
-            _sortDescending = descending;
-          });
-          _applyServerSort();
-        },
-        onSaveDefault: () =>
-            ref.read(sceneSortProvider.notifier).saveAsDefault(),
-        saveDefaultSuccessMessage: context.l10n.scenes_sort_saved_default,
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => ListSortBottomSheet<_SceneSortField>(
+          title: context.l10n.sort_scenes,
+          options: _SceneSortField.values,
+          initialOption: _sortField,
+          initialDescending: _sortDescending,
+          resetOption: _SceneSortField.date,
+          resetDescending: true,
+          optionLabel: _sortFieldLabel,
+          onApply: (field, descending) {
+            setState(() {
+              _sortField = field;
+              _sortDescending = descending;
+            });
+            _applyServerSort();
+          },
+          onSaveDefault: () =>
+              ref.read(sceneSortProvider.notifier).saveAsDefault(),
+          saveDefaultSuccessMessage: context.l10n.scenes_sort_saved_default,
+        ),
       ),
     );
   }
 
   /// Displays the filter configuration bottom sheet.
   void _showFilterPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => const SceneFilterPanel(),
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => const SceneFilterPanel(),
+      ),
     );
   }
 
@@ -443,14 +447,16 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       organized: organizedFilter.toBool() ?? filter.organized,
     );
 
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => SceneSavedFilterDialog(
-        searchQuery: ref.read(sceneSearchQueryProvider),
-        sort: sortConfig.sort,
-        descending: sortConfig.descending,
-        filter: effectiveFilter,
-        onLoad: _applySavedFilterConfig,
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => SceneSavedFilterDialog(
+          searchQuery: ref.read(sceneSearchQueryProvider),
+          sort: sortConfig.sort,
+          descending: sortConfig.descending,
+          filter: effectiveFilter,
+          onLoad: _applySavedFilterConfig,
+        ),
       ),
     );
   }

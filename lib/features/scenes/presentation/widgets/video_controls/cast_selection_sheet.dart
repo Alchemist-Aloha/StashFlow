@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../providers/video_player_provider.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:dart_cast/dart_cast.dart' as dc;
@@ -43,16 +45,18 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         'CastSelectionSheet: connecting to $deviceName',
         source: 'cast_selection_sheet',
       );
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => AlertDialog(
-          content: Row(
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(width: 24),
-              Expanded(child: Text(message)),
-            ],
+      unawaited(
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => AlertDialog(
+            content: Row(
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(width: 24),
+                Expanded(child: Text(message)),
+              ],
+            ),
           ),
         ),
       );
@@ -274,7 +278,8 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
           messenger.showSnackBar(
             SnackBar(content: Text(l10n.cast_casting_to(device.name))),
           );
-        } catch (e) {
+        } on Object catch (e) {
+          // This operation also reports invalid results through StateError.
           logCastProcess(
             'CastSelectionSheet: pairing failed: $e',
             source: 'cast_selection_sheet',
@@ -292,7 +297,8 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       } else if (localWasPlaying) {
         playerStateNotifier.play();
       }
-    } catch (e) {
+    } on Object catch (e) {
+      // This operation also reports invalid results through StateError.
       logCastProcess(
         'CastSelectionSheet: cast failed: $e',
         source: 'cast_selection_sheet',

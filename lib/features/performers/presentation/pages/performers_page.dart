@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -202,38 +204,42 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     }
 
     _lastRandomPerformerId = random.id;
-    context.push('/performers/performer/${random.id}');
+    unawaited(context.push('/performers/performer/${random.id}'));
   }
 
   void _showSortPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => ListSortBottomSheet<_PerformerSortOption>(
-        title: context.l10n.performers_sort_title,
-        options: _PerformerSortOption.values,
-        initialOption: _sortOption,
-        initialDescending: _sortDescending,
-        resetOption: _PerformerSortOption.name,
-        resetDescending: false,
-        optionLabel: _sortLabel,
-        onApply: (option, descending) {
-          setState(() {
-            _sortOption = option;
-            _sortDescending = descending;
-          });
-          _applyServerSort(option);
-        },
-        onSaveDefault: () =>
-            ref.read(performerSortProvider.notifier).saveAsDefault(),
-        saveDefaultSuccessMessage: context.l10n.tags_sort_saved,
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => ListSortBottomSheet<_PerformerSortOption>(
+          title: context.l10n.performers_sort_title,
+          options: _PerformerSortOption.values,
+          initialOption: _sortOption,
+          initialDescending: _sortDescending,
+          resetOption: _PerformerSortOption.name,
+          resetDescending: false,
+          optionLabel: _sortLabel,
+          onApply: (option, descending) {
+            setState(() {
+              _sortOption = option;
+              _sortDescending = descending;
+            });
+            _applyServerSort(option);
+          },
+          onSaveDefault: () =>
+              ref.read(performerSortProvider.notifier).saveAsDefault(),
+          saveDefaultSuccessMessage: context.l10n.tags_sort_saved,
+        ),
       ),
     );
   }
 
   void _showFilterPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => const PerformerFilterPanel(),
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => const PerformerFilterPanel(),
+      ),
     );
   }
 
@@ -245,49 +251,52 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     final sortConfig = ref.read(performerSortProvider);
     final filter = ref.read(performerFilterStateProvider);
 
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => SavedFilterDialog<PerformerSavedFilterConfig>(
-        searchQuery: ref.read(performerSearchQueryProvider),
-        sort: sortConfig.sort,
-        descending: sortConfig.descending,
-        activeFilterCount: _activeFilterCount(filter),
-        defaultSortLabel: 'name',
-        saveSuccessMessage: context.l10n.saved_item('Performer filter'),
-        loadPresets: () => ref
-            .read(savedFilterRepositoryProvider)
-            .findAll(
-              mode: 'PERFORMERS',
-              fromRaw: (raw) => PerformerSavedFilterConfig.fromServerPayload(
-                id: raw['id'] as String,
-                name: raw['name'] as String,
-                findFilter: raw['find_filter'],
-                objectFilter: raw['object_filter'],
-              ),
-            ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => SavedFilterDialog<PerformerSavedFilterConfig>(
+          searchQuery: ref.read(performerSearchQueryProvider),
+          sort: sortConfig.sort,
+          descending: sortConfig.descending,
+          activeFilterCount: _activeFilterCount(filter),
+          defaultSortLabel: 'name',
+          saveSuccessMessage: context.l10n.saved_item('Performer filter'),
+          loadPresets: () => ref
               .read(savedFilterRepositoryProvider)
-              .save(
-                input: PerformerSavedFilterConfig(
-                  id: existingId,
-                  name: name,
-                  searchQuery: ref.read(performerSearchQueryProvider),
-                  sort: sortConfig.sort,
-                  descending: sortConfig.descending,
-                  filter: ref.read(performerFilterStateProvider),
-                ).toSaveInput(),
+              .findAll(
+                mode: 'PERFORMERS',
                 fromRaw: (raw) => PerformerSavedFilterConfig.fromServerPayload(
                   id: raw['id'] as String,
                   name: raw['name'] as String,
                   findFilter: raw['find_filter'],
                   objectFilter: raw['object_filter'],
                 ),
-              );
-        },
-        deletePreset: (id) =>
-            ref.read(savedFilterRepositoryProvider).delete(id: id),
-        onLoad: _applySavedFilterConfig,
+              ),
+          savePreset: ({required String name, String? existingId}) {
+            return ref
+                .read(savedFilterRepositoryProvider)
+                .save(
+                  input: PerformerSavedFilterConfig(
+                    id: existingId,
+                    name: name,
+                    searchQuery: ref.read(performerSearchQueryProvider),
+                    sort: sortConfig.sort,
+                    descending: sortConfig.descending,
+                    filter: ref.read(performerFilterStateProvider),
+                  ).toSaveInput(),
+                  fromRaw: (raw) =>
+                      PerformerSavedFilterConfig.fromServerPayload(
+                        id: raw['id'] as String,
+                        name: raw['name'] as String,
+                        findFilter: raw['find_filter'],
+                        objectFilter: raw['object_filter'],
+                      ),
+                );
+          },
+          deletePreset: (id) =>
+              ref.read(savedFilterRepositoryProvider).delete(id: id),
+          onLoad: _applySavedFilterConfig,
+        ),
       ),
     );
   }

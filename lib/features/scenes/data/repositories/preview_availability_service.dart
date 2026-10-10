@@ -6,6 +6,7 @@ import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 /// Resolves whether a scene preview URL points at existing media.
 typedef PreviewAvailabilityCheck = Future<bool> Function(String previewUrl);
@@ -68,7 +69,13 @@ class PreviewAvailabilityService {
       // Only a definitive "gone" response hides the preview. Any other status
       // keeps it available so auth or method quirks never remove a valid entry.
       return response.statusCode != 404 && response.statusCode != 410;
-    } catch (_) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'isAvailable',
+        error,
+        stackTrace,
+        source: 'preview_availability_service',
+      );
       // A failed probe must not hide a preview that might still play.
       return true;
     } finally {

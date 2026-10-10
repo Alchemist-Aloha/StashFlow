@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/appearance_settings_page.dart';
+import 'package:stash_app_flutter/features/setup/presentation/widgets/theme_color_picker_dialog.dart';
+import 'package:stash_app_flutter/core/presentation/theme/theme_color_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 import 'package:stash_app_flutter/core/presentation/theme/font_family_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
@@ -64,6 +66,38 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(prefs.getString(appFontFamilyPreferenceKey), 'lora');
+  });
+
+  testWidgets('custom color dialog persists only on Apply', (tester) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const AppearanceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+    final custom = find.byKey(const Key('custom-theme-color'));
+    await tester.ensureVisible(custom);
+    await tester.pumpAndSettle();
+    await tester.tap(custom);
+    await tester.pumpAndSettle();
+    expect(find.byType(ThemeColorPickerDialog), findsOneWidget);
+    await tester.enterText(find.byType(TextField), '123456');
+    await tester.pump();
+    expect(prefs.getInt(appThemeSeedColorPreferenceKey), isNull);
+    await tester.tap(find.text('Apply'));
+    await tester.pumpAndSettle();
+    expect(prefs.getInt(appThemeSeedColorPreferenceKey), 0xFF123456);
+
+    await tester.tap(custom);
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'FF123456',
+    );
+    await tester.enterText(find.byType(TextField), 'FFFFFF');
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(prefs.getInt(appThemeSeedColorPreferenceKey), 0xFF123456);
   });
 
   testWidgets('AppearanceSettingsPage saves app language', (tester) async {

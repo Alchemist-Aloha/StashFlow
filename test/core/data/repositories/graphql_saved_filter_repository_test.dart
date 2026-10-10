@@ -62,6 +62,25 @@ void main() {
       expect(result, ['Good']);
     });
 
+    test('findAll skips payloads with invalid field types', () async {
+      final client = _FakeGraphQLClient(
+        queryData: {
+          'findSavedFilters': [
+            {'id': 'bad', 'name': 42},
+            {'id': 'good', 'name': 'Good'},
+          ],
+        },
+      );
+      final repository = GraphQLSavedFilterRepository(client);
+
+      final result = await repository.findAll<String>(
+        mode: 'SCENES',
+        fromRaw: (raw) => raw['name'] as String,
+      );
+
+      expect(result, ['Good']);
+    });
+
     test('save forwards the full saved filter input payload', () async {
       final client = _FakeGraphQLClient(
         mutationData: {
@@ -102,9 +121,15 @@ void main() {
       );
 
       expect(saved['id'], '6');
-      expect(client.lastMutationVariables!['input']['mode'], 'TAGS');
       expect(
-        client.lastMutationVariables!['input']['object_filter']['favorite'],
+        (client.lastMutationVariables!['input']
+            as Map<String, dynamic>)['mode'],
+        'TAGS',
+      );
+      expect(
+        ((client.lastMutationVariables!['input']
+                as Map<String, dynamic>)['object_filter']
+            as Map<String, dynamic>)['favorite'],
         true,
       );
     });

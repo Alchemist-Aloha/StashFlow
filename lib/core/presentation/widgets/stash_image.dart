@@ -13,6 +13,7 @@ import '../../data/auth/auth_provider.dart';
 import '../../data/graphql/media_headers_provider.dart';
 import '../../data/graphql/url_resolver.dart';
 import '../../data/graphql/graphql_client.dart';
+import '../../utils/app_log_store.dart';
 
 // Small stateful wrapper which retries a failed cached image load by
 // removing the local cache entry and forcing a re-download. This helps
@@ -100,7 +101,14 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
       if (cacheManager != null) {
         await cacheManager.removeFile(imageUrl);
       }
-    } catch (_) {}
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'handleError',
+        error,
+        stackTrace,
+        source: 'stash_image',
+      );
+    }
 
     // Small delay to avoid tight retry loops and allow cache manager state to settle.
     await Future<void>.delayed(const Duration(milliseconds: 150));
@@ -156,7 +164,7 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
       ),
       errorWidget: (context, url, error) {
         // Kick off async cleanup + retry; show the standard error UI immediately.
-        _handleError();
+        unawaited(_handleError());
         return _buildError(context);
       },
     );
@@ -307,7 +315,13 @@ class StashImage extends ConsumerWidget {
       }
 
       await precacheImage(provider, context);
-    } catch (_) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'prefetch',
+        error,
+        stackTrace,
+        source: 'stash_image',
+      );
       // A visible image load can retry through the normal widget path.
     } finally {
       if (acquiredSlot) _releasePrefetchSlot();

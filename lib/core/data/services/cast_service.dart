@@ -150,16 +150,16 @@ class AppCastService extends Notifier<CastState> {
 
     ref.onDispose(() {
       logCastProcess('CastService: disposing');
-      _subscription?.cancel();
-      _sessionSubscription?.cancel();
-      _positionSubscription?.cancel();
-      _durationSubscription?.cancel();
-      _stateSubscription?.cancel();
+      unawaited(_subscription?.cancel());
+      unawaited(_sessionSubscription?.cancel());
+      unawaited(_positionSubscription?.cancel());
+      unawaited(_durationSubscription?.cancel());
+      unawaited(_stateSubscription?.cancel());
       _stopRemotePollWatchdog();
       _resumeVerifyTimer?.cancel();
       _positionFloorTimer?.cancel();
       _dlnaPollClient?.close();
-      _castService.dispose();
+      unawaited(_castService.dispose());
     });
 
     return CastState();
@@ -169,7 +169,7 @@ class AppCastService extends Notifier<CastState> {
 
   void startDiscovery() {
     logCastProcess('CastService: start discovery');
-    _subscription?.cancel();
+    unawaited(_subscription?.cancel());
     state = state.copyWith(discoveredDevices: []);
     _subscription = _castService
         .startDiscovery(timeout: const Duration(seconds: 15))
@@ -191,7 +191,7 @@ class AppCastService extends Notifier<CastState> {
 
   void stopDiscovery() {
     logCastProcess('CastService: stop discovery');
-    _subscription?.cancel();
+    unawaited(_subscription?.cancel());
     _castService.stopDiscovery();
     state = state.copyWith(discoveredDevices: []);
   }
@@ -257,7 +257,13 @@ class AppCastService extends Notifier<CastState> {
           .first
           .timeout(timeout);
       return true;
-    } on TimeoutException {
+    } on TimeoutException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'waitForPlaybackConfirmation',
+        error,
+        stackTrace,
+        source: 'cast_service',
+      );
       return _isPlaybackConfirmed(session.state);
     }
   }
@@ -422,7 +428,8 @@ class AppCastService extends Notifier<CastState> {
       logCastProcess(
         'CastService: polled DLNA renderer device=${session.device.name} position=$position state=$transportState',
       );
-    } catch (e) {
+    } on Object catch (e) {
+      // Playback recovery must also handle non-Exception plugin failures.
       logCastProcess(
         'CastService: DLNA renderer poll failed device=${session.device.name}: $e',
       );
@@ -478,7 +485,8 @@ class AppCastService extends Notifier<CastState> {
       );
       try {
         await session.disconnect();
-      } catch (e) {
+      } on Object catch (e) {
+        // Playback recovery must also handle non-Exception plugin failures.
         logCastProcess(
           'CastService: error disconnecting previous media device=${session.device.name}: $e',
         );
@@ -531,7 +539,8 @@ class AppCastService extends Notifier<CastState> {
       );
       try {
         await session.disconnect();
-      } catch (e) {
+      } on Object catch (e) {
+        // Playback recovery must also handle non-Exception plugin failures.
         logCastProcess(
           'CastService: error disconnecting session device=${session.device.name}: $e',
         );
@@ -632,7 +641,8 @@ class AppCastService extends Notifier<CastState> {
     _holdPositionFloor(position);
     try {
       await session.loadMedia(_mediaAt(media, position));
-    } catch (e) {
+    } on Object catch (e) {
+      // Playback recovery must also handle non-Exception plugin failures.
       logCastProcess(
         'CastService: re-point failed device=${session.device.name}: $e',
       );

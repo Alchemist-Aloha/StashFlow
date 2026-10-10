@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -129,33 +131,37 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
   }
 
   void _showSortPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => ListSortBottomSheet<_GroupSortOption>(
-        title: context.l10n.common_sort,
-        options: _GroupSortOption.values,
-        initialOption: _sortOption,
-        initialDescending: _sortDescending,
-        resetOption: _GroupSortOption.name,
-        resetDescending: false,
-        optionLabel: _sortLabel,
-        onApply: (option, descending) {
-          setState(() {
-            _sortOption = option;
-            _sortDescending = descending;
-          });
-          _applyServerSort(option);
-        },
-        onSaveDefault: () =>
-            ref.read(groupSortProvider.notifier).saveAsDefault(),
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => ListSortBottomSheet<_GroupSortOption>(
+          title: context.l10n.common_sort,
+          options: _GroupSortOption.values,
+          initialOption: _sortOption,
+          initialDescending: _sortDescending,
+          resetOption: _GroupSortOption.name,
+          resetDescending: false,
+          optionLabel: _sortLabel,
+          onApply: (option, descending) {
+            setState(() {
+              _sortOption = option;
+              _sortDescending = descending;
+            });
+            _applyServerSort(option);
+          },
+          onSaveDefault: () =>
+              ref.read(groupSortProvider.notifier).saveAsDefault(),
+        ),
       ),
     );
   }
 
   void _showFilterPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => const GroupFilterPanel(),
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => const GroupFilterPanel(),
+      ),
     );
   }
 
@@ -163,49 +169,51 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
     final sortConfig = ref.read(groupSortProvider);
     final currentFilter = ref.read(groupListFilterProvider);
 
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => SavedFilterDialog<GroupSavedFilterConfig>(
-        searchQuery: ref.read(groupSearchQueryProvider),
-        sort: sortConfig.sort,
-        descending: sortConfig.descending,
-        activeFilterCount: _activeFilterCount(),
-        defaultSortLabel: 'name',
-        saveSuccessMessage: context.l10n.saved_item('Group filter'),
-        loadPresets: () => ref
-            .read(savedFilterRepositoryProvider)
-            .findAll(
-              mode: 'GROUPS',
-              fromRaw: (raw) => GroupSavedFilterConfig.fromServerPayload(
-                id: raw['id'] as String,
-                name: raw['name'] as String,
-                findFilter: raw['find_filter'],
-                objectFilter: raw['object_filter'],
-              ),
-            ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => SavedFilterDialog<GroupSavedFilterConfig>(
+          searchQuery: ref.read(groupSearchQueryProvider),
+          sort: sortConfig.sort,
+          descending: sortConfig.descending,
+          activeFilterCount: _activeFilterCount(),
+          defaultSortLabel: 'name',
+          saveSuccessMessage: context.l10n.saved_item('Group filter'),
+          loadPresets: () => ref
               .read(savedFilterRepositoryProvider)
-              .save(
-                input: GroupSavedFilterConfig(
-                  id: existingId,
-                  name: name,
-                  searchQuery: ref.read(groupSearchQueryProvider),
-                  sort: sortConfig.sort,
-                  descending: sortConfig.descending,
-                  filter: currentFilter,
-                ).toSaveInput(),
+              .findAll(
+                mode: 'GROUPS',
                 fromRaw: (raw) => GroupSavedFilterConfig.fromServerPayload(
                   id: raw['id'] as String,
                   name: raw['name'] as String,
                   findFilter: raw['find_filter'],
                   objectFilter: raw['object_filter'],
                 ),
-              );
-        },
-        deletePreset: (id) =>
-            ref.read(savedFilterRepositoryProvider).delete(id: id),
-        onLoad: _applySavedFilterConfig,
+              ),
+          savePreset: ({required String name, String? existingId}) {
+            return ref
+                .read(savedFilterRepositoryProvider)
+                .save(
+                  input: GroupSavedFilterConfig(
+                    id: existingId,
+                    name: name,
+                    searchQuery: ref.read(groupSearchQueryProvider),
+                    sort: sortConfig.sort,
+                    descending: sortConfig.descending,
+                    filter: currentFilter,
+                  ).toSaveInput(),
+                  fromRaw: (raw) => GroupSavedFilterConfig.fromServerPayload(
+                    id: raw['id'] as String,
+                    name: raw['name'] as String,
+                    findFilter: raw['find_filter'],
+                    objectFilter: raw['object_filter'],
+                  ),
+                );
+          },
+          deletePreset: (id) =>
+              ref.read(savedFilterRepositoryProvider).delete(id: id),
+          onLoad: _applySavedFilterConfig,
+        ),
       ),
     );
   }

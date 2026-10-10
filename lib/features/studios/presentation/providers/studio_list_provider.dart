@@ -9,6 +9,7 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'studio_list_provider.g.dart';
 
@@ -68,7 +69,14 @@ class StudioFilterState extends _$StudioFilterState {
         return domain.StudioFilter.fromJson(
           jsonDecode(jsonString) as Map<String, dynamic>,
         );
-      } catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'build',
+          error,
+          stackTrace,
+          source: 'studio_list_provider',
+        );
+        // Malformed stored data can also fail with a cast error.
         return domain.StudioFilter.empty();
       }
     }

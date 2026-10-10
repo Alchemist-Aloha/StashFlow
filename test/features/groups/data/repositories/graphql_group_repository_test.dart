@@ -121,7 +121,8 @@ void main() {
       expect(filterVariables?['direction'], 'DESC');
       expect(groupFilterVariables?['is_missing'], 'director');
       expect(
-        (groupFilterVariables?['custom_fields'] as List).single['field'],
+        ((groupFilterVariables?['custom_fields'] as List).single
+            as Map<String, dynamic>)['field'],
         'source',
       );
       expect(

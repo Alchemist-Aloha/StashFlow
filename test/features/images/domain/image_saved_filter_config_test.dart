@@ -27,29 +27,60 @@ void main() {
     );
 
     final input = config.toSaveInput();
+    final objectFilter = input['object_filter'] as Map<String, dynamic>;
 
     expect(input['mode'], 'IMAGES');
-    expect(input['object_filter']['organized']['value'], 'true');
-    expect(input['object_filter']['performer_count']['value']['value'], 2);
-    expect(input['object_filter']['studios']['value']['items'], [
-      {'id': 'studio-1', 'label': 'studio-1'},
-    ]);
-    expect(input['object_filter']['galleries']['value'], [
+    expect(
+      (objectFilter['organized'] as Map<String, dynamic>)['value'],
+      'true',
+    );
+    expect(
+      ((objectFilter['performer_count'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['value'],
+      2,
+    );
+    expect(
+      ((objectFilter['studios'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['items'],
+      [
+        {'id': 'studio-1', 'label': 'studio-1'},
+      ],
+    );
+    expect((objectFilter['galleries'] as Map<String, dynamic>)['value'], [
       {'id': 'gallery-1', 'label': 'gallery-1'},
     ]);
-    expect(input['object_filter']['code']['value'], 'IMG-1');
-    expect(input['object_filter']['photographer']['value'], 'Alice');
-    expect(input['object_filter']['phash_distance']['value']['distance'], 3);
-    expect(input['object_filter']['folder']['value']['items'], [
-      {'id': 'folder-1', 'label': 'folder-1'},
-    ]);
-    expect(input['object_filter']['is_missing']['value'], 'rating');
-    expect(input['object_filter']['custom_fields'].single['field'], 'source');
+    expect((objectFilter['code'] as Map<String, dynamic>)['value'], 'IMG-1');
+    expect(
+      (objectFilter['photographer'] as Map<String, dynamic>)['value'],
+      'Alice',
+    );
+    expect(
+      ((objectFilter['phash_distance'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['distance'],
+      3,
+    );
+    expect(
+      ((objectFilter['folder'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['items'],
+      [
+        {'id': 'folder-1', 'label': 'folder-1'},
+      ],
+    );
+    expect(
+      (objectFilter['is_missing'] as Map<String, dynamic>)['value'],
+      'rating',
+    );
+    expect(
+      (objectFilter['custom_fields'] as List)
+          .cast<Map<String, dynamic>>()
+          .single['field'],
+      'source',
+    );
 
     final loaded = ImageSavedFilterConfig.fromServerPayload(
       id: '1',
       name: 'Organized images',
-      objectFilter: input['object_filter'],
+      objectFilter: objectFilter,
     );
     expect(loaded.filter.organized, isTrue);
     expect(loaded.filter.studios?.value, ['studio-1']);

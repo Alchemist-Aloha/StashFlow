@@ -72,26 +72,28 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
       title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
-        DropdownButtonFormField<String?>(
-          initialValue: _tempFilter.isMissingField,
-          decoration: InputDecoration(
-            labelText: context.l10n.auto_missing_field,
-          ),
-          items: [
-            DropdownMenuItem<String?>(
-              value: null,
-              child: Text(context.l10n.common_none),
-            ),
-            ...missingFields.map(
-              (entry) => DropdownMenuItem<String?>(
-                value: entry.$1,
-                child: Text(entry.$2),
+        FilterField(
+          label: context.l10n.auto_missing_field,
+          children: [
+            FilterDropdown<String?>(
+              value: _tempFilter.isMissingField,
+              items: [
+                DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text(context.l10n.common_none),
+                ),
+                ...missingFields.map(
+                  (entry) => DropdownMenuItem<String?>(
+                    value: entry.$1,
+                    child: Text(entry.$2),
+                  ),
+                ),
+              ],
+              onChanged: (value) => setState(
+                () => _tempFilter = _tempFilter.copyWith(isMissingField: value),
               ),
             ),
           ],
-          onChanged: (value) => setState(
-            () => _tempFilter = _tempFilter.copyWith(isMissingField: value),
-          ),
         ),
         IntCriterionInput(
           label: context.l10n.common_rating,
@@ -298,18 +300,24 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
   Widget _buildEntityFilter<T>(
     String label,
     String providerType,
-    dynamic criterion,
-    ValueChanged<dynamic> onChanged,
+    Object? criterion,
+    ValueChanged<Object?> onChanged,
     bool isHierarchical,
   ) {
-    final selectedIds =
-        (criterion?.value as List<dynamic>?)?.cast<String>() ?? <String>[];
-    final modifier =
-        criterion?.modifier as CriterionModifier? ?? CriterionModifier.includes;
+    final (selectedIds, modifier) = switch (criterion) {
+      MultiCriterion(:final value, :final modifier) => (value, modifier),
+      HierarchicalMultiCriterion(:final value, :final modifier) => (
+        value,
+        modifier,
+      ),
+      null => (<String>[], CriterionModifier.includes),
+      _ => throw ArgumentError.value(criterion, 'criterion'),
+    };
 
     return SelectionCriterionInput(
       label: label,
       selectedIds: selectedIds,
+      providerType: providerType,
       modifier: modifier,
       onModifierChanged: (next) => onChanged(
         _buildEntityCriterion(

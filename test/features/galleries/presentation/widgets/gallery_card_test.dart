@@ -99,6 +99,13 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('/gallery/path'), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.text('/gallery/path'),
+        matching: find.byType(SelectionArea),
+      ),
+      findsOneWidget,
+    );
     await tester.scrollUntilVisible(
       find.text('1920 x 1080'),
       200,

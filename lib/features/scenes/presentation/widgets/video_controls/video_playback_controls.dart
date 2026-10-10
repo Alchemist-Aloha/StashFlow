@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
@@ -453,21 +455,23 @@ class VideoPlaybackControls extends ConsumerWidget {
                         icon: Icon(Icons.cast_rounded, size: controlIconSize),
                         onPressed: () {
                           onInteract();
-                          showModalBottomSheet<void>(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            isScrollControlled: true,
-                            builder: (context) => CastSelectionSheet(
-                              videoUrl:
-                                  controller
-                                      .player
-                                      .state
-                                      .playlist
-                                      .medias
-                                      .firstOrNull
-                                      ?.uri ??
-                                  '',
-                              title: scene.displayTitle,
+                          unawaited(
+                            showModalBottomSheet<void>(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              isScrollControlled: true,
+                              builder: (context) => CastSelectionSheet(
+                                videoUrl:
+                                    controller
+                                        .player
+                                        .state
+                                        .playlist
+                                        .medias
+                                        .firstOrNull
+                                        ?.uri ??
+                                    '',
+                                title: scene.displayTitle,
+                              ),
                             ),
                           );
                         },

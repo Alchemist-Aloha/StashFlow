@@ -8,6 +8,7 @@ import '../preferences/secure_storage_provider.dart';
 import 'app_config_backup.dart';
 import 'app_config_backup_codec.dart';
 import 'app_config_settings_registry.dart';
+import '../../utils/app_log_store.dart';
 
 final class AppConfigReplaceException implements Exception {
   const AppConfigReplaceException({required this.rolledBack});
@@ -102,14 +103,28 @@ final class AppConfigService {
       await _setOptionalString(_activeProfileKey, backup.activeServerProfileId);
       await _clearSecrets(profileIds);
       await _writeCredentials(backup.credentials);
-    } catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'replace',
+        error,
+        stackTrace,
+        source: 'app_config_service',
+      );
+      // Storage failures include StateError; rollback must still run.
       var rolledBack = true;
       try {
         await _settingsRegistry.replace(preferences, oldSettings);
         await _setOptionalString(_profilesKey, oldProfilesJson);
         await _setOptionalString(_activeProfileKey, oldActiveId);
         await _restoreSecrets(oldSecrets);
-      } catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'replace',
+          error,
+          stackTrace,
+          source: 'app_config_service',
+        );
+        // Storage failures include StateError; rollback must still run.
         rolledBack = false;
       }
       throw AppConfigReplaceException(rolledBack: rolledBack);
@@ -136,7 +151,14 @@ final class AppConfigService {
             );
           })
           .toList(growable: false);
-    } catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'readProfiles',
+        error,
+        stackTrace,
+        source: 'app_config_service',
+      );
+      // Malformed profiles can also fail with a cast error.
       throw const AppConfigFormatException(AppConfigFormatError.invalidData);
     }
   }

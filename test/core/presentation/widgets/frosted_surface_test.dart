@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
@@ -39,17 +41,20 @@ void main() {
       await pumpFrosted(tester);
 
       final filter = tester.widget<BackdropFilter>(find.byType(BackdropFilter));
-      final blur = filter.filter as dynamic;
-      expect(blur.sigmaX, AppTheme.frostedBlurSigma);
-      expect(blur.sigmaY, AppTheme.frostedBlurSigma);
+      expect(
+        filter.filter,
+        ui.ImageFilter.blur(
+          sigmaX: AppTheme.frostedBlurSigma,
+          sigmaY: AppTheme.frostedBlurSigma,
+        ),
+      );
     });
 
     testWidgets('media chrome may scale the blur up', (tester) async {
       await pumpFrosted(tester, blurSigma: 12);
 
       final filter = tester.widget<BackdropFilter>(find.byType(BackdropFilter));
-      final blur = filter.filter as dynamic;
-      expect(blur.sigmaX, 12);
+      expect(filter.filter, ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12));
     });
 
     testWidgets('clips the blur to the surface bounds', (tester) async {

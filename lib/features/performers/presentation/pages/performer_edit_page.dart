@@ -9,6 +9,7 @@ import '../../domain/entities/performer.dart';
 import '../providers/performer_details_provider.dart';
 import '../providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class PerformerEditPage extends ConsumerStatefulWidget {
   final Performer performer;
@@ -305,7 +306,13 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
           _scrapedImage = merged.images.first;
         }
       });
-    } catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'scrape',
+        e,
+        stackTrace,
+        source: 'performer_edit_page',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -364,7 +371,14 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
         ref.invalidate(performerDetailsProvider(widget.performer.id));
         Navigator.of(context).pop(true);
       }
-    } catch (e) {
+    } on Object catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'save',
+        e,
+        stackTrace,
+        source: 'performer_edit_page',
+      );
+      // This operation also reports invalid results through StateError.
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(

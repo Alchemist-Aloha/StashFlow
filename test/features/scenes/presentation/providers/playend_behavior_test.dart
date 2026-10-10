@@ -85,13 +85,16 @@ void main() {
     );
   });
 
-  tearDown(() {
-    playingStream.close();
-    positionStream.close();
-    durationStream.close();
-    completedStream.close();
+  tearDown(() async {
+    final closing = [
+      playingStream.close(),
+      positionStream.close(),
+      durationStream.close(),
+      completedStream.close(),
+    ];
     container.dispose();
     app.mediaHandler = null;
+    await Future.wait(closing);
   });
 
   // Helper to create a Scene

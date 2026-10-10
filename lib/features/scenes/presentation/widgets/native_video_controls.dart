@@ -150,7 +150,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
         source: 'NativeVideoControls',
       );
       for (final sub in _subscriptions) {
-        sub.cancel();
+        unawaited(sub.cancel());
       }
       _subscriptions.clear();
       _subscriptions.add(
@@ -176,7 +176,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
     _feedbackTimer?.cancel();
     _desktopSettingsSubscription?.close();
     for (final sub in _subscriptions) {
-      sub.cancel();
+      unawaited(sub.cancel());
     }
     super.dispose();
   }
@@ -450,9 +450,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
         ? castState.remoteIsPlaying
         : widget.controller.player.state.playing;
     if (isPlaying) {
-      _pause();
+      unawaited(_pause());
     } else {
-      _play();
+      unawaited(_play());
     }
     _showControlsTemporarily();
   }
@@ -583,7 +583,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
             style: playerOverlayButtonStyle(context),
             icon: Icon(iconData),
             onPressed: () {
-              ref.read(playerStateProvider.notifier).toggleMute();
+              unawaited(ref.read(playerStateProvider.notifier).toggleMute());
               _showControlsTemporarily();
             },
           ),
@@ -611,7 +611,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                 child: Slider(
                   value: volume,
                   onChanged: (v) {
-                    ref.read(playerStateProvider.notifier).setVolume(v);
+                    unawaited(
+                      ref.read(playerStateProvider.notifier).setVolume(v),
+                    );
                     _showControlsTemporarily();
                   },
                 ),
@@ -654,7 +656,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
             style: playerOverlayButtonStyle(context),
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () {
-              widget.controller.player.setRate(1.0);
+              unawaited(widget.controller.player.setRate(1.0));
               _showControlsTemporarily();
             },
           ),
@@ -677,7 +679,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                 max: 3.0,
                 divisions: 11,
                 onChanged: (v) {
-                  widget.controller.player.setRate(v);
+                  unawaited(widget.controller.player.setRate(v));
                   _showControlsTemporarily();
                 },
               ),
@@ -782,13 +784,21 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
         case KeybindAction.volumeUp:
           callback = () {
             final currentVol = ref.read(desktopSettingsProvider).volume;
-            ref.read(playerStateProvider.notifier).setVolume(currentVol + 0.05);
+            unawaited(
+              ref
+                  .read(playerStateProvider.notifier)
+                  .setVolume(currentVol + 0.05),
+            );
           };
           break;
         case KeybindAction.volumeDown:
           callback = () {
             final currentVol = ref.read(desktopSettingsProvider).volume;
-            ref.read(playerStateProvider.notifier).setVolume(currentVol - 0.05);
+            unawaited(
+              ref
+                  .read(playerStateProvider.notifier)
+                  .setVolume(currentVol - 0.05),
+            );
           };
           break;
         case KeybindAction.toggleMute:
@@ -818,13 +828,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
         case KeybindAction.speedUp:
           callback = () {
             final currentSpeed = widget.controller.player.state.rate;
-            widget.controller.player.setRate(currentSpeed + 0.25);
+            unawaited(widget.controller.player.setRate(currentSpeed + 0.25));
           };
           break;
         case KeybindAction.speedDown:
           callback = () {
             final currentSpeed = widget.controller.player.state.rate;
-            widget.controller.player.setRate(currentSpeed - 0.25);
+            unawaited(widget.controller.player.setRate(currentSpeed - 0.25));
           };
           break;
         case KeybindAction.resetSpeed:
@@ -918,16 +928,16 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
             nextScene: nextScene,
             onPlayPause: () {
               if (effectivePlaying) {
-                _pause();
+                unawaited(_pause());
               } else {
-                _play();
+                unawaited(_play());
               }
             },
             onSkipPrevious: () {
-              ref.read(playerStateProvider.notifier).playPrevious();
+              unawaited(ref.read(playerStateProvider.notifier).playPrevious());
             },
             onSkipNext: () {
-              ref.read(playerStateProvider.notifier).playNext();
+              unawaited(ref.read(playerStateProvider.notifier).playNext());
             },
             onInteract: _showControlsTemporarily,
           ),
@@ -1023,13 +1033,17 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                   .read(desktopSettingsProvider)
                                   .volume;
                               if (pointerSignal.scrollDelta.dy < 0) {
-                                ref
-                                    .read(playerStateProvider.notifier)
-                                    .setVolume(currentVol + 0.05);
+                                unawaited(
+                                  ref
+                                      .read(playerStateProvider.notifier)
+                                      .setVolume(currentVol + 0.05),
+                                );
                               } else {
-                                ref
-                                    .read(playerStateProvider.notifier)
-                                    .setVolume(currentVol - 0.05);
+                                unawaited(
+                                  ref
+                                      .read(playerStateProvider.notifier)
+                                      .setVolume(currentVol - 0.05),
+                                );
                               }
                             } else if (pointerSignal.scrollDelta.dx != 0) {
                               // Horizontal scroll -> Seek
@@ -1063,7 +1077,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                             _originalSpeed =
                                 widget.controller.player.state.rate;
                             _currentSpeed = 2.0;
-                            widget.controller.player.setRate(_currentSpeed);
+                            unawaited(
+                              widget.controller.player.setRate(_currentSpeed),
+                            );
                             _showFeedback(Icons.fast_forward, '2.0x');
                           },
                           onLongPressMoveUpdate: (details) {
@@ -1074,7 +1090,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                               final newSpeed = 2.0 + extraSpeed;
                               if (newSpeed != _currentSpeed) {
                                 setState(() => _currentSpeed = newSpeed);
-                                widget.controller.player.setRate(_currentSpeed);
+                                unawaited(
+                                  widget.controller.player.setRate(
+                                    _currentSpeed,
+                                  ),
+                                );
                                 _showFeedback(
                                   Icons.fast_forward,
                                   '${_currentSpeed.toStringAsFixed(1)}x',
@@ -1083,7 +1103,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                             }
                           },
                           onLongPressEnd: (_) {
-                            widget.controller.player.setRate(_originalSpeed);
+                            unawaited(
+                              widget.controller.player.setRate(_originalSpeed),
+                            );
                             setState(() {
                               _feedbackVisible = false;
                             });
@@ -1108,13 +1130,17 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                       details.focalPoint.dx <
                                       constraints.maxWidth / 2;
                                   if (_dragIsLeft) {
-                                    ScreenBrightness().application.then((val) {
-                                      if (mounted &&
-                                          _currentDragMode ==
-                                              _DragMode.vertical) {
-                                        _dragStartValue = val;
-                                      }
-                                    });
+                                    unawaited(
+                                      ScreenBrightness().application.then((
+                                        val,
+                                      ) {
+                                        if (mounted &&
+                                            _currentDragMode ==
+                                                _DragMode.vertical) {
+                                          _dragStartValue = val;
+                                        }
+                                      }),
+                                    );
                                   } else if (!Platform.isAndroid) {
                                     _dragStartValue = ref
                                         .read(desktopSettingsProvider)
@@ -1138,10 +1164,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
 
                                 if (_dragIsLeft) {
                                   // Brightness
-                                  ScreenBrightness()
-                                      .setApplicationScreenBrightness(
-                                        _dragStartValue,
-                                      );
+                                  unawaited(
+                                    ScreenBrightness()
+                                        .setApplicationScreenBrightness(
+                                          _dragStartValue,
+                                        ),
+                                  );
                                   _showFeedback(
                                     Icons.brightness_6,
                                     '${(_dragStartValue * 100).round()}%',
@@ -1162,9 +1190,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                   );
                                 } else {
                                   // Volume
-                                  ref
-                                      .read(playerStateProvider.notifier)
-                                      .setVolume(_dragStartValue);
+                                  unawaited(
+                                    ref
+                                        .read(playerStateProvider.notifier)
+                                        .setVolume(_dragStartValue),
+                                  );
                                   _showFeedback(
                                     Icons.volume_up,
                                     '${(_dragStartValue * 100).round()}%',

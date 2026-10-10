@@ -16,10 +16,11 @@ class RandomNavigationEnabled extends Notifier<bool> {
     return prefs.getBool(_storageKey) ?? true;
   }
 
-  void set(bool value) {
+  /// Updates the visible state immediately and completes after persistence.
+  Future<void> set(bool value) async {
     state = value;
     final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_storageKey, value);
+    await prefs.setBool(_storageKey, value);
   }
 }
 
@@ -37,10 +38,11 @@ class SceneRandomRespectActiveFilter extends Notifier<bool> {
     return prefs.getBool(_storageKey) ?? true;
   }
 
-  void set(bool value) {
+  /// Updates the visible state immediately and completes after persistence.
+  Future<void> set(bool value) async {
     state = value;
     final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_storageKey, value);
+    await prefs.setBool(_storageKey, value);
   }
 }
 

@@ -13,6 +13,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowLog
 import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
@@ -63,6 +64,10 @@ class MainActivityTest {
         assertFalse(activity.updatePipAspectRatio(-1, 1))
         assertFalse(activity.updatePipAspectRatio(1, 100))
         assertEquals(Rational(16, 9), activity.lastPipParams?.aspectRatio)
+        assertTrue(ShadowLog.getLogsForTag("StashFlow").any {
+            it.msg == "Failed to update picture-in-picture aspect ratio" &&
+                it.throwable is IllegalArgumentException
+        })
     }
 
     @Test

@@ -11,6 +11,7 @@ import 'package:multiview_desktop/multiview_desktop.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/pip_mode.dart';
 import 'video_controls/video_progress_bar.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 /// Shorter side of the smallest desktop PiP window the user can resize to.
 const double kDesktopPipMinimumShortSide = 120;
@@ -209,7 +210,14 @@ class DesktopPipWindowSession {
         window.hideCurrentAppTabFromTaskbar(true);
       }
       return true;
-    } catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'open',
+        error,
+        stackTrace,
+        source: 'desktop_pip_window',
+      );
+      // Playback recovery must also handle non-Exception plugin failures.
       _viewId = null;
       _stopWatchingVideoParams();
       _source.value = null;
@@ -253,8 +261,13 @@ class DesktopPipWindowSession {
             );
             if (_viewId == viewId) _aspectRatio = ratio;
           })
-          .catchError((Object error) {
-            debugPrint('Desktop PiP aspect ratio update failed: $error');
+          .catchError((Object error, StackTrace stackTrace) {
+            AppLogStore.instance.addError(
+              'Update PiP aspect ratio',
+              error,
+              stackTrace,
+              source: 'desktop_pip_window',
+            );
           });
     }
 

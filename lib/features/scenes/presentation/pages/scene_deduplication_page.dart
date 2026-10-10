@@ -5,6 +5,7 @@ import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 import '../../domain/entities/scene_deduplication.dart';
 import '../providers/scene_list_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class SceneDeduplicationPage extends ConsumerStatefulWidget {
   const SceneDeduplicationPage({super.key});
@@ -161,7 +162,13 @@ class _SceneDeduplicationPageState
           content: Text(context.l10n.deleted_n_scenes(requestedIds.length)),
         ),
       );
-    } catch (error) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'confirmDelete',
+        error,
+        stackTrace,
+        source: 'scene_deduplication_page',
+      );
       if (!mounted) return;
       if (deletedIds.isNotEmpty) _reconcileDeletedScenes(deletedIds);
       ScaffoldMessenger.of(context).showSnackBar(

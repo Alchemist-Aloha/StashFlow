@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -39,7 +41,9 @@ class ServerProfileCard extends ConsumerWidget {
       ),
       child: InkWell(
         onTap: () {
-          ref.read(activeServerProfileIdProvider.notifier).set(profile.id);
+          unawaited(
+            ref.read(activeServerProfileIdProvider.notifier).set(profile.id),
+          );
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(

@@ -1,4 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
+import 'package:stash_app_flutter/features/performers/presentation/providers/performer_details_provider.dart';
+import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
+import 'package:stash_app_flutter/features/tags/presentation/providers/tag_details_provider.dart';
+import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
+import 'package:stash_app_flutter/features/studios/presentation/providers/studio_details_provider.dart';
+import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
+import 'package:stash_app_flutter/features/groups/presentation/providers/group_details_provider.dart';
+import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/filter_widgets.dart';
@@ -7,6 +19,124 @@ import '../../../helpers/test_helpers.dart';
 
 void main() {
   group('filter widgets', () {
+    final entityOverrides = {
+      'performer': performerDetailsProvider('42').overrideWith(
+        (ref) async => const Performer(
+          id: '42',
+          name: 'Alice',
+          urls: [],
+          birthdate: null,
+          aliasList: [],
+          favorite: false,
+          imagePath: null,
+          sceneCount: 0,
+          imageCount: 0,
+          galleryCount: 0,
+          groupCount: 0,
+          tagIds: [],
+          tagNames: [],
+        ),
+      ),
+      'tag': tagDetailsProvider('42').overrideWith(
+        (ref) async => const Tag(
+          id: '42',
+          name: 'Portrait',
+          sceneCount: 0,
+          imageCount: 0,
+          galleryCount: 0,
+          performerCount: 0,
+          favorite: false,
+        ),
+      ),
+      'studio': studioDetailsProvider('42').overrideWith(
+        (ref) async => const Studio(
+          id: '42',
+          name: 'Studio A',
+          favorite: false,
+          sceneCount: 0,
+          imageCount: 0,
+          galleryCount: 0,
+          performerCount: 0,
+        ),
+      ),
+      'group': groupDetailsProvider(
+        '42',
+      ).overrideWith((ref) async => const Group(id: '42', name: 'Collection')),
+      'gallery': galleryDetailsProvider('42').overrideWith(
+        (ref) async => const Gallery(
+          id: '42',
+          title: '',
+          path: '/photos/Holiday_album.zip',
+        ),
+      ),
+    };
+    final names = {
+      'performer': 'Alice',
+      'tag': 'Portrait',
+      'studio': 'Studio A',
+      'group': 'Collection',
+      'gallery': 'Holiday album',
+    };
+
+    for (final type in entityOverrides.keys) {
+      testWidgets('selected $type uses its name but removes by ID', (
+        tester,
+      ) async {
+        String? removedId;
+        await pumpTestWidget(
+          tester,
+          overrides: [entityOverrides[type]!],
+          child: Scaffold(
+            body: SelectionCriterionInput(
+              label: type,
+              providerType: type,
+              selectedIds: const ['42'],
+              modifier: CriterionModifier.includes,
+              onModifierChanged: (_) {},
+              onAddPressed: () {},
+              onRemoveId: (id) => removedId = id,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(names[type]!), findsOneWidget);
+        expect(find.text('42'), findsNothing);
+        tester.widget<Chip>(find.byType(Chip)).onDeleted!();
+        expect(removedId, '42');
+      });
+    }
+
+    testWidgets('unavailable entity keeps a removable ID fallback', (
+      tester,
+    ) async {
+      final pending = Completer<Tag>();
+      String? removedId;
+      await pumpTestWidget(
+        tester,
+        overrides: [
+          tagDetailsProvider('42').overrideWith((ref) => pending.future),
+        ],
+        child: Scaffold(
+          body: SelectionCriterionInput(
+            label: 'Performer tags',
+            providerType: 'tag',
+            selectedIds: const ['42'],
+            modifier: CriterionModifier.includes,
+            onModifierChanged: (_) {},
+            onAddPressed: () {},
+            onRemoveId: (id) => removedId = id,
+          ),
+        ),
+      );
+      expect(find.text('42'), findsOneWidget);
+      pending.completeError(StateError('Entity unavailable'));
+      await tester.pumpAndSettle();
+      expect(find.text('42'), findsOneWidget);
+      tester.widget<Chip>(find.byType(Chip)).onDeleted!();
+      expect(removedId, '42');
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets(
       'StringCriterionInput exposes regex operators and hides the value field for null modifiers',
       (tester) async {

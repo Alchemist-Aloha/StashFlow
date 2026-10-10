@@ -47,7 +47,7 @@ class VttService {
       return await request;
     } finally {
       if (identical(_inFlight[effectiveUrl], request)) {
-        _inFlight.remove(effectiveUrl);
+        final _ = _inFlight.remove(effectiveUrl);
       }
     }
   }
@@ -86,7 +86,7 @@ class VttService {
       );
       _cache[effectiveUrl] = spriteInfoList;
       return spriteInfoList;
-    } catch (e) {
+    } on Exception catch (e) {
       AppLogStore.instance.add('Error fetching VTT: $e', source: 'VttService');
       return null;
     }

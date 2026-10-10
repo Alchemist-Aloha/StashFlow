@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -23,6 +25,7 @@ import '../providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class PerformerDetailsPage extends ConsumerWidget {
   final String performerId;
@@ -48,7 +51,7 @@ class PerformerDetailsPage extends ConsumerWidget {
       return;
     }
 
-    context.push('/performers/performer/${randomPerformer.id}');
+    unawaited(context.push('/performers/performer/${randomPerformer.id}'));
   }
 
   int? _calculateAge(String? birthdate) {
@@ -62,7 +65,13 @@ class PerformerDetailsPage extends ConsumerWidget {
         age--;
       }
       return age;
-    } catch (_) {
+    } on FormatException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'calculateAge',
+        error,
+        stackTrace,
+        source: 'performer_details_page',
+      );
       return null;
     }
   }
@@ -226,7 +235,14 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     performerDetailsProvider(performer.id),
                                   );
                                   ref.invalidate(performerListProvider);
-                                } catch (e) {
+                                } on Object catch (e, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    e,
+                                    stackTrace,
+                                    source: 'performer_details_page',
+                                  );
+                                  // This operation also reports invalid results through StateError.
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
@@ -264,7 +280,14 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     performerDetailsProvider(performer.id),
                                   );
                                   ref.invalidate(performerListProvider);
-                                } catch (error) {
+                                } on Object catch (error, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    error,
+                                    stackTrace,
+                                    source: 'performer_details_page',
+                                  );
+                                  // This operation also reports invalid results through StateError.
                                   if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -317,8 +340,10 @@ class PerformerDetailsPage extends ConsumerWidget {
                                         visualDensity: VisualDensity.compact,
                                         onPressed: () {
                                           if (index < performer.tagIds.length) {
-                                            context.push(
-                                              '/tags/tag/${performer.tagIds[index]}',
+                                            unawaited(
+                                              context.push(
+                                                '/tags/tag/${performer.tagIds[index]}',
+                                              ),
                                             );
                                           }
                                         },
@@ -374,7 +399,13 @@ class PerformerDetailsPage extends ConsumerWidget {
                                                 );
                                               }
                                             }
-                                          } catch (e) {
+                                          } on Exception catch (e, stackTrace) {
+                                            AppLogStore.instance.addError(
+                                              'build',
+                                              e,
+                                              stackTrace,
+                                              source: 'performer_details_page',
+                                            );
                                             if (context.mounted) {
                                               ScaffoldMessenger.of(
                                                 context,
@@ -535,7 +566,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                                             imageFilterStateProvider.notifier,
                                           )
                                           .setGalleryId(gallery.id);
-                                      context.push('/galleries/images');
+                                      unawaited(
+                                        context.push('/galleries/images'),
+                                      );
                                     },
                                   ),
                                 ],

@@ -20,7 +20,12 @@ void main() {
       rating100: 60,
       date: '2026-08-03',
       files: [
-        entity.ImageFile(width: 1200, height: 800, path: '/images/image-1.jpg'),
+        entity.ImageFile(
+          width: 1200,
+          height: 800,
+          path: '/images/image-1.jpg',
+          size: 1572864,
+        ),
       ],
       paths: entity.ImagePaths(thumbnail: ''),
     );
@@ -42,6 +47,17 @@ void main() {
     expect(find.text('Image Details'), findsOneWidget);
     expect(find.text('/images/image-1.jpg'), findsOneWidget);
     expect(find.text('Image title'), findsOneWidget);
+    expect(find.text('File Size'), findsOneWidget);
+    expect(find.text('1.50 MB'), findsOneWidget);
+    for (final text in ['Image title', 'image-1', '1200 x 800', '1.50 MB']) {
+      expect(
+        find.ancestor(
+          of: find.text(text),
+          matching: find.byType(SelectionArea),
+        ),
+        findsOneWidget,
+      );
+    }
     final detailsSheet = find.byType(ImageDetailsBottomSheet);
     expect(
       find.descendant(of: detailsSheet, matching: find.byType(RatingButton)),

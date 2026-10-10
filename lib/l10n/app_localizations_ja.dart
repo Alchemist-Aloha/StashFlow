@@ -1235,7 +1235,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_appearance_custom_hex => 'カスタム16進数カラー';
 
   @override
-  String get settings_appearance_custom_hex_helper => '8桁のARGB 16進コードを入力してください';
+  String get settings_appearance_color_hue => '色相';
+
+  @override
+  String get settings_appearance_color_saturation => '彩度';
+
+  @override
+  String get settings_appearance_color_brightness => '明度';
+
+  @override
+  String get settings_appearance_custom_hex_helper =>
+      '6桁のRGBまたは8桁のARGBの16進カラーコードを入力';
 
   @override
   String get settings_appearance_font_family => 'フォント';

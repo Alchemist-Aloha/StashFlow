@@ -15,11 +15,13 @@ fragment ImageData on Image {
   }
   visual_files {
     ... on ImageFile {
+      size
       width
       height
       path
     }
     ... on VideoFile {
+      size
       width
       height
       path

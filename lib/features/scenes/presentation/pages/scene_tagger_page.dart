@@ -27,6 +27,7 @@ import '../../data/utils/scrape_normalizer.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/player_settings.dart';
 import '../widgets/scene_filter_panel.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class SceneTaggerPage extends ConsumerStatefulWidget {
   const SceneTaggerPage({super.key});
@@ -97,7 +98,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     _presetsFuture = ref
         .read(savedFilterRepositoryProvider)
         .findAll(mode: 'SCENES', fromRaw: SceneSavedFilterConfig.fromRaw);
-    Future.microtask(_loadScenes);
+    unawaited(Future.microtask(_loadScenes));
   }
 
   @override
@@ -139,7 +140,13 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
         _scenes = scenePage.scenes;
         _totalSceneCount = scenePage.totalCount;
       });
-    } catch (error) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'loadScenes',
+        error,
+        stackTrace,
+        source: 'scene_tagger_page',
+      );
       if (!mounted) return;
       setState(() {
         _loadError = error.toString();
@@ -172,7 +179,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _page = 1;
     }
     if (_mode == _TaggerMode.currentPage) {
-      _loadScenes();
+      unawaited(_loadScenes());
     } else {
       _clearRandomModeList();
     }
@@ -181,7 +188,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   void _goToPage(int page) {
     if (_loadingScenes || page < 1 || page > _totalPages) return;
     setState(() => _page = page);
-    _loadScenes();
+    unawaited(_loadScenes());
   }
 
   int get _totalPages {
@@ -226,7 +233,13 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           _selectedMatchIndexes[scene.id] = 0;
           _scrapedCount += 1;
         });
-      } catch (error) {
+      } on Exception catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'startCurrentPageTagging',
+          error,
+          stackTrace,
+          source: 'scene_tagger_page',
+        );
         if (!mounted) return;
         setState(() {
           _results[scene.id] = _TaggerResult.error(error.toString());
@@ -283,7 +296,13 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 _selectedMatchIndexes[scene.id] = 0;
               }
             });
-          } catch (error) {
+          } on Exception catch (error, stackTrace) {
+            AppLogStore.instance.addError(
+              'startRandomUnorganizedTagging',
+              error,
+              stackTrace,
+              source: 'scene_tagger_page',
+            );
             if (!mounted) return;
             setState(() {
               _scrapedCount += 1;
@@ -293,7 +312,13 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
 
         page += 1;
       }
-    } catch (error) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'startRandomUnorganizedTagging',
+        error,
+        stackTrace,
+        source: 'scene_tagger_page',
+      );
       if (!mounted) return;
       setState(() {
         _loadError = error.toString();
@@ -362,7 +387,13 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.saved_item(scene.title))),
       );
-    } catch (error) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'applySelectedScrapedScene',
+        error,
+        stackTrace,
+        source: 'scene_tagger_page',
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.failed_to_save(error.toString()))),
@@ -647,7 +678,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                   }
                 });
                 if (_mode == _TaggerMode.currentPage) {
-                  _loadScenes();
+                  unawaited(_loadScenes());
                 }
               },
             ),
@@ -1634,7 +1665,14 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
         Media(effectiveStreamUrl, httpHeaders: effectiveHeaders),
         play: true,
       );
-    } catch (error) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'ensurePlayerAndPlay',
+        error,
+        stackTrace,
+        source: 'scene_tagger_page',
+      );
+      // Playback recovery must also handle non-Exception plugin failures.
       _error = error.toString();
     } finally {
       if (mounted) {
@@ -1861,7 +1899,13 @@ Uint8List? _scrapedImageBytes(String image) {
   if (coverImage == null) return null;
   try {
     return base64Decode(coverImage.split(',').last);
-  } on FormatException {
+  } on FormatException catch (error, stackTrace) {
+    AppLogStore.instance.addError(
+      'scrapedImageBytes',
+      error,
+      stackTrace,
+      source: 'scene_tagger_page',
+    );
     return null;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -212,7 +214,7 @@ void main() {
                 .page;
 
             if (feed) {
-              router.push('/scenes/scene/0', extra: true);
+              unawaited(router.push('/scenes/scene/0', extra: true));
             } else {
               final card = tester
                   .widgetList<SceneCard>(find.byType(SceneCard))
@@ -390,7 +392,7 @@ void main() {
                     tester.state(find.byType(TiktokScenesView)),
                     same(feedState),
                   );
-                  router.push('/scenes/scene/2', extra: true);
+                  unawaited(router.push('/scenes/scene/2', extra: true));
                 } else {
                   final card = tester
                       .widgetList<SceneCard>(find.byType(SceneCard))
@@ -543,7 +545,7 @@ void main() {
                     .markRandom();
               }
               if (transition == 'playlist-stacked') {
-                router.push('/scenes/scene/1', extra: true);
+                unawaited(router.push('/scenes/scene/1', extra: true));
                 await _settle(tester);
               }
               PlaylistFloatingPanel.show(

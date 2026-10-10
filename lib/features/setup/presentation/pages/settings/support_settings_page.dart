@@ -6,6 +6,7 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import '../../widgets/settings_page_shell.dart';
 import '../../providers/update_provider.dart';
+import '../../../../../core/utils/app_log_store.dart';
 
 class SupportSettingsPage extends ConsumerWidget {
   const SupportSettingsPage({super.key});
@@ -53,7 +54,14 @@ class SupportSettingsPage extends ConsumerWidget {
                                       mode: LaunchMode.externalApplication,
                                     );
                                   }
-                                } catch (_) {}
+                                } on Exception catch (error, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    error,
+                                    stackTrace,
+                                    source: 'support_settings_page',
+                                  );
+                                }
                               },
                             ),
                           ),
@@ -90,7 +98,14 @@ class SupportSettingsPage extends ConsumerWidget {
                                   mode: LaunchMode.externalApplication,
                                 );
                               }
-                            } catch (_) {}
+                            } on Exception catch (error, stackTrace) {
+                              AppLogStore.instance.addError(
+                                'build',
+                                error,
+                                stackTrace,
+                                source: 'support_settings_page',
+                              );
+                            }
                           },
                         ),
                         loading: () => SettingsActionCard(
@@ -136,7 +151,13 @@ class SupportSettingsPage extends ConsumerWidget {
                             );
                           }
                         }
-                      } catch (e) {
+                      } on Exception catch (e, stackTrace) {
+                        AppLogStore.instance.addError(
+                          'build',
+                          e,
+                          stackTrace,
+                          source: 'support_settings_page',
+                        );
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -179,7 +200,13 @@ class SupportSettingsPage extends ConsumerWidget {
                             );
                           }
                         }
-                      } catch (e) {
+                      } on Exception catch (e, stackTrace) {
+                        AppLogStore.instance.addError(
+                          'build',
+                          e,
+                          stackTrace,
+                          source: 'support_settings_page',
+                        );
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

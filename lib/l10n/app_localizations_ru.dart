@@ -1252,8 +1252,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_appearance_custom_hex => 'Пользовательский Hex-цвет';
 
   @override
+  String get settings_appearance_color_hue => 'Цветовой тон';
+
+  @override
+  String get settings_appearance_color_saturation => 'Насыщенность';
+
+  @override
+  String get settings_appearance_color_brightness => 'Яркость';
+
+  @override
   String get settings_appearance_custom_hex_helper =>
-      'Введите 8-значный ARGB hex-код';
+      'Введите 6-значный RGB или 8-значный ARGB-код цвета';
 
   @override
   String get settings_appearance_font_family => 'Шрифт';

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -132,74 +134,84 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
   }
 
   void _showSortPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => ListSortBottomSheet<EntitySceneMediaSortField>(
-        title: context.l10n.sort_scenes,
-        options: EntitySceneMediaSortField.values,
-        initialOption: _sortField,
-        initialDescending: _sortDescending,
-        resetOption: EntitySceneMediaSortField.date,
-        resetDescending: true,
-        optionLabel: _sortFieldLabel,
-        onApply: (field, descending) {
-          setState(() {
-            _sortField = field;
-            _sortDescending = descending;
-          });
-          _applyServerSort();
-        },
-        onSaveDefault: () => ref
-            .read(entityMediaSortProvider(widget.filterKind).notifier)
-            .saveAsDefault(),
-        saveDefaultSuccessMessage: context.l10n.scenes_sort_saved_default,
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => ListSortBottomSheet<EntitySceneMediaSortField>(
+          title: context.l10n.sort_scenes,
+          options: EntitySceneMediaSortField.values,
+          initialOption: _sortField,
+          initialDescending: _sortDescending,
+          resetOption: EntitySceneMediaSortField.date,
+          resetDescending: true,
+          optionLabel: _sortFieldLabel,
+          onApply: (field, descending) {
+            setState(() {
+              _sortField = field;
+              _sortDescending = descending;
+            });
+            _applyServerSort();
+          },
+          onSaveDefault: () => ref
+              .read(entityMediaSortProvider(widget.filterKind).notifier)
+              .saveAsDefault(),
+          saveDefaultSuccessMessage: context.l10n.scenes_sort_saved_default,
+        ),
       ),
     );
   }
 
   void _showFilterPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => SceneFilterPanel(
-        initialFilter: ref.read(
-          entityMediaFilterStateProvider(widget.filterKind),
-        ),
-        initialOrganized: ref.read(
-          entityMediaOrganizedOnlyProvider(widget.filterKind),
-        ),
-        onApply: (filter, organized) {
-          ref
-              .read(entityMediaFilterStateProvider(widget.filterKind).notifier)
-              .update(filter);
-          ref
-              .read(
-                entityMediaOrganizedOnlyProvider(widget.filterKind).notifier,
-              )
-              .set(organized);
-        },
-        onSaveDefault: (filter, organized) async {
-          ref
-              .read(entityMediaFilterStateProvider(widget.filterKind).notifier)
-              .update(filter);
-          ref
-              .read(
-                entityMediaOrganizedOnlyProvider(widget.filterKind).notifier,
-              )
-              .set(organized);
-          await Future.wait([
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => SceneFilterPanel(
+          initialFilter: ref.read(
+            entityMediaFilterStateProvider(widget.filterKind),
+          ),
+          initialOrganized: ref.read(
+            entityMediaOrganizedOnlyProvider(widget.filterKind),
+          ),
+          onApply: (filter, organized) {
             ref
                 .read(
                   entityMediaFilterStateProvider(widget.filterKind).notifier,
                 )
-                .saveAsDefault(),
+                .update(filter);
             ref
                 .read(
                   entityMediaOrganizedOnlyProvider(widget.filterKind).notifier,
                 )
-                .saveAsDefault(),
-          ]);
-        },
-        saveSuccessMessage: context.l10n.scenes_filter_saved,
+                .set(organized);
+          },
+          onSaveDefault: (filter, organized) async {
+            ref
+                .read(
+                  entityMediaFilterStateProvider(widget.filterKind).notifier,
+                )
+                .update(filter);
+            ref
+                .read(
+                  entityMediaOrganizedOnlyProvider(widget.filterKind).notifier,
+                )
+                .set(organized);
+            await Future.wait([
+              ref
+                  .read(
+                    entityMediaFilterStateProvider(widget.filterKind).notifier,
+                  )
+                  .saveAsDefault(),
+              ref
+                  .read(
+                    entityMediaOrganizedOnlyProvider(
+                      widget.filterKind,
+                    ).notifier,
+                  )
+                  .saveAsDefault(),
+            ]);
+          },
+          saveSuccessMessage: context.l10n.scenes_filter_saved,
+        ),
       ),
     );
   }
@@ -214,16 +226,18 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
       filter.copyWith(organized: organizedFilter.toBool() ?? filter.organized),
     );
 
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => SceneSavedFilterDialog(
-        searchQuery: ref.read(
-          entityMediaSearchQueryProvider(widget.filterKind),
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => SceneSavedFilterDialog(
+          searchQuery: ref.read(
+            entityMediaSearchQueryProvider(widget.filterKind),
+          ),
+          sort: sortConfig.sort,
+          descending: sortConfig.descending,
+          filter: effectiveFilter,
+          onLoad: _applySavedFilterConfig,
         ),
-        sort: sortConfig.sort,
-        descending: sortConfig.descending,
-        filter: effectiveFilter,
-        onLoad: _applySavedFilterConfig,
       ),
     );
   }
@@ -327,7 +341,7 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
             ref
                 .read(playbackQueueProvider.notifier)
                 .setSequenceForScene(widget.queueId, scenes, item.id);
-            context.push('/scenes/scene/${item.id}', extra: true);
+            unawaited(context.push('/scenes/scene/${item.id}', extra: true));
           },
         );
       },

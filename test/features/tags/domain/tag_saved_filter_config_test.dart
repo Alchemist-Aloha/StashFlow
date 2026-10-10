@@ -21,22 +21,41 @@ void main() {
     );
 
     final input = config.toSaveInput();
+    final objectFilter = input['object_filter'] as Map<String, dynamic>;
+    final findFilter = input['find_filter'] as Map<String, dynamic>;
 
     expect(input['mode'], 'TAGS');
-    expect(input['find_filter']['direction'], 'ASC');
-    expect(input['object_filter']['favorite']['value'], 'true');
-    expect(input['object_filter']['ignore_auto_tag']['value'], 'false');
-    expect(input['object_filter']['is_missing']['value'], 'description');
-    expect(input['object_filter']['sort_name']['value'], 'sort');
-    expect(input['object_filter']['parent_count']['value']['value'], 2);
-    expect(input['object_filter']['parents']['value']['items'], [
-      {'id': 'parent-1', 'label': 'parent-1'},
-    ]);
+    expect(findFilter['direction'], 'ASC');
+    expect((objectFilter['favorite'] as Map<String, dynamic>)['value'], 'true');
+    expect(
+      (objectFilter['ignore_auto_tag'] as Map<String, dynamic>)['value'],
+      'false',
+    );
+    expect(
+      (objectFilter['is_missing'] as Map<String, dynamic>)['value'],
+      'description',
+    );
+    expect(
+      (objectFilter['sort_name'] as Map<String, dynamic>)['value'],
+      'sort',
+    );
+    expect(
+      ((objectFilter['parent_count'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['value'],
+      2,
+    );
+    expect(
+      ((objectFilter['parents'] as Map<String, dynamic>)['value']
+          as Map<String, dynamic>)['items'],
+      [
+        {'id': 'parent-1', 'label': 'parent-1'},
+      ],
+    );
 
     final loaded = TagSavedFilterConfig.fromServerPayload(
       id: '1',
       name: 'Favorite tags',
-      objectFilter: input['object_filter'],
+      objectFilter: objectFilter,
     );
     expect(loaded.filter.favorite, isTrue);
     expect(loaded.filter.ignoreAutoTag, isFalse);

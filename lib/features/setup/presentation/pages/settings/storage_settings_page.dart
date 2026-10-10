@@ -8,6 +8,7 @@ import '../../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../../core/data/app_config/app_config_providers.dart';
 import '../../widgets/settings_page_shell.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
+import '../../../../../core/utils/app_log_store.dart';
 
 class StorageSettingsPage extends ConsumerWidget {
   const StorageSettingsPage({super.key});
@@ -63,7 +64,14 @@ class StorageSettingsPage extends ConsumerWidget {
                                       ),
                                     ),
                                   );
-                                } catch (e) {
+                                } on Object catch (e, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    e,
+                                    stackTrace,
+                                    source: 'storage_settings_page',
+                                  );
+                                  // This operation also reports invalid results through StateError.
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -111,7 +119,14 @@ class StorageSettingsPage extends ConsumerWidget {
                                       ),
                                     ),
                                   );
-                                } catch (e) {
+                                } on Object catch (e, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    e,
+                                    stackTrace,
+                                    source: 'storage_settings_page',
+                                  );
+                                  // This operation also reports invalid results through StateError.
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -159,7 +174,14 @@ class StorageSettingsPage extends ConsumerWidget {
                                       ),
                                     ),
                                   );
-                                } catch (e) {
+                                } on Object catch (e, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    e,
+                                    stackTrace,
+                                    source: 'storage_settings_page',
+                                  );
+                                  // This operation also reports invalid results through StateError.
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -210,13 +232,13 @@ class StorageSettingsPage extends ConsumerWidget {
                         child: Text(context.l10n.settings_storage_unlimited),
                       ),
                     ],
-                    onChanged: (v) {
+                    onChanged: (v) async {
                       if (v != null) {
-                        prefs.setInt('max_image_cache_size_mb', v);
+                        await prefs.setInt('max_image_cache_size_mb', v);
+                        if (!context.mounted) return;
                         ref.invalidate(maxImageCacheSizeProvider);
-                        service.enforceImageCacheLimit(v).then((_) {
-                          ref.invalidate(cacheSizesProvider);
-                        });
+                        await service.enforceImageCacheLimit(v);
+                        if (context.mounted) ref.invalidate(cacheSizesProvider);
                       }
                     },
                   ),
@@ -244,13 +266,13 @@ class StorageSettingsPage extends ConsumerWidget {
                         child: Text(context.l10n.settings_storage_unlimited),
                       ),
                     ],
-                    onChanged: (v) {
+                    onChanged: (v) async {
                       if (v != null) {
-                        prefs.setInt('max_video_cache_size_mb', v);
+                        await prefs.setInt('max_video_cache_size_mb', v);
+                        if (!context.mounted) return;
                         ref.invalidate(maxVideoCacheSizeProvider);
-                        service.enforceVideoCacheLimit(v).then((_) {
-                          ref.invalidate(cacheSizesProvider);
-                        });
+                        await service.enforceVideoCacheLimit(v);
+                        if (context.mounted) ref.invalidate(cacheSizesProvider);
                       }
                     },
                   ),
@@ -402,7 +424,13 @@ class _AppConfigBackupSectionState
     setState(() => _busy = true);
     try {
       await operation();
-    } catch (_) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'run',
+        error,
+        stackTrace,
+        source: 'storage_settings_page',
+      );
       if (mounted) _message(context.l10n.settings_config_invalid);
     } finally {
       if (mounted) setState(() => _busy = false);

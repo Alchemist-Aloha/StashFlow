@@ -79,6 +79,23 @@ void main() {
       },
     );
 
+    test('logout clears cookies even when the endpoint fails', () async {
+      server.listen((HttpRequest request) async {
+        request.response.statusCode = HttpStatus.internalServerError;
+        await request.response.close();
+      });
+      await service.cookieJar.saveFromResponse(graphqlEndpoint, [
+        Cookie('session', 'to-clear')..path = '/',
+      ]);
+
+      await service.logout(graphqlEndpoint: graphqlEndpoint);
+
+      expect(
+        await service.cookieHeaderFor(requestUri: graphqlEndpoint),
+        isEmpty,
+      );
+    });
+
     test('logout calls /logout and clears persisted cookies', () async {
       server.listen((HttpRequest request) async {
         if (request.method == 'POST' && request.uri.path == '/login') {

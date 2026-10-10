@@ -74,7 +74,7 @@ class _GlobalFullscreenOverlayState
     WidgetsBinding.instance.removeObserver(this);
     _animationController.dispose();
     for (final sub in _subscriptions) {
-      sub.cancel();
+      unawaited(sub.cancel());
     }
     super.dispose();
   }
@@ -100,7 +100,7 @@ class _GlobalFullscreenOverlayState
     _orientationSync = _orientationSync.then((_) async {
       try {
         await _syncFullscreenOrientation();
-      } catch (error, stackTrace) {
+      } on Exception catch (error, stackTrace) {
         AppLogStore.instance.add(
           'GlobalFullscreenOverlay: error syncing fullscreen orientation: '
           '$error\n$stackTrace',
@@ -205,15 +205,19 @@ class _GlobalFullscreenOverlayState
         // Android owns the PiP animation; don't stack a fullscreen slide on it.
         _animationController.value = 1;
       } else {
-        _animationController.forward().then((_) {
-          if (mounted) setState(() => _isAnimating = false);
-        });
+        unawaited(
+          _animationController.forward().then((_) {
+            if (mounted) setState(() => _isAnimating = false);
+          }),
+        );
       }
-      _enterFullScreen().then((_) {
-        if (mounted) {
-          ref.read(playerStateProvider.notifier).markFullscreenEntered();
-        }
-      });
+      unawaited(
+        _enterFullScreen().then((_) {
+          if (mounted) {
+            ref.read(playerStateProvider.notifier).markFullscreenEntered();
+          }
+        }),
+      );
     } else if (!isFullScreen && _isVisible) {
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: hiding overlay',
@@ -258,7 +262,8 @@ class _GlobalFullscreenOverlayState
           });
         }
       }
-    } catch (e) {
+    } on Object catch (e) {
+      // Animation and playback failures must not escape this UI boundary.
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: error entering fullscreen: $e',
         source: 'GlobalFullscreenOverlay',
@@ -284,7 +289,8 @@ class _GlobalFullscreenOverlayState
         _pipOnlyPresentation = false;
       });
       ref.read(playerStateProvider.notifier).markFullscreenExited();
-    } catch (error, stackTrace) {
+    } on Object catch (error, stackTrace) {
+      // Animation cancellation must leave fullscreen retryable.
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: error exiting fullscreen: '
         '$error\n$stackTrace',
@@ -354,7 +360,8 @@ class _GlobalFullscreenOverlayState
           !controller.player.state.playing) {
         await controller.player.play();
       }
-    } catch (error, stackTrace) {
+    } on Object catch (error, stackTrace) {
+      // Player StateError must not roll back an already completed exit.
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: error resuming playback after fullscreen '
         'exit: $error\n$stackTrace',
@@ -392,7 +399,9 @@ class _GlobalFullscreenOverlayState
       return;
     }
 
-    GoRouter.of(context).push('/scenes/scene/${randomScene.id}', extra: true);
+    unawaited(
+      GoRouter.of(context).push('/scenes/scene/${randomScene.id}', extra: true),
+    );
   }
 
   @override
@@ -461,7 +470,7 @@ class _GlobalFullscreenOverlayState
     if (controller != _currentListenedController) {
       if (_currentListenedController != null) {
         for (final sub in _subscriptions) {
-          sub.cancel();
+          unawaited(sub.cancel());
         }
         _subscriptions.clear();
       }

@@ -38,7 +38,7 @@ void main() {
         contains(
           'WidgetsBinding.instance.addPostFrameCallback((_) {\n'
           '      if (!mounted) return;\n'
-          '      _startPlaybackIfNeeded',
+          '      unawaited(_startPlaybackIfNeeded',
         ),
       );
       expect(
@@ -62,7 +62,7 @@ void main() {
         contains(
           'WidgetsBinding.instance.addPostFrameCallback((_) {\n'
           '            if (!mounted) return;\n'
-          '            _manageControllers();',
+          '            unawaited(_manageControllers());',
         ),
       );
       expect(

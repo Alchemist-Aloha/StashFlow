@@ -1230,7 +1230,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_appearance_custom_hex => '自定义 Hex 颜色';
 
   @override
-  String get settings_appearance_custom_hex_helper => '输入 8 位 ARGB hex 代码';
+  String get settings_appearance_color_hue => '色相';
+
+  @override
+  String get settings_appearance_color_saturation => '饱和度';
+
+  @override
+  String get settings_appearance_color_brightness => '亮度';
+
+  @override
+  String get settings_appearance_custom_hex_helper =>
+      '输入 6 位 RGB 或 8 位 ARGB 十六进制颜色代码';
 
   @override
   String get settings_appearance_font_family => '字体';
@@ -4607,7 +4617,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_appearance_custom_hex => '自定义 Hex 颜色';
 
   @override
-  String get settings_appearance_custom_hex_helper => '输入 8 位 ARGB hex 代码';
+  String get settings_appearance_color_hue => '色相';
+
+  @override
+  String get settings_appearance_color_saturation => '饱和度';
+
+  @override
+  String get settings_appearance_color_brightness => '亮度';
+
+  @override
+  String get settings_appearance_custom_hex_helper =>
+      '输入 6 位 RGB 或 8 位 ARGB 十六进制颜色代码';
 
   @override
   String get settings_appearance_font_family => '字体';
@@ -7986,7 +8006,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_appearance_custom_hex => '自訂 Hex 顏色';
 
   @override
-  String get settings_appearance_custom_hex_helper => '輸入 8 位數 ARGB hex 代碼';
+  String get settings_appearance_color_hue => '色相';
+
+  @override
+  String get settings_appearance_color_saturation => '飽和度';
+
+  @override
+  String get settings_appearance_color_brightness => '亮度';
+
+  @override
+  String get settings_appearance_custom_hex_helper =>
+      '輸入 6 位 RGB 或 8 位 ARGB 十六進位色彩代碼';
 
   @override
   String get settings_appearance_font_family => '字型';

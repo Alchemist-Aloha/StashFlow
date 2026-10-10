@@ -54,7 +54,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _load();
   }
 
-  Future<void> _load() async {
+  void _load() {
     final prefs = ref.read(sharedPreferencesProvider);
     final endBehaviorStr = prefs.getString(_playEndBehaviorKey);
     if (endBehaviorStr != null) {

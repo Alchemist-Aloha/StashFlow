@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -72,7 +74,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _load();
   }
 
-  Future<void> _load() async {
+  void _load() {
     final prefs = ref.read(sharedPreferencesProvider);
 
     _showRandomNavigation = ref.read(randomNavigationEnabledProvider);
@@ -155,102 +157,113 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
   Future<void> _saveSettings() async {
     final prefs = ref.read(sharedPreferencesProvider);
-
-    ref
-        .read(randomNavigationEnabledProvider.notifier)
-        .set(_showRandomNavigation);
-    await ref.read(autoHideTopAppBarProvider.notifier).set(_autoHideTopAppBar);
-    ref
-        .read(sceneRandomRespectActiveFilterProvider.notifier)
-        .set(_sceneRandomRespectActiveFilter);
-    ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
-    ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
-    ref
-        .read(gridLayoutSettingProvider(GridLayoutSetting.gallery).notifier)
-        .set(_galleryGridLayout);
-    ref
-        .read(mainPageGravityOrientationProvider.notifier)
-        .set(_mainPageGravityOrientation);
     ref
         .read(playerStateProvider.notifier)
         .setUseActualSceneVideoInMiniPlayer(_useActualSceneVideoInMiniPlayer);
-    await ref
-        .read(entityImageFilterMethodSettingProvider.notifier)
-        .set(_entityImageFilterMethod);
 
-    ref
-        .read(gridColumnSettingProvider(GridColumnSetting.scene).notifier)
-        .set(_sceneGridColumns);
-    ref
-        .read(gridColumnSettingProvider(GridColumnSetting.gallery).notifier)
-        .set(_galleryGridColumns);
-    ref
-        .read(gridColumnSettingProvider(GridColumnSetting.performer).notifier)
-        .set(_performerGridColumns);
-    ref
-        .read(gridColumnSettingProvider(GridColumnSetting.image).notifier)
-        .set(_imageGridColumns);
-    ref
-        .read(gridColumnSettingProvider(GridColumnSetting.studio).notifier)
-        .set(_studioGridColumns);
-    ref
-        .read(gridColumnSettingProvider(GridColumnSetting.tag).notifier)
-        .set(_tagGridColumns);
-    ref
-        .read(gridColumnSettingProvider(GridColumnSetting.group).notifier)
-        .set(_groupGridColumns);
-    ref
-        .read(gridColumnSettingProvider(GridColumnSetting.sceneMarker).notifier)
-        .set(_markerGridColumns);
-
-    ref.read(cardTitleFontSizeProvider.notifier).set(_cardTitleFontSize);
-
-    ref.read(maxPerformerAvatarsProvider.notifier).set(_maxPerformerAvatars);
-    ref.read(showPerformerAvatarsProvider.notifier).set(_showPerformerAvatars);
-    ref
-        .read(hideSceneTechnicalMetadataProvider.notifier)
-        .set(_hideSceneTechnicalMetadata);
-    ref.read(performerAvatarSizeProvider.notifier).set(_performerAvatarSize);
-
-    ref
-        .read(
-          gridLayoutSettingProvider(GridLayoutSetting.performerMedia).notifier,
-        )
-        .set(_performerMediaGridLayout);
-    ref
-        .read(
-          gridLayoutSettingProvider(
-            GridLayoutSetting.performerGalleries,
-          ).notifier,
-        )
-        .set(_performerGalleriesGridLayout);
-    ref
-        .read(gridLayoutSettingProvider(GridLayoutSetting.studioMedia).notifier)
-        .set(_studioMediaGridLayout);
-    ref
-        .read(
-          gridLayoutSettingProvider(GridLayoutSetting.studioGalleries).notifier,
-        )
-        .set(_studioGalleriesGridLayout);
-    ref
-        .read(gridLayoutSettingProvider(GridLayoutSetting.tagMedia).notifier)
-        .set(_tagMediaGridLayout);
-    ref
-        .read(
-          gridLayoutSettingProvider(GridLayoutSetting.tagGalleries).notifier,
-        )
-        .set(_tagGalleriesGridLayout);
-    ref
-        .read(gridLayoutSettingProvider(GridLayoutSetting.groupMedia).notifier)
-        .set(_groupMediaGridLayout);
-    ref
-        .read(gridLayoutSettingProvider(GridLayoutSetting.sceneMarker).notifier)
-        .set(_markerGridLayout);
-
-    await prefs.setBool(
-      _imageFullscreenVerticalSwipeKey,
-      _imageFullscreenVerticalSwipe,
-    );
+    await Future.wait([
+      ref
+          .read(randomNavigationEnabledProvider.notifier)
+          .set(_showRandomNavigation),
+      ref.read(autoHideTopAppBarProvider.notifier).set(_autoHideTopAppBar),
+      ref
+          .read(sceneRandomRespectActiveFilterProvider.notifier)
+          .set(_sceneRandomRespectActiveFilter),
+      ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout),
+      ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout),
+      ref
+          .read(gridLayoutSettingProvider(GridLayoutSetting.gallery).notifier)
+          .set(_galleryGridLayout),
+      ref
+          .read(mainPageGravityOrientationProvider.notifier)
+          .set(_mainPageGravityOrientation),
+      ref
+          .read(entityImageFilterMethodSettingProvider.notifier)
+          .set(_entityImageFilterMethod),
+      ref
+          .read(gridColumnSettingProvider(GridColumnSetting.scene).notifier)
+          .set(_sceneGridColumns),
+      ref
+          .read(gridColumnSettingProvider(GridColumnSetting.gallery).notifier)
+          .set(_galleryGridColumns),
+      ref
+          .read(gridColumnSettingProvider(GridColumnSetting.performer).notifier)
+          .set(_performerGridColumns),
+      ref
+          .read(gridColumnSettingProvider(GridColumnSetting.image).notifier)
+          .set(_imageGridColumns),
+      ref
+          .read(gridColumnSettingProvider(GridColumnSetting.studio).notifier)
+          .set(_studioGridColumns),
+      ref
+          .read(gridColumnSettingProvider(GridColumnSetting.tag).notifier)
+          .set(_tagGridColumns),
+      ref
+          .read(gridColumnSettingProvider(GridColumnSetting.group).notifier)
+          .set(_groupGridColumns),
+      ref
+          .read(
+            gridColumnSettingProvider(GridColumnSetting.sceneMarker).notifier,
+          )
+          .set(_markerGridColumns),
+      ref.read(cardTitleFontSizeProvider.notifier).set(_cardTitleFontSize),
+      ref.read(maxPerformerAvatarsProvider.notifier).set(_maxPerformerAvatars),
+      ref
+          .read(showPerformerAvatarsProvider.notifier)
+          .set(_showPerformerAvatars),
+      ref
+          .read(hideSceneTechnicalMetadataProvider.notifier)
+          .set(_hideSceneTechnicalMetadata),
+      ref.read(performerAvatarSizeProvider.notifier).set(_performerAvatarSize),
+      ref
+          .read(
+            gridLayoutSettingProvider(
+              GridLayoutSetting.performerMedia,
+            ).notifier,
+          )
+          .set(_performerMediaGridLayout),
+      ref
+          .read(
+            gridLayoutSettingProvider(
+              GridLayoutSetting.performerGalleries,
+            ).notifier,
+          )
+          .set(_performerGalleriesGridLayout),
+      ref
+          .read(
+            gridLayoutSettingProvider(GridLayoutSetting.studioMedia).notifier,
+          )
+          .set(_studioMediaGridLayout),
+      ref
+          .read(
+            gridLayoutSettingProvider(
+              GridLayoutSetting.studioGalleries,
+            ).notifier,
+          )
+          .set(_studioGalleriesGridLayout),
+      ref
+          .read(gridLayoutSettingProvider(GridLayoutSetting.tagMedia).notifier)
+          .set(_tagMediaGridLayout),
+      ref
+          .read(
+            gridLayoutSettingProvider(GridLayoutSetting.tagGalleries).notifier,
+          )
+          .set(_tagGalleriesGridLayout),
+      ref
+          .read(
+            gridLayoutSettingProvider(GridLayoutSetting.groupMedia).notifier,
+          )
+          .set(_groupMediaGridLayout),
+      ref
+          .read(
+            gridLayoutSettingProvider(GridLayoutSetting.sceneMarker).notifier,
+          )
+          .set(_markerGridLayout),
+      prefs.setBool(
+        _imageFullscreenVerticalSwipeKey,
+        _imageFullscreenVerticalSwipe,
+      ),
+    ]);
   }
 
   @override
@@ -435,7 +448,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             size: 24 * context.dimensions.fontSizeFactor,
                           ),
                           onTap: () {
-                            context.push('/settings/interface/navigation');
+                            unawaited(
+                              context.push('/settings/interface/navigation'),
+                            );
                           },
                         ),
                       ],
@@ -690,7 +705,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     gridValue: _groupMediaGridLayout,
                     onChanged: (isGrid) {
                       setState(() => _groupMediaGridLayout = isGrid);
-                      _saveSettings();
+                      unawaited(_saveSettings());
                     },
                     gridColumnsValue: _groupGridColumns,
                     onGridColumnsChanged: (value) async {
@@ -710,7 +725,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     gridValue: _markerGridLayout,
                     onChanged: (isGrid) {
                       setState(() => _markerGridLayout = isGrid);
-                      _saveSettings();
+                      unawaited(_saveSettings());
                     },
                     gridColumnsValue: _markerGridColumns,
                     onGridColumnsChanged: (value) async {
@@ -732,14 +747,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           mediaGridValue: _performerMediaGridLayout,
                           onMediaChanged: (isGrid) {
                             setState(() => _performerMediaGridLayout = isGrid);
-                            _saveSettings();
+                            unawaited(_saveSettings());
                           },
                           galleriesGridValue: _performerGalleriesGridLayout,
                           onGalleriesChanged: (isGrid) {
                             setState(
                               () => _performerGalleriesGridLayout = isGrid,
                             );
-                            _saveSettings();
+                            unawaited(_saveSettings());
                           },
                           alwaysShowGridColumns: true,
                           gridColumnsLabel:
@@ -760,12 +775,12 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           mediaGridValue: _studioMediaGridLayout,
                           onMediaChanged: (isGrid) {
                             setState(() => _studioMediaGridLayout = isGrid);
-                            _saveSettings();
+                            unawaited(_saveSettings());
                           },
                           galleriesGridValue: _studioGalleriesGridLayout,
                           onGalleriesChanged: (isGrid) {
                             setState(() => _studioGalleriesGridLayout = isGrid);
-                            _saveSettings();
+                            unawaited(_saveSettings());
                           },
                           gridColumnsValue: _studioGridColumns,
                           onGridColumnsChanged: (value) async {
@@ -780,12 +795,12 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           mediaGridValue: _tagMediaGridLayout,
                           onMediaChanged: (isGrid) {
                             setState(() => _tagMediaGridLayout = isGrid);
-                            _saveSettings();
+                            unawaited(_saveSettings());
                           },
                           galleriesGridValue: _tagGalleriesGridLayout,
                           onGalleriesChanged: (isGrid) {
                             setState(() => _tagGalleriesGridLayout = isGrid);
-                            _saveSettings();
+                            unawaited(_saveSettings());
                           },
                           gridColumnsValue: _tagGridColumns,
                           onGridColumnsChanged: (value) async {

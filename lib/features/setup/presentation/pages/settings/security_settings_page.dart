@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
@@ -128,7 +130,9 @@ class SecuritySettingsPage extends ConsumerWidget {
                       onChanged: settings.enabled && settings.hasPasscode
                           ? (value) {
                               if (value != null) {
-                                notifier.setBackgroundLockSeconds(value);
+                                unawaited(
+                                  notifier.setBackgroundLockSeconds(value),
+                                );
                               }
                             }
                           : null,

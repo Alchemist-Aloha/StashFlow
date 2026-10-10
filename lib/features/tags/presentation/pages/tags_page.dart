@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -137,33 +139,38 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   }
 
   void _showSortPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => ListSortBottomSheet<_TagSortOption>(
-        title: context.l10n.tags_sort_title,
-        options: _TagSortOption.values,
-        initialOption: _sortOption,
-        initialDescending: _sortDescending,
-        resetOption: _TagSortOption.name,
-        resetDescending: false,
-        optionLabel: _sortLabel,
-        onApply: (option, descending) {
-          setState(() {
-            _sortOption = option;
-            _sortDescending = descending;
-          });
-          _applyServerSort(option);
-        },
-        onSaveDefault: () => ref.read(tagSortProvider.notifier).saveAsDefault(),
-        saveDefaultSuccessMessage: context.l10n.tags_sort_saved,
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => ListSortBottomSheet<_TagSortOption>(
+          title: context.l10n.tags_sort_title,
+          options: _TagSortOption.values,
+          initialOption: _sortOption,
+          initialDescending: _sortDescending,
+          resetOption: _TagSortOption.name,
+          resetDescending: false,
+          optionLabel: _sortLabel,
+          onApply: (option, descending) {
+            setState(() {
+              _sortOption = option;
+              _sortDescending = descending;
+            });
+            _applyServerSort(option);
+          },
+          onSaveDefault: () =>
+              ref.read(tagSortProvider.notifier).saveAsDefault(),
+          saveDefaultSuccessMessage: context.l10n.tags_sort_saved,
+        ),
       ),
     );
   }
 
   void _showFilterPanel() {
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => const TagFilterPanel(),
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => const TagFilterPanel(),
+      ),
     );
   }
 
@@ -171,49 +178,51 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     final sortConfig = ref.read(tagSortProvider);
     final tagFilter = ref.read(tagListFilterProvider);
 
-    showFrostedPanelBottomSheet<void>(
-      context: context,
-      builder: (context) => SavedFilterDialog<TagSavedFilterConfig>(
-        searchQuery: ref.read(tagSearchQueryProvider),
-        sort: sortConfig.sort,
-        descending: sortConfig.descending,
-        activeFilterCount: activeFilterCount(tagFilter.toJson()),
-        defaultSortLabel: 'name',
-        saveSuccessMessage: context.l10n.saved_item('Tag filter'),
-        loadPresets: () => ref
-            .read(savedFilterRepositoryProvider)
-            .findAll(
-              mode: 'TAGS',
-              fromRaw: (raw) => TagSavedFilterConfig.fromServerPayload(
-                id: raw['id'] as String,
-                name: raw['name'] as String,
-                findFilter: raw['find_filter'],
-                objectFilter: raw['object_filter'],
-              ),
-            ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref
+    unawaited(
+      showFrostedPanelBottomSheet<void>(
+        context: context,
+        builder: (context) => SavedFilterDialog<TagSavedFilterConfig>(
+          searchQuery: ref.read(tagSearchQueryProvider),
+          sort: sortConfig.sort,
+          descending: sortConfig.descending,
+          activeFilterCount: activeFilterCount(tagFilter.toJson()),
+          defaultSortLabel: 'name',
+          saveSuccessMessage: context.l10n.saved_item('Tag filter'),
+          loadPresets: () => ref
               .read(savedFilterRepositoryProvider)
-              .save(
-                input: TagSavedFilterConfig(
-                  id: existingId,
-                  name: name,
-                  searchQuery: ref.read(tagSearchQueryProvider),
-                  sort: sortConfig.sort,
-                  descending: sortConfig.descending,
-                  filter: ref.read(tagListFilterProvider),
-                ).toSaveInput(),
+              .findAll(
+                mode: 'TAGS',
                 fromRaw: (raw) => TagSavedFilterConfig.fromServerPayload(
                   id: raw['id'] as String,
                   name: raw['name'] as String,
                   findFilter: raw['find_filter'],
                   objectFilter: raw['object_filter'],
                 ),
-              );
-        },
-        deletePreset: (id) =>
-            ref.read(savedFilterRepositoryProvider).delete(id: id),
-        onLoad: _applySavedFilterConfig,
+              ),
+          savePreset: ({required String name, String? existingId}) {
+            return ref
+                .read(savedFilterRepositoryProvider)
+                .save(
+                  input: TagSavedFilterConfig(
+                    id: existingId,
+                    name: name,
+                    searchQuery: ref.read(tagSearchQueryProvider),
+                    sort: sortConfig.sort,
+                    descending: sortConfig.descending,
+                    filter: ref.read(tagListFilterProvider),
+                  ).toSaveInput(),
+                  fromRaw: (raw) => TagSavedFilterConfig.fromServerPayload(
+                    id: raw['id'] as String,
+                    name: raw['name'] as String,
+                    findFilter: raw['find_filter'],
+                    objectFilter: raw['object_filter'],
+                  ),
+                );
+          },
+          deletePreset: (id) =>
+              ref.read(savedFilterRepositoryProvider).delete(id: id),
+          onLoad: _applySavedFilterConfig,
+        ),
       ),
     );
   }
@@ -246,7 +255,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     }
 
     _lastRandomTagId = randomTag.id;
-    context.push('/tags/tag/${randomTag.id}');
+    unawaited(context.push('/tags/tag/${randomTag.id}'));
   }
 
   @override

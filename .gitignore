@@ -71,3 +71,7 @@ dist/
 .hermes/
 .pi/
 .agents/
+
+# website related
+node_modules/
+.vite

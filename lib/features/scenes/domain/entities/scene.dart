@@ -75,6 +75,7 @@ abstract class VideoCaption with _$VideoCaption {
 abstract class SceneFile with _$SceneFile {
   const factory SceneFile({
     required String? format,
+    int? size,
     required int? width,
     required int? height,
     @JsonKey(name: 'video_codec') required String? videoCodec,

@@ -317,13 +317,9 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
   }
 
   Widget _buildRatingFilter() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.galleries_min_rating,
       children: [
-        Text(
-          context.l10n.galleries_min_rating,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: [
@@ -370,13 +366,9 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
   }
 
   Widget _buildOrganizedFilter() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.common_organized,
       children: [
-        Text(
-          context.l10n.common_organized,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: OrganizedFilter.values.map((option) {
@@ -400,10 +392,9 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
     bool? value,
     ValueChanged<bool?> onChanged,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: label,
       children: [
-        Text(label, style: context.textTheme.labelLarge),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: [
@@ -448,13 +439,9 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
       '2160p',
       '4320p',
     ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.images_resolution_title,
       children: [
-        Text(
-          context.l10n.images_resolution_title,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: resolutions.map((res) {
@@ -489,13 +476,9 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
 
   Widget _buildOrientationFilter() {
     final orientations = ['LANDSCAPE', 'PORTRAIT', 'SQUARE'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.common_orientation,
       children: [
-        Text(
-          context.l10n.common_orientation,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: orientations.map((ori) {
@@ -531,18 +514,24 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
   Widget _buildEntityFilter<T>(
     String label,
     String providerType,
-    dynamic criterion,
-    ValueChanged<dynamic> onChanged,
+    Object? criterion,
+    ValueChanged<Object?> onChanged,
     bool isHierarchical,
   ) {
-    final selectedIds =
-        (criterion?.value as List<dynamic>?)?.cast<String>() ?? <String>[];
-    final modifier =
-        criterion?.modifier as CriterionModifier? ?? CriterionModifier.includes;
+    final (selectedIds, modifier) = switch (criterion) {
+      MultiCriterion(:final value, :final modifier) => (value, modifier),
+      HierarchicalMultiCriterion(:final value, :final modifier) => (
+        value,
+        modifier,
+      ),
+      null => (<String>[], CriterionModifier.includes),
+      _ => throw ArgumentError.value(criterion, 'criterion'),
+    };
 
     return SelectionCriterionInput(
       label: label,
       selectedIds: selectedIds,
+      providerType: providerType,
       modifier: modifier,
       onModifierChanged: (next) {
         onChanged(

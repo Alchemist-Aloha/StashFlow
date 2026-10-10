@@ -101,6 +101,10 @@ Canonical implementation:
 
 The app supports light/dark/system theme modes, a persisted Material seed color,
 and a True Black option for dark themes. Theme changes apply without restart.
+Custom primary colors open a full-spectrum hue/saturation/brightness dialog with
+synchronized hex input (6-digit RGB or 8-digit ARGB, optionally prefixed by `#`).
+Apply persists the selected color; canceling does not change the active theme.
+Invalid hex input disables Apply and displays localized guidance.
 Appearance also offers System, Serif, Monospace, Manrope, Outfit, Space
 Grotesk, Inter, Lora, and JetBrains Mono font families. The six named families
 are bundled under the SIL Open Font License; missing glyphs use platform
@@ -210,7 +214,9 @@ List invariants:
 
 Each feature owns a typed filter entity and maps it to the server's criteria in
 its repository. Filter UI edits a temporary value and commits only on Apply;
-canceling a sheet must not mutate the active query.
+canceling a sheet must not mutate the active query. Applying sort or filters
+refreshes the results automatically, including scoped entity media grids, and
+resets pagination without appending responses from the previous query.
 
 Sort/filter sheets must:
 
@@ -219,7 +225,14 @@ Sort/filter sheets must:
 - show the active-filter count accurately;
 - support reset and persisted defaults where offered;
 - preserve search, sort direction, and feature-specific criteria together;
-- use shared filter widgets when their semantics match.
+- use shared filter widgets when their semantics match;
+- display names (or media titles) for selected entity criteria, including restored
+  filters; retain IDs for queries/removal and as a fallback if a name is unavailable;
+- use `FilterField` for consistently start-aligned labels, scaled outer spacing,
+  and label-to-control gaps across text, numeric, chip, and entity criteria;
+- use full-width `FilterDropdown` controls with the same scalable decoration
+  and minimum touch height; place value inputs below operators so long localized
+  options and large UI scales do not squeeze or overflow adjacent controls.
 
 Do not force every entity into the Scene filter shape. Performer, studio, tag,
 group, image, gallery, scene, and marker criteria remain feature-specific.
@@ -275,7 +288,9 @@ reliable when scrubbing is unavailable.
 ### Scene details
 
 Scene details combine identity, playback, metadata, related media, and editing
-without duplicating repository state.
+without duplicating repository state. The scene information panel opened from
+card long-press or details shows the primary file's size in its technical
+metadata, using readable byte units or a placeholder when unavailable.
 
 Layout contract:
 
@@ -325,7 +340,10 @@ Interactive rating entry points share `RatingButton` and `RatingPicker`. A singl
 star opens a popup editor with five stars, fractional-rating selection, Clear,
 and Apply/Cancel. Ratings use the server's 0–100 scale; cancelling leaves the
 confirmed rating unchanged. Image metadata panels, including card long-press
-details, are read-only and omit rating controls. Fullscreen image rating retains
+details, are read-only and omit rating controls. Scene, image, and gallery
+metadata panels support text selection and copying. Image panels show the
+primary visual file's size in readable byte units, or a placeholder when
+unavailable. Fullscreen image rating retains
 its image/gallery target selector.
 
 Scene rating and metadata edits go through the scene repository. Successful
@@ -762,6 +780,21 @@ Changes should select focused coverage from these areas:
 - Windows fullscreen restoration and Linux icon path resolution.
 
 ### Verification commands
+
+`analysis_options.yaml` extends Flutter lints with strict typing, explicit future
+handling (`unawaited_futures` and `discarded_futures`), `avoid_dynamic_calls`, and
+`avoid_catching_errors`, `avoid_print`, `avoid_void_async`, `exhaustive_cases`, and
+`avoid_catches_without_on_clauses`. Await work whose completion matters; use
+`unawaited()` only for intentional background work, preserving its error handling.
+Prefer typed exception catches. Intentional recovery boundaries that must also
+handle cast, storage, or native-plugin errors use documented `on Object` catches.
+Caught failures are recorded through `AppLogStore` when debug logging is enabled,
+including recovery and cleanup paths. `addError` records the operation, exception
+type, and stack trace, not raw exception payloads that can contain credentials,
+authenticated URLs, or backup data. Cache workers forward their bounded log
+entries to the main isolate so failures appear in the in-app log viewer. Native
+Android recovery failures use the platform logger with their stack traces.
+Access JSON through typed maps/lists rather than dynamic member calls.
 
 For documentation-only edits, run structural/link checks and `git diff --check`.
 For code changes, run the narrowest relevant tests first, then broaden according

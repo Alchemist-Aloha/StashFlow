@@ -62,6 +62,12 @@ void main() {
 
   test('desktop startup runs the shared-engine multi-view root', () {
     final dartSource = File('lib/main.dart').readAsStringSync();
+    final rootRunnerSource = File(
+      'lib/core/utils/root_app_runner.dart',
+    ).readAsStringSync();
+    final nativeRootRunnerSource = File(
+      'lib/core/utils/root_app_runner_native.dart',
+    ).readAsStringSync();
     final linuxRunnerSource = File(
       'linux/runner/my_application.cc',
     ).readAsStringSync();
@@ -78,7 +84,16 @@ void main() {
       'macos/Runner/AppDelegate.swift',
     ).readAsStringSync();
 
-    expect(dartSource, contains('mvd.runMultiApp('));
+    expect(dartSource, contains('root_app_runner.runRootApp(app)'));
+    expect(
+      rootRunnerSource,
+      contains("if (dart.library.io) 'root_app_runner_native.dart'"),
+    );
+    expect(rootRunnerSource, contains('platform.runRootApp(app)'));
+    expect(nativeRootRunnerSource, contains('runMultiApp(home:'));
+    for (final platform in ['windows', 'linux', 'macOS']) {
+      expect(nativeRootRunnerSource, contains('TargetPlatform.$platform'));
+    }
     expect(
       linuxRunnerSource,
       contains('multiview_desktop_linux_runner_install('),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -21,6 +23,7 @@ import '../providers/tag_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class TagDetailsPage extends ConsumerWidget {
   final String tagId;
@@ -46,7 +49,7 @@ class TagDetailsPage extends ConsumerWidget {
       return;
     }
 
-    context.push('/tags/tag/${randomTag.id}');
+    unawaited(context.push('/tags/tag/${randomTag.id}'));
   }
 
   @override
@@ -155,7 +158,14 @@ class TagDetailsPage extends ConsumerWidget {
                                       .setTagFavorite(tag.id, !tag.favorite);
                                   ref.invalidate(tagDetailsProvider(tag.id));
                                   ref.invalidate(tagListProvider);
-                                } catch (e) {
+                                } on Object catch (e, stackTrace) {
+                                  AppLogStore.instance.addError(
+                                    'build',
+                                    e,
+                                    stackTrace,
+                                    source: 'tag_details_page',
+                                  );
+                                  // This operation also reports invalid results through StateError.
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
@@ -279,7 +289,9 @@ class TagDetailsPage extends ConsumerWidget {
                                             imageFilterStateProvider.notifier,
                                           )
                                           .setGalleryId(gallery.id);
-                                      context.push('/galleries/images');
+                                      unawaited(
+                                        context.push('/galleries/images'),
+                                      );
                                     },
                                   ),
                                 ],

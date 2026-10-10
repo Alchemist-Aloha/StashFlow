@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -9,6 +11,7 @@ import '../../domain/models/server_profile.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/connection_provider.dart';
 import '../providers/server_profiles_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class ServerProfileDrawer extends ConsumerStatefulWidget {
   final ServerProfile? profile;
@@ -50,7 +53,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         _authMode == AuthMode.basic || _authMode == AuthMode.bearer;
 
     if (widget.profile != null) {
-      _loadCredentials();
+      unawaited(_loadCredentials());
     }
   }
 
@@ -156,7 +159,13 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       setState(() {
         _testResult = result;
       });
-    } catch (e) {
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'testConnection',
+        e,
+        stackTrace,
+        source: 'server_profile_drawer',
+      );
       if (!mounted) return;
       setState(() {
         _testResult = 'Error: $e';

@@ -2424,10 +2424,28 @@ abstract class AppLocalizations {
   /// **'Custom Hex Color'**
   String get settings_appearance_custom_hex;
 
+  /// No description provided for @settings_appearance_color_hue.
+  ///
+  /// In en, this message translates to:
+  /// **'Hue'**
+  String get settings_appearance_color_hue;
+
+  /// No description provided for @settings_appearance_color_saturation.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturation'**
+  String get settings_appearance_color_saturation;
+
+  /// No description provided for @settings_appearance_color_brightness.
+  ///
+  /// In en, this message translates to:
+  /// **'Brightness'**
+  String get settings_appearance_color_brightness;
+
   /// No description provided for @settings_appearance_custom_hex_helper.
   ///
   /// In en, this message translates to:
-  /// **'Enter an 8-digit ARGB hex code'**
+  /// **'Enter 6-digit RGB or 8-digit ARGB hex'**
   String get settings_appearance_custom_hex_helper;
 
   /// No description provided for @settings_appearance_font_family.

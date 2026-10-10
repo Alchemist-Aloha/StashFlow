@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart' show VideoParams;
+import 'app_log_store.dart';
 
 /// Minimum window size the desktop layouts are designed around.
 const Size kDesktopMinimumWindowSize = Size(800, 600);
@@ -93,7 +94,13 @@ class PipMode {
         final entered = await enter(aspectRatio);
         if (entered) isInPipMode.value = true;
         return entered;
-      } catch (_) {
+      } on Exception catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'enterIfAvailable',
+          error,
+          stackTrace,
+          source: 'pip_mode',
+        );
         return false;
       }
     }
@@ -112,7 +119,13 @@ class PipMode {
       // Publish success now so orientation stays suppressed between the two.
       if (entered) isInPipMode.value = true;
       return entered;
-    } catch (_) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'enterIfAvailable',
+        error,
+        stackTrace,
+        source: 'pip_mode',
+      );
       return false;
     }
   }
@@ -133,7 +146,13 @@ class PipMode {
             args,
           ) ??
           false;
-    } catch (_) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'updateAspectRatio',
+        error,
+        stackTrace,
+        source: 'pip_mode',
+      );
       return false;
     }
   }
@@ -157,7 +176,13 @@ class PipMode {
       final exited = await exit();
       if (exited) isInPipMode.value = false;
       return exited;
-    } catch (_) {
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'exitIfAvailable',
+        error,
+        stackTrace,
+        source: 'pip_mode',
+      );
       return false;
     }
   }

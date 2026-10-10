@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'app_config_backup.dart';
+import '../../utils/app_log_store.dart';
 
 enum AppConfigFormatError {
   fileTooLarge,
@@ -112,11 +113,30 @@ final class AppConfigBackupCodec {
       );
       _validate(backup);
       return backup;
-    } on AppConfigFormatException {
+    } on AppConfigFormatException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'decode',
+        error,
+        stackTrace,
+        source: 'app_config_backup_codec',
+      );
       rethrow;
-    } on FormatException {
+    } on FormatException catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'decode',
+        error,
+        stackTrace,
+        source: 'app_config_backup_codec',
+      );
       throw const AppConfigFormatException(AppConfigFormatError.invalidJson);
-    } catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'decode',
+        error,
+        stackTrace,
+        source: 'app_config_backup_codec',
+      );
+      // Malformed stored data can also fail with a cast error.
       throw const AppConfigFormatException(AppConfigFormatError.invalidData);
     }
   }
@@ -237,7 +257,14 @@ final class AppConfigBackupCodec {
     }
     try {
       return value.cast<String, dynamic>();
-    } catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'map',
+        error,
+        stackTrace,
+        source: 'app_config_backup_codec',
+      );
+      // Malformed stored data can also fail with a cast error.
       throw const AppConfigFormatException(AppConfigFormatError.invalidData);
     }
   }

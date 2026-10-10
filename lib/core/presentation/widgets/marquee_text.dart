@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class MarqueeText extends StatefulWidget {
@@ -28,7 +30,7 @@ class _MarqueeTextState extends State<MarqueeText> {
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _startScrolling(_scrollGeneration);
+      unawaited(_startScrolling(_scrollGeneration));
     });
   }
 
@@ -44,12 +46,12 @@ class _MarqueeTextState extends State<MarqueeText> {
       }
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        _startScrolling(_scrollGeneration);
+        unawaited(_startScrolling(_scrollGeneration));
       });
     }
   }
 
-  void _startScrolling(int generation) async {
+  Future<void> _startScrolling(int generation) async {
     if (!_isCurrentGeneration(generation) || !_scrollController.hasClients) {
       return;
     }
@@ -76,7 +78,7 @@ class _MarqueeTextState extends State<MarqueeText> {
     }
 
     _scrollController.jumpTo(0);
-    _startScrolling(generation);
+    unawaited(_startScrolling(generation));
   }
 
   bool _isCurrentGeneration(int generation) =>

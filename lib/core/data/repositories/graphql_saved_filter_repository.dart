@@ -1,10 +1,9 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
 
 import '../graphql/graphql_exception.dart';
 import '../graphql/graphql_client.dart';
+import '../../utils/app_log_store.dart';
 
 const _findSavedFiltersDocument = r'''
   query FindSavedFiltersByMode($mode: FilterMode) {
@@ -81,13 +80,14 @@ class GraphQLSavedFilterRepository {
     for (final raw in filters.whereType<Map<String, dynamic>>()) {
       try {
         decoded.add(fromRaw(raw));
-      } catch (error, stackTrace) {
-        developer.log(
-          'Skipping invalid saved filter ${raw['id'] ?? '<unknown>'}',
-          name: 'GraphQLSavedFilterRepository',
-          error: error,
-          stackTrace: stackTrace,
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'findAll',
+          error,
+          stackTrace,
+          source: 'graphql_saved_filter_repository',
         );
+        // Malformed stored data can also fail with a cast error.
       }
     }
     return List.unmodifiable(decoded);

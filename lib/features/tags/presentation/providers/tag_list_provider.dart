@@ -10,6 +10,7 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'tag_list_provider.g.dart';
 
@@ -72,7 +73,14 @@ class TagListFilterNotifier extends Notifier<TagFilter> {
     if (raw != null && raw.isNotEmpty) {
       try {
         return TagFilter.fromJson(jsonDecode(raw) as Map<String, dynamic>);
-      } catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'build',
+          error,
+          stackTrace,
+          source: 'tag_list_provider',
+        );
+        // Malformed stored data can also fail with a cast error.
         // Fall through to the legacy favorites-only preference.
       }
     }

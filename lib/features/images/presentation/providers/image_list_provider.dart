@@ -10,6 +10,7 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../../core/domain/entities/filter_options.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'image_list_provider.g.dart';
 
@@ -86,7 +87,14 @@ class ImageFilterState extends _$ImageFilterState {
             jsonDecode(jsonString) as Map<String, dynamic>,
           ),
         );
-      } catch (_) {
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'build',
+          error,
+          stackTrace,
+          source: 'image_list_provider',
+        );
+        // Malformed stored data can also fail with a cast error.
         // Fall through to the empty default for corrupt legacy preferences.
       }
     }

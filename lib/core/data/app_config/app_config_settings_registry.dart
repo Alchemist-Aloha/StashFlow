@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../features/scenes/presentation/providers/player_settings.dart';
+import '../../utils/app_log_store.dart';
 
 final class AppConfigSettingException implements Exception {
   const AppConfigSettingException(this.key);
@@ -228,7 +229,13 @@ final class AppConfigSettingsRegistry {
     final snapshot = await read(prefs);
     try {
       await _writeAll(prefs, values);
-    } catch (_) {
+    } catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'replace',
+        error,
+        stackTrace,
+        source: 'app_config_settings_registry',
+      );
       await _writeAll(prefs, snapshot);
       rethrow;
     }
@@ -283,7 +290,13 @@ final class AppConfigSettingsRegistry {
         try {
           final decoded = jsonDecode(value as String);
           return expectList ? decoded is List : decoded is Map;
-        } catch (_) {
+        } on FormatException catch (error, stackTrace) {
+          AppLogStore.instance.addError(
+            'jsonString',
+            error,
+            stackTrace,
+            source: 'app_config_settings_registry',
+          );
           return false;
         }
       });

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:window_manager/window_manager.dart';
+import 'app_log_store.dart';
 
 class DesktopFullscreen {
   DesktopFullscreen._();
@@ -40,9 +41,23 @@ class DesktopFullscreen {
       await windowManager.setBounds(_slightlySmaller(maximizedBounds));
       await windowManager.setFullScreen(true);
     } catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'enter',
+        error,
+        stackTrace,
+        source: 'desktop_fullscreen',
+      );
       try {
         await _restoreMaximizedWindow();
-      } catch (_) {}
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'enter',
+          error,
+          stackTrace,
+          source: 'desktop_fullscreen',
+        );
+        // Restoration must not mask the original transition failure.
+      }
       Error.throwWithStackTrace(error, stackTrace);
     }
   }
@@ -104,7 +119,15 @@ class DesktopFullscreen {
     while (_activeTransition != null) {
       try {
         await _activeTransition;
-      } catch (_) {}
+      } on Object catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'serialize',
+          error,
+          stackTrace,
+          source: 'desktop_fullscreen',
+        );
+        // A failed transition must not block the next attempt.
+      }
     }
 
     final current = operation();

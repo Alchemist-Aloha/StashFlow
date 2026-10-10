@@ -87,9 +87,9 @@ void main() {
       final json = filter.toJson();
 
       expect(json['searchQuery'], 'test');
-      expect(json['rating100']['value'], 100);
+      expect((json['rating100'] as Map<String, dynamic>)['value'], 100);
       expect(json['organized'], true);
-      expect(json['resolution']['value'], ['1080p']);
+      expect((json['resolution'] as Map<String, dynamic>)['value'], ['1080p']);
     });
   });
 }

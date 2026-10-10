@@ -69,8 +69,9 @@ Future<void> main() async {
           await windowManager.setSize(kDesktopMinimumWindowSize);
           await windowManager.maximize();
         }
-      } catch (e) {
-        debugPrint('Failed to set initial window size: $e');
+      } on Object catch (e, stackTrace) {
+        AppLogStore.instance.addError('main', e, stackTrace, source: 'main');
+        // Startup fallbacks must also handle binding and plugin errors.
       }
     }
 
@@ -81,7 +82,9 @@ Future<void> main() async {
       PaintingBinding.instance.imageCache.maximumSize = 500;
       PaintingBinding.instance.imageCache.maximumSizeBytes =
           200 * 1024 * 1024; // 200 MB
-    } catch (_) {
+    } on Object catch (error, stackTrace) {
+      AppLogStore.instance.addError('main', error, stackTrace, source: 'main');
+      // Startup fallbacks must also handle binding and plugin errors.
       // Ignore if PaintingBinding isn't available in some test environments.
     }
     PipMode.initialize();
@@ -98,8 +101,10 @@ Future<void> main() async {
             androidStopForegroundOnPause: false,
           ),
         );
-      } catch (e) {
-        debugPrint('Failed to initialize AudioService: $e');
+      } on Object catch (e, stackTrace) {
+        AppLogStore.instance.addError('main', e, stackTrace, source: 'main');
+        // Startup fallbacks must also handle binding and plugin errors.
+
         // Fallback or handle gracefully
       }
     }
@@ -167,7 +172,8 @@ Future<void> main() async {
       );
       unawaited(_attachPersistentGraphqlStore(graphqlStore));
     });
-  } catch (error, stackTrace) {
+  } on Object catch (error, stackTrace) {
+    // Startup fallbacks must also handle binding and plugin errors.
     AppLogStore.instance.add('$error\n$stackTrace', source: 'startup_error');
     _runRootApp(StartupErrorApp(error: error, stackTrace: stackTrace));
   }
@@ -186,7 +192,8 @@ Future<void> _attachPersistentGraphqlStore(
     }
     final persistentStore = await HiveStore.open();
     deferredStore.attach(persistentStore);
-  } catch (error, stackTrace) {
+  } on Object catch (error, stackTrace) {
+    // Startup fallbacks must also handle binding and plugin errors.
     debugPrint('Startup: GraphQL cache initialization failed: $error');
     AppLogStore.instance.add(
       '$error\n$stackTrace',
@@ -209,7 +216,8 @@ Future<void> _enforceStartupCacheLimits(SharedPreferences prefs) async {
     await service.enforceImageCacheLimit(imageLimitMb);
     await service.enforceVideoCacheLimit(videoLimitMb);
     debugPrint('Startup: cache limit enforcement completed');
-  } catch (error, stackTrace) {
+  } on Object catch (error, stackTrace) {
+    // Startup fallbacks must also handle binding and plugin errors.
     debugPrint('Startup: cache limit enforcement failed: $error');
     AppLogStore.instance.add(
       '$error\n$stackTrace',

@@ -161,13 +161,9 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
   }
 
   Widget _buildRatingFilter() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.galleries_min_rating,
       children: [
-        Text(
-          context.l10n.galleries_min_rating,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: [
@@ -454,10 +450,9 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
     bool? value,
     ValueChanged<bool?> onChanged,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: label,
       children: [
-        Text(label, style: context.textTheme.labelLarge),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: [
@@ -497,13 +492,9 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
       'INTERSEX',
       'NON_BINARY',
     ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.performers_gender,
       children: [
-        Text(
-          context.l10n.performers_gender,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: genders.map((g) {
@@ -537,13 +528,9 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
 
   Widget _buildCircumcisedFilter() {
     final values = ['CUT', 'UNCUT'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterField(
+      label: context.l10n.performers_circumcised,
       children: [
-        Text(
-          context.l10n.performers_circumcised,
-          style: context.textTheme.labelLarge,
-        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: values
@@ -569,18 +556,24 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
   Widget _buildEntityFilter<T>(
     String label,
     String providerType,
-    dynamic criterion,
-    ValueChanged<dynamic> onChanged,
+    Object? criterion,
+    ValueChanged<Object?> onChanged,
     bool isHierarchical,
   ) {
-    final selectedIds =
-        (criterion?.value as List<dynamic>?)?.cast<String>() ?? <String>[];
-    final modifier =
-        criterion?.modifier as CriterionModifier? ?? CriterionModifier.includes;
+    final (selectedIds, modifier) = switch (criterion) {
+      MultiCriterion(:final value, :final modifier) => (value, modifier),
+      HierarchicalMultiCriterion(:final value, :final modifier) => (
+        value,
+        modifier,
+      ),
+      null => (<String>[], CriterionModifier.includes),
+      _ => throw ArgumentError.value(criterion, 'criterion'),
+    };
 
     return SelectionCriterionInput(
       label: label,
       selectedIds: selectedIds,
+      providerType: providerType,
       modifier: modifier,
       onModifierChanged: (next) {
         onChanged(

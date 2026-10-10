@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Rational
+import android.util.Log
 import io.flutter.embedding.engine.FlutterEngine
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.plugin.common.MethodChannel
@@ -83,7 +84,8 @@ open class MainActivity : AudioServiceActivity() {
 			AudioManager.FLAG_SHOW_UI,
 		)
 		audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toDouble() / maximum
-	} catch (_: Throwable) {
+	} catch (error: Throwable) {
+		Log.w("StashFlow", "Failed to adjust media volume", error)
 		null
 	}
 
@@ -93,7 +95,8 @@ open class MainActivity : AudioServiceActivity() {
 		}
 		return try {
 			enterPictureInPictureMode(pipParams(numerator, denominator))
-		} catch (_: Throwable) {
+		} catch (error: Throwable) {
+			Log.w("StashFlow", "Failed to enter picture-in-picture", error)
 			false
 		}
 	}
@@ -105,7 +108,8 @@ open class MainActivity : AudioServiceActivity() {
 		return try {
 			setPictureInPictureParams(pipParams(numerator, denominator))
 			true
-		} catch (_: Throwable) {
+		} catch (error: Throwable) {
+			Log.w("StashFlow", "Failed to update picture-in-picture aspect ratio", error)
 			false
 		}
 	}

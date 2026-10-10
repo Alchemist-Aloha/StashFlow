@@ -54,6 +54,7 @@ void main() {
                   'width': 100,
                   'height': 100,
                   'path': '/path/to/img.jpg',
+                  'size': 1572864,
                   '__typename': 'ImageFile',
                 },
               ],
@@ -99,6 +100,7 @@ void main() {
       expect(result.length, 1);
       expect(result.first.id, '1');
       expect(result.first.title, 'Test Image');
+      expect(result.first.files.single.size, 1572864);
       expect(result.first.paths.thumbnail, 'http://localhost:9999/thumb.jpg');
       expect(result.first.studioName, 'Studio One');
       expect(result.first.performerNames, ['Performer One']);
@@ -169,12 +171,24 @@ void main() {
         }),
       );
       final filter = request.variables['image_filter'] as Map<String, dynamic>;
-      expect(filter['code']['value'], 'IMG-1');
-      expect(filter['photographer']['value'], 'Alice');
-      expect(filter['phash_distance']['distance'], 3);
-      expect(filter['files_filter']['parent_folder']['value'], ['folder-1']);
+      expect((filter['code'] as Map<String, dynamic>)['value'], 'IMG-1');
+      expect(
+        (filter['photographer'] as Map<String, dynamic>)['value'],
+        'Alice',
+      );
+      expect((filter['phash_distance'] as Map<String, dynamic>)['distance'], 3);
+      expect(
+        ((filter['files_filter'] as Map<String, dynamic>)['parent_folder']
+            as Map<String, dynamic>)['value'],
+        ['folder-1'],
+      );
       expect(filter['is_missing'], 'rating');
-      expect(filter['custom_fields'].single['field'], 'source');
+      expect(
+        (filter['custom_fields'] as List)
+            .cast<Map<String, dynamic>>()
+            .single['field'],
+        'source',
+      );
     });
 
     test('getImageById returns an image on success', () async {
@@ -192,7 +206,8 @@ void main() {
               'width': 100,
               'height': 100,
               'path': '/path/to/img.jpg',
-              '__typename': 'ImageFile',
+              'size': 3221225472,
+              '__typename': 'VideoFile',
             },
           ],
           'paths': {
@@ -225,6 +240,7 @@ void main() {
       expect(result, isA<Image>());
       expect(result.id, '1');
       expect(result.title, 'Test Image');
+      expect(result.files.single.size, 3221225472);
       expect(result.paths.thumbnail, 'http://localhost:9999/thumb.jpg');
     });
 

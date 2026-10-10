@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 /// Reports each completion edge once, shared by global and feed sessions.
 StreamSubscription<bool> listenToPlaybackCompletion(
@@ -157,7 +158,13 @@ class PlaybackStartupRecovery {
 
       try {
         return await start(attempt).timeout(retryTimeout);
-      } catch (error) {
+      } catch (error, stackTrace) {
+        AppLogStore.instance.addError(
+          'run',
+          error,
+          stackTrace,
+          source: 'playback_session_controller',
+        );
         lastError = error;
         if (attempt >= maxAttempts - 1 || !isCurrent()) {
           rethrow;
