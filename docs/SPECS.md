@@ -716,10 +716,14 @@ Encryption and cloud synchronization are outside the current backup scope.
 
 Release, release-candidate, and nightly builds share
 `.github/workflows/reusable-release.yml`. Android, Linux, web, and release jobs
-use Ubuntu 26.04. CI uses Flutter 3.47.6 and enforces
-`pubspec.lock`, fetching the pinned media-kit fork through Pub rather than the
-ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
+use Ubuntu 26.04. CI uses Flutter 3.47.6 and resolves dependencies with
+`flutter pub get`
+Pub fetches the media-kit fork rather than
+using the ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
 libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
+
+The app requires Flutter 3.47.6 or newer and Dart 3.11 or newer within Dart 3.x.
+`msix` and `fastforge` are development dependencies used only for packaging.
 
 ### macOS
 
