@@ -4,6 +4,8 @@ import 'package:media_kit/media_kit.dart' as mk;
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_debug_overlay.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_debug_properties_stub.dart'
+    as web;
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 class DiagnosticPlatform extends Fake implements mk.NativePlayer {
@@ -81,6 +83,18 @@ Widget panel(mk.Player player, {double scale = 1, double width = 400}) =>
     );
 
 void main() {
+  test(
+    'web diagnostics omit native properties without reading the player',
+    () async {
+      final platform = DiagnosticPlatform();
+      expect(
+        await web.sampleVideoDebugProperties(platform, ['video-codec']),
+        isEmpty,
+      );
+      expect(platform.reads, 0);
+    },
+  );
+
   testWidgets(
     'samples real metrics, handles missing properties, stops on unmount',
     (tester) async {
@@ -110,7 +124,7 @@ void main() {
   );
 
   testWidgets(
-    'player replacement clears stale diagnostics and web is supported',
+    'player replacement clears stale diagnostics for a missing platform',
     (tester) async {
       await tester.pumpWidget(panel(DiagnosticPlayer(DiagnosticPlatform())));
       await tester.pump();

@@ -7,6 +7,8 @@ import 'package:media_kit/media_kit.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
 import '../../providers/video_player_provider.dart';
+import 'video_debug_properties_stub.dart'
+    if (dart.library.io) 'video_debug_properties_native.dart';
 
 /// Read-only diagnostics, sampled only while the debug panel is mounted.
 /// Unsupported mpv properties remain unavailable rather than implying zero.
@@ -52,21 +54,11 @@ class _VideoDebugOverlayState extends State<VideoDebugOverlay> {
     if (_sampling) return;
     _sampling = true;
     final player = widget.player;
-    final platform = player.platform;
-    final values = <String, String>{};
     try {
-      if (platform is NativePlayer) {
-        for (final property in _properties) {
-          try {
-            values[property] = await platform.getProperty(
-              property,
-              waitForInitialization: false,
-            );
-          } on Object {
-            // Properties may be absent or the session may be disposing.
-          }
-        }
-      }
+      final values = await sampleVideoDebugProperties(
+        player.platform,
+        _properties,
+      );
       if (mounted && identical(player, widget.player)) {
         setState(() => _values = values);
       }
