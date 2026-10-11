@@ -473,6 +473,57 @@ void main() {
     },
   );
 
+  for (final lifecycle in [
+    AppLifecycleState.hidden,
+    AppLifecycleState.paused,
+  ]) {
+    test('notification pause is honored immediately in $lifecycle', () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      var playback = PlayerStateData(playing: true);
+      when(mockPlayer.state).thenAnswer((_) => playback);
+      when(mockPlayer.pause()).thenAnswer((_) async {
+        playback = PlayerStateData(playing: false);
+        playingStream.add(false);
+      });
+      await notifier.attachController(
+        createTestScene('notification-pause'),
+        mockPlayer,
+        mockVideoController,
+      );
+      notifier.setEnableBackgroundPlayback(true);
+      notifier.didChangeAppLifecycleState(lifecycle);
+
+      await app.mediaHandler!.pause();
+      positionStream.add(const Duration(seconds: 1));
+      await Future<void>.delayed(Duration.zero);
+
+      verify(mockPlayer.pause()).called(1);
+      verifyNever(mockPlayer.play());
+      expect(container.read(playerStateProvider).isPlaying, isFalse);
+    });
+  }
+
+  test(
+    'notification pause suppresses recovery of an already paused player',
+    () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      when(mockPlayer.state).thenReturn(PlayerStateData(playing: false));
+      await notifier.attachController(
+        createTestScene('notification-already-paused'),
+        mockPlayer,
+        mockVideoController,
+      );
+      notifier.setEnableBackgroundPlayback(true);
+      notifier.didChangeAppLifecycleState(AppLifecycleState.paused);
+
+      await app.mediaHandler!.pause();
+      positionStream.add(const Duration(seconds: 1));
+      await Future<void>.delayed(Duration.zero);
+
+      verifyNever(mockPlayer.play());
+    },
+  );
+
   test('background playback off pauses an active player', () async {
     final notifier = container.read(playerStateProvider.notifier);
     final scene = createTestScene('background-off');

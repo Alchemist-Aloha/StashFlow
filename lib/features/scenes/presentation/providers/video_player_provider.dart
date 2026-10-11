@@ -384,10 +384,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   int _backgroundRecoveryToken = 0;
   bool _backgroundRecoverySuppressed = false;
   bool _backgroundRecoveryInFlight = false;
-  DateTime? _backgroundEnteredAt;
   int _playSceneGeneration = 0;
   int _queuePrewarmGeneration = 0;
-  static const Duration _backgroundPauseGraceWindow = Duration(seconds: 2);
 
   @override
   GlobalPlayerState build() {
@@ -1691,12 +1689,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
   void pause({bool suppressBackgroundRecovery = true}) {
     final player = state.player;
-    if (player == null || !player.state.playing) return;
+    if (player == null) return;
     if (_appLifecycleState != AppLifecycleState.resumed &&
         state.enableBackgroundPlayback &&
         suppressBackgroundRecovery) {
       _backgroundRecoverySuppressed = true;
     }
+    if (!player.state.playing) return;
     unawaited(player.pause());
     state = state.copyWith(isPlaying: false);
     if (!isTestMode) {
@@ -1710,7 +1709,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       _backgroundRecoveryToken++;
       _backgroundRecoverySuppressed = false;
-      _backgroundEnteredAt = null;
       return;
     }
 
@@ -1719,7 +1717,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached;
     if (!isBackgroundState) return;
-    _backgroundEnteredAt ??= DateTime.now();
 
     final player = this.state.player;
     if (player == null || !player.state.playing) return;
@@ -1821,23 +1818,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   Future<void> _handleMediaPauseCommand() async {
-    final inBackground = _appLifecycleState != AppLifecycleState.resumed;
-    final enteredAt = _backgroundEnteredAt;
-    final inBackgroundGraceWindow =
-        inBackground &&
-        state.enableBackgroundPlayback &&
-        enteredAt != null &&
-        DateTime.now().difference(enteredAt) < _backgroundPauseGraceWindow;
-
-    if (inBackgroundGraceWindow) {
-      AppLogStore.instance.add(
-        'PlayerState: ignoring transient media pause during background transition',
-        source: 'player_provider',
-      );
-      _scheduleBackgroundPlaybackRecovery();
-      return;
-    }
-
     if (ref.read(castServiceProvider).isCasting) {
       await ref.read(castServiceProvider.notifier).pause();
       return;

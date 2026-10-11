@@ -604,6 +604,11 @@ Background playback follows the persisted preference:
 
 - when enabled, playback may continue while the app is backgrounded and the
   media notification remains synchronized;
+- explicit system media commands take effect immediately after backgrounding;
+  Pause suppresses background keepalive until an explicit Play or foreground
+  resume;
+- controller initialization must not require a Flutter render frame, so
+  notification queue changes and auto-next can start while frames are suspended;
 - when disabled, an active global player pauses on backgrounding unless the app
   is entering an allowed picture-in-picture path;
 - preview/local auxiliary players do not inherit global background ownership.
