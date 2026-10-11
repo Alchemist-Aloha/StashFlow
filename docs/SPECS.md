@@ -448,6 +448,10 @@ included in configuration backups.
 
 ### Native video output and decoding
 
+- `media_kit` and `media_kit_video` come from the same revision of the
+  `Alchemist-Aloha/media-kit` fork. Its core build hook downloads, verifies, and
+  packages native playback libraries; do not add `media_kit_libs_*` packages.
+
 - Playback settings persist `video_mpv_vo` and `video_mpv_hwdec`; `default`
   leaves media-kit's platform defaults unchanged. `hwdec=no` selects software
   decoding without disabling GPU rendering.
@@ -709,6 +713,18 @@ Backup invariants:
 Encryption and cloud synchronization are outside the current backup scope.
 
 ## Platform and build behavior
+
+Release, release-candidate, and nightly builds share
+`.github/workflows/reusable-release.yml`. Android, Linux, web, and release jobs
+use Ubuntu 26.04. CI uses Flutter 3.47.6 and enforces
+`pubspec.lock`, fetching the pinned media-kit fork through Pub rather than the
+ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
+libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
+
+### macOS
+
+The minimum deployment target is macOS 13, matching the native frameworks emitted
+by the pinned Flutter SDK.
 
 ### Android
 

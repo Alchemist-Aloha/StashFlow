@@ -13,4 +13,4 @@ PRODUCT_BUNDLE_IDENTIFIER = com.github.alchemistaloha.stashflow
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.github.alchemistaloha. All rights reserved.
 
-MACOSX_DEPLOYMENT_TARGET = 12.0
+MACOSX_DEPLOYMENT_TARGET = 13.0
