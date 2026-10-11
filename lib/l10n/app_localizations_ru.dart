@@ -9,6 +9,66 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get video_debug_format => 'Тип MIME';
+
+  @override
+  String get video_debug_variant => 'Вариант';
+
+  @override
+  String get video_debug_source => 'Источник';
+
+  @override
+  String get video_debug_decoder => 'Декодер';
+
+  @override
+  String get video_debug_codec => 'Кодек';
+
+  @override
+  String get video_debug_hardware => 'Активное аппаратное декодирование';
+
+  @override
+  String get video_debug_output => 'Видеовывод';
+
+  @override
+  String get video_debug_pixel_format => 'Формат пикселей';
+
+  @override
+  String get video_debug_performance => 'Производительность';
+
+  @override
+  String get video_debug_source_fps => 'Частота кадров источника';
+
+  @override
+  String get video_debug_output_fps => 'Частота кадров вывода';
+
+  @override
+  String get video_debug_decoder_drops => 'Пропуски кадров декодера';
+
+  @override
+  String get video_debug_output_drops => 'Пропуски кадров вывода';
+
+  @override
+  String get video_debug_av_sync => 'Синхронизация A/V';
+
+  @override
+  String get video_debug_cache => 'Кэш демультиплексора';
+
+  @override
+  String get video_debug_buffer => 'Буфер впереди';
+
+  @override
+  String get video_debug_startup => 'Запуск';
+
+  @override
+  String get video_debug_prewarm => 'Предзагрузка';
+
+  @override
+  String get video_debug_success => 'Успешно';
+
+  @override
+  String get video_debug_failed => 'Ошибка';
+
+  @override
   String get appTitle => 'StashFlow';
 
   @override

@@ -9,6 +9,67 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get video_debug_format => 'Tipo MIME';
+
+  @override
+  String get video_debug_variant => 'Variante';
+
+  @override
+  String get video_debug_source => 'Origen';
+
+  @override
+  String get video_debug_decoder => 'Decodificador';
+
+  @override
+  String get video_debug_codec => 'Códec';
+
+  @override
+  String get video_debug_hardware => 'Decodificación por hardware activa';
+
+  @override
+  String get video_debug_output => 'Salida de vídeo';
+
+  @override
+  String get video_debug_pixel_format => 'Formato de píxel';
+
+  @override
+  String get video_debug_performance => 'Rendimiento';
+
+  @override
+  String get video_debug_source_fps => 'Fotogramas de origen';
+
+  @override
+  String get video_debug_output_fps => 'Fotogramas de salida';
+
+  @override
+  String get video_debug_decoder_drops =>
+      'Fotogramas descartados por decodificador';
+
+  @override
+  String get video_debug_output_drops => 'Fotogramas descartados en salida';
+
+  @override
+  String get video_debug_av_sync => 'Sincronización A/V';
+
+  @override
+  String get video_debug_cache => 'Caché del demultiplexor';
+
+  @override
+  String get video_debug_buffer => 'Búfer adelantado';
+
+  @override
+  String get video_debug_startup => 'Inicio';
+
+  @override
+  String get video_debug_prewarm => 'Precarga';
+
+  @override
+  String get video_debug_success => 'Correcto';
+
+  @override
+  String get video_debug_failed => 'Fallido';
+
+  @override
   String get appTitle => 'StashFlow';
 
   @override

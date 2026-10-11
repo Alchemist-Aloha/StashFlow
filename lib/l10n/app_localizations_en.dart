@@ -9,6 +9,66 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get video_debug_format => 'MIME type';
+
+  @override
+  String get video_debug_variant => 'Variant';
+
+  @override
+  String get video_debug_source => 'Source';
+
+  @override
+  String get video_debug_decoder => 'Decoder';
+
+  @override
+  String get video_debug_codec => 'Codec';
+
+  @override
+  String get video_debug_hardware => 'Active hardware decoding';
+
+  @override
+  String get video_debug_output => 'Video output';
+
+  @override
+  String get video_debug_pixel_format => 'Pixel format';
+
+  @override
+  String get video_debug_performance => 'Performance';
+
+  @override
+  String get video_debug_source_fps => 'Source frame rate';
+
+  @override
+  String get video_debug_output_fps => 'Output frame rate';
+
+  @override
+  String get video_debug_decoder_drops => 'Decoder dropped frames';
+
+  @override
+  String get video_debug_output_drops => 'Output dropped frames';
+
+  @override
+  String get video_debug_av_sync => 'A/V sync';
+
+  @override
+  String get video_debug_cache => 'Demuxer cache';
+
+  @override
+  String get video_debug_buffer => 'Buffered ahead';
+
+  @override
+  String get video_debug_startup => 'Startup';
+
+  @override
+  String get video_debug_prewarm => 'Prewarm';
+
+  @override
+  String get video_debug_success => 'Succeeded';
+
+  @override
+  String get video_debug_failed => 'Failed';
+
+  @override
   String get appTitle => 'StashFlow';
 
   @override

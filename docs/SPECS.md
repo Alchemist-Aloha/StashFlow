@@ -446,6 +446,14 @@ no valid preference is saved; existing saved delays are preserved. The selected
 delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
 included in configuration backups.
 
+The optional video debug overlay groups stream, active decoder/output, and
+performance diagnostics in a bounded, scrollable panel. It follows controls
+visibility and samples native mpv properties once per second only while visible.
+It distinguishes source/output frame rates and decoder/output dropped frames;
+unsupported metrics are shown as unavailable, not zero. Startup and prewarm
+latencies retain their existing session meaning. The panel never displays media
+URLs or authentication headers.
+
 ### Native video output and decoding
 
 - `media_kit` and `media_kit_video` come from the same revision of the

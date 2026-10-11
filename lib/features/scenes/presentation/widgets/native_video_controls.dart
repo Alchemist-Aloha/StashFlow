@@ -11,6 +11,7 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:go_router/go_router.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'video_controls/video_progress_bar.dart';
+import 'video_controls/video_debug_overlay.dart';
 import 'video_controls/video_playback_controls.dart';
 import 'video_controls/player_gesture_feedback.dart';
 import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
@@ -1312,37 +1313,27 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                     ),
 
                   // Layer 1: UI Overlays
-                  // Debug Info (Follows controls visibility or always visible if you prefer)
-                  if (playerState.showVideoDebugInfo)
+                  if (playerState.showVideoDebugInfo && _controlsVisible)
                     Positioned(
-                      top: isFullScreen ? 60 : 8,
-                      left: !isFullScreen && widget.onInlineBack != null
-                          ? 60
-                          : 8,
-                      child: IgnorePointer(
-                        child: AnimatedOpacity(
-                          opacity: _controlsVisible ? 1 : 0,
-                          duration: const Duration(milliseconds: 180),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
+                      top:
+                          56 * context.dimensions.fontSizeFactor +
+                          MediaQuery.paddingOf(context).top,
+                      left: context.dimensions.spacingSmall,
+                      right: context.dimensions.spacingSmall,
+                      child: Align(
+                        alignment: AlignmentDirectional.topStart,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 400 * context.dimensions.fontSizeFactor,
+                            maxHeight: math.max(
+                              0,
+                              constraints.maxHeight * 0.5 -
+                                  MediaQuery.paddingOf(context).top,
                             ),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withAlpha(130),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: Text(
-                              'mime: ${playerState.streamMimeType ?? 'unknown'}'
-                              '${playerState.streamLabel == null || playerState.streamLabel!.isEmpty ? '' : '  label: ${playerState.streamLabel}'}'
-                              '${playerState.streamSource == null || playerState.streamSource!.isEmpty ? '' : '  src: ${playerState.streamSource}'}'
-                              '${playerState.prewarmAttempted != true ? '' : '  prewarm: ${playerState.prewarmSucceeded == true ? 'ok' : 'fail'}${playerState.prewarmLatencyMs == null ? '' : '/${playerState.prewarmLatencyMs}ms'}'}'
-                              '${playerState.startupLatencyMs == null ? '' : '  start: ${playerState.startupLatencyMs}ms'}',
-                              style: context.textTheme.bodyMedium?.copyWith(
-                                color: Colors.white70,
-                                fontSize: context.fontSizes.small,
-                              ),
-                            ),
+                          ),
+                          child: VideoDebugOverlay(
+                            player: widget.controller.player,
+                            session: playerState,
                           ),
                         ),
                       ),

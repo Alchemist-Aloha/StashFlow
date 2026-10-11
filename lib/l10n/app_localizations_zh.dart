@@ -9,6 +9,66 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get video_debug_format => 'MIME 类型';
+
+  @override
+  String get video_debug_variant => '版本';
+
+  @override
+  String get video_debug_source => '来源';
+
+  @override
+  String get video_debug_decoder => '解码器';
+
+  @override
+  String get video_debug_codec => '编解码器';
+
+  @override
+  String get video_debug_hardware => '当前硬件解码';
+
+  @override
+  String get video_debug_output => '视频输出';
+
+  @override
+  String get video_debug_pixel_format => '像素格式';
+
+  @override
+  String get video_debug_performance => '性能';
+
+  @override
+  String get video_debug_source_fps => '源帧率';
+
+  @override
+  String get video_debug_output_fps => '输出帧率';
+
+  @override
+  String get video_debug_decoder_drops => '解码丢帧';
+
+  @override
+  String get video_debug_output_drops => '输出丢帧';
+
+  @override
+  String get video_debug_av_sync => '音视频同步';
+
+  @override
+  String get video_debug_cache => '解复用缓存';
+
+  @override
+  String get video_debug_buffer => '提前缓冲';
+
+  @override
+  String get video_debug_startup => '启动';
+
+  @override
+  String get video_debug_prewarm => '预热';
+
+  @override
+  String get video_debug_success => '成功';
+
+  @override
+  String get video_debug_failed => '失败';
+
+  @override
   String get appTitle => 'StashFlow';
 
   @override
@@ -3396,6 +3456,66 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   AppLocalizationsZhHans() : super('zh_Hans');
 
   @override
+  String get video_debug_format => 'MIME 类型';
+
+  @override
+  String get video_debug_variant => '版本';
+
+  @override
+  String get video_debug_source => '来源';
+
+  @override
+  String get video_debug_decoder => '解码器';
+
+  @override
+  String get video_debug_codec => '编解码器';
+
+  @override
+  String get video_debug_hardware => '当前硬件解码';
+
+  @override
+  String get video_debug_output => '视频输出';
+
+  @override
+  String get video_debug_pixel_format => '像素格式';
+
+  @override
+  String get video_debug_performance => '性能';
+
+  @override
+  String get video_debug_source_fps => '源帧率';
+
+  @override
+  String get video_debug_output_fps => '输出帧率';
+
+  @override
+  String get video_debug_decoder_drops => '解码丢帧';
+
+  @override
+  String get video_debug_output_drops => '输出丢帧';
+
+  @override
+  String get video_debug_av_sync => '音视频同步';
+
+  @override
+  String get video_debug_cache => '解复用缓存';
+
+  @override
+  String get video_debug_buffer => '提前缓冲';
+
+  @override
+  String get video_debug_startup => '启动';
+
+  @override
+  String get video_debug_prewarm => '预热';
+
+  @override
+  String get video_debug_success => '成功';
+
+  @override
+  String get video_debug_failed => '失败';
+
+  @override
   String get appTitle => 'StashFlow';
 
   @override
@@ -6781,6 +6901,66 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 /// The translations for Chinese, using the Han script (`zh_Hant`).
 class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
+
+  @override
+  String get video_debug_format => 'MIME 類型';
+
+  @override
+  String get video_debug_variant => '版本';
+
+  @override
+  String get video_debug_source => '來源';
+
+  @override
+  String get video_debug_decoder => '解碼器';
+
+  @override
+  String get video_debug_codec => '編解碼器';
+
+  @override
+  String get video_debug_hardware => '目前硬體解碼';
+
+  @override
+  String get video_debug_output => '視訊輸出';
+
+  @override
+  String get video_debug_pixel_format => '像素格式';
+
+  @override
+  String get video_debug_performance => '效能';
+
+  @override
+  String get video_debug_source_fps => '來源影格率';
+
+  @override
+  String get video_debug_output_fps => '輸出影格率';
+
+  @override
+  String get video_debug_decoder_drops => '解碼丟幀';
+
+  @override
+  String get video_debug_output_drops => '輸出丟幀';
+
+  @override
+  String get video_debug_av_sync => '影音同步';
+
+  @override
+  String get video_debug_cache => '解多工快取';
+
+  @override
+  String get video_debug_buffer => '提前緩衝';
+
+  @override
+  String get video_debug_startup => '啟動';
+
+  @override
+  String get video_debug_prewarm => '預熱';
+
+  @override
+  String get video_debug_success => '成功';
+
+  @override
+  String get video_debug_failed => '失敗';
 
   @override
   String get appTitle => 'StashFlow';

@@ -114,6 +114,126 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @video_debug_format.
+  ///
+  /// In en, this message translates to:
+  /// **'MIME type'**
+  String get video_debug_format;
+
+  /// No description provided for @video_debug_variant.
+  ///
+  /// In en, this message translates to:
+  /// **'Variant'**
+  String get video_debug_variant;
+
+  /// No description provided for @video_debug_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get video_debug_source;
+
+  /// No description provided for @video_debug_decoder.
+  ///
+  /// In en, this message translates to:
+  /// **'Decoder'**
+  String get video_debug_decoder;
+
+  /// No description provided for @video_debug_codec.
+  ///
+  /// In en, this message translates to:
+  /// **'Codec'**
+  String get video_debug_codec;
+
+  /// No description provided for @video_debug_hardware.
+  ///
+  /// In en, this message translates to:
+  /// **'Active hardware decoding'**
+  String get video_debug_hardware;
+
+  /// No description provided for @video_debug_output.
+  ///
+  /// In en, this message translates to:
+  /// **'Video output'**
+  String get video_debug_output;
+
+  /// No description provided for @video_debug_pixel_format.
+  ///
+  /// In en, this message translates to:
+  /// **'Pixel format'**
+  String get video_debug_pixel_format;
+
+  /// No description provided for @video_debug_performance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get video_debug_performance;
+
+  /// No description provided for @video_debug_source_fps.
+  ///
+  /// In en, this message translates to:
+  /// **'Source frame rate'**
+  String get video_debug_source_fps;
+
+  /// No description provided for @video_debug_output_fps.
+  ///
+  /// In en, this message translates to:
+  /// **'Output frame rate'**
+  String get video_debug_output_fps;
+
+  /// No description provided for @video_debug_decoder_drops.
+  ///
+  /// In en, this message translates to:
+  /// **'Decoder dropped frames'**
+  String get video_debug_decoder_drops;
+
+  /// No description provided for @video_debug_output_drops.
+  ///
+  /// In en, this message translates to:
+  /// **'Output dropped frames'**
+  String get video_debug_output_drops;
+
+  /// No description provided for @video_debug_av_sync.
+  ///
+  /// In en, this message translates to:
+  /// **'A/V sync'**
+  String get video_debug_av_sync;
+
+  /// No description provided for @video_debug_cache.
+  ///
+  /// In en, this message translates to:
+  /// **'Demuxer cache'**
+  String get video_debug_cache;
+
+  /// No description provided for @video_debug_buffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Buffered ahead'**
+  String get video_debug_buffer;
+
+  /// No description provided for @video_debug_startup.
+  ///
+  /// In en, this message translates to:
+  /// **'Startup'**
+  String get video_debug_startup;
+
+  /// No description provided for @video_debug_prewarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Prewarm'**
+  String get video_debug_prewarm;
+
+  /// No description provided for @video_debug_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Succeeded'**
+  String get video_debug_success;
+
+  /// No description provided for @video_debug_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get video_debug_failed;
+
   /// The name of the application
   ///
   /// In en, this message translates to:

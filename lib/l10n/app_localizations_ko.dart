@@ -9,6 +9,66 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get video_debug_format => 'MIME 유형';
+
+  @override
+  String get video_debug_variant => '변형';
+
+  @override
+  String get video_debug_source => '소스';
+
+  @override
+  String get video_debug_decoder => '디코더';
+
+  @override
+  String get video_debug_codec => '코덱';
+
+  @override
+  String get video_debug_hardware => '활성 하드웨어 디코딩';
+
+  @override
+  String get video_debug_output => '비디오 출력';
+
+  @override
+  String get video_debug_pixel_format => '픽셀 형식';
+
+  @override
+  String get video_debug_performance => '성능';
+
+  @override
+  String get video_debug_source_fps => '소스 프레임 속도';
+
+  @override
+  String get video_debug_output_fps => '출력 프레임 속도';
+
+  @override
+  String get video_debug_decoder_drops => '디코더 드롭 프레임';
+
+  @override
+  String get video_debug_output_drops => '출력 드롭 프레임';
+
+  @override
+  String get video_debug_av_sync => '오디오/비디오 동기화';
+
+  @override
+  String get video_debug_cache => '디먹서 캐시';
+
+  @override
+  String get video_debug_buffer => '미리 버퍼링됨';
+
+  @override
+  String get video_debug_startup => '시작';
+
+  @override
+  String get video_debug_prewarm => '사전 로딩';
+
+  @override
+  String get video_debug_success => '성공';
+
+  @override
+  String get video_debug_failed => '실패';
+
+  @override
   String get appTitle => 'StashFlow';
 
   @override
