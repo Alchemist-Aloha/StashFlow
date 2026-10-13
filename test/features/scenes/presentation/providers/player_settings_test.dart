@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/player_mpv_properties_stub.dart'
+    as web;
 
 class _RecordingNativePlayer implements NativePlayer {
   final properties = <String, String>{};
@@ -323,6 +325,12 @@ void main() {
         expect(store.mpvConf, isEmpty);
       },
     );
+
+    test('web ignores runtime mpv options', () async {
+      final native = _RecordingNativePlayer();
+      await web.applyPlayerMpvProperties(native, {'deband': 'yes'});
+      expect(native.properties, isEmpty);
+    });
 
     test(
       'runtime options are awaited and applied to the native player',
