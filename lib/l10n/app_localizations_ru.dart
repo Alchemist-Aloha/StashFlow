@@ -3607,4 +3607,84 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settings_playback_mpv_embed_help =>
       'Прямой вывод Android выбирает декодер mediacodec и не поддерживает отрисовку субтитров mpv и видеофильтры. Выбор другого декодера восстанавливает вывод по умолчанию.';
+
+  @override
+  String get settings_playback_mpv_gpu_next =>
+      'Вывод GPU next (gpu-next, Android)';
+
+  @override
+  String get settings_playback_mpv_rendering => 'Рендеринг и движение';
+
+  @override
+  String get settings_playback_mpv_interpolation =>
+      'Интерполяция кадров (interpolation)';
+
+  @override
+  String get settings_playback_mpv_sync => 'Синхронизация видео (video-sync)';
+
+  @override
+  String get settings_playback_mpv_tscale => 'Фильтр интерполяции (tscale)';
+
+  @override
+  String get settings_playback_mpv_scale => 'Фильтр увеличения (scale)';
+
+  @override
+  String get settings_playback_mpv_dscale => 'Фильтр уменьшения (dscale)';
+
+  @override
+  String get settings_playback_mpv_cscale => 'Фильтр цветности (cscale)';
+
+  @override
+  String get settings_playback_mpv_deband => 'Устранение полос (deband)';
+
+  @override
+  String get settings_playback_mpv_enabled => 'Включено (yes)';
+
+  @override
+  String get settings_playback_mpv_disabled => 'Выключено (no)';
+
+  @override
+  String get settings_playback_mpv_conf => 'Пользовательская конфигурация mpv';
+
+  @override
+  String get settings_playback_mpv_rendering_help =>
+      'Только новые плееры. Интерполяция использует display-resample; тайминг рабочего стола может её ограничить. Прямой вывод Android игнорирует рендеринг. Качественные фильтры увеличивают нагрузку GPU.';
+
+  @override
+  String get settings_playback_mpv_conf_help =>
+      'Одна строка option=value, комментарии # или значения в кавычках. Доступные параметры ниже заменяют выбранные. Без профилей, подключений файлов, скриптов и параметров приложения. mpv может игнорировать неверные значения. Очистите и сохраните для сброса; перезапустите для обновления всех плееров.';
+
+  @override
+  String get settings_playback_mpv_conf_invalid =>
+      'Используйте поддерживаемые строки option=value (не более 16 384 символов).';
+
+  @override
+  String get settings_playback_mpv_conf_saved =>
+      'Сохранено. Перезапустите приложение для обновления всех плееров.';
+
+  @override
+  String get settings_playback_mpv_libmpv_software =>
+      'Встроенный программный вывод (libmpv)';
+
+  @override
+  String get settings_playback_mpv_vaapi => 'Декодирование VA-API (vaapi)';
+
+  @override
+  String get settings_playback_mpv_vaapi_copy =>
+      'Декодирование VA-API с копированием в RAM (vaapi-copy)';
+
+  @override
+  String get settings_playback_mpv_nvdec => 'Декодирование NVIDIA (nvdec)';
+
+  @override
+  String get settings_playback_mpv_nvdec_copy =>
+      'Декодирование NVIDIA с копированием в RAM (nvdec-copy)';
+
+  @override
+  String get settings_playback_mpv_vdpau_copy =>
+      'Декодирование VDPAU с копированием в RAM (vdpau-copy)';
+
+  @override
+  String get settings_playback_mpv_linux_help =>
+      'Linux использует встроенный libmpv, а не gpu-next или оконный вывод. Программный вывод медленнее и игнорирует настройки GPU. Поддержка декодеров зависит от GPU и драйверов; режимы копирования в RAM работают и с программным выводом. Недоступные декодеры заменяются программным декодированием.';
 }

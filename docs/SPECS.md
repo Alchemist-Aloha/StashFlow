@@ -466,13 +466,47 @@ URLs or authentication headers.
 - Every newly created controller reads these preferences: global playback,
   TikTok feed, scene-info previews, and the scene tagger. Existing or preloaded
   controllers retain their configuration; restarting the app updates all of them.
-- Android offers `gpu` and `mediacodec_embed`; other native platforms use the
-  embedded `libmpv` output. Web does not expose or apply mpv preferences.
+- Android offers `gpu`, `gpu-next` (libplacebo), and `mediacodec_embed`; the
+  pinned fork handles gpu-next surface output and all three bundled Android ABIs
+  contain the renderer. GPU/driver compatibility still requires device testing.
+  Desktop platforms use embedded `libmpv` output. Linux additionally offers
+  `libmpv-software`, an app preference mapped to `vo=libmpv` with
+  `enableHardwareAcceleration=false` (software render API). It is not an mpv
+  driver name. Software rendering is slower and omits GPU rendering overrides.
+  `gpu-next`, `gpu`, and standalone window outputs are not compatible with the
+  current Linux render-API texture integration and must not be offered there.
+  Web does not expose or apply mpv preferences.
+- Linux decoder choices include `vaapi`, `vaapi-copy`, `nvdec`, `nvdec-copy`,
+  and `vdpau-copy`, in addition to default, software and automatic modes. VA-API
+  direct interop receives the X11/Wayland display through the pinned plugin;
+  NVDEC direct interop depends on NVIDIA drivers. Copy-back modes also work with
+  software output. Direct VDPAU is not offered because its X11/OpenGL requirements
+  do not match the plugin's cross-session GLES integration. Hardware/driver
+  availability determines whether decoding succeeds or falls back to software.
+  These Linux-only choices are filtered out on other platforms and on web.
 - Direct Android output requires `hwdec=mediacodec` and does not support mpv
   subtitle rendering or video filters. Selecting it sets the required decoder;
   selecting another decoder restores default output. Runtime loading also guards
   against incompatible pairs and platform-specific options imported from backups.
-- Configuration backups include both keys with allowlisted values. Verify
+- Rendering selectors persist `video_mpv_<option>` for `interpolation`,
+  `video-sync`, `tscale`, `scale`, `dscale`, `cscale`, and `deband`. `default`
+  preserves native defaults. Interpolation supplies `video-sync=display-resample`
+  unless synchronization is explicitly selected or overridden. Display timing in
+  desktop render-API embedding may limit interpolation; it is not guaranteed.
+- The final playback-settings section stores `video_mpv_conf`: a flat runtime
+  mpv.conf subset, at most 16,384 characters, with `option=value`, bare enabled
+  options, full-line `#` comments and single/double-quoted values. Duplicate
+  options use the last value. Custom values override rendering selectors.
+  Supported playback-tuning options are listed in the editor and allowlisted in
+  `PlayerSettingsStore`; profiles, includes, scripts, paths, authentication and
+  app-owned output/decoder/lifecycle options are rejected, including on import.
+  Native mpv may ignore unsupported option values. Clearing and saving removes
+  custom overrides, not selector choices.
+- All four new-player paths await runtime option application before opening
+  media. Web applies none. Direct MediaCodec and software render-API output
+  omit rendering overrides but keep audio/cache tuning. Existing controllers retain their settings.
+- Configuration backups include output, decoder, rendering and custom settings
+  with validated keys/values. Verify
   persistence, effective controller configuration, platform filtering, and paired
   selection behavior in tests; hardware compatibility requires device testing.
 

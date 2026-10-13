@@ -166,6 +166,16 @@ final class AppConfigSettingsRegistry {
       PlayerSettingsStore.mpvHwdecKey,
       allowed: PlayerSettingsStore.mpvHwdecValues,
     ),
+    for (final entry in PlayerSettingsStore.mpvChoices.entries)
+      _string(
+        PlayerSettingsStore.mpvOptionKey(entry.key),
+        allowed: entry.value,
+      ),
+    _Setting(
+      PlayerSettingsStore.mpvConfKey,
+      _SettingType.string,
+      (value) => PlayerSettingsStore.isValidMpvConf(value as String),
+    ),
     _bool('show_video_debug_info'),
     _bool('enable_debug_logging'),
     _bool('app_lock_enabled'),

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +19,8 @@ class PlayerSettings {
   final bool feedStartRandom;
   final bool resumePlayPosition;
 
-  /// mpv video output override, or `default` for media-kit's platform default.
+  /// Output preference, or `default` for media-kit's platform default.
+  /// `libmpv-software` uses the libmpv software render API, not a separate VO.
   final String mpvVo;
 
   /// mpv hardware decoder override; `no` explicitly uses software decoding.
@@ -80,7 +82,190 @@ class PlayerSettingsStore {
   static const mpvHwdecKey = 'video_mpv_hwdec';
 
   /// Output drivers compatible with media-kit's embedded video surfaces.
-  static const mpvVoValues = {'default', 'gpu', 'mediacodec_embed', 'libmpv'};
+  static const mpvVoValues = {
+    'default',
+    'gpu',
+    'gpu-next',
+    'mediacodec_embed',
+    'libmpv',
+    'libmpv-software',
+  };
+
+  /// Runtime rendering choices shared by settings and configuration backups.
+  static const mpvChoices = {
+    'interpolation': {'default', 'yes', 'no'},
+    'video-sync': {
+      'default',
+      'audio',
+      'display-resample',
+      'display-resample-vdrop',
+      'display-vdrop',
+      'display-desync',
+    },
+    'tscale': {
+      'default',
+      'oversample',
+      'linear',
+      'mitchell',
+      'catmull_rom',
+      'sinc',
+    },
+    'scale': {'default', 'bilinear', 'bicubic', 'lanczos', 'ewa_lanczossharp'},
+    'dscale': {'default', 'bilinear', 'bicubic', 'lanczos', 'mitchell'},
+    'cscale': {'default', 'bilinear', 'bicubic', 'lanczos', 'ewa_lanczossharp'},
+    'deband': {'default', 'yes', 'no'},
+  };
+  static String mpvOptionKey(String option) => 'video_mpv_$option';
+  static const mpvConfKey = 'video_mpv_conf';
+
+  // Only playback tuning: imported configs cannot load files/scripts or replace
+  // the app's surface, authentication, navigation, or player lifecycle.
+  static const customMpvOptions = {
+    'interpolation',
+    'video-sync',
+    'tscale',
+    'scale',
+    'dscale',
+    'cscale',
+    'deband',
+    'interpolation-threshold',
+    'tscale-radius',
+    'tscale-clamp',
+    'tscale-blur',
+    'scale-antiring',
+    'dscale-antiring',
+    'cscale-antiring',
+    'scale-radius',
+    'dscale-radius',
+    'cscale-radius',
+    'correct-downscaling',
+    'linear-downscaling',
+    'linear-upscaling',
+    'sigmoid-upscaling',
+    'deband-iterations',
+    'deband-threshold',
+    'deband-range',
+    'deband-grain',
+    'dither-depth',
+    'dither',
+    'temporal-dither',
+    'gamma',
+    'brightness',
+    'contrast',
+    'saturation',
+    'hue',
+    'tone-mapping',
+    'tone-mapping-param',
+    'hdr-compute-peak',
+    'target-prim',
+    'target-trc',
+    'target-peak',
+    'gamut-mapping-mode',
+    'video-output-levels',
+    'audio-delay',
+    'audio-normalize-downmix',
+    'audio-pitch-correction',
+    'demuxer-max-bytes',
+    'demuxer-max-back-bytes',
+    'cache',
+    'cache-secs',
+  };
+
+  /// Parses a flat mpv.conf subset. Duplicate options use the last value.
+  /// Profiles, includes, scripts and app-owned options are intentionally rejected.
+  static Map<String, String> parseMpvConf(String text) {
+    if (text.length > 16384) throw const FormatException('Config too long');
+    final options = <String, String>{};
+    final lines = text.split('\n');
+    for (var index = 0; index < lines.length; index++) {
+      final line = lines[index].trim();
+      if (line.isEmpty || line.startsWith('#')) continue;
+      final separator = line.indexOf('=');
+      final key = (separator < 0 ? line : line.substring(0, separator)).trim();
+      var value = separator < 0 ? 'yes' : line.substring(separator + 1).trim();
+      if (value.length >= 2 &&
+          ((value.startsWith('"') && value.endsWith('"')) ||
+              (value.startsWith("'") && value.endsWith("'")))) {
+        value = value.substring(1, value.length - 1);
+      }
+      if (!customMpvOptions.contains(key) ||
+          value.isEmpty ||
+          value.contains('\u0000')) {
+        throw FormatException('${index + 1}');
+      }
+      options[key] = value;
+    }
+    return options;
+  }
+
+  static bool isValidMpvConf(String text) {
+    try {
+      parseMpvConf(text);
+      return true;
+    } on FormatException {
+      return false;
+    }
+  }
+
+  String loadMpvOption(String option) =>
+      _loadMpvChoice(mpvOptionKey(option), mpvChoices[option]!);
+
+  String get mpvConf {
+    final value = prefs.get(mpvConfKey);
+    return value is String && isValidMpvConf(value) ? value : '';
+  }
+
+  Future<void> saveMpvOption(String option, String value) async {
+    if (!(mpvChoices[option]?.contains(value) ?? false)) {
+      throw ArgumentError.value(value, option);
+    }
+    await prefs.setString(mpvOptionKey(option), value);
+  }
+
+  Future<void> saveMpvConf(String text) async {
+    parseMpvConf(text);
+    await prefs.setString(mpvConfKey, text);
+  }
+
+  /// Effective runtime options; custom entries override selectors. Interpolation
+  /// supplies display synchronization unless explicitly overridden.
+  Map<String, String> loadMpvProperties({
+    TargetPlatform? platform,
+    bool isWeb = kIsWeb,
+  }) {
+    if (isWeb) return {};
+    final result = <String, String>{
+      for (final option in mpvChoices.keys)
+        if (loadMpvOption(option) != 'default') option: loadMpvOption(option),
+      ...parseMpvConf(mpvConf),
+    };
+    if (result['interpolation'] == 'yes') {
+      result.putIfAbsent('video-sync', () => 'display-resample');
+    }
+    final configuration = loadVideoConfiguration(platform: platform);
+    if (configuration.vo == 'mediacodec_embed' ||
+        !configuration.enableHardwareAcceleration) {
+      result.removeWhere(
+        (key, _) =>
+            !key.startsWith('audio-') &&
+            !key.startsWith('demuxer-') &&
+            key != 'cache' &&
+            key != 'cache-secs',
+      );
+    }
+    return result;
+  }
+
+  /// Apply once after attaching a new controller and before opening media.
+  Future<void> applyMpvProperties(Player player) async {
+    final options = loadMpvProperties();
+    if (options.isEmpty) return;
+    final native = player.platform;
+    if (native is! NativePlayer) return;
+    for (final entry in options.entries) {
+      await native.setProperty(entry.key, entry.value);
+    }
+  }
 
   /// Supported decoder choices; platform-specific entries are filtered below.
   static const mpvHwdecValues = {
@@ -91,19 +276,45 @@ class PlayerSettingsStore {
     'auto-copy',
     'mediacodec',
     'mediacodec-copy',
+    'vaapi',
+    'vaapi-copy',
+    'nvdec',
+    'nvdec-copy',
+    'vdpau-copy',
   };
 
   /// Outputs that can render inside the app on [platform].
   static Set<String> supportedMpvVoValues(TargetPlatform platform) =>
-      platform == TargetPlatform.android
-      ? const {'default', 'gpu', 'mediacodec_embed'}
-      : const {'default', 'libmpv'};
+      switch (platform) {
+        TargetPlatform.android => const {
+          'default',
+          'gpu',
+          'gpu-next',
+          'mediacodec_embed',
+        },
+        TargetPlatform.linux => const {'default', 'libmpv', 'libmpv-software'},
+        _ => const {'default', 'libmpv'},
+      };
 
   /// Decoder modes available for selection on [platform].
-  static Set<String> supportedMpvHwdecValues(TargetPlatform platform) =>
-      platform == TargetPlatform.android
-      ? mpvHwdecValues
-      : const {'default', 'no', 'auto', 'auto-safe', 'auto-copy'};
+  static Set<String> supportedMpvHwdecValues(TargetPlatform platform) => {
+    'default',
+    'no',
+    'auto',
+    'auto-safe',
+    'auto-copy',
+    if (platform == TargetPlatform.android) ...{
+      'mediacodec',
+      'mediacodec-copy',
+    },
+    if (platform == TargetPlatform.linux) ...{
+      'vaapi',
+      'vaapi-copy',
+      'nvdec',
+      'nvdec-copy',
+      'vdpau-copy',
+    },
+  };
 
   final SharedPreferences prefs;
 
@@ -173,8 +384,9 @@ class PlayerSettingsStore {
       vo = 'default';
     }
     return VideoControllerConfiguration(
-      vo: vo == 'default' ? null : vo,
+      vo: vo == 'default' ? null : (vo == 'libmpv-software' ? 'libmpv' : vo),
       hwdec: hwdec == 'default' ? null : hwdec,
+      enableHardwareAcceleration: vo != 'libmpv-software',
     );
   }
 

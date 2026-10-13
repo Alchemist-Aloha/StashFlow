@@ -47,6 +47,15 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _resumePlayPosition = true;
   String _mpvVo = 'default';
   String _mpvHwdec = 'default';
+  final _mpvConfController = TextEditingController();
+  final _mpvOptions = <String, String>{};
+  String? _mpvConfError;
+
+  @override
+  void dispose() {
+    _mpvConfController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -94,8 +103,15 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     final videoConfiguration = PlayerSettingsStore(
       prefs,
     ).loadVideoConfiguration();
-    _mpvVo = videoConfiguration.vo ?? 'default';
+    _mpvVo = !videoConfiguration.enableHardwareAcceleration
+        ? 'libmpv-software'
+        : videoConfiguration.vo ?? 'default';
     _mpvHwdec = videoConfiguration.hwdec ?? 'default';
+    final store = PlayerSettingsStore(prefs);
+    for (final option in PlayerSettingsStore.mpvChoices.keys) {
+      _mpvOptions[option] = store.loadMpvOption(option);
+    }
+    _mpvConfController.text = store.mpvConf;
 
     setState(() => _loading = false);
   }
@@ -289,6 +305,10 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                   if (!kIsWeb) ...[
                     SizedBox(height: context.dimensions.spacingLarge),
                     _buildMpvSettings(),
+                    SizedBox(height: context.dimensions.spacingLarge),
+                    _buildMpvRenderingSettings(),
+                    SizedBox(height: context.dimensions.spacingLarge),
+                    _buildMpvConfSettings(),
                   ],
                 ],
               ),
@@ -305,7 +325,14 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       'auto-safe': l10n.settings_playback_mpv_auto_safe,
       'auto-copy': l10n.settings_playback_mpv_auto_copy,
       'gpu': l10n.settings_playback_mpv_gpu,
+      'gpu-next': l10n.settings_playback_mpv_gpu_next,
       'libmpv': l10n.settings_playback_mpv_libmpv,
+      'libmpv-software': l10n.settings_playback_mpv_libmpv_software,
+      'vaapi': l10n.settings_playback_mpv_vaapi,
+      'vaapi-copy': l10n.settings_playback_mpv_vaapi_copy,
+      'nvdec': l10n.settings_playback_mpv_nvdec,
+      'nvdec-copy': l10n.settings_playback_mpv_nvdec_copy,
+      'vdpau-copy': l10n.settings_playback_mpv_vdpau_copy,
       'mediacodec_embed': l10n.settings_playback_mpv_embed,
       'mediacodec': l10n.settings_playback_mpv_mediacodec,
       'mediacodec-copy': l10n.settings_playback_mpv_mediacodec_copy,
@@ -319,6 +346,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
             title: l10n.settings_playback_mpv_vo,
             description: defaultTargetPlatform == TargetPlatform.android
                 ? l10n.settings_playback_mpv_embed_help
+                : defaultTargetPlatform == TargetPlatform.linux
+                ? l10n.settings_playback_mpv_linux_help
                 : null,
             value: _mpvVo,
             choices: [
@@ -340,6 +369,108 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                 (value, labels[value]!),
             ],
             onChanged: (value) => _saveMpvSettings(hwdec: value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMpvRenderingSettings() {
+    final l10n = context.l10n;
+    final titles = {
+      'interpolation': l10n.settings_playback_mpv_interpolation,
+      'video-sync': l10n.settings_playback_mpv_sync,
+      'tscale': l10n.settings_playback_mpv_tscale,
+      'scale': l10n.settings_playback_mpv_scale,
+      'dscale': l10n.settings_playback_mpv_dscale,
+      'cscale': l10n.settings_playback_mpv_cscale,
+      'deband': l10n.settings_playback_mpv_deband,
+    };
+    return SettingsSectionCard(
+      title: l10n.settings_playback_mpv_rendering,
+      subtitle: l10n.settings_playback_mpv_rendering_help,
+      child: Column(
+        children: [
+          for (final entry in PlayerSettingsStore.mpvChoices.entries) ...[
+            if (entry.key != 'interpolation')
+              Divider(height: context.dimensions.spacingLarge),
+            _buildChoiceSelector(
+              title: titles[entry.key]!,
+              value: _mpvOptions[entry.key]!,
+              choices: [
+                for (final value in entry.value)
+                  (
+                    value,
+                    switch (value) {
+                      'default' => l10n.settings_playback_mpv_default,
+                      'yes' => l10n.settings_playback_mpv_enabled,
+                      'no' => l10n.settings_playback_mpv_disabled,
+                      _ => value,
+                    },
+                  ),
+              ],
+              onChanged: (value) async {
+                await PlayerSettingsStore(
+                  ref.read(sharedPreferencesProvider),
+                ).saveMpvOption(entry.key, value);
+                if (mounted) setState(() => _mpvOptions[entry.key] = value);
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMpvConfSettings() {
+    final l10n = context.l10n;
+    return SettingsSectionCard(
+      title: l10n.settings_playback_mpv_conf,
+      subtitle: l10n.settings_playback_mpv_conf_help,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: _mpvConfController,
+            minLines: 5,
+            maxLines: 12,
+            maxLength: 16384,
+            autocorrect: false,
+            enableSuggestions: false,
+            decoration: InputDecoration(
+              labelText: l10n.settings_playback_mpv_conf,
+              hintText:
+                  'interpolation=yes\nvideo-sync=display-resample\ntscale=oversample',
+              errorText: _mpvConfError,
+            ),
+          ),
+          SizedBox(height: context.dimensions.spacingSmall),
+          Text(
+            PlayerSettingsStore.customMpvOptions.join(', '),
+            style: context.textTheme.bodySmall,
+          ),
+          SizedBox(height: context.dimensions.spacingMedium),
+          FilledButton(
+            onPressed: () async {
+              final store = PlayerSettingsStore(
+                ref.read(sharedPreferencesProvider),
+              );
+              if (!PlayerSettingsStore.isValidMpvConf(
+                _mpvConfController.text,
+              )) {
+                setState(
+                  () => _mpvConfError = l10n.settings_playback_mpv_conf_invalid,
+                );
+                return;
+              }
+              await store.saveMpvConf(_mpvConfController.text);
+              if (!mounted) return;
+              setState(() => _mpvConfError = null);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.settings_playback_mpv_conf_saved)),
+              );
+            },
+            child: Text(l10n.common_save),
           ),
         ],
       ),

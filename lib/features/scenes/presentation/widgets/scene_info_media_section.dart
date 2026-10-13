@@ -427,6 +427,9 @@ class _SceneInfoPreviewPlayerState
         effectiveHeaders = const {};
       }
 
+      await PlayerSettingsStore(
+        ref.read(sharedPreferencesProvider),
+      ).applyMpvProperties(player);
       await player.open(
         Media(effectiveUrl, httpHeaders: effectiveHeaders),
         play: widget.autoplay,

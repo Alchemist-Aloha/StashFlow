@@ -1388,6 +1388,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         return;
       }
 
+      await PlayerSettingsStore(
+        ref.read(sharedPreferencesProvider),
+      ).applyMpvProperties(player);
       await player.open(
         Media(
           effectiveStreamUrl,

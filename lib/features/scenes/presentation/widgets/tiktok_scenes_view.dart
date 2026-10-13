@@ -407,6 +407,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         }
       }
 
+      await PlayerSettingsStore(
+        ref.read(sharedPreferencesProvider),
+      ).applyMpvProperties(player);
       await player.open(
         Media(choice.url, httpHeaders: headers, start: startPosition),
         play: false,

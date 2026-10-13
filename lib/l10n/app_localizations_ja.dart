@@ -3489,4 +3489,81 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get settings_playback_mpv_embed_help =>
       'Android 直接出力を選択するとデコーダーは mediacodec になります。mpv による字幕描画や映像フィルターには対応していません。別のデコーダーを選ぶと、出力は既定値に戻ります。';
+
+  @override
+  String get settings_playback_mpv_gpu_next => 'GPU next 出力 (gpu-next、Android)';
+
+  @override
+  String get settings_playback_mpv_rendering => '描画と動き';
+
+  @override
+  String get settings_playback_mpv_interpolation => 'フレーム補間 (interpolation)';
+
+  @override
+  String get settings_playback_mpv_sync => '映像同期 (video-sync)';
+
+  @override
+  String get settings_playback_mpv_tscale => '補間フィルター (tscale)';
+
+  @override
+  String get settings_playback_mpv_scale => '拡大フィルター (scale)';
+
+  @override
+  String get settings_playback_mpv_dscale => '縮小フィルター (dscale)';
+
+  @override
+  String get settings_playback_mpv_cscale => '色差フィルター (cscale)';
+
+  @override
+  String get settings_playback_mpv_deband => 'バンディング軽減 (deband)';
+
+  @override
+  String get settings_playback_mpv_enabled => '有効 (yes)';
+
+  @override
+  String get settings_playback_mpv_disabled => '無効 (no)';
+
+  @override
+  String get settings_playback_mpv_conf => 'カスタム mpv 設定';
+
+  @override
+  String get settings_playback_mpv_rendering_help =>
+      '新しいプレーヤーのみ。補間は標準で display-resample を使いますが、デスクトップのタイミングにより制限される場合があります。Android 直接出力は描画設定を無視します。高品質フィルターは GPU 負荷を増やします。';
+
+  @override
+  String get settings_playback_mpv_conf_help =>
+      '1 行に option=value を入力。# コメント行と引用符付きの値に対応します。下の対応設定は選択項目より優先されます。プロファイル、外部ファイル、スクリプト、アプリ管理の設定には対応しません。無効な値は mpv に無視される場合があります。空にして保存するとリセットされます。全プレーヤーへの反映にはアプリを再起動してください。';
+
+  @override
+  String get settings_playback_mpv_conf_invalid =>
+      '対応する option=value 行を使ってください（最大 16,384 文字）。';
+
+  @override
+  String get settings_playback_mpv_conf_saved =>
+      '保存しました。全プレーヤーへの反映にはアプリを再起動してください。';
+
+  @override
+  String get settings_playback_mpv_libmpv_software => '埋め込みソフトウェア出力 (libmpv)';
+
+  @override
+  String get settings_playback_mpv_vaapi => 'VA-API デコード (vaapi)';
+
+  @override
+  String get settings_playback_mpv_vaapi_copy =>
+      'VA-API デコード・コピーバック (vaapi-copy)';
+
+  @override
+  String get settings_playback_mpv_nvdec => 'NVIDIA デコード (nvdec)';
+
+  @override
+  String get settings_playback_mpv_nvdec_copy =>
+      'NVIDIA デコード・コピーバック (nvdec-copy)';
+
+  @override
+  String get settings_playback_mpv_vdpau_copy =>
+      'VDPAU デコード・コピーバック (vdpau-copy)';
+
+  @override
+  String get settings_playback_mpv_linux_help =>
+      'Linux は埋め込み libmpv を使用し、gpu-next やウィンドウ出力は使用しません。ソフトウェア出力は低速で GPU 描画設定を無視します。デコーダー対応は GPU とドライバーによって異なります。コピーバック方式はソフトウェア出力でも使えます。非対応の場合はソフトウェアデコードに切り替わります。';
 }

@@ -6443,6 +6443,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Direct Android output selects mediacodec decoding and does not support mpv-rendered subtitles or video filters. Choosing another decoder restores the default output.'**
   String get settings_playback_mpv_embed_help;
+
+  /// No description provided for @settings_playback_mpv_gpu_next.
+  ///
+  /// In en, this message translates to:
+  /// **'GPU next output (gpu-next, Android)'**
+  String get settings_playback_mpv_gpu_next;
+
+  /// No description provided for @settings_playback_mpv_rendering.
+  ///
+  /// In en, this message translates to:
+  /// **'Rendering and motion'**
+  String get settings_playback_mpv_rendering;
+
+  /// No description provided for @settings_playback_mpv_interpolation.
+  ///
+  /// In en, this message translates to:
+  /// **'Frame interpolation (interpolation)'**
+  String get settings_playback_mpv_interpolation;
+
+  /// No description provided for @settings_playback_mpv_sync.
+  ///
+  /// In en, this message translates to:
+  /// **'Video synchronization (video-sync)'**
+  String get settings_playback_mpv_sync;
+
+  /// No description provided for @settings_playback_mpv_tscale.
+  ///
+  /// In en, this message translates to:
+  /// **'Interpolation filter (tscale)'**
+  String get settings_playback_mpv_tscale;
+
+  /// No description provided for @settings_playback_mpv_scale.
+  ///
+  /// In en, this message translates to:
+  /// **'Upscaling filter (scale)'**
+  String get settings_playback_mpv_scale;
+
+  /// No description provided for @settings_playback_mpv_dscale.
+  ///
+  /// In en, this message translates to:
+  /// **'Downscaling filter (dscale)'**
+  String get settings_playback_mpv_dscale;
+
+  /// No description provided for @settings_playback_mpv_cscale.
+  ///
+  /// In en, this message translates to:
+  /// **'Chroma filter (cscale)'**
+  String get settings_playback_mpv_cscale;
+
+  /// No description provided for @settings_playback_mpv_deband.
+  ///
+  /// In en, this message translates to:
+  /// **'Debanding (deband)'**
+  String get settings_playback_mpv_deband;
+
+  /// No description provided for @settings_playback_mpv_enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled (yes)'**
+  String get settings_playback_mpv_enabled;
+
+  /// No description provided for @settings_playback_mpv_disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled (no)'**
+  String get settings_playback_mpv_disabled;
+
+  /// No description provided for @settings_playback_mpv_conf.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom mpv configuration'**
+  String get settings_playback_mpv_conf;
+
+  /// No description provided for @settings_playback_mpv_rendering_help.
+  ///
+  /// In en, this message translates to:
+  /// **'New players only. Interpolation defaults to display-resample; desktop timing may limit it. Direct Android output ignores rendering options. Quality filters increase GPU load.'**
+  String get settings_playback_mpv_rendering_help;
+
+  /// No description provided for @settings_playback_mpv_conf_help.
+  ///
+  /// In en, this message translates to:
+  /// **'One option=value per line, # comment lines or quoted values. Supported options below override selectors. No profiles, includes, scripts or app-owned options. mpv may ignore invalid values. Clear and save to reset; restart the app to update all players.'**
+  String get settings_playback_mpv_conf_help;
+
+  /// No description provided for @settings_playback_mpv_conf_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Use supported option=value lines (maximum 16,384 characters).'**
+  String get settings_playback_mpv_conf_invalid;
+
+  /// No description provided for @settings_playback_mpv_conf_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved. Restart the app to update all players.'**
+  String get settings_playback_mpv_conf_saved;
+
+  /// No description provided for @settings_playback_mpv_libmpv_software.
+  ///
+  /// In en, this message translates to:
+  /// **'Embedded software output (libmpv)'**
+  String get settings_playback_mpv_libmpv_software;
+
+  /// No description provided for @settings_playback_mpv_vaapi.
+  ///
+  /// In en, this message translates to:
+  /// **'VA-API decoding (vaapi)'**
+  String get settings_playback_mpv_vaapi;
+
+  /// No description provided for @settings_playback_mpv_vaapi_copy.
+  ///
+  /// In en, this message translates to:
+  /// **'VA-API decoding, copy-back (vaapi-copy)'**
+  String get settings_playback_mpv_vaapi_copy;
+
+  /// No description provided for @settings_playback_mpv_nvdec.
+  ///
+  /// In en, this message translates to:
+  /// **'NVIDIA decoding (nvdec)'**
+  String get settings_playback_mpv_nvdec;
+
+  /// No description provided for @settings_playback_mpv_nvdec_copy.
+  ///
+  /// In en, this message translates to:
+  /// **'NVIDIA decoding, copy-back (nvdec-copy)'**
+  String get settings_playback_mpv_nvdec_copy;
+
+  /// No description provided for @settings_playback_mpv_vdpau_copy.
+  ///
+  /// In en, this message translates to:
+  /// **'VDPAU decoding, copy-back (vdpau-copy)'**
+  String get settings_playback_mpv_vdpau_copy;
+
+  /// No description provided for @settings_playback_mpv_linux_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Linux uses embedded libmpv, not gpu-next or window-based outputs. Software output is slower and ignores GPU rendering settings. Decoder support depends on GPU and drivers; copy-back modes also work with software output. Unavailable decoders fall back to software decoding.'**
+  String get settings_playback_mpv_linux_help;
 }
 
 class _AppLocalizationsDelegate

@@ -3449,6 +3449,79 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settings_playback_mpv_embed_help =>
       'Android 直接输出会选择 mediacodec 解码，不支持 mpv 渲染的字幕或视频滤镜。选择其他解码器将恢复默认输出。';
+
+  @override
+  String get settings_playback_mpv_gpu_next => 'GPU next 输出（gpu-next，Android）';
+
+  @override
+  String get settings_playback_mpv_rendering => '渲染与动态效果';
+
+  @override
+  String get settings_playback_mpv_interpolation => '帧插值（interpolation）';
+
+  @override
+  String get settings_playback_mpv_sync => '视频同步（video-sync）';
+
+  @override
+  String get settings_playback_mpv_tscale => '插值滤镜（tscale）';
+
+  @override
+  String get settings_playback_mpv_scale => '放大滤镜（scale）';
+
+  @override
+  String get settings_playback_mpv_dscale => '缩小滤镜（dscale）';
+
+  @override
+  String get settings_playback_mpv_cscale => '色度滤镜（cscale）';
+
+  @override
+  String get settings_playback_mpv_deband => '去色带（deband）';
+
+  @override
+  String get settings_playback_mpv_enabled => '启用（yes）';
+
+  @override
+  String get settings_playback_mpv_disabled => '禁用（no）';
+
+  @override
+  String get settings_playback_mpv_conf => '自定义 mpv 配置';
+
+  @override
+  String get settings_playback_mpv_rendering_help =>
+      '仅应用于新建播放器。插值默认使用 display-resample；桌面输出时序可能限制插值。Android 直接输出忽略渲染选项。高质量滤镜会增加 GPU 负载。';
+
+  @override
+  String get settings_playback_mpv_conf_help =>
+      '每行输入 option=value，支持 # 注释行和带引号的值。下方支持的选项会覆盖上方选择。不支持配置档、外部文件、脚本或应用管理的选项。mpv 可能忽略无效值。清空并保存可重置；重启应用以更新所有播放器。';
+
+  @override
+  String get settings_playback_mpv_conf_invalid =>
+      '请使用支持的 option=value 行（最多 16,384 个字符）。';
+
+  @override
+  String get settings_playback_mpv_conf_saved => '已保存。重启应用以更新所有播放器。';
+
+  @override
+  String get settings_playback_mpv_libmpv_software => '嵌入式软件输出（libmpv）';
+
+  @override
+  String get settings_playback_mpv_vaapi => 'VA-API 解码（vaapi）';
+
+  @override
+  String get settings_playback_mpv_vaapi_copy => 'VA-API 解码并回拷（vaapi-copy）';
+
+  @override
+  String get settings_playback_mpv_nvdec => 'NVIDIA 解码（nvdec）';
+
+  @override
+  String get settings_playback_mpv_nvdec_copy => 'NVIDIA 解码并回拷（nvdec-copy）';
+
+  @override
+  String get settings_playback_mpv_vdpau_copy => 'VDPAU 解码并回拷（vdpau-copy）';
+
+  @override
+  String get settings_playback_mpv_linux_help =>
+      'Linux 使用嵌入式 libmpv，不支持 gpu-next 或独立窗口输出。软件输出较慢，会忽略 GPU 渲染设置。解码器支持取决于 GPU 和驱动；回拷模式也适用于软件输出。不可用的解码器会回退到软件解码。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6896,6 +6969,79 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_playback_mpv_embed_help =>
       'Android 直接输出会选择 mediacodec 解码，不支持 mpv 渲染的字幕或视频滤镜。选择其他解码器将恢复默认输出。';
+
+  @override
+  String get settings_playback_mpv_gpu_next => 'GPU next 输出（gpu-next，Android）';
+
+  @override
+  String get settings_playback_mpv_rendering => '渲染与动态效果';
+
+  @override
+  String get settings_playback_mpv_interpolation => '帧插值（interpolation）';
+
+  @override
+  String get settings_playback_mpv_sync => '视频同步（video-sync）';
+
+  @override
+  String get settings_playback_mpv_tscale => '插值滤镜（tscale）';
+
+  @override
+  String get settings_playback_mpv_scale => '放大滤镜（scale）';
+
+  @override
+  String get settings_playback_mpv_dscale => '缩小滤镜（dscale）';
+
+  @override
+  String get settings_playback_mpv_cscale => '色度滤镜（cscale）';
+
+  @override
+  String get settings_playback_mpv_deband => '去色带（deband）';
+
+  @override
+  String get settings_playback_mpv_enabled => '启用（yes）';
+
+  @override
+  String get settings_playback_mpv_disabled => '禁用（no）';
+
+  @override
+  String get settings_playback_mpv_conf => '自定义 mpv 配置';
+
+  @override
+  String get settings_playback_mpv_rendering_help =>
+      '仅应用于新建播放器。插值默认使用 display-resample；桌面输出时序可能限制插值。Android 直接输出忽略渲染选项。高质量滤镜会增加 GPU 负载。';
+
+  @override
+  String get settings_playback_mpv_conf_help =>
+      '每行输入 option=value，支持 # 注释行和带引号的值。下方支持的选项会覆盖上方选择。不支持配置档、外部文件、脚本或应用管理的选项。mpv 可能忽略无效值。清空并保存可重置；重启应用以更新所有播放器。';
+
+  @override
+  String get settings_playback_mpv_conf_invalid =>
+      '请使用支持的 option=value 行（最多 16,384 个字符）。';
+
+  @override
+  String get settings_playback_mpv_conf_saved => '已保存。重启应用以更新所有播放器。';
+
+  @override
+  String get settings_playback_mpv_libmpv_software => '嵌入式软件输出（libmpv）';
+
+  @override
+  String get settings_playback_mpv_vaapi => 'VA-API 解码（vaapi）';
+
+  @override
+  String get settings_playback_mpv_vaapi_copy => 'VA-API 解码并回拷（vaapi-copy）';
+
+  @override
+  String get settings_playback_mpv_nvdec => 'NVIDIA 解码（nvdec）';
+
+  @override
+  String get settings_playback_mpv_nvdec_copy => 'NVIDIA 解码并回拷（nvdec-copy）';
+
+  @override
+  String get settings_playback_mpv_vdpau_copy => 'VDPAU 解码并回拷（vdpau-copy）';
+
+  @override
+  String get settings_playback_mpv_linux_help =>
+      'Linux 使用嵌入式 libmpv，不支持 gpu-next 或独立窗口输出。软件输出较慢，会忽略 GPU 渲染设置。解码器支持取决于 GPU 和驱动；回拷模式也适用于软件输出。不可用的解码器会回退到软件解码。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10352,4 +10498,77 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settings_playback_mpv_embed_help =>
       'Android 直接輸出會選擇 mediacodec 解碼，不支援 mpv 繪製的字幕或影片濾鏡。選擇其他解碼器將恢復預設輸出。';
+
+  @override
+  String get settings_playback_mpv_gpu_next => 'GPU next 輸出（gpu-next，Android）';
+
+  @override
+  String get settings_playback_mpv_rendering => '算繪與動態效果';
+
+  @override
+  String get settings_playback_mpv_interpolation => '影格插值（interpolation）';
+
+  @override
+  String get settings_playback_mpv_sync => '影片同步（video-sync）';
+
+  @override
+  String get settings_playback_mpv_tscale => '插值濾鏡（tscale）';
+
+  @override
+  String get settings_playback_mpv_scale => '放大濾鏡（scale）';
+
+  @override
+  String get settings_playback_mpv_dscale => '縮小濾鏡（dscale）';
+
+  @override
+  String get settings_playback_mpv_cscale => '色度濾鏡（cscale）';
+
+  @override
+  String get settings_playback_mpv_deband => '去色帶（deband）';
+
+  @override
+  String get settings_playback_mpv_enabled => '啟用（yes）';
+
+  @override
+  String get settings_playback_mpv_disabled => '停用（no）';
+
+  @override
+  String get settings_playback_mpv_conf => '自訂 mpv 設定';
+
+  @override
+  String get settings_playback_mpv_rendering_help =>
+      '僅套用於新建播放器。插值預設使用 display-resample；桌面輸出時序可能限制插值。Android 直接輸出忽略算繪選項。高品質濾鏡會增加 GPU 負載。';
+
+  @override
+  String get settings_playback_mpv_conf_help =>
+      '每行輸入 option=value，支援 # 註解行及帶引號的值。下方支援的選項會覆蓋上方選擇。不支援設定檔、外部檔案、指令碼或應用程式管理的選項。mpv 可能忽略無效值。清空並儲存可重設；重新啟動應用程式以更新所有播放器。';
+
+  @override
+  String get settings_playback_mpv_conf_invalid =>
+      '請使用支援的 option=value 行（最多 16,384 個字元）。';
+
+  @override
+  String get settings_playback_mpv_conf_saved => '已儲存。重新啟動應用程式以更新所有播放器。';
+
+  @override
+  String get settings_playback_mpv_libmpv_software => '嵌入式軟體輸出（libmpv）';
+
+  @override
+  String get settings_playback_mpv_vaapi => 'VA-API 解碼（vaapi）';
+
+  @override
+  String get settings_playback_mpv_vaapi_copy => 'VA-API 解碼並回拷（vaapi-copy）';
+
+  @override
+  String get settings_playback_mpv_nvdec => 'NVIDIA 解碼（nvdec）';
+
+  @override
+  String get settings_playback_mpv_nvdec_copy => 'NVIDIA 解碼並回拷（nvdec-copy）';
+
+  @override
+  String get settings_playback_mpv_vdpau_copy => 'VDPAU 解碼並回拷（vdpau-copy）';
+
+  @override
+  String get settings_playback_mpv_linux_help =>
+      'Linux 使用嵌入式 libmpv，不支援 gpu-next 或獨立視窗輸出。軟體輸出較慢，會忽略 GPU 算繪設定。解碼器支援取決於 GPU 和驅動程式；回拷模式也適用於軟體輸出。不可用的解碼器會回退到軟體解碼。';
 }

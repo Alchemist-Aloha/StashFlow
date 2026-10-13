@@ -52,7 +52,10 @@ void main() {
       {'app_theme_mode': 1},
       {'app_theme_mode': 'neon'},
       {'app_font_family': 'unknown'},
-      {'video_mpv_vo': 'gpu-next'},
+      {'video_mpv_vo': 'invalid'},
+      {'video_mpv_interpolation': 'invalid'},
+      {'video_mpv_conf': 'include=private.conf'},
+      {'video_mpv_conf': 42},
       {'video_mpv_hwdec': 'invalid'},
       {'video_mpv_hwdec': false},
       {'video_controls_auto_hide_seconds': 11},
@@ -89,6 +92,32 @@ void main() {
       expect(prefs.getStringList('search_history_scenes'), ['keep']);
     },
   );
+
+  test('mpv rendering preferences and config round-trip in backups', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final settings = <String, Object>{
+      'video_mpv_vo': 'gpu-next',
+      'video_mpv_interpolation': 'yes',
+      'video_mpv_video-sync': 'display-resample',
+      'video_mpv_tscale': 'oversample',
+      'video_mpv_scale': 'lanczos',
+      'video_mpv_deband': 'no',
+      'video_mpv_conf': '# tuning\ndeband-grain=4',
+    };
+    await registry.replace(prefs, settings);
+    expect(await registry.read(prefs), settings);
+    await registry.replace(prefs, {
+      'video_mpv_vo': 'libmpv-software',
+      'video_mpv_hwdec': 'vaapi-copy',
+    });
+    expect(await registry.read(prefs), {
+      'video_mpv_vo': 'libmpv-software',
+      'video_mpv_hwdec': 'vaapi-copy',
+    });
+    await registry.replace(prefs, {});
+    expect(await registry.read(prefs), isEmpty);
+  });
 
   test('catalog is explicit and stable', () {
     expect(

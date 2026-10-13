@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/playback_settings_page.dart';
@@ -81,6 +82,8 @@ void main() {
       expect(find.text('Software decoding (no)'), findsOneWidget);
       expect(find.textContaining('GPU output (gpu)'), findsOneWidget);
 
+      await select('Video output (vo)', 'GPU next output (gpu-next, Android)');
+      expect(store.loadVideoConfiguration().vo, 'gpu-next');
       await select('Video output (vo)', 'Platform default');
       await select('Hardware decoding (hwdec)', 'Platform default');
       expect(store.loadVideoConfiguration().vo, isNull);
@@ -107,6 +110,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Embedded output (libmpv)'), findsOneWidget);
     expect(find.text('GPU output (gpu)'), findsNothing);
+    expect(find.text('GPU next output (gpu-next, Android)'), findsNothing);
+    expect(find.text('Embedded software output (libmpv)'), findsOneWidget);
     expect(find.text('Direct Android output (mediacodec_embed)'), findsNothing);
     await tester.tap(find.text('Embedded output (libmpv)'));
     await tester.pumpAndSettle();
@@ -122,8 +127,141 @@ void main() {
       find.text('Android hardware decoder, copy-back (mediacodec-copy)'),
       findsNothing,
     );
+    expect(find.text('VA-API decoding (vaapi)'), findsOneWidget);
+    expect(find.text('NVIDIA decoding (nvdec)'), findsOneWidget);
+    expect(find.text('VDPAU decoding, copy-back (vdpau-copy)'), findsOneWidget);
+    await tester.tap(find.text('VA-API decoding, copy-back (vaapi-copy)'));
+    await tester.pumpAndSettle();
+    expect(
+      PlayerSettingsStore(prefs).loadVideoConfiguration().hwdec,
+      'vaapi-copy',
+    );
+    await tester.ensureVisible(title);
+    await tester.pumpAndSettle();
+    await tester.tap(title);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Embedded software output (libmpv)'));
+    await tester.pumpAndSettle();
+    final software = PlayerSettingsStore(prefs).loadVideoConfiguration();
+    expect(software.vo, 'libmpv');
+    expect(software.enableHardwareAcceleration, isFalse);
+    await tester.pumpWidget(const SizedBox());
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const PlaybackSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(title);
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Embedded software output (libmpv)'),
+      findsOneWidget,
+    );
+    expect(prefs.getString(PlayerSettingsStore.mpvVoKey), 'libmpv-software');
     expect(tester.takeException(), isNull);
   }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+
+  testWidgets(
+    'rendering selectors and custom config validate, save and reset',
+    (tester) async {
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: const PlaybackSettingsPage(),
+      );
+      await tester.pumpAndSettle();
+      final interpolation = find.text('Frame interpolation (interpolation)');
+      await tester.ensureVisible(interpolation);
+      await tester.pumpAndSettle();
+      await tester.tap(interpolation);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Enabled (yes)'));
+      await tester.pumpAndSettle();
+      final store = PlayerSettingsStore(prefs);
+      expect(store.loadMpvProperties()['video-sync'], 'display-resample');
+      final editor = find.byType(TextField);
+      await tester.ensureVisible(editor);
+      await tester.pumpAndSettle();
+      await tester.enterText(editor, 'vo=gpu');
+      final save = find.widgetWithText(FilledButton, 'Save');
+      await tester.ensureVisible(save);
+      await tester.pumpAndSettle();
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'Use supported option=value lines (maximum 16,384 characters).',
+        ),
+        findsOneWidget,
+      );
+      expect(prefs.containsKey(PlayerSettingsStore.mpvConfKey), isFalse);
+      await tester.enterText(editor, 'tscale=linear\ndeband=yes');
+      await tester.ensureVisible(save);
+      await tester.pumpAndSettle();
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(store.loadMpvProperties()['tscale'], 'linear');
+      expect(store.mpvConf, 'tscale=linear\ndeband=yes');
+      await tester.enterText(editor, '');
+      await tester.ensureVisible(save);
+      await tester.pumpAndSettle();
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(store.mpvConf, isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final scale in [0.5, 2.0]) {
+    for (final width in [400.0, 1200.0]) {
+      for (final brightness in Brightness.values) {
+        testWidgets(
+          'mpv settings fit width $width, scale $scale, $brightness',
+          (tester) async {
+            tester.view.physicalSize = Size(width, 900);
+            tester.view.devicePixelRatio = 1;
+            addTearDown(tester.view.resetPhysicalSize);
+            addTearDown(tester.view.resetDevicePixelRatio);
+            await pumpTestWidget(
+              tester,
+              prefs: prefs,
+              child: Theme(
+                data: AppTheme.buildTheme(
+                  brightness,
+                  Colors.teal,
+                  fontSizeFactor: scale,
+                ),
+                child: const PlaybackSettingsPage(),
+              ),
+            );
+            await tester.pumpAndSettle();
+            final interpolation = find.text(
+              'Frame interpolation (interpolation)',
+            );
+            await tester.ensureVisible(interpolation);
+            await tester.pumpAndSettle();
+            await tester.tap(interpolation);
+            await tester.pumpAndSettle();
+            expect(find.byType(BottomSheet), findsOneWidget);
+            expect(tester.takeException(), isNull);
+            await tester.tap(find.text('Enabled (yes)'));
+            await tester.pumpAndSettle();
+            final editor = find.byType(TextField);
+            await tester.ensureVisible(editor);
+            await tester.pumpAndSettle();
+            expect(tester.getRect(editor).left, greaterThanOrEqualTo(0));
+            expect(tester.getRect(editor).right, lessThanOrEqualTo(width));
+            await tester.ensureVisible(
+              find.widgetWithText(FilledButton, 'Save'),
+            );
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull);
+          },
+        );
+      }
+    }
+  }
 
   testWidgets('PlaybackSettingsPage renders gravity orientation toggle', (
     tester,

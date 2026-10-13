@@ -1661,6 +1661,9 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
         effectiveHeaders = const <String, String>{};
       }
 
+      await PlayerSettingsStore(
+        ref.read(sharedPreferencesProvider),
+      ).applyMpvProperties(player);
       await player.open(
         Media(effectiveStreamUrl, httpHeaders: effectiveHeaders),
         play: true,

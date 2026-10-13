@@ -3638,4 +3638,85 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settings_playback_mpv_embed_help =>
       'La salida directa de Android selecciona mediacodec y no admite subtítulos renderizados por mpv ni filtros de vídeo. Elegir otro decodificador restaura la salida predeterminada.';
+
+  @override
+  String get settings_playback_mpv_gpu_next =>
+      'Salida GPU next (gpu-next, Android)';
+
+  @override
+  String get settings_playback_mpv_rendering => 'Renderizado y movimiento';
+
+  @override
+  String get settings_playback_mpv_interpolation =>
+      'Interpolación de fotogramas (interpolation)';
+
+  @override
+  String get settings_playback_mpv_sync =>
+      'Sincronización de vídeo (video-sync)';
+
+  @override
+  String get settings_playback_mpv_tscale => 'Filtro de interpolación (tscale)';
+
+  @override
+  String get settings_playback_mpv_scale => 'Filtro de ampliación (scale)';
+
+  @override
+  String get settings_playback_mpv_dscale => 'Filtro de reducción (dscale)';
+
+  @override
+  String get settings_playback_mpv_cscale => 'Filtro de croma (cscale)';
+
+  @override
+  String get settings_playback_mpv_deband => 'Reducir bandas (deband)';
+
+  @override
+  String get settings_playback_mpv_enabled => 'Activado (yes)';
+
+  @override
+  String get settings_playback_mpv_disabled => 'Desactivado (no)';
+
+  @override
+  String get settings_playback_mpv_conf => 'Configuración mpv personalizada';
+
+  @override
+  String get settings_playback_mpv_rendering_help =>
+      'Solo nuevos reproductores. La interpolación usa display-resample; el escritorio puede limitarla. La salida directa de Android ignora el renderizado. Los filtros de calidad aumentan la carga GPU.';
+
+  @override
+  String get settings_playback_mpv_conf_help =>
+      'Una opción=valor por línea, comentarios # o valores entre comillas. Las opciones compatibles abajo reemplazan los selectores. Sin perfiles, inclusiones, scripts ni opciones de la app. mpv puede ignorar valores inválidos. Vacía y guarda para restablecer; reinicia para actualizar todos los reproductores.';
+
+  @override
+  String get settings_playback_mpv_conf_invalid =>
+      'Usa líneas opción=valor compatibles (máximo 16.384 caracteres).';
+
+  @override
+  String get settings_playback_mpv_conf_saved =>
+      'Guardado. Reinicia la app para actualizar todos los reproductores.';
+
+  @override
+  String get settings_playback_mpv_libmpv_software =>
+      'Salida integrada por software (libmpv)';
+
+  @override
+  String get settings_playback_mpv_vaapi => 'Decodificación VA-API (vaapi)';
+
+  @override
+  String get settings_playback_mpv_vaapi_copy =>
+      'Decodificación VA-API con copia a RAM (vaapi-copy)';
+
+  @override
+  String get settings_playback_mpv_nvdec => 'Decodificación NVIDIA (nvdec)';
+
+  @override
+  String get settings_playback_mpv_nvdec_copy =>
+      'Decodificación NVIDIA con copia a RAM (nvdec-copy)';
+
+  @override
+  String get settings_playback_mpv_vdpau_copy =>
+      'Decodificación VDPAU con copia a RAM (vdpau-copy)';
+
+  @override
+  String get settings_playback_mpv_linux_help =>
+      'Linux usa libmpv integrado, no gpu-next ni salidas en ventanas. La salida por software es más lenta e ignora ajustes GPU. Los decodificadores dependen de la GPU y los controladores; los modos con copia a RAM también funcionan con salida por software. Si no están disponibles, se usa decodificación por software.';
 }
