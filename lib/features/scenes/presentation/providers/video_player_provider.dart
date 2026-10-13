@@ -17,6 +17,7 @@ import 'queue_playback_coordinator.dart';
 import 'scene_details_provider.dart';
 import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
+import '../../data/repositories/playback_media.dart';
 import '../../data/repositories/stream_prewarmer.dart';
 import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
@@ -1392,7 +1393,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         ref.read(sharedPreferencesProvider),
       ).applyMpvProperties(player);
       await player.open(
-        Media(
+        createPlaybackMedia(
           effectiveStreamUrl,
           httpHeaders: httpHeaders ?? const <String, String>{},
           start: initialPosition,

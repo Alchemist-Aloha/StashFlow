@@ -435,6 +435,9 @@ Responsibilities:
   the global session so the surviving
   decoder is eventually disposed, not leaked or disposed during the handoff.
 
+Browser media uses URL/browser authentication and never passes custom HTTP
+headers to media-kit. This applies to global playback, feed preloads, and previews.
+
 The UI talks directly to media-kit state. Do not restore the removed
 video-player compatibility adapters or route-owned fullscreen player.
 Inline and fullscreen player utility buttons share the same overlay treatment
@@ -726,7 +729,8 @@ supported limits.
   media required for playback.
 - Size displays refresh after clear/limit changes.
 - Media limits apply to their documented cache only; do not imply a strict
-  database limit when none exists.
+  database limit when none exists. Web skips filesystem media-limit enforcement;
+  browser storage is not available through `path_provider`.
 - Errors are localized for users and detailed safely in logs.
 
 ### Application configuration backup

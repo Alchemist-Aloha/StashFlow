@@ -13,6 +13,7 @@ import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../data/repositories/playback_media.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/domain/entities/scraped/scraped_scene.dart';
@@ -1645,7 +1646,6 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
     try {
       final headers = ref.read(mediaPlaybackHeadersProvider);
       var effectiveStreamUrl = streamUrl;
-      var effectiveHeaders = headers;
       if (kIsWeb) {
         final authState = ref.read(authProvider);
         final apiKey = ref.read(serverApiKeyProvider);
@@ -1658,14 +1658,13 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
           password: authState.password,
           graphqlEndpoint: Uri.tryParse(serverUrl),
         );
-        effectiveHeaders = const <String, String>{};
       }
 
       await PlayerSettingsStore(
         ref.read(sharedPreferencesProvider),
       ).applyMpvProperties(player);
       await player.open(
-        Media(effectiveStreamUrl, httpHeaders: effectiveHeaders),
+        createPlaybackMedia(effectiveStreamUrl, httpHeaders: headers),
         play: true,
       );
     } on Object catch (error, stackTrace) {

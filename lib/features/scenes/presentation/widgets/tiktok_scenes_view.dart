@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -23,6 +24,10 @@ import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
+import '../../data/repositories/playback_media.dart';
+import '../../../../core/data/auth/auth_provider.dart';
+import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -369,6 +374,18 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       if (choice == null || !mounted) return;
 
       final headers = ref.read(mediaPlaybackHeadersProvider);
+      var effectiveUrl = choice.url;
+      if (kIsWeb) {
+        final authState = ref.read(authProvider);
+        effectiveUrl = applyWebMediaAuthFallback(
+          url: effectiveUrl,
+          authMode: authState.mode,
+          apiKey: ref.read(serverApiKeyProvider),
+          username: authState.username,
+          password: authState.password,
+          graphqlEndpoint: Uri.tryParse(ref.read(serverUrlProvider)),
+        );
+      }
 
       final player = Player();
       final controller = VideoController(
@@ -411,7 +428,11 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         ref.read(sharedPreferencesProvider),
       ).applyMpvProperties(player);
       await player.open(
-        Media(choice.url, httpHeaders: headers, start: startPosition),
+        createPlaybackMedia(
+          effectiveUrl,
+          httpHeaders: headers,
+          start: startPosition,
+        ),
         play: false,
       );
 
