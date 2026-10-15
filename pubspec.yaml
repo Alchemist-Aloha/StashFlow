@@ -26,12 +26,12 @@ dependencies:
   media_kit:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: 4c912779279a8487db7c45a49e779a16563199ec
+      ref: d9830182a8225674aeb5e236fdf330c1191925fb
       path: ./media_kit
   media_kit_video:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: 4c912779279a8487db7c45a49e779a16563199ec
+      ref: d9830182a8225674aeb5e236fdf330c1191925fb
       path: ./media_kit_video
   audio_service: ^0.18.19
   audio_service_mpris: ^0.2.1
