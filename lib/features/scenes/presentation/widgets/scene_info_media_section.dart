@@ -16,6 +16,7 @@ import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene.dart';
 import '../../data/repositories/preview_availability_service.dart';
+import '../../data/repositories/playback_media.dart';
 import '../providers/player_settings.dart';
 import 'scene_cover_fullscreen_viewer.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -412,7 +413,7 @@ class _SceneInfoPreviewPlayerState
               rawUrl: widget.previewUrl,
               graphqlEndpoint: graphqlEndpoint,
             );
-      var effectiveHeaders = ref.read(mediaPlaybackHeadersProvider);
+      final effectiveHeaders = ref.read(mediaPlaybackHeadersProvider);
 
       if (kIsWeb) {
         final authState = ref.read(authProvider);
@@ -424,11 +425,13 @@ class _SceneInfoPreviewPlayerState
           password: authState.password,
           graphqlEndpoint: graphqlEndpoint,
         );
-        effectiveHeaders = const {};
       }
 
+      await PlayerSettingsStore(
+        ref.read(sharedPreferencesProvider),
+      ).applyMpvProperties(player);
       await player.open(
-        Media(effectiveUrl, httpHeaders: effectiveHeaders),
+        createPlaybackMedia(effectiveUrl, httpHeaders: effectiveHeaders),
         play: widget.autoplay,
       );
     } on Object catch (error, stackTrace) {

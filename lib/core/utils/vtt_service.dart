@@ -56,10 +56,7 @@ class VttService {
     String effectiveUrl,
     Map<String, String>? headers,
   ) async {
-    AppLogStore.instance.add(
-      'Fetching VTT: $effectiveUrl',
-      source: 'VttService',
-    );
+    AppLogStore.instance.add('Fetching VTT', source: 'VttService');
 
     try {
       final uri = Uri.parse(effectiveUrl);
@@ -86,8 +83,13 @@ class VttService {
       );
       _cache[effectiveUrl] = spriteInfoList;
       return spriteInfoList;
-    } on Exception catch (e) {
-      AppLogStore.instance.add('Error fetching VTT: $e', source: 'VttService');
+    } on Exception catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'fetchSpriteInfo',
+        e,
+        stackTrace,
+        source: 'VttService',
+      );
       return null;
     }
   }

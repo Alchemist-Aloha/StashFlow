@@ -300,6 +300,7 @@ class AppCacheService {
   }
 
   Future<void> enforceImageCacheLimit(int maxMb) async {
+    if (kIsWeb) return; // Browser storage is not a path_provider filesystem.
     await _enforceLimit(
       dirs: await _imageCacheDirs(),
       maxMb: maxMb,
@@ -309,6 +310,7 @@ class AppCacheService {
   }
 
   Future<void> enforceVideoCacheLimit(int maxMb) async {
+    if (kIsWeb) return;
     await _enforceLimit(
       dirs: await _videoCacheDirs(),
       maxMb: maxMb,

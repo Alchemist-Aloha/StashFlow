@@ -5,6 +5,7 @@ analyzer:
     - '**/*.g.dart'
     - '**/*.freezed.dart'
     - '**/*.graphql.dart'
+    - media-kit/**
     - build/**
     - android/**
     - ios/**

@@ -37,16 +37,16 @@ jobs:
         target: [android, windows, linux, web, macos]
         include:
           - target: android
-            os: ubuntu-latest
+            os: ubuntu-26.04
             artifact_name: apk
           - target: windows
             os: windows-latest
             artifact_name: windows
           - target: linux
-            os: ubuntu-latest
+            os: ubuntu-26.04
             artifact_name: linux
           - target: web
-            os: ubuntu-latest
+            os: ubuntu-26.04
             artifact_name: web
           - target: macos
             os: macos-26
@@ -76,6 +76,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: "3.47.6"
           cache: true
 
       - name: Install dependencies
@@ -108,11 +109,16 @@ jobs:
             liblzma-dev \
             libstdc++-12-dev \
             libsecret-1-dev \
-            libmpv-dev \
-            libavcodec-dev \
-            libavformat-dev \
-            libavutil-dev \
-            libswresample-dev \
+            libva-drm2 \
+            libva-x11-2 \
+            libva-wayland2 \
+            libvdpau1 \
+            libpulse0 \
+            libxss1 \
+            libxv1 \
+            libegl1 \
+            libgbm1 \
+            libwayland-egl1 \
             libarchive-tools \
             fakeroot \
             zstd
@@ -253,7 +259,7 @@ jobs:
   release:
     needs: build
     if: inputs.rolling_tag != '' || startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     steps:

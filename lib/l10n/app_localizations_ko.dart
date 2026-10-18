@@ -9,6 +9,66 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get video_debug_format => 'MIME 유형';
+
+  @override
+  String get video_debug_variant => '변형';
+
+  @override
+  String get video_debug_source => '소스';
+
+  @override
+  String get video_debug_decoder => '디코더';
+
+  @override
+  String get video_debug_codec => '코덱';
+
+  @override
+  String get video_debug_hardware => '활성 하드웨어 디코딩';
+
+  @override
+  String get video_debug_output => '비디오 출력';
+
+  @override
+  String get video_debug_pixel_format => '픽셀 형식';
+
+  @override
+  String get video_debug_performance => '성능';
+
+  @override
+  String get video_debug_source_fps => '소스 프레임 속도';
+
+  @override
+  String get video_debug_output_fps => '출력 프레임 속도';
+
+  @override
+  String get video_debug_decoder_drops => '디코더 드롭 프레임';
+
+  @override
+  String get video_debug_output_drops => '출력 드롭 프레임';
+
+  @override
+  String get video_debug_av_sync => '오디오/비디오 동기화';
+
+  @override
+  String get video_debug_cache => '디먹서 캐시';
+
+  @override
+  String get video_debug_buffer => '미리 버퍼링됨';
+
+  @override
+  String get video_debug_startup => '시작';
+
+  @override
+  String get video_debug_prewarm => '사전 로딩';
+
+  @override
+  String get video_debug_success => '성공';
+
+  @override
+  String get video_debug_failed => '실패';
+
+  @override
   String get appTitle => 'StashFlow';
 
   @override
@@ -3426,4 +3486,82 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get settings_playback_mpv_embed_help =>
       'Android 직접 출력을 선택하면 mediacodec 디코딩이 사용되며 mpv 자막 렌더링과 영상 필터는 지원되지 않습니다. 다른 디코더를 선택하면 기본 출력으로 돌아갑니다.';
+
+  @override
+  String get settings_playback_mpv_gpu_next =>
+      'GPU next 출력 (gpu-next, Android)';
+
+  @override
+  String get settings_playback_mpv_rendering => '렌더링 및 움직임';
+
+  @override
+  String get settings_playback_mpv_interpolation => '프레임 보간 (interpolation)';
+
+  @override
+  String get settings_playback_mpv_sync => '영상 동기화 (video-sync)';
+
+  @override
+  String get settings_playback_mpv_tscale => '보간 필터 (tscale)';
+
+  @override
+  String get settings_playback_mpv_scale => '확대 필터 (scale)';
+
+  @override
+  String get settings_playback_mpv_dscale => '축소 필터 (dscale)';
+
+  @override
+  String get settings_playback_mpv_cscale => '색차 필터 (cscale)';
+
+  @override
+  String get settings_playback_mpv_deband => '밴딩 감소 (deband)';
+
+  @override
+  String get settings_playback_mpv_enabled => '사용 (yes)';
+
+  @override
+  String get settings_playback_mpv_disabled => '사용 안 함 (no)';
+
+  @override
+  String get settings_playback_mpv_conf => '사용자 지정 mpv 설정';
+
+  @override
+  String get settings_playback_mpv_rendering_help =>
+      '새 플레이어만 적용됩니다. 보간은 기본적으로 display-resample을 사용하며 데스크톱 타이밍으로 제한될 수 있습니다. Android 직접 출력은 렌더링 옵션을 무시합니다. 고품질 필터는 GPU 부하를 늘립니다.';
+
+  @override
+  String get settings_playback_mpv_conf_help =>
+      '한 줄에 option=value 입력. # 주석 줄과 따옴표 값을 지원합니다. 아래 지원 옵션이 선택 항목보다 우선합니다. 프로필, 외부 파일, 스크립트 및 앱 관리 옵션은 지원하지 않습니다. mpv가 잘못된 값을 무시할 수 있습니다. 비우고 저장하면 초기화됩니다. 모든 플레이어에 적용하려면 앱을 다시 시작하세요.';
+
+  @override
+  String get settings_playback_mpv_conf_invalid =>
+      '지원하는 option=value 줄을 사용하세요(최대 16,384자).';
+
+  @override
+  String get settings_playback_mpv_conf_saved =>
+      '저장했습니다. 모든 플레이어에 적용하려면 앱을 다시 시작하세요.';
+
+  @override
+  String get settings_playback_mpv_libmpv_software => '내장 소프트웨어 출력 (libmpv)';
+
+  @override
+  String get settings_playback_mpv_vaapi => 'VA-API 디코딩 (vaapi)';
+
+  @override
+  String get settings_playback_mpv_vaapi_copy =>
+      'VA-API 디코딩, 복사 방식 (vaapi-copy)';
+
+  @override
+  String get settings_playback_mpv_nvdec => 'NVIDIA 디코딩 (nvdec)';
+
+  @override
+  String get settings_playback_mpv_nvdec_copy =>
+      'NVIDIA 디코딩, 복사 방식 (nvdec-copy)';
+
+  @override
+  String get settings_playback_mpv_vdpau_copy =>
+      'VDPAU 디코딩, 복사 방식 (vdpau-copy)';
+
+  @override
+  String get settings_playback_mpv_linux_help =>
+      'Linux는 gpu-next나 창 출력 대신 내장 libmpv를 사용합니다. 소프트웨어 출력은 느리며 GPU 렌더링 설정을 무시합니다. 디코더 지원은 GPU와 드라이버에 따라 다릅니다. 복사 방식은 소프트웨어 출력에서도 작동합니다. 지원하지 않으면 소프트웨어 디코딩으로 전환합니다.';
 }

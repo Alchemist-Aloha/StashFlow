@@ -435,6 +435,9 @@ Responsibilities:
   the global session so the surviving
   decoder is eventually disposed, not leaked or disposed during the handoff.
 
+Browser media uses URL/browser authentication and never passes custom HTTP
+headers to media-kit. This applies to global playback, feed preloads, and previews.
+
 The UI talks directly to media-kit state. Do not restore the removed
 video-player compatibility adapters or route-owned fullscreen player.
 Inline and fullscreen player utility buttons share the same overlay treatment
@@ -446,7 +449,19 @@ no valid preference is saved; existing saved delays are preserved. The selected
 delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
 included in configuration backups.
 
+The optional video debug overlay groups stream, active decoder/output, and
+performance diagnostics in a bounded, scrollable panel. It follows controls
+visibility and samples native mpv properties once per second only while visible.
+It distinguishes source/output frame rates and decoder/output dropped frames;
+unsupported metrics are shown as unavailable, not zero. Startup and prewarm
+latencies retain their existing session meaning. The panel never displays media
+URLs or authentication headers.
+
 ### Native video output and decoding
+
+- `media_kit` and `media_kit_video` come from the same revision of the
+  `Alchemist-Aloha/media-kit` fork. Its core build hook downloads, verifies, and
+  packages native playback libraries; do not add `media_kit_libs_*` packages.
 
 - Playback settings persist `video_mpv_vo` and `video_mpv_hwdec`; `default`
   leaves media-kit's platform defaults unchanged. `hwdec=no` selects software
@@ -454,13 +469,47 @@ included in configuration backups.
 - Every newly created controller reads these preferences: global playback,
   TikTok feed, scene-info previews, and the scene tagger. Existing or preloaded
   controllers retain their configuration; restarting the app updates all of them.
-- Android offers `gpu` and `mediacodec_embed`; other native platforms use the
-  embedded `libmpv` output. Web does not expose or apply mpv preferences.
+- Android offers `gpu`, `gpu-next` (libplacebo), and `mediacodec_embed`; the
+  pinned fork handles gpu-next surface output and all three bundled Android ABIs
+  contain the renderer. GPU/driver compatibility still requires device testing.
+  Desktop platforms use embedded `libmpv` output. Linux additionally offers
+  `libmpv-software`, an app preference mapped to `vo=libmpv` with
+  `enableHardwareAcceleration=false` (software render API). It is not an mpv
+  driver name. Software rendering is slower and omits GPU rendering overrides.
+  `gpu-next`, `gpu`, and standalone window outputs are not compatible with the
+  current Linux render-API texture integration and must not be offered there.
+  Web does not expose or apply mpv preferences.
+- Linux decoder choices include `vaapi`, `vaapi-copy`, `nvdec`, `nvdec-copy`,
+  and `vdpau-copy`, in addition to default, software and automatic modes. VA-API
+  direct interop receives the X11/Wayland display through the pinned plugin;
+  NVDEC direct interop depends on NVIDIA drivers. Copy-back modes also work with
+  software output. Direct VDPAU is not offered because its X11/OpenGL requirements
+  do not match the plugin's cross-session GLES integration. Hardware/driver
+  availability determines whether decoding succeeds or falls back to software.
+  These Linux-only choices are filtered out on other platforms and on web.
 - Direct Android output requires `hwdec=mediacodec` and does not support mpv
   subtitle rendering or video filters. Selecting it sets the required decoder;
   selecting another decoder restores default output. Runtime loading also guards
   against incompatible pairs and platform-specific options imported from backups.
-- Configuration backups include both keys with allowlisted values. Verify
+- Rendering selectors persist `video_mpv_<option>` for `interpolation`,
+  `video-sync`, `tscale`, `scale`, `dscale`, `cscale`, and `deband`. `default`
+  preserves native defaults. Interpolation supplies `video-sync=display-resample`
+  unless synchronization is explicitly selected or overridden. Display timing in
+  desktop render-API embedding may limit interpolation; it is not guaranteed.
+- The final playback-settings section stores `video_mpv_conf`: a flat runtime
+  mpv.conf subset, at most 16,384 characters, with `option=value`, bare enabled
+  options, full-line `#` comments and single/double-quoted values. Duplicate
+  options use the last value. Custom values override rendering selectors.
+  Supported playback-tuning options are listed in the editor and allowlisted in
+  `PlayerSettingsStore`; profiles, includes, scripts, paths, authentication and
+  app-owned output/decoder/lifecycle options are rejected, including on import.
+  Native mpv may ignore unsupported option values. Clearing and saving removes
+  custom overrides, not selector choices.
+- All four new-player paths await runtime option application before opening
+  media. Web applies none. Direct MediaCodec and software render-API output
+  omit rendering overrides but keep audio/cache tuning. Existing controllers retain their settings.
+- Configuration backups include output, decoder, rendering and custom settings
+  with validated keys/values. Verify
   persistence, effective controller configuration, platform filtering, and paired
   selection behavior in tests; hardware compatibility requires device testing.
 
@@ -600,6 +649,11 @@ Background playback follows the persisted preference:
 
 - when enabled, playback may continue while the app is backgrounded and the
   media notification remains synchronized;
+- explicit system media commands take effect immediately after backgrounding;
+  Pause suppresses background keepalive until an explicit Play or foreground
+  resume;
+- controller initialization must not require a Flutter render frame, so
+  notification queue changes and auto-next can start while frames are suspended;
 - when disabled, an active global player pauses on backgrounding unless the app
   is entering an allowed picture-in-picture path;
 - preview/local auxiliary players do not inherit global background ownership.
@@ -675,7 +729,8 @@ supported limits.
   media required for playback.
 - Size displays refresh after clear/limit changes.
 - Media limits apply to their documented cache only; do not imply a strict
-  database limit when none exists.
+  database limit when none exists. Web skips filesystem media-limit enforcement;
+  browser storage is not available through `path_provider`.
 - Errors are localized for users and detailed safely in logs.
 
 ### Application configuration backup
@@ -709,6 +764,22 @@ Backup invariants:
 Encryption and cloud synchronization are outside the current backup scope.
 
 ## Platform and build behavior
+
+Release, release-candidate, and nightly builds share
+`.github/workflows/reusable-release.yml`. Android, Linux, web, and release jobs
+use Ubuntu 26.04. CI uses Flutter 3.47.6 and resolves dependencies with
+`flutter pub get`
+Pub fetches the media-kit fork rather than
+using the ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
+libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
+
+The app requires Flutter 3.47.6 or newer and Dart 3.11 or newer within Dart 3.x.
+`msix` and `fastforge` are development dependencies used only for packaging.
+
+### macOS
+
+The minimum deployment target is macOS 13, matching the native frameworks emitted
+by the pinned Flutter SDK.
 
 ### Android
 

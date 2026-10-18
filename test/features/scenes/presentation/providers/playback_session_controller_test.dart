@@ -276,8 +276,6 @@ class _CustomPlayerStream extends Mock implements mk.PlayerStream {
   @override
   Stream<mk.PlaylistMode> get playlistMode => const Stream.empty();
   @override
-  Stream<bool> get shuffle => const Stream.empty();
-  @override
   Stream<mk.AudioParams> get audioParams => const Stream.empty();
   @override
   final Stream<mk.VideoParams> videoParams;

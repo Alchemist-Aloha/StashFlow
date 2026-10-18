@@ -4,8 +4,35 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:stash_app_flutter/core/utils/vtt_service.dart';
+import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 
 void main() {
+  test('VTT logs omit authenticated URLs and exception payloads', () async {
+    final logger = AppLogStore.instance
+      ..clear()
+      ..isEnabled = true;
+    addTearDown(() {
+      logger
+        ..isEnabled = false
+        ..clear();
+    });
+    final service = VttService(
+      apiKey: 'secret-test-key',
+      client: MockClient((request) async {
+        expect(request.url.queryParameters['apikey'], 'secret-test-key');
+        throw http.ClientException('failed to fetch ${request.url}');
+      }),
+    );
+    expect(
+      await service.fetchSpriteInfo('https://stash.test/thumbs.vtt', {}),
+      isNull,
+    );
+    expect(logger.entries, isNotEmpty);
+    final messages = logger.entries.map((entry) => entry.message).join('\n');
+    expect(messages, isNot(contains('secret-test-key')));
+    expect(messages, isNot(contains('https://stash.test')));
+  });
+
   test('concurrent VTT loads share one HTTP request', () async {
     final responseCompleter = Completer<http.Response>();
     var requestCount = 0;
