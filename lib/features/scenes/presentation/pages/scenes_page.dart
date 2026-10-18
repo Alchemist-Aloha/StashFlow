@@ -409,6 +409,15 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         builder: (context) => ListSortBottomSheet<_SceneSortField>(
           title: context.l10n.sort_scenes,
           options: _SceneSortField.values,
+          commonOptions: const [
+            _SceneSortField.date,
+            _SceneSortField.title,
+            _SceneSortField.rating,
+            _SceneSortField.duration,
+            _SceneSortField.random,
+            _SceneSortField.updatedAt,
+            _SceneSortField.lastPlayedAt,
+          ],
           initialOption: _sortField,
           initialDescending: _sortDescending,
           resetOption: _SceneSortField.date,

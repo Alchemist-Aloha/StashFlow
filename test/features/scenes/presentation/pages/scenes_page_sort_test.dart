@@ -62,8 +62,16 @@ void main() {
       await tester.tap(find.byIcon(Icons.sort));
       await tester.pumpAndSettle();
 
-      // Verify Title
+      // Common sorts lead; the full catalogue remains available on demand.
       expect(find.text('Sort Scenes'), findsOneWidget);
+      expect(find.byType(ChoiceChip), findsNWidgets(7));
+      for (final label in ['Random', 'Updated At', 'Last Played At']) {
+        expect(find.widgetWithText(ChoiceChip, label), findsOneWidget);
+      }
+      await tester.ensureVisible(find.byType(ExpansionTile));
+      await tester.tap(find.text('Advanced sort options'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ChoiceChip), findsNWidgets(31));
 
       // Verify Apply Sort button exists
       expect(find.byType(ElevatedButton), findsAtLeastNWidgets(1));

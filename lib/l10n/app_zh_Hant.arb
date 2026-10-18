@@ -47,6 +47,7 @@
   "common_reset": "重設",
   "common_apply": "套用",
   "common_save_default": "儲存為預設",
+  "common_advanced_sort_options": "進階排序選項",
   "common_sort_method": "排序方式",
   "common_direction": "方向",
   "common_ascending": "遞增",

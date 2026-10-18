@@ -162,6 +162,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get common_save_default => 'Enregistrer par défaut';
 
   @override
+  String get common_advanced_sort_options => 'Options de tri avancées';
+
+  @override
   String get common_sort_method => 'Méthode de tri';
 
   @override

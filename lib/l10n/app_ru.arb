@@ -47,6 +47,7 @@
   "common_reset": "Сбросить",
   "common_apply": "Применить",
   "common_save_default": "Сохранить по умолчанию",
+  "common_advanced_sort_options": "Дополнительные параметры сортировки",
   "common_sort_method": "Способ сортировки",
   "common_direction": "Направление",
   "common_ascending": "По возрастанию",

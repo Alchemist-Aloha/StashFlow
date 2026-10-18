@@ -47,6 +47,7 @@
   "common_reset": "Réinitialiser",
   "common_apply": "Appliquer",
   "common_save_default": "Enregistrer par défaut",
+  "common_advanced_sort_options": "Options de tri avancées",
   "common_sort_method": "Méthode de tri",
   "common_direction": "Direction",
   "common_ascending": "Croissant",

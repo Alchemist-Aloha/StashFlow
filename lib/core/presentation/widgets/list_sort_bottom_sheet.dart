@@ -9,6 +9,7 @@ class ListSortBottomSheet<T> extends StatefulWidget {
     super.key,
     required this.title,
     required this.options,
+    this.commonOptions,
     required this.initialOption,
     required this.initialDescending,
     required this.resetOption,
@@ -21,6 +22,10 @@ class ListSortBottomSheet<T> extends StatefulWidget {
 
   final String title;
   final List<T> options;
+
+  /// When set, other options are disclosed in an advanced section. The selected
+  /// option stays in the first group even when it is not a common option.
+  final List<T>? commonOptions;
   final T initialOption;
   final bool initialDescending;
   final T resetOption;
@@ -72,8 +77,34 @@ class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
     }
   }
 
+  Widget _optionChips(Iterable<T> options) => Wrap(
+    spacing: context.dimensions.spacingSmall,
+    runSpacing: context.dimensions.spacingSmall,
+    children: options
+        .map(
+          (option) => ChoiceChip(
+            label: Text(widget.optionLabel(option)),
+            selected: _tempOption == option,
+            onSelected: (selected) {
+              if (!selected) return;
+              setState(() => _tempOption = option);
+            },
+          ),
+        )
+        .toList(),
+  );
+
   @override
   Widget build(BuildContext context) {
+    final commonOptions = widget.commonOptions;
+    final advancedOptions = commonOptions == null
+        ? <T>[]
+        : widget.options
+              .where(
+                (option) =>
+                    !commonOptions.contains(option) && option != _tempOption,
+              )
+              .toList();
     return SafeArea(
       top: false,
       child: FrostedPanel(
@@ -84,97 +115,102 @@ class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BottomSheetPanelHeader(
-              title: widget.title,
-              onReset: () {
-                setState(() {
-                  _tempOption = widget.resetOption;
-                  _tempDescending = widget.resetDescending;
-                });
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.dimensions.spacingLarge,
-              ),
-              child: Text(
-                context.l10n.common_sort_method,
-                style: context.textTheme.labelLarge,
-              ),
-            ),
-            SizedBox(height: context.dimensions.spacingSmall),
             Flexible(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.dimensions.spacingLarge,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.sizeOf(context).height * 0.22,
-                  ),
-                  child: Scrollbar(
-                    controller: _optionsScrollController,
-                    thumbVisibility: true,
-                    child: SingleChildScrollView(
-                      controller: _optionsScrollController,
-                      primary: false,
-                      padding: EdgeInsets.symmetric(
-                        vertical: context.dimensions.spacingSmall,
+              child: Scrollbar(
+                controller: _optionsScrollController,
+                thumbVisibility: true,
+                child: SingleChildScrollView(
+                  controller: _optionsScrollController,
+                  primary: false,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BottomSheetPanelHeader(
+                        title: widget.title,
+                        onReset: () {
+                          setState(() {
+                            _tempOption = widget.resetOption;
+                            _tempDescending = widget.resetDescending;
+                          });
+                        },
                       ),
-                      child: Wrap(
-                        spacing: context.dimensions.spacingSmall,
-                        runSpacing: context.dimensions.spacingSmall,
-                        children: widget.options
-                            .map(
-                              (option) => ChoiceChip(
-                                label: Text(widget.optionLabel(option)),
-                                selected: _tempOption == option,
-                                onSelected: (selected) {
-                                  if (!selected) return;
-                                  setState(() => _tempOption = option);
-                                },
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimensions.spacingLarge,
+                        ),
+                        child: Text(
+                          context.l10n.common_sort_method,
+                          style: context.textTheme.labelLarge,
+                        ),
+                      ),
+                      SizedBox(height: context.dimensions.spacingSmall),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimensions.spacingLarge,
+                          vertical: context.dimensions.spacingSmall,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _optionChips(
+                              commonOptions == null
+                                  ? widget.options
+                                  : widget.options.where(
+                                      (option) =>
+                                          commonOptions.contains(option) ||
+                                          option == _tempOption,
+                                    ),
+                            ),
+                            if (advancedOptions.isNotEmpty)
+                              ExpansionTile(
+                                tilePadding: EdgeInsets.zero,
+                                title: Text(
+                                  context.l10n.common_advanced_sort_options,
+                                ),
+                                children: [_optionChips(advancedOptions)],
                               ),
-                            )
-                            .toList(),
+                          ],
+                        ),
                       ),
-                    ),
+                      SizedBox(height: context.dimensions.spacingMedium),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimensions.spacingLarge,
+                        ),
+                        child: Text(
+                          context.l10n.common_direction,
+                          style: context.textTheme.labelLarge,
+                        ),
+                      ),
+                      SizedBox(height: context.dimensions.spacingSmall),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimensions.spacingLarge,
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: SegmentedButton<bool>(
+                            segments: [
+                              ButtonSegment(
+                                value: true,
+                                label: Text(context.l10n.common_descending),
+                                icon: const Icon(Icons.arrow_downward),
+                              ),
+                              ButtonSegment(
+                                value: false,
+                                label: Text(context.l10n.common_ascending),
+                                icon: const Icon(Icons.arrow_upward),
+                              ),
+                            ],
+                            selected: {_tempDescending},
+                            onSelectionChanged: (value) =>
+                                setState(() => _tempDescending = value.first),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-            ),
-            SizedBox(height: context.dimensions.spacingMedium),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.dimensions.spacingLarge,
-              ),
-              child: Text(
-                context.l10n.common_direction,
-                style: context.textTheme.labelLarge,
-              ),
-            ),
-            SizedBox(height: context.dimensions.spacingSmall),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.dimensions.spacingLarge,
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: SegmentedButton<bool>(
-                  segments: [
-                    ButtonSegment(
-                      value: true,
-                      label: Text(context.l10n.common_descending),
-                      icon: const Icon(Icons.arrow_downward),
-                    ),
-                    ButtonSegment(
-                      value: false,
-                      label: Text(context.l10n.common_ascending),
-                      icon: const Icon(Icons.arrow_upward),
-                    ),
-                  ],
-                  selected: {_tempDescending},
-                  onSelectionChanged: (value) =>
-                      setState(() => _tempDescending = value.first),
                 ),
               ),
             ),

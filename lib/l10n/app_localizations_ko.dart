@@ -160,6 +160,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_save_default => '기본값으로 저장';
 
   @override
+  String get common_advanced_sort_options => '고급 정렬 옵션';
+
+  @override
   String get common_sort_method => '정렬 방식';
 
   @override
