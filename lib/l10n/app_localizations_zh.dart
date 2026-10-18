@@ -160,6 +160,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_save_default => '保存为默认';
 
   @override
+  String get common_advanced_sort_options => '高级排序选项';
+
+  @override
   String get common_sort_method => '排序方式';
 
   @override
@@ -3678,6 +3681,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get common_save_default => '保存为默认';
+
+  @override
+  String get common_advanced_sort_options => '高级排序选项';
 
   @override
   String get common_sort_method => '排序方式';
@@ -7200,6 +7206,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get common_save_default => '儲存為預設';
+
+  @override
+  String get common_advanced_sort_options => '進階排序選項';
 
   @override
   String get common_sort_method => '排序方式';

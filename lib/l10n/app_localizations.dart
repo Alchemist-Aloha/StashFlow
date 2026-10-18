@@ -336,6 +336,12 @@ abstract class AppLocalizations {
   /// **'Save as Default'**
   String get common_save_default;
 
+  /// No description provided for @common_advanced_sort_options.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced sort options'**
+  String get common_advanced_sort_options;
+
   /// No description provided for @common_sort_method.
   ///
   /// In en, this message translates to:

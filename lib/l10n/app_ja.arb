@@ -47,6 +47,7 @@
   "common_reset": "リセット",
   "common_apply": "適用",
   "common_save_default": "デフォルトとして保存",
+  "common_advanced_sort_options": "詳細な並べ替えオプション",
   "common_sort_method": "並べ替え方法",
   "common_direction": "方向",
   "common_ascending": "昇順",

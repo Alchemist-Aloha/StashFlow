@@ -16,6 +16,22 @@ void main() {
     expect(manifest, isNot(contains('requestLegacyExternalStorage')));
   });
 
+  test('release preserves Kotlin types looked up by Dart JNI', () {
+    final rules = File('android/app/proguard-rules.pro').readAsStringSync();
+    // jni's Kotlin bridge uses these JVM names and member descriptors literally.
+    for (final declaration in [
+      'interface kotlin.coroutines.Continuation',
+      'class kotlin.coroutines.intrinsics.CoroutineSingletons',
+      'class kotlin.coroutines.intrinsics.IntrinsicsKt',
+      'class kotlin.coroutines.intrinsics.IntrinsicsKt__IntrinsicsKt',
+      'class kotlin.Result',
+      r'class kotlin.Result$Failure',
+      'class kotlin.Unit',
+    ]) {
+      expect(rules, contains('-keep $declaration { *; }'));
+    }
+  });
+
   test('release shrinker rules do not retain entire plugin packages', () {
     final rules = File('android/app/proguard-rules.pro').readAsStringSync();
     expect(rules, isNot(contains('-keep class io.flutter.plugins.** { *; }')));

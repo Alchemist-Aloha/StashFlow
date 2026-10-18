@@ -166,6 +166,18 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   String? _currentQuery;
   String? _lastSubmittedText;
   bool _isTopAppBarVisible = true;
+  final _actionPillKey = GlobalKey();
+  double _actionPillHeight = 0;
+
+  void _measureActionPill() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final height = _actionPillKey.currentContext?.size?.height ?? 0;
+      if (height != _actionPillHeight) {
+        setState(() => _actionPillHeight = height);
+      }
+    });
+  }
 
   DateTime? _lastHorizontalSwipeTime;
   static const _horizontalSwipeThreshold = Duration(milliseconds: 500);
@@ -232,6 +244,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   Widget build(BuildContext context) {
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
     final autoHideTopAppBar = ref.watch(autoHideTopAppBarProvider);
+    if (widget.actions.isNotEmpty) _measureActionPill();
+    final actionPillGap = context.dimensions.spacingMedium;
 
     // Hoist layout values out of the build sub-trees.
     // Why: Previously, MediaQuery.sizeOf and _getResponsiveGridDelegate were queried repeatedly
@@ -422,12 +436,14 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     Widget buildContent(double topInset) {
       final topInsetPadding = EdgeInsets.only(top: topInset);
       final hasLeadingBar = _currentQuery != null || widget.sortBar != null;
-      // Floating chrome (the mini player) publishes its height as a bottom
-      // inset, so the last row can always be scrolled clear of the glass.
       final bottomInset = MediaQuery.paddingOf(context).bottom;
+      // The shell reserves the mini player; reserve the pill above it separately.
+      final actionPillInset = widget.actions.isEmpty
+          ? 0.0
+          : _actionPillHeight + actionPillGap;
       final listPadding = (widget.padding ?? EdgeInsets.zero)
           .add(hasLeadingBar ? EdgeInsets.zero : topInsetPadding)
-          .add(EdgeInsets.only(bottom: bottomInset));
+          .add(EdgeInsets.only(bottom: bottomInset + actionPillInset));
 
       return NotificationListener<UserScrollNotification>(
         onNotification: (notification) {
@@ -742,31 +758,40 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
               ),
               if (widget.actions.isNotEmpty)
                 Positioned(
-                  bottom: bottomInset + 16,
+                  bottom: bottomInset + actionPillGap,
                   left: 0,
                   right: 0,
-                  child: Center(
-                    child: FrostedSurface(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 4,
-                      ),
-                      borderRadius: BorderRadius.circular(32),
-                      tint: context.colors.surfaceVariant.withValues(
-                        alpha: AppTheme.frostedChromeAlpha,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.shadow.withValues(alpha: 0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                  child: NotificationListener<SizeChangedLayoutNotification>(
+                    onNotification: (_) {
+                      _measureActionPill();
+                      return false;
+                    },
+                    child: SizeChangedLayoutNotifier(
+                      child: Center(
+                        child: FrostedSurface(
+                          key: _actionPillKey,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 4,
+                          ),
+                          borderRadius: BorderRadius.circular(32),
+                          tint: context.colors.surfaceVariant.withValues(
+                            alpha: AppTheme.frostedChromeAlpha,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.shadow.withValues(alpha: 0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: widget.actions,
+                          ),
                         ),
-                      ],
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: widget.actions,
                       ),
                     ),
                   ),

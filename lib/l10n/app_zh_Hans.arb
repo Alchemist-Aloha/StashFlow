@@ -50,6 +50,7 @@
   "common_reset": "重置",
   "common_apply": "应用",
   "common_save_default": "保存为默认",
+  "common_advanced_sort_options": "高级排序选项",
   "common_sort_method": "排序方式",
   "common_direction": "方向",
   "common_ascending": "升序",

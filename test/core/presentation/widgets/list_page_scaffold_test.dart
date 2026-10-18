@@ -143,6 +143,115 @@ void main() {
       });
     }
 
+    for (final layout in ['list', 'grid', 'masonry']) {
+      for (final scale in [0.8, 1.5]) {
+        for (final bottomInset in [0.0, 66.0]) {
+          testWidgets(
+            '$layout final item clears pill at scale $scale / inset $bottomInset',
+            (tester) async {
+              final controller = ScrollController();
+              addTearDown(controller.dispose);
+              await pumpTestWidget(
+                tester,
+                child: Builder(
+                  builder: (context) => Theme(
+                    data: AppTheme.buildTheme(
+                      Brightness.light,
+                      Colors.teal,
+                      fontSizeFactor: scale,
+                    ),
+                    child: MediaQuery(
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(padding: EdgeInsets.only(bottom: bottomInset)),
+                      child: ListPageScaffold<int>(
+                        title: 'Library',
+                        searchHint: 'Search...',
+                        onSearchChanged: (_) {},
+                        hideAppBar: true,
+                        scrollController: controller,
+                        provider: AsyncValue.data(List.generate(60, (i) => i)),
+                        useResponsiveGrid: false,
+                        useMasonry: layout == 'masonry',
+                        gridDelegate: layout == 'list'
+                            ? null
+                            : const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                              ),
+                        itemBuilder: (_, item, _, _) => SizedBox(
+                          key: ValueKey('row-$item'),
+                          height: 80,
+                          child: Text('Item $item'),
+                        ),
+                        actions: [
+                          SizedBox(
+                            height: 48 * scale,
+                            child: IconButton(
+                              icon: const Icon(Icons.filter_list),
+                              onPressed: () {},
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+              await tester.pumpAndSettle();
+              controller.jumpTo(controller.position.maxScrollExtent);
+              await tester.pumpAndSettle();
+              final pill = find.ancestor(
+                of: find.byIcon(Icons.filter_list),
+                matching: find.byType(FrostedSurface),
+              );
+              expect(
+                tester.getRect(find.byKey(const ValueKey('row-59'))).bottom,
+                lessThanOrEqualTo(tester.getRect(pill).top + 0.01),
+              );
+              expect(tester.takeException(), isNull);
+            },
+          );
+        }
+      }
+    }
+
+    testWidgets('pill clearance follows child height changes', (tester) async {
+      late StateSetter updateAction;
+      var height = 48.0;
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<int>(
+          title: 'Library',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.data([1]),
+          itemBuilder: (_, item, _, _) => Text('Item $item'),
+          actions: [
+            StatefulBuilder(
+              builder: (context, setState) {
+                updateAction = setState;
+                return SizedBox(height: height, width: 48);
+              },
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+      final initialPadding = tester
+          .widget<ListView>(find.byType(ListView))
+          .padding!
+          .resolve(TextDirection.ltr)
+          .bottom;
+      updateAction(() => height = 96);
+      await tester.pumpAndSettle();
+      final updatedPadding = tester
+          .widget<ListView>(find.byType(ListView))
+          .padding!
+          .resolve(TextDirection.ltr)
+          .bottom;
+      expect(updatedPadding - initialPadding, 48);
+    });
+
     testWidgets('random FAB clears the mini player in the real shell', (
       tester,
     ) async {

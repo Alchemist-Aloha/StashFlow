@@ -10,6 +10,7 @@ import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
+import '../gallery_sort.dart';
 import '../providers/gallery_list_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../domain/entities/gallery.dart';
@@ -27,22 +28,6 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 
-enum _GallerySortOption {
-  date,
-  title,
-  path,
-  rating,
-  fileModTime,
-  tagCount,
-  performerCount,
-  performerAge,
-  random,
-  imageCount,
-  fileCount,
-  createdAt,
-  updatedAt,
-}
-
 class GalleriesPage extends ConsumerStatefulWidget {
   const GalleriesPage({super.key});
 
@@ -51,7 +36,7 @@ class GalleriesPage extends ConsumerStatefulWidget {
 }
 
 class _GalleriesPageState extends ConsumerState<GalleriesPage> {
-  _GallerySortOption _sortOption = _GallerySortOption.path;
+  GallerySortOption _sortOption = GallerySortOption.path;
   bool _sortDescending = false;
 
   /// Remembers the last random gallery ID to avoid consecutive duplicates.
@@ -64,7 +49,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       if (!mounted) return;
       final sortConfig = ref.read(gallerySortProvider);
       setState(() {
-        _sortOption = _sortOptionForKey(sortConfig.sort);
+        _sortOption = GallerySortOption.fromKey(sortConfig.sort);
         _sortDescending = sortConfig.descending;
       });
       _applyServerSort();
@@ -76,43 +61,10 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   }
 
   void _applyServerSort() {
-    final sortKey = switch (_sortOption) {
-      _GallerySortOption.date => 'date',
-      _GallerySortOption.title => 'title',
-      _GallerySortOption.path => 'path',
-      _GallerySortOption.rating => 'rating',
-      _GallerySortOption.fileModTime => 'file_mod_time',
-      _GallerySortOption.tagCount => 'tag_count',
-      _GallerySortOption.performerCount => 'performer_count',
-      _GallerySortOption.performerAge => 'performer_age',
-      _GallerySortOption.random => 'random',
-      _GallerySortOption.imageCount => 'images_count',
-      _GallerySortOption.fileCount => 'file_count',
-      _GallerySortOption.createdAt => 'created_at',
-      _GallerySortOption.updatedAt => 'updated_at',
-    };
+    final sortKey = _sortOption.key;
     ref
         .read(galleryListProvider.notifier)
         .setSort(sort: sortKey, descending: _sortDescending);
-  }
-
-  _GallerySortOption _sortOptionForKey(String? sort) {
-    return switch (sort) {
-      'date' => _GallerySortOption.date,
-      'title' => _GallerySortOption.title,
-      'path' => _GallerySortOption.path,
-      'rating100' || 'rating' => _GallerySortOption.rating,
-      'file_mod_time' => _GallerySortOption.fileModTime,
-      'tag_count' => _GallerySortOption.tagCount,
-      'performer_count' => _GallerySortOption.performerCount,
-      'performer_age' => _GallerySortOption.performerAge,
-      'random' => _GallerySortOption.random,
-      'images_count' || 'image_count' => _GallerySortOption.imageCount,
-      'zip_file_count' || 'file_count' => _GallerySortOption.fileCount,
-      'created_at' => _GallerySortOption.createdAt,
-      'updated_at' => _GallerySortOption.updatedAt,
-      _ => _GallerySortOption.path,
-    };
   }
 
   /// Opens a random gallery image view.
@@ -129,36 +81,19 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     unawaited(context.push('/galleries/images'));
   }
 
-  String _sortOptionLabel(_GallerySortOption option) {
-    return switch (option) {
-      _GallerySortOption.date => context.l10n.common_date,
-      _GallerySortOption.title => context.l10n.common_title,
-      _GallerySortOption.path => context.l10n.common_filepath,
-      _GallerySortOption.rating => context.l10n.common_rating,
-      _GallerySortOption.fileModTime => context.l10n.sort_file_mod_time,
-      _GallerySortOption.tagCount => context.l10n.sort_tag_count,
-      _GallerySortOption.performerCount => context.l10n.sort_performers_count,
-      _GallerySortOption.performerAge => context.l10n.scenes_sort_performer_age,
-      _GallerySortOption.random => context.l10n.common_random,
-      _GallerySortOption.imageCount => context.l10n.common_image_count,
-      _GallerySortOption.fileCount => context.l10n.sort_zip_file_count,
-      _GallerySortOption.createdAt => context.l10n.sort_created_at,
-      _GallerySortOption.updatedAt => context.l10n.sort_updated_at,
-    };
-  }
-
   void _showSortPanel() {
     unawaited(
       showFrostedPanelBottomSheet<void>(
         context: context,
-        builder: (context) => ListSortBottomSheet<_GallerySortOption>(
+        builder: (context) => ListSortBottomSheet<GallerySortOption>(
           title: context.l10n.galleries_sort_title,
-          options: _GallerySortOption.values,
+          options: GallerySortOption.values,
+          commonOptions: GallerySortOption.commonOptions,
           initialOption: _sortOption,
           initialDescending: _sortDescending,
-          resetOption: _GallerySortOption.path,
+          resetOption: GallerySortOption.path,
           resetDescending: false,
-          optionLabel: _sortOptionLabel,
+          optionLabel: (option) => option.label(context),
           onApply: (option, descending) {
             setState(() {
               _sortOption = option;
@@ -246,7 +181,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
 
   void _applySavedFilterConfig(GallerySavedFilterConfig config) {
     setState(() {
-      _sortOption = _sortOptionForKey(config.sort);
+      _sortOption = GallerySortOption.fromKey(config.sort);
       _sortDescending = config.descending;
     });
 
@@ -302,7 +237,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
               tooltip: context.l10n.common_sort,
               onPressed: _showSortPanel,
             ),
-            if (_sortOption != _GallerySortOption.path || _sortDescending)
+            if (_sortOption != GallerySortOption.path || _sortDescending)
               Positioned(
                 right: context.dimensions.spacingSmall,
                 top: context.dimensions.spacingSmall,

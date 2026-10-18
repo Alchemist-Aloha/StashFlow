@@ -14,22 +14,12 @@ import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
+import '../scene_sort.dart';
 import '../providers/entity_media_filter_scope.dart';
 import '../providers/playback_queue_provider.dart';
 import 'scene_card.dart';
 import 'scene_filter_panel.dart';
 import 'scene_saved_filter_dialog.dart';
-
-enum EntitySceneMediaSortField {
-  date,
-  title,
-  rating,
-  duration,
-  playCount,
-  createdAt,
-  updatedAt,
-  random,
-}
 
 class EntitySceneMediaGrid extends ConsumerStatefulWidget {
   const EntitySceneMediaGrid({
@@ -61,7 +51,7 @@ class EntitySceneMediaGrid extends ConsumerStatefulWidget {
 }
 
 class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
-  EntitySceneMediaSortField _sortField = EntitySceneMediaSortField.date;
+  SceneSortField _sortField = SceneSortField.date;
   bool _sortDescending = true;
 
   @override
@@ -71,7 +61,7 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
       if (!mounted) return;
       final sortConfig = ref.read(entityMediaSortProvider(widget.filterKind));
       setState(() {
-        _sortField = _sortFieldForKey(sortConfig.sort);
+        _sortField = SceneSortField.fromKey(sortConfig.sort);
         _sortDescending = sortConfig.descending;
       });
     });
@@ -85,66 +75,25 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
     );
   }
 
-  String _sortKeyForField(EntitySceneMediaSortField field) {
-    return switch (field) {
-      EntitySceneMediaSortField.date => 'date',
-      EntitySceneMediaSortField.title => 'title',
-      EntitySceneMediaSortField.rating => 'rating',
-      EntitySceneMediaSortField.duration => 'duration',
-      EntitySceneMediaSortField.playCount => 'play_count',
-      EntitySceneMediaSortField.createdAt => 'created_at',
-      EntitySceneMediaSortField.updatedAt => 'updated_at',
-      EntitySceneMediaSortField.random => 'random',
-    };
-  }
-
-  EntitySceneMediaSortField _sortFieldForKey(String? sort) {
-    return switch (sort) {
-      'title' => EntitySceneMediaSortField.title,
-      'rating' => EntitySceneMediaSortField.rating,
-      'duration' => EntitySceneMediaSortField.duration,
-      'play_count' => EntitySceneMediaSortField.playCount,
-      'created_at' => EntitySceneMediaSortField.createdAt,
-      'updated_at' => EntitySceneMediaSortField.updatedAt,
-      'random' => EntitySceneMediaSortField.random,
-      _ => EntitySceneMediaSortField.date,
-    };
-  }
-
-  String _sortFieldLabel(EntitySceneMediaSortField field) {
-    return switch (field) {
-      EntitySceneMediaSortField.date => context.l10n.common_date,
-      EntitySceneMediaSortField.title => context.l10n.common_title,
-      EntitySceneMediaSortField.rating => context.l10n.common_rating,
-      EntitySceneMediaSortField.duration => context.l10n.scenes_sort_duration,
-      EntitySceneMediaSortField.playCount => context.l10n.performers_play_count,
-      EntitySceneMediaSortField.createdAt => context.l10n.sort_created_at,
-      EntitySceneMediaSortField.updatedAt => context.l10n.sort_updated_at,
-      EntitySceneMediaSortField.random => context.l10n.sort_random,
-    };
-  }
-
   void _applyServerSort() {
     ref
         .read(entityMediaSortProvider(widget.filterKind).notifier)
-        .setSort(
-          sort: _sortKeyForField(_sortField),
-          descending: _sortDescending,
-        );
+        .setSort(sort: _sortField.key, descending: _sortDescending);
   }
 
   void _showSortPanel() {
     unawaited(
       showFrostedPanelBottomSheet<void>(
         context: context,
-        builder: (context) => ListSortBottomSheet<EntitySceneMediaSortField>(
+        builder: (context) => ListSortBottomSheet<SceneSortField>(
           title: context.l10n.sort_scenes,
-          options: EntitySceneMediaSortField.values,
+          options: SceneSortField.values,
+          commonOptions: SceneSortField.commonOptions,
           initialOption: _sortField,
           initialDescending: _sortDescending,
-          resetOption: EntitySceneMediaSortField.date,
+          resetOption: SceneSortField.date,
           resetDescending: true,
-          optionLabel: _sortFieldLabel,
+          optionLabel: (field) => field.label(context),
           onApply: (field, descending) {
             setState(() {
               _sortField = field;
@@ -245,7 +194,7 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
   void _applySavedFilterConfig(SceneSavedFilterConfig config) {
     final scopedFilter = _scopedFilter(config.filter);
     setState(() {
-      _sortField = _sortFieldForKey(config.sort);
+      _sortField = SceneSortField.fromKey(config.sort);
       _sortDescending = config.descending;
     });
 
@@ -305,8 +254,7 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
               tooltip: context.l10n.scenes_sort_tooltip,
               onPressed: _showSortPanel,
             ),
-            if (_sortField != EntitySceneMediaSortField.date ||
-                !_sortDescending)
+            if (_sortField != SceneSortField.date || !_sortDescending)
               const Positioned(right: 8, top: 8, child: _ActionDot()),
           ],
         ),

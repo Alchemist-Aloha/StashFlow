@@ -61,6 +61,7 @@
   "common_reset": "Reset",
   "common_apply": "Apply",
   "common_save_default": "Save as Default",
+  "common_advanced_sort_options": "Advanced sort options",
   "common_sort_method": "Sort Method",
   "common_direction": "Direction",
   "common_ascending": "Ascending",

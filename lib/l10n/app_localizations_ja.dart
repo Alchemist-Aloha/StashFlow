@@ -162,6 +162,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_save_default => 'デフォルトとして保存';
 
   @override
+  String get common_advanced_sort_options => '詳細な並べ替えオプション';
+
+  @override
   String get common_sort_method => '並べ替え方法';
 
   @override

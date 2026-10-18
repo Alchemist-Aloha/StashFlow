@@ -145,6 +145,14 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         builder: (context) => ListSortBottomSheet<_TagSortOption>(
           title: context.l10n.tags_sort_title,
           options: _TagSortOption.values,
+          commonOptions: const [
+            _TagSortOption.name,
+            _TagSortOption.sceneCount,
+            _TagSortOption.imageCount,
+            _TagSortOption.galleryCount,
+            _TagSortOption.random,
+            _TagSortOption.updatedAt,
+          ],
           initialOption: _sortOption,
           initialDescending: _sortDescending,
           resetOption: _TagSortOption.name,

@@ -162,6 +162,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_save_default => 'Salva come Predefinito';
 
   @override
+  String get common_advanced_sort_options => 'Opzioni di ordinamento avanzate';
+
+  @override
   String get common_sort_method => 'Metodo di Ordinamento';
 
   @override

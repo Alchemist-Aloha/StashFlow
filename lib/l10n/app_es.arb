@@ -47,6 +47,7 @@
   "common_reset": "Restablecer",
   "common_apply": "Aplicar",
   "common_save_default": "Guardar como predeterminado",
+  "common_advanced_sort_options": "Opciones de ordenación avanzadas",
   "common_sort_method": "Método de ordenación",
   "common_direction": "Dirección",
   "common_ascending": "Ascendente",

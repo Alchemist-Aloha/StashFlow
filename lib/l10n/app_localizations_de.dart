@@ -162,6 +162,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get common_save_default => 'Als Standard speichern';
 
   @override
+  String get common_advanced_sort_options => 'Erweiterte Sortieroptionen';
+
+  @override
   String get common_sort_method => 'Sortiermethode';
 
   @override
