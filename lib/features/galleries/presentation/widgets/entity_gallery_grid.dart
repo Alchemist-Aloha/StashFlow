@@ -17,21 +17,10 @@ import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
 import '../../domain/entities/gallery_saved_filter_config.dart';
+import '../gallery_sort.dart';
 import '../providers/entity_gallery_filter_scope.dart';
 import 'gallery_card.dart';
 import 'gallery_filter_panel.dart';
-
-enum EntityGallerySortOption {
-  path,
-  title,
-  date,
-  rating,
-  imageCount,
-  fileCount,
-  createdAt,
-  updatedAt,
-  random,
-}
 
 class EntityGalleryGrid extends ConsumerStatefulWidget {
   const EntityGalleryGrid({
@@ -60,7 +49,7 @@ class EntityGalleryGrid extends ConsumerStatefulWidget {
 }
 
 class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
-  EntityGallerySortOption _sortOption = EntityGallerySortOption.path;
+  GallerySortOption _sortOption = GallerySortOption.path;
   bool _sortDescending = false;
 
   @override
@@ -70,7 +59,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
       if (!mounted) return;
       final sortConfig = ref.read(entityGallerySortProvider(widget.filterKind));
       setState(() {
-        _sortOption = _sortOptionForKey(sortConfig.sort);
+        _sortOption = GallerySortOption.fromKey(sortConfig.sort);
         _sortDescending = sortConfig.descending;
       });
     });
@@ -84,69 +73,25 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
     );
   }
 
-  String _sortKeyForOption(EntityGallerySortOption option) {
-    return switch (option) {
-      EntityGallerySortOption.path => 'path',
-      EntityGallerySortOption.title => 'title',
-      EntityGallerySortOption.date => 'date',
-      EntityGallerySortOption.rating => 'rating',
-      EntityGallerySortOption.imageCount => 'images_count',
-      EntityGallerySortOption.fileCount => 'file_count',
-      EntityGallerySortOption.createdAt => 'created_at',
-      EntityGallerySortOption.updatedAt => 'updated_at',
-      EntityGallerySortOption.random => 'random',
-    };
-  }
-
-  EntityGallerySortOption _sortOptionForKey(String? sort) {
-    return switch (sort) {
-      'title' => EntityGallerySortOption.title,
-      'date' => EntityGallerySortOption.date,
-      'rating100' || 'rating' => EntityGallerySortOption.rating,
-      'images_count' || 'image_count' => EntityGallerySortOption.imageCount,
-      'zip_file_count' || 'file_count' => EntityGallerySortOption.fileCount,
-      'created_at' => EntityGallerySortOption.createdAt,
-      'updated_at' => EntityGallerySortOption.updatedAt,
-      'random' => EntityGallerySortOption.random,
-      _ => EntityGallerySortOption.path,
-    };
-  }
-
-  String _sortOptionLabel(EntityGallerySortOption option) {
-    return switch (option) {
-      EntityGallerySortOption.path => context.l10n.common_filepath,
-      EntityGallerySortOption.title => context.l10n.common_title,
-      EntityGallerySortOption.date => context.l10n.common_date,
-      EntityGallerySortOption.rating => context.l10n.common_rating,
-      EntityGallerySortOption.imageCount => context.l10n.common_image_count,
-      EntityGallerySortOption.fileCount => context.l10n.sort_zip_file_count,
-      EntityGallerySortOption.createdAt => context.l10n.sort_created_at,
-      EntityGallerySortOption.updatedAt => context.l10n.sort_updated_at,
-      EntityGallerySortOption.random => context.l10n.common_random,
-    };
-  }
-
   void _applyServerSort() {
     ref
         .read(entityGallerySortProvider(widget.filterKind).notifier)
-        .setSort(
-          sort: _sortKeyForOption(_sortOption),
-          descending: _sortDescending,
-        );
+        .setSort(sort: _sortOption.key, descending: _sortDescending);
   }
 
   void _showSortPanel() {
     unawaited(
       showFrostedPanelBottomSheet<void>(
         context: context,
-        builder: (context) => ListSortBottomSheet<EntityGallerySortOption>(
+        builder: (context) => ListSortBottomSheet<GallerySortOption>(
           title: context.l10n.galleries_sort_title,
-          options: EntityGallerySortOption.values,
+          options: GallerySortOption.values,
+          commonOptions: GallerySortOption.commonOptions,
           initialOption: _sortOption,
           initialDescending: _sortDescending,
-          resetOption: EntityGallerySortOption.path,
+          resetOption: GallerySortOption.path,
           resetDescending: false,
-          optionLabel: _sortOptionLabel,
+          optionLabel: (option) => option.label(context),
           onApply: (option, descending) {
             setState(() {
               _sortOption = option;
@@ -296,7 +241,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
   void _applySavedFilterConfig(GallerySavedFilterConfig config) {
     final scopedFilter = _scopedFilter(config.filter);
     setState(() {
-      _sortOption = _sortOptionForKey(config.sort);
+      _sortOption = GallerySortOption.fromKey(config.sort);
       _sortDescending = config.descending;
     });
 
@@ -372,7 +317,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
               tooltip: context.l10n.common_sort,
               onPressed: _showSortPanel,
             ),
-            if (_sortOption != EntityGallerySortOption.path || _sortDescending)
+            if (_sortOption != GallerySortOption.path || _sortDescending)
               const Positioned(right: 8, top: 8, child: _ActionDot()),
           ],
         ),

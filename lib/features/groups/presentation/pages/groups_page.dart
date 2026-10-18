@@ -137,6 +137,15 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
         builder: (context) => ListSortBottomSheet<_GroupSortOption>(
           title: context.l10n.common_sort,
           options: _GroupSortOption.values,
+          commonOptions: const [
+            _GroupSortOption.name,
+            _GroupSortOption.date,
+            _GroupSortOption.rating,
+            _GroupSortOption.duration,
+            _GroupSortOption.sceneCount,
+            _GroupSortOption.random,
+            _GroupSortOption.updatedAt,
+          ],
           initialOption: _sortOption,
           initialDescending: _sortDescending,
           resetOption: _GroupSortOption.name,

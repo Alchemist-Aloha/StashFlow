@@ -38,6 +38,7 @@ void main() {
     await tester.tap(find.byTooltip('Sort'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Marker time'));
+    await tester.ensureVisible(find.text('Ascending'));
     await tester.tap(find.text('Ascending'));
     await tester.tap(find.text('Apply Sort'));
     await tester.pumpAndSettle();

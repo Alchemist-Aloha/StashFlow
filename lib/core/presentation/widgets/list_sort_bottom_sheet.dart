@@ -105,122 +105,126 @@ class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
                     !commonOptions.contains(option) && option != _tempOption,
               )
               .toList();
-    return SafeArea(
-      top: false,
-      child: FrostedPanel(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppTheme.radiusExtraLarge),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Flexible(
-              child: Scrollbar(
-                controller: _optionsScrollController,
-                thumbVisibility: true,
-                child: SingleChildScrollView(
+    return FractionallySizedBox(
+      // Use the modal's available height and keep it stable while options expand.
+      heightFactor: 0.88,
+      child: SafeArea(
+        top: false,
+        child: FrostedPanel(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppTheme.radiusExtraLarge),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                child: Scrollbar(
                   controller: _optionsScrollController,
-                  primary: false,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BottomSheetPanelHeader(
-                        title: widget.title,
-                        onReset: () {
-                          setState(() {
-                            _tempOption = widget.resetOption;
-                            _tempDescending = widget.resetDescending;
-                          });
-                        },
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: context.dimensions.spacingLarge,
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    controller: _optionsScrollController,
+                    primary: false,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BottomSheetPanelHeader(
+                          title: widget.title,
+                          onReset: () {
+                            setState(() {
+                              _tempOption = widget.resetOption;
+                              _tempDescending = widget.resetDescending;
+                            });
+                          },
                         ),
-                        child: Text(
-                          context.l10n.common_sort_method,
-                          style: context.textTheme.labelLarge,
-                        ),
-                      ),
-                      SizedBox(height: context.dimensions.spacingSmall),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: context.dimensions.spacingLarge,
-                          vertical: context.dimensions.spacingSmall,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _optionChips(
-                              commonOptions == null
-                                  ? widget.options
-                                  : widget.options.where(
-                                      (option) =>
-                                          commonOptions.contains(option) ||
-                                          option == _tempOption,
-                                    ),
-                            ),
-                            if (advancedOptions.isNotEmpty)
-                              ExpansionTile(
-                                tilePadding: EdgeInsets.zero,
-                                title: Text(
-                                  context.l10n.common_advanced_sort_options,
-                                ),
-                                children: [_optionChips(advancedOptions)],
-                              ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: context.dimensions.spacingMedium),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: context.dimensions.spacingLarge,
-                        ),
-                        child: Text(
-                          context.l10n.common_direction,
-                          style: context.textTheme.labelLarge,
-                        ),
-                      ),
-                      SizedBox(height: context.dimensions.spacingSmall),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: context.dimensions.spacingLarge,
-                        ),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: SegmentedButton<bool>(
-                            segments: [
-                              ButtonSegment(
-                                value: true,
-                                label: Text(context.l10n.common_descending),
-                                icon: const Icon(Icons.arrow_downward),
-                              ),
-                              ButtonSegment(
-                                value: false,
-                                label: Text(context.l10n.common_ascending),
-                                icon: const Icon(Icons.arrow_upward),
-                              ),
-                            ],
-                            selected: {_tempDescending},
-                            onSelectionChanged: (value) =>
-                                setState(() => _tempDescending = value.first),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: context.dimensions.spacingLarge,
+                          ),
+                          child: Text(
+                            context.l10n.common_sort_method,
+                            style: context.textTheme.labelLarge,
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(height: context.dimensions.spacingSmall),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: context.dimensions.spacingLarge,
+                            vertical: context.dimensions.spacingSmall,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _optionChips(
+                                commonOptions == null
+                                    ? widget.options
+                                    : widget.options.where(
+                                        (option) =>
+                                            commonOptions.contains(option) ||
+                                            option == _tempOption,
+                                      ),
+                              ),
+                              if (advancedOptions.isNotEmpty)
+                                ExpansionTile(
+                                  tilePadding: EdgeInsets.zero,
+                                  title: Text(
+                                    context.l10n.common_advanced_sort_options,
+                                  ),
+                                  children: [_optionChips(advancedOptions)],
+                                ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: context.dimensions.spacingMedium),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: context.dimensions.spacingLarge,
+                          ),
+                          child: Text(
+                            context.l10n.common_direction,
+                            style: context.textTheme.labelLarge,
+                          ),
+                        ),
+                        SizedBox(height: context.dimensions.spacingSmall),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: context.dimensions.spacingLarge,
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: SegmentedButton<bool>(
+                              segments: [
+                                ButtonSegment(
+                                  value: true,
+                                  label: Text(context.l10n.common_descending),
+                                  icon: const Icon(Icons.arrow_downward),
+                                ),
+                                ButtonSegment(
+                                  value: false,
+                                  label: Text(context.l10n.common_ascending),
+                                  icon: const Icon(Icons.arrow_upward),
+                                ),
+                              ],
+                              selected: {_tempDescending},
+                              onSelectionChanged: (value) =>
+                                  setState(() => _tempDescending = value.first),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            BottomSheetPanelActions(
-              primaryLabel: context.l10n.common_apply_sort,
-              secondaryLabel: context.l10n.common_save_default,
-              onPrimary: _apply,
-              onSecondary: _saveDefault,
-            ),
-          ],
+              BottomSheetPanelActions(
+                primaryLabel: context.l10n.common_apply_sort,
+                secondaryLabel: context.l10n.common_save_default,
+                onPrimary: _apply,
+                onSecondary: _saveDefault,
+              ),
+            ],
+          ),
         ),
       ),
     );

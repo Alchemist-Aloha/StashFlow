@@ -214,6 +214,15 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         builder: (context) => ListSortBottomSheet<_PerformerSortOption>(
           title: context.l10n.performers_sort_title,
           options: _PerformerSortOption.values,
+          commonOptions: const [
+            _PerformerSortOption.name,
+            _PerformerSortOption.rating,
+            _PerformerSortOption.sceneCount,
+            _PerformerSortOption.latestScene,
+            _PerformerSortOption.lastPlayedAt,
+            _PerformerSortOption.random,
+            _PerformerSortOption.updatedAt,
+          ],
           initialOption: _sortOption,
           initialDescending: _sortDescending,
           resetOption: _PerformerSortOption.name,

@@ -171,6 +171,14 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
         builder: (context) => ListSortBottomSheet<_StudioSortOption>(
           title: context.l10n.studios_sort_title,
           options: _StudioSortOption.values,
+          commonOptions: const [
+            _StudioSortOption.name,
+            _StudioSortOption.rating,
+            _StudioSortOption.sceneCount,
+            _StudioSortOption.latestScene,
+            _StudioSortOption.random,
+            _StudioSortOption.updatedAt,
+          ],
           initialOption: _sortOption,
           initialDescending: _sortDescending,
           resetOption: _StudioSortOption.name,

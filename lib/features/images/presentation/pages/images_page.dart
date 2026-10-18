@@ -247,6 +247,15 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
         builder: (context) => ListSortBottomSheet<_ImageSortOption>(
           title: context.l10n.images_sort_title,
           options: _ImageSortOption.values,
+          commonOptions: const [
+            _ImageSortOption.date,
+            _ImageSortOption.title,
+            _ImageSortOption.path,
+            _ImageSortOption.rating,
+            _ImageSortOption.resolution,
+            _ImageSortOption.random,
+            _ImageSortOption.updatedAt,
+          ],
           initialOption: _sortOption,
           initialDescending: _sortDescending,
           resetOption: _ImageSortOption.path,

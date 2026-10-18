@@ -225,6 +225,9 @@ Sort/filter sheets must:
 
 - remain usable at small heights and large UI scales;
 - keep primary actions reachable;
+- size sort sheets to 88% of the modal route's available height rather than the
+  full `MediaQuery` screen height; expansion keeps the panel height fixed while
+  options scroll inside it and the outside dismiss area remains reachable;
 - show the active-filter count accurately;
 - support reset and persisted defaults where offered;
 - preserve search, sort direction, and feature-specific criteria together;
@@ -237,10 +240,20 @@ Sort/filter sheets must:
   and minimum touch height; place value inputs below operators so long localized
   options and large UI scales do not squeeze or overflow adjacent controls.
 
-Scene sorting leads with Date, Title, Rating, Duration, Random, Updated At,
-and Last Played At. Other sort fields remain available in an expandable advanced section; a selected advanced field
-stays in the first group so its selection remains visible when collapsed.
-Other entity sort sheets retain their existing option presentation.
+The scene library and performer, studio, tag, and group scene grids share one
+sort catalogue, including server keys and localized labels. Common scene sorts
+are Date, Title, Rating, Duration, Random, Updated At, and Last Played At.
+The gallery library and entity gallery grids likewise share one full catalogue;
+common gallery sorts are Date, Title, File Path, Rating, Image Count, Random,
+and Updated At. Image browsing, including embedded and scoped image pages,
+shows Date, Title, File Path, Rating, Resolution, Random, and Updated At as common.
+Other sort fields remain available in an expandable advanced section; a selected
+advanced field stays in the first group so its selection remains visible when
+collapsed. Sharing catalogues does not share query state: entity sorts and saved
+defaults remain scoped to their existing providers.
+Performer, studio, tag, and group list sort sheets also separate common choices
+from advanced fields, retaining all fields and surfacing a selected advanced
+field in the first group.
 
 Do not force every entity into the Scene filter shape. Performer, studio, tag,
 group, image, gallery, scene, and marker criteria remain feature-specific.

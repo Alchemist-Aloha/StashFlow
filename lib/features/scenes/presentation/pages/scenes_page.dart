@@ -26,43 +26,10 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/utils/app_log_store.dart';
 
+import '../scene_sort.dart';
 import '../widgets/scene_filter_panel.dart';
 import '../widgets/scene_saved_filter_dialog.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
-
-enum _SceneSortField {
-  organized,
-  date,
-  productionDate,
-  rating,
-  playCount,
-  title,
-  duration,
-  bitrate,
-  framerate,
-  updatedAt,
-  createdAt,
-  random,
-  fileCount,
-  filesize,
-  resolution,
-  lastPlayedAt,
-  resumeTime,
-  playDuration,
-  interactive,
-  interactiveSpeed,
-  perceptualSimilarity,
-  performerAge,
-  studio,
-  path,
-  fileModTime,
-  tagCount,
-  performerCount,
-  oCounter,
-  lastOAt,
-  groupSceneNumber,
-  code,
-}
 
 /// The main browsing page for scenes.
 ///
@@ -82,7 +49,7 @@ class ScenesPage extends ConsumerStatefulWidget {
 
 class _ScenesPageState extends ConsumerState<ScenesPage> {
   /// The current field used for sorting scenes.
-  _SceneSortField _sortField = _SceneSortField.date;
+  SceneSortField _sortField = SceneSortField.date;
 
   /// Whether the sort is in descending order.
   bool _sortDescending = true;
@@ -135,40 +102,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       if (!mounted) return;
       final sortConfig = ref.read(sceneSortProvider);
       setState(() {
-        _sortField = switch (sortConfig.sort) {
-          'organized' => _SceneSortField.organized,
-          'date' => _SceneSortField.date,
-          'production_date' => _SceneSortField.productionDate,
-          'rating' => _SceneSortField.rating,
-          'play_count' => _SceneSortField.playCount,
-          'title' => _SceneSortField.title,
-          'duration' => _SceneSortField.duration,
-          'bitrate' => _SceneSortField.bitrate,
-          'framerate' => _SceneSortField.framerate,
-          'updated_at' => _SceneSortField.updatedAt,
-          'created_at' => _SceneSortField.createdAt,
-          'random' => _SceneSortField.random,
-          'file_count' => _SceneSortField.fileCount,
-          'filesize' => _SceneSortField.filesize,
-          'resolution' => _SceneSortField.resolution,
-          'last_played_at' => _SceneSortField.lastPlayedAt,
-          'resume_time' => _SceneSortField.resumeTime,
-          'play_duration' => _SceneSortField.playDuration,
-          'interactive' => _SceneSortField.interactive,
-          'interactive_speed' => _SceneSortField.interactiveSpeed,
-          'perceptual_similarity' => _SceneSortField.perceptualSimilarity,
-          'performer_age' => _SceneSortField.performerAge,
-          'studio' => _SceneSortField.studio,
-          'path' => _SceneSortField.path,
-          'file_mod_time' => _SceneSortField.fileModTime,
-          'tag_count' => _SceneSortField.tagCount,
-          'performer_count' => _SceneSortField.performerCount,
-          'o_counter' => _SceneSortField.oCounter,
-          'last_o_at' => _SceneSortField.lastOAt,
-          'group_scene_number' => _SceneSortField.groupSceneNumber,
-          'code' => _SceneSortField.code,
-          _ => _SceneSortField.date,
-        };
+        _sortField = SceneSortField.fromKey(sortConfig.sort);
         _sortDescending = sortConfig.descending;
       });
       _applyServerSort();
@@ -188,83 +122,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   void _applyServerSort() {
     ref
         .read(sceneSortProvider.notifier)
-        .setSort(
-          sort: _sortKeyForField(_sortField),
-          descending: _sortDescending,
-        );
-  }
-
-  String _sortKeyForField(_SceneSortField field) {
-    return switch (field) {
-      _SceneSortField.organized => 'organized',
-      _SceneSortField.date => 'date',
-      _SceneSortField.productionDate => 'production_date',
-      _SceneSortField.rating => 'rating',
-      _SceneSortField.playCount => 'play_count',
-      _SceneSortField.title => 'title',
-      _SceneSortField.duration => 'duration',
-      _SceneSortField.bitrate => 'bitrate',
-      _SceneSortField.framerate => 'framerate',
-      _SceneSortField.updatedAt => 'updated_at',
-      _SceneSortField.createdAt => 'created_at',
-      _SceneSortField.random => 'random',
-      _SceneSortField.fileCount => 'file_count',
-      _SceneSortField.filesize => 'filesize',
-      _SceneSortField.resolution => 'resolution',
-      _SceneSortField.lastPlayedAt => 'last_played_at',
-      _SceneSortField.resumeTime => 'resume_time',
-      _SceneSortField.playDuration => 'play_duration',
-      _SceneSortField.interactive => 'interactive',
-      _SceneSortField.interactiveSpeed => 'interactive_speed',
-      _SceneSortField.perceptualSimilarity => 'perceptual_similarity',
-      _SceneSortField.performerAge => 'performer_age',
-      _SceneSortField.studio => 'studio',
-      _SceneSortField.path => 'path',
-      _SceneSortField.fileModTime => 'file_mod_time',
-      _SceneSortField.tagCount => 'tag_count',
-      _SceneSortField.performerCount => 'performer_count',
-      _SceneSortField.oCounter => 'o_counter',
-      _SceneSortField.lastOAt => 'last_o_at',
-      _SceneSortField.groupSceneNumber => 'group_scene_number',
-      _SceneSortField.code => 'code',
-    };
-  }
-
-  _SceneSortField _sortFieldForKey(String? sort) {
-    return switch (sort) {
-      'organized' => _SceneSortField.organized,
-      'date' => _SceneSortField.date,
-      'production_date' => _SceneSortField.productionDate,
-      'rating' => _SceneSortField.rating,
-      'play_count' => _SceneSortField.playCount,
-      'title' => _SceneSortField.title,
-      'duration' => _SceneSortField.duration,
-      'bitrate' => _SceneSortField.bitrate,
-      'framerate' => _SceneSortField.framerate,
-      'updated_at' => _SceneSortField.updatedAt,
-      'created_at' => _SceneSortField.createdAt,
-      'random' => _SceneSortField.random,
-      'file_count' => _SceneSortField.fileCount,
-      'filesize' => _SceneSortField.filesize,
-      'resolution' => _SceneSortField.resolution,
-      'last_played_at' => _SceneSortField.lastPlayedAt,
-      'resume_time' => _SceneSortField.resumeTime,
-      'play_duration' => _SceneSortField.playDuration,
-      'interactive' => _SceneSortField.interactive,
-      'interactive_speed' => _SceneSortField.interactiveSpeed,
-      'perceptual_similarity' => _SceneSortField.perceptualSimilarity,
-      'performer_age' => _SceneSortField.performerAge,
-      'studio' => _SceneSortField.studio,
-      'path' => _SceneSortField.path,
-      'file_mod_time' => _SceneSortField.fileModTime,
-      'tag_count' => _SceneSortField.tagCount,
-      'performer_count' => _SceneSortField.performerCount,
-      'o_counter' => _SceneSortField.oCounter,
-      'last_o_at' => _SceneSortField.lastOAt,
-      'group_scene_number' => _SceneSortField.groupSceneNumber,
-      'code' => _SceneSortField.code,
-      _ => _SceneSortField.date,
-    };
+        .setSort(sort: _sortField.key, descending: _sortDescending);
   }
 
   /// Opens the "Casino mode" random scene view.
@@ -359,70 +217,20 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     }
   }
 
-  /// Formats a [_SceneSortField] enum value for display in the UI.
-  String _sortFieldLabel(_SceneSortField field) {
-    return switch (field) {
-      _SceneSortField.organized => context.l10n.common_organized,
-      _SceneSortField.date => context.l10n.common_date,
-      _SceneSortField.productionDate =>
-        context.l10n.scenes_field_production_date,
-      _SceneSortField.rating => context.l10n.common_rating,
-      _SceneSortField.playCount => context.l10n.performers_play_count,
-      _SceneSortField.title => context.l10n.common_title,
-      _SceneSortField.duration => context.l10n.scenes_sort_duration,
-      _SceneSortField.bitrate => context.l10n.scenes_sort_bitrate,
-      _SceneSortField.framerate => context.l10n.scenes_sort_framerate,
-      _SceneSortField.updatedAt => context.l10n.sort_updated_at,
-      _SceneSortField.createdAt => context.l10n.sort_created_at,
-      _SceneSortField.random => context.l10n.sort_random,
-      _SceneSortField.fileCount => context.l10n.scenes_sort_file_count,
-      _SceneSortField.filesize => context.l10n.scenes_sort_filesize,
-      _SceneSortField.resolution => context.l10n.scenes_sort_resolution,
-      _SceneSortField.lastPlayedAt => context.l10n.scenes_sort_last_played_at,
-      _SceneSortField.resumeTime => context.l10n.scenes_sort_resume_time,
-      _SceneSortField.playDuration => context.l10n.scenes_sort_play_duration,
-      _SceneSortField.interactive => context.l10n.scenes_sort_interactive,
-      _SceneSortField.interactiveSpeed =>
-        context.l10n.scenes_sort_interactive_speed,
-      _SceneSortField.perceptualSimilarity =>
-        context.l10n.scenes_sort_perceptual_similarity,
-      _SceneSortField.performerAge => context.l10n.scenes_sort_performer_age,
-      _SceneSortField.studio => context.l10n.scenes_sort_studio,
-      _SceneSortField.path => context.l10n.scenes_sort_path,
-      _SceneSortField.fileModTime => context.l10n.scenes_sort_file_mod_time,
-      _SceneSortField.tagCount => context.l10n.scenes_sort_tag_count,
-      _SceneSortField.performerCount =>
-        context.l10n.scenes_sort_performer_count,
-      _SceneSortField.oCounter => context.l10n.scenes_sort_o_counter,
-      _SceneSortField.lastOAt => context.l10n.scenes_sort_last_o_at,
-      _SceneSortField.groupSceneNumber =>
-        context.l10n.scenes_sort_group_scene_number,
-      _SceneSortField.code => context.l10n.scenes_sort_code,
-    };
-  }
-
   /// Displays the sort selection bottom sheet.
   void _showSortPanel() {
     unawaited(
       showFrostedPanelBottomSheet<void>(
         context: context,
-        builder: (context) => ListSortBottomSheet<_SceneSortField>(
+        builder: (context) => ListSortBottomSheet<SceneSortField>(
           title: context.l10n.sort_scenes,
-          options: _SceneSortField.values,
-          commonOptions: const [
-            _SceneSortField.date,
-            _SceneSortField.title,
-            _SceneSortField.rating,
-            _SceneSortField.duration,
-            _SceneSortField.random,
-            _SceneSortField.updatedAt,
-            _SceneSortField.lastPlayedAt,
-          ],
+          options: SceneSortField.values,
+          commonOptions: SceneSortField.commonOptions,
           initialOption: _sortField,
           initialDescending: _sortDescending,
-          resetOption: _SceneSortField.date,
+          resetOption: SceneSortField.date,
           resetDescending: true,
-          optionLabel: _sortFieldLabel,
+          optionLabel: (field) => field.label(context),
           onApply: (field, descending) {
             setState(() {
               _sortField = field;
@@ -472,7 +280,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   void _applySavedFilterConfig(SceneSavedFilterConfig config) {
     setState(() {
-      _sortField = _sortFieldForKey(config.sort);
+      _sortField = SceneSortField.fromKey(config.sort);
       _sortDescending = config.descending;
     });
 
@@ -563,7 +371,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
             tooltip: context.l10n.scenes_sort_tooltip,
             onPressed: _showSortPanel,
           ),
-          if (_sortField != _SceneSortField.date || !_sortDescending)
+          if (_sortField != SceneSortField.date || !_sortDescending)
             Positioned(
               right: 8,
               top: 8,
