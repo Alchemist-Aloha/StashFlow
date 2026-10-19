@@ -225,9 +225,10 @@ Sort/filter sheets must:
 
 - remain usable at small heights and large UI scales;
 - keep primary actions reachable;
-- size sort sheets to 88% of the modal route's available height rather than the
-  full `MediaQuery` screen height; expansion keeps the panel height fixed while
-  options scroll inside it and the outside dismiss area remains reachable;
+- size sort sheets to their visible content, growing and shrinking as advanced
+  options expand and collapse, up to 88% of the modal route's available height
+  rather than the full `MediaQuery` screen height; overflow scrolls inside the
+  panel while actions and the outside dismiss area remain reachable;
 - show the active-filter count accurately;
 - support reset and persisted defaults where offered;
 - preserve search, sort direction, and feature-specific criteria together;
@@ -850,6 +851,12 @@ Do not mix a second independent `window_manager` fullscreen transition into the
 native Windows path.
 
 ### Linux desktop
+
+The main window hides its GTK header bar and window decorations in Hyprland and
+niri sessions, detected by complete, case-insensitive tokens in the colon-separated
+`XDG_CURRENT_DESKTOP` value. Window management uses compositor shortcuts there;
+other desktops retain their existing title-bar behavior. Missing session metadata
+retains decorations rather than guessing the compositor.
 
 The runner resolves its icon/resource path relative to the executable rather
 than the process working directory. Installed and directly launched builds must

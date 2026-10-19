@@ -9,6 +9,7 @@ void main() {
   Future<void> openSheet(
     WidgetTester tester, {
     List<int>? commonOptions,
+    int optionCount = 31,
     int initialOption = 0,
     double scale = 1,
     Locale locale = const Locale('en'),
@@ -34,7 +35,7 @@ void main() {
                 constraints: sheetConstraints,
                 builder: (_) => ListSortBottomSheet<int>(
                   title: 'Sort',
-                  options: List.generate(31, (i) => i),
+                  options: List.generate(optionCount, (i) => i),
                   commonOptions: commonOptions,
                   initialOption: initialOption,
                   initialDescending: true,
@@ -136,39 +137,64 @@ void main() {
     expect(saved, isTrue);
   });
 
-  for (final availableHeight in [300.0, 600.0]) {
-    testWidgets('expansion preserves height in a $availableHeight-high modal', (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(800, 600);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      await openSheet(
-        tester,
-        commonOptions: [0, 1, 2, 3],
-        sheetConstraints: BoxConstraints(maxHeight: availableHeight),
-      );
-      final sheet = find.byType(ListSortBottomSheet<int>);
-      final originalBounds = tester.getRect(sheet);
-      expect(originalBounds.height, closeTo(availableHeight * 0.88, 0.01));
-      await tester.ensureVisible(find.byType(ExpansionTile));
-      await tester.tap(find.text('Advanced sort options'));
-      // Check intermediate animation frames as well as the final layout.
-      for (var frame = 0; frame < 20; frame++) {
-        await tester.pump(const Duration(milliseconds: 16));
+  testWidgets('ungrouped short lists fit their content', (tester) async {
+    await openSheet(tester, optionCount: 3);
+    expect(
+      tester.getSize(find.byType(ListSortBottomSheet<int>)).height,
+      lessThan(600 * 0.88),
+    );
+    expect(find.text('Apply Sort').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final availableHeight in [300.0, 900.0]) {
+    testWidgets(
+      'content height stays capped in a $availableHeight-high modal',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 900);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        await openSheet(
+          tester,
+          commonOptions: [0, 1, 2, 3],
+          sheetConstraints: BoxConstraints(maxHeight: availableHeight),
+        );
+        final sheet = find.byType(ListSortBottomSheet<int>);
+        final originalBounds = tester.getRect(sheet);
+        final maxHeight = availableHeight * 0.88;
+        if (availableHeight == 900) {
+          expect(originalBounds.height, lessThan(maxHeight));
+        } else {
+          expect(originalBounds.height, closeTo(maxHeight, 0.01));
+        }
+        await tester.ensureVisible(find.byType(ExpansionTile));
+        await tester.tap(find.text('Advanced sort options'));
+        // Check intermediate animation frames as well as the final layout.
+        for (var frame = 0; frame < 20; frame++) {
+          await tester.pump(const Duration(milliseconds: 16));
+          expect(tester.getSize(sheet).height, lessThanOrEqualTo(maxHeight));
+          expect(tester.takeException(), isNull);
+        }
+        await tester.pumpAndSettle();
+        final expandedBounds = tester.getRect(sheet);
+        expect(expandedBounds.height, closeTo(maxHeight, 0.01));
+        if (availableHeight == 900) {
+          expect(expandedBounds.height, greaterThan(originalBounds.height));
+        }
+        await tester.ensureVisible(find.text('Option 30'));
+        expect(find.text('Option 30').hitTestable(), findsOneWidget);
+        expect(find.text('Apply Sort').hitTestable(), findsOneWidget);
+        await tester.ensureVisible(find.byType(ExpansionTile));
+        await tester.tap(find.text('Advanced sort options'));
+        await tester.pumpAndSettle();
         expect(tester.getRect(sheet), originalBounds);
-        expect(tester.takeException(), isNull);
-      }
-      await tester.pumpAndSettle();
-      expect(tester.getRect(sheet), originalBounds);
-      await tester.ensureVisible(find.text('Option 30'));
-      expect(find.text('Option 30').hitTestable(), findsOneWidget);
-      expect(find.text('Apply Sort').hitTestable(), findsOneWidget);
-      await tester.tapAt(Offset(400, originalBounds.top - 10));
-      await tester.pumpAndSettle();
-      expect(sheet, findsNothing);
-    });
+        expect(find.text('Apply Sort').hitTestable(), findsOneWidget);
+        await tester.tapAt(Offset(400, originalBounds.top - 10));
+        await tester.pumpAndSettle();
+        expect(sheet, findsNothing);
+      },
+    );
   }
 
   for (final size in [const Size(320, 480), const Size(640, 320)]) {

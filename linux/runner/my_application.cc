@@ -7,6 +7,7 @@
 
 #include "flutter/generated_plugin_registrant.h"
 #include "icon_path.h"
+#include "window_decorations.h"
 #include <multiview_desktop/multiview_desktop_runner.h>
 
 struct _MyApplication {
@@ -60,8 +61,7 @@ static void my_application_activate(GApplication* application) {
   // desktop).
   // If running on X and not using GNOME then just use a traditional title bar
   // in case the window manager does more exotic layout, e.g. tiling.
-  // If running on Wayland assume the header bar will work (may need changing
-  // if future cases occur).
+  // Hyprland and niri manage windows without an application title bar.
   gboolean use_header_bar = TRUE;
 #ifdef GDK_WINDOWING_X11
   GdkScreen* screen = gtk_window_get_screen(window);
@@ -72,7 +72,12 @@ static void my_application_activate(GApplication* application) {
     }
   }
 #endif
-  if (use_header_bar) {
+  const bool hide_decorations = app_should_hide_window_decorations(
+      g_getenv("XDG_CURRENT_DESKTOP"));
+  if (hide_decorations) {
+    gtk_window_set_title(window, "StashFlow");
+    gtk_window_set_decorated(window, FALSE);
+  } else if (use_header_bar) {
     GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
     gtk_widget_show(GTK_WIDGET(header_bar));
     gtk_header_bar_set_title(header_bar, "StashFlow");
