@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -44,6 +45,20 @@ StashMediaHandler _buildMediaHandler() => StashMediaHandler();
 Future<void> main() async {
   final startupStopwatch = Stopwatch()..start();
   WidgetsFlutterBinding.ensureInitialized();
+
+  // TEMP perf audit hook (revert after emulator profiling).
+  if (kProfileMode) {
+    SchedulerBinding.instance.addTimingsCallback((timings) {
+      for (final t in timings) {
+        // ignore: avoid_print
+        print(
+          'PERFFRAME build=${t.buildDuration.inMicroseconds} '
+          'raster=${t.rasterDuration.inMicroseconds} '
+          'span=${t.totalSpan.inMicroseconds}',
+        );
+      }
+    });
+  }
 
   try {
     if (!kIsWeb &&

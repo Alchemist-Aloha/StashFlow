@@ -797,6 +797,18 @@ libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
 The app requires Flutter 3.47.6 or newer and Dart 3.11 or newer within Dart 3.x.
 `msix` and `fastforge` are development dependencies used only for packaging.
 
+Stable release artifact filenames retain the full `pubspec.yaml` version,
+including the build number, plus platform and architecture where applicable.
+Rolling RC and nightly artifact filenames use a fixed channel label without a
+version or commit SHA, for example `StashFlow-nightly-linux-x64.AppImage` or
+`StashFlow-rc-linux-x64.AppImage`. Successful rolling publications overwrite
+matching assets and then remove obsolete assets not present in the new build.
+The release title/body retains commit information. Concurrent runs for the same
+rolling channel cancel older runs so older builds cannot publish over newer ones.
+Linux distribution packages (AppImage, deb, and pacman) ship with adjacent
+`.sha256` files referencing only the package basename, so downloads can be
+verified together with `sha256sum -c <filename>.sha256`.
+
 ### macOS
 
 The minimum deployment target is macOS 13, matching the native frameworks emitted
@@ -842,6 +854,10 @@ native Windows path.
 The runner resolves its icon/resource path relative to the executable rather
 than the process working directory. Installed and directly launched builds must
 show the same icon and start successfully from arbitrary working directories.
+Fastforge's `stash_app_flutter` launcher executable must be copied from the
+installed `StashFlow` binary after CMake fixes its RPATH to `$ORIGIN/lib`, not
+from the build tree. AppImage validation checks both binaries match and that the
+launcher resolves libraries relative to itself rather than CI build paths.
 
 ### Web and GitHub Pages
 

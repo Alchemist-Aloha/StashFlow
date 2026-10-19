@@ -25,6 +25,10 @@ on:
         type: boolean
         default: true
 
+concurrency:
+  group: release-${{ inputs.rolling_tag || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build ${{ matrix.target }}
@@ -58,11 +62,20 @@ jobs:
 
       - name: Read version
         shell: bash
+        env:
+          ARCHIVE_SUFFIX: ${{ inputs.archive_suffix }}
         run: |
-          version="$(sed -n 's/^version: \([^+]*\).*/\1/p' pubspec.yaml)"
-          suffix="${{ inputs.archive_suffix }}"
-          artifact_version="${suffix#-}"
-          echo "STASHFLOW_ARTIFACT_VERSION=${artifact_version:-$version}" >> "$GITHUB_ENV"
+          version="$(awk '/^version:/ {print $2; exit}' pubspec.yaml)"
+          test -n "$version" || { echo 'Missing pubspec version' >&2; exit 1; }
+          artifact_version="$version"
+          if [ -n "$ARCHIVE_SUFFIX" ]; then
+            artifact_version="${ARCHIVE_SUFFIX#-}"
+          fi
+          echo "STASHFLOW_ARTIFACT_VERSION=$artifact_version" >> "$GITHUB_ENV"
+
+      - name: Test release artifact metadata
+        if: matrix.target == 'linux'
+        run: python3 scripts/test_release_artifacts.py
 
       - name: Setup Java
         if: matrix.target == 'android'
@@ -223,6 +236,8 @@ jobs:
             "$GITHUB_WORKSPACE/$appimage" --appimage-extract >/dev/null
             test -x squashfs-root/StashFlow || { echo 'AppImage is missing the StashFlow executable' >&2; exit 1; }
             test -x squashfs-root/stash_app_flutter || { echo 'AppImage is missing the Fastforge launcher executable' >&2; exit 1; }
+            cmp squashfs-root/StashFlow squashfs-root/stash_app_flutter
+            readelf -d squashfs-root/stash_app_flutter | grep -F '[$ORIGIN/lib]'
           )
 
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'pkgname = stashflow'
@@ -230,6 +245,17 @@ jobs:
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'depend = libsecret'
           test "$(bsdtar --numeric-owner -tvf "$package" | awk '$NF == "opt/StashFlow/StashFlow" { print $3 ":" $4 }')" = '0:0'
         shell: bash
+
+      - name: Checksum Linux dists
+        if: matrix.target == 'linux'
+        shell: bash
+        run: |
+          find dist -type f \( -name '*.deb' -o -name '*.AppImage' -o -name '*.pkg.tar.zst' \) -print0 | while IFS= read -r -d '' file; do
+            (
+              cd "$(dirname "$file")"
+              sha256sum "$(basename "$file")" > "$(basename "$file").sha256"
+            )
+          done
 
       - name: Package Windows dists
         if: matrix.target == 'windows'
@@ -308,6 +334,23 @@ jobs:
           body: ${{ inputs.release_body }}
           prerelease: ${{ inputs.prerelease }}
           make_latest: ${{ inputs.make_latest }}
+          overwrite_files: true
+          fail_on_unmatched_files: true
           files: artifacts/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove obsolete rolling assets
+        if: inputs.rolling_tag != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          ROLLING_TAG: ${{ inputs.rolling_tag }}
+        shell: bash
+        run: |
+          find artifacts -type f -printf '%f\n' > "$RUNNER_TEMP/current-release-assets.txt"
+          gh release view "$ROLLING_TAG" --json assets --jq '.assets[].name' | while IFS= read -r asset; do
+            if ! grep -Fxq -- "$asset" "$RUNNER_TEMP/current-release-assets.txt"; then
+              gh release delete-asset "$ROLLING_TAG" "$asset" --yes
+            fi
+          done
