@@ -797,6 +797,15 @@ libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
 The app requires Flutter 3.47.6 or newer and Dart 3.11 or newer within Dart 3.x.
 `msix` and `fastforge` are development dependencies used only for packaging.
 
+Release artifact filenames retain the full `pubspec.yaml` version, including the
+build number, plus platform and architecture where applicable. Rolling RC and
+nightly artifacts append their channel and short Git commit SHA rather than
+replacing the version. For example:
+`StashFlow-1.38.1+110-nightly-abcdef0-linux-x64.AppImage`.
+Linux distribution packages (AppImage, deb, and pacman) ship with adjacent
+`.sha256` files referencing only the package basename, so downloads can be
+verified together with `sha256sum -c <filename>.sha256`.
+
 ### macOS
 
 The minimum deployment target is macOS 13, matching the native frameworks emitted

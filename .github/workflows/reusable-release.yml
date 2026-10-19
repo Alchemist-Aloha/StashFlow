@@ -58,11 +58,20 @@ jobs:
 
       - name: Read version
         shell: bash
+        env:
+          ARCHIVE_SUFFIX: ${{ inputs.archive_suffix }}
         run: |
-          version="$(sed -n 's/^version: \([^+]*\).*/\1/p' pubspec.yaml)"
-          suffix="${{ inputs.archive_suffix }}"
-          artifact_version="${suffix#-}"
-          echo "STASHFLOW_ARTIFACT_VERSION=${artifact_version:-$version}" >> "$GITHUB_ENV"
+          version="$(awk '/^version:/ {print $2; exit}' pubspec.yaml)"
+          test -n "$version" || { echo 'Missing pubspec version' >&2; exit 1; }
+          artifact_version="${version}${ARCHIVE_SUFFIX}"
+          if [ -n "$ARCHIVE_SUFFIX" ]; then
+            artifact_version="${artifact_version}-${GITHUB_SHA:0:7}"
+          fi
+          echo "STASHFLOW_ARTIFACT_VERSION=$artifact_version" >> "$GITHUB_ENV"
+
+      - name: Test release artifact metadata
+        if: matrix.target == 'linux'
+        run: python3 scripts/test_release_artifacts.py
 
       - name: Setup Java
         if: matrix.target == 'android'
@@ -230,6 +239,17 @@ jobs:
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'depend = libsecret'
           test "$(bsdtar --numeric-owner -tvf "$package" | awk '$NF == "opt/StashFlow/StashFlow" { print $3 ":" $4 }')" = '0:0'
         shell: bash
+
+      - name: Checksum Linux dists
+        if: matrix.target == 'linux'
+        shell: bash
+        run: |
+          find dist -type f \( -name '*.deb' -o -name '*.AppImage' -o -name '*.pkg.tar.zst' \) -print0 | while IFS= read -r -d '' file; do
+            (
+              cd "$(dirname "$file")"
+              sha256sum "$(basename "$file")" > "$(basename "$file").sha256"
+            )
+          done
 
       - name: Package Windows dists
         if: matrix.target == 'windows'
