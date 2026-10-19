@@ -961,10 +961,10 @@ packages:
     dependency: "direct dev"
     description:
       name: json_serializable
-      sha256: eb8d06bc95d35ccd26507b493d02321875671e1a7e41c6b4a6ccc76409b541f8
+      sha256: "3b177bc10ac583af8770ef514abc3287a972776194d0ef21310e3a4312fd0f33"
       url: "https://pub.dev"
     source: hosted
-    version: "6.15.0"
+    version: "6.15.1"
   leak_tracker:
     dependency: transitive
     description:

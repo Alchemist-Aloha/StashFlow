@@ -75,7 +75,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   build_runner: ^2.16.0
   freezed: ^4.0.1
-  json_serializable: ^6.14.0
+  json_serializable: ^6.15.1
   riverpod_generator: ^4.0.4
   graphql_codegen: ^3.0.1
   flutter_launcher_icons: ^0.14.4
