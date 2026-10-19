@@ -25,6 +25,10 @@ on:
         type: boolean
         default: true
 
+concurrency:
+  group: release-${{ inputs.rolling_tag || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build ${{ matrix.target }}
@@ -63,9 +67,9 @@ jobs:
         run: |
           version="$(awk '/^version:/ {print $2; exit}' pubspec.yaml)"
           test -n "$version" || { echo 'Missing pubspec version' >&2; exit 1; }
-          artifact_version="${version}${ARCHIVE_SUFFIX}"
+          artifact_version="$version"
           if [ -n "$ARCHIVE_SUFFIX" ]; then
-            artifact_version="${artifact_version}-${GITHUB_SHA:0:7}"
+            artifact_version="${ARCHIVE_SUFFIX#-}"
           fi
           echo "STASHFLOW_ARTIFACT_VERSION=$artifact_version" >> "$GITHUB_ENV"
 
@@ -232,6 +236,8 @@ jobs:
             "$GITHUB_WORKSPACE/$appimage" --appimage-extract >/dev/null
             test -x squashfs-root/StashFlow || { echo 'AppImage is missing the StashFlow executable' >&2; exit 1; }
             test -x squashfs-root/stash_app_flutter || { echo 'AppImage is missing the Fastforge launcher executable' >&2; exit 1; }
+            cmp squashfs-root/StashFlow squashfs-root/stash_app_flutter
+            readelf -d squashfs-root/stash_app_flutter | grep -F '[$ORIGIN/lib]'
           )
 
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'pkgname = stashflow'
@@ -328,6 +334,23 @@ jobs:
           body: ${{ inputs.release_body }}
           prerelease: ${{ inputs.prerelease }}
           make_latest: ${{ inputs.make_latest }}
+          overwrite_files: true
+          fail_on_unmatched_files: true
           files: artifacts/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove obsolete rolling assets
+        if: inputs.rolling_tag != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          ROLLING_TAG: ${{ inputs.rolling_tag }}
+        shell: bash
+        run: |
+          find artifacts -type f -printf '%f\n' > "$RUNNER_TEMP/current-release-assets.txt"
+          gh release view "$ROLLING_TAG" --json assets --jq '.assets[].name' | while IFS= read -r asset; do
+            if ! grep -Fxq -- "$asset" "$RUNNER_TEMP/current-release-assets.txt"; then
+              gh release delete-asset "$ROLLING_TAG" "$asset" --yes
+            fi
+          done

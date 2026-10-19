@@ -112,9 +112,9 @@ install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
 
 # Fastforge derives Linux launcher names from pubspec.yaml rather than
-# BINARY_NAME. Keep the branded executable and provide the name its generated
-# AppRun and desktop files expect.
-install(PROGRAMS "${CMAKE_BINARY_DIR}/intermediates_do_not_run/${BINARY_NAME}"
+# BINARY_NAME. Copy the installed executable after its RPATH has been fixed;
+# the build-tree executable still references libraries on the build machine.
+install(PROGRAMS "${CMAKE_INSTALL_PREFIX}/${BINARY_NAME}"
   DESTINATION "${CMAKE_INSTALL_PREFIX}"
   RENAME "stash_app_flutter"
   COMPONENT Runtime)
