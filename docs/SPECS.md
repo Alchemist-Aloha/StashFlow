@@ -893,6 +893,16 @@ changes, taskbar visibility, title-bar controls after exit, and desktop PiP.
 
 ### Linux desktop
 
+Release, release-candidate, and nightly workflows build native Linux x64 and
+ARM64 jobs on Ubuntu 26.04 runners. ARM64 bootstraps the pinned Flutter tag with
+native Dart. Both architectures ship ZIP, deb, AppImage, and pacman packages,
+with distinct artifact names and `linux-x64` or `linux-arm64` filenames. Debian
+metadata uses `amd64`/`arm64`; pacman and AppImage use `x86_64`/`aarch64`.
+The AppImage tool matches the native runner architecture; its wrapper overrides
+Fastforge's fixed x64 environment. Validate ELF architectures for the runner,
+Flutter, mpv, and bundled libraries, and verify package architecture metadata
+and the AppImage runtime before publishing.
+
 The main window hides its GTK header bar and window decorations in Hyprland and
 niri sessions, detected by complete, case-insensitive tokens in the colon-separated
 `XDG_CURRENT_DESKTOP` value. Window management uses compositor shortcuts there;

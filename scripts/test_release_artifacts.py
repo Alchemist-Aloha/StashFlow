@@ -80,14 +80,15 @@ class ReleaseArtifactsTest(unittest.TestCase):
             root = Path(directory)
             dist = root / "dist" / "1.38.1+110"
             dist.mkdir(parents=True)
-            for extension in ["AppImage", "deb", "pkg.tar.zst"]:
-                (dist / f"StashFlow-nightly-linux-x64.{extension}").write_bytes(b"package")
+            for architecture in ["x64", "arm64"]:
+                for extension in ["AppImage", "deb", "pkg.tar.zst"]:
+                    (dist / f"StashFlow-nightly-linux-{architecture}.{extension}").write_bytes(b"package")
             subprocess.run(
                 ["bash", "-euo", "pipefail", "-c", workflow_script("Checksum Linux dists")],
                 cwd=root, check=True,
             )
             checksums = list(dist.glob("*.sha256"))
-            self.assertEqual(len(checksums), 3)
+            self.assertEqual(len(checksums), 6)
             for checksum in checksums:
                 subprocess.run(["sha256sum", "-c", checksum.name], cwd=dist, check=True)
                 self.assertNotIn("dist/", checksum.read_text())

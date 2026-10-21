@@ -184,7 +184,7 @@ Release artifacts are produced from the release build output:
 |----------|----------------|--------|
 | Windows | `fastforge package --platform windows --targets exe` (Inno Setup) | `StashFlow-<version>-windows-x64.exe` |
 | Linux | `fastforge package --platform linux --targets deb,appimage` | `.deb`, `.AppImage` |
-| Arch Linux | `scripts/build_linux_pacman.sh <version> <output-dir>` | `.pkg.tar.zst` |
+| Arch Linux | `scripts/build_linux_pacman.sh <version> <output-dir> [x64\|arm64]` | `.pkg.tar.zst` |
 | RPM | `scripts/build_linux_rpm.sh` | `dist/<version>/StashFlow-<version>-linux.rpm` |
 | Windows Store | `dart run msix:create` (uses `msix_config` in `pubspec.yaml`) | `.msix` |
 

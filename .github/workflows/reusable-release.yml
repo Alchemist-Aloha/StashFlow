@@ -53,12 +53,20 @@ jobs:
           - target: linux
             os: ubuntu-26.04
             artifact_name: linux
+            arch: x64
+          - target: linux
+            os: ubuntu-26.04-arm
+            artifact_name: linux-arm64
+            arch: arm64
           - target: web
             os: ubuntu-26.04
             artifact_name: web
           - target: macos
             os: macos-26
             artifact_name: macos
+
+    env:
+      TARGET_ARCH: ${{ matrix.arch }}
 
     steps:
       - name: Checkout Code
@@ -77,12 +85,6 @@ jobs:
           fi
           echo "STASHFLOW_ARTIFACT_VERSION=$artifact_version" >> "$GITHUB_ENV"
 
-      - name: Test release artifact metadata
-        if: matrix.target == 'linux'
-        run: |
-          python3 scripts/test_release_artifacts.py
-          python3 scripts/test_windows_bundle.py
-
       - name: Setup Java
         if: matrix.target == 'android'
         uses: actions/setup-java@v5
@@ -92,7 +94,7 @@ jobs:
           cache: gradle
 
       - name: Setup Flutter
-        if: matrix.target != 'windows' || matrix.arch != 'arm64'
+        if: matrix.arch != 'arm64' || (matrix.target != 'windows' && matrix.target != 'linux')
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -114,6 +116,17 @@ jobs:
           $dartVersion = & "$flutterRoot\bin\cache\dart-sdk\bin\dart.exe" --version 2>&1 | Out-String
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if ($dartVersion -notmatch 'windows_arm64') { throw "Expected native ARM64 Dart: $dartVersion" }
+
+      - name: Setup Flutter on Linux ARM64
+        if: matrix.target == 'linux' && matrix.arch == 'arm64'
+        shell: bash
+        run: |
+          flutter_root="$RUNNER_TEMP/flutter-arm64"
+          git clone --depth 1 --branch 3.47.7 https://github.com/flutter/flutter.git "$flutter_root"
+          echo "$flutter_root/bin" >> "$GITHUB_PATH"
+          echo "FLUTTER_ROOT=$flutter_root" >> "$GITHUB_ENV"
+          "$flutter_root/bin/flutter" --version
+          "$flutter_root/bin/cache/dart-sdk/bin/dart" --version 2>&1 | grep -q 'linux_arm64'
 
       - name: Install dependencies
         run: flutter pub get
@@ -159,6 +172,13 @@ jobs:
             fakeroot \
             zstd
 
+      - name: Test release artifact metadata
+        if: matrix.target == 'linux'
+        run: |
+          python3 scripts/test_release_artifacts.py
+          python3 scripts/test_windows_bundle.py
+          python3 scripts/test_linux_bundle.py
+
       - name: Generate macOS Flutter ephemeral files
         if: matrix.target == 'macos'
         run: flutter build macos --config-only
@@ -189,8 +209,9 @@ jobs:
       - name: Package Linux
         if: matrix.target == 'linux'
         run: |
-          cd build/linux/x64/release/bundle
-          zip -r ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-linux-x64.zip .
+          python3 scripts/validate_linux_bundle.py "build/linux/$TARGET_ARCH/release/bundle" "$TARGET_ARCH"
+          cd "build/linux/$TARGET_ARCH/release/bundle"
+          zip -r "../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-linux-${TARGET_ARCH}.zip" .
         shell: bash
 
       - name: Package Web
@@ -231,16 +252,19 @@ jobs:
         if: matrix.target == 'linux'
         run: |
           export PATH="$PATH:$HOME/.pub-cache/bin"
-          sudo wget -qO /usr/local/bin/appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
-          sudo chmod +x /usr/local/bin/appimagetool
+          sudo mkdir -p /usr/local/lib/stashflow
+          sudo wget -qO /usr/local/lib/stashflow/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$(uname -m).AppImage"
+          sudo chmod +x /usr/local/lib/stashflow/appimagetool
+          sudo install -m755 scripts/appimagetool.sh /usr/local/bin/appimagetool
           export APPIMAGE_EXTRACT_AND_RUN=1
           dart pub global activate fastforge 0.6.12
           fastforge package --platform linux --targets deb,appimage --artifact-name 'StashFlow-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}'
           find dist -type f \( -name '*.deb' -o -name '*.AppImage' \) -print0 | while IFS= read -r -d '' file; do
             extension="${file##*.}"
-            mv "$file" "$(dirname "$file")/StashFlow-${STASHFLOW_ARTIFACT_VERSION}-linux-x64.${extension}"
+            mv "$file" "$(dirname "$file")/StashFlow-${STASHFLOW_ARTIFACT_VERSION}-linux-${TARGET_ARCH}.${extension}"
           done
-          scripts/build_linux_pacman.sh "$STASHFLOW_ARTIFACT_VERSION" "$PWD/dist"
+          python3 scripts/validate_linux_bundle.py "build/linux/$TARGET_ARCH/release/bundle" "$TARGET_ARCH"
+          scripts/build_linux_pacman.sh "$STASHFLOW_ARTIFACT_VERSION" "$PWD/dist" "$TARGET_ARCH"
         shell: bash
 
       - name: Validate Linux dists
@@ -248,8 +272,17 @@ jobs:
         run: |
           appimage=$(find dist -type f -name '*.AppImage' -print -quit)
           package=$(find dist -type f -name '*.pkg.tar.zst' -print -quit)
+          deb=$(find dist -type f -name '*.deb' -print -quit)
           test -n "$appimage" || { echo 'AppImage artifact not found' >&2; exit 1; }
           test -n "$package" || { echo 'Pacman artifact not found' >&2; exit 1; }
+          test -n "$deb" || { echo 'Debian artifact not found' >&2; exit 1; }
+          case "$TARGET_ARCH" in
+            x64) package_arch=x86_64; deb_arch=amd64 ;;
+            arm64) package_arch=aarch64; deb_arch=arm64 ;;
+            *) echo "Unsupported Linux architecture: $TARGET_ARCH" >&2; exit 1 ;;
+          esac
+          test "$(dpkg-deb -f "$deb" Architecture)" = "$deb_arch"
+          python3 scripts/validate_linux_bundle.py "build/linux/$TARGET_ARCH/release/bundle" "$TARGET_ARCH" --appimage "$appimage"
           echo "Validating $appimage"
           echo "Validating $package"
 
@@ -261,10 +294,12 @@ jobs:
             test -x squashfs-root/StashFlow || { echo 'AppImage is missing the StashFlow executable' >&2; exit 1; }
             test -x squashfs-root/stash_app_flutter || { echo 'AppImage is missing the Fastforge launcher executable' >&2; exit 1; }
             cmp squashfs-root/StashFlow squashfs-root/stash_app_flutter
+            python3 "$GITHUB_WORKSPACE/scripts/validate_linux_bundle.py" squashfs-root "$TARGET_ARCH"
             readelf -d squashfs-root/stash_app_flutter | grep -F '[$ORIGIN/lib]'
           )
 
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'pkgname = stashflow'
+          bsdtar -xOf "$package" .PKGINFO | grep -Fx "arch = $package_arch"
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'depend = gtk3'
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'depend = libsecret'
           test "$(bsdtar --numeric-owner -tvf "$package" | awk '$NF == "opt/StashFlow/StashFlow" { print $3 ":" $4 }')" = '0:0'
