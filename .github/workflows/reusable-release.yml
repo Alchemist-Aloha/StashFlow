@@ -251,10 +251,10 @@ jobs:
           esac
           cd build/macos/Build/Products/Release
           test -f StashFlow.app/Contents/MacOS/StashFlow
-          lipo -verify_arch "$macos_arch" StashFlow.app/Contents/MacOS/StashFlow
+          lipo StashFlow.app/Contents/MacOS/StashFlow -verify_arch "$macos_arch"
           find StashFlow.app -type f -print0 | while IFS= read -r -d '' binary; do
             if file -b "$binary" | grep -q 'Mach-O'; then
-              lipo -verify_arch "$macos_arch" "$binary"
+              lipo "$binary" -verify_arch "$macos_arch"
             fi
           done
           zip -r "../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-macos-${macos_arch}.zip" StashFlow.app

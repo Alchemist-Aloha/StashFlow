@@ -68,8 +68,8 @@ class ReleaseArtifactsTest(unittest.TestCase):
                             ),
                             "lipo": (
                                 "from pathlib import Path\nimport sys\n"
-                                "assert sys.argv[1] == '-verify_arch'\n"
-                                "sys.exit(0 if sys.argv[2] in Path(sys.argv[3]).read_text().split() else 1)\n"
+                                "assert len(sys.argv) == 4 and sys.argv[2] == '-verify_arch', 'input file must precede -verify_arch'\n"
+                                "sys.exit(0 if sys.argv[3] in Path(sys.argv[1]).read_text().split() else 1)\n"
                             ),
                             "zip": (
                                 "from pathlib import Path\nimport sys\n"
