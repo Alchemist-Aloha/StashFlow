@@ -22,6 +22,18 @@ flutter doctor -v
 
 All components for your target platform must show a green checkmark.
 
+### Windows build dependencies
+
+Install Visual Studio's **Desktop development with C++** workload, including
+MSVC, a Windows SDK, and C++ CMake tools. In **Individual components**, also
+select **C++ ATL for latest build tools (x86 & x64)** for the installed MSVC
+toolset (`Microsoft.VisualStudio.Component.VC.ATL`).
+
+The Windows secure-storage plugin requires ATL even when `flutter doctor -v`
+reports a working Windows toolchain. If compilation fails with
+`Cannot open include file: 'atlstr.h'`, add this component through Visual Studio
+Installer, then rerun `flutter build windows --release`.
+
 ### Linux build dependencies
 
 Linux desktop builds additionally need GTK and media libraries. On Debian/Ubuntu:

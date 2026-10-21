@@ -176,6 +176,11 @@ Desktop-like behavior is capability-gated through the desktop capability and
 settings providers. It includes hover feedback, keyboard navigation, player
 shortcuts, and pointer-appropriate controls without weakening touch behavior.
 
+Outside the web, the mouse Back button dispatches the app's normal Back action
+across routes, dialogs, and fullscreen surfaces, respecting back interception.
+At the root it does nothing rather than closing the app. Other mouse buttons
+are unchanged; browsers retain their native mouse-button history handling.
+
 Global shortcuts are suppressed while the user edits text. Keybinds are
 persisted, resettable, and grouped into global-navigation, video-player, and
 image-viewer contexts. Conflicts are rejected within overlapping contexts while
@@ -225,9 +230,10 @@ Sort/filter sheets must:
 
 - remain usable at small heights and large UI scales;
 - keep primary actions reachable;
-- size sort sheets to 88% of the modal route's available height rather than the
-  full `MediaQuery` screen height; expansion keeps the panel height fixed while
-  options scroll inside it and the outside dismiss area remains reachable;
+- size sort sheets to their visible content, growing and shrinking as advanced
+  options expand and collapse, up to 88% of the modal route's available height
+  rather than the full `MediaQuery` screen height; overflow scrolls inside the
+  panel while actions and the outside dismiss area remain reachable;
 - show the active-filter count accurately;
 - support reset and persisted defaults where offered;
 - preserve search, sort direction, and feature-specific criteria together;
@@ -835,11 +841,24 @@ There is no current F-Droid flavor or Fastlane metadata. Adding a store-specific
 flavor requires a fresh dependency/license and reproducible-build audit; it is
 not an existing supported build target.
 
+### Windows build prerequisites
+
+Windows builds require the Visual Studio C++ desktop toolchain and C++ ATL
+for the active MSVC toolset (`Microsoft.VisualStudio.Component.VC.ATL`, x86/x64).
+The Windows secure-storage plugin includes `atlstr.h`; `flutter doctor` alone
+does not establish that this optional component is installed. See
+[`Building from Source`](wiki/Building-from-Source.md#windows-build-dependencies).
+
 ### Windows fullscreen
 
-Windows uses the dedicated native fullscreen transition and window-manager
-coordination. It must preserve normal versus maximized restore state, window
-bounds, monitor placement, title-bar controls, and taskbar behavior.
+Windows uses the runner-owned `WindowsFullscreenController`, called through
+`stash_app_flutter/fullscreen` by `DesktopFullscreen`. It saves the main HWND's
+styles and `WINDOWPLACEMENT`, removes its frame/zoom state, and sizes it directly
+to the current monitor's `rcMonitor` without an intermediate unmaximize or inset
+resize. Exit restores the saved styles and placement. It must preserve normal
+versus maximized restore state, window bounds, monitor placement, title-bar
+controls, and taskbar behavior. Fullscreen frame messages bypass window_manager
+only for the main HWND; separate PiP windows retain their own handling.
 
 Entering and exiting fullscreen are asynchronous transactions. Flutter must not
 mark exit complete before native restoration succeeds. Failures return to a
@@ -847,9 +866,28 @@ coherent, retryable state and are logged. Repeated toggles, Alt+Tab, secondary
 monitors, and entry from a maximized window must remain safe.
 
 Do not mix a second independent `window_manager` fullscreen transition into the
-native Windows path.
+native Windows path. Linux and macOS continue to use window_manager fullscreen.
+
+The standalone Win32 regression test in `test/windows/runner/` checks normal and
+maximized restoration, repeated toggles, full-monitor client bounds, and every
+attached monitor. Run it in a Windows desktop session:
+
+```powershell
+cmake -S test/windows/runner -B build/windows-fullscreen-test
+cmake --build build/windows-fullscreen-test --config Debug
+ctest --test-dir build/windows-fullscreen-test -C Debug --output-on-failure
+```
+
+Also manually verify Windows 11 Alt+Tab/minimize/restore, mixed-DPI monitor
+changes, taskbar visibility, title-bar controls after exit, and desktop PiP.
 
 ### Linux desktop
+
+The main window hides its GTK header bar and window decorations in Hyprland and
+niri sessions, detected by complete, case-insensitive tokens in the colon-separated
+`XDG_CURRENT_DESKTOP` value. Window management uses compositor shortcuts there;
+other desktops retain their existing title-bar behavior. Missing session metadata
+retains decorations rather than guessing the compositor.
 
 The runner resolves its icon/resource path relative to the executable rather
 than the process working directory. Installed and directly launched builds must

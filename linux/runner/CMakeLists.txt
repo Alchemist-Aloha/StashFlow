@@ -10,6 +10,7 @@ add_executable(${BINARY_NAME}
   "icon_path.cc"
   "main.cc"
   "my_application.cc"
+  "window_decorations.cc"
   "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
 )
 

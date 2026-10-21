@@ -1,6 +1,8 @@
 #include "flutter_window.h"
 
 #include <flutter_windows.h>
+#include <flutter/plugin_registrar_windows.h>
+#include <flutter/standard_method_codec.h>
 #include <multiview_desktop/multi_view_desktop_plugin.h>
 
 #include "flutter/generated_plugin_registrant.h"
@@ -28,6 +30,36 @@ bool FlutterWindow::OnCreate() {
   const int height = frame.bottom - frame.top;
 
   MultiViewDesktopPrepareEngine(project_, GetHandle());
+  fullscreen_ = std::make_unique<WindowsFullscreenController>(GetHandle());
+  auto* registrar = flutter::PluginRegistrarManager::GetInstance()
+                        ->GetRegistrar<flutter::PluginRegistrarWindows>(
+                            FlutterDesktopEngineGetPluginRegistrar(
+                                MultiViewDesktopGetEngineRef(),
+                                "StashFlowFullscreen"));
+  fullscreen_channel_ =
+      std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+          registrar->messenger(), "stash_app_flutter/fullscreen",
+          &flutter::StandardMethodCodec::GetInstance());
+  fullscreen_channel_->SetMethodCallHandler(
+      [this](const auto& call, auto result) {
+        if (call.method_name() != "setFullScreen") {
+          result->NotImplemented();
+          return;
+        }
+        const auto* fullscreen = call.arguments()
+                                     ? std::get_if<bool>(call.arguments())
+                                     : nullptr;
+        if (!fullscreen) {
+          result->Error("invalid_arguments", "Expected a fullscreen boolean");
+          return;
+        }
+        const auto error = fullscreen_->SetFullscreen(*fullscreen);
+        if (error.empty()) {
+          result->Success();
+        } else {
+          result->Error("fullscreen_error", error);
+        }
+      });
   MultiViewDesktopCreateMainView(GetHandle(), width, height, RegisterPlugins);
   const HWND flutter_hwnd =
       MultiViewDesktopGetFlutterHwnd(MultiViewDesktopGetMainViewId());
@@ -39,6 +71,8 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  fullscreen_channel_.reset();
+  fullscreen_.reset();
   Win32Window::OnDestroy();
 }
 
@@ -47,6 +81,29 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
                               WPARAM const wparam,
                               LPARAM const lparam) noexcept {
   LRESULT result = 0;
+  if (fullscreen_ && fullscreen_->is_fullscreen()) {
+    // Bypass window_manager's normal/maximized frame calculations only for the
+    // main HWND. Its process-wide delegate must still handle other windows.
+    if (message == WM_NCCALCSIZE) return 0;
+    if (message == WM_NCHITTEST) return HTCLIENT;
+    if (message == WM_GETMINMAXINFO) return 0;
+    if (message == WM_SIZE) {
+      return Win32Window::MessageHandler(hwnd, message, wparam, lparam);
+    }
+    if (message == WM_SYSCOMMAND &&
+        ((wparam & 0xfff0) == SC_MAXIMIZE ||
+         (wparam & 0xfff0) == SC_SIZE || (wparam & 0xfff0) == SC_MOVE)) {
+      return 0;
+    }
+    if (message == WM_DPICHANGED || message == WM_DISPLAYCHANGE) {
+      // Let plugins update their DPI bookkeeping, but do not apply the normal
+      // window's suggested rectangle while fullscreen.
+      MultiViewDesktopHandleWindowProc(hwnd, message, wparam, lparam, &result);
+      const auto error = fullscreen_->ResizeToMonitor();
+      if (!error.empty()) OutputDebugStringA(error.c_str());
+      return 0;
+    }
+  }
   if (message == WM_FONTCHANGE) {
     FlutterDesktopEngineReloadSystemFonts(MultiViewDesktopGetEngineRef());
   }
