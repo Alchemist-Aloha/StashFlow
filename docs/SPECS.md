@@ -838,9 +838,14 @@ not an existing supported build target.
 
 ### Windows fullscreen
 
-Windows uses the dedicated native fullscreen transition and window-manager
-coordination. It must preserve normal versus maximized restore state, window
-bounds, monitor placement, title-bar controls, and taskbar behavior.
+Windows uses the runner-owned `WindowsFullscreenController`, called through
+`stash_app_flutter/fullscreen` by `DesktopFullscreen`. It saves the main HWND's
+styles and `WINDOWPLACEMENT`, removes its frame/zoom state, and sizes it directly
+to the current monitor's `rcMonitor` without an intermediate unmaximize or inset
+resize. Exit restores the saved styles and placement. It must preserve normal
+versus maximized restore state, window bounds, monitor placement, title-bar
+controls, and taskbar behavior. Fullscreen frame messages bypass window_manager
+only for the main HWND; separate PiP windows retain their own handling.
 
 Entering and exiting fullscreen are asynchronous transactions. Flutter must not
 mark exit complete before native restoration succeeds. Failures return to a
@@ -848,7 +853,20 @@ coherent, retryable state and are logged. Repeated toggles, Alt+Tab, secondary
 monitors, and entry from a maximized window must remain safe.
 
 Do not mix a second independent `window_manager` fullscreen transition into the
-native Windows path.
+native Windows path. Linux and macOS continue to use window_manager fullscreen.
+
+The standalone Win32 regression test in `test/windows/runner/` checks normal and
+maximized restoration, repeated toggles, full-monitor client bounds, and every
+attached monitor. Run it in a Windows desktop session:
+
+```powershell
+cmake -S test/windows/runner -B build/windows-fullscreen-test
+cmake --build build/windows-fullscreen-test --config Debug
+ctest --test-dir build/windows-fullscreen-test -C Debug --output-on-failure
+```
+
+Also manually verify Windows 11 Alt+Tab/minimize/restore, mixed-DPI monitor
+changes, taskbar visibility, title-bar controls after exit, and desktop PiP.
 
 ### Linux desktop
 
