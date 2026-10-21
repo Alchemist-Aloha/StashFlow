@@ -841,6 +841,14 @@ There is no current F-Droid flavor or Fastlane metadata. Adding a store-specific
 flavor requires a fresh dependency/license and reproducible-build audit; it is
 not an existing supported build target.
 
+### Windows build prerequisites
+
+Windows builds require the Visual Studio C++ desktop toolchain and C++ ATL
+for the active MSVC toolset (`Microsoft.VisualStudio.Component.VC.ATL`, x86/x64).
+The Windows secure-storage plugin includes `atlstr.h`; `flutter doctor` alone
+does not establish that this optional component is installed. See
+[`Building from Source`](wiki/Building-from-Source.md#windows-build-dependencies).
+
 ### Windows fullscreen
 
 Windows uses the runner-owned `WindowsFullscreenController`, called through
