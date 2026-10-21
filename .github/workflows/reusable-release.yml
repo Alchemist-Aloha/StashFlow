@@ -31,14 +31,13 @@ concurrency:
 
 jobs:
   build:
-    name: Build ${{ matrix.target }}
+    name: Build ${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
-        target: [android, windows, linux, web, macos]
         include:
           - target: android
             os: ubuntu-26.04
@@ -46,6 +45,11 @@ jobs:
           - target: windows
             os: windows-latest
             artifact_name: windows
+            arch: x64
+          - target: windows
+            os: windows-11-arm
+            artifact_name: windows-arm64
+            arch: arm64
           - target: linux
             os: ubuntu-26.04
             artifact_name: linux
@@ -75,7 +79,9 @@ jobs:
 
       - name: Test release artifact metadata
         if: matrix.target == 'linux'
-        run: python3 scripts/test_release_artifacts.py
+        run: |
+          python3 scripts/test_release_artifacts.py
+          python3 scripts/test_windows_bundle.py
 
       - name: Setup Java
         if: matrix.target == 'android'
@@ -86,11 +92,28 @@ jobs:
           cache: gradle
 
       - name: Setup Flutter
+        if: matrix.target != 'windows' || matrix.arch != 'arm64'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: "3.47.7"
           cache: true
+
+      # The release archive bundles x64 Dart; bootstrap native Dart on ARM64.
+      - name: Setup Flutter on Windows ARM64
+        if: matrix.target == 'windows' && matrix.arch == 'arm64'
+        shell: pwsh
+        run: |
+          $flutterRoot = Join-Path $env:RUNNER_TEMP 'flutter-arm64'
+          git clone --depth 1 --branch 3.47.7 https://github.com/flutter/flutter.git $flutterRoot
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "$flutterRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "FLUTTER_ROOT=$flutterRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & "$flutterRoot\bin\flutter.bat" --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $dartVersion = & "$flutterRoot\bin\cache\dart-sdk\bin\dart.exe" --version 2>&1 | Out-String
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($dartVersion -notmatch 'windows_arm64') { throw "Expected native ARM64 Dart: $dartVersion" }
 
       - name: Install dependencies
         run: flutter pub get
@@ -158,8 +181,9 @@ jobs:
       - name: Package Windows
         if: matrix.target == 'windows'
         run: |
-          cd build/windows/x64/runner/Release
-          7z a ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-windows-x64.zip *
+          python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
+          cd build/windows/${{ matrix.arch }}/runner/Release
+          7z a ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-windows-${{ matrix.arch }}.zip *
         shell: bash
 
       - name: Package Linux
@@ -262,10 +286,18 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ('${{ matrix.arch }}' -eq 'arm64') {
+            Add-Content windows/packaging/exe/make_config.yaml "`narchitectures_allowed: arm64`narchitectures_install_in_64bit_mode: arm64"
+          }
           $env:PATH += ";$env:LOCALAPPDATA\Pub\Cache\bin"
           dart pub global activate fastforge 0.6.12
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           fastforge package --platform windows --targets exe --artifact-name 'StashFlow-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}'
-          Get-ChildItem dist -Recurse -Filter *.exe | Rename-Item -NewName "StashFlow-$env:STASHFLOW_ARTIFACT_VERSION-windows-x64.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-ChildItem dist -Recurse -Filter *.exe | Rename-Item -NewName "StashFlow-$env:STASHFLOW_ARTIFACT_VERSION-windows-${{ matrix.arch }}.exe"
 
       - name: Upload dist packages
         if: matrix.target == 'linux' || matrix.target == 'windows'

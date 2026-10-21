@@ -843,8 +843,18 @@ not an existing supported build target.
 
 ### Windows build prerequisites
 
+Release, release-candidate, and nightly workflows build Windows x64 and ARM64
+ZIP bundles and EXE installers in separate jobs. ARM64 uses `windows-11-arm`
+and bootstraps the pinned Flutter tag with native ARM64 Dart; the x64 release
+archive must not determine the target architecture on the ARM runner. Artifact
+filenames end in `windows-x64` or `windows-arm64`, and upload names are distinct.
+ARM64 installers allow ARM64 systems and use 64-bit installation paths. Both
+bundles must contain matching-architecture executables and DLLs, including the
+Flutter engine and bundled mpv, checked before packaging and after Fastforge's
+rebuild.
+
 Windows builds require the Visual Studio C++ desktop toolchain and C++ ATL
-for the active MSVC toolset (`Microsoft.VisualStudio.Component.VC.ATL`, x86/x64).
+for the active MSVC toolset and target architecture (x86/x64 or ARM64).
 The Windows secure-storage plugin includes `atlstr.h`; `flutter doctor` alone
 does not establish that this optional component is installed. See
 [`Building from Source`](wiki/Building-from-Source.md#windows-build-dependencies).
