@@ -42,7 +42,7 @@ class EntityMediaSort extends _$EntityMediaSort {
     EntityMediaFilterKind kind,
   ) {
     final prefs = ref.read(sharedPreferencesProvider);
-    final sort = prefs.getString(_sortKey(kind)) ?? 'date';
+    final sort = prefs.getString(_sortKey(kind)) ?? 'random';
     final descending = prefs.getBool(_descKey(kind)) ?? true;
     final seed = sort == 'random'
         ? ref.read(entityMediaRandomSeedProvider(kind))
@@ -52,6 +52,7 @@ class EntityMediaSort extends _$EntityMediaSort {
   }
 
   void setSort({String? sort, bool descending = true}) {
+    sort ??= 'random';
     final seed = sort == 'random'
         ? ref.read(entityMediaRandomSeedProvider(kind))
         : null;
@@ -158,34 +159,23 @@ FutureOr<List<Scene>> entityMediaPreview(
   String entityId,
 ) async {
   ref.keepAlive();
+  final sortConfig = ref.watch(entityMediaSortProvider(kind));
+  final sort = sortConfig.sort == 'random'
+      ? 'random_${ref.watch(entityMediaRandomSeedProvider(kind))}'
+      : sortConfig.sort;
   final repository = ref.read(sceneRepositoryProvider);
 
-  return switch (kind) {
-    EntityMediaFilterKind.performer => repository.findScenes(
-      page: 1,
-      perPage: 24,
-      performerId: entityId,
+  return repository.findScenes(
+    page: 1,
+    perPage: 24,
+    sort: sort,
+    descending: sortConfig.descending,
+    sceneFilter: sceneFilterForEntityMedia(
+      filter: SceneFilter.empty(),
+      kind: kind,
+      entityId: entityId,
     ),
-    EntityMediaFilterKind.studio => repository.findScenes(
-      page: 1,
-      perPage: 24,
-      studioId: entityId,
-    ),
-    EntityMediaFilterKind.tag => repository.findScenes(
-      page: 1,
-      perPage: 24,
-      tagId: entityId,
-    ),
-    EntityMediaFilterKind.group => repository.findScenes(
-      page: 1,
-      perPage: 24,
-      sceneFilter: sceneFilterForEntityMedia(
-        filter: SceneFilter.empty(),
-        kind: kind,
-        entityId: entityId,
-      ),
-    ),
-  };
+  );
 }
 
 @riverpod

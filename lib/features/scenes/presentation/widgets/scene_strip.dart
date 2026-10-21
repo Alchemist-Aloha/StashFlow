@@ -157,6 +157,7 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
                     child: SceneCard(
                       scene: scene,
                       isGrid: true,
+                      thumbnailAspectRatio: 16 / 9,
                       showPerformers: false,
                       useHero: false,
                       onTap: queueId != null || onTap != null

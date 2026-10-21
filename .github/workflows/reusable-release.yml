@@ -31,14 +31,13 @@ concurrency:
 
 jobs:
   build:
-    name: Build ${{ matrix.target }}
+    name: Build ${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
-        target: [android, windows, linux, web, macos]
         include:
           - target: android
             os: ubuntu-26.04
@@ -46,15 +45,33 @@ jobs:
           - target: windows
             os: windows-latest
             artifact_name: windows
+            arch: x64
+          - target: windows
+            os: windows-11-arm
+            artifact_name: windows-arm64
+            arch: arm64
           - target: linux
             os: ubuntu-26.04
             artifact_name: linux
+            arch: x64
+          - target: linux
+            os: ubuntu-26.04-arm
+            artifact_name: linux-arm64
+            arch: arm64
           - target: web
             os: ubuntu-26.04
             artifact_name: web
           - target: macos
             os: macos-26
             artifact_name: macos
+            arch: arm64
+          - target: macos
+            os: macos-26-intel
+            artifact_name: macos-x64
+            arch: x64
+
+    env:
+      TARGET_ARCH: ${{ matrix.arch }}
 
     steps:
       - name: Checkout Code
@@ -73,10 +90,6 @@ jobs:
           fi
           echo "STASHFLOW_ARTIFACT_VERSION=$artifact_version" >> "$GITHUB_ENV"
 
-      - name: Test release artifact metadata
-        if: matrix.target == 'linux'
-        run: python3 scripts/test_release_artifacts.py
-
       - name: Setup Java
         if: matrix.target == 'android'
         uses: actions/setup-java@v5
@@ -86,11 +99,39 @@ jobs:
           cache: gradle
 
       - name: Setup Flutter
+        if: matrix.arch != 'arm64' || (matrix.target != 'windows' && matrix.target != 'linux')
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: "3.47.7"
           cache: true
+
+      # The release archive bundles x64 Dart; bootstrap native Dart on ARM64.
+      - name: Setup Flutter on Windows ARM64
+        if: matrix.target == 'windows' && matrix.arch == 'arm64'
+        shell: pwsh
+        run: |
+          $flutterRoot = Join-Path $env:RUNNER_TEMP 'flutter-arm64'
+          git clone --depth 1 --branch 3.47.7 https://github.com/flutter/flutter.git $flutterRoot
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "$flutterRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "FLUTTER_ROOT=$flutterRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & "$flutterRoot\bin\flutter.bat" --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $dartVersion = & "$flutterRoot\bin\cache\dart-sdk\bin\dart.exe" --version 2>&1 | Out-String
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($dartVersion -notmatch 'windows_arm64') { throw "Expected native ARM64 Dart: $dartVersion" }
+
+      - name: Setup Flutter on Linux ARM64
+        if: matrix.target == 'linux' && matrix.arch == 'arm64'
+        shell: bash
+        run: |
+          flutter_root="$RUNNER_TEMP/flutter-arm64"
+          git clone --depth 1 --branch 3.47.7 https://github.com/flutter/flutter.git "$flutter_root"
+          echo "$flutter_root/bin" >> "$GITHUB_PATH"
+          echo "FLUTTER_ROOT=$flutter_root" >> "$GITHUB_ENV"
+          "$flutter_root/bin/flutter" --version
+          "$flutter_root/bin/cache/dart-sdk/bin/dart" --version 2>&1 | grep -q 'linux_arm64'
 
       - name: Install dependencies
         run: flutter pub get
@@ -136,6 +177,13 @@ jobs:
             fakeroot \
             zstd
 
+      - name: Test release artifact metadata
+        if: matrix.target == 'linux'
+        run: |
+          python3 scripts/test_release_artifacts.py
+          python3 scripts/test_windows_bundle.py
+          python3 scripts/test_linux_bundle.py
+
       - name: Generate macOS Flutter ephemeral files
         if: matrix.target == 'macos'
         run: flutter build macos --config-only
@@ -151,22 +199,29 @@ jobs:
           elif [ "${{ matrix.target }}" = "web" ]; then
             flutter build web --release --base-href /StashFlow/
           elif [ "${{ matrix.target }}" = "macos" ]; then
-            flutter build macos --release
+            case "$TARGET_ARCH" in
+              x64) macos_arch=x86_64 ;;
+              arm64) macos_arch=arm64 ;;
+              *) echo "Unsupported macOS architecture: $TARGET_ARCH" >&2; exit 1 ;;
+            esac
+            FLUTTER_MACOS_ARM64_ONLY=false FLUTTER_XCODE_ARCHS="$macos_arch" flutter build macos --release
           fi
         shell: bash
 
       - name: Package Windows
         if: matrix.target == 'windows'
         run: |
-          cd build/windows/x64/runner/Release
-          7z a ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-windows-x64.zip *
+          python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
+          cd build/windows/${{ matrix.arch }}/runner/Release
+          7z a ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-windows-${{ matrix.arch }}.zip *
         shell: bash
 
       - name: Package Linux
         if: matrix.target == 'linux'
         run: |
-          cd build/linux/x64/release/bundle
-          zip -r ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-linux-x64.zip .
+          python3 scripts/validate_linux_bundle.py "build/linux/$TARGET_ARCH/release/bundle" "$TARGET_ARCH"
+          cd "build/linux/$TARGET_ARCH/release/bundle"
+          zip -r "../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-linux-${TARGET_ARCH}.zip" .
         shell: bash
 
       - name: Package Web
@@ -189,8 +244,20 @@ jobs:
       - name: Package macOS
         if: matrix.target == 'macos'
         run: |
+          case "$TARGET_ARCH" in
+            x64) macos_arch=x86_64 ;;
+            arm64) macos_arch=arm64 ;;
+            *) echo "Unsupported macOS architecture: $TARGET_ARCH" >&2; exit 1 ;;
+          esac
           cd build/macos/Build/Products/Release
-          zip -r ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-macos-$(uname -m).zip *.app
+          test -f StashFlow.app/Contents/MacOS/StashFlow
+          lipo StashFlow.app/Contents/MacOS/StashFlow -verify_arch "$macos_arch"
+          find StashFlow.app -type f -print0 | while IFS= read -r -d '' binary; do
+            if file -b "$binary" | grep -q 'Mach-O'; then
+              lipo "$binary" -verify_arch "$macos_arch"
+            fi
+          done
+          zip -r "../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-macos-${macos_arch}.zip" StashFlow.app
         shell: bash
 
       - name: Name Android binaries
@@ -207,16 +274,19 @@ jobs:
         if: matrix.target == 'linux'
         run: |
           export PATH="$PATH:$HOME/.pub-cache/bin"
-          sudo wget -qO /usr/local/bin/appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
-          sudo chmod +x /usr/local/bin/appimagetool
+          sudo mkdir -p /usr/local/lib/stashflow
+          sudo wget -qO /usr/local/lib/stashflow/appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$(uname -m).AppImage"
+          sudo chmod +x /usr/local/lib/stashflow/appimagetool
+          sudo install -m755 scripts/appimagetool.sh /usr/local/bin/appimagetool
           export APPIMAGE_EXTRACT_AND_RUN=1
           dart pub global activate fastforge 0.6.12
           fastforge package --platform linux --targets deb,appimage --artifact-name 'StashFlow-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}'
           find dist -type f \( -name '*.deb' -o -name '*.AppImage' \) -print0 | while IFS= read -r -d '' file; do
             extension="${file##*.}"
-            mv "$file" "$(dirname "$file")/StashFlow-${STASHFLOW_ARTIFACT_VERSION}-linux-x64.${extension}"
+            mv "$file" "$(dirname "$file")/StashFlow-${STASHFLOW_ARTIFACT_VERSION}-linux-${TARGET_ARCH}.${extension}"
           done
-          scripts/build_linux_pacman.sh "$STASHFLOW_ARTIFACT_VERSION" "$PWD/dist"
+          python3 scripts/validate_linux_bundle.py "build/linux/$TARGET_ARCH/release/bundle" "$TARGET_ARCH"
+          scripts/build_linux_pacman.sh "$STASHFLOW_ARTIFACT_VERSION" "$PWD/dist" "$TARGET_ARCH"
         shell: bash
 
       - name: Validate Linux dists
@@ -224,8 +294,17 @@ jobs:
         run: |
           appimage=$(find dist -type f -name '*.AppImage' -print -quit)
           package=$(find dist -type f -name '*.pkg.tar.zst' -print -quit)
+          deb=$(find dist -type f -name '*.deb' -print -quit)
           test -n "$appimage" || { echo 'AppImage artifact not found' >&2; exit 1; }
           test -n "$package" || { echo 'Pacman artifact not found' >&2; exit 1; }
+          test -n "$deb" || { echo 'Debian artifact not found' >&2; exit 1; }
+          case "$TARGET_ARCH" in
+            x64) package_arch=x86_64; deb_arch=amd64 ;;
+            arm64) package_arch=aarch64; deb_arch=arm64 ;;
+            *) echo "Unsupported Linux architecture: $TARGET_ARCH" >&2; exit 1 ;;
+          esac
+          test "$(dpkg-deb -f "$deb" Architecture)" = "$deb_arch"
+          python3 scripts/validate_linux_bundle.py "build/linux/$TARGET_ARCH/release/bundle" "$TARGET_ARCH" --appimage "$appimage"
           echo "Validating $appimage"
           echo "Validating $package"
 
@@ -237,10 +316,12 @@ jobs:
             test -x squashfs-root/StashFlow || { echo 'AppImage is missing the StashFlow executable' >&2; exit 1; }
             test -x squashfs-root/stash_app_flutter || { echo 'AppImage is missing the Fastforge launcher executable' >&2; exit 1; }
             cmp squashfs-root/StashFlow squashfs-root/stash_app_flutter
+            python3 "$GITHUB_WORKSPACE/scripts/validate_linux_bundle.py" squashfs-root "$TARGET_ARCH"
             readelf -d squashfs-root/stash_app_flutter | grep -F '[$ORIGIN/lib]'
           )
 
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'pkgname = stashflow'
+          bsdtar -xOf "$package" .PKGINFO | grep -Fx "arch = $package_arch"
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'depend = gtk3'
           bsdtar -xOf "$package" .PKGINFO | grep -Fx 'depend = libsecret'
           test "$(bsdtar --numeric-owner -tvf "$package" | awk '$NF == "opt/StashFlow/StashFlow" { print $3 ":" $4 }')" = '0:0'
@@ -262,10 +343,18 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ('${{ matrix.arch }}' -eq 'arm64') {
+            Add-Content windows/packaging/exe/make_config.yaml "`narchitectures_allowed: arm64`narchitectures_install_in_64bit_mode: arm64"
+          }
           $env:PATH += ";$env:LOCALAPPDATA\Pub\Cache\bin"
           dart pub global activate fastforge 0.6.12
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           fastforge package --platform windows --targets exe --artifact-name 'StashFlow-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}'
-          Get-ChildItem dist -Recurse -Filter *.exe | Rename-Item -NewName "StashFlow-$env:STASHFLOW_ARTIFACT_VERSION-windows-x64.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-ChildItem dist -Recurse -Filter *.exe | Rename-Item -NewName "StashFlow-$env:STASHFLOW_ARTIFACT_VERSION-windows-${{ matrix.arch }}.exe"
 
       - name: Upload dist packages
         if: matrix.target == 'linux' || matrix.target == 'windows'

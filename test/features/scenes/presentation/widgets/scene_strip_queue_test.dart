@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
@@ -37,6 +38,68 @@ Scene _scene(String id, String title) {
 }
 
 void main() {
+  for (final scale in [0.8, 1.5]) {
+    for (final dimensions in [(1080, 1920), (1080, 1080), (1920, 1080)]) {
+      testWidgets(
+        'SceneStrip crops $dimensions thumbnails above titles at scale $scale',
+        (tester) async {
+          SharedPreferences.setMockInitialValues({});
+          final prefs = await SharedPreferences.getInstance();
+          final scene = _scene('cropped', 'Scene title').copyWith(
+            files: [
+              SceneFile(
+                width: dimensions.$1,
+                height: dimensions.$2,
+                format: null,
+                videoCodec: null,
+                audioCodec: null,
+                bitRate: null,
+                duration: 60,
+                frameRate: null,
+              ),
+            ],
+          );
+
+          await tester.pumpWidget(
+            ProviderScope(
+              overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+              child: MaterialApp(
+                theme: AppTheme.buildTheme(
+                  Brightness.light,
+                  Colors.teal,
+                  fontSizeFactor: scale,
+                ),
+                home: Scaffold(body: SceneStrip(scenes: [scene])),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          final frame = find.descendant(
+            of: find.byType(SceneCard),
+            matching: find.byType(AspectRatio),
+          );
+          final frameRect = tester.getRect(frame);
+          final titleRect = tester.getRect(find.text('Scene title'));
+          final cardRect = tester.getRect(find.byType(SceneCard));
+          expect(frameRect.width / frameRect.height, closeTo(16 / 9, 0.001));
+          expect(titleRect.top, greaterThanOrEqualTo(frameRect.bottom));
+          expect(titleRect.bottom, lessThanOrEqualTo(cardRect.bottom));
+          expect(
+            tester.widget<StashImage>(find.byType(StashImage)).fit,
+            BoxFit.cover,
+          );
+          final clip = find.descendant(
+            of: frame,
+            matching: find.byType(ClipRect),
+          );
+          expect(tester.getRect(clip), frameRect);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
   testWidgets('SceneStrip disables SceneCard VTT scrubbing on Android', (
     tester,
   ) async {

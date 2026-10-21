@@ -2,18 +2,23 @@
 
 set -euo pipefail
 
-if (( $# != 2 )); then
-  echo "Usage: $0 <artifact-version> <output-directory>" >&2
+if (( $# < 2 || $# > 3 )); then
+  echo "Usage: $0 <artifact-version> <output-directory> [x64|arm64]" >&2
   exit 64
 fi
 
 artifact_version=$1
 output_directory=$2
+case "${3:-$(uname -m)}" in
+  x64|x86_64) bundle_arch=x64; package_arch=x86_64 ;;
+  arm64|aarch64) bundle_arch=arm64; package_arch=aarch64 ;;
+  *) echo "Unsupported Linux architecture: ${3:-$(uname -m)}" >&2; exit 64 ;;
+esac
 project_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 if [[ "$output_directory" != /* ]]; then
   output_directory="$project_root/$output_directory"
 fi
-bundle_directory="$project_root/build/linux/x64/release/bundle"
+bundle_directory="$project_root/build/linux/$bundle_arch/release/bundle"
 package_root=$(mktemp -d)
 trap 'rm -rf -- "$package_root"' EXIT
 
@@ -64,7 +69,7 @@ printf '%s\n' \
   "builddate = $build_date" \
   'packager = Alchemist Aloha <Alchemist-Aloha@users.noreply.github.com>' \
   "size = $installed_size" \
-  'arch = x86_64' \
+  "arch = $package_arch" \
   'license = AGPL-3.0' \
   'depend = gtk3' \
   'depend = libsecret' \
@@ -80,7 +85,7 @@ printf '%s\n' \
 )
 
 mkdir -p "$output_directory"
-output_path="$output_directory/StashFlow-${artifact_version}-linux-x64.pkg.tar.zst"
+output_path="$output_directory/StashFlow-${artifact_version}-linux-${bundle_arch}.pkg.tar.zst"
 (
   cd "$package_root"
   bsdtar -caf "$output_path" \

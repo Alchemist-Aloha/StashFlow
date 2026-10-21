@@ -51,7 +51,7 @@ class EntitySceneMediaGrid extends ConsumerStatefulWidget {
 }
 
 class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
-  SceneSortField _sortField = SceneSortField.date;
+  SceneSortField _sortField = SceneSortField.random;
   bool _sortDescending = true;
 
   @override
@@ -91,7 +91,7 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
           commonOptions: SceneSortField.commonOptions,
           initialOption: _sortField,
           initialDescending: _sortDescending,
-          resetOption: SceneSortField.date,
+          resetOption: SceneSortField.random,
           resetDescending: true,
           optionLabel: (field) => field.label(context),
           onApply: (field, descending) {
@@ -194,7 +194,7 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
   void _applySavedFilterConfig(SceneSavedFilterConfig config) {
     final scopedFilter = _scopedFilter(config.filter);
     setState(() {
-      _sortField = SceneSortField.fromKey(config.sort);
+      _sortField = SceneSortField.fromKey(config.sort ?? 'random');
       _sortDescending = config.descending;
     });
 
@@ -209,7 +209,7 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
         .set(OrganizedFilter.fromBool(scopedFilter.organized));
     ref
         .read(entityMediaSortProvider(widget.filterKind).notifier)
-        .setSort(sort: config.sort ?? 'date', descending: config.descending);
+        .setSort(sort: config.sort, descending: config.descending);
   }
 
   @override

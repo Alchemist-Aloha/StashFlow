@@ -257,6 +257,11 @@ Other sort fields remain available in an expandable advanced section; a selected
 advanced field stays in the first group so its selection remains visible when
 collapsed. Sharing catalogues does not share query state: entity sorts and saved
 defaults remain scoped to their existing providers.
+Entity scene media categories (performer, studio, tag, and group) default to
+Random when no sort is saved. Their horizontal previews, including the scene
+detail page's More From rows, follow the corresponding expanded list's sort
+field and direction, sharing its random seed so random ordering also agrees.
+Previews preserve server order while excluding the current scene where relevant.
 Performer, studio, tag, and group list sort sheets also separate common choices
 from advanced fields, retaining all fields and surfacing a selected advanced
 field in the first group.
@@ -307,6 +312,9 @@ its painting vertically to 1:2 and crop the top and bottom to fill that frame;
 image loading must not change the card's layout bounds. Non-square covers keep
 their normal fit. Other uniform-grid thumbnails use 16:9; list and masonry
 thumbnails follow the source proportions, clamped to the supported card range.
+Horizontal scene strips always use fixed 16:9 thumbnail frames, including for
+portrait and square media. Covers fill and crop inside the thumbnail bounds;
+image painting must not overlap the title and metadata below.
 
 Hover scrubbing is enabled only for pointer-capable environments and only when
 sprite data is available. Touch scrolling and card activation must remain
@@ -820,6 +828,13 @@ verified together with `sha256sum -c <filename>.sha256`.
 The minimum deployment target is macOS 13, matching the native frameworks emitted
 by the pinned Flutter SDK.
 
+Release, release-candidate, and nightly workflows build Apple Silicon on
+`macos-26` and Intel on `macos-26-intel`, explicitly selecting `arm64` and
+`x86_64` through Flutter's Xcode build settings. ZIP filenames end in
+`macos-arm64` or `macos-x86_64`, and upload artifact names are distinct.
+Before packaging, the app executable and every bundled Mach-O binary must
+contain the target architecture; embedded universal libraries are allowed.
+
 ### Android
 
 - Application ID and namespace are `io.github.alchemistaloha.stashflow`.
@@ -843,8 +858,18 @@ not an existing supported build target.
 
 ### Windows build prerequisites
 
+Release, release-candidate, and nightly workflows build Windows x64 and ARM64
+ZIP bundles and EXE installers in separate jobs. ARM64 uses `windows-11-arm`
+and bootstraps the pinned Flutter tag with native ARM64 Dart; the x64 release
+archive must not determine the target architecture on the ARM runner. Artifact
+filenames end in `windows-x64` or `windows-arm64`, and upload names are distinct.
+ARM64 installers allow ARM64 systems and use 64-bit installation paths. Both
+bundles must contain matching-architecture executables and DLLs, including the
+Flutter engine and bundled mpv, checked before packaging and after Fastforge's
+rebuild.
+
 Windows builds require the Visual Studio C++ desktop toolchain and C++ ATL
-for the active MSVC toolset (`Microsoft.VisualStudio.Component.VC.ATL`, x86/x64).
+for the active MSVC toolset and target architecture (x86/x64 or ARM64).
 The Windows secure-storage plugin includes `atlstr.h`; `flutter doctor` alone
 does not establish that this optional component is installed. See
 [`Building from Source`](wiki/Building-from-Source.md#windows-build-dependencies).
@@ -882,6 +907,16 @@ Also manually verify Windows 11 Alt+Tab/minimize/restore, mixed-DPI monitor
 changes, taskbar visibility, title-bar controls after exit, and desktop PiP.
 
 ### Linux desktop
+
+Release, release-candidate, and nightly workflows build native Linux x64 and
+ARM64 jobs on Ubuntu 26.04 runners. ARM64 bootstraps the pinned Flutter tag with
+native Dart. Both architectures ship ZIP, deb, AppImage, and pacman packages,
+with distinct artifact names and `linux-x64` or `linux-arm64` filenames. Debian
+metadata uses `amd64`/`arm64`; pacman and AppImage use `x86_64`/`aarch64`.
+The AppImage tool matches the native runner architecture; its wrapper overrides
+Fastforge's fixed x64 environment. Validate ELF architectures for the runner,
+Flutter, mpv, and bundled libraries, and verify package architecture metadata
+and the AppImage runtime before publishing.
 
 The main window hides its GTK header bar and window decorations in Hyprland and
 niri sessions, detected by complete, case-insensitive tokens in the colon-separated

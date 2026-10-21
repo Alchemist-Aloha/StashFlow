@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' show min;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -1703,8 +1703,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return studioMediaAsync.when(
       data: (scenes) {
         final List<Scene> sceneList = scenes;
-        final filtered = sceneList.where((item) => item.id != scene.id).toList()
-          ..shuffle(Random(scene.id.hashCode));
+        final filtered = sceneList
+            .where((item) => item.id != scene.id)
+            .toList();
 
         if (filtered.isEmpty) {
           return const SizedBox.shrink();
@@ -1762,11 +1763,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       );
       final section = mediaAsync.maybeWhen(
         data: (scenes) {
-          final relatedScenes =
-              scenes
-                  .where((relatedScene) => relatedScene.id != scene.id)
-                  .toList()
-                ..shuffle(Random(Object.hash(scene.id, performerId)));
+          final relatedScenes = scenes
+              .where((relatedScene) => relatedScene.id != scene.id)
+              .toList();
           if (relatedScenes.isEmpty) return null;
 
           return _buildSectionContainer(

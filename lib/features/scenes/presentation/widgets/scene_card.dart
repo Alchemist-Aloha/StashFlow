@@ -33,6 +33,7 @@ class SceneCard extends ConsumerStatefulWidget {
   SceneCard.skeleton({
     this.isGrid = false,
     this.useMasonry = false,
+    this.thumbnailAspectRatio,
     this.showPerformers = false,
     this.onTap,
     this.memCacheWidth,
@@ -90,6 +91,7 @@ class SceneCard extends ConsumerStatefulWidget {
     required this.scene,
     this.isGrid = false,
     this.useMasonry = false,
+    this.thumbnailAspectRatio,
     this.showPerformers = true,
     this.onTap,
     this.memCacheWidth,
@@ -108,6 +110,10 @@ class SceneCard extends ConsumerStatefulWidget {
 
   /// Whether to use dynamic aspect ratio in grid mode (for masonry layouts).
   final bool useMasonry;
+
+  /// Optional fixed thumbnail frame, overriding the source proportions.
+  /// Horizontal strips use 16:9 so every card reserves the same title space.
+  final double? thumbnailAspectRatio;
 
   /// Whether to show performer avatars if available.
   final bool showPerformers;
@@ -399,7 +405,9 @@ class _SceneCardState extends ConsumerState<SceneCard> {
               });
             }
           : null,
-      child: Material(color: Colors.transparent, child: content),
+      child: ClipRect(
+        child: Material(color: Colors.transparent, child: content),
+      ),
     );
 
     if (widget.useHero) {
@@ -431,10 +439,18 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         context,
         ref,
         duration,
-        widget.useMasonry || isSquareVideo ? fileAspectRatio ?? 16 / 9 : 16 / 9,
+        widget.thumbnailAspectRatio ??
+            (widget.useMasonry || isSquareVideo
+                ? fileAspectRatio ?? 16 / 9
+                : 16 / 9),
       );
     }
-    return _buildListCard(context, ref, duration, fileAspectRatio ?? 16 / 9);
+    return _buildListCard(
+      context,
+      ref,
+      duration,
+      widget.thumbnailAspectRatio ?? fileAspectRatio ?? 16 / 9,
+    );
   }
 
   /// Builds the full-width list variant of the card.
