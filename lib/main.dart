@@ -337,7 +337,24 @@ class MyApp extends ConsumerWidget {
         if (child == null) {
           return const SizedBox.shrink();
         }
-        return AppLockGate(child: child);
+        return AppLockGate(
+          child: Listener(
+            behavior: HitTestBehavior.translucent,
+            onPointerDown: (event) {
+              // Browsers already map the mouse Back button to their history.
+              if (!kIsWeb &&
+                  event.kind == PointerDeviceKind.mouse &&
+                  event.buttons == kBackMouseButton) {
+                unawaited(
+                  router.backButtonDispatcher.invokeCallback(
+                    Future<bool>.value(false),
+                  ),
+                );
+              }
+            },
+            child: child,
+          ),
+        );
       },
       onGenerateTitle: (context) => context.l10n.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

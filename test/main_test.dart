@@ -1,15 +1,19 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_mode_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/true_black_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import 'package:stash_app_flutter/main.dart';
+import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
 
 class TestAppThemeModeNotifier extends AppThemeModeNotifier {
   @override
@@ -154,6 +158,153 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(controller.offset, greaterThan(0));
+  });
+
+  testWidgets(
+    'mouse Back respects dialogs and back interception before routes',
+    (tester) async {
+      var interceptBack = true;
+      final platformCalls = <MethodCall>[];
+      final messenger = tester.binding.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        platformCalls.add(call);
+        return null;
+      });
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const Scaffold(body: Text('Root')),
+            routes: [
+              GoRoute(
+                path: 'details',
+                builder: (context, state) => StatefulBuilder(
+                  builder: (context, setState) => PopScope(
+                    canPop: !interceptBack,
+                    onPopInvokedWithResult: (didPop, result) {
+                      if (!didPop) setState(() => interceptBack = false);
+                    },
+                    child: Scaffold(
+                      body: Center(
+                        child: TextButton(
+                          onPressed: () => showDialog<void>(
+                            context: context,
+                            builder: (_) =>
+                                const AlertDialog(content: Text('Dialog')),
+                          ),
+                          child: const Text('Open dialog'),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      final prefs = await SharedPreferences.getInstance();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            routerProvider.overrideWith((ref) => router),
+          ],
+          child: const MyApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      unawaited(router.push<void>('/details'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open dialog'));
+      await tester.pumpAndSettle();
+
+      Future<void> mouseBack() async {
+        await tester.tapAt(
+          const Offset(10, 10),
+          kind: PointerDeviceKind.mouse,
+          buttons: kBackMouseButton,
+        );
+        await tester.pumpAndSettle();
+      }
+
+      await mouseBack();
+      expect(find.text('Dialog'), findsNothing);
+      expect(router.canPop(), isTrue);
+      expect(interceptBack, isTrue);
+
+      await mouseBack();
+      expect(interceptBack, isFalse);
+      expect(router.canPop(), isTrue);
+
+      await mouseBack();
+      expect(router.canPop(), isFalse);
+      expect(find.text('Root'), findsOneWidget);
+
+      await mouseBack();
+      expect(find.text('Root'), findsOneWidget);
+      expect(
+        platformCalls.where((call) => call.method == 'SystemNavigator.pop'),
+        isEmpty,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('other mouse buttons and touch do not navigate back', (
+    tester,
+  ) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const Scaffold(body: Text('Root')),
+          routes: [
+            GoRoute(
+              path: 'details',
+              builder: (_, _) => const Scaffold(body: Text('Details')),
+            ),
+          ],
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    final prefs = await SharedPreferences.getInstance();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          routerProvider.overrideWith((ref) => router),
+        ],
+        child: const MyApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    unawaited(router.push<void>('/details'));
+    await tester.pumpAndSettle();
+
+    for (final buttons in [
+      kPrimaryMouseButton,
+      kSecondaryMouseButton,
+      kMiddleMouseButton,
+      kForwardMouseButton,
+      kBackMouseButton | kPrimaryMouseButton,
+    ]) {
+      await tester.tapAt(
+        const Offset(10, 10),
+        kind: PointerDeviceKind.mouse,
+        buttons: buttons,
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Details'), findsOneWidget);
+    }
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+    expect(find.text('Details'), findsOneWidget);
   });
 
   testWidgets('MyApp builds correctly', (WidgetTester tester) async {

@@ -176,6 +176,11 @@ Desktop-like behavior is capability-gated through the desktop capability and
 settings providers. It includes hover feedback, keyboard navigation, player
 shortcuts, and pointer-appropriate controls without weakening touch behavior.
 
+Outside the web, the mouse Back button dispatches the app's normal Back action
+across routes, dialogs, and fullscreen surfaces, respecting back interception.
+At the root it does nothing rather than closing the app. Other mouse buttons
+are unchanged; browsers retain their native mouse-button history handling.
+
 Global shortcuts are suppressed while the user edits text. Keybinds are
 persisted, resettable, and grouped into global-navigation, video-player, and
 image-viewer contexts. Conflicts are rejected within overlapping contexts while
