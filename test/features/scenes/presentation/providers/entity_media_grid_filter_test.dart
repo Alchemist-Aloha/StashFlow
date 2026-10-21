@@ -44,9 +44,10 @@ class _DelayedPaginationRepository extends MockGraphQLSceneRepository {
 }
 
 Future<ProviderContainer> _containerWith(
-  MockGraphQLSceneRepository repository,
-) async {
-  SharedPreferences.setMockInitialValues({});
+  MockGraphQLSceneRepository repository, [
+  Map<String, Object> initialValues = const {},
+]) async {
+  SharedPreferences.setMockInitialValues(initialValues);
   final prefs = await SharedPreferences.getInstance();
   final container = ProviderContainer(
     overrides: [
@@ -82,6 +83,69 @@ void main() {
   });
 
   for (final kind in EntityMediaFilterKind.values) {
+    test('$kind preview and grid share the default random order', () async {
+      final repository = MockGraphQLSceneRepository();
+      final container = await _containerWith(repository);
+      final preview = entityMediaPreviewProvider(kind, 'page-entity');
+      final grid = entityMediaGridProvider(kind, 'page-entity');
+      container.listen(preview, (_, _) {});
+      container.listen(grid, (_, _) {});
+
+      await container.read(preview.future);
+      final previewCall = repository.findSceneCalls.first;
+      await container.read(grid.future);
+      final gridCall = repository.findSceneCalls.last;
+      final seed = container.read(entityMediaRandomSeedProvider(kind));
+      expect(previewCall.sort, 'random_$seed');
+      expect(gridCall.sort, previewCall.sort);
+      expect(gridCall.descending, previewCall.descending);
+      expect(gridCall.sceneFilter, previewCall.sceneFilter);
+
+      final callsBeforeReshuffle = repository.findSceneCalls.length;
+      container.read(entityMediaRandomSeedProvider(kind).notifier).next();
+      await container.read(preview.future);
+      await container.read(grid.future);
+      final nextSeed = container.read(entityMediaRandomSeedProvider(kind));
+      expect(
+        repository.findSceneCalls
+            .skip(callsBeforeReshuffle)
+            .map((call) => call.sort),
+        ['random_$nextSeed', 'random_$nextSeed'],
+      );
+    });
+
+    test('$kind preview follows saved and newly applied sorting', () async {
+      final repository = MockGraphQLSceneRepository();
+      final container = await _containerWith(repository, {
+        'entity_media_${kind.name}_sort_field': 'title',
+        'entity_media_${kind.name}_sort_descending': false,
+      });
+      final preview = entityMediaPreviewProvider(kind, 'page-entity');
+      container.listen(preview, (_, _) {});
+      await container.read(preview.future);
+      expect(repository.lastFindScenesSort, 'title');
+      expect(repository.lastFindScenesDescending, false);
+
+      container
+          .read(entityMediaSortProvider(kind).notifier)
+          .setSort(sort: 'rating', descending: true);
+      await container.read(preview.future);
+      expect(repository.lastFindScenesSort, 'rating');
+      expect(repository.lastFindScenesDescending, true);
+
+      final otherKind = EntityMediaFilterKind.values.firstWhere(
+        (other) => other != kind,
+      );
+      container
+          .read(entityMediaSortProvider(otherKind).notifier)
+          .setSort(sort: 'date');
+      expect(container.read(entityMediaSortProvider(kind)).sort, 'rating');
+
+      container.read(entityMediaSortProvider(kind).notifier).setSort();
+      await container.read(preview.future);
+      expect(repository.lastFindScenesSort, startsWith('random_'));
+    });
+
     test('$kind media grid reloads when query settings are applied', () async {
       final repository = MockGraphQLSceneRepository();
       final container = await _containerWith(repository);
@@ -193,7 +257,7 @@ void main() {
         ).future,
       );
 
-      expect(repository.lastFindScenesSort, 'date');
+      expect(repository.lastFindScenesSort, startsWith('random_'));
       expect(repository.lastFindScenesDescending, true);
       expect(repository.lastFindScenesSceneFilter?.rating100, isNull);
       expect(repository.lastFindScenesSceneFilter?.performers?.value, [

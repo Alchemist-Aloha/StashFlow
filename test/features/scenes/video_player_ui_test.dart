@@ -17,6 +17,7 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_video_player.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/entity_media_filter_scope.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
@@ -574,46 +575,74 @@ void main() {
     },
   );
 
-  testWidgets('SceneDetailsPage shows related scenes for each performer', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(1200, 1600);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-
-    final currentScene = sceneWithoutStudio(
-      's1',
-      'Current Scene',
-    ).copyWith(performerIds: const ['p1'], performerNames: const ['Alex']);
-    final relatedScene = sceneWithoutStudio('s2', 'Related Scene');
-    final mockRepo = MockGraphQLSceneRepository()
-      ..withData([currentScene, relatedScene]);
-
-    await pumpTestWidget(
+  for (final kind in [
+    EntityMediaFilterKind.performer,
+    EntityMediaFilterKind.studio,
+  ]) {
+    testWidgets('SceneDetailsPage preserves $kind preview order', (
       tester,
-      prefs: prefs,
-      overrides: [
-        sceneRepositoryProvider.overrideWithValue(mockRepo),
-        entityMediaPreviewProvider(
-          EntityMediaFilterKind.performer,
-          'p1',
-        ).overrideWith((ref) async => [currentScene, relatedScene]),
-      ],
-      child: SceneDetailsPage(sceneId: currentScene.id),
-    );
-    await tester.pump(const Duration(seconds: 1));
-    await tester.pump();
+    ) async {
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
 
-    expect(find.text('More From Alex'), findsOneWidget);
-    expect(find.text('Related Scene'), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(SceneCard),
-        matching: find.text('Current Scene'),
-      ),
-      findsNothing,
-    );
-  });
+      final currentScene = sceneWithoutStudio('s1', 'Current Scene').copyWith(
+        performerIds: kind == EntityMediaFilterKind.performer
+            ? const ['p1']
+            : const [],
+        performerNames: kind == EntityMediaFilterKind.performer
+            ? const ['Alex']
+            : const [],
+        studioId: kind == EntityMediaFilterKind.studio ? 'p1' : null,
+        studioName: kind == EntityMediaFilterKind.studio ? 'Studio' : null,
+      );
+      final relatedScenes = List.generate(
+        5,
+        (index) => sceneWithoutStudio('related-$index', 'Related Scene $index'),
+      );
+      final mockRepo = MockGraphQLSceneRepository()
+        ..withData([currentScene, ...relatedScenes]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(mockRepo),
+          entityMediaPreviewProvider(kind, 'p1').overrideWith(
+            (ref) async => [
+              relatedScenes.first,
+              currentScene,
+              ...relatedScenes.skip(1),
+            ],
+          ),
+        ],
+        child: SceneDetailsPage(sceneId: currentScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump();
+
+      expect(
+        find.text(
+          kind == EntityMediaFilterKind.performer
+              ? 'More From Alex'
+              : 'More From Studio',
+        ),
+        findsOneWidget,
+      );
+      final strip = tester.widget<SceneStrip>(find.byType(SceneStrip));
+      expect(
+        strip.scenes.map((scene) => scene.id),
+        relatedScenes.map((scene) => scene.id),
+      );
+      expect(
+        find.descendant(
+          of: find.byType(SceneCard),
+          matching: find.text('Current Scene'),
+        ),
+        findsNothing,
+      );
+    });
+  }
 
   testWidgets('SceneDetailsPage displays existing scene markers', (
     tester,

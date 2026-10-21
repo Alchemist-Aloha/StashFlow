@@ -257,6 +257,11 @@ Other sort fields remain available in an expandable advanced section; a selected
 advanced field stays in the first group so its selection remains visible when
 collapsed. Sharing catalogues does not share query state: entity sorts and saved
 defaults remain scoped to their existing providers.
+Entity scene media categories (performer, studio, tag, and group) default to
+Random when no sort is saved. Their horizontal previews, including the scene
+detail page's More From rows, follow the corresponding expanded list's sort
+field and direction, sharing its random seed so random ordering also agrees.
+Previews preserve server order while excluding the current scene where relevant.
 Performer, studio, tag, and group list sort sheets also separate common choices
 from advanced fields, retaining all fields and surfacing a selected advanced
 field in the first group.
@@ -307,6 +312,9 @@ its painting vertically to 1:2 and crop the top and bottom to fill that frame;
 image loading must not change the card's layout bounds. Non-square covers keep
 their normal fit. Other uniform-grid thumbnails use 16:9; list and masonry
 thumbnails follow the source proportions, clamped to the supported card range.
+Horizontal scene strips always use fixed 16:9 thumbnail frames, including for
+portrait and square media. Covers fill and crop inside the thumbnail bounds;
+image painting must not overlap the title and metadata below.
 
 Hover scrubbing is enabled only for pointer-capable environments and only when
 sprite data is available. Touch scrolling and card activation must remain

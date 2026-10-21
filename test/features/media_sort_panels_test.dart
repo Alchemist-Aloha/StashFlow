@@ -101,6 +101,8 @@ void main() {
       );
       expect(sheet.options, SceneSortField.values);
       expect(sheet.commonOptions, SceneSortField.commonOptions);
+      expect(sheet.initialOption, SceneSortField.random);
+      expect(sheet.resetOption, SceneSortField.random);
       expect(find.byType(ChoiceChip), findsNWidgets(7));
       expect(find.widgetWithText(ChoiceChip, 'Last Played At'), findsOneWidget);
       await expandAdvanced(tester);
