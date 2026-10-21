@@ -64,6 +64,11 @@ jobs:
           - target: macos
             os: macos-26
             artifact_name: macos
+            arch: arm64
+          - target: macos
+            os: macos-26-intel
+            artifact_name: macos-x64
+            arch: x64
 
     env:
       TARGET_ARCH: ${{ matrix.arch }}
@@ -194,7 +199,12 @@ jobs:
           elif [ "${{ matrix.target }}" = "web" ]; then
             flutter build web --release --base-href /StashFlow/
           elif [ "${{ matrix.target }}" = "macos" ]; then
-            flutter build macos --release
+            case "$TARGET_ARCH" in
+              x64) macos_arch=x86_64 ;;
+              arm64) macos_arch=arm64 ;;
+              *) echo "Unsupported macOS architecture: $TARGET_ARCH" >&2; exit 1 ;;
+            esac
+            FLUTTER_MACOS_ARM64_ONLY=false FLUTTER_XCODE_ARCHS="$macos_arch" flutter build macos --release
           fi
         shell: bash
 
@@ -234,8 +244,20 @@ jobs:
       - name: Package macOS
         if: matrix.target == 'macos'
         run: |
+          case "$TARGET_ARCH" in
+            x64) macos_arch=x86_64 ;;
+            arm64) macos_arch=arm64 ;;
+            *) echo "Unsupported macOS architecture: $TARGET_ARCH" >&2; exit 1 ;;
+          esac
           cd build/macos/Build/Products/Release
-          zip -r ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-macos-$(uname -m).zip *.app
+          test -f StashFlow.app/Contents/MacOS/StashFlow
+          lipo -verify_arch "$macos_arch" StashFlow.app/Contents/MacOS/StashFlow
+          find StashFlow.app -type f -print0 | while IFS= read -r -d '' binary; do
+            if file -b "$binary" | grep -q 'Mach-O'; then
+              lipo -verify_arch "$macos_arch" "$binary"
+            fi
+          done
+          zip -r "../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-macos-${macos_arch}.zip" StashFlow.app
         shell: bash
 
       - name: Name Android binaries

@@ -22,6 +22,79 @@ def workflow_script(name):
 
 
 class ReleaseArtifactsTest(unittest.TestCase):
+    def test_macos_build_selects_requested_xcode_architecture(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            flutter = root / "flutter"
+            flutter.write_text(
+                '#!/usr/bin/env bash\nset -euo pipefail\n'
+                'printf "%s:%s\\n" "$FLUTTER_XCODE_ARCHS" "$FLUTTER_MACOS_ARM64_ONLY"\n'
+            )
+            flutter.chmod(0o755)
+            for architecture, cpu in [("x64", "x86_64"), ("arm64", "arm64")]:
+                with self.subTest(architecture=architecture):
+                    result = subprocess.check_output(
+                        ["bash", "-euo", "pipefail", "-c",
+                         workflow_script("Build").replace("${{ matrix.target }}", "macos")],
+                        env={**os.environ, "PATH": f"{root}:{os.environ['PATH']}",
+                             "TARGET_ARCH": architecture}, text=True,
+                    )
+                    self.assertEqual(result, f"{cpu}:false\n")
+
+    def test_macos_packaging_checks_runner_and_embedded_frameworks(self):
+        for architecture, cpu in [("x64", "x86_64"), ("arm64", "arm64")]:
+            for broken in [None, "runner", "framework", "missing_runner"]:
+                with self.subTest(architecture=architecture, broken=broken):
+                    with tempfile.TemporaryDirectory() as directory:
+                        root = Path(directory)
+                        app = root / "build/macos/Build/Products/Release/StashFlow.app"
+                        runner = app / "Contents/MacOS/StashFlow"
+                        framework = app / "Contents/Frameworks/Native Media.framework/Native Media"
+                        other_cpu = "arm64" if cpu == "x86_64" else "x86_64"
+                        for path, kind in [(runner, "runner"), (framework, "framework")]:
+                            path.parent.mkdir(parents=True, exist_ok=True)
+                            path.write_text("Mach-O " + (other_cpu if broken == kind else cpu))
+                        if broken == "missing_runner":
+                            runner.unlink()
+                        if broken is None:
+                            framework.write_text("Mach-O arm64 x86_64")
+                        (app / "Contents/Info.plist").write_text("metadata")
+                        tools = root / "tools"
+                        tools.mkdir()
+                        stubs = {
+                            "file": (
+                                "from pathlib import Path\nimport sys\n"
+                                "print('Mach-O' if Path(sys.argv[-1]).read_text().startswith('Mach-O ') else 'data')\n"
+                            ),
+                            "lipo": (
+                                "from pathlib import Path\nimport sys\n"
+                                "assert sys.argv[1] == '-verify_arch'\n"
+                                "sys.exit(0 if sys.argv[2] in Path(sys.argv[3]).read_text().split() else 1)\n"
+                            ),
+                            "zip": (
+                                "from pathlib import Path\nimport sys\n"
+                                "Path(sys.argv[2]).write_bytes(b'archive')\n"
+                            ),
+                        }
+                        for name, source in stubs.items():
+                            tool = tools / name
+                            tool.write_text("#!/usr/bin/env python3\n" + source)
+                            tool.chmod(0o755)
+                        result = subprocess.run(
+                            ["bash", "-euo", "pipefail", "-c", workflow_script("Package macOS")],
+                            cwd=root,
+                            env={**os.environ, "PATH": f"{tools}:{os.environ['PATH']}",
+                                 "TARGET_ARCH": architecture, "STASHFLOW_ARTIFACT_VERSION": "nightly"},
+                            capture_output=True, text=True,
+                        )
+                        archive = root / f"StashFlow-nightly-macos-{cpu}.zip"
+                        if broken:
+                            self.assertNotEqual(result.returncode, 0)
+                            self.assertFalse(archive.exists())
+                        else:
+                            self.assertEqual(result.returncode, 0, result.stderr)
+                            self.assertTrue(archive.is_file())
+
     def test_only_stable_artifact_names_include_version(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
