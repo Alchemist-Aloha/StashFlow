@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/domain/entities/filter_options.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
@@ -30,6 +31,7 @@ class EntityGalleryGrid extends ConsumerStatefulWidget {
     required this.galleriesAsync,
     required this.isGridView,
     required this.gridColumns,
+    this.gridColumnSetting,
     required this.onRefresh,
     required this.onFetchNextPage,
     super.key,
@@ -41,6 +43,9 @@ class EntityGalleryGrid extends ConsumerStatefulWidget {
   final AsyncValue<List<Gallery>> galleriesAsync;
   final bool isGridView;
   final int? gridColumns;
+
+  /// Category preference shared with the Interface settings page.
+  final GridColumnSetting? gridColumnSetting;
   final Future<void> Function() onRefresh;
   final VoidCallback onFetchNextPage;
 
@@ -288,6 +293,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
         scopedFilter != baseFilter || organizedFilter != OrganizedFilter.all;
 
     return ListPageScaffold<Gallery>(
+      gridColumnSetting: widget.gridColumnSetting,
       title: widget.title,
       searchOnlyAppBar: true,
       searchHint: context.l10n.common_search_placeholder,

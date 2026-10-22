@@ -225,6 +225,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     );
 
     return ListPageScaffold<Gallery>(
+      gridColumnSetting: GridColumnSetting.gallery,
       title: context.l10n.galleries_title,
       scrollController: ref.watch(
         listScrollControllerProvider(ListScrollTarget.gallery),

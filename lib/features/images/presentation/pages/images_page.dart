@@ -388,6 +388,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return ListPageScaffold<entity.Image>(
+      gridColumnSetting: GridColumnSetting.image,
       title: widget.title ?? context.l10n.images_title,
       showAppBarTitle: widget.showAppBarTitle,
       searchOnlyAppBar: widget.searchOnlyAppBar,

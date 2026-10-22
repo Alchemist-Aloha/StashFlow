@@ -213,6 +213,12 @@ List invariants:
 - Duplicate fetches are coalesced or ignored while the same page is in flight.
 - Empty and error states provide an appropriate recovery action.
 - Grid/list layout and supported column preferences persist.
+- In grids with a column setting, Ctrl+mouse wheel adjusts that category's
+  persisted Interface setting by one column per event within the existing 1–10
+  range. Wheel up reduces columns (larger cards); wheel down adds columns.
+  Start from the displayed responsive count when the setting is automatic.
+  Consume the shortcut without scrolling or platform zoom; ordinary scrolling,
+  list/feed layouts, and horizontal strips keep their existing behavior.
 - Cards receive decode-size hints so image memory use tracks rendered size.
 - Shared list scroll padding reserves the measured floating action-pill height
   and its separation above the inherited mini-player inset. The final item must

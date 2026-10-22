@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import '../theme/app_theme.dart';
 import '../../utils/responsive.dart';
 import '../providers/desktop_capabilities_provider.dart';
+import '../providers/layout_settings_provider.dart';
 import 'error_state_view.dart';
 import 'frosted_surface.dart';
 import 'section_header.dart';
@@ -43,6 +44,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.itemBuilder,
     this.customBody,
     this.gridDelegate,
+    this.gridColumnSetting,
     this.actions = const [],
     this.sortBar,
     this.emptyMessage = 'No items found',
@@ -111,6 +113,9 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
 
   /// Delegate for grid layouts. If null, a [ListView] is used.
   final SliverGridDelegate? gridDelegate;
+
+  /// Persisted column preference adjusted by Ctrl+mouse wheel in grid mode.
+  final GridColumnSetting? gridColumnSetting;
 
   /// Controls displayed in the floating bottom action pill.
   final List<Widget> actions;
@@ -197,6 +202,28 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _handleColumnScroll(
+    PointerSignalEvent event,
+    GridColumnSetting setting,
+    int displayedColumns,
+  ) {
+    if (event is! PointerScrollEvent ||
+        event.kind != PointerDeviceKind.mouse ||
+        event.scrollDelta.dy == 0 ||
+        !HardwareKeyboard.instance.isControlPressed) {
+      return;
+    }
+    GestureBinding.instance.pointerSignalResolver.register(event, (_) {
+      final current =
+          ref.read(gridColumnSettingProvider(setting)) ?? displayedColumns;
+      final next = (current + (event.scrollDelta.dy > 0 ? 1 : -1)).clamp(1, 10);
+      unawaited(
+        ref.read(gridColumnSettingProvider(setting).notifier).set(next),
+      );
+      event.respond(allowPlatformDefault: false);
+    });
   }
 
   SliverGridDelegate _getResponsiveGridDelegate(BuildContext context) {
@@ -692,6 +719,32 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                         // bar height as a box offset rather than scroll padding.
                         if (widget.customBody != null) {
                           body = Padding(padding: topInsetPadding, child: body);
+                        }
+
+                        final columnSetting = widget.gridColumnSetting;
+                        if (isGrid &&
+                            fixedDelegate != null &&
+                            columnSetting != null &&
+                            widget.customBody == null) {
+                          body = Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              body,
+                              // Hit-test before the scrollable so the resolver
+                              // consumes Ctrl+wheel without scrolling or zooming.
+                              Positioned.fill(
+                                child: Listener(
+                                  behavior: HitTestBehavior.translucent,
+                                  onPointerSignal: (event) =>
+                                      _handleColumnScroll(
+                                        event,
+                                        columnSetting,
+                                        fixedDelegate.crossAxisCount,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          );
                         }
 
                         if (widget.onRefresh != null) {
