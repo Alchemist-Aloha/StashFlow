@@ -33,9 +33,11 @@ This branch has no application release or deployment workflows.
 - [DESIGN.md](DESIGN.md): visual direction.
 - [docs/SPECS.md](docs/SPECS.md): behavior and deployment contracts.
 
-The hero shows desktop browsing; the desktop section shows playback and details.
-Device frames preserve full screenshot proportions, including window chrome.
-Mobile images show existing captures, not claims about the current client theme.
+The hero features Android's vertical Feed mode. The mobile showcase starts with
+Feed, alongside Browse, Play, and Refine; the desktop section pairs Linux browsing
+with playback and details. All captures use the test library at
+`http://192.168.88.225:29999` and the Purple preset in dark mode.
+Device frames preserve full screenshot proportions.
 Screenshots contain sample media artwork; verify publication rights before
 deploying publicly.
 
@@ -53,11 +55,14 @@ branch. The filenames below record their source in the application repository:
 | `edit_scene.webp` | `asset/edit_scene.jpg` |
 | `scene_filter.webp` | `asset/scene_filter.jpg` |
 | `scene_sort.webp` | `asset/scene_sort.jpg` |
-| `scenes_desktop.webp` | `asset/stashflow_scenes_desktop.png` |
-| `scene_details_desktop.webp` | `asset/stashflow_scene_details_desktop.png` |
+| `scroll_feed.webp` | `asset/scroll_feed.jpg` |
+| `scenes_desktop.webp` | `asset/linux/scenes.jpg` |
+| `scene_details_desktop.webp` | `asset/linux/scene_details.jpg` |
 
-Mobile conversions use a maximum width of 540px and WebP quality 85.
-Desktop conversions use WebP quality 88 without cropping or resizing.
+Sources were imported from application commit `8f0525cab8ed5a04f1f73a3c85f58a7c6e9b6b4a`.
+Mobile conversions use a width of 540px (720px for the featured feed) and WebP
+quality 88. Desktop conversions use WebP quality 88 at the original 1440×900.
+Images are never cropped.
 
 Manrope is self-hosted in `assets/fonts/Manrope.ttf`, with its SIL Open Font
 License in `assets/fonts/OFL.txt`. System fonts cover unsupported scripts.

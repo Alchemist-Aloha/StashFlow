@@ -49,9 +49,9 @@ class SiteTest(unittest.TestCase):
                 page = Page()
                 page.feed(source)
                 self.assertEqual(page.lang, locale.replace("_", "-"))
-                self.assertEqual(page.radios, 3)
+                self.assertEqual(page.radios, 4)
                 self.assertIn('class="showcase-controls"', source)
-                for choice in ("browse", "play", "refine"):
+                for choice in ("feed", "browse", "play", "refine"):
                     self.assertIn(f'for="{choice}"', source)
                 self.assertIn('id="app"', source)
                 data = source.split('<script id="site-data" type="application/json">', 1)[1].split("</script>", 1)[0]
@@ -72,6 +72,11 @@ class SiteTest(unittest.TestCase):
                 self.assertIn("https://github.com/Alchemist-Aloha/StashFlow/releases/latest", source)
                 hero = source.split('class="hero"', 1)[1].split("</section>", 1)[0]
                 self.assertIn('class="button" href="#download"', hero)
+                self.assertIn('/assets/scroll_feed.webp', hero)
+                self.assertNotIn('/assets/scenes_desktop.webp', hero)
+                self.assertIn('id="feed" checked', source)
+                self.assertIn('class="showcase-panel feed-panel"', source)
+                self.assertIn('width="720" height="1600"', hero)
                 self.assertNotIn("/releases/latest", hero)
                 release = json.loads((ROOT / "downloads.json").read_text())
                 self.assertEqual([p["id"] for p in release["platforms"]],

@@ -48,34 +48,36 @@ defineProps({
   </header>
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
-      <h1 id="hero-title">{{ copy.heroTitle }}</h1>
-      <p class="hero-lead">{{ copy.heroLead }}</p>
-      <div class="actions"><a class="button" href="#download">{{ copy.download }}</a><a class="text-link" href="#mobile">{{ copy.explore }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
-      <div class="hero-devices">
-        <div class="laptop">
-          <div class="laptop-screen"><img :src="`${assetPrefix}/assets/scenes_desktop.webp`" width="1918" height="1046" :alt="copy.desktopBrowse" fetchpriority="high"></div>
-          <div class="laptop-base"></div>
-        </div>
-        <div class="phone hero-phone"><img :src="`${assetPrefix}/assets/scenes.webp`" width="540" height="1170" :alt="copy.browse" fetchpriority="high"></div>
+      <div class="hero-copy">
+        <h1 id="hero-title">{{ copy.heroTitle }}</h1>
+        <p class="hero-lead">{{ copy.heroLead }}</p>
+        <div class="actions"><a class="button" href="#download">{{ copy.download }}</a><a class="text-link" href="#mobile">{{ copy.explore }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
+        <p class="hero-feature">{{ copy.feedCopy }}</p>
       </div>
-      <p class="device-note">{{ copy.heroNote }}</p>
+      <figure class="hero-devices">
+        <div class="phone hero-phone"><img :src="`${assetPrefix}/assets/scroll_feed.webp`" width="720" height="1600" :alt="copy.feed" fetchpriority="high"></div>
+        <figcaption class="device-note">{{ copy.heroNote }}</figcaption>
+      </figure>
     </section>
 
     <section class="mobile-showcase" id="mobile" aria-labelledby="mobile-title">
       <div class="section-heading"><h2 id="mobile-title">{{ copy.mobileTitle }}</h2><p>{{ copy.mobileLead }}</p></div>
       <fieldset class="showcase"><legend class="sr-only">{{ copy.mobile }}</legend>
-        <input type="radio" name="showcase" id="browse" checked>
+        <input type="radio" name="showcase" id="feed" checked>
+        <input type="radio" name="showcase" id="browse">
         <input type="radio" name="showcase" id="play">
         <input type="radio" name="showcase" id="refine">
         <div class="showcase-controls">
+          <label for="feed">{{ copy.feed }}</label>
           <label for="browse">{{ copy.browse }}</label>
           <label for="play">{{ copy.play }}</label>
           <label for="refine">{{ copy.refine }}</label>
         </div>
         <div class="showcase-panels">
-          <figure class="showcase-panel browse-panel"><div class="phone"><img :src="`${assetPrefix}/assets/scenes.webp`" width="540" height="1170" :alt="copy.browse" loading="lazy"></div><figcaption><h3>{{ copy.browse }}</h3><p>{{ copy.browseCopy }}</p></figcaption></figure>
-          <figure class="showcase-panel play-panel"><div class="phone"><img :src="`${assetPrefix}/assets/scene_details.webp`" width="438" height="947" :alt="copy.play" loading="lazy"></div><figcaption><h3>{{ copy.play }}</h3><p>{{ copy.playCopy }}</p></figcaption></figure>
-          <figure class="showcase-panel refine-panel"><div class="phone"><img :src="`${assetPrefix}/assets/edit_scene.webp`" width="540" height="1170" :alt="copy.refine" loading="lazy"></div><figcaption><h3>{{ copy.refine }}</h3><p>{{ copy.refineCopy }}</p></figcaption></figure>
+          <figure class="showcase-panel feed-panel"><div class="phone"><img :src="`${assetPrefix}/assets/scroll_feed.webp`" width="720" height="1600" :alt="copy.feed" loading="lazy"></div><figcaption><h3>{{ copy.feed }}</h3><p>{{ copy.feedCopy }}</p></figcaption></figure>
+          <figure class="showcase-panel browse-panel"><div class="phone"><img :src="`${assetPrefix}/assets/scenes.webp`" width="540" height="1200" :alt="copy.browse" loading="lazy"></div><figcaption><h3>{{ copy.browse }}</h3><p>{{ copy.browseCopy }}</p></figcaption></figure>
+          <figure class="showcase-panel play-panel"><div class="phone"><img :src="`${assetPrefix}/assets/scene_details.webp`" width="540" height="1200" :alt="copy.play" loading="lazy"></div><figcaption><h3>{{ copy.play }}</h3><p>{{ copy.playCopy }}</p></figcaption></figure>
+          <figure class="showcase-panel refine-panel"><div class="phone"><img :src="`${assetPrefix}/assets/edit_scene.webp`" width="540" height="1200" :alt="copy.refine" loading="lazy"></div><figcaption><h3>{{ copy.refine }}</h3><p>{{ copy.refineCopy }}</p></figcaption></figure>
         </div>
       </fieldset>
       <p class="screenshot-note">{{ copy.heroNote }}</p>
@@ -83,14 +85,17 @@ defineProps({
 
     <section class="desktop-showcase" id="desktop" aria-labelledby="desktop-title">
       <div class="section-heading"><h2 id="desktop-title">{{ copy.desktopTitle }}</h2><p>{{ copy.desktopLead }}</p></div>
-      <div class="laptop"><div class="laptop-screen"><img :src="`${assetPrefix}/assets/scene_details_desktop.webp`" width="1919" height="1044" :alt="copy.desktopPlay" loading="lazy"></div><div class="laptop-base"></div></div>
+      <div class="desktop-gallery">
+        <figure><div class="laptop"><div class="laptop-screen"><img :src="`${assetPrefix}/assets/scenes_desktop.webp`" width="1440" height="900" :alt="copy.desktopBrowse" loading="lazy"></div><div class="laptop-base"></div></div><figcaption>{{ copy.desktopBrowse }}</figcaption></figure>
+        <figure><div class="laptop"><div class="laptop-screen"><img :src="`${assetPrefix}/assets/scene_details_desktop.webp`" width="1440" height="900" :alt="copy.desktopPlay" loading="lazy"></div><div class="laptop-base"></div></div><figcaption>{{ copy.desktopPlay }}</figcaption></figure>
+      </div>
     </section>
 
     <section class="tools" aria-labelledby="tools-title">
       <h2 id="tools-title">{{ copy.toolsTitle }}</h2>
       <div class="tool-grid">
-        <article class="tool"><div class="screenshot-crop"><img :src="`${assetPrefix}/assets/scene_filter.webp`" width="540" height="1170" :alt="copy.filterTitle" loading="lazy"></div><div class="tool-copy"><h3>{{ copy.filterTitle }}</h3><p>{{ copy.filterCopy }}</p></div></article>
-        <article class="tool"><div class="screenshot-crop"><img :src="`${assetPrefix}/assets/scene_sort.webp`" width="540" height="1170" :alt="copy.sortTitle" loading="lazy"></div><div class="tool-copy"><h3>{{ copy.sortTitle }}</h3><p>{{ copy.sortCopy }}</p></div></article>
+        <article class="tool"><div class="screenshot-crop"><img :src="`${assetPrefix}/assets/scene_filter.webp`" width="540" height="1200" :alt="copy.filterTitle" loading="lazy"></div><div class="tool-copy"><h3>{{ copy.filterTitle }}</h3><p>{{ copy.filterCopy }}</p></div></article>
+        <article class="tool"><div class="screenshot-crop"><img :src="`${assetPrefix}/assets/scene_sort.webp`" width="540" height="1200" :alt="copy.sortTitle" loading="lazy"></div><div class="tool-copy"><h3>{{ copy.sortTitle }}</h3><p>{{ copy.sortCopy }}</p></div></article>
       </div>
     </section>
 

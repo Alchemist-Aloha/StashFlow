@@ -14,7 +14,8 @@ introduction style.
 (#241b27), plum-black showcase (#171117), and soft orchid (#eab5ec) actions
 with dark plum labels. Muted mauve copy and lavender-tinted tool surfaces connect
 the light sections to the app captures. The hero commits to plum-black with
-orchid display type and an enlarged laptop/phone composition. The light mobile
+orchid display type, left-aligned editorial copy, and a single full-height Android
+Feed capture. The vertical video interface, not desktop hardware, leads the page. The light mobile
 showcase provides a deliberate release from that opening. The download finale
 lets the existing orchid accent own a full section, with plum type and an organized
 download directory. Flat platform groups use hairline separators, architecture
@@ -29,13 +30,15 @@ uses the hero's plum-black and orchid language: large unboxed screenshots lead,
 with quieter captions below rather than pale image cards.
 
 **STORY:** Understand that StashFlow connects to an existing Stash server, explore
-mobile browsing/playback/editing, see desktop support, then download a native
+mobile Feed/browsing/playback/editing, see desktop support, then download a native
 release. Explain web-demo limitations and the lack of an iOS target.
 
-**FIRST VIEWPORT:** Centered orchid two-line headline on plum-black, short
-supporting copy, download and exploration actions, then a wider desktop library
-composition beside a larger mobile screen.
-The desktop section shows real scene playback and details. Filter and sort
+**FIRST VIEWPORT:** Orchid headline and concise server-connection copy on the
+left; a large, upright Feed screenshot on the right. Download and exploration
+links sit directly below the copy. The phone preserves the complete Android
+capture, including navigation and feed metadata. On mobile the same hierarchy
+stacks, with the feed still the only hero device.
+The desktop section pairs Linux library browsing with real playback and details. Filter and sort
 screenshots show concrete library controls, including saved sort defaults.
 Screen frames follow
 the original, uncropped image proportions rather than stretching content to a fixed ratio.
@@ -49,9 +52,8 @@ review was not run; implementation and visual verification were performed in-thr
 
 ## Interaction and adaptation
 
-The focal entrance assembles the same library across devices: a brief headline
-shutter introduces the composition, the laptop turns from a foreshortened view,
-and the phone travels out from its companion screen into place. The bounded
+The focal entrance introduces vertical Feed mode: a brief headline shutter and
+an upright phone rising 32px into its final position. The bounded
 sequence finishes within 920ms; copy and actions never wait for it.
 The desktop laptop opens into its front-on reading position with native CSS
 scroll-driven perspective. Tool screenshots similarly turn toward the reader
@@ -65,8 +67,9 @@ No loops, scroll listeners, permanent compositor hints, or animation dependencie
 are used. Perspective transforms and bounded clip masks carry the motion without
 animating layout or large-area blur. Reduced motion removes spatial effects while
 retaining immediate selection and color feedback.
-Screenshot browsing uses native radio inputs within one fieldset. Browse, Play,
-and Refine form an equal-width segmented capsule on the lavender surface, with
+Screenshot browsing uses native radio inputs within one fieldset. Feed, Browse,
+Play, and Refine form equal-width segments on the lavender surface, with Feed
+selected by default and
 an orchid selected segment, stable label weight, and a distinct focus ring.
 Keyboard arrows choose a panel; visible labels work by touch and pointer, even
 without JavaScript. Controls, phone, and caption use a tighter shared measure
@@ -89,6 +92,8 @@ use consistent stroke SVG arrows rather than font-dependent glyphs. Controls hav
 focus, 44px minimum target heights, and no dependency on JavaScript.
 
 Large layouts pair a larger phone with feature copy; narrow layouts stack them.
+The two desktop captures sit side by side at wide widths and stack below 700px.
+All eight shipped captures come from the same test library and purple app preset.
 The control section is a full-width dark interlude with orchid display type.
 Larger filter/sort screenshots lead their captions, staggered on wide layouts
 to break the equal-card rhythm; small screens restore a straight reading sequence. Tool screenshots and the

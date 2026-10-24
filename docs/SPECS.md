@@ -48,10 +48,17 @@ with orchid display type and larger, unboxed filter/sort screenshots above their
 captions. Wide layouts stagger those screenshots; narrow layouts retain a stacked
 sequence. Filtering and sorting copy includes saved defaults.
 
-The mobile showcase groups Browse, Play, and Refine as equal-width segments in
+The hero pairs left-aligned copy and download/exploration actions with a full,
+uncropped Android Feed screenshot. The Purple preset and dark mode remain visible
+in all new test-library captures. On narrow screens the hero stacks copy above
+the phone. Desktop browsing and playback screenshots appear together below the
+mobile showcase, stacked on narrow screens.
+
+The mobile showcase groups Feed, Browse, Play, and Refine as equal-width segments in
 one fieldset, using native radio inputs and associated labels. Selected, hover,
 and keyboard focus states remain distinct; label weight and segment widths stay
-stable when switching. Long localized labels wrap rather than clip. All segments
+stable when switching. Feed is selected initially, including without JavaScript.
+Long localized labels wrap rather than clip. All segments
 are at least 48px tall, and selection works without JavaScript. The phone/caption layout preserves full screenshot framing.
 
 The solid plum-black sticky top bar contains home, the main application GitHub
@@ -68,7 +75,7 @@ and page scrolling provide access to the mobile/desktop content. Keep 44px minim
 touch targets, visible focus, and anchor offsets that accommodate localized copy.
 
 CSS-only motion stages a bounded hero sequence (at most 920ms): the headline
-opens, the laptop turns front-on, and the phone moves into its companion position.
+opens and the featured feed phone rises into its reading position.
 Actions remain immediately usable. Screenshot selection uses a 400ms screen wipe
 and 240ms caption fade; rapid selection interrupts the prior panel. Supported
 browsers use native scroll timelines to open the desktop device and turn tool
