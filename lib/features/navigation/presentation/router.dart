@@ -251,18 +251,6 @@ GoRouter router(Ref ref) {
                       galleryId: state.pathParameters['id']!,
                     ),
                   ),
-                  GoRoute(
-                    path: 'images',
-                    builder: (context, state) => const ImagesPage(),
-                    routes: [
-                      GoRoute(
-                        path: ':id',
-                        builder: (context, state) => ImageFullscreenPage(
-                          imageId: state.pathParameters['id']!,
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ],
@@ -286,6 +274,23 @@ GoRouter router(Ref ref) {
                         ),
                       ),
                     ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              // Keep existing image links while giving Images its own tab state.
+              GoRoute(
+                path: '/galleries/images',
+                builder: (context, state) => const ImagesPage(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => ImageFullscreenPage(
+                      imageId: state.pathParameters['id']!,
+                    ),
                   ),
                 ],
               ),

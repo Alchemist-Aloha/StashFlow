@@ -134,7 +134,7 @@ states, and overlays must retain accessible contrast.
 must preserve feature state while switching branches and keep the global player
 outside individual route lifecycles.
 
-The customizable navigation model contains six tab types:
+The customizable navigation model contains seven tab types:
 
 - Scenes
 - Performers
@@ -142,11 +142,16 @@ The customizable navigation model contains six tab types:
 - Tags
 - Galleries
 - Groups
+- Images
 
-Groups is hidden by default. Users may reorder tabs and change visibility, but
-at least one usable destination must remain. UI indices must map explicitly to
-the router's fixed branch indices. Re-selecting an active top-level destination
+Groups and Images are hidden by default. Users may reorder tabs and change
+visibility, but at least one usable destination must remain. UI indices must map
+explicitly to the router's fixed branch indices. Re-selecting an active top-level destination
 scrolls its primary list to the top rather than duplicating the route.
+Images reuses the existing `/galleries/images` list and fullscreen child routes
+in its own shell branch, retaining saved tab order and existing image links.
+When Images is hidden, those routes retain Galleries as the selected visible
+navigation destination when available.
 
 Canonical implementation:
 

@@ -18,9 +18,13 @@ void main() {
       final notifier = container.read(navigationTabsProvider.notifier);
 
       await notifier.reorder(4, 0);
-      await notifier.reorder(1, 5);
+      await notifier.reorder(
+        1,
+        container.read(navigationTabsProvider).length - 1,
+      );
       await notifier.toggleTab(NavigationTabType.performers, false);
       await notifier.toggleTab(NavigationTabType.groups, true);
+      await notifier.toggleTab(NavigationTabType.images, true);
       final expected = container
           .read(navigationTabsProvider)
           .map((tab) => tab.toJson())
@@ -67,6 +71,7 @@ void main() {
           NavigationTabType.studios,
           NavigationTabType.tags,
           NavigationTabType.groups,
+          NavigationTabType.images,
         ]);
         expect(
           tabs.where((tab) => tab.visible).single.type,
@@ -79,7 +84,7 @@ void main() {
       },
     );
 
-    test('defaults groups to hidden in a fresh config', () async {
+    test('defaults groups and images to hidden in a fresh config', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
 
@@ -90,10 +95,10 @@ void main() {
 
       final tabs = container.read(navigationTabsProvider);
 
-      expect(
-        tabs.firstWhere((tab) => tab.type == NavigationTabType.groups).visible,
-        isFalse,
-      );
+      expect(tabs.where((tab) => !tab.visible).map((tab) => tab.type), [
+        NavigationTabType.groups,
+        NavigationTabType.images,
+      ]);
     });
 
     test(
@@ -118,6 +123,12 @@ void main() {
         final tabs = container.read(navigationTabsProvider);
 
         expect(tabs.map((tab) => tab.type), contains(NavigationTabType.groups));
+        expect(
+          tabs
+              .singleWhere((tab) => tab.type == NavigationTabType.images)
+              .visible,
+          isFalse,
+        );
         expect(
           tabs
               .firstWhere((tab) => tab.type == NavigationTabType.groups)

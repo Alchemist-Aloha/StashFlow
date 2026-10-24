@@ -306,7 +306,12 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       branchToUiMap[branchIndex] = i;
     }
 
-    final currentUiIndex = branchToUiMap[navigationShell.currentIndex] ?? 0;
+    final currentUiIndex =
+        branchToUiMap[navigationShell.currentIndex] ??
+        (navigationShell.currentIndex == NavigationTabType.images.index
+            ? branchToUiMap[NavigationTabType.galleries.index]
+            : null) ??
+        0;
 
     final onScenesPage = currentPath == '/scenes';
 
@@ -366,6 +371,13 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                   listScrollControllerProvider(
                     ListScrollTarget.gallery,
                   ).notifier,
+                )
+                .scrollToTop();
+            break;
+          case NavigationTabType.images:
+            ref
+                .read(
+                  listScrollControllerProvider(ListScrollTarget.image).notifier,
                 )
                 .scrollToTop();
             break;
