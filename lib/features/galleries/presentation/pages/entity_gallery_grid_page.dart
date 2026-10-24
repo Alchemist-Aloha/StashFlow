@@ -33,6 +33,7 @@ class EntityGalleryGridPage extends ConsumerWidget {
       galleriesAsync: galleriesAsync,
       isGridView: ref.watch(gridLayoutSettingProvider(_layoutSetting)),
       gridColumns: ref.watch(gridColumnSettingProvider(_columnSetting)),
+      gridColumnSetting: _columnSetting,
       onRefresh: () =>
           ref.refresh(entityGalleryGridProvider(filterKind, entityId).future),
       onFetchNextPage: () => ref

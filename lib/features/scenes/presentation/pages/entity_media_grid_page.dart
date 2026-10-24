@@ -32,6 +32,7 @@ class EntityMediaGridPage extends ConsumerWidget {
       mediaAsync: mediaAsync,
       isGridView: ref.watch(gridLayoutSettingProvider(_layoutSetting)),
       gridColumns: ref.watch(gridColumnSettingProvider(_columnSetting)),
+      gridColumnSetting: _columnSetting,
       queueId: _queueId,
       onRefresh: () =>
           ref.refresh(entityMediaGridProvider(filterKind, entityId).future),

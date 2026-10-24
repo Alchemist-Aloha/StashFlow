@@ -207,6 +207,7 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
         _sortField != _MarkerSortField.createdAt || !_sortDescending;
 
     return ListPageScaffold<SceneMarkerSummary>(
+      gridColumnSetting: GridColumnSetting.sceneMarker,
       title: context.l10n.markers_title,
       searchHint: context.l10n.markers_search_hint,
       onSearchChanged: _onSearchChanged,

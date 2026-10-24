@@ -421,6 +421,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     ];
 
     return ListPageScaffold<Scene>(
+      gridColumnSetting: GridColumnSetting.scene,
       title: context.l10n.appTitle,
       searchHint: context.l10n.scenes_search_hint,
       onSearchChanged: _onSearchChanged,

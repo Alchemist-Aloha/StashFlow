@@ -11,6 +11,8 @@ The app is primarily tested on Android and Windows. The web build is best treate
 
 ## 📸 Screenshots
 
+### Android mobile
+
 <p align="center">
    <img src="asset/scenes.jpg" alt="Scenes feed" width="220" />
    <img src="asset/scene_details.jpg" alt="Scene details playback" width="220" />
@@ -20,7 +22,22 @@ The app is primarily tested on Android and Windows. The web build is best treate
 <p align="center">
    <img src="asset/scene_filter.jpg" alt="Scenes filter" width="220" />
    <img src="asset/scene_sort.jpg" alt="Scenes sort" width="220" />
-   <img src="asset/library_stats.jpg" alt="Library stats" width="220" />
+   <img src="asset/scroll_feed.jpg" alt="Scroll-feed playback mode on Android" width="220" />
+</p>
+
+### Linux desktop
+
+<p align="center">
+   <img src="asset/linux/scenes.jpg" alt="Linux scenes feed" width="440" />
+   <img src="asset/linux/scene_details.jpg" alt="Linux scene details playback" width="440" />
+</p>
+<p align="center">
+   <img src="asset/linux/edit_scene.jpg" alt="Linux scene details editor" width="440" />
+   <img src="asset/linux/scene_filter.jpg" alt="Linux scenes filter" width="440" />
+</p>
+<p align="center">
+   <img src="asset/linux/scene_sort.jpg" alt="Linux scenes sort" width="440" />
+   <img src="asset/linux/library_stats.jpg" alt="Linux library stats" width="440" />
 </p>
 
 ## ✨ Key Features

@@ -339,6 +339,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         _sortOption != _PerformerSortOption.name || _sortDescending;
 
     return ListPageScaffold<Performer>(
+      gridColumnSetting: GridColumnSetting.performer,
       title: context.l10n.performers_title,
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: _onSearchChanged,
