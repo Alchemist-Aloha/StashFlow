@@ -134,7 +134,7 @@ states, and overlays must retain accessible contrast.
 must preserve feature state while switching branches and keep the global player
 outside individual route lifecycles.
 
-The customizable navigation model contains six tab types:
+The customizable navigation model contains seven tab types:
 
 - Scenes
 - Performers
@@ -142,11 +142,16 @@ The customizable navigation model contains six tab types:
 - Tags
 - Galleries
 - Groups
+- Images
 
-Groups is hidden by default. Users may reorder tabs and change visibility, but
-at least one usable destination must remain. UI indices must map explicitly to
-the router's fixed branch indices. Re-selecting an active top-level destination
+Groups and Images are hidden by default. Users may reorder tabs and change
+visibility, but at least one usable destination must remain. UI indices must map
+explicitly to the router's fixed branch indices. Re-selecting an active top-level destination
 scrolls its primary list to the top rather than duplicating the route.
+Images reuses the existing `/galleries/images` list and fullscreen child routes
+in its own shell branch, retaining saved tab order and existing image links.
+When Images is hidden, those routes retain Galleries as the selected visible
+navigation destination when available.
 
 Canonical implementation:
 
@@ -312,6 +317,26 @@ overlays, context actions, and optional performer avatars. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
 scaling.
 
+Grid, list, masonry, and horizontal-strip scene cards show a thin, accessible
+playback-position bar directly below the thumbnail when the saved `resumeTime`
+and primary file duration are finite and positive. The ratio is clamped to
+0–100%; a saved position at or beyond the duration displays a full bar. Play
+count alone does not imply completion. Unplayed scenes, unknown durations, and
+loading skeletons show no bar. Interface Settings exposes the default-on toggle
+owned by `showScenePlaybackProgressProvider` in `layout_settings_provider.dart`;
+its persisted `show_scene_playback_progress` key is included in configuration
+backups, with missing keys falling back to enabled.
+
+Cards prefer the last locally observed playback position over stale list data.
+`scenePlaybackPositionProvider` receives global local-player and cast position
+updates, including seeks and pauses, so returning to any scene list while a
+mini-player or PiP session continues updates the matching bar in real time.
+Only the bar rebuilds on position ticks; browsing cards must not initialize a
+player or fetch scene details. Observed positions survive card unmounts and
+playback changes/stops for the current app session, and reset when the active
+server profile changes. Server resume data remains the fallback for scenes not
+played in this session; this display cache does not change activity-save timing.
+
 Square-video scene thumbnails retain their native 1:1 frame in grid and list
 layouts on all platforms. If the decoded cover image is also square, stretch
 its painting vertically to 1:2 and crop the top and bottom to fill that frame;
@@ -402,6 +427,13 @@ fills the available content width, retaining scaled theme padding. Both headers
 show the title and metadata without a cover thumbnail beside the title. The unfilled
 details button sits beside the rating button, with the image count immediately
 after it in the expanded header's action row, wrapping when space is limited.
+The section collapses after scrolling beyond its scaled threshold. During touch
+or drag scrolling it stays collapsed until the grid settles at the top after
+release, including any fling or overscroll rebound; merely crossing the collapse
+threshold on the way back does not expand it. Wheel, keyboard, and programmatic
+scrolls retain immediate threshold-based reveal. The explicit expand button
+always responds immediately without changing the image scroll offset. Nested
+and horizontal scrolling must not trigger header reveal.
 Confirmed rating changes
 refresh gallery details and update the gallery list without reshuffling it;
 failures retain the confirmed value and show localized feedback. Gallery card

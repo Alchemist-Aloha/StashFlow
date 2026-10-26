@@ -1420,6 +1420,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'Masquer les métadonnées de scène par défaut';
 
   @override
+  String get settings_interface_show_scene_progress =>
+      'Afficher la progression de lecture';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      'Afficher la position de lecture enregistrée sous les miniatures des scènes.';
+
+  @override
+  String get scene_playback_progress => 'Progression de lecture';
+
+  @override
   String get settings_interface_hide_scene_metadata_subtitle =>
       'Afficher les métadonnées techniques de la scène après avoir appuyé sur Afficher les métadonnées.';
 

@@ -1421,6 +1421,17 @@ class AppLocalizationsIt extends AppLocalizations {
       'Nascondi i metadati della scena per impostazione predefinita';
 
   @override
+  String get settings_interface_show_scene_progress =>
+      'Mostra avanzamento di riproduzione';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      'Mostra la posizione di riproduzione salvata sotto le miniature delle scene.';
+
+  @override
+  String get scene_playback_progress => 'Avanzamento di riproduzione';
+
+  @override
   String get settings_interface_hide_scene_metadata_subtitle =>
       'Mostra i metadati tecnici della scena solo dopo aver toccato Mostra metadati.';
 

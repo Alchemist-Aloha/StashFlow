@@ -119,6 +119,20 @@ void main() {
     expect(await registry.read(prefs), isEmpty);
   });
 
+  test('scene playback progress preference round-trips in backups', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    await registry.replace(prefs, {'show_scene_playback_progress': false});
+    expect(await registry.read(prefs), {'show_scene_playback_progress': false});
+    expect(
+      () => registry.replace(prefs, {'show_scene_playback_progress': 'false'}),
+      throwsA(isA<AppConfigSettingException>()),
+    );
+    expect(prefs.getBool('show_scene_playback_progress'), isFalse);
+    await registry.replace(prefs, {});
+    expect(prefs.containsKey('show_scene_playback_progress'), isFalse);
+  });
+
   test('catalog is explicit and stable', () {
     expect(
       registry.managedKeys,

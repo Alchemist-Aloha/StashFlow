@@ -225,6 +225,38 @@ void main() {
     expect(prefs.getBool('auto_hide_top_app_bar'), isTrue);
   });
 
+  testWidgets('InterfaceSettingsPage saves and reloads scene progress toggle', (
+    tester,
+  ) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const InterfaceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    final tile = find.widgetWithText(
+      SwitchListTile,
+      'Show scene playback progress',
+    );
+    await tester.scrollUntilVisible(tile, 150);
+    final toggle = find.descendant(of: tile, matching: find.byType(Switch));
+    expect(tester.widget<Switch>(toggle).value, isTrue);
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    expect(prefs.getBool('show_scene_playback_progress'), isFalse);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const InterfaceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(tile, 150);
+    expect(tester.widget<Switch>(toggle).value, isFalse);
+  });
+
   testWidgets('InterfaceSettingsPage saves scene metadata visibility', (
     tester,
   ) async {

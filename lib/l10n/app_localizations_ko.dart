@@ -1384,6 +1384,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_hide_scene_metadata => '장면 메타데이터를 기본으로 숨기기';
 
   @override
+  String get settings_interface_show_scene_progress => '장면 재생 진행률 표시';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      '장면 썸네일 아래에 저장된 재생 위치를 표시합니다.';
+
+  @override
+  String get scene_playback_progress => '재생 진행률';
+
+  @override
   String get settings_interface_hide_scene_metadata_subtitle =>
       '메타데이터 표시를 탭한 후에만 장면 기술 메타데이터를 표시합니다.';
 

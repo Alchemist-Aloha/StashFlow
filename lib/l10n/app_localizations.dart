@@ -2718,6 +2718,24 @@ abstract class AppLocalizations {
   /// **'Hide scene metadata by default'**
   String get settings_interface_hide_scene_metadata;
 
+  /// No description provided for @settings_interface_show_scene_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Show scene playback progress'**
+  String get settings_interface_show_scene_progress;
+
+  /// No description provided for @settings_interface_show_scene_progress_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the saved playback position below scene thumbnails.'**
+  String get settings_interface_show_scene_progress_subtitle;
+
+  /// No description provided for @scene_playback_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback progress'**
+  String get scene_playback_progress;
+
   /// No description provided for @settings_interface_hide_scene_metadata_subtitle.
   ///
   /// In en, this message translates to:
