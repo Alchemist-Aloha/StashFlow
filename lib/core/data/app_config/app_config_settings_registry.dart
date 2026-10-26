@@ -81,6 +81,7 @@ final class AppConfigSettingsRegistry {
     _int('max_performer_avatars', min: 0, max: 20),
     _bool('show_performer_avatars'),
     _bool('hide_scene_technical_metadata'),
+    _bool('show_scene_playback_progress'),
     _double('performer_avatar_size', min: 8, max: 128),
     _double('card_title_font_size', min: 0, max: 72),
     _bool('image_fullscreen_vertical_swipe'),

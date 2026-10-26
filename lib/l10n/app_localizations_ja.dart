@@ -1386,6 +1386,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_hide_scene_metadata => 'シーンのメタデータをデフォルトで非表示';
 
   @override
+  String get settings_interface_show_scene_progress => 'シーンの再生状況を表示';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      'シーンのサムネイルの下に保存された再生位置を表示します。';
+
+  @override
+  String get scene_playback_progress => '再生状況';
+
+  @override
   String get settings_interface_hide_scene_metadata_subtitle =>
       '「メタデータを表示」をタップした後にのみ、シーンの技術メタデータを表示します。';
 

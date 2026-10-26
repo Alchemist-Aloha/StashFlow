@@ -317,6 +317,26 @@ overlays, context actions, and optional performer avatars. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
 scaling.
 
+Grid, list, masonry, and horizontal-strip scene cards show a thin, accessible
+playback-position bar directly below the thumbnail when the saved `resumeTime`
+and primary file duration are finite and positive. The ratio is clamped to
+0–100%; a saved position at or beyond the duration displays a full bar. Play
+count alone does not imply completion. Unplayed scenes, unknown durations, and
+loading skeletons show no bar. Interface Settings exposes the default-on toggle
+owned by `showScenePlaybackProgressProvider` in `layout_settings_provider.dart`;
+its persisted `show_scene_playback_progress` key is included in configuration
+backups, with missing keys falling back to enabled.
+
+Cards prefer the last locally observed playback position over stale list data.
+`scenePlaybackPositionProvider` receives global local-player and cast position
+updates, including seeks and pauses, so returning to any scene list while a
+mini-player or PiP session continues updates the matching bar in real time.
+Only the bar rebuilds on position ticks; browsing cards must not initialize a
+player or fetch scene details. Observed positions survive card unmounts and
+playback changes/stops for the current app session, and reset when the active
+server profile changes. Server resume data remains the fallback for scenes not
+played in this session; this display cache does not change activity-save timing.
+
 Square-video scene thumbnails retain their native 1:1 frame in grid and list
 layouts on all platforms. If the decoded cover image is also square, stretch
 its painting vertically to 1:2 and crop the top and bottom to fill that frame;

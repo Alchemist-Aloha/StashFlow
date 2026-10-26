@@ -13,6 +13,7 @@ import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../pages/scene_info_page.dart';
+import '../providers/scene_playback_position_provider.dart';
 import 'scrubbing_preview.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
@@ -218,7 +219,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
   /// Formats seconds into a human-readable duration string.
   String _formatDuration(double? duration) {
-    if (duration == null) return '--:--';
+    if (duration == null || !duration.isFinite || duration < 0) return '--:--';
     final seconds = duration.round();
     final h = seconds ~/ 3600;
     final m = (seconds % 3600) ~/ 60;
@@ -484,6 +485,10 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 aspectRatio: aspectRatio.clamp(0.5, 2.5),
                 child: _buildThumbnail(context, duration, aspectRatio),
               ),
+              _ScenePlaybackProgress(
+                scene: widget.scene,
+                skeletonize: widget.skeletonize,
+              ),
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
@@ -575,6 +580,10 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                   aspectRatio.clamp(0.5, 2.5),
                 ),
               ),
+              _ScenePlaybackProgress(
+                scene: widget.scene,
+                skeletonize: widget.skeletonize,
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Row(
@@ -642,6 +651,47 @@ class _SceneCardState extends ConsumerState<SceneCard> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// Keep playback ticks local to the bar, not the thumbnail and its VTT preview.
+class _ScenePlaybackProgress extends ConsumerWidget {
+  const _ScenePlaybackProgress({
+    required this.scene,
+    required this.skeletonize,
+  });
+
+  final Scene scene;
+  final bool skeletonize;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!ref.watch(showScenePlaybackProgressProvider) || skeletonize) {
+      return const SizedBox.shrink();
+    }
+
+    final duration = scene.files.firstOrNull?.duration;
+    final resumeTime =
+        ref.watch(scenePlaybackPositionProvider(scene.id)) ?? scene.resumeTime;
+    if (duration == null ||
+        !duration.isFinite ||
+        duration <= 0 ||
+        resumeTime == null ||
+        !resumeTime.isFinite ||
+        resumeTime <= 0) {
+      return const SizedBox.shrink();
+    }
+
+    return LinearProgressIndicator(
+      value: (resumeTime / duration).clamp(0.0, 1.0),
+      minHeight: context.dimensions.spacingSmall / 2,
+      color: context.colors.primary,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.zero,
+      trackGap: 0,
+      stopIndicatorRadius: 0,
+      semanticsLabel: context.l10n.scene_playback_progress,
     );
   }
 }

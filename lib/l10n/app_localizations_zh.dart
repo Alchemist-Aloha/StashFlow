@@ -1379,6 +1379,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_hide_scene_metadata => '默认隐藏场景元数据';
 
   @override
+  String get settings_interface_show_scene_progress => '显示场景播放进度';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      '在场景缩略图下方显示已保存的播放位置。';
+
+  @override
+  String get scene_playback_progress => '播放进度';
+
+  @override
   String get settings_interface_hide_scene_metadata_subtitle =>
       '点击“显示元数据”后才显示场景技术元数据。';
 
@@ -4900,6 +4910,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_interface_hide_scene_metadata => '默认隐藏场景元数据';
+
+  @override
+  String get settings_interface_show_scene_progress => '显示场景播放进度';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      '在场景缩略图下方显示已保存的播放位置。';
+
+  @override
+  String get scene_playback_progress => '播放进度';
 
   @override
   String get settings_interface_hide_scene_metadata_subtitle =>
@@ -8425,6 +8445,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_interface_hide_scene_metadata => '預設隱藏場景中繼資料';
+
+  @override
+  String get settings_interface_show_scene_progress => '顯示場景播放進度';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      '在場景縮圖下方顯示已儲存的播放位置。';
+
+  @override
+  String get scene_playback_progress => '播放進度';
 
   @override
   String get settings_interface_hide_scene_metadata_subtitle =>

@@ -54,6 +54,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   int _maxPerformerAvatars = 3;
   bool _showPerformerAvatars = true;
   bool _hideSceneTechnicalMetadata = true;
+  bool _showScenePlaybackProgress = true;
   double _performerAvatarSize = 16.0;
 
   // New settings
@@ -125,6 +126,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _maxPerformerAvatars = ref.read(maxPerformerAvatarsProvider);
     _showPerformerAvatars = ref.read(showPerformerAvatarsProvider);
     _hideSceneTechnicalMetadata = ref.read(hideSceneTechnicalMetadataProvider);
+    _showScenePlaybackProgress = ref.read(showScenePlaybackProgressProvider);
     _performerAvatarSize = ref.read(performerAvatarSizeProvider);
 
     _performerMediaGridLayout = ref.read(
@@ -214,6 +216,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
       ref
           .read(hideSceneTechnicalMetadataProvider.notifier)
           .set(_hideSceneTechnicalMetadata),
+      ref
+          .read(showScenePlaybackProgressProvider.notifier)
+          .set(_showScenePlaybackProgress),
       ref.read(performerAvatarSizeProvider.notifier).set(_performerAvatarSize),
       ref
           .read(
@@ -329,6 +334,23 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           value: _hideSceneTechnicalMetadata,
                           onChanged: (value) async {
                             setState(() => _hideSceneTechnicalMetadata = value);
+                            await _saveSettings();
+                          },
+                        ),
+                        Divider(height: context.dimensions.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context.l10n.settings_interface_show_scene_progress,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_show_scene_progress_subtitle,
+                          ),
+                          value: _showScenePlaybackProgress,
+                          onChanged: (value) async {
+                            setState(() => _showScenePlaybackProgress = value);
                             await _saveSettings();
                           },
                         ),

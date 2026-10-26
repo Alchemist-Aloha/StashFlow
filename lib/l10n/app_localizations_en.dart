@@ -1402,6 +1402,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Hide scene metadata by default';
 
   @override
+  String get settings_interface_show_scene_progress =>
+      'Show scene playback progress';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      'Show the saved playback position below scene thumbnails.';
+
+  @override
+  String get scene_playback_progress => 'Playback progress';
+
+  @override
   String get settings_interface_hide_scene_metadata_subtitle =>
       'Show technical scene metadata only when requested.';
 

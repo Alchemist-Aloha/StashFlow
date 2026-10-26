@@ -20,6 +20,7 @@ import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scen
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_view_mode.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_playback_position_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/data/services/cast_service.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
@@ -123,6 +124,87 @@ void main() {
       tagNames: [],
     );
   }
+
+  test(
+    'publishes playback ticks and retains positions across stop and next scene',
+    () async {
+      final scene = createTestScene('live');
+      final notifier = container.read(playerStateProvider.notifier);
+      when(mockPlayer.state).thenReturn(
+        PlayerStateData(
+          position: const Duration(seconds: 10),
+          duration: const Duration(seconds: 100),
+        ),
+      );
+      await notifier.attachController(scene, mockPlayer, mockVideoController);
+      final progress = scenePlaybackPositionProvider(scene.id);
+      expect(container.read(progress), 10);
+
+      for (final seconds in [40, 15, 0, 100]) {
+        when(mockPlayer.state).thenReturn(
+          PlayerStateData(
+            position: Duration(seconds: seconds),
+            duration: const Duration(seconds: 100),
+          ),
+        );
+        positionStream.add(Duration(seconds: seconds));
+        await Future<void>.delayed(Duration.zero);
+        expect(container.read(progress), seconds.toDouble());
+      }
+
+      notifier.stop();
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(progress), 100);
+      expect(container.read(playerStateProvider).activeScene, isNull);
+
+      when(mockPlayer.state).thenReturn(
+        PlayerStateData(
+          position: const Duration(seconds: 25),
+          duration: const Duration(seconds: 100),
+        ),
+      );
+      await notifier.attachController(
+        createTestScene('next'),
+        mockPlayer,
+        mockVideoController,
+      );
+      expect(container.read(scenePlaybackPositionProvider('next')), 25);
+      expect(container.read(progress), 100);
+    },
+  );
+
+  test(
+    'cast progress wins over paused local ticks and survives stopping',
+    () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      when(mockPlayer.state).thenReturn(
+        PlayerStateData(
+          position: const Duration(seconds: 10),
+          duration: const Duration(seconds: 100),
+        ),
+      );
+      await notifier.attachController(
+        createTestScene('cast'),
+        mockPlayer,
+        mockVideoController,
+      );
+      final cast =
+          container.read(castServiceProvider.notifier) as _FakeAppCastService;
+      cast.activate();
+      cast.setRemotePosition(const Duration(seconds: 70));
+      await Future<void>.delayed(Duration.zero);
+      final progress = scenePlaybackPositionProvider('cast');
+      expect(container.read(progress), 70);
+
+      positionStream.add(const Duration(seconds: 10));
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(progress), 70);
+
+      notifier.stop();
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(progress), 70);
+    },
+  );
 
   for (final enterThroughApp in [false, true]) {
     test(
@@ -1023,6 +1105,10 @@ class _FakeAppCastService extends AppCastService {
       isCasting: true,
       localWasPlaying: localWasPlaying,
     );
+  }
+
+  void setRemotePosition(Duration position) {
+    state = state.copyWith(remotePosition: position);
   }
 
   void completeRemoteMedia() {

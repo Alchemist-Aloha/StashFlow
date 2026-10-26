@@ -1411,6 +1411,17 @@ class AppLocalizationsRu extends AppLocalizations {
       'Скрывать метаданные сцены по умолчанию';
 
   @override
+  String get settings_interface_show_scene_progress =>
+      'Показывать прогресс воспроизведения';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      'Показывать сохранённую позицию воспроизведения под миниатюрами сцен.';
+
+  @override
+  String get scene_playback_progress => 'Прогресс воспроизведения';
+
+  @override
   String get settings_interface_hide_scene_metadata_subtitle =>
       'Показывать технические метаданные сцены только после нажатия «Показать метаданные».';
 

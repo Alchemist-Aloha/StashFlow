@@ -10,9 +10,12 @@ import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/sprite_info.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_playback_position_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import 'package:stash_app_flutter/core/utils/vtt_service.dart';
 
 class MockVttService implements VttService {
@@ -140,6 +143,206 @@ void main() {
     final image = await picture.toImage(width, height);
     picture.dispose();
     return image;
+  }
+
+  for (final layout in ['list', 'grid', 'masonry']) {
+    testWidgets('SceneCard shows saved progress below $layout thumbnail', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          SizedBox(
+            width: 240,
+            child: SceneCard(
+              scene: defaultTestScene.copyWith(resumeTime: 916.25),
+              isGrid: layout != 'list',
+              useMasonry: layout == 'masonry',
+            ),
+          ),
+        ),
+      );
+
+      final progress = find.byType(LinearProgressIndicator);
+      expect(tester.widget<LinearProgressIndicator>(progress).value, 0.25);
+      final frame = find.byType(AspectRatio);
+      expect(tester.getRect(progress).top, tester.getRect(frame).bottom);
+      expect(tester.getSize(progress).height, 4);
+      expect(tester.getSize(progress).width, tester.getSize(frame).width);
+      final semanticsData = tester.getSemantics(progress).getSemanticsData();
+      expect(semanticsData.label, contains('Playback progress'));
+      expect(semanticsData.value, '25');
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final sample in [
+    (resume: null, duration: 100.0, expected: null),
+    (resume: 0.0, duration: 100.0, expected: null),
+    (resume: -10.0, duration: 100.0, expected: null),
+    (resume: double.nan, duration: 100.0, expected: null),
+    (resume: double.infinity, duration: 100.0, expected: null),
+    (resume: 20.0, duration: null, expected: null),
+    (resume: 20.0, duration: 0.0, expected: null),
+    (resume: 20.0, duration: -100.0, expected: null),
+    (resume: 20.0, duration: double.nan, expected: null),
+    (resume: 20.0, duration: double.infinity, expected: null),
+    (resume: 100.0, duration: 100.0, expected: 1.0),
+    (resume: 120.0, duration: 100.0, expected: 1.0),
+  ]) {
+    testWidgets('SceneCard handles playback data $sample', (tester) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          SceneCard(
+            scene: defaultTestScene.copyWith(
+              resumeTime: sample.resume,
+              files: [
+                defaultTestScene.files.first.copyWith(
+                  duration: sample.duration,
+                ),
+              ],
+            ),
+            isGrid: true,
+          ),
+        ),
+      );
+
+      final progress = find.byType(LinearProgressIndicator);
+      if (sample.expected == null) {
+        expect(progress, findsNothing);
+      } else {
+        expect(
+          tester.widget<LinearProgressIndicator>(progress).value,
+          sample.expected,
+        );
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets(
+    'SceneCard hides playback progress with no files or while loading',
+    (tester) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          SceneCard(
+            scene: defaultTestScene.copyWith(resumeTime: 20, files: []),
+            isGrid: true,
+          ),
+        ),
+      );
+      expect(find.byType(LinearProgressIndicator), findsNothing);
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          SceneCard(
+            scene: defaultTestScene.copyWith(resumeTime: 20),
+            isGrid: true,
+            skeletonize: true,
+          ),
+        ),
+      );
+      expect(find.byType(LinearProgressIndicator), findsNothing);
+    },
+  );
+
+  testWidgets('SceneCard reacts to progress updates and the persisted toggle', (
+    tester,
+  ) async {
+    await prefs.setBool('show_scene_playback_progress', false);
+    await tester.pumpWidget(
+      buildTestWidget(
+        SceneCard(
+          scene: defaultTestScene.copyWith(resumeTime: 20),
+          isGrid: true,
+        ),
+      ),
+    );
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(SceneCard)),
+    );
+    await container.read(showScenePlaybackProgressProvider.notifier).set(true);
+    await tester.pump();
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    expect(prefs.getBool('show_scene_playback_progress'), isTrue);
+
+    await tester.pumpWidget(
+      buildTestWidget(
+        SceneCard(
+          scene: defaultTestScene.copyWith(resumeTime: 1832.5),
+          isGrid: true,
+        ),
+      ),
+    );
+    expect(
+      tester
+          .widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator))
+          .value,
+      0.5,
+    );
+
+    await container.read(showScenePlaybackProgressProvider.notifier).set(false);
+    await tester.pump();
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(prefs.getBool('show_scene_playback_progress'), isFalse);
+  });
+
+  for (final isGrid in [false, true]) {
+    testWidgets(
+      'SceneCard follows live positions without rebuilding its image (grid: $isGrid)',
+      (tester) async {
+        final scene = defaultTestScene.copyWith(
+          resumeTime: 10,
+          files: [defaultTestScene.files.first.copyWith(duration: 100)],
+        );
+        final card = SizedBox(
+          width: 240,
+          child: SceneCard(scene: scene, isGrid: isGrid),
+        );
+        await tester.pumpWidget(buildTestWidget(card));
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(SceneCard)),
+        );
+        expect(container.exists(playerStateProvider), isFalse);
+        final image = tester.widget<StashImage>(find.byType(StashImage));
+        final position = container.read(
+          scenePlaybackPositionProvider(scene.id).notifier,
+        );
+        position.update(const Duration(seconds: 60));
+        await tester.pump();
+        expect(
+          tester
+              .widget<LinearProgressIndicator>(
+                find.byType(LinearProgressIndicator),
+              )
+              .value,
+          0.6,
+        );
+        expect(tester.widget<StashImage>(find.byType(StashImage)), same(image));
+
+        // A seek to the start must override the old saved resume point.
+        position.update(Duration.zero);
+        await tester.pump();
+        expect(find.byType(LinearProgressIndicator), findsNothing);
+        position.update(const Duration(seconds: 25));
+        await tester.pump();
+
+        // Simulate leaving and returning to the list with stale server data.
+        await tester.pumpWidget(buildTestWidget(const SizedBox.shrink()));
+        await tester.pump();
+        await tester.pumpWidget(buildTestWidget(card));
+        expect(
+          tester
+              .widget<LinearProgressIndicator>(
+                find.byType(LinearProgressIndicator),
+              )
+              .value,
+          0.25,
+        );
+        expect(container.exists(playerStateProvider), isFalse);
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 
   testWidgets('SceneCard renders list mode properly', (tester) async {

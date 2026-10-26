@@ -46,6 +46,7 @@ void main() {
           SharedPreferences.setMockInitialValues({});
           final prefs = await SharedPreferences.getInstance();
           final scene = _scene('cropped', 'Scene title').copyWith(
+            resumeTime: 30,
             files: [
               SceneFile(
                 width: dimensions.$1,
@@ -83,7 +84,14 @@ void main() {
           final titleRect = tester.getRect(find.text('Scene title'));
           final cardRect = tester.getRect(find.byType(SceneCard));
           expect(frameRect.width / frameRect.height, closeTo(16 / 9, 0.001));
-          expect(titleRect.top, greaterThanOrEqualTo(frameRect.bottom));
+          final progress = find.byType(LinearProgressIndicator);
+          expect(tester.widget<LinearProgressIndicator>(progress).value, 0.5);
+          expect(tester.getRect(progress).top, frameRect.bottom);
+          expect(tester.getSize(progress).height, closeTo(4 * scale, 0.001));
+          expect(
+            titleRect.top,
+            greaterThanOrEqualTo(tester.getRect(progress).bottom),
+          );
           expect(titleRect.bottom, lessThanOrEqualTo(cardRect.bottom));
           expect(
             tester.widget<StashImage>(find.byType(StashImage)).fit,

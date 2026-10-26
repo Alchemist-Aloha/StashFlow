@@ -121,6 +121,23 @@ class ShowPerformerAvatars extends _$ShowPerformerAvatars {
   }
 }
 
+/// Controls playback-position bars on scene cards; enabled for existing installs.
+@riverpod
+class ShowScenePlaybackProgress extends _$ShowScenePlaybackProgress {
+  static const _storageKey = 'show_scene_playback_progress';
+
+  @override
+  bool build() {
+    return ref.watch(sharedPreferencesProvider).getBool(_storageKey) ?? true;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    await ref.read(sharedPreferencesProvider).setBool(_storageKey, value);
+  }
+}
+
 @riverpod
 class HideSceneTechnicalMetadata extends _$HideSceneTechnicalMetadata {
   static const _storageKey = 'hide_scene_technical_metadata';

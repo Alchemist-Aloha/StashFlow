@@ -15,6 +15,7 @@ import '../../domain/entities/scene_title_utils.dart';
 import 'playback_queue_provider.dart';
 import 'queue_playback_coordinator.dart';
 import 'scene_details_provider.dart';
+import 'scene_playback_position_provider.dart';
 import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/playback_media.dart';
@@ -473,6 +474,12 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     // follow the remote renderer instead of the local player's ticks.
     ref.listen(castServiceProvider, (previous, next) {
       if (!next.isCasting) return;
+      final sceneId = state.activeScene?.id;
+      if (sceneId != null) {
+        ref
+            .read(scenePlaybackPositionProvider(sceneId).notifier)
+            .update(next.remotePosition);
+      }
       _lastMediaHandlerPosition = next.remotePosition;
       mediaHandler?.updatePlaybackState(
         isPlaying: next.remoteIsPlaying,
@@ -1640,6 +1647,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       },
     );
 
+    _videoListener();
+
     if (player.state.playing) {
       _activityTracker.start(
         sceneId: scene.id,
@@ -2002,6 +2011,14 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       final currentDuration = player.state.duration;
       final currentSpeed = player.state.rate;
       final currentBuffered = player.state.buffer;
+
+      if (activeSceneId != null &&
+          currentDuration > Duration.zero &&
+          !ref.read(castServiceProvider).isCasting) {
+        ref
+            .read(scenePlaybackPositionProvider(activeSceneId).notifier)
+            .update(currentPosition);
+      }
 
       final activeScene = state.activeScene;
       final currentMediaItem = mediaHandler?.mediaItem.value;

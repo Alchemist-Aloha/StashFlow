@@ -1416,6 +1416,17 @@ class AppLocalizationsDe extends AppLocalizations {
       'Szenenmetadaten standardmäßig ausblenden';
 
   @override
+  String get settings_interface_show_scene_progress =>
+      'Wiedergabefortschritt anzeigen';
+
+  @override
+  String get settings_interface_show_scene_progress_subtitle =>
+      'Die gespeicherte Wiedergabeposition unter den Szenenvorschaubildern anzeigen.';
+
+  @override
+  String get scene_playback_progress => 'Wiedergabefortschritt';
+
+  @override
   String get settings_interface_hide_scene_metadata_subtitle =>
       'Technische Szenenmetadaten erst nach Auswahl von „Metadaten anzeigen“ einblenden.';
 
