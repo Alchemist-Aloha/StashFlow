@@ -59,6 +59,138 @@ class _RatingGalleryRepository implements GraphQLGalleryRepository {
 }
 
 void main() {
+  Future<ScrollPosition> pumpScrollableGallery(
+    WidgetTester tester, {
+    double scale = 1,
+    TargetPlatform platform = TargetPlatform.android,
+  }) async {
+    final images = MockGraphQLImageRepository()
+      ..withData(
+        List.generate(
+          60,
+          (index) => entity.Image(
+            id: 'image-$index',
+            title: 'Image $index',
+            files: const [entity.ImageFile(width: 100, height: 100, path: '')],
+            paths: const entity.ImagePaths(image: '', thumbnail: ''),
+          ),
+        ),
+      );
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        galleryDetailsProvider('gallery-1').overrideWith(
+          (ref) => const Gallery(id: 'gallery-1', title: 'Gallery One'),
+        ),
+        imageRepositoryProvider.overrideWithValue(images),
+      ],
+      child: Theme(
+        data: AppTheme.buildTheme(
+          Brightness.light,
+          Colors.teal,
+          fontSizeFactor: scale,
+        ).copyWith(platform: platform),
+        child: const GalleryDetailsPage(galleryId: 'gallery-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    return Scrollable.of(tester.element(find.byType(ImageCard).first)).position;
+  }
+
+  for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
+    for (final scale in [0.8, 1.5]) {
+      testWidgets(
+        'gallery header waits for release and settling ($platform, $scale)',
+        (tester) async {
+          tester.view.physicalSize = const Size(360, 850);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          final position = await pumpScrollableGallery(
+            tester,
+            scale: scale,
+            platform: platform,
+          );
+          position.jumpTo(160);
+          await tester.pumpAndSettle();
+          final collapsed = find.byKey(const Key('gallery_details_collapsed'));
+          final expanded = find.byKey(const Key('gallery_details_expanded'));
+          expect(collapsed, findsOneWidget);
+
+          final scrollable = find
+              .ancestor(
+                of: find.byType(ImageCard).first,
+                matching: find.byType(Scrollable),
+              )
+              .first;
+          final gesture = await tester.startGesture(
+            tester.getCenter(scrollable),
+          );
+          await gesture.moveBy(const Offset(0, 210));
+          await tester.pumpAndSettle();
+          expect(position.pixels, lessThanOrEqualTo(position.minScrollExtent));
+          expect(collapsed, findsOneWidget);
+          expect(expanded, findsNothing);
+
+          await gesture.up();
+          await tester.pumpAndSettle();
+          expect(position.pixels, closeTo(position.minScrollExtent, 0.01));
+          expect(expanded, findsOneWidget);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
+  testWidgets(
+    'gallery header stays collapsed when touch scroll stops near the top',
+    (tester) async {
+      final position = await pumpScrollableGallery(tester);
+      position.jumpTo(160);
+      await tester.pumpAndSettle();
+      final scrollable = find
+          .ancestor(
+            of: find.byType(ImageCard).first,
+            matching: find.byType(Scrollable),
+          )
+          .first;
+      final gesture = await tester.startGesture(tester.getCenter(scrollable));
+      await gesture.moveBy(const Offset(0, 20));
+      await tester.pump();
+      await gesture.moveBy(Offset(0, position.pixels - 24));
+      await tester.pump(const Duration(seconds: 1));
+      await gesture.moveBy(Offset.zero);
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(position.pixels, greaterThan(position.minScrollExtent));
+      expect(position.pixels, lessThan(48));
+      expect(
+        find.byKey(const Key('gallery_details_collapsed')),
+        findsOneWidget,
+      );
+
+      // Explicit expansion stays immediate and preserves the image position.
+      final offset = position.pixels;
+      await tester.tap(find.byIcon(Icons.expand_more_rounded));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('gallery_details_expanded')), findsOneWidget);
+      expect(position.pixels, offset);
+    },
+  );
+
+  testWidgets('gallery programmatic reveal keeps its existing threshold', (
+    tester,
+  ) async {
+    final position = await pumpScrollableGallery(tester);
+    position.jumpTo(160);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('gallery_details_collapsed')), findsOneWidget);
+    position.jumpTo(24);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('gallery_details_expanded')), findsOneWidget);
+    expect(position.pixels, 24);
+  });
+
   testWidgets(
     'gallery rating confirms, clears, and preserves state on failure',
     (tester) async {

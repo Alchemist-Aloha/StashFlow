@@ -30,6 +30,7 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
   late final ScrollController _scrollController;
   var _detailsCollapsed = false;
   var _collapseOffset = 0.0;
+  var _deferDetailsReveal = false;
 
   @override
   void initState() {
@@ -72,10 +73,30 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
     });
   }
 
-  void _handleScroll() {
-    final shouldCollapse = _scrollController.offset > _collapseOffset;
-    if (shouldCollapse == _detailsCollapsed || !mounted) return;
+  void _handleScroll({bool scrollEnded = false}) {
+    if (!mounted || !_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    final shouldCollapse = position.pixels > _collapseOffset;
+    // Expanding mid-drag resizes the image viewport under the user's finger.
+    if (_detailsCollapsed &&
+        _deferDetailsReveal &&
+        (!scrollEnded || position.pixels > position.minScrollExtent)) {
+      return;
+    }
+    if (shouldCollapse == _detailsCollapsed) return;
     setState(() => _detailsCollapsed = shouldCollapse);
+  }
+
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
+      return false;
+    }
+    if (notification is ScrollStartNotification) {
+      _deferDetailsReveal = notification.dragDetails != null;
+    } else if (notification is ScrollEndNotification) {
+      _handleScroll(scrollEnded: true);
+    }
+    return false;
   }
 
   Future<void> _refresh() async {
@@ -127,36 +148,41 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
   Widget build(BuildContext context) {
     final galleryAsync = ref.watch(galleryDetailsProvider(widget.galleryId));
 
-    return ImagesPage(
-      title: context.l10n.details_gallery,
-      showAppBarTitle: false,
-      searchOnlyAppBar: true,
-      topContent: AnimatedSize(
-        duration: const Duration(milliseconds: 200),
-        alignment: Alignment.topCenter,
-        child: galleryAsync.when(
-          data: (gallery) => _detailsCollapsed
-              ? _CollapsedGalleryDetails(
-                  key: const Key('gallery_details_collapsed'),
-                  gallery: gallery,
-                  onExpand: _expandDetails,
-                  onRatingSelected: (rating) => _updateRating(gallery, rating),
-                )
-              : _CompactGalleryDetails(
-                  key: const Key('gallery_details_expanded'),
-                  gallery: gallery,
-                  onRatingSelected: (rating) => _updateRating(gallery, rating),
-                ),
-          loading: () => const LinearProgressIndicator(),
-          error: (error, stack) => ErrorStateView(
-            message: context.l10n.common_error(error.toString()),
-            onRetry: () =>
-                ref.invalidate(galleryDetailsProvider(widget.galleryId)),
+    return NotificationListener<ScrollNotification>(
+      onNotification: _handleScrollNotification,
+      child: ImagesPage(
+        title: context.l10n.details_gallery,
+        showAppBarTitle: false,
+        searchOnlyAppBar: true,
+        topContent: AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          alignment: Alignment.topCenter,
+          child: galleryAsync.when(
+            data: (gallery) => _detailsCollapsed
+                ? _CollapsedGalleryDetails(
+                    key: const Key('gallery_details_collapsed'),
+                    gallery: gallery,
+                    onExpand: _expandDetails,
+                    onRatingSelected: (rating) =>
+                        _updateRating(gallery, rating),
+                  )
+                : _CompactGalleryDetails(
+                    key: const Key('gallery_details_expanded'),
+                    gallery: gallery,
+                    onRatingSelected: (rating) =>
+                        _updateRating(gallery, rating),
+                  ),
+            loading: () => const LinearProgressIndicator(),
+            error: (error, stack) => ErrorStateView(
+              message: context.l10n.common_error(error.toString()),
+              onRetry: () =>
+                  ref.invalidate(galleryDetailsProvider(widget.galleryId)),
+            ),
           ),
         ),
+        scrollController: _scrollController,
+        onRefresh: _refresh,
       ),
-      scrollController: _scrollController,
-      onRefresh: _refresh,
     );
   }
 }

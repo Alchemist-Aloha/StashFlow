@@ -427,6 +427,13 @@ fills the available content width, retaining scaled theme padding. Both headers
 show the title and metadata without a cover thumbnail beside the title. The unfilled
 details button sits beside the rating button, with the image count immediately
 after it in the expanded header's action row, wrapping when space is limited.
+The section collapses after scrolling beyond its scaled threshold. During touch
+or drag scrolling it stays collapsed until the grid settles at the top after
+release, including any fling or overscroll rebound; merely crossing the collapse
+threshold on the way back does not expand it. Wheel, keyboard, and programmatic
+scrolls retain immediate threshold-based reveal. The explicit expand button
+always responds immediately without changing the image scroll offset. Nested
+and horizontal scrolling must not trigger header reveal.
 Confirmed rating changes
 refresh gallery details and update the gallery list without reshuffling it;
 failures retain the confirmed value and show localized feedback. Gallery card
