@@ -87,6 +87,8 @@ final class AppConfigSettingsRegistry {
     _bool('image_fullscreen_vertical_swipe'),
     _bool('show_random_navigation'),
     _bool('auto_hide_top_app_bar'),
+    _bool('mini_player_bottom_spacer_enabled'),
+    _double('mini_player_bottom_offset', min: 0, max: 200),
     _bool('scene_random_respect_active_filter'),
     _bool('main_page_gravity_orientation'),
     for (final prefix in const [

@@ -14,6 +14,7 @@ import 'package:flutter/gestures.dart';
 import '../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../core/presentation/providers/list_scroll_controller_provider.dart';
+import '../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../core/data/graphql/graphql_client.dart';
 import '../../scenes/presentation/providers/video_player_provider.dart';
 import '../../scenes/presentation/providers/scene_list_provider.dart';
@@ -414,6 +415,13 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     // reserve the band's height as bottom inset through the media query, so
     // nothing ends up permanently hidden under the glass.
     final miniPlayerVisible = !hideMiniPlayer && activeSceneId != null;
+    final bottomOffset =
+        !isFullScreen && ref.watch(miniPlayerBottomSpacerEnabledProvider)
+        ? ref.watch(miniPlayerBottomOffsetProvider)
+        : 0.0;
+    // Keep all bottom actions clear of the taskbar, even without active playback.
+    final floatingBottomInset =
+        bottomOffset + (miniPlayerVisible ? MiniPlayer.height : 0.0);
 
     Widget bodyContent = Stack(
       children: [
@@ -426,14 +434,16 @@ class _ShellPageState extends ConsumerState<ShellPage> {
               // bottom margin, while it replaces padding.bottom with viewInsets.
               final mediaQuery = MediaQuery.of(bodyContext);
               return MediaQuery(
-                data: miniPlayerVisible
+                data: floatingBottomInset > 0
                     ? mediaQuery.copyWith(
                         padding: mediaQuery.padding.copyWith(
-                          bottom: mediaQuery.padding.bottom + MiniPlayer.height,
+                          bottom:
+                              mediaQuery.padding.bottom + floatingBottomInset,
                         ),
                         viewPadding: mediaQuery.viewPadding.copyWith(
                           bottom:
-                              mediaQuery.viewPadding.bottom + MiniPlayer.height,
+                              mediaQuery.viewPadding.bottom +
+                              floatingBottomInset,
                         ),
                       )
                     : mediaQuery,
@@ -443,7 +453,12 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           ),
         ),
         if (miniPlayerVisible)
-          const Positioned(left: 0, right: 0, bottom: 0, child: MiniPlayer()),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: bottomOffset,
+            child: const MiniPlayer(),
+          ),
       ],
     );
 

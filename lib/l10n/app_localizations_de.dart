@@ -3703,4 +3703,16 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settings_playback_mpv_linux_help =>
       'Linux nutzt eingebettetes libmpv, nicht gpu-next oder Fensterausgaben. Softwareausgabe ist langsamer und ignoriert GPU-Rendering-Einstellungen. Decoder hängen von GPU und Treibern ab; Rückkopiermodi funktionieren auch mit Softwareausgabe. Nicht verfügbare Decoder nutzen Softwaredekodierung.';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer =>
+      'Abstand unter dem Miniplayer';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer_subtitle =>
+      'Fügt unter dem Miniplayer und schwebenden Bedienelementen Platz hinzu, wenn eine Systemtaskleiste sie verdeckt.';
+
+  @override
+  String get settings_interface_miniplayer_bottom_offset =>
+      'Abstand zum unteren Rand';
 }

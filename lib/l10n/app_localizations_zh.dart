@@ -3535,6 +3535,16 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settings_playback_mpv_linux_help =>
       'Linux 使用嵌入式 libmpv，不支持 gpu-next 或独立窗口输出。软件输出较慢，会忽略 GPU 渲染设置。解码器支持取决于 GPU 和驱动；回拷模式也适用于软件输出。不可用的解码器会回退到软件解码。';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer => '迷你播放器底部留白';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer_subtitle =>
+      '当系统任务栏遮挡迷你播放器和悬浮控件时，在它们下方添加空白。';
+
+  @override
+  String get settings_interface_miniplayer_bottom_offset => '底部偏移量';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7068,6 +7078,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_playback_mpv_linux_help =>
       'Linux 使用嵌入式 libmpv，不支持 gpu-next 或独立窗口输出。软件输出较慢，会忽略 GPU 渲染设置。解码器支持取决于 GPU 和驱动；回拷模式也适用于软件输出。不可用的解码器会回退到软件解码。';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer => '迷你播放器底部留白';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer_subtitle =>
+      '当系统任务栏遮挡迷你播放器和悬浮控件时，在它们下方添加空白。';
+
+  @override
+  String get settings_interface_miniplayer_bottom_offset => '底部偏移量';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10610,4 +10630,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settings_playback_mpv_linux_help =>
       'Linux 使用嵌入式 libmpv，不支援 gpu-next 或獨立視窗輸出。軟體輸出較慢，會忽略 GPU 算繪設定。解碼器支援取決於 GPU 和驅動程式；回拷模式也適用於軟體輸出。不可用的解碼器會回退到軟體解碼。';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer => '迷你播放器底部留白';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer_subtitle =>
+      '當系統工作列遮擋迷你播放器和浮動控制項時，在它們下方加入空白。';
+
+  @override
+  String get settings_interface_miniplayer_bottom_offset => '底部位移量';
 }

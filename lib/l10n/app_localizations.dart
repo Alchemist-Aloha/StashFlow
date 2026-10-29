@@ -6605,6 +6605,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Linux uses embedded libmpv, not gpu-next or window-based outputs. Software output is slower and ignores GPU rendering settings. Decoder support depends on GPU and drivers; copy-back modes also work with software output. Unavailable decoders fall back to software decoding.'**
   String get settings_playback_mpv_linux_help;
+
+  /// No description provided for @settings_interface_miniplayer_bottom_spacer.
+  ///
+  /// In en, this message translates to:
+  /// **'Mini-player bottom spacer'**
+  String get settings_interface_miniplayer_bottom_spacer;
+
+  /// No description provided for @settings_interface_miniplayer_bottom_spacer_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add space below the mini-player and floating controls when a system taskbar covers them.'**
+  String get settings_interface_miniplayer_bottom_spacer_subtitle;
+
+  /// No description provided for @settings_interface_miniplayer_bottom_offset.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom offset'**
+  String get settings_interface_miniplayer_bottom_offset;
 }
 
 class _AppLocalizationsDelegate

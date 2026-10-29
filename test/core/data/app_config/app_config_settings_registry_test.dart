@@ -144,6 +144,8 @@ void main() {
         'use_true_black',
         'app_global_scale_factor',
         'auto_hide_top_app_bar',
+        'mini_player_bottom_spacer_enabled',
+        'mini_player_bottom_offset',
         'navigation_tabs_config',
         'desktop_keybinds',
         'video_play_end_behavior',

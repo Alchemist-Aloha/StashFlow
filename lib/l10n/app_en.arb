@@ -1651,5 +1651,8 @@
   "settings_playback_mpv_nvdec": "NVIDIA decoding (nvdec)",
   "settings_playback_mpv_nvdec_copy": "NVIDIA decoding, copy-back (nvdec-copy)",
   "settings_playback_mpv_vdpau_copy": "VDPAU decoding, copy-back (vdpau-copy)",
-  "settings_playback_mpv_linux_help": "Linux uses embedded libmpv, not gpu-next or window-based outputs. Software output is slower and ignores GPU rendering settings. Decoder support depends on GPU and drivers; copy-back modes also work with software output. Unavailable decoders fall back to software decoding."
+  "settings_playback_mpv_linux_help": "Linux uses embedded libmpv, not gpu-next or window-based outputs. Software output is slower and ignores GPU rendering settings. Decoder support depends on GPU and drivers; copy-back modes also work with software output. Unavailable decoders fall back to software decoding.",
+  "settings_interface_miniplayer_bottom_spacer": "Mini-player bottom spacer",
+  "settings_interface_miniplayer_bottom_spacer_subtitle": "Add space below the mini-player and floating controls when a system taskbar covers them.",
+  "settings_interface_miniplayer_bottom_offset": "Bottom offset"
 }
