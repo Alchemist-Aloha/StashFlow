@@ -4,10 +4,11 @@ import 'package:path/path.dart' as p;
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 import 'package:stashflow_translation/stashflow_translation.dart';
 import 'caption_cue.dart';
+import 'caption_options.dart';
 import 'local_caption_model.dart';
 
-/// One isolate-confined ASR/translation engine per caption session. Calls are
-/// serialized by CaptionSession; closing queues behind any pending inference.
+/// Isolate-confined ASR plus one lazily loaded Marian model at a time.
+/// Requests are serialized by CaptionSession; close queues behind inference.
 class CaptionWorker {
   CaptionWorker._(this._isolate, this._commands);
   final Isolate _isolate;
@@ -18,14 +19,22 @@ class CaptionWorker {
     String directory, {
     LocalCaptionModel? translation,
     String? translationDirectory,
+    List<(LocalCaptionModel, String)> translations = const [],
+    CaptionOptions options = const CaptionOptions(),
+    bool translate = false,
   }) async {
+    if (!options.isValid) throw ArgumentError('Invalid caption options');
     final ready = ReceivePort();
     final isolate = await Isolate.spawn(_worker, (
       ready.sendPort,
       model,
       directory,
-      translation,
-      translationDirectory,
+      [
+        ...translations,
+        if (translation != null) (translation, translationDirectory!),
+      ],
+      options,
+      translate || translation != null,
     ));
     try {
       final result = await ready.first.timeout(const Duration(seconds: 90));
@@ -33,7 +42,7 @@ class CaptionWorker {
         throw StateError('Caption engine initialization failed');
       }
       return CaptionWorker._(isolate, result);
-    } catch (_) {
+    } on Object {
       isolate.kill();
       rethrow;
     } finally {
@@ -53,6 +62,7 @@ class CaptionWorker {
       windowStart,
       windowEnd,
     ));
+    if (response is CaptionTranslationUnavailable) throw response;
     if (response is! List<CaptionCue>) {
       throw StateError('Caption inference failed');
     }
@@ -78,29 +88,79 @@ class CaptionWorker {
   }
 }
 
+String _language(String detected, String fallback) {
+  final language = detected
+      .replaceAll('<|', '')
+      .replaceAll('|>', '')
+      .trim()
+      .toLowerCase();
+  return captionLanguageCodes.contains(language)
+      ? language
+      : fallback == 'auto'
+      ? 'und'
+      : fallback;
+}
+
 Future<void> _worker(
-  (SendPort, LocalCaptionModel, String, LocalCaptionModel?, String?) args,
+  (
+    SendPort,
+    LocalCaptionModel,
+    String,
+    List<(LocalCaptionModel, String)>,
+    CaptionOptions,
+    bool,
+  )
+  args,
 ) async {
-  final (ready, model, directory, translation, translationDirectory) = args;
+  final (ready, model, directory, translations, options, translate) = args;
+  final source = options.sourceLanguage == 'auto' && !model.canDetectLanguage
+      ? model.sourceLanguages.first
+      : options.sourceLanguage;
   sherpa.OnlineRecognizer? online;
   sherpa.OfflineRecognizer? offline;
   sherpa.VoiceActivityDetector? vad;
   MarianTranslator? translator;
+  String? activeTranslation;
   final commands = ReceivePort();
   try {
     sherpa.initBindings();
-    if (model.engine == 'whisper') {
+    if ([
+      'whisper',
+      'sensevoice',
+      'paraformer',
+      'offline-transducer',
+    ].contains(model.engine)) {
       offline = sherpa.OfflineRecognizer(
         sherpa.OfflineRecognizerConfig(
           model: sherpa.OfflineModelConfig(
-            whisper: sherpa.OfflineWhisperModelConfig(
-              encoder: p.join(directory, model.files[0].name),
-              decoder: p.join(directory, model.files[1].name),
-              language: model.source,
-              task: 'transcribe',
-            ),
-            tokens: p.join(directory, model.files[2].name),
-            numThreads: 2,
+            whisper: model.engine == 'whisper'
+                ? sherpa.OfflineWhisperModelConfig(
+                    encoder: p.join(directory, model.files[0].name),
+                    decoder: p.join(directory, model.files[1].name),
+                    language: source == 'auto' ? '' : source,
+                    task: 'transcribe',
+                  )
+                : const sherpa.OfflineWhisperModelConfig(),
+            senseVoice: model.engine == 'sensevoice'
+                ? sherpa.OfflineSenseVoiceModelConfig(
+                    model: p.join(directory, model.files[0].name),
+                    language: source == 'auto' ? 'auto' : source,
+                  )
+                : const sherpa.OfflineSenseVoiceModelConfig(),
+            paraformer: model.engine == 'paraformer'
+                ? sherpa.OfflineParaformerModelConfig(
+                    model: p.join(directory, model.files[0].name),
+                  )
+                : const sherpa.OfflineParaformerModelConfig(),
+            transducer: model.engine == 'offline-transducer'
+                ? sherpa.OfflineTransducerModelConfig(
+                    encoder: p.join(directory, model.files[0].name),
+                    decoder: p.join(directory, model.files[1].name),
+                    joiner: p.join(directory, model.files[2].name),
+                  )
+                : const sherpa.OfflineTransducerModelConfig(),
+            tokens: p.join(directory, model.tokensFile),
+            numThreads: options.threads,
             debug: false,
           ),
         ),
@@ -109,12 +169,15 @@ Future<void> _worker(
         config: sherpa.VadModelConfig(
           sileroVad: sherpa.SileroVadModelConfig(
             model: p.join(directory, 'silero_vad.onnx'),
+            threshold: options.speechThreshold,
             minSilenceDuration: 0.3,
-            maxSpeechDuration: 5,
+            maxSpeechDuration: (options.windowSeconds - 1)
+                .clamp(2, 5)
+                .toDouble(),
           ),
           debug: false,
         ),
-        bufferSizeInSeconds: 15,
+        bufferSizeInSeconds: options.windowSeconds + 4,
       );
     } else {
       online = sherpa.OnlineRecognizer(
@@ -125,23 +188,19 @@ Future<void> _worker(
               decoder: p.join(directory, model.files[1].name),
               joiner: p.join(directory, model.files[2].name),
             ),
-            tokens: p.join(directory, 'tokens.txt'),
-            modelType: model.engine,
-            numThreads: 2,
+            tokens: p.join(directory, model.tokensFile),
+            modelType: model.engine == 'transducer' ? '' : model.engine,
+            numThreads: options.threads,
             debug: false,
           ),
           enableEndpoint: false,
         ),
       );
     }
-    if (translation != null) {
-      translator = MarianTranslator(translationDirectory!);
-    }
     ready.send(commands.sendPort);
     await for (final message in commands) {
       final (input, reply) = message as (Object?, SendPort);
       if (input == null) {
-        // Acknowledge only after native memory has been released.
         online?.free();
         online = null;
         offline?.free();
@@ -189,6 +248,7 @@ Future<void> _worker(
                 audioStart: audioStart,
                 windowStart: windowStart,
                 windowEnd: windowEnd,
+                language: source,
               ),
             );
           } finally {
@@ -218,13 +278,14 @@ Future<void> _worker(
               stream.acceptWaveform(samples: speech.samples, sampleRate: 16000);
               offline.decode(stream);
               final result = offline.getResult(stream);
+              final language = _language(result.lang, source);
               final start =
                   audioStart +
                   Duration(
                     microseconds: (speech.start * 1000000 / 16000).round(),
                   );
-              // shortcut: this Whisper export lacks attention outputs; use VAD
-              // phrase timing until attention-enabled weights are adopted.
+              // shortcut: plain Whisper exports lack attention outputs; VAD phrase
+              // timing works until attention-enabled exports are adopted.
               final end =
                   start +
                   Duration(
@@ -235,38 +296,71 @@ Future<void> _worker(
               final clippedEnd = end > windowEnd ? windowEnd : end;
               final text = result.text.trim();
               if (text.isNotEmpty && clippedStart < clippedEnd) {
-                cues.add(CaptionCue(clippedStart, clippedEnd, text));
+                cues.add(
+                  CaptionCue(
+                    clippedStart,
+                    clippedEnd,
+                    text,
+                    language: language,
+                  ),
+                );
               }
             } finally {
               stream.free();
             }
           }
         }
-        if (translator == null) {
+        if (!translate) {
           reply.send(cues);
-        } else {
-          reply.send(
-            cues
-                .map(
-                  (cue) => CaptionCue(
-                    cue.start,
-                    cue.end,
-                    translator!.translate(
-                      cue.text,
-                      languageToken: translation!.target == 'zh'
-                          ? '>>cmn_Hans<<'
-                          : '',
-                    ),
-                  ),
-                )
-                .toList(),
+          continue;
+        }
+        final output = <CaptionCue>[];
+        for (final cue in cues) {
+          final language = cue.language ?? source;
+          if (language == options.outputLanguage) {
+            output.add(cue);
+            continue;
+          }
+          final pair = translations
+              .where(
+                (p) =>
+                    p.$1.source == language &&
+                    p.$1.supportsOutput(options.outputLanguage),
+              )
+              .firstOrNull;
+          if (pair == null) {
+            throw CaptionTranslationUnavailable(
+              language,
+              options.outputLanguage,
+            );
+          }
+          if (activeTranslation != pair.$1.id) {
+            translator?.close();
+            translator = null;
+            translator = MarianTranslator(pair.$2);
+            activeTranslation = pair.$1.id;
+          }
+          final text = translator!.translate(
+            cue.text,
+            languageToken: pair.$1.languageToken(options.outputLanguage),
+          );
+          output.add(
+            CaptionCue(
+              cue.start,
+              cue.end,
+              options.bilingual ? '${cue.text}\n$text' : text,
+              language: language,
+            ),
           );
         }
-      } on Object catch (_) {
+        reply.send(output);
+      } on CaptionTranslationUnavailable catch (error) {
+        reply.send(error);
+      } on Object {
         reply.send('Caption inference failed');
       }
     }
-  } on Object catch (_) {
+  } on Object {
     ready.send('Caption engine initialization failed');
   } finally {
     online?.free();

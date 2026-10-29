@@ -1,12 +1,19 @@
 import 'dart:async';
 import 'caption_cue.dart';
+import 'caption_options.dart';
 
-enum CaptionStatus { preparing, ready, failed }
+enum CaptionStatus { preparing, ready, failed, translationUnavailable }
 
 class CaptionFrame {
-  const CaptionFrame(this.status, [this.text = '']);
+  const CaptionFrame(
+    this.status, [
+    this.text = '',
+    this.language,
+    this.outputLanguage,
+  ]);
   final CaptionStatus status;
   final String text;
+  final String? language, outputLanguage;
 }
 
 /// Bounded look-ahead scheduling, owned by one scene/track/model/language session.
@@ -17,7 +24,9 @@ class CaptionSession {
     required this.process,
     required this.cancelDecode,
     required this.onFrame,
+    this.windowDuration = window,
   });
+  final Duration windowDuration;
   final Duration Function() position, duration;
   final Future<List<CaptionCue>> Function(Duration start, Duration end) process;
   final void Function() cancelDecode;
@@ -38,7 +47,10 @@ class CaptionSession {
 
   void _emit(CaptionFrame frame) {
     if (_disposed ||
-        (_lastFrame?.text == frame.text && _lastFrame?.status == frame.status)) {
+        (_lastFrame?.text == frame.text &&
+            _lastFrame?.status == frame.status &&
+            _lastFrame?.language == frame.language &&
+            _lastFrame?.outputLanguage == frame.outputLanguage)) {
       return;
     }
     _lastFrame = frame;
@@ -55,9 +67,17 @@ class CaptionSession {
       cancelDecode();
     }
     _lastPosition = now;
-    final index = now.inMilliseconds ~/ window.inMilliseconds;
+    final total = duration();
+    if (total > Duration.zero && now >= total) {
+      _emit(const CaptionFrame(CaptionStatus.ready));
+      return;
+    }
+    final scheduled = now < Duration.zero ? Duration.zero : now;
+    final index = scheduled.inMilliseconds ~/ windowDuration.inMilliseconds;
     final current = _cache[index];
-    if (current == null) {
+    if (now < Duration.zero) {
+      _emit(const CaptionFrame(CaptionStatus.ready));
+    } else if (current == null) {
       _emit(const CaptionFrame(CaptionStatus.preparing));
     } else {
       _emit(
@@ -67,18 +87,18 @@ class CaptionSession {
               .where((cue) => cue.contains(now))
               .map((cue) => cue.text)
               .join('\n'),
+          current.where((cue) => cue.contains(now)).firstOrNull?.language,
         ),
       );
     }
     if (_pending != null) return;
     for (var next = index; next <= index + 2; next++) {
       if (_cache.containsKey(next)) continue;
-      final start = window * next;
-      final total = duration();
+      final start = windowDuration * next;
       if (total > Duration.zero && start >= total) return;
-      final end = total > Duration.zero && start + window > total
+      final end = total > Duration.zero && start + windowDuration > total
           ? total
-          : start + window;
+          : start + windowDuration;
       _pending = _process(next, start, end, _generation);
       return;
     }
@@ -94,12 +114,21 @@ class CaptionSession {
       final cues = await process(start, end);
       if (_disposed || generation != _generation) return;
       _cache[index] = cues;
-      // Session-local text only, bounded to roughly three minutes.
+      // Session-local text only, bounded to 32 processing windows.
       if (_cache.length > 32) _cache.remove(_cache.keys.first);
-    } on Object catch (_) {
+    } on Object catch (error) {
       if (_disposed || generation != _generation) return;
       _failed = true;
-      _emit(const CaptionFrame(CaptionStatus.failed));
+      _emit(
+        error is CaptionTranslationUnavailable
+            ? CaptionFrame(
+                CaptionStatus.translationUnavailable,
+                '',
+                error.source,
+                error.target,
+              )
+            : const CaptionFrame(CaptionStatus.failed),
+      );
     } finally {
       _pending = null;
     }

@@ -7,6 +7,7 @@ import '../../../../core/data/services/cast_service.dart';
 import '../../data/local_captions/caption_audio_decoder.dart';
 import '../../data/local_captions/caption_session.dart';
 import '../../data/local_captions/caption_worker.dart';
+import '../../data/local_captions/local_caption_model.dart';
 import 'local_caption_settings.dart';
 import 'video_player_provider.dart';
 export '../../data/local_captions/caption_session.dart'
@@ -60,7 +61,13 @@ class LocalCaptionsNotifier extends Notifier<LocalCaptions> {
     });
     ref.listen(
       localCaptionSettingsProvider.select(
-        (s) => (s.selected, s.translation, s.canTranscribe, s.canTranslate),
+        (s) => (
+          s.selected,
+          s.translation,
+          s.canTranscribe,
+          s.canTranslate,
+          s.options,
+        ),
       ),
       (_, next) => unawaited(stop()),
     );
@@ -138,23 +145,29 @@ class LocalCaptionsNotifier extends Notifier<LocalCaptions> {
     try {
       await ref.read(playerStateProvider.notifier).setSubtitle('none');
       final model = settings.model!;
-      final translation = mode == LocalCaptionMode.translate
-          ? settings.translationModel
-          : null;
+      final translations = mode == LocalCaptionMode.translate
+          ? settings.translationsFor(model, settings.options)
+          : <LocalCaptionModel>[];
       final store = await ref.read(captionModelStoreProvider.future);
-      if (!await store.isInstalled(model) ||
-          (translation != null && !await store.isInstalled(translation))) {
+      if (!await store.isInstalled(model)) {
         throw StateError('Caption model unavailable');
+      }
+      for (final translation in translations) {
+        if (!await store.isInstalled(translation)) {
+          throw StateError('Translation model unavailable');
+        }
       }
       final temporary = await getTemporaryDirectory();
       if (!ref.mounted || generation != _generation) return;
       final opening = _opening = CaptionWorker.start(
         model,
         store.directory(model).path,
-        translation: translation,
-        translationDirectory: translation == null
-            ? null
-            : store.directory(translation).path,
+        translations: [
+          for (final translation in translations)
+            (translation, store.directory(translation).path),
+        ],
+        options: settings.options,
+        translate: mode == LocalCaptionMode.translate,
       );
       final worker = await opening;
       // A stop during initialization transfers cleanup ownership to _release.
@@ -167,7 +180,10 @@ class LocalCaptionsNotifier extends Notifier<LocalCaptions> {
       );
       final audioTrack = player.state.track.audio.id;
       final session = _session = CaptionSession(
-        position: () => player.state.position,
+        position: () =>
+            player.state.position -
+            Duration(milliseconds: settings.options.delayMilliseconds),
+        windowDuration: Duration(seconds: settings.options.windowSeconds),
         duration: () => player.state.duration,
         cancelDecode: decoder.cancel,
         onFrame: (frame) {

@@ -1,6 +1,7 @@
 /// A generated phrase in the original media time base, independent of playback speed.
 class CaptionCue {
-  const CaptionCue(this.start, this.end, this.text);
+  const CaptionCue(this.start, this.end, this.text, {this.language});
+  final String? language;
   final Duration start, end;
   final String text;
   bool contains(Duration position) => start <= position && position < end;
@@ -14,6 +15,7 @@ List<CaptionCue> captionCuesFromTokens({
   required Duration audioStart,
   required Duration windowStart,
   required Duration windowEnd,
+  String? language,
 }) {
   final cues = <CaptionCue>[];
   var words = <String>[];
@@ -23,7 +25,14 @@ List<CaptionCue> captionCuesFromTokens({
     final text = words.join().replaceAll('▁', ' ').trim();
     if (start != null && text.isNotEmpty) {
       final end = last + const Duration(milliseconds: 600);
-      cues.add(CaptionCue(start!, end < windowEnd ? end : windowEnd, text));
+      cues.add(
+        CaptionCue(
+          start!,
+          end < windowEnd ? end : windowEnd,
+          text,
+          language: language,
+        ),
+      );
     }
     words = [];
     start = null;

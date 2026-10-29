@@ -11,6 +11,7 @@ import '../../providers/local_caption_settings.dart';
 import '../../providers/local_captions_provider.dart';
 import '../../providers/video_player_provider.dart';
 import '../local_caption_labels.dart';
+import 'caption_tuning_dialog.dart';
 
 /// Shared subtitle menu, including scenes with no server-provided captions.
 class SceneSubtitleMenu extends ConsumerWidget {
@@ -25,6 +26,17 @@ class SceneSubtitleMenu extends ConsumerWidget {
   final Scene scene;
   final ValueChanged<String?>? onSubtitleSelected;
   final VoidCallback? onInteract;
+
+  void _openSettings(BuildContext context, WidgetRef ref) {
+    if (!context.mounted) return;
+    final router = GoRouter.of(context);
+    if (ref.read(playerStateProvider).isFullScreen) {
+      final player = ref.read(playerStateProvider.notifier);
+      player.syncBackgroundToActiveScene(context);
+      player.requestExitFullscreen();
+    }
+    unawaited(router.push('/settings/playback'));
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,25 +62,48 @@ class SceneSubtitleMenu extends ConsumerWidget {
         onInteract?.call();
         final notifier = ref.read(localCaptionsProvider.notifier);
         if (value == '__models') {
-          if (!context.mounted) return;
-          final router = GoRouter.of(context);
-          if (ref.read(playerStateProvider).isFullScreen) {
-            final player = ref.read(playerStateProvider.notifier);
-            player.syncBackgroundToActiveScene(context);
-            player.requestExitFullscreen();
-          }
-          unawaited(router.push('/settings/playback'));
+          _openSettings(context, ref);
         } else if (value == '__transcribe' || value == '__translate') {
           final current = ref.read(playerStateProvider);
           if (current.activeScene?.id != scene.id ||
               !identical(current.player, controller.player)) {
             return;
           }
-          await notifier.setMode(
+          final draft = await showCaptionTuningDialog(
+            context,
             value == '__transcribe'
                 ? LocalCaptionMode.transcribe
                 : LocalCaptionMode.translate,
           );
+          if (draft == null || !context.mounted) return;
+          if (draft.manageModels) {
+            _openSettings(context, ref);
+            return;
+          }
+          final active = ref.read(playerStateProvider);
+          if (active.activeScene?.id != scene.id ||
+              !identical(active.player, controller.player)) {
+            return;
+          }
+          await ref
+              .read(localCaptionSettingsProvider.notifier)
+              .configure(
+                draft.speechId!,
+                draft.options,
+                translationId: draft.mode == LocalCaptionMode.translate
+                    ? draft.translationId
+                    : null,
+                automaticTranslation:
+                    draft.mode == LocalCaptionMode.translate &&
+                    draft.translationId == null,
+              );
+          if (!context.mounted) return;
+          final afterSave = ref.read(playerStateProvider);
+          if (afterSave.activeScene?.id != scene.id ||
+              !identical(afterSave.player, controller.player)) {
+            return;
+          }
+          await notifier.setMode(draft.mode);
         } else {
           await notifier.stop();
           if (!context.mounted) return;
@@ -125,15 +160,15 @@ class SceneSubtitleMenu extends ConsumerWidget {
         CheckedPopupMenuItem(
           value: '__translate',
           checked: mode == LocalCaptionMode.translate,
-          enabled: enabled && settings.canTranslate,
+          enabled: enabled && settings.canTranscribe,
           child: Text(
-            settings.translationModel == null
+            settings.model == null
                 ? context.l10n.local_captions_translate
                 : context.l10n.local_captions_model(
                     context.l10n.local_captions_translate,
                     localCaptionLanguageLabel(
                       context,
-                      settings.translationModel!.target!,
+                      settings.options.outputLanguage,
                     ),
                   ),
           ),

@@ -120,6 +120,38 @@ void main() {
       expect(await root.list().toList(), isEmpty);
     });
 
+    test(
+      'downloaded Hub manifests restore offline without fetching the catalog',
+      () async {
+        const repo = 'test/sherpa-onnx-streaming-zipformer-en';
+        const revision = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+        final snapshot = LocalCaptionModel(
+          id: LocalCaptionModel.snapshotId(repo, revision, false),
+          repository: repo,
+          revision: revision,
+          source: 'en',
+          engine: 'transducer',
+          files: [
+            for (final name in [
+              'encoder.onnx',
+              'decoder.onnx',
+              'joiner.onnx',
+              'tokens.txt',
+            ])
+              CaptionModelFile(name, 3, sha256.convert([1, 2, 3]).toString()),
+          ],
+        );
+        await store.install(
+          snapshot,
+          cancel: CancelToken(),
+          onProgress: (_) {},
+        );
+        final restored = await store.readInstalled();
+        expect(restored.single.id, snapshot.id);
+        expect(restored.single.toJson(), snapshot.toJson());
+      },
+    );
+
     test('rejects path traversal before touching disk', () async {
       final unsafe = LocalCaptionModel(
         id: '../escape',
@@ -225,6 +257,43 @@ void main() {
       position = const Duration(seconds: 3);
       session.tick();
       expect(frames.last.text, isEmpty);
+      await session.close();
+    },
+  );
+
+  test(
+    'delay boundaries remain blank while look-ahead uses configured windows',
+    () async {
+      var position = const Duration(seconds: -3);
+      final frames = <CaptionFrame>[];
+      final starts = <Duration>[];
+      final session = CaptionSession(
+        position: () => position,
+        duration: () => const Duration(seconds: 12),
+        windowDuration: const Duration(seconds: 4),
+        cancelDecode: () {},
+        onFrame: frames.add,
+        process: (start, end) async {
+          starts.add(start);
+          return [CaptionCue(start, end, 'speech', language: 'ja')];
+        },
+      );
+      session.tick();
+      await Future<void>.delayed(Duration.zero);
+      session.tick();
+      expect(frames.last.text, isEmpty);
+      expect(frames.last.status, CaptionStatus.ready);
+      expect(starts.first, Duration.zero);
+      position = Duration.zero;
+      session.tick();
+      expect(frames.last.text, 'speech');
+      expect(frames.last.language, 'ja');
+      await Future<void>.delayed(Duration.zero);
+      position = const Duration(seconds: 13);
+      session.tick();
+      expect(frames.last.text, isEmpty);
+      expect(frames.last.status, CaptionStatus.ready);
+      expect(starts, everyElement(lessThan(const Duration(seconds: 12))));
       await session.close();
     },
   );

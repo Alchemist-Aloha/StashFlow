@@ -114,6 +114,138 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @local_captions_auto_model.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic (downloaded models)'**
+  String get local_captions_auto_model;
+
+  /// No description provided for @local_captions_catalog_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse compatible Whisper, transducer, SenseVoice, Paraformer and Marian OPUS-MT models on Hugging Face. Check the model card and license; large models may exceed device memory.'**
+  String get local_captions_catalog_help;
+
+  /// No description provided for @local_captions_catalog_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot load model catalog. Check your connection and retry.'**
+  String get local_captions_catalog_error;
+
+  /// No description provided for @local_captions_incompatible.
+  ///
+  /// In en, this message translates to:
+  /// **'This repository does not contain a compatible model layout.'**
+  String get local_captions_incompatible;
+
+  /// No description provided for @local_captions_downloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded models'**
+  String get local_captions_downloaded;
+
+  /// No description provided for @local_captions_multilingual.
+  ///
+  /// In en, this message translates to:
+  /// **'Multilingual'**
+  String get local_captions_multilingual;
+
+  /// No description provided for @local_captions_configure.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription and translation'**
+  String get local_captions_configure;
+
+  /// No description provided for @local_captions_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Source language'**
+  String get local_captions_source;
+
+  /// No description provided for @local_captions_output.
+  ///
+  /// In en, this message translates to:
+  /// **'Output language'**
+  String get local_captions_output;
+
+  /// No description provided for @local_captions_automatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Detect automatically'**
+  String get local_captions_automatic;
+
+  /// No description provided for @local_captions_model_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Model default'**
+  String get local_captions_model_default;
+
+  /// No description provided for @local_captions_auto_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Multilingual Whisper and SenseVoice detect each speech segment. English-only .en models do not. Mixed or very short speech may need a fixed language.'**
+  String get local_captions_auto_help;
+
+  /// No description provided for @local_captions_window.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio window'**
+  String get local_captions_window;
+
+  /// No description provided for @local_captions_threads.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech recognition threads'**
+  String get local_captions_threads;
+
+  /// No description provided for @local_captions_threshold.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech detection threshold'**
+  String get local_captions_threshold;
+
+  /// No description provided for @local_captions_threshold_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower values include quieter speech; higher values reject more noise.'**
+  String get local_captions_threshold_help;
+
+  /// No description provided for @local_captions_delay.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle delay'**
+  String get local_captions_delay;
+
+  /// No description provided for @local_captions_bilingual.
+  ///
+  /// In en, this message translates to:
+  /// **'Show original with translation'**
+  String get local_captions_bilingual;
+
+  /// No description provided for @local_captions_missing_pair.
+  ///
+  /// In en, this message translates to:
+  /// **'No downloaded model for {source} → {target}. Choose a matching translation model in settings.'**
+  String local_captions_missing_pair(String source, String target);
+
+  /// No description provided for @local_captions_detected.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected language: {language}'**
+  String local_captions_detected(String language);
+
+  /// No description provided for @local_captions_model_missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Download a speech model in Playback Settings first.'**
+  String get local_captions_model_missing;
+
+  /// No description provided for @local_captions_language_name.
+  ///
+  /// In en, this message translates to:
+  /// **'{code, select, af {Afrikaans} am {Amharic} ar {Arabic} as {Assamese} az {Azerbaijani} ba {Bashkir} be {Belarusian} bg {Bulgarian} bn {Bangla} bo {Tibetan} br {Breton} bs {Bosnian} ca {Catalan} cs {Czech} cy {Welsh} da {Danish} de {German} el {Greek} en {English} es {Spanish} et {Estonian} eu {Basque} fa {Persian} fi {Finnish} fo {Faroese} fr {French} gl {Galician} gu {Gujarati} ha {Hausa} haw {Hawaiian} he {Hebrew} hi {Hindi} hr {Croatian} ht {Haitian Creole} hu {Hungarian} hy {Armenian} id {Indonesian} is {Icelandic} it {Italian} ja {Japanese} jw {Javanese} ka {Georgian} kk {Kazakh} km {Khmer} kn {Kannada} ko {Korean} la {Latin} lb {Luxembourgish} ln {Lingala} lo {Lao} lt {Lithuanian} lv {Latvian} mg {Malagasy} mi {Māori} mk {Macedonian} ml {Malayalam} mn {Mongolian} mr {Marathi} ms {Malay} mt {Maltese} my {Burmese} ne {Nepali} nl {Dutch} nn {Norwegian Nynorsk} no {Norwegian} oc {Occitan} pa {Punjabi} pl {Polish} ps {Pashto} pt {Portuguese} ro {Romanian} ru {Russian} sa {Sanskrit} sd {Sindhi} si {Sinhala} sk {Slovak} sl {Slovenian} sn {Shona} so {Somali} sq {Albanian} sr {Serbian} su {Sundanese} sv {Swedish} sw {Swahili} ta {Tamil} te {Telugu} tg {Tajik} th {Thai} tk {Turkmen} tl {Filipino} tr {Turkish} tt {Tatar} uk {Ukrainian} ur {Urdu} uz {Uzbek} vi {Vietnamese} yi {Yiddish} yo {Yoruba} zh {Chinese} yue {Cantonese} zh_Hant {Traditional Chinese} other {{code}}}'**
+  String local_captions_language_name(String code);
+
   /// No description provided for @local_captions_title.
   ///
   /// In en, this message translates to:
@@ -177,7 +309,7 @@ abstract class AppLocalizations {
   /// No description provided for @local_captions_mismatch.
   ///
   /// In en, this message translates to:
-  /// **'Speech and translation models must use the same source language.'**
+  /// **'Download a translation model matching the source and output languages.'**
   String get local_captions_mismatch;
 
   /// No description provided for @local_captions_transcribe.

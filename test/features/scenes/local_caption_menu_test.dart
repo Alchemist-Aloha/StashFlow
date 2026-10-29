@@ -114,6 +114,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
+      await tester.pumpAndSettle();
       expect(find.text('generated phrase'), findsOneWidget);
       await tester.tap(find.byTooltip('Select subtitle'));
       await tester.pumpAndSettle();
@@ -123,6 +126,9 @@ void main() {
           matching: find.byType(CheckedPopupMenuItem<String>),
         ),
       );
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
       await tester.pumpAndSettle();
       expect(find.text('generated phrase'), findsOneWidget);
       await tester.tap(find.byTooltip('Select subtitle'));

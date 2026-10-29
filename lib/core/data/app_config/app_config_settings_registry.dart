@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../features/scenes/presentation/providers/player_settings.dart';
 import '../../../features/scenes/data/local_captions/local_caption_model.dart';
+import '../../../features/scenes/data/local_captions/caption_options.dart';
 import '../../utils/app_log_store.dart';
 
 final class AppConfigSettingException implements Exception {
@@ -156,19 +157,25 @@ final class AppConfigSettingsRegistry {
     _bool('video_gravity_orientation'),
     _bool('use_actual_scene_video_in_miniplayer'),
     _string('default_subtitle_language'),
-    _string(
+    _Setting(
       'local_caption_model',
-      allowed: {
-        for (final model in LocalCaptionModel.catalog)
-          if (!model.isTranslation) model.id,
-      },
+      _SettingType.string,
+      (value) => LocalCaptionModel.validSelection(value as String, false),
     ),
-    _string(
+    _Setting(
       'local_caption_translation_model',
-      allowed: {
-        for (final model in LocalCaptionModel.catalog)
-          if (model.isTranslation) model.id,
-      },
+      _SettingType.string,
+      (value) => LocalCaptionModel.validSelection(value as String, true),
+    ),
+    _Setting(
+      'local_caption_model_manifests',
+      _SettingType.string,
+      (value) => LocalCaptionModel.validManifests(value as String),
+    ),
+    _Setting(
+      'local_caption_options',
+      _SettingType.string,
+      (value) => CaptionOptions.parse(value as String) != null,
     ),
     _double('subtitle_font_size', min: 8, max: 96),
     _double('subtitle_position_bottom_ratio', min: 0, max: 1),

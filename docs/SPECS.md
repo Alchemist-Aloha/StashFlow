@@ -541,15 +541,30 @@ URLs or authentication headers.
 
 ### On-device transcription and translation
 
-Playback Settings provides explicit, cancellable model downloads, installed-model
-selection and removal. Downloads use pinned upstream revisions, exact sizes and
-SHA-256 verification; only complete, atomically installed models are selectable.
-Speech models cover English and Mandarin (streaming Zipformer), and Japanese
-(Whisper tiny with Silero VAD, using phrase-level VAD timing rather than token
-timestamps). Marian translation
-models initially cover English → Simplified Chinese, Mandarin → English, and
-Japanese → English. Translation requires matching source languages. Model
-selections are backed up; downloaded weights and generated text are not.
+Playback Settings provides searchable Hub catalogs, explicit cancellable downloads,
+and installed-model selection/removal. Public repository discovery is paginated
+and scoped to known sherpa-onnx Whisper, transducer, SenseVoice and Paraformer
+export conventions, plus CTranslate2 Marian OPUS-MT language pairs; this is not
+support for arbitrary Hugging Face architectures. Selecting a repository inspects
+its layout and pins its revision, file sizes, SHA-256 hashes, languages and license
+before download. Unsupported layouts are rejected; only complete, atomically
+installed models are usable. Existing snapshots remain selectable offline, and
+a repository already installed reuses that snapshot until removed. Model cards
+remain with downloaded files; large models may exceed device memory. Selections,
+validated manifests and inference options are backed up, never weights or text.
+
+The player opens a transcription/translation dialog before applying either mode.
+The dialog stages speech-model, source/output-language, preferred downloaded
+translation-model, ASR-thread (1–8), audio-window (4–12 seconds), VAD-threshold
+(0.2–0.8), subtitle-delay (±5 seconds) and bilingual-display settings. Cancel
+changes neither preferences nor active inference; Apply commits one configuration.
+Multilingual Whisper, including tiny, detects language per VAD phrase when Auto
+is selected; English-only `.en` exports do not. SenseVoice also supports detection
+for its trained languages. Short/noisy/mixed-language phrases may need a fixed
+language. Offline recognizers use phrase-level VAD timing, not token timestamps.
+Translation lazily loads one downloaded Marian model matching each phrase's
+source and selected output language. A missing pair stops with a localized recovery
+message, never a wrong-language fallback; same-language output passes through.
 
 The shared subtitle menu is available even without server captions, including
 the feed. Transcribe and Translate are opt-in, session-scoped modes and disable
@@ -558,7 +573,7 @@ generation. Web and casting cannot generate subtitles. Native inline,
 fullscreen, feed and PiP surfaces share timed Flutter-rendered cues and existing
 subtitle font, alignment and position preferences.
 
-A separate, silent, untimed mpv PCM decoder reads bounded six-second windows
+A separate, silent, untimed mpv PCM decoder reads bounded configured windows
 with one-second context around them. It reuses the active media URL, headers
 and audio-track ID; it never changes audible playback settings. PCM output must
 be accepted before opening media. ASR (sherpa-onnx) and translation
@@ -568,7 +583,7 @@ Initial generation and uncached seeks show preparation status; real-time
 throughput and accuracy depend on hardware and models, not guaranteed latency.
 
 Seeks invalidate pending results. Scene/controller, audio-track, server/auth or
-model-selection changes stop the session and clear cues; inline/fullscreen/PiP
+model-selection or inference-option changes stop the session and clear cues; inline/fullscreen/PiP
 handoffs of the same controller do not. At most 32 windows of text are kept in
 session memory; temporary PCM is removed after each extraction. Native errors
 are replaced with localized recovery messages, never authenticated URLs or

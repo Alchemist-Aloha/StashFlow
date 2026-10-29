@@ -1,4 +1,8 @@
-/// Curated, revision-pinned model downloads. Files are SHA-256 verified before use.
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import 'caption_options.dart';
+
+/// A resolved, revision-pinned model snapshot, independent of the live catalog.
 class LocalCaptionModel {
   const LocalCaptionModel({
     required this.id,
@@ -8,11 +12,229 @@ class LocalCaptionModel {
     this.target,
     required this.engine,
     required this.files,
+    this.languages = const [],
+    this.displayName,
+    this.license,
+    this.targetPrefixes = const {},
   });
   final String id, repository, revision, source, engine;
   final String? target;
   final List<CaptionModelFile> files;
+  final List<String> languages;
+  final String? displayName, license;
+  final Map<String, String> targetPrefixes;
   bool get isTranslation => target != null;
+  List<String> get sourceLanguages {
+    if (languages.isNotEmpty) return languages;
+    if (engine == 'whisper' && !repository.contains('.en')) {
+      return captionLanguageCodes
+          .where((c) => c != 'yue' || repository.contains('large-v3'))
+          .toList();
+    }
+    return [source];
+  }
+
+  bool get canDetectLanguage =>
+      (engine == 'whisper' && sourceLanguages.length > 1) ||
+      engine == 'sensevoice';
+  bool supportsSource(String code) => code == 'auto'
+      ? canDetectLanguage
+      : sourceLanguages.contains(code) || sourceLanguages.contains('und');
+  bool supportsOutput(String code) =>
+      target == code ||
+      targetPrefixes.containsKey(code) ||
+      (!id.startsWith('hub-') && target == 'zh' && code == 'zh-Hant');
+  String languageToken(String output) =>
+      targetPrefixes[output] ??
+      (!id.startsWith('hub-') && target == 'zh'
+          ? output == 'zh-Hant'
+                ? '>>cmn_Hant<<'
+                : output == 'zh'
+                ? '>>cmn_Hans<<'
+                : ''
+          : '');
+  String get tokensFile =>
+      files.firstWhere((f) => f.name.endsWith('tokens.txt')).name;
+
+  bool get _validLayout {
+    final names = files.map((f) => f.name).toSet();
+    if (isTranslation) {
+      final vocabulary =
+          names.contains('shared_vocabulary.json') ||
+          names.contains('shared_vocabulary.txt') ||
+          (names.any((n) => n.startsWith('source_vocabulary.')) &&
+              names.any((n) => n.startsWith('target_vocabulary.')));
+      return names.containsAll([
+            'model.bin',
+            'config.json',
+            'source.spm',
+            'target.spm',
+          ]) &&
+          vocabulary;
+    }
+    if (!names.any((n) => n.endsWith('tokens.txt'))) return false;
+    if ([
+          'whisper',
+          'sensevoice',
+          'paraformer',
+          'offline-transducer',
+        ].contains(engine) &&
+        !names.contains('silero_vad.onnx')) {
+      return false;
+    }
+    if (engine == 'sensevoice' || engine == 'paraformer') {
+      return files.first.name.endsWith('.onnx');
+    }
+    return files.length >= (engine == 'whisper' ? 3 : 4) &&
+        files[0].name.contains('encoder') &&
+        files[1].name.contains('decoder') &&
+        (engine == 'whisper' || files[2].name.contains('joiner'));
+  }
+
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'repository': repository,
+    'revision': revision,
+    'source': source,
+    'target': target,
+    'engine': engine,
+    'languages': languages,
+    'name': displayName,
+    'license': license,
+    'prefixes': targetPrefixes,
+    'files': files
+        .map(
+          (f) => {
+            'name': f.name,
+            'bytes': f.bytes,
+            'sha256': f.sha256,
+            'url': f.downloadUrl,
+          },
+        )
+        .toList(),
+  };
+
+  static String snapshotId(
+    String repository,
+    String revision,
+    bool translation,
+  ) =>
+      'hub-${translation ? 't' : 's'}-${sha256.convert(utf8.encode('$repository@$revision')).toString().substring(0, 32)}';
+  static bool validSelection(String id, bool translation) =>
+      RegExp('^hub-${translation ? 't' : 's'}-[0-9a-f]{32}\$').hasMatch(id) ||
+      catalog.any((m) => m.id == id && m.isTranslation == translation);
+
+  /// Validates imported/on-disk manifests before any network or native operation.
+  static LocalCaptionModel fromJson(Map<String, dynamic> json) {
+    final model = LocalCaptionModel(
+      id: json['id'] as String,
+      repository: json['repository'] as String,
+      revision: json['revision'] as String,
+      source: json['source'] as String,
+      target: json['target'] as String?,
+      engine: json['engine'] as String,
+      languages: (json['languages'] as List? ?? []).cast<String>(),
+      displayName: json['name'] as String?,
+      license: json['license'] as String?,
+      targetPrefixes: (json['prefixes'] as Map? ?? {}).cast<String, String>(),
+      files: (json['files'] as List)
+          .cast<Map<String, dynamic>>()
+          .map(
+            (f) => CaptionModelFile(
+              f['name'] as String,
+              f['bytes'] as int,
+              f['sha256'] as String,
+              downloadUrl: f['url'] as String?,
+            ),
+          )
+          .toList(),
+    );
+    final legacy = find(model.id);
+    if (!RegExp(
+          r'^[A-Za-z0-9][A-Za-z0-9_.-]*/[A-Za-z0-9][A-Za-z0-9_.-]*$',
+        ).hasMatch(model.repository) ||
+        !RegExp(r'^[0-9a-f]{40}$').hasMatch(model.revision) ||
+        model.id !=
+                snapshotId(
+                  model.repository,
+                  model.revision,
+                  model.isTranslation,
+                ) &&
+            !(legacy?.repository == model.repository &&
+                legacy?.revision == model.revision &&
+                legacy?.engine == model.engine) ||
+        ![
+          'zipformer',
+          'zipformer2',
+          'transducer',
+          'offline-transducer',
+          'whisper',
+          'sensevoice',
+          'paraformer',
+          'marian',
+        ].contains(model.engine) ||
+        model.isTranslation != (model.engine == 'marian') ||
+        ![...captionLanguageCodes, 'auto', 'und'].contains(model.source) ||
+        model.target != null && !captionLanguageCodes.contains(model.target) ||
+        model.languages.any(
+          (c) => ![...captionLanguageCodes, 'und'].contains(c),
+        ) ||
+        model.targetPrefixes.entries.any(
+          (e) =>
+              !captionOutputLanguages.contains(e.key) ||
+              !RegExp(r'^>>[A-Za-z0-9_]+<<$').hasMatch(e.value),
+        ) ||
+        model.files.isEmpty ||
+        model.files.length > 32 ||
+        !model._validLayout ||
+        model.files.map((f) => f.name).toSet().length != model.files.length ||
+        model.files.any(
+          (f) =>
+              !RegExp(r'^[A-Za-z0-9][A-Za-z0-9_.-]*$').hasMatch(f.name) ||
+              f.bytes <= 0 ||
+              f.bytes > 8000000000 ||
+              !RegExp(r'^[0-9a-f]{64}$').hasMatch(f.sha256) ||
+              f.downloadUrl != null &&
+                  !(f.name == 'silero_vad.onnx' &&
+                      f.bytes == sileroVad.bytes &&
+                      f.sha256 == sileroVad.sha256 &&
+                      f.downloadUrl == sileroVad.downloadUrl),
+        )) {
+      throw const FormatException('Invalid caption model manifest');
+    }
+    return model;
+  }
+
+  static List<LocalCaptionModel> parseManifests(String? value) {
+    if (value == null) return [];
+    if (value.length > 1000000) {
+      throw const FormatException('Model manifests too large');
+    }
+    final list = jsonDecode(value) as List;
+    if (list.length > 128) {
+      throw const FormatException('Too many model manifests');
+    }
+    return list
+        .map((m) => fromJson((m as Map).cast<String, dynamic>()))
+        .toList();
+  }
+
+  static bool validManifests(String value) {
+    try {
+      parseManifests(value);
+      return true;
+    } on Object {
+      return false;
+    }
+  }
+
+  static const sileroVad = CaptionModelFile(
+    'silero_vad.onnx',
+    643854,
+    '9e2449e1087496d8d4caba907f23e0bd3f78d91fa552479bb9c23ac09cbb1fd6',
+    downloadUrl:
+        'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx',
+  );
   int get bytes => files.fold(0, (sum, file) => sum + file.bytes);
   String url(CaptionModelFile file) =>
       file.downloadUrl ??
@@ -24,6 +246,7 @@ class LocalCaptionModel {
     return null;
   }
 
+  // Migration snapshots only. The picker discovers models from the live Hub API.
   static const catalog = <LocalCaptionModel>[
     LocalCaptionModel(
       id: 'zipformer-en',

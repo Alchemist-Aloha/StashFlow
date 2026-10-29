@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 import 'package:stash_app_flutter/features/scenes/data/local_captions/caption_audio_decoder.dart';
+import 'package:stash_app_flutter/features/scenes/data/local_captions/caption_options.dart';
 import 'package:stash_app_flutter/features/scenes/data/local_captions/caption_worker.dart';
 import 'package:stash_app_flutter/features/scenes/data/local_captions/local_caption_model.dart';
 import 'package:stashflow_translation/stashflow_translation.dart';
@@ -35,8 +36,8 @@ void main() {
           isEmpty,
         );
         if (id == 'whisper-ja') {
-          // Exercise Whisper's VAD-timed speech path too; this English fixture
-          // checks the API pipeline, not Japanese recognition quality.
+          // This legacy model ID is multilingual; auto-detect English rather
+          // than forcing Japanese on the shared speech fixture.
           sherpa.initBindings();
           final wave = sherpa.readWave('$_models/zipformer-en/test.wav');
           final cues = await worker.process(
@@ -46,6 +47,7 @@ void main() {
             const Duration(seconds: 3),
           );
           expect(cues, isNotEmpty);
+          expect(cues.every((cue) => cue.language == 'en'), isTrue);
           expect(
             cues.every(
               (cue) =>
@@ -77,6 +79,64 @@ void main() {
       }
     }, skip: !_native);
   }
+  for (final output in ['zh', 'en', 'de']) {
+    test(
+      'Whisper auto-detection routes $output output without a wrong-language fallback',
+      () async {
+        final model = LocalCaptionModel.find('whisper-ja')!;
+        final worker = await CaptionWorker.start(
+          model,
+          Directory('$_models/whisper-ja').absolute.path,
+          translations: [
+            (
+              LocalCaptionModel.find('marian-en-zh')!,
+              Directory('$_models/marian-en-zh').absolute.path,
+            ),
+          ],
+          options: CaptionOptions(outputLanguage: output, bilingual: true),
+          translate: true,
+        );
+        try {
+          sherpa.initBindings();
+          final wave = sherpa.readWave('$_models/zipformer-en/test.wav');
+          final result = worker.process(
+            wave.samples,
+            Duration.zero,
+            Duration.zero,
+            Duration(
+              microseconds: (wave.samples.length * 1000000 / wave.sampleRate)
+                  .round(),
+            ),
+          );
+          if (output == 'de') {
+            await expectLater(
+              result,
+              throwsA(
+                isA<CaptionTranslationUnavailable>()
+                    .having((e) => e.source, 'source', 'en')
+                    .having((e) => e.target, 'target', 'de'),
+              ),
+            );
+          } else {
+            final cues = await result;
+            expect(cues, isNotEmpty);
+            expect(cues.every((c) => c.language == 'en'), isTrue);
+            expect(
+              cues.map((c) => c.text).join(' '),
+              output == 'zh'
+                  ? matches(RegExp(r'[\u4e00-\u9fff]'))
+                  : matches(RegExp('[a-zA-Z]')),
+            );
+            expect(cues.every((c) => c.text.contains('\n')), output == 'zh');
+          }
+        } finally {
+          await worker.close();
+        }
+      },
+      skip: !_native,
+    );
+  }
+
   test(
     'native decoder produces bounded 16 kHz mono PCM and removes temporary audio',
     () async {

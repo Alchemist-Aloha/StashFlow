@@ -1,10 +1,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <fstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 #include <ctranslate2/translator.h>
+#include <nlohmann/json.hpp>
 #include <sentencepiece_processor.h>
 
 #ifdef _WIN32
@@ -18,6 +20,8 @@ struct Translator {
   sentencepiece::SentencePieceProcessor source;
   sentencepiece::SentencePieceProcessor target;
   std::unique_ptr<ctranslate2::Translator> engine;
+  bool append_source_eos = true;
+  std::string source_eos = "</s>";
 };
 
 char* copy_string(const std::string& value) {
@@ -45,6 +49,10 @@ SF_EXPORT void* sf_translation_open(const char* directory, char** error) noexcep
     if (!result->source.Load(root + "/source.spm").ok() ||
         !result->target.Load(root + "/target.spm").ok())
       throw std::runtime_error("tokenizer");
+    std::ifstream config_file(root + "/config.json");
+    const auto model_config = nlohmann::json::parse(config_file);
+    result->append_source_eos = !model_config.value("add_source_eos", false);
+    result->source_eos = model_config.value("eos_token", std::string("</s>"));
     ctranslate2::ReplicaPoolConfig config;
     config.num_threads_per_replica = 2;
     config.max_queued_batches = 1;
@@ -70,7 +78,7 @@ SF_EXPORT char* sf_translation_run(void* handle, const char* text,
       throw std::runtime_error("tokenize");
     if (tokens.size() > 256) throw std::invalid_argument("too long");
     if (language_token && *language_token) tokens.insert(tokens.begin(), language_token);
-    tokens.emplace_back("</s>"); // Marian tokenizer's EOS; CT2 config does not add it.
+    if (translator.append_source_eos) tokens.emplace_back(translator.source_eos);
     ctranslate2::TranslationOptions options;
     options.beam_size = 1;
     options.max_input_length = 258;

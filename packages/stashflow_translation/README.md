@@ -28,9 +28,11 @@ Returned text/error strings are freed by the same library that allocated them.
 Inference input/output token counts are bounded.
 
 The model directory contains `model.bin`, `config.json`,
-`shared_vocabulary.json`, `source.spm` and `target.spm`.
-Append Marian's source EOS explicitly. English→Chinese additionally requires
-the `>>cmn_Hans<<` source language token. The app preserves model cards and
+`source.spm`, `target.spm` and either a shared vocabulary or separate
+source/target vocabularies (`.json` or legacy `.txt`). The bridge appends the
+configured source EOS only when CTranslate2 does not already add it.
+Multilingual Chinese targets additionally require the model's source language
+tag, such as `>>cmn_Hans<<` or `>>cmn_Hant<<`. The app preserves model cards and
 verifies every downloaded file before publishing an installation.
 
 Licenses and model provenance are available in
@@ -46,7 +48,7 @@ rtk flutter test test/features/scenes/local_captions_test.dart
 rtk flutter test test/features/scenes/local_caption_settings_test.dart
 ```
 
-Optional host smoke tests use models downloaded from the pinned app catalog
+Optional host smoke tests retain the legacy pinned migration snapshots
 under `build/caption-smoke-models/<model-id>/`. The English speech fixture is
 the pinned Zipformer repository's `test_wavs/0.wav`, saved as
 `zipformer-en/test.wav`. A standalone Flutter test runner does not bundle plugin
@@ -61,7 +63,8 @@ rtk flutter test test/features/scenes/local_captions_native_test.dart \
 
 These test bounded PCM extraction/cleanup, actual offline translation, sherpa
 recognition and worker teardown. The pinned Whisper export has no cross-attention
-outputs: Japanese subtitles use VAD phrase timing, not token timestamps. The
-English fixture also exercises this decoding path, without measuring Japanese
-recognition quality. These checks do not establish sustained mobile
+outputs: Whisper subtitles use VAD phrase timing, not token timestamps. The
+legacy `whisper-ja` ID now exposes all of tiny's multilingual vocabulary. The
+English fixture verifies automatic detection, bilingual English→Chinese routing,
+same-language passthrough and missing-pair errors, not multilingual accuracy. These checks do not establish sustained mobile
 throughput, translation accuracy on scene dialogue, or remote playback support.

@@ -5,6 +5,7 @@ import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/local_captions_provider.dart';
 import '../providers/video_player_provider.dart';
+import 'local_caption_labels.dart';
 
 /// Renders the same generated cue in inline, feed, fullscreen and PiP surfaces.
 class GeneratedCaptionOverlay extends ConsumerWidget {
@@ -22,6 +23,14 @@ class GeneratedCaptionOverlay extends ConsumerWidget {
     final text = switch (captions.frame.status) {
       CaptionStatus.preparing => context.l10n.local_captions_preparing,
       CaptionStatus.failed => context.l10n.local_captions_failed,
+      CaptionStatus.translationUnavailable =>
+        context.l10n.local_captions_missing_pair(
+          localCaptionLanguageLabel(context, captions.frame.language ?? 'und'),
+          localCaptionLanguageLabel(
+            context,
+            captions.frame.outputLanguage ?? 'und',
+          ),
+        ),
       CaptionStatus.ready => captions.frame.text,
     };
     if (text.isEmpty) return const SizedBox.shrink();

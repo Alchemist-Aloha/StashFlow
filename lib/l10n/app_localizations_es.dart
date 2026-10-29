@@ -9,6 +9,188 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get local_captions_auto_model => 'Automático (modelos descargados)';
+
+  @override
+  String get local_captions_catalog_help =>
+      'Explora modelos compatibles Whisper, Transducer, SenseVoice, Paraformer y Marian OPUS-MT en Hugging Face. Revisa la ficha y la licencia; los modelos grandes pueden superar la memoria del dispositivo.';
+
+  @override
+  String get local_captions_catalog_error =>
+      'No se pudo cargar el catálogo. Comprueba la conexión y reinténtalo.';
+
+  @override
+  String get local_captions_incompatible =>
+      'Este repositorio no contiene un formato de modelo compatible.';
+
+  @override
+  String get local_captions_downloaded => 'Modelos descargados';
+
+  @override
+  String get local_captions_multilingual => 'Multilingüe';
+
+  @override
+  String get local_captions_configure => 'Transcripción y traducción';
+
+  @override
+  String get local_captions_source => 'Idioma de origen';
+
+  @override
+  String get local_captions_output => 'Idioma de salida';
+
+  @override
+  String get local_captions_automatic => 'Detectar automáticamente';
+
+  @override
+  String get local_captions_model_default => 'Predeterminado del modelo';
+
+  @override
+  String get local_captions_auto_help =>
+      'Whisper multilingüe y SenseVoice detectan cada segmento de voz. Los modelos .en solo en inglés no lo hacen. El habla mixta o muy breve puede necesitar un idioma fijo.';
+
+  @override
+  String get local_captions_window => 'Ventana de audio';
+
+  @override
+  String get local_captions_threads => 'Hilos de reconocimiento de voz';
+
+  @override
+  String get local_captions_threshold => 'Umbral de detección de voz';
+
+  @override
+  String get local_captions_threshold_help =>
+      'Los valores bajos incluyen voces más suaves; los altos rechazan más ruido.';
+
+  @override
+  String get local_captions_delay => 'Retardo de subtítulos';
+
+  @override
+  String get local_captions_bilingual => 'Mostrar original con traducción';
+
+  @override
+  String local_captions_missing_pair(String source, String target) {
+    return 'No hay un modelo descargado para $source → $target. Elige un modelo de traducción compatible en los ajustes.';
+  }
+
+  @override
+  String local_captions_detected(String language) {
+    return 'Idioma detectado: $language';
+  }
+
+  @override
+  String get local_captions_model_missing =>
+      'Primero descarga un modelo de voz en los ajustes de reproducción.';
+
+  @override
+  String local_captions_language_name(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'af': 'afrikáans',
+      'am': 'amárico',
+      'ar': 'árabe',
+      'as': 'asamés',
+      'az': 'azerbaiyano',
+      'ba': 'baskir',
+      'be': 'bielorruso',
+      'bg': 'búlgaro',
+      'bn': 'bengalí',
+      'bo': 'tibetano',
+      'br': 'bretón',
+      'bs': 'bosnio',
+      'ca': 'catalán',
+      'cs': 'checo',
+      'cy': 'galés',
+      'da': 'danés',
+      'de': 'alemán',
+      'el': 'griego',
+      'en': 'inglés',
+      'es': 'español',
+      'et': 'estonio',
+      'eu': 'euskera',
+      'fa': 'persa',
+      'fi': 'finés',
+      'fo': 'feroés',
+      'fr': 'francés',
+      'gl': 'gallego',
+      'gu': 'guyaratí',
+      'ha': 'hausa',
+      'haw': 'hawaiano',
+      'he': 'hebreo',
+      'hi': 'hindi',
+      'hr': 'croata',
+      'ht': 'criollo haitiano',
+      'hu': 'húngaro',
+      'hy': 'armenio',
+      'id': 'indonesio',
+      'is': 'islandés',
+      'it': 'italiano',
+      'ja': 'japonés',
+      'jw': 'javanés',
+      'ka': 'georgiano',
+      'kk': 'kazajo',
+      'km': 'jemer',
+      'kn': 'canarés',
+      'ko': 'coreano',
+      'la': 'latín',
+      'lb': 'luxemburgués',
+      'ln': 'lingala',
+      'lo': 'lao',
+      'lt': 'lituano',
+      'lv': 'letón',
+      'mg': 'malgache',
+      'mi': 'maorí',
+      'mk': 'macedonio',
+      'ml': 'malayálam',
+      'mn': 'mongol',
+      'mr': 'maratí',
+      'ms': 'malayo',
+      'mt': 'maltés',
+      'my': 'birmano',
+      'ne': 'nepalí',
+      'nl': 'neerlandés',
+      'nn': 'noruego nynorsk',
+      'no': 'noruego',
+      'oc': 'occitano',
+      'pa': 'punyabí',
+      'pl': 'polaco',
+      'ps': 'pastún',
+      'pt': 'portugués',
+      'ro': 'rumano',
+      'ru': 'ruso',
+      'sa': 'sánscrito',
+      'sd': 'sindi',
+      'si': 'cingalés',
+      'sk': 'eslovaco',
+      'sl': 'esloveno',
+      'sn': 'shona',
+      'so': 'somalí',
+      'sq': 'albanés',
+      'sr': 'serbio',
+      'su': 'sundanés',
+      'sv': 'sueco',
+      'sw': 'suajili',
+      'ta': 'tamil',
+      'te': 'telugu',
+      'tg': 'tayiko',
+      'th': 'tailandés',
+      'tk': 'turcomano',
+      'tl': 'filipino',
+      'tr': 'turco',
+      'tt': 'tártaro',
+      'uk': 'ucraniano',
+      'ur': 'urdu',
+      'uz': 'uzbeko',
+      'vi': 'vietnamita',
+      'yi': 'yidis',
+      'yo': 'yoruba',
+      'zh': 'chino',
+      'yue': 'cantonés',
+      'zh_Hant': 'chino tradicional',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String get local_captions_title => 'Subtítulos en el dispositivo';
 
   @override
@@ -48,7 +230,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get local_captions_mismatch =>
-      'Los modelos de voz y traducción deben tener el mismo idioma de origen.';
+      'Descarga un modelo de traducción que coincida con los idiomas de origen y salida.';
 
   @override
   String get local_captions_transcribe => 'Transcribir audio';

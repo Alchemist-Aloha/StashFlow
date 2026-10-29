@@ -9,6 +9,184 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get local_captions_auto_model => '自動（ダウンロード済みモデル）';
+
+  @override
+  String get local_captions_catalog_help =>
+      'Hugging Face の対応する Whisper、Transducer、SenseVoice、Paraformer、Marian OPUS-MT モデルを検索できます。モデルカードとライセンスを確認してください。大きいモデルは端末のメモリ容量を超える場合があります。';
+
+  @override
+  String get local_captions_catalog_error => 'モデル一覧を読み込めません。接続を確認して再試行してください。';
+
+  @override
+  String get local_captions_incompatible => 'このリポジトリのモデル形式には対応していません。';
+
+  @override
+  String get local_captions_downloaded => 'ダウンロード済みモデル';
+
+  @override
+  String get local_captions_multilingual => '多言語';
+
+  @override
+  String get local_captions_configure => '文字起こしと翻訳';
+
+  @override
+  String get local_captions_source => '入力言語';
+
+  @override
+  String get local_captions_output => '出力言語';
+
+  @override
+  String get local_captions_automatic => '自動検出';
+
+  @override
+  String get local_captions_model_default => 'モデルの既定値';
+
+  @override
+  String get local_captions_auto_help =>
+      '多言語 Whisper と SenseVoice は音声区間ごとに言語を検出します。英語専用の .en モデルには対応しません。複数言語が混ざる音声や短い音声では言語の指定が必要な場合があります。';
+
+  @override
+  String get local_captions_window => '音声ウィンドウ';
+
+  @override
+  String get local_captions_threads => '音声認識スレッド数';
+
+  @override
+  String get local_captions_threshold => '音声検出のしきい値';
+
+  @override
+  String get local_captions_threshold_help => '低くすると小さな声も含め、高くすると雑音をより多く除外します。';
+
+  @override
+  String get local_captions_delay => '字幕の遅延';
+
+  @override
+  String get local_captions_bilingual => '原文と翻訳を併記';
+
+  @override
+  String local_captions_missing_pair(String source, String target) {
+    return '$source → $target のモデルが未ダウンロードです。設定で対応する翻訳モデルを選択してください。';
+  }
+
+  @override
+  String local_captions_detected(String language) {
+    return '検出された言語：$language';
+  }
+
+  @override
+  String get local_captions_model_missing => '先に再生設定から音声モデルをダウンロードしてください。';
+
+  @override
+  String local_captions_language_name(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'af': 'アフリカーンス語',
+      'am': 'アムハラ語',
+      'ar': 'アラビア語',
+      'as': 'アッサム語',
+      'az': 'アゼルバイジャン語',
+      'ba': 'バシキール語',
+      'be': 'ベラルーシ語',
+      'bg': 'ブルガリア語',
+      'bn': 'ベンガル語',
+      'bo': 'チベット語',
+      'br': 'ブルトン語',
+      'bs': 'ボスニア語',
+      'ca': 'カタロニア語',
+      'cs': 'チェコ語',
+      'cy': 'ウェールズ語',
+      'da': 'デンマーク語',
+      'de': 'ドイツ語',
+      'el': 'ギリシャ語',
+      'en': '英語',
+      'es': 'スペイン語',
+      'et': 'エストニア語',
+      'eu': 'バスク語',
+      'fa': 'ペルシア語',
+      'fi': 'フィンランド語',
+      'fo': 'フェロー語',
+      'fr': 'フランス語',
+      'gl': 'ガリシア語',
+      'gu': 'グジャラート語',
+      'ha': 'ハウサ語',
+      'haw': 'ハワイ語',
+      'he': 'ヘブライ語',
+      'hi': 'ヒンディー語',
+      'hr': 'クロアチア語',
+      'ht': 'ハイチ・クレオール語',
+      'hu': 'ハンガリー語',
+      'hy': 'アルメニア語',
+      'id': 'インドネシア語',
+      'is': 'アイスランド語',
+      'it': 'イタリア語',
+      'ja': '日本語',
+      'jw': 'ジャワ語',
+      'ka': 'ジョージア語',
+      'kk': 'カザフ語',
+      'km': 'クメール語',
+      'kn': 'カンナダ語',
+      'ko': '韓国語',
+      'la': 'ラテン語',
+      'lb': 'ルクセンブルク語',
+      'ln': 'リンガラ語',
+      'lo': 'ラオ語',
+      'lt': 'リトアニア語',
+      'lv': 'ラトビア語',
+      'mg': 'マダガスカル語',
+      'mi': 'マオリ語',
+      'mk': 'マケドニア語',
+      'ml': 'マラヤーラム語',
+      'mn': 'モンゴル語',
+      'mr': 'マラーティー語',
+      'ms': 'マレー語',
+      'mt': 'マルタ語',
+      'my': 'ミャンマー語',
+      'ne': 'ネパール語',
+      'nl': 'オランダ語',
+      'nn': 'ノルウェー語(ニーノシュク)',
+      'no': 'ノルウェー語',
+      'oc': 'オック語',
+      'pa': 'パンジャブ語',
+      'pl': 'ポーランド語',
+      'ps': 'パシュトゥー語',
+      'pt': 'ポルトガル語',
+      'ro': 'ルーマニア語',
+      'ru': 'ロシア語',
+      'sa': 'サンスクリット語',
+      'sd': 'シンド語',
+      'si': 'シンハラ語',
+      'sk': 'スロバキア語',
+      'sl': 'スロベニア語',
+      'sn': 'ショナ語',
+      'so': 'ソマリ語',
+      'sq': 'アルバニア語',
+      'sr': 'セルビア語',
+      'su': 'スンダ語',
+      'sv': 'スウェーデン語',
+      'sw': 'スワヒリ語',
+      'ta': 'タミル語',
+      'te': 'テルグ語',
+      'tg': 'タジク語',
+      'th': 'タイ語',
+      'tk': 'トルクメン語',
+      'tl': 'フィリピノ語',
+      'tr': 'トルコ語',
+      'tt': 'タタール語',
+      'uk': 'ウクライナ語',
+      'ur': 'ウルドゥー語',
+      'uz': 'ウズベク語',
+      'vi': 'ベトナム語',
+      'yi': 'イディッシュ語',
+      'yo': 'ヨルバ語',
+      'zh': '中国語',
+      'yue': '広東語',
+      'zh_Hant': '繁体中国語',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String get local_captions_title => '端末内字幕';
 
   @override
@@ -47,7 +225,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'モデルの操作に失敗しました。空き容量と接続を確認して再試行してください。';
 
   @override
-  String get local_captions_mismatch => '音声モデルと翻訳モデルの元言語を一致させてください。';
+  String get local_captions_mismatch => '入力言語と出力言語に対応する翻訳モデルをダウンロードしてください。';
 
   @override
   String get local_captions_transcribe => '音声を書き起こす';

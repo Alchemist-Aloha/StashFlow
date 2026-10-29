@@ -9,6 +9,184 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get local_captions_auto_model => '自动选择（已下载模型）';
+
+  @override
+  String get local_captions_catalog_help =>
+      '浏览 Hugging Face 上兼容的 Whisper、Transducer、SenseVoice、Paraformer 和 Marian OPUS-MT 模型。下载前请检查模型说明和许可证；大模型可能超出设备内存。';
+
+  @override
+  String get local_captions_catalog_error => '无法加载模型目录。请检查网络连接后重试。';
+
+  @override
+  String get local_captions_incompatible => '此仓库不包含兼容的模型格式。';
+
+  @override
+  String get local_captions_downloaded => '已下载的模型';
+
+  @override
+  String get local_captions_multilingual => '多语言';
+
+  @override
+  String get local_captions_configure => '转录与翻译';
+
+  @override
+  String get local_captions_source => '源语言';
+
+  @override
+  String get local_captions_output => '输出语言';
+
+  @override
+  String get local_captions_automatic => '自动识别';
+
+  @override
+  String get local_captions_model_default => '模型默认值';
+
+  @override
+  String get local_captions_auto_help =>
+      '多语言 Whisper 和 SenseVoice 可逐段识别语种，英语专用 .en 模型不支持。混合语言或很短的语音可能需要手动指定语种。';
+
+  @override
+  String get local_captions_window => '音频窗口';
+
+  @override
+  String get local_captions_threads => '语音识别线程数';
+
+  @override
+  String get local_captions_threshold => '语音检测阈值';
+
+  @override
+  String get local_captions_threshold_help => '较低值可识别更轻的声音；较高值可排除更多噪声。';
+
+  @override
+  String get local_captions_delay => '字幕延迟';
+
+  @override
+  String get local_captions_bilingual => '同时显示原文与译文';
+
+  @override
+  String local_captions_missing_pair(String source, String target) {
+    return '尚未下载 $source → $target 模型。请在设置中选择匹配的翻译模型。';
+  }
+
+  @override
+  String local_captions_detected(String language) {
+    return '识别到的语言：$language';
+  }
+
+  @override
+  String get local_captions_model_missing => '请先在播放设置中下载语音模型。';
+
+  @override
+  String local_captions_language_name(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'af': '南非荷兰语',
+      'am': '阿姆哈拉语',
+      'ar': '阿拉伯语',
+      'as': '阿萨姆语',
+      'az': '阿塞拜疆语',
+      'ba': '巴什基尔语',
+      'be': '白俄罗斯语',
+      'bg': '保加利亚语',
+      'bn': '孟加拉语',
+      'bo': '藏语',
+      'br': '布列塔尼语',
+      'bs': '波斯尼亚语',
+      'ca': '加泰罗尼亚语',
+      'cs': '捷克语',
+      'cy': '威尔士语',
+      'da': '丹麦语',
+      'de': '德语',
+      'el': '希腊语',
+      'en': '英语',
+      'es': '西班牙语',
+      'et': '爱沙尼亚语',
+      'eu': '巴斯克语',
+      'fa': '波斯语',
+      'fi': '芬兰语',
+      'fo': '法罗语',
+      'fr': '法语',
+      'gl': '加利西亚语',
+      'gu': '古吉拉特语',
+      'ha': '豪萨语',
+      'haw': '夏威夷语',
+      'he': '希伯来语',
+      'hi': '印地语',
+      'hr': '克罗地亚语',
+      'ht': '海地克里奥尔语',
+      'hu': '匈牙利语',
+      'hy': '亚美尼亚语',
+      'id': '印度尼西亚语',
+      'is': '冰岛语',
+      'it': '意大利语',
+      'ja': '日语',
+      'jw': '爪哇语',
+      'ka': '格鲁吉亚语',
+      'kk': '哈萨克语',
+      'km': '高棉语',
+      'kn': '卡纳达语',
+      'ko': '韩语',
+      'la': '拉丁语',
+      'lb': '卢森堡语',
+      'ln': '林加拉语',
+      'lo': '老挝语',
+      'lt': '立陶宛语',
+      'lv': '拉脱维亚语',
+      'mg': '马拉加斯语',
+      'mi': '毛利语',
+      'mk': '马其顿语',
+      'ml': '马拉雅拉姆语',
+      'mn': '蒙古语',
+      'mr': '马拉地语',
+      'ms': '马来语',
+      'mt': '马耳他语',
+      'my': '缅甸语',
+      'ne': '尼泊尔语',
+      'nl': '荷兰语',
+      'nn': '挪威尼诺斯克语',
+      'no': '挪威语',
+      'oc': '奥克语',
+      'pa': '旁遮普语',
+      'pl': '波兰语',
+      'ps': '普什图语',
+      'pt': '葡萄牙语',
+      'ro': '罗马尼亚语',
+      'ru': '俄语',
+      'sa': '梵语',
+      'sd': '信德语',
+      'si': '僧伽罗语',
+      'sk': '斯洛伐克语',
+      'sl': '斯洛文尼亚语',
+      'sn': '绍纳语',
+      'so': '索马里语',
+      'sq': '阿尔巴尼亚语',
+      'sr': '塞尔维亚语',
+      'su': '巽他语',
+      'sv': '瑞典语',
+      'sw': '斯瓦希里语',
+      'ta': '泰米尔语',
+      'te': '泰卢固语',
+      'tg': '塔吉克语',
+      'th': '泰语',
+      'tk': '土库曼语',
+      'tl': '菲律宾语',
+      'tr': '土耳其语',
+      'tt': '鞑靼语',
+      'uk': '乌克兰语',
+      'ur': '乌尔都语',
+      'uz': '乌兹别克语',
+      'vi': '越南语',
+      'yi': '意第绪语',
+      'yo': '约鲁巴语',
+      'zh': '中文',
+      'yue': '粤语',
+      'zh_Hant': '繁体中文',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String get local_captions_title => '设备端字幕';
 
   @override
@@ -46,7 +224,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get local_captions_model_error => '模型操作失败。请检查存储空间和网络连接后重试。';
 
   @override
-  String get local_captions_mismatch => '语音模型和翻译模型必须使用相同的源语言。';
+  String get local_captions_mismatch => '请下载匹配源语言和输出语言的翻译模型。';
 
   @override
   String get local_captions_transcribe => '转录音频';
@@ -3610,6 +3788,184 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   AppLocalizationsZhHans() : super('zh_Hans');
 
   @override
+  String get local_captions_auto_model => '自动选择（已下载模型）';
+
+  @override
+  String get local_captions_catalog_help =>
+      '浏览 Hugging Face 上兼容的 Whisper、Transducer、SenseVoice、Paraformer 和 Marian OPUS-MT 模型。下载前请检查模型说明和许可证；大模型可能超出设备内存。';
+
+  @override
+  String get local_captions_catalog_error => '无法加载模型目录。请检查网络连接后重试。';
+
+  @override
+  String get local_captions_incompatible => '此仓库不包含兼容的模型格式。';
+
+  @override
+  String get local_captions_downloaded => '已下载的模型';
+
+  @override
+  String get local_captions_multilingual => '多语言';
+
+  @override
+  String get local_captions_configure => '转录与翻译';
+
+  @override
+  String get local_captions_source => '源语言';
+
+  @override
+  String get local_captions_output => '输出语言';
+
+  @override
+  String get local_captions_automatic => '自动识别';
+
+  @override
+  String get local_captions_model_default => '模型默认值';
+
+  @override
+  String get local_captions_auto_help =>
+      '多语言 Whisper 和 SenseVoice 可逐段识别语种，英语专用 .en 模型不支持。混合语言或很短的语音可能需要手动指定语种。';
+
+  @override
+  String get local_captions_window => '音频窗口';
+
+  @override
+  String get local_captions_threads => '语音识别线程数';
+
+  @override
+  String get local_captions_threshold => '语音检测阈值';
+
+  @override
+  String get local_captions_threshold_help => '较低值可识别更轻的声音；较高值可排除更多噪声。';
+
+  @override
+  String get local_captions_delay => '字幕延迟';
+
+  @override
+  String get local_captions_bilingual => '同时显示原文与译文';
+
+  @override
+  String local_captions_missing_pair(String source, String target) {
+    return '尚未下载 $source → $target 模型。请在设置中选择匹配的翻译模型。';
+  }
+
+  @override
+  String local_captions_detected(String language) {
+    return '识别到的语言：$language';
+  }
+
+  @override
+  String get local_captions_model_missing => '请先在播放设置中下载语音模型。';
+
+  @override
+  String local_captions_language_name(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'af': '南非荷兰语',
+      'am': '阿姆哈拉语',
+      'ar': '阿拉伯语',
+      'as': '阿萨姆语',
+      'az': '阿塞拜疆语',
+      'ba': '巴什基尔语',
+      'be': '白俄罗斯语',
+      'bg': '保加利亚语',
+      'bn': '孟加拉语',
+      'bo': '藏语',
+      'br': '布列塔尼语',
+      'bs': '波斯尼亚语',
+      'ca': '加泰罗尼亚语',
+      'cs': '捷克语',
+      'cy': '威尔士语',
+      'da': '丹麦语',
+      'de': '德语',
+      'el': '希腊语',
+      'en': '英语',
+      'es': '西班牙语',
+      'et': '爱沙尼亚语',
+      'eu': '巴斯克语',
+      'fa': '波斯语',
+      'fi': '芬兰语',
+      'fo': '法罗语',
+      'fr': '法语',
+      'gl': '加利西亚语',
+      'gu': '古吉拉特语',
+      'ha': '豪萨语',
+      'haw': '夏威夷语',
+      'he': '希伯来语',
+      'hi': '印地语',
+      'hr': '克罗地亚语',
+      'ht': '海地克里奥尔语',
+      'hu': '匈牙利语',
+      'hy': '亚美尼亚语',
+      'id': '印度尼西亚语',
+      'is': '冰岛语',
+      'it': '意大利语',
+      'ja': '日语',
+      'jw': '爪哇语',
+      'ka': '格鲁吉亚语',
+      'kk': '哈萨克语',
+      'km': '高棉语',
+      'kn': '卡纳达语',
+      'ko': '韩语',
+      'la': '拉丁语',
+      'lb': '卢森堡语',
+      'ln': '林加拉语',
+      'lo': '老挝语',
+      'lt': '立陶宛语',
+      'lv': '拉脱维亚语',
+      'mg': '马拉加斯语',
+      'mi': '毛利语',
+      'mk': '马其顿语',
+      'ml': '马拉雅拉姆语',
+      'mn': '蒙古语',
+      'mr': '马拉地语',
+      'ms': '马来语',
+      'mt': '马耳他语',
+      'my': '缅甸语',
+      'ne': '尼泊尔语',
+      'nl': '荷兰语',
+      'nn': '挪威尼诺斯克语',
+      'no': '挪威语',
+      'oc': '奥克语',
+      'pa': '旁遮普语',
+      'pl': '波兰语',
+      'ps': '普什图语',
+      'pt': '葡萄牙语',
+      'ro': '罗马尼亚语',
+      'ru': '俄语',
+      'sa': '梵语',
+      'sd': '信德语',
+      'si': '僧伽罗语',
+      'sk': '斯洛伐克语',
+      'sl': '斯洛文尼亚语',
+      'sn': '绍纳语',
+      'so': '索马里语',
+      'sq': '阿尔巴尼亚语',
+      'sr': '塞尔维亚语',
+      'su': '巽他语',
+      'sv': '瑞典语',
+      'sw': '斯瓦希里语',
+      'ta': '泰米尔语',
+      'te': '泰卢固语',
+      'tg': '塔吉克语',
+      'th': '泰语',
+      'tk': '土库曼语',
+      'tl': '菲律宾语',
+      'tr': '土耳其语',
+      'tt': '鞑靼语',
+      'uk': '乌克兰语',
+      'ur': '乌尔都语',
+      'uz': '乌兹别克语',
+      'vi': '越南语',
+      'yi': '意第绪语',
+      'yo': '约鲁巴语',
+      'zh': '中文',
+      'yue': '粤语',
+      'zh_Hant': '繁体中文',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String get local_captions_title => '设备端字幕';
 
   @override
@@ -3647,7 +4003,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get local_captions_model_error => '模型操作失败。请检查存储空间和网络连接后重试。';
 
   @override
-  String get local_captions_mismatch => '语音模型和翻译模型必须使用相同的源语言。';
+  String get local_captions_mismatch => '请下载匹配源语言和输出语言的翻译模型。';
 
   @override
   String get local_captions_transcribe => '转录音频';
@@ -7211,6 +7567,184 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
 
   @override
+  String get local_captions_auto_model => '自動選擇（已下載模型）';
+
+  @override
+  String get local_captions_catalog_help =>
+      '瀏覽 Hugging Face 上相容的 Whisper、Transducer、SenseVoice、Paraformer 與 Marian OPUS-MT 模型。下載前請檢查模型說明與授權；大型模型可能超出裝置記憶體。';
+
+  @override
+  String get local_captions_catalog_error => '無法載入模型目錄。請檢查網路連線後重試。';
+
+  @override
+  String get local_captions_incompatible => '此儲存庫不包含相容的模型格式。';
+
+  @override
+  String get local_captions_downloaded => '已下載的模型';
+
+  @override
+  String get local_captions_multilingual => '多語言';
+
+  @override
+  String get local_captions_configure => '轉錄與翻譯';
+
+  @override
+  String get local_captions_source => '來源語言';
+
+  @override
+  String get local_captions_output => '輸出語言';
+
+  @override
+  String get local_captions_automatic => '自動辨識';
+
+  @override
+  String get local_captions_model_default => '模型預設值';
+
+  @override
+  String get local_captions_auto_help =>
+      '多語言 Whisper 與 SenseVoice 可逐段辨識語種，英語專用 .en 模型不支援。混合語言或很短的語音可能需要手動指定語種。';
+
+  @override
+  String get local_captions_window => '音訊視窗';
+
+  @override
+  String get local_captions_threads => '語音辨識執行緒數';
+
+  @override
+  String get local_captions_threshold => '語音偵測閾值';
+
+  @override
+  String get local_captions_threshold_help => '較低值可辨識更輕的聲音；較高值可排除更多雜訊。';
+
+  @override
+  String get local_captions_delay => '字幕延遲';
+
+  @override
+  String get local_captions_bilingual => '同時顯示原文與譯文';
+
+  @override
+  String local_captions_missing_pair(String source, String target) {
+    return '尚未下載 $source → $target 模型。請在設定中選擇相符的翻譯模型。';
+  }
+
+  @override
+  String local_captions_detected(String language) {
+    return '辨識到的語言：$language';
+  }
+
+  @override
+  String get local_captions_model_missing => '請先在播放設定中下載語音模型。';
+
+  @override
+  String local_captions_language_name(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'af': '南非荷蘭文',
+      'am': '阿姆哈拉文',
+      'ar': '阿拉伯文',
+      'as': '阿薩姆文',
+      'az': '亞塞拜然文',
+      'ba': '巴什喀爾文',
+      'be': '白俄羅斯文',
+      'bg': '保加利亞文',
+      'bn': '孟加拉文',
+      'bo': '藏文',
+      'br': '布列塔尼文',
+      'bs': '波士尼亞文',
+      'ca': '加泰蘭文',
+      'cs': '捷克文',
+      'cy': '威爾斯文',
+      'da': '丹麥文',
+      'de': '德文',
+      'el': '希臘文',
+      'en': '英文',
+      'es': '西班牙文',
+      'et': '愛沙尼亞文',
+      'eu': '巴斯克文',
+      'fa': '波斯文',
+      'fi': '芬蘭文',
+      'fo': '法羅文',
+      'fr': '法文',
+      'gl': '加利西亞文',
+      'gu': '古吉拉特文',
+      'ha': '豪薩文',
+      'haw': '夏威夷文',
+      'he': '希伯來文',
+      'hi': '印地文',
+      'hr': '克羅埃西亞文',
+      'ht': '海地文',
+      'hu': '匈牙利文',
+      'hy': '亞美尼亞文',
+      'id': '印尼文',
+      'is': '冰島文',
+      'it': '義大利文',
+      'ja': '日文',
+      'jw': '爪哇文',
+      'ka': '喬治亞文',
+      'kk': '哈薩克文',
+      'km': '高棉文',
+      'kn': '坎那達文',
+      'ko': '韓文',
+      'la': '拉丁文',
+      'lb': '盧森堡文',
+      'ln': '林加拉文',
+      'lo': '寮文',
+      'lt': '立陶宛文',
+      'lv': '拉脫維亞文',
+      'mg': '馬達加斯加文',
+      'mi': '毛利文',
+      'mk': '馬其頓文',
+      'ml': '馬來亞拉姆文',
+      'mn': '蒙古文',
+      'mr': '馬拉地文',
+      'ms': '馬來文',
+      'mt': '馬爾他文',
+      'my': '緬甸文',
+      'ne': '尼泊爾文',
+      'nl': '荷蘭文',
+      'nn': '新挪威文',
+      'no': '挪威文',
+      'oc': '奧克西坦文',
+      'pa': '旁遮普文',
+      'pl': '波蘭文',
+      'ps': '普什圖文',
+      'pt': '葡萄牙文',
+      'ro': '羅馬尼亞文',
+      'ru': '俄文',
+      'sa': '梵文',
+      'sd': '信德文',
+      'si': '僧伽羅文',
+      'sk': '斯洛伐克文',
+      'sl': '斯洛維尼亞文',
+      'sn': '紹納文',
+      'so': '索馬利文',
+      'sq': '阿爾巴尼亞文',
+      'sr': '塞爾維亞文',
+      'su': '巽他文',
+      'sv': '瑞典文',
+      'sw': '史瓦希里文',
+      'ta': '坦米爾文',
+      'te': '泰盧固文',
+      'tg': '塔吉克文',
+      'th': '泰文',
+      'tk': '土庫曼文',
+      'tl': '菲律賓文',
+      'tr': '土耳其文',
+      'tt': '韃靼文',
+      'uk': '烏克蘭文',
+      'ur': '烏都文',
+      'uz': '烏茲別克文',
+      'vi': '越南文',
+      'yi': '意第緒文',
+      'yo': '約魯巴文',
+      'zh': '中文',
+      'yue': '粵語',
+      'zh_Hant': '繁體中文',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String get local_captions_title => '裝置端字幕';
 
   @override
@@ -7248,7 +7782,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get local_captions_model_error => '模型操作失敗。請檢查儲存空間與網路連線後重試。';
 
   @override
-  String get local_captions_mismatch => '語音模型與翻譯模型必須使用相同的來源語言。';
+  String get local_captions_mismatch => '請下載符合來源語言與輸出語言的翻譯模型。';
 
   @override
   String get local_captions_transcribe => '轉錄音訊';

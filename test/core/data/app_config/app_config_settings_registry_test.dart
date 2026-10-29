@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/features/scenes/data/local_captions/local_caption_model.dart';
+import 'package:stash_app_flutter/features/scenes/data/local_captions/caption_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/app_config/app_config_settings_registry.dart';
 
@@ -45,6 +48,32 @@ void main() {
     });
   });
 
+  test(
+    'model snapshots and inference options survive configuration backup',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final legacy = LocalCaptionModel.find('zipformer-en')!;
+      const repo = 'test/sherpa-onnx-streaming-zipformer-en';
+      final id = LocalCaptionModel.snapshotId(repo, legacy.revision, false);
+      final manifest = {...legacy.toJson(), 'repository': repo, 'id': id};
+      final values = <String, Object>{
+        'local_caption_model': id,
+        'local_caption_model_manifests': jsonEncode([manifest]),
+        'local_caption_options': jsonEncode(
+          const CaptionOptions(
+            sourceLanguage: 'en',
+            outputLanguage: 'fr',
+            threads: 4,
+            bilingual: true,
+          ).toJson(),
+        ),
+      };
+      await registry.replace(prefs, values);
+      expect(await registry.read(prefs), values);
+    },
+  );
+
   test('validates types and constrained values before replacement', () async {
     SharedPreferences.setMockInitialValues({'app_theme_mode': 'light'});
     final prefs = await SharedPreferences.getInstance();
@@ -56,6 +85,14 @@ void main() {
       {'local_caption_model': 'marian-en-zh'},
       {'local_caption_translation_model': 'zipformer-en'},
       {'local_caption_model': '../outside'},
+      {'local_caption_model_manifests': '[{}]'},
+      {'local_caption_options': '{}'},
+      {
+        'local_caption_options': jsonEncode({
+          ...const CaptionOptions().toJson(),
+          'threads': 0,
+        }),
+      },
       {'video_mpv_interpolation': 'invalid'},
       {'video_mpv_conf': 'include=private.conf'},
       {'video_mpv_conf': 42},

@@ -9,6 +9,186 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get local_captions_auto_model => '자동(다운로드한 모델)';
+
+  @override
+  String get local_captions_catalog_help =>
+      'Hugging Face에서 호환되는 Whisper, Transducer, SenseVoice, Paraformer, Marian OPUS-MT 모델을 검색하세요. 모델 카드와 라이선스를 확인하세요. 큰 모델은 기기 메모리 용량을 초과할 수 있습니다.';
+
+  @override
+  String get local_captions_catalog_error =>
+      '모델 목록을 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.';
+
+  @override
+  String get local_captions_incompatible => '이 저장소의 모델 형식은 지원하지 않습니다.';
+
+  @override
+  String get local_captions_downloaded => '다운로드한 모델';
+
+  @override
+  String get local_captions_multilingual => '다국어';
+
+  @override
+  String get local_captions_configure => '받아쓰기 및 번역';
+
+  @override
+  String get local_captions_source => '원본 언어';
+
+  @override
+  String get local_captions_output => '출력 언어';
+
+  @override
+  String get local_captions_automatic => '자동 감지';
+
+  @override
+  String get local_captions_model_default => '모델 기본값';
+
+  @override
+  String get local_captions_auto_help =>
+      '다국어 Whisper와 SenseVoice는 음성 구간마다 언어를 감지합니다. 영어 전용 .en 모델은 지원하지 않습니다. 여러 언어가 섞이거나 매우 짧은 음성은 언어를 지정해야 할 수 있습니다.';
+
+  @override
+  String get local_captions_window => '오디오 구간';
+
+  @override
+  String get local_captions_threads => '음성 인식 스레드 수';
+
+  @override
+  String get local_captions_threshold => '음성 감지 임계값';
+
+  @override
+  String get local_captions_threshold_help =>
+      '낮추면 작은 목소리도 포함하고, 높이면 더 많은 잡음을 제외합니다.';
+
+  @override
+  String get local_captions_delay => '자막 지연';
+
+  @override
+  String get local_captions_bilingual => '원문과 번역 함께 표시';
+
+  @override
+  String local_captions_missing_pair(String source, String target) {
+    return '$source → $target 모델을 다운로드하지 않았습니다. 설정에서 호환되는 번역 모델을 선택하세요.';
+  }
+
+  @override
+  String local_captions_detected(String language) {
+    return '감지된 언어: $language';
+  }
+
+  @override
+  String get local_captions_model_missing => '먼저 재생 설정에서 음성 모델을 다운로드하세요.';
+
+  @override
+  String local_captions_language_name(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'af': '아프리칸스어',
+      'am': '암하라어',
+      'ar': '아랍어',
+      'as': '아삼어',
+      'az': '아제르바이잔어',
+      'ba': '바슈키르어',
+      'be': '벨라루스어',
+      'bg': '불가리아어',
+      'bn': '벵골어',
+      'bo': '티베트어',
+      'br': '브르타뉴어',
+      'bs': '보스니아어',
+      'ca': '카탈로니아어',
+      'cs': '체코어',
+      'cy': '웨일스어',
+      'da': '덴마크어',
+      'de': '독일어',
+      'el': '그리스어',
+      'en': '영어',
+      'es': '스페인어',
+      'et': '에스토니아어',
+      'eu': '바스크어',
+      'fa': '페르시아어',
+      'fi': '핀란드어',
+      'fo': '페로어',
+      'fr': '프랑스어',
+      'gl': '갈리시아어',
+      'gu': '구자라트어',
+      'ha': '하우사어',
+      'haw': '하와이어',
+      'he': '히브리어',
+      'hi': '힌디어',
+      'hr': '크로아티아어',
+      'ht': '아이티어',
+      'hu': '헝가리어',
+      'hy': '아르메니아어',
+      'id': '인도네시아어',
+      'is': '아이슬란드어',
+      'it': '이탈리아어',
+      'ja': '일본어',
+      'jw': '자바어',
+      'ka': '조지아어',
+      'kk': '카자흐어',
+      'km': '크메르어',
+      'kn': '칸나다어',
+      'ko': '한국어',
+      'la': '라틴어',
+      'lb': '룩셈부르크어',
+      'ln': '링갈라어',
+      'lo': '라오어',
+      'lt': '리투아니아어',
+      'lv': '라트비아어',
+      'mg': '말라가시어',
+      'mi': '마오리어',
+      'mk': '마케도니아어',
+      'ml': '말라얄람어',
+      'mn': '몽골어',
+      'mr': '마라티어',
+      'ms': '말레이어',
+      'mt': '몰타어',
+      'my': '버마어',
+      'ne': '네팔어',
+      'nl': '네덜란드어',
+      'nn': '노르웨이어(니노르스크)',
+      'no': '노르웨이어',
+      'oc': '오크어',
+      'pa': '펀자브어',
+      'pl': '폴란드어',
+      'ps': '파슈토어',
+      'pt': '포르투갈어',
+      'ro': '루마니아어',
+      'ru': '러시아어',
+      'sa': '산스크리트어',
+      'sd': '신디어',
+      'si': '싱할라어',
+      'sk': '슬로바키아어',
+      'sl': '슬로베니아어',
+      'sn': '쇼나어',
+      'so': '소말리아어',
+      'sq': '알바니아어',
+      'sr': '세르비아어',
+      'su': '순다어',
+      'sv': '스웨덴어',
+      'sw': '스와힐리어',
+      'ta': '타밀어',
+      'te': '텔루구어',
+      'tg': '타지크어',
+      'th': '태국어',
+      'tk': '투르크멘어',
+      'tl': '필리핀어',
+      'tr': '튀르키예어',
+      'tt': '타타르어',
+      'uk': '우크라이나어',
+      'ur': '우르두어',
+      'uz': '우즈베크어',
+      'vi': '베트남어',
+      'yi': '이디시어',
+      'yo': '요루바어',
+      'zh': '중국어',
+      'yue': '광둥어',
+      'zh_Hant': '중국어(번체)',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String get local_captions_title => '기기 내 자막';
 
   @override
@@ -47,7 +227,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '모델 작업에 실패했습니다. 저장 공간과 연결을 확인한 후 다시 시도하세요.';
 
   @override
-  String get local_captions_mismatch => '음성 모델과 번역 모델의 원본 언어가 같아야 합니다.';
+  String get local_captions_mismatch => '원본 언어와 출력 언어에 맞는 번역 모델을 다운로드하세요.';
 
   @override
   String get local_captions_transcribe => '오디오 받아쓰기';
