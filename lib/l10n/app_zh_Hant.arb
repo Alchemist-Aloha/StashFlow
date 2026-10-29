@@ -20,7 +20,7 @@
   "local_captions_bilingual": "同時顯示原文與譯文",
   "local_captions_missing_pair": "尚未下載 {source} → {target} 模型。請在設定中選擇相符的翻譯模型。",
   "local_captions_detected": "辨識到的語言：{language}",
-  "local_captions_model_missing": "請先在播放設定中下載語音模型。",
+  "local_captions_model_missing": "請下載語音模型以開始。",
   "local_captions_language_name": "{code, select, af {南非荷蘭文} am {阿姆哈拉文} ar {阿拉伯文} as {阿薩姆文} az {亞塞拜然文} ba {巴什喀爾文} be {白俄羅斯文} bg {保加利亞文} bn {孟加拉文} bo {藏文} br {布列塔尼文} bs {波士尼亞文} ca {加泰蘭文} cs {捷克文} cy {威爾斯文} da {丹麥文} de {德文} el {希臘文} en {英文} es {西班牙文} et {愛沙尼亞文} eu {巴斯克文} fa {波斯文} fi {芬蘭文} fo {法羅文} fr {法文} gl {加利西亞文} gu {古吉拉特文} ha {豪薩文} haw {夏威夷文} he {希伯來文} hi {印地文} hr {克羅埃西亞文} ht {海地文} hu {匈牙利文} hy {亞美尼亞文} id {印尼文} is {冰島文} it {義大利文} ja {日文} jw {爪哇文} ka {喬治亞文} kk {哈薩克文} km {高棉文} kn {坎那達文} ko {韓文} la {拉丁文} lb {盧森堡文} ln {林加拉文} lo {寮文} lt {立陶宛文} lv {拉脫維亞文} mg {馬達加斯加文} mi {毛利文} mk {馬其頓文} ml {馬來亞拉姆文} mn {蒙古文} mr {馬拉地文} ms {馬來文} mt {馬爾他文} my {緬甸文} ne {尼泊爾文} nl {荷蘭文} nn {新挪威文} no {挪威文} oc {奧克西坦文} pa {旁遮普文} pl {波蘭文} ps {普什圖文} pt {葡萄牙文} ro {羅馬尼亞文} ru {俄文} sa {梵文} sd {信德文} si {僧伽羅文} sk {斯洛伐克文} sl {斯洛維尼亞文} sn {紹納文} so {索馬利文} sq {阿爾巴尼亞文} sr {塞爾維亞文} su {巽他文} sv {瑞典文} sw {史瓦希里文} ta {坦米爾文} te {泰盧固文} tg {塔吉克文} th {泰文} tk {土庫曼文} tl {菲律賓文} tr {土耳其文} tt {韃靼文} uk {烏克蘭文} ur {烏都文} uz {烏茲別克文} vi {越南文} yi {意第緒文} yo {約魯巴文} zh {中文} yue {粵語} zh_Hant {繁體中文} other {{code}}}",
   "local_captions_title": "裝置端字幕",
   "local_captions_help": "下載語音模型與相符的翻譯模型。音訊與文字僅在此裝置上處理。下載可能使用行動數據；啟動與跳轉後需要準備時間。",

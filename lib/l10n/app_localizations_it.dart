@@ -79,7 +79,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get local_captions_model_missing =>
-      'Scarica prima un modello vocale nelle impostazioni di riproduzione.';
+      'Scarica un modello vocale per iniziare.';
 
   @override
   String local_captions_language_name(String code) {

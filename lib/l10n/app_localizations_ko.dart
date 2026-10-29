@@ -77,7 +77,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get local_captions_model_missing => '먼저 재생 설정에서 음성 모델을 다운로드하세요.';
+  String get local_captions_model_missing => '시작하려면 음성 모델을 다운로드하세요.';
 
   @override
   String local_captions_language_name(String code) {

@@ -542,7 +542,9 @@ URLs or authentication headers.
 ### On-device transcription and translation
 
 Playback Settings provides searchable Hub catalogs, explicit cancellable downloads,
-and installed-model selection/removal. Public repository discovery is paginated
+and installed-model selection/removal. Search results fill the available search
+view, resizing above the mobile keyboard rather than using a fixed screen-height
+fraction. Public repository discovery is paginated
 and scoped to known sherpa-onnx Whisper, transducer, SenseVoice and Paraformer
 export conventions, plus CTranslate2 Marian OPUS-MT language pairs; this is not
 support for arbitrary Hugging Face architectures. Selecting a repository inspects
@@ -553,25 +555,44 @@ a repository already installed reuses that snapshot until removed. Model cards
 remain with downloaded files; large models may exceed device memory. Selections,
 validated manifests and inference options are backed up, never weights or text.
 
-The player opens a transcription/translation dialog before applying either mode.
+The subtitle menu offers one Transcribe action, opening a transcription dialog
+with translation as an optional switch, not a separate mode selector or menu
+action. Model management is available from the dialog and Playback Settings,
+not as a subtitle-menu action. The dialog remains accessible without downloaded
+models so users can reach model management; Apply requires installed models.
+Source and output language lists support searching localized names and language
+codes. Speech and translation models can be inspected and downloaded directly
+inside the dialog using the shared catalog, with progress, cancellation and
+error recovery. Downloads install weights but stage model selection in the
+dialog until Apply; cancelling the dialog retains completed downloads, not
+configuration changes. Apply is disabled while a download is in progress.
 The dialog stages speech-model, source/output-language, preferred downloaded
 translation-model, ASR-thread (1–8), audio-window (4–12 seconds), VAD-threshold
 (0.2–0.8), subtitle-delay (±5 seconds) and bilingual-display settings. Cancel
 changes neither preferences nor active inference; Apply commits one configuration.
+The next dialog restores the last applied models and inference options, including
+the translation switch and preferred model when applying transcription; these
+survive app restarts. Existing saved options without the switch default to
+transcription without translation.
 Multilingual Whisper, including tiny, detects language per VAD phrase when Auto
 is selected; English-only `.en` exports do not. SenseVoice also supports detection
 for its trained languages. Short/noisy/mixed-language phrases may need a fixed
-language. Offline recognizers use phrase-level VAD timing, not token timestamps.
+language. A fixed source language disables automatic language detection and
+its dialog status; recognizer metadata cannot override the chosen language or
+translation routing. Selecting Auto enables detection again when applied.
+Offline recognizers use phrase-level VAD timing, not token timestamps.
 Translation lazily loads one downloaded Marian model matching each phrase's
 source and selected output language. A missing pair stops with a localized recovery
 message, never a wrong-language fallback; same-language output passes through.
 
 The shared subtitle menu is available even without server captions, including
-the feed. Transcribe and Translate are opt-in, session-scoped modes and disable
+the feed. Transcription, with or without translation, is opt-in and session-scoped and disables
 the selected server subtitle track. None or selecting a server track stops
 generation. Web and casting cannot generate subtitles. Native inline,
 fullscreen, feed and PiP surfaces share timed Flutter-rendered cues and existing
-subtitle font, alignment and position preferences.
+subtitle font, alignment and position preferences. Server and generated captions
+use one shared text style and padding recipe; the configured font size is scaled
+once by the UI scale, without a server-subtitle-only multiplier.
 
 A separate, silent, untimed mpv PCM decoder reads bounded configured windows
 with one-second context around them. It reuses the active media URL, headers

@@ -10,7 +10,6 @@ import '../../../domain/entities/scene.dart';
 import '../../providers/local_caption_settings.dart';
 import '../../providers/local_captions_provider.dart';
 import '../../providers/video_player_provider.dart';
-import '../local_caption_labels.dart';
 import 'caption_tuning_dialog.dart';
 
 /// Shared subtitle menu, including scenes with no server-provided captions.
@@ -42,7 +41,6 @@ class SceneSubtitleMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final playback = ref.watch(playerStateProvider);
     final generated = ref.watch(localCaptionsProvider);
-    final settings = ref.watch(localCaptionSettingsProvider);
     final casting = ref.watch(castServiceProvider.select((s) => s.isCasting));
     final ownsPlayer =
         identical(playback.player, controller.player) &&
@@ -61,20 +59,13 @@ class SceneSubtitleMenu extends ConsumerWidget {
       onSelected: (value) async {
         onInteract?.call();
         final notifier = ref.read(localCaptionsProvider.notifier);
-        if (value == '__models') {
-          _openSettings(context, ref);
-        } else if (value == '__transcribe' || value == '__translate') {
+        if (value == '__transcribe') {
           final current = ref.read(playerStateProvider);
           if (current.activeScene?.id != scene.id ||
               !identical(current.player, controller.player)) {
             return;
           }
-          final draft = await showCaptionTuningDialog(
-            context,
-            value == '__transcribe'
-                ? LocalCaptionMode.transcribe
-                : LocalCaptionMode.translate,
-          );
+          final draft = await showCaptionTuningDialog(context);
           if (draft == null || !context.mounted) return;
           if (draft.manageModels) {
             _openSettings(context, ref);
@@ -153,32 +144,11 @@ class SceneSubtitleMenu extends ConsumerWidget {
         const PopupMenuDivider(),
         CheckedPopupMenuItem(
           value: '__transcribe',
-          checked: mode == LocalCaptionMode.transcribe,
-          enabled: enabled && settings.canTranscribe,
+          checked: mode != LocalCaptionMode.off,
+          enabled: enabled,
           child: Text(context.l10n.local_captions_transcribe),
         ),
-        CheckedPopupMenuItem(
-          value: '__translate',
-          checked: mode == LocalCaptionMode.translate,
-          enabled: enabled && settings.canTranscribe,
-          child: Text(
-            settings.model == null
-                ? context.l10n.local_captions_translate
-                : context.l10n.local_captions_model(
-                    context.l10n.local_captions_translate,
-                    localCaptionLanguageLabel(
-                      context,
-                      settings.options.outputLanguage,
-                    ),
-                  ),
-          ),
-        ),
-        if (localCaptionsSupported)
-          PopupMenuItem(
-            value: '__models',
-            child: Text(context.l10n.local_captions_manage),
-          )
-        else
+        if (!localCaptionsSupported)
           PopupMenuItem(
             enabled: false,
             child: Text(context.l10n.local_captions_unsupported),

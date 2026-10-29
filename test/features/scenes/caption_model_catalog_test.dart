@@ -39,6 +39,16 @@ class _Hub implements HttpClientAdapter {
 }
 
 void main() {
+  test(
+    'fixed source bypasses detection metadata; Auto uses detected language',
+    () {
+      expect(captionResultLanguage('<|de|>', 'en'), 'en');
+      expect(captionResultLanguage('<|de|>', 'auto'), 'de');
+      expect(captionResultLanguage('unrecognized', 'auto'), 'und');
+      expect(captionResultLanguage('', 'zh'), 'zh');
+    },
+  );
+
   const revision = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
   late _Hub hub;
   late CaptionModelCatalog catalog;
@@ -254,12 +264,19 @@ void main() {
         speechThreshold: 0.35,
         delayMilliseconds: -1500,
         bilingual: true,
+        translate: true,
       );
       expect(
         CaptionOptions.parse(jsonEncode(options.toJson()))!.toJson(),
         options.toJson(),
       );
+      final legacy = options.toJson()..remove('translate');
+      final restored = CaptionOptions.parse(jsonEncode(legacy))!;
+      expect(restored.translate, isFalse);
+      expect(restored.toJson(), {...legacy, 'translate': false});
       for (final invalid in [
+        {...options.toJson(), 'translate': 'yes'},
+        {...options.toJson(), 'translate': null},
         {...options.toJson(), 'threads': 0},
         {...options.toJson(), 'threads': 100},
         {...options.toJson(), 'window': 0},

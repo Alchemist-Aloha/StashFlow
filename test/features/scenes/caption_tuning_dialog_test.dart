@@ -20,7 +20,9 @@ class _Models extends LocalCaptionSettingsNotifier {
 
 class _Idle extends LocalCaptionsNotifier {
   @override
-  LocalCaptions build() => const LocalCaptions();
+  LocalCaptions build() => const LocalCaptions(
+    frame: CaptionFrame(CaptionStatus.ready, 'phrase', 'en'),
+  );
 }
 
 void main() {
@@ -50,10 +52,7 @@ void main() {
               body: Builder(
                 builder: (context) => TextButton(
                   onPressed: () async {
-                    result = await showCaptionTuningDialog(
-                      context,
-                      LocalCaptionMode.translate,
-                    );
+                    result = await showCaptionTuningDialog(context);
                   },
                   child: const Text('Open tuning'),
                 ),
@@ -70,35 +69,42 @@ void main() {
           expect(tester.takeException(), isNull);
         }
 
-        Future<void> language(
-          String field,
-          String label, {
-          double delta = 200,
-        }) async {
-          final input = find.byWidgetPredicate(
-            (w) => w is InputDecorator && w.decoration.labelText == field,
+        Future<void> language(String field, String label) async {
+          final menu = find.byWidgetPredicate(
+            (w) => w is DropdownMenu<String> && (w.label as Text).data == field,
+          );
+          final input = find.descendant(
+            of: menu,
+            matching: find.byType(TextField),
           );
           await tester.ensureVisible(input);
           await tester.tap(input);
           await tester.pumpAndSettle();
-          final scroll = find.byType(Scrollable).last;
-          final option = find.descendant(
-            of: scroll,
-            matching: find.text(label),
-          );
-          await tester.scrollUntilVisible(option, delta, scrollable: scroll);
-          await Scrollable.ensureVisible(
-            tester.element(option),
-            alignment: 0.5,
-          );
+          await tester.enterText(input, label);
           await tester.pumpAndSettle();
+          final option = find.widgetWithText(MenuItemButton, label).last;
+          await tester.ensureVisible(option);
           await tester.tap(option);
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
         }
 
+        Future<void> toggleTranslation() async {
+          final toggle = find.widgetWithText(SwitchListTile, 'Translate audio');
+          await tester.ensureVisible(toggle);
+          await tester.tap(toggle);
+          await tester.pumpAndSettle();
+        }
+
         await open();
+        expect(
+          find.byType(DropdownButtonFormField<LocalCaptionMode>),
+          findsNothing,
+        );
+        expect(find.text('Output language'), findsNothing);
+        await toggleTranslation();
         expect(find.text('Detect automatically'), findsOneWidget);
+        expect(find.text('Detected language: English'), findsOneWidget);
         expect(
           tester
               .widget<FilledButton>(find.widgetWithText(FilledButton, 'Apply'))
@@ -106,11 +112,23 @@ void main() {
           isNotNull,
         );
         await language('Source language', 'German');
+        expect(find.text('Detected language: English'), findsNothing);
+        expect(
+          find.textContaining('Multilingual Whisper and SenseVoice'),
+          findsNothing,
+        );
         expect(
           tester
               .widget<FilledButton>(find.widgetWithText(FilledButton, 'Apply'))
               .onPressed,
           isNull,
+        );
+        await toggleTranslation();
+        expect(
+          tester
+              .widget<FilledButton>(find.widgetWithText(FilledButton, 'Apply'))
+              .onPressed,
+          isNotNull,
         );
         await tester.tap(find.text('Cancel'));
         await tester.pumpAndSettle();
@@ -120,11 +138,15 @@ void main() {
           'auto',
         );
         await open();
+        expect(find.text('Output language'), findsNothing);
+        await toggleTranslation();
         expect(find.text('Detect automatically'), findsOneWidget);
         await language('Source language', 'English');
-        await language('Output language', 'English', delta: -200);
+        await language('Output language', 'English');
         await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
         await tester.pumpAndSettle();
+        expect(result!.mode, LocalCaptionMode.translate);
+        expect(result!.options.translate, isTrue);
         expect(result!.speechId, 'whisper-ja');
         expect(result!.options.sourceLanguage, 'en');
         expect(result!.options.outputLanguage, 'en');
@@ -133,6 +155,37 @@ void main() {
           container.read(localCaptionSettingsProvider).options.sourceLanguage,
           'auto',
         );
+        await container
+            .read(localCaptionSettingsProvider.notifier)
+            .configure(
+              result!.speechId!,
+              result!.options,
+              automaticTranslation: true,
+            );
+        await open();
+        expect(
+          container.read(localCaptionSettingsProvider).options.sourceLanguage,
+          'en',
+        );
+        expect(
+          tester
+              .widget<SwitchListTile>(
+                find.widgetWithText(SwitchListTile, 'Translate audio'),
+              )
+              .value,
+          isTrue,
+        );
+        final source = find.byWidgetPredicate(
+          (w) =>
+              w is DropdownMenu<String> &&
+              (w.label as Text).data == 'Source language',
+        );
+        expect(
+          tester.widget<DropdownMenu<String>>(source).initialSelection,
+          'en',
+        );
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
       });
     }

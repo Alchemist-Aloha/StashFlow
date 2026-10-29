@@ -88,19 +88,6 @@ class CaptionWorker {
   }
 }
 
-String _language(String detected, String fallback) {
-  final language = detected
-      .replaceAll('<|', '')
-      .replaceAll('|>', '')
-      .trim()
-      .toLowerCase();
-  return captionLanguageCodes.contains(language)
-      ? language
-      : fallback == 'auto'
-      ? 'und'
-      : fallback;
-}
-
 Future<void> _worker(
   (
     SendPort,
@@ -278,7 +265,7 @@ Future<void> _worker(
               stream.acceptWaveform(samples: speech.samples, sampleRate: 16000);
               offline.decode(stream);
               final result = offline.getResult(stream);
-              final language = _language(result.lang, source);
+              final language = captionResultLanguage(result.lang, source);
               final start =
                   audioStart +
                   Duration(

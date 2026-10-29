@@ -80,7 +80,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get local_captions_model_missing =>
-      'Téléchargez d’abord un modèle vocal dans les paramètres de lecture.';
+      'Téléchargez un modèle vocal pour commencer.';
 
   @override
   String local_captions_language_name(String code) {

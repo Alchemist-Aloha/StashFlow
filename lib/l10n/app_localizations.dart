@@ -237,7 +237,7 @@ abstract class AppLocalizations {
   /// No description provided for @local_captions_model_missing.
   ///
   /// In en, this message translates to:
-  /// **'Download a speech model in Playback Settings first.'**
+  /// **'Download a speech model to begin.'**
   String get local_captions_model_missing;
 
   /// No description provided for @local_captions_language_name.

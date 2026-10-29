@@ -20,7 +20,7 @@
   "local_captions_bilingual": "원문과 번역 함께 표시",
   "local_captions_missing_pair": "{source} → {target} 모델을 다운로드하지 않았습니다. 설정에서 호환되는 번역 모델을 선택하세요.",
   "local_captions_detected": "감지된 언어: {language}",
-  "local_captions_model_missing": "먼저 재생 설정에서 음성 모델을 다운로드하세요.",
+  "local_captions_model_missing": "시작하려면 음성 모델을 다운로드하세요.",
   "local_captions_language_name": "{code, select, af {아프리칸스어} am {암하라어} ar {아랍어} as {아삼어} az {아제르바이잔어} ba {바슈키르어} be {벨라루스어} bg {불가리아어} bn {벵골어} bo {티베트어} br {브르타뉴어} bs {보스니아어} ca {카탈로니아어} cs {체코어} cy {웨일스어} da {덴마크어} de {독일어} el {그리스어} en {영어} es {스페인어} et {에스토니아어} eu {바스크어} fa {페르시아어} fi {핀란드어} fo {페로어} fr {프랑스어} gl {갈리시아어} gu {구자라트어} ha {하우사어} haw {하와이어} he {히브리어} hi {힌디어} hr {크로아티아어} ht {아이티어} hu {헝가리어} hy {아르메니아어} id {인도네시아어} is {아이슬란드어} it {이탈리아어} ja {일본어} jw {자바어} ka {조지아어} kk {카자흐어} km {크메르어} kn {칸나다어} ko {한국어} la {라틴어} lb {룩셈부르크어} ln {링갈라어} lo {라오어} lt {리투아니아어} lv {라트비아어} mg {말라가시어} mi {마오리어} mk {마케도니아어} ml {말라얄람어} mn {몽골어} mr {마라티어} ms {말레이어} mt {몰타어} my {버마어} ne {네팔어} nl {네덜란드어} nn {노르웨이어(니노르스크)} no {노르웨이어} oc {오크어} pa {펀자브어} pl {폴란드어} ps {파슈토어} pt {포르투갈어} ro {루마니아어} ru {러시아어} sa {산스크리트어} sd {신디어} si {싱할라어} sk {슬로바키아어} sl {슬로베니아어} sn {쇼나어} so {소말리아어} sq {알바니아어} sr {세르비아어} su {순다어} sv {스웨덴어} sw {스와힐리어} ta {타밀어} te {텔루구어} tg {타지크어} th {태국어} tk {투르크멘어} tl {필리핀어} tr {튀르키예어} tt {타타르어} uk {우크라이나어} ur {우르두어} uz {우즈베크어} vi {베트남어} yi {이디시어} yo {요루바어} zh {중국어} yue {광둥어} zh_Hant {중국어(번체)} other {{code}}}",
   "local_captions_title": "기기 내 자막",
   "local_captions_help": "음성 모델과 호환되는 번역 모델을 다운로드하세요. 오디오와 텍스트는 이 기기에만 남습니다. 다운로드 시 모바일 데이터가 사용될 수 있으며 시작과 탐색 후 준비 시간이 필요합니다.",

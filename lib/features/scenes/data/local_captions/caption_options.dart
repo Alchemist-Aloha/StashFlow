@@ -10,11 +10,15 @@ class CaptionOptions {
     this.speechThreshold = 0.5,
     this.delayMilliseconds = 0,
     this.bilingual = false,
+    this.translate = false,
   });
   final String sourceLanguage, outputLanguage;
   final int threads, windowSeconds, delayMilliseconds;
   final double speechThreshold;
   final bool bilingual;
+
+  /// Whether the transcription dialog should also enable translation.
+  final bool translate;
 
   bool get isValid =>
       (sourceLanguage == 'auto' ||
@@ -39,6 +43,7 @@ class CaptionOptions {
     'threshold': speechThreshold,
     'delay': delayMilliseconds,
     'bilingual': bilingual,
+    'translate': translate,
   };
 
   static CaptionOptions? parse(String? text) {
@@ -53,6 +58,9 @@ class CaptionOptions {
         speechThreshold: (json['threshold'] as num).toDouble(),
         delayMilliseconds: json['delay'] as int,
         bilingual: json['bilingual'] as bool,
+        translate: json.containsKey('translate')
+            ? json['translate'] as bool
+            : false,
       );
       return result.isValid ? result : null;
     } on Object {
@@ -68,6 +76,7 @@ class CaptionOptions {
     double? speechThreshold,
     int? delayMilliseconds,
     bool? bilingual,
+    bool? translate,
   }) => CaptionOptions(
     sourceLanguage: sourceLanguage ?? this.sourceLanguage,
     outputLanguage: outputLanguage ?? this.outputLanguage,
@@ -76,7 +85,19 @@ class CaptionOptions {
     speechThreshold: speechThreshold ?? this.speechThreshold,
     delayMilliseconds: delayMilliseconds ?? this.delayMilliseconds,
     bilingual: bilingual ?? this.bilingual,
+    translate: translate ?? this.translate,
   );
+}
+
+/// Fixed source languages override recognizer metadata, including translation routing.
+String captionResultLanguage(String detected, String source) {
+  if (source != 'auto') return source;
+  final language = detected
+      .replaceAll('<|', '')
+      .replaceAll('|>', '')
+      .trim()
+      .toLowerCase();
+  return captionLanguageCodes.contains(language) ? language : 'und';
 }
 
 // Whisper's multilingual vocabulary, not the app's interface-language list.

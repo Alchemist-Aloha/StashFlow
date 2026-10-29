@@ -79,7 +79,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get local_captions_model_missing =>
-      'Сначала загрузите речевую модель в настройках воспроизведения.';
+      'Загрузите речевую модель, чтобы начать.';
 
   @override
   String local_captions_language_name(String code) {

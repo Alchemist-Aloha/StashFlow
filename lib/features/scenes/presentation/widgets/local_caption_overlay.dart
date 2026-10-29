@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import '../../../../core/utils/l10n_extensions.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/local_captions_provider.dart';
 import '../providers/video_player_provider.dart';
 import 'local_caption_labels.dart';
+import 'subtitle_presentation.dart';
 
 /// Renders the same generated cue in inline, feed, fullscreen and PiP surfaces.
 class GeneratedCaptionOverlay extends ConsumerWidget {
-  const GeneratedCaptionOverlay({super.key, required this.player});
+  const GeneratedCaptionOverlay({
+    super.key,
+    required this.player,
+    this.presentation,
+  });
   final Player player;
+
+  /// Uses the video surface's exact padding, including transformed layouts.
+  final SubtitleViewConfiguration? presentation;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,29 +45,28 @@ class GeneratedCaptionOverlay extends ConsumerWidget {
     return IgnorePointer(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return Padding(
-            padding: EdgeInsets.fromLTRB(
-              context.dimensions.spacingMedium,
-              0,
-              context.dimensions.spacingMedium,
-              constraints.maxHeight * settings.subtitlePositionBottomRatio,
-            ),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Text(
-                text,
+          final subtitles =
+              presentation ??
+              subtitlePresentation(
+                context,
+                fontSize: settings.subtitleFontSize,
                 textAlign: switch (settings.subtitleTextAlignment) {
                   'left' => TextAlign.left,
                   'right' => TextAlign.right,
                   _ => TextAlign.center,
                 },
-                style: TextStyle(
-                  color: Colors.white,
-                  backgroundColor: Colors.black87,
-                  fontSize:
-                      settings.subtitleFontSize *
-                      context.dimensions.fontSizeFactor,
-                ),
+                bottomPadding:
+                    constraints.maxHeight *
+                    settings.subtitlePositionBottomRatio,
+              );
+          return Padding(
+            padding: subtitles.padding,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Text(
+                text,
+                textAlign: subtitles.textAlign,
+                style: subtitles.style,
                 maxLines: 6,
                 overflow: TextOverflow.ellipsis,
               ),

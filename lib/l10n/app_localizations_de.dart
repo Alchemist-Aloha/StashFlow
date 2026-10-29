@@ -80,7 +80,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get local_captions_model_missing =>
-      'Zuerst ein Sprachmodell in den Wiedergabeeinstellungen herunterladen.';
+      'Lade ein Sprachmodell herunter, um zu beginnen.';
 
   @override
   String local_captions_language_name(String code) {

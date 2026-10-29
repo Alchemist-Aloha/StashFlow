@@ -213,7 +213,11 @@ class LocalCaptionSettingsNotifier extends Notifier<LocalCaptionSettings> {
     }
   }
 
-  Future<void> download(LocalCaptionModel model) async {
+  /// Installs weights; dialog downloads leave the active selection unchanged.
+  Future<void> download(
+    LocalCaptionModel model, {
+    bool selectAfterDownload = true,
+  }) async {
     if (_download != null || _deleting) return;
     if (state.models.length >= 128 &&
         !state.models.any((m) => m.id == model.id)) {
@@ -238,7 +242,7 @@ class LocalCaptionSettingsNotifier extends Notifier<LocalCaptionSettings> {
         }.values.toList(),
       );
       await _saveManifests();
-      await select(model.id);
+      if (selectAfterDownload) await select(model.id);
     } on Object {
       _update(error: cancel.cancelError?.error != 'user');
     } finally {

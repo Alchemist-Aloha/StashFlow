@@ -75,7 +75,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get local_captions_model_missing => '先に再生設定から音声モデルをダウンロードしてください。';
+  String get local_captions_model_missing => '開始するには音声モデルをダウンロードしてください。';
 
   @override
   String local_captions_language_name(String code) {

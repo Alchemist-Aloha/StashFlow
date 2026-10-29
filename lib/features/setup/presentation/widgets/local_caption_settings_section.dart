@@ -79,10 +79,11 @@ class LocalCaptionSettingsSection extends ConsumerWidget {
     return ListTile(
       key: ValueKey('caption-model-${model.id}'),
       contentPadding: EdgeInsets.zero,
+      selected: selected,
       leading: Icon(selected ? Icons.check_circle : Icons.circle_outlined),
       title: Text(localCaptionModelLabel(context, model)),
       subtitle: Text(model.repository),
-      onTap: busy ? null : () => notifier.select(model.id),
+      onTap: busy || selected ? null : () => notifier.select(model.id),
       trailing: PopupMenuButton<String>(
         tooltip: context.l10n.common_settings,
         onSelected: (value) async {
@@ -96,7 +97,7 @@ class LocalCaptionSettingsSection extends ConsumerWidget {
         itemBuilder: (_) => [
           PopupMenuItem(
             value: 'select',
-            enabled: !busy,
+            enabled: !busy && !selected,
             child: Text(context.l10n.local_captions_select),
           ),
           PopupMenuItem(

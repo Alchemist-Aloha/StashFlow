@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
+import 'subtitle_presentation.dart';
 import 'local_caption_overlay.dart';
 
 class TransformableVideoSurface extends StatefulWidget {
@@ -73,34 +73,27 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
 
   @override
   Widget build(BuildContext context) {
+    final subtitles = subtitlePresentation(
+      context,
+      fontSize: widget.fontSize,
+      textAlign: widget.textAlign,
+      bottomPadding: widget.bottomRatio * widget.constraints.maxHeight,
+    );
     Widget content = Video(
       controller: widget.controller,
       controls: null,
       pauseUponEnteringBackgroundMode: false,
-      subtitleViewConfiguration: SubtitleViewConfiguration(
-        visible: true,
-        textAlign: widget.textAlign,
-        padding: EdgeInsets.fromLTRB(
-          context.dimensions.spacingMedium,
-          0,
-          context.dimensions.spacingMedium,
-          widget.bottomRatio * widget.constraints.maxHeight,
-        ),
-        style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.75),
-          fontSize:
-              widget.fontSize *
-              4, // Scale up the font size for better visibility when transformed, and rely on the user to adjust it down if needed.
-          backgroundColor: Colors.black.withValues(alpha: 0.4),
-        ),
-      ),
+      subtitleViewConfiguration: subtitles,
     );
 
     content = Stack(
       fit: StackFit.expand,
       children: [
         content,
-        GeneratedCaptionOverlay(player: widget.controller.player),
+        GeneratedCaptionOverlay(
+          player: widget.controller.player,
+          presentation: subtitles,
+        ),
       ],
     );
 

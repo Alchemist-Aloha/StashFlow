@@ -8,6 +8,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/local_c
 import 'package:stash_app_flutter/features/scenes/presentation/providers/local_captions_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/local_caption_overlay.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/subtitle_presentation.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/scene_subtitle_menu.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -60,6 +61,7 @@ class _Models extends LocalCaptionSettingsNotifier {
 class _Captions extends LocalCaptionsNotifier {
   _Captions(this.player);
   final mk.Player player;
+  LocalCaptionMode get mode => state.mode;
   @override
   LocalCaptions build() => const LocalCaptions();
   @override
@@ -79,7 +81,7 @@ class _Captions extends LocalCaptionsNotifier {
 
 void main() {
   testWidgets(
-    'subtitle menu enables local modes without server captions and None stops them',
+    'one transcription action offers optional translation and None stops both',
     (tester) async {
       final player = _Player(), scene = _Scene();
       final captions = _Captions(player);
@@ -118,19 +120,65 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
       await tester.pumpAndSettle();
       expect(find.text('generated phrase'), findsOneWidget);
+      final cue = tester.widget<Text>(find.text('generated phrase'));
+      final presentation = subtitlePresentation(
+        tester.element(find.text('generated phrase')),
+        fontSize: 18,
+        textAlign: TextAlign.center,
+        bottomPadding: 0,
+      );
+      expect(cue.style, presentation.style);
+      expect(cue.textAlign, presentation.textAlign);
+      expect(cue.style!.fontSize, 18);
+      expect(captions.mode, LocalCaptionMode.transcribe);
       await tester.tap(find.byTooltip('Select subtitle'));
       await tester.pumpAndSettle();
+      expect(find.text('Translate audio'), findsNothing);
+      expect(find.text('Manage subtitle models'), findsNothing);
+      final action = tester.widget<CheckedPopupMenuItem<String>>(
+        find.widgetWithText(CheckedPopupMenuItem<String>, 'Transcribe audio'),
+      );
+      expect(action.checked, isTrue);
       await tester.tap(
         find.ancestor(
-          of: find.textContaining('Translate audio'),
+          of: find.text('Transcribe audio'),
           matching: find.byType(CheckedPopupMenuItem<String>),
         ),
       );
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsOneWidget);
+      final translate = find.widgetWithText(SwitchListTile, 'Translate audio');
+      await tester.ensureVisible(translate);
+      await tester.tap(translate);
+      await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
       await tester.pumpAndSettle();
+      expect(captions.mode, LocalCaptionMode.translate);
       expect(find.text('generated phrase'), findsOneWidget);
+      await tester.tap(find.byTooltip('Select subtitle'));
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<CheckedPopupMenuItem<String>>(
+              find.widgetWithText(
+                CheckedPopupMenuItem<String>,
+                'Transcribe audio',
+              ),
+            )
+            .checked,
+        isTrue,
+      );
+      await tester.tap(
+        find.widgetWithText(CheckedPopupMenuItem<String>, 'Transcribe audio'),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.widget<SwitchListTile>(translate).value, isTrue);
+      await tester.ensureVisible(translate);
+      await tester.tap(translate);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(captions.mode, LocalCaptionMode.translate);
       await tester.tap(find.byTooltip('Select subtitle'));
       await tester.pumpAndSettle();
       await tester.tap(
@@ -146,7 +194,7 @@ void main() {
   );
 
   testWidgets(
-    'missing weights disable inference; model settings exit fullscreen first',
+    'missing weights allow dialog recovery; model settings exit fullscreen first',
     (tester) async {
       final player = _Player(), scene = _Scene();
       final playback = _Playback(player, scene);
@@ -178,7 +226,18 @@ void main() {
           matching: find.byType(CheckedPopupMenuItem<String>),
         ),
       );
-      expect(disabled.enabled, isFalse);
+      expect(disabled.enabled, isTrue);
+      expect(find.text('Manage subtitle models'), findsNothing);
+      await tester.tap(
+        find.widgetWithText(CheckedPopupMenuItem<String>, 'Transcribe audio'),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, 'Apply'))
+            .onPressed,
+        isNull,
+      );
       await tester.tap(find.text('Manage subtitle models'));
       await tester.pumpAndSettle();
       expect(playback.synchronized, isTrue);

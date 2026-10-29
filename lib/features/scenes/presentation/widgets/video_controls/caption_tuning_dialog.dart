@@ -8,8 +8,9 @@ import '../../../data/local_captions/local_caption_model.dart';
 import '../../providers/local_caption_settings.dart';
 import '../../providers/local_captions_provider.dart';
 import '../local_caption_labels.dart';
+import '../../../../setup/presentation/widgets/caption_model_picker.dart';
 
-/// A modal draft; cancellation never changes running inference or preferences.
+/// A modal draft; cancelling keeps installed downloads but discards configuration.
 class CaptionConfiguration {
   const CaptionConfiguration(
     this.mode,
@@ -29,24 +30,20 @@ class CaptionConfiguration {
   final bool manageModels;
 }
 
-Future<CaptionConfiguration?> showCaptionTuningDialog(
-  BuildContext context,
-  LocalCaptionMode mode,
-) => showDialog<CaptionConfiguration>(
-  context: context,
-  builder: (_) => _CaptionTuningDialog(mode: mode),
-);
+Future<CaptionConfiguration?> showCaptionTuningDialog(BuildContext context) =>
+    showDialog<CaptionConfiguration>(
+      context: context,
+      builder: (_) => const _CaptionTuningDialog(),
+    );
 
 class _CaptionTuningDialog extends ConsumerStatefulWidget {
-  const _CaptionTuningDialog({required this.mode});
-  final LocalCaptionMode mode;
+  const _CaptionTuningDialog();
   @override
   ConsumerState<_CaptionTuningDialog> createState() =>
       _CaptionTuningDialogState();
 }
 
 class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
-  late LocalCaptionMode _mode;
   late CaptionOptions _options;
   LocalCaptionModel? _speech;
   String? _translationId;
@@ -54,7 +51,6 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
   void initState() {
     super.initState();
     final settings = ref.read(localCaptionSettingsProvider);
-    _mode = widget.mode;
     _options = settings.options;
     _speech = settings.canTranscribe
         ? settings.model
@@ -106,7 +102,9 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
         ? _translationId
         : null;
     final canStart =
-        validSpeech && (_mode == LocalCaptionMode.transcribe || validPair);
+        validSpeech &&
+        (!_options.translate || validPair) &&
+        settings.downloading == null;
     final detected = ref.watch(localCaptionsProvider).frame.language;
     final space = context.dimensions.spacingMedium;
     return AlertDialog(
@@ -118,37 +116,11 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DropdownButtonFormField<LocalCaptionMode>(
-              initialValue: _mode,
-              isExpanded: true,
-              decoration: InputDecoration(labelText: context.l10n.mode),
-              items: [
-                DropdownMenuItem(
-                  value: LocalCaptionMode.transcribe,
-                  child: Text(
-                    context.l10n.local_captions_transcribe,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                DropdownMenuItem(
-                  value: LocalCaptionMode.translate,
-                  child: Text(
-                    context.l10n.local_captions_translate,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-              onChanged: (mode) {
-                if (mode != null) setState(() => _mode = mode);
-              },
-            ),
-            SizedBox(height: space),
             if (speechModels.isEmpty)
               Text(context.l10n.local_captions_model_missing)
             else
               DropdownButtonFormField<String>(
+                key: ValueKey(_speech?.id),
                 initialValue: _speech?.id,
                 isExpanded: true,
                 decoration: InputDecoration(
@@ -171,6 +143,27 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
                   _normalizeSource();
                 }),
               ),
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              title: Text(context.l10n.common_download),
+              children: [
+                CaptionModelPicker(
+                  translation: false,
+                  selectedId: _speech?.id,
+                  onSelected: (model) => setState(() {
+                    _speech = model;
+                    _normalizeSource();
+                  }),
+                ),
+                if (settings.error)
+                  Text(
+                    context.l10n.local_captions_model_error,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+              ],
+            ),
             SizedBox(height: space),
             if (_speech != null)
               _language(
@@ -181,17 +174,28 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
                   () => _options = _options.copyWith(sourceLanguage: value),
                 ),
               ),
-            if (_speech?.canDetectLanguage ?? false) ...[
+            if ((_speech?.canDetectLanguage ?? false) &&
+                _options.sourceLanguage == 'auto') ...[
               SizedBox(height: space),
               Text(context.l10n.local_captions_auto_help),
             ],
-            if (detected != null && detected != 'und')
+            if (_options.sourceLanguage == 'auto' &&
+                detected != null &&
+                detected != 'und')
               Text(
                 context.l10n.local_captions_detected(
                   localCaptionLanguageLabel(context, detected),
                 ),
               ),
-            if (_mode == LocalCaptionMode.translate) ...[
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              value: _options.translate,
+              title: Text(context.l10n.local_captions_translate),
+              onChanged: (value) => setState(
+                () => _options = _options.copyWith(translate: value),
+              ),
+            ),
+            if (_options.translate) ...[
               SizedBox(height: space),
               _language(
                 context.l10n.local_captions_output,
@@ -236,6 +240,31 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
                       setState(() => _translationId = id == 'auto' ? null : id),
                 ),
               ],
+              ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: Text(context.l10n.common_download),
+                children: [
+                  CaptionModelPicker(
+                    translation: true,
+                    selectedId: _translationId,
+                    onSelected: (model) => setState(() {
+                      _translationId = model.id;
+                      if (!model.supportsOutput(_options.outputLanguage)) {
+                        _options = _options.copyWith(
+                          outputLanguage: model.target,
+                        );
+                      }
+                    }),
+                  ),
+                  if (settings.error)
+                    Text(
+                      context.l10n.local_captions_model_error,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                ],
+              ),
               if (!validPair)
                 Padding(
                   padding: EdgeInsets.only(top: space),
@@ -317,7 +346,14 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
           onPressed: canStart
               ? () => Navigator.pop(
                   context,
-                  CaptionConfiguration(_mode, _speech!.id, _options, preferred),
+                  CaptionConfiguration(
+                    _options.translate
+                        ? LocalCaptionMode.translate
+                        : LocalCaptionMode.transcribe,
+                    _speech!.id,
+                    _options,
+                    preferred,
+                  ),
                 )
               : null,
           child: Text(context.l10n.common_apply),
@@ -331,25 +367,30 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
     String value,
     List<String> languages,
     ValueChanged<String> select,
-  ) => DropdownButtonFormField<String>(
+  ) => DropdownMenu<String>(
     key: ValueKey('$title-$value'),
-    initialValue: value,
-    isExpanded: true,
-    menuMaxHeight: MediaQuery.sizeOf(context).height * 0.4,
-    decoration: InputDecoration(labelText: title),
-    items: languages
-        .map(
-          (code) => DropdownMenuItem(
-            value: code,
-            child: Text(
-              localCaptionLanguageLabel(context, code),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+    initialSelection: value,
+    expandedInsets: EdgeInsets.zero,
+    menuHeight: MediaQuery.sizeOf(context).height * 0.4,
+    label: Text(title),
+    hintText: context.l10n.common_search,
+    enableFilter: true,
+    requestFocusOnTap: true,
+    filterCallback: (entries, query) => entries
+        .where(
+          (entry) => '${entry.value} ${entry.label}'.toLowerCase().contains(
+            query.trim().toLowerCase(),
           ),
         )
         .toList(),
-    onChanged: (code) {
+    dropdownMenuEntries: [
+      for (final code in languages)
+        DropdownMenuEntry(
+          value: code,
+          label: localCaptionLanguageLabel(context, code),
+        ),
+    ],
+    onSelected: (code) {
       if (code != null) select(code);
     },
   );

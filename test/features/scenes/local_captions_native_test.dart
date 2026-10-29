@@ -79,6 +79,31 @@ void main() {
       }
     }, skip: !_native);
   }
+  test('Whisper fixed source skips automatic language selection', () async {
+    final worker = await CaptionWorker.start(
+      LocalCaptionModel.find('whisper-ja')!,
+      Directory('$_models/whisper-ja').absolute.path,
+      options: const CaptionOptions(sourceLanguage: 'en'),
+    );
+    try {
+      sherpa.initBindings();
+      final wave = sherpa.readWave('$_models/zipformer-en/test.wav');
+      final cues = await worker.process(
+        wave.samples,
+        Duration.zero,
+        Duration.zero,
+        Duration(
+          microseconds: (wave.samples.length * 1000000 / wave.sampleRate)
+              .round(),
+        ),
+      );
+      expect(cues, isNotEmpty);
+      expect(cues.every((cue) => cue.language == 'en'), isTrue);
+    } finally {
+      await worker.close();
+    }
+  }, skip: !_native);
+
   for (final output in ['zh', 'en', 'de']) {
     test(
       'Whisper auto-detection routes $output output without a wrong-language fallback',

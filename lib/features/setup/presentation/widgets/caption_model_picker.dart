@@ -13,8 +13,17 @@ import '../../../scenes/presentation/widgets/local_caption_labels.dart';
 
 /// An anchored searchable catalog, with explicit inspection and download actions.
 class CaptionModelPicker extends ConsumerStatefulWidget {
-  const CaptionModelPicker({super.key, required this.translation});
+  const CaptionModelPicker({
+    super.key,
+    required this.translation,
+    this.selectedId,
+    this.onSelected,
+  });
   final bool translation;
+
+  /// When supplied, selection is staged by the caller, not saved to preferences.
+  final ValueChanged<LocalCaptionModel>? onSelected;
+  final String? selectedId;
   @override
   ConsumerState<CaptionModelPicker> createState() => _CaptionModelPickerState();
 }
@@ -74,15 +83,26 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
     }
   }
 
+  Future<void> _download(LocalCaptionModel model) async {
+    await ref
+        .read(localCaptionSettingsProvider.notifier)
+        .download(model, selectAfterDownload: widget.onSelected == null);
+    if (mounted &&
+        ref.read(localCaptionSettingsProvider).installed.contains(model.id)) {
+      widget.onSelected?.call(model);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(localCaptionSettingsProvider);
     final notifier = ref.read(localCaptionSettingsProvider.notifier);
-    final model = _changed
-        ? _model
+    final selectedId = widget.onSelected != null
+        ? widget.selectedId
         : widget.translation
-        ? state.translationModel
-        : state.model;
+        ? state.translation
+        : state.selected;
+    final model = _changed ? _model : state.find(selectedId);
     final busy = state.downloading != null || state.loading;
     final label = widget.translation
         ? context.l10n.local_captions_translation_models
@@ -94,6 +114,17 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
           searchController: _search,
           isFullScreen: MediaQuery.sizeOf(context).width < 600,
           viewHintText: context.l10n.common_search,
+          // Let the search route supply the height, including keyboard insets.
+          viewBuilder: (suggestions) => Builder(
+            builder: (context) => Padding(
+              padding: EdgeInsets.only(
+                bottom:
+                    MediaQuery.viewInsetsOf(context).bottom +
+                    MediaQuery.paddingOf(context).bottom,
+              ),
+              child: suggestions.firstOrNull ?? const SizedBox.shrink(),
+            ),
+          ),
           builder: (context, controller) => Semantics(
             button: true,
             label: label,
@@ -127,117 +158,113 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
             ),
           ),
           suggestionsBuilder: (context, controller) => [
-            SizedBox(
-              height: MediaQuery.sizeOf(context).height * 0.55,
-              child: Consumer(
-                builder: (context, ref, _) {
-                  final remote = ref.watch(
-                    captionHubModelsProvider(widget.translation),
-                  );
-                  final installed = ref
-                      .watch(localCaptionSettingsProvider)
-                      .downloaded
-                      .where((m) => m.isTranslation == widget.translation);
-                  final models = <String, CaptionHubModel>{
-                    for (final m in installed)
-                      m.repository: CaptionHubModel(
-                        m.repository,
-                        m.engine,
-                        m.source,
-                        m.target,
-                        m.sourceLanguages,
-                        m.license,
-                      ),
-                    for (final m in remote.asData?.value ?? <CaptionHubModel>[])
-                      m.repository: m,
-                  }.values;
-                  final codes = {
-                    for (final m in models) ...m.languages,
-                    for (final m in models)
-                      if (m.target != null) m.target!,
-                  };
-                  final names = {
-                    for (final code in codes)
-                      code: localCaptionLanguageLabel(context, code),
-                  };
-                  final query = controller.text.trim().toLowerCase();
-                  final matches = models
-                      .where(
-                        (m) =>
-                            ('${m.repository} ${m.engine} ${[...m.languages, if (m.target != null) m.target!].map((c) => '$c ${names[c]}').join(' ')}')
-                                .toLowerCase()
-                                .contains(query),
-                      )
-                      .toList();
-                  return Column(
-                    children: [
-                      if (remote.isLoading) const LinearProgressIndicator(),
-                      if (remote.hasError)
-                        ListTile(
-                          title: Text(
-                            context.l10n.local_captions_catalog_error,
+            Consumer(
+              builder: (context, ref, _) {
+                final remote = ref.watch(
+                  captionHubModelsProvider(widget.translation),
+                );
+                final installed = ref
+                    .watch(localCaptionSettingsProvider)
+                    .downloaded
+                    .where((m) => m.isTranslation == widget.translation);
+                final models = <String, CaptionHubModel>{
+                  for (final m in installed)
+                    m.repository: CaptionHubModel(
+                      m.repository,
+                      m.engine,
+                      m.source,
+                      m.target,
+                      m.sourceLanguages,
+                      m.license,
+                    ),
+                  for (final m in remote.asData?.value ?? <CaptionHubModel>[])
+                    m.repository: m,
+                }.values;
+                final codes = {
+                  for (final m in models) ...m.languages,
+                  for (final m in models)
+                    if (m.target != null) m.target!,
+                };
+                final names = {
+                  for (final code in codes)
+                    code: localCaptionLanguageLabel(context, code),
+                };
+                final query = controller.text.trim().toLowerCase();
+                final matches = models
+                    .where(
+                      (m) =>
+                          ('${m.repository} ${m.engine} ${[...m.languages, if (m.target != null) m.target!].map((c) => '$c ${names[c]}').join(' ')}')
+                              .toLowerCase()
+                              .contains(query),
+                    )
+                    .toList();
+                return Column(
+                  children: [
+                    if (remote.isLoading) const LinearProgressIndicator(),
+                    if (remote.hasError)
+                      ListTile(
+                        title: Text(context.l10n.local_captions_catalog_error),
+                        trailing: TextButton(
+                          onPressed: () => ref.invalidate(
+                            captionHubModelsProvider(widget.translation),
                           ),
-                          trailing: TextButton(
-                            onPressed: () => ref.invalidate(
-                              captionHubModelsProvider(widget.translation),
-                            ),
-                            child: Text(context.l10n.common_retry),
-                          ),
+                          child: Text(context.l10n.common_retry),
                         ),
-                      Expanded(
-                        child:
-                            matches.isEmpty &&
-                                !remote.isLoading &&
-                                !remote.hasError
-                            ? Center(
-                                child: Text(
-                                  context.l10n.scenes_no_results_found,
-                                ),
-                              )
-                            : ListView.builder(
-                                primary: false,
-                                itemCount: matches.length,
-                                itemBuilder: (context, index) {
-                                  final item = matches[index];
-                                  return ListTile(
-                                    title: Text(item.repository),
-                                    subtitle: Text(
-                                      item.target == null
-                                          ? item.languages.length > 1
-                                                ? context
-                                                      .l10n
-                                                      .local_captions_multilingual
-                                                : names[item.source] ??
-                                                      context
-                                                          .l10n
-                                                          .local_captions_model_default
-                                          : context.l10n.local_captions_pair(
-                                              localCaptionLanguageLabel(
-                                                context,
-                                                item.source,
-                                              ),
-                                              localCaptionLanguageLabel(
-                                                context,
-                                                item.target!,
-                                              ),
-                                            ),
-                                    ),
-                                    onTap: () => unawaited(_choose(item)),
-                                  );
-                                },
-                              ),
                       ),
-                    ],
-                  );
-                },
-              ),
+                    Expanded(
+                      child:
+                          matches.isEmpty &&
+                              !remote.isLoading &&
+                              !remote.hasError
+                          ? Center(
+                              child: Text(context.l10n.scenes_no_results_found),
+                            )
+                          : ListView.builder(
+                              primary: false,
+                              itemCount: matches.length,
+                              itemBuilder: (context, index) {
+                                final item = matches[index];
+                                return ListTile(
+                                  title: Text(item.repository),
+                                  subtitle: Text(
+                                    item.target == null
+                                        ? item.languages.length > 1
+                                              ? context
+                                                    .l10n
+                                                    .local_captions_multilingual
+                                              : names[item.source] ??
+                                                    context
+                                                        .l10n
+                                                        .local_captions_model_default
+                                        : context.l10n.local_captions_pair(
+                                            localCaptionLanguageLabel(
+                                              context,
+                                              item.source,
+                                            ),
+                                            localCaptionLanguageLabel(
+                                              context,
+                                              item.target!,
+                                            ),
+                                          ),
+                                  ),
+                                  onTap: () => unawaited(_choose(item)),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
         if (_resolving) const LinearProgressIndicator(),
         if (model != null) ...[
           SizedBox(height: context.dimensions.spacingSmall),
-          Text(localCaptionModelLabel(context, model)),
+          Text(
+            localCaptionModelLabel(context, model),
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
           Text(
             context.l10n.local_captions_size(
               NumberFormat(
@@ -252,6 +279,7 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
                       : 'Apache-2.0'),
             ),
           ),
+          SizedBox(height: context.dimensions.spacingSmall),
           if (state.downloading == model.id) ...[
             LinearProgressIndicator(
               value: state.progress,
@@ -270,27 +298,29 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
               children: [
                 if (state.installed.contains(model.id))
                   TextButton.icon(
-                    onPressed: busy ? null : () => notifier.select(model.id),
+                    onPressed: busy || selectedId == model.id
+                        ? null
+                        : () {
+                            if (widget.onSelected != null) {
+                              widget.onSelected!(model);
+                            } else {
+                              unawaited(notifier.select(model.id));
+                            }
+                          },
                     icon: Icon(
-                      (widget.translation
-                                  ? state.translation
-                                  : state.selected) ==
-                              model.id
+                      selectedId == model.id
                           ? Icons.check_circle
                           : Icons.circle_outlined,
                     ),
                     label: Text(
-                      (widget.translation
-                                  ? state.translation
-                                  : state.selected) ==
-                              model.id
+                      selectedId == model.id
                           ? context.l10n.selected
                           : context.l10n.local_captions_select,
                     ),
                   )
                 else
                   FilledButton.icon(
-                    onPressed: busy ? null : () => notifier.download(model),
+                    onPressed: busy ? null : () => _download(model),
                     icon: const Icon(Icons.download),
                     label: Text(context.l10n.common_download),
                   ),

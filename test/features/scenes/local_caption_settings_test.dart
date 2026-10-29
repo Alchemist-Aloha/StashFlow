@@ -14,6 +14,7 @@ import 'package:stash_app_flutter/features/setup/presentation/widgets/caption_mo
 import 'package:stash_app_flutter/features/scenes/presentation/providers/local_caption_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/local_captions_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/local_caption_settings_section.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/caption_tuning_dialog.dart';
 import '../../helpers/test_helpers.dart';
 
 class _Store extends CaptionModelStore {
@@ -122,6 +123,156 @@ void main() {
     },
   );
 
+  test(
+    'applied options and translation choice survive transcription and restart',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final store = _Store();
+      addTearDown(store.dio.close);
+      final overrides = [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        captionModelStoreProvider.overrideWith((_) async => store),
+      ];
+      final container = ProviderContainer.test(overrides: overrides);
+      final notifier = container.read(localCaptionSettingsProvider.notifier);
+      await notifier.refresh();
+      await notifier.download(LocalCaptionModel.find('zipformer-en')!);
+      await notifier.download(LocalCaptionModel.find('marian-en-zh')!);
+      const options = CaptionOptions(
+        sourceLanguage: 'en',
+        outputLanguage: 'zh',
+        bilingual: true,
+        translate: true,
+        threads: 3,
+        windowSeconds: 8,
+        speechThreshold: 0.65,
+        delayMilliseconds: 1200,
+      );
+      await notifier.configure(
+        'zipformer-en',
+        options,
+        translationId: 'marian-en-zh',
+      );
+      // Transcription does not discard the last translation-model preference.
+      await notifier.configure('zipformer-en', options);
+      final restored = ProviderContainer.test(overrides: overrides);
+      await restored.read(localCaptionSettingsProvider.notifier).refresh();
+      final settings = restored.read(localCaptionSettingsProvider);
+      expect(settings.selected, 'zipformer-en');
+      expect(settings.translation, 'marian-en-zh');
+      expect(settings.options.toJson(), options.toJson());
+      await restored
+          .read(localCaptionSettingsProvider.notifier)
+          .configure('zipformer-en', options, automaticTranslation: true);
+      final automatic = ProviderContainer.test(overrides: overrides);
+      expect(automatic.read(localCaptionSettingsProvider).translation, isNull);
+    },
+  );
+
+  testWidgets(
+    'dialog downloads speech and translation without committing its draft',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final store = _Store(), catalog = _Catalog();
+      addTearDown(store.dio.close);
+      addTearDown(catalog.dio.close);
+      CaptionConfiguration? draft;
+      await pumpTestWidget(
+        tester,
+        overrides: [
+          captionModelStoreProvider.overrideWith((_) async => store),
+          captionModelCatalogProvider.overrideWithValue(catalog),
+          localCaptionsProvider.overrideWith(_IdleCaptions.new),
+        ],
+        child: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                draft = await showCaptionTuningDialog(context);
+              },
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final container = ProviderScope.containerOf(
+        tester.element(find.text('Open')),
+      );
+      final before = container.read(localCaptionSettingsProvider);
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      Future<void> download(bool translation, String id) async {
+        final expansion = find.byType(ExpansionTile).at(translation ? 1 : 0);
+        await tester.ensureVisible(expansion);
+        await tester.tap(
+          find.descendant(of: expansion, matching: find.text('Download')).first,
+        );
+        await tester.pumpAndSettle();
+        final picker = find.byWidgetPredicate(
+          (w) => w is CaptionModelPicker && w.translation == translation,
+        );
+        final field = find
+            .descendant(of: picker, matching: find.byType(InputDecorator))
+            .first;
+        await tester.ensureVisible(field);
+        await tester.tap(field);
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byType(TextField).last,
+          translation ? 'Chinese' : id,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.widgetWithText(ListTile, LocalCaptionModel.find(id)!.repository),
+        );
+        await tester.pumpAndSettle();
+        final button = find
+            .descendant(of: picker, matching: find.byType(FilledButton))
+            .first;
+        await tester.ensureVisible(button);
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        expect(store.installed, contains(id));
+        expect(
+          container.read(localCaptionSettingsProvider).selected,
+          before.selected,
+        );
+        expect(
+          container.read(localCaptionSettingsProvider).translation,
+          before.translation,
+        );
+      }
+
+      await download(false, 'zipformer-en');
+      final toggle = find.widgetWithText(SwitchListTile, 'Translate audio');
+      await tester.ensureVisible(toggle);
+      await tester.tap(toggle);
+      await tester.pumpAndSettle();
+      await download(true, 'marian-en-zh');
+      expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, 'Apply'))
+            .onPressed,
+        isNotNull,
+      );
+      await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
+      await tester.pumpAndSettle();
+      expect(draft!.speechId, 'zipformer-en');
+      expect(draft!.translationId, 'marian-en-zh');
+      expect(draft!.options.outputLanguage, 'zh');
+      expect(
+        container.read(localCaptionSettingsProvider).options.toJson(),
+        before.options.toJson(),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   test('backup selections do not enable missing weights', () async {
     SharedPreferences.setMockInitialValues({
       captionModelPreference: 'zipformer-en',
@@ -223,10 +374,16 @@ void main() {
             await tester.ensureVisible(field);
             await tester.tap(field);
             await tester.pumpAndSettle();
+            final searchList = find.byType(ListView).last;
+            expect(tester.getSize(searchList).height, greaterThan(600));
+            tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+            await tester.pumpAndSettle();
+            expect(tester.getBottomLeft(searchList).dy, lessThanOrEqualTo(600));
             await tester.enterText(find.byType(TextField).last, query);
             await tester.pumpAndSettle();
             final repository = LocalCaptionModel.find(id)!.repository;
             await tester.tap(find.widgetWithText(ListTile, repository));
+            tester.view.resetViewInsets();
             await tester.pumpAndSettle();
             final download = find.widgetWithText(FilledButton, 'Download');
             await tester.ensureVisible(download);

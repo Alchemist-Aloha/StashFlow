@@ -75,7 +75,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get local_captions_model_missing => '请先在播放设置中下载语音模型。';
+  String get local_captions_model_missing => '请下载语音模型以开始。';
 
   @override
   String local_captions_language_name(String code) {
@@ -3854,7 +3854,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get local_captions_model_missing => '请先在播放设置中下载语音模型。';
+  String get local_captions_model_missing => '请下载语音模型以开始。';
 
   @override
   String local_captions_language_name(String code) {
@@ -7633,7 +7633,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get local_captions_model_missing => '請先在播放設定中下載語音模型。';
+  String get local_captions_model_missing => '請下載語音模型以開始。';
 
   @override
   String local_captions_language_name(String code) {
