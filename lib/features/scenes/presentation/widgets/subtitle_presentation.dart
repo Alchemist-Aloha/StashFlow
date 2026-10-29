@@ -10,6 +10,8 @@ SubtitleViewConfiguration subtitlePresentation(
   required double bottomPadding,
 }) => SubtitleViewConfiguration(
   textAlign: textAlign,
+  // Override media-kit's viewport-based shrinking to match Flutter captions.
+  textScaler: MediaQuery.textScalerOf(context),
   padding: EdgeInsets.fromLTRB(
     context.dimensions.spacingMedium,
     0,

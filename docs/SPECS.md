@@ -603,7 +603,10 @@ generation. Web and casting cannot generate subtitles. Native inline,
 fullscreen, feed and PiP surfaces share timed Flutter-rendered cues and existing
 subtitle font, alignment and position preferences. Server and generated captions
 use one shared text style and padding recipe; the configured font size is scaled
-once by the UI scale, without a server-subtitle-only multiplier.
+once by the UI scale, without a server-subtitle-only multiplier. Both use the
+ambient system text scaler; media-kit's default viewport-relative subtitle
+shrinking must be overridden so external SRT and generated captions retain the
+same configured font size even in small video surfaces.
 
 A separate, silent, untimed mpv PCM decoder reads bounded configured windows
 with one-second context around them. It reuses the active media URL, headers

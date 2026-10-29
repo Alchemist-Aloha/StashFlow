@@ -45,6 +45,7 @@ The app is primarily tested on Android and Windows. The web build is best treate
 - 📱 **Cross-platform** support for Android, desktop, and web.
 - 🧭 **Flexible navigation** with customizable primary tabs and responsive layouts.
 - 🎬 **Playback tools** including queue continuity, autoplay next, PiP, background audio, cast support, and subtitle controls.
+- 💬 **On-device transcription and translation** to generate subtitles even when a scene has none. Choose **Transcribe** in the subtitle menu, then download compatible models in the dialog or **Settings → Playback**. Speech and text stay on-device; generation requires native playback and is unavailable on web or while casting. Speed and accuracy depend on your hardware and models.
 - 🖼️ **Media browsing** for scenes, markers, images, galleries, performers, studios, tags, and groups.
 - 🔎 **Filtering and sorting** with saved per-page defaults and server-side presets.
 - 🛠️ **Editing and scraping** for scene metadata, entity associations, and match merging.

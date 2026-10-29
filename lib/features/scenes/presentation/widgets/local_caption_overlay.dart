@@ -66,6 +66,7 @@ class GeneratedCaptionOverlay extends ConsumerWidget {
               child: Text(
                 text,
                 textAlign: subtitles.textAlign,
+                textScaler: subtitles.textScaler,
                 style: subtitles.style,
                 maxLines: 6,
                 overflow: TextOverflow.ellipsis,

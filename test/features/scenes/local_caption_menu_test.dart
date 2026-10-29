@@ -12,6 +12,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/video_p
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/local_caption_overlay.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/subtitle_presentation.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/scene_subtitle_menu.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import '../../helpers/test_helpers.dart';
 
 class _Scene extends Fake implements Scene {
@@ -21,7 +22,17 @@ class _Scene extends Fake implements Scene {
   List<VideoCaption> get captions => const [];
 }
 
-class _Player extends Fake implements mk.Player {}
+class _Player extends Fake implements mk.Player {
+  @override
+  mk.PlayerState get state => mk.PlayerState(subtitle: ['generated phrase']);
+  @override
+  mk.PlayerStream get stream => _SubtitleStream();
+}
+
+class _SubtitleStream extends Fake implements mk.PlayerStream {
+  @override
+  Stream<List<String>> get subtitle => const Stream.empty();
+}
 
 class _Controller extends Fake implements VideoController {
   _Controller(this.player);
@@ -111,6 +122,88 @@ class _ObservedCaptions extends LocalCaptionsNotifier {
 }
 
 void main() {
+  for (final size in [const Size(320, 180), const Size(1920, 1080)]) {
+    for (final scale in [0.5, 1.0, 2.0]) {
+      for (final textScale in [1.0, 1.6]) {
+        testWidgets(
+          'SRT and transcription render at the same size at $size / $scale / $textScale',
+          (tester) async {
+            await tester.binding.setSurfaceSize(size);
+            addTearDown(() => tester.binding.setSurfaceSize(null));
+            final player = _Player();
+            final captions = _Captions(player);
+            await pumpTestWidget(
+              tester,
+              overrides: [
+                playerStateProvider.overrideWith(
+                  () => _Playback(player, _Scene()),
+                ),
+                localCaptionsProvider.overrideWith(() => captions),
+              ],
+              child: Theme(
+                data: AppTheme.buildTheme(
+                  Brightness.dark,
+                  Colors.teal,
+                  fontSizeFactor: scale,
+                ),
+                child: MediaQuery(
+                  data: MediaQueryData(
+                    size: size,
+                    textScaler: TextScaler.linear(textScale),
+                  ),
+                  child: Builder(
+                    builder: (context) {
+                      final presentation = subtitlePresentation(
+                        context,
+                        fontSize: 18,
+                        textAlign: TextAlign.center,
+                        bottomPadding: 0,
+                      );
+                      return Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          SubtitleView(
+                            controller: _Controller(player),
+                            configuration: presentation,
+                          ),
+                          GeneratedCaptionOverlay(
+                            player: player,
+                            presentation: presentation,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+            );
+            await captions.setMode(LocalCaptionMode.transcribe);
+            await tester.pumpAndSettle();
+            final srt = find.descendant(
+              of: find.byType(SubtitleView),
+              matching: find.byType(Text),
+            );
+            final generated = find.descendant(
+              of: find.byType(GeneratedCaptionOverlay),
+              matching: find.byType(Text),
+            );
+            for (final finder in [srt, generated]) {
+              final text = tester.widget<Text>(finder);
+              final scaler =
+                  text.textScaler ??
+                  MediaQuery.textScalerOf(tester.element(finder));
+              expect(
+                scaler.scale(text.style!.fontSize!),
+                closeTo(18 * scale * textScale, 0.001),
+              );
+            }
+            expect(tester.takeException(), isNull);
+          },
+        );
+      }
+    }
+  }
+
   testWidgets('installing a translation model does not stop transcription', (
     tester,
   ) async {
