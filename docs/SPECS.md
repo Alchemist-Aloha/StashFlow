@@ -1004,6 +1004,11 @@ bundles must contain matching-architecture executables and DLLs, including the
 Flutter engine and bundled mpv, checked before packaging and after Fastforge's
 rebuild.
 
+The on-device translation DLL and its static CTranslate2/SentencePiece
+dependencies use the same static MSVC runtime. Windows ARM64 uses Ruy's fallback
+CPU detection because the pinned cpuinfo does not support that platform; other
+targets retain CPU detection.
+
 Windows builds require the Visual Studio C++ desktop toolchain and C++ ATL
 for the active MSVC toolset and target architecture (x86/x64 or ARM64).
 The Windows secure-storage plugin includes `atlstr.h`; `flutter doctor` alone

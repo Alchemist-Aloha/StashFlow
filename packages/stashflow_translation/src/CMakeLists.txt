@@ -7,6 +7,10 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "" FORCE)
 # Build one self-contained CPU library; no Python, GPU runtime or model assets.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+if(MSVC)
+  # Static CTranslate2 selects /MT internally. Match it in the bridge and SPM.
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 set(WITH_MKL OFF CACHE BOOL "" FORCE)
@@ -21,6 +25,15 @@ FetchContent_Declare(ct2
   GIT_SUBMODULES third_party/cpu_features third_party/spdlog third_party/ruy
   GIT_SUBMODULES_RECURSE TRUE)
 FetchContent_MakeAvailable(ct2)
+
+if(WIN32 AND (CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64" OR
+              CMAKE_SYSTEM_PROCESSOR MATCHES "^(ARM64|arm64|aarch64)$"))
+  # The pinned cpuinfo has no Windows ARM64 implementation. Use Ruy's existing
+  # fallback rather than referencing its undefined cpuinfo_isa symbol.
+  get_target_property(ruy_cpuinfo_options ruy_cpuinfo COMPILE_OPTIONS)
+  list(REMOVE_ITEM ruy_cpuinfo_options "-DRUY_HAVE_CPUINFO")
+  set_property(TARGET ruy_cpuinfo PROPERTY COMPILE_OPTIONS "${ruy_cpuinfo_options}")
+endif()
 
 set(SPM_ENABLE_SHARED OFF CACHE BOOL "" FORCE)
 set(SPM_ENABLE_TCMALLOC OFF CACHE BOOL "" FORCE)

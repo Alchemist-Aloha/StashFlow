@@ -14,6 +14,10 @@ all three release ABIs. ARMv7 uses CT2 scalar elementwise kernels and Ruy's
 supported matrix kernels; performance on 32-bit devices is not guaranteed.
 The Android compatibility header declines explicit pthread affinity, an
 unavailable Bionic API; the app never requests thread pinning.
+Windows builds use the static MSVC runtime throughout the bridge, CTranslate2
+and SentencePiece. Windows ARM64 uses Ruy's fallback CPU detection because the
+pinned cpuinfo dependency does not implement that platform; other targets retain
+CPU detection.
 
 The hook configures native Linux, Windows and Apple builds. Only platforms
 actually built/tested in the handoff are verified; cross-host packaging and
