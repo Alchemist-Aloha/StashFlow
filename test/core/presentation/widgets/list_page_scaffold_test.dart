@@ -18,6 +18,10 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/widgets/mini_player.dart';
+import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/list_sort_bottom_sheet.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../../../helpers/test_helpers.dart';
 
@@ -28,6 +32,10 @@ class _ActivePlayerState extends PlayerState {
 
   @override
   GlobalPlayerState build() => GlobalPlayerState(activeScene: scene);
+
+  void clearScene() => state = GlobalPlayerState();
+
+  void enterFullscreen() => state = state.copyWith(isFullScreen: true);
 }
 
 Scene _activeScene() => Scene(
@@ -252,82 +260,226 @@ void main() {
       expect(updatedPadding - initialPadding, 48);
     });
 
-    testWidgets('random FAB clears the mini player in the real shell', (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(400, 800);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
+    for (final width in [400.0, 1024.0]) {
+      for (final scale in [0.8, 1.5]) {
+        testWidgets(
+          'spacer moves shell controls together at width $width / scale $scale',
+          (tester) async {
+            tester.view.physicalSize = Size(width, 1000);
+            tester.view.devicePixelRatio = 1;
+            tester.view.padding = const FakeViewPadding(bottom: 24);
+            tester.view.viewPadding = const FakeViewPadding(bottom: 24);
+            addTearDown(() {
+              tester.view.resetPhysicalSize();
+              tester.view.resetDevicePixelRatio();
+              tester.view.resetPadding();
+              tester.view.resetViewPadding();
+            });
 
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final scene = _activeScene();
-      final router = GoRouter(
-        initialLocation: '/home',
-        routes: [
-          StatefulShellRoute.indexedStack(
-            builder: (context, state, navigationShell) =>
-                ShellPage(navigationShell: navigationShell),
-            branches: [
-              StatefulShellBranch(
-                routes: [
-                  GoRoute(
-                    path: '/home',
-                    builder: (context, state) => ListPageScaffold<int>(
-                      title: 'Test Title',
-                      searchHint: 'Search...',
-                      onSearchChanged: (_) {},
-                      provider: const AsyncValue.data([1]),
-                      itemBuilder: (_, item, _, _) => Text('Item $item'),
-                      floatingActionButton: FloatingActionButton.small(
-                        onPressed: () {},
-                        child: const Icon(Icons.casino_outlined),
-                      ),
+            SharedPreferences.setMockInitialValues({});
+            final prefs = await SharedPreferences.getInstance();
+            final scene = _activeScene();
+            final router = GoRouter(
+              initialLocation: '/home',
+              routes: [
+                StatefulShellRoute.indexedStack(
+                  builder: (context, state, navigationShell) =>
+                      ShellPage(navigationShell: navigationShell),
+                  branches: [
+                    StatefulShellBranch(
+                      routes: [
+                        GoRoute(
+                          path: '/home',
+                          builder: (context, state) => ListPageScaffold<int>(
+                            title: 'Test Title',
+                            searchHint: 'Search...',
+                            onSearchChanged: (_) {},
+                            provider: const AsyncValue.data([1]),
+                            itemBuilder: (_, item, _, _) => Text('Item $item'),
+                            actions: [
+                              IconButton(
+                                icon: const Icon(Icons.filter_list),
+                                onPressed: () =>
+                                    showFrostedPanelBottomSheet<void>(
+                                      context: context,
+                                      builder: (_) => FilterBottomSheetScaffold(
+                                        title: 'Filters',
+                                        onReset: () {},
+                                        body: const Text('Filter options'),
+                                        onApply: () {},
+                                        onSaveDefault: () async {},
+                                      ),
+                                    ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.sort),
+                                onPressed: () =>
+                                    showFrostedPanelBottomSheet<void>(
+                                      context: context,
+                                      builder: (_) =>
+                                          ListSortBottomSheet<String>(
+                                            title: 'Sort',
+                                            options: const ['Title'],
+                                            initialOption: 'Title',
+                                            initialDescending: false,
+                                            resetOption: 'Title',
+                                            resetDescending: false,
+                                            optionLabel: (option) => option,
+                                            onApply: (_, _) {},
+                                            onSaveDefault: () async {},
+                                          ),
+                                    ),
+                              ),
+                            ],
+                            floatingActionButton: FloatingActionButton.small(
+                              onPressed: () {},
+                              child: const Icon(Icons.casino_outlined),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              StatefulShellBranch(
-                routes: [
-                  GoRoute(
-                    path: '/other',
-                    builder: (context, state) => const Scaffold(),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      );
-      addTearDown(router.dispose);
+                    StatefulShellBranch(
+                      routes: [
+                        GoRoute(
+                          path: '/other',
+                          builder: (context, state) => const Scaffold(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            );
+            addTearDown(router.dispose);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            sharedPreferencesProvider.overrideWithValue(prefs),
-            playerStateProvider.overrideWith(() => _ActivePlayerState(scene)),
-            desktopCapabilitiesProvider.overrideWithValue(false),
-          ],
-          child: MaterialApp.router(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            routerConfig: router,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+            await tester.pumpWidget(
+              ProviderScope(
+                overrides: [
+                  sharedPreferencesProvider.overrideWithValue(prefs),
+                  playerStateProvider.overrideWith(
+                    () => _ActivePlayerState(scene),
+                  ),
+                  desktopCapabilitiesProvider.overrideWithValue(false),
+                ],
+                child: MaterialApp.router(
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  theme: AppTheme.buildTheme(
+                    Brightness.light,
+                    Colors.teal,
+                    fontSizeFactor: scale,
+                  ),
+                  darkTheme: AppTheme.darkTheme,
+                  routerConfig: router,
+                ),
+              ),
+            );
+            await tester.pumpAndSettle();
 
-      expect(find.byType(NavigationBar), findsOneWidget);
-      expect(find.byType(MiniPlayer), findsOneWidget);
-      final randomFab = tester.getRect(find.byType(FloatingActionButton));
-      final miniPlayer = tester.getRect(find.byType(MiniPlayer));
-      expect(randomFab.bottom, lessThanOrEqualTo(miniPlayer.top - 16));
-    });
+            expect(
+              find.byType(NavigationBar),
+              width < 600 ? findsOneWidget : findsNothing,
+            );
+            expect(find.byType(MiniPlayer), findsOneWidget);
+            final container = ProviderScope.containerOf(
+              tester.element(find.byType(ShellPage)),
+            );
+            final pill = find.ancestor(
+              of: find.byIcon(Icons.filter_list),
+              matching: find.byType(FrostedSurface),
+            );
+            Rect playerRect() => tester.getRect(find.byType(MiniPlayer));
+            Rect fabRect() => tester.getRect(find.byType(FloatingActionButton));
+            Rect pillRect() => tester.getRect(pill);
+            final initialPlayer = playerRect();
+            final initialFab = fabRect();
+            final initialPill = pillRect();
+            final pageContext = tester.element(
+              find.byType(ListPageScaffold<int>),
+            );
+            final initialInsets = MediaQuery.of(pageContext);
+            expect(initialFab.bottom, lessThanOrEqualTo(initialPlayer.top));
+            expect(initialPill.bottom, lessThanOrEqualTo(initialPlayer.top));
+
+            Future<double> panelBottom(IconData icon) async {
+              await tester.tap(find.byIcon(icon));
+              await tester.pumpAndSettle();
+              final bottom = tester.getRect(find.byType(FrostedPanel)).bottom;
+              Navigator.of(tester.element(find.byType(FrostedPanel))).pop();
+              await tester.pumpAndSettle();
+              return bottom;
+            }
+
+            final initialFilterBottom = await panelBottom(Icons.filter_list);
+            final initialSortBottom = await panelBottom(Icons.sort);
+            await container
+                .read(miniPlayerBottomSpacerEnabledProvider.notifier)
+                .set(true);
+            await tester.pumpAndSettle();
+            expect(
+              playerRect().bottom,
+              closeTo(initialPlayer.bottom - 64, 0.01),
+            );
+            expect(fabRect().bottom, closeTo(initialFab.bottom - 64, 0.01));
+            expect(pillRect().bottom, closeTo(initialPill.bottom - 64, 0.01));
+            expect(
+              await panelBottom(Icons.filter_list),
+              closeTo(initialFilterBottom - 64, 0.01),
+            );
+            expect(
+              await panelBottom(Icons.sort),
+              closeTo(initialSortBottom - 64, 0.01),
+            );
+
+            await container
+                .read(miniPlayerBottomOffsetProvider.notifier)
+                .set(120);
+            await tester.pumpAndSettle();
+            expect(
+              playerRect().bottom,
+              closeTo(initialPlayer.bottom - 120, 0.01),
+            );
+            expect(fabRect().bottom, closeTo(initialFab.bottom - 120, 0.01));
+            expect(pillRect().bottom, closeTo(initialPill.bottom - 120, 0.01));
+            expect(
+              MediaQuery.of(pageContext).padding.bottom,
+              initialInsets.padding.bottom + 120,
+            );
+            expect(
+              MediaQuery.of(pageContext).viewPadding.bottom,
+              initialInsets.viewPadding.bottom + 120,
+            );
+
+            await container
+                .read(miniPlayerBottomSpacerEnabledProvider.notifier)
+                .set(false);
+            await tester.pumpAndSettle();
+            expect(playerRect(), initialPlayer);
+            expect(fabRect(), initialFab);
+            expect(pillRect(), initialPill);
+
+            await container
+                .read(miniPlayerBottomSpacerEnabledProvider.notifier)
+                .set(true);
+            (container.read(playerStateProvider.notifier) as _ActivePlayerState)
+                .clearScene();
+            await tester.pumpAndSettle();
+            expect(find.byType(MiniPlayer), findsNothing);
+            expect(
+              MediaQuery.of(pageContext).padding.bottom,
+              initialInsets.padding.bottom - MiniPlayer.height + 120,
+            );
+            (container.read(playerStateProvider.notifier) as _ActivePlayerState)
+                .enterFullscreen();
+            await tester.pumpAndSettle();
+            expect(MediaQuery.of(pageContext).padding.bottom, anyOf(0.0, 24.0));
+            expect(tester.takeException(), isNull);
+          },
+        );
+      }
+    }
 
     test('avoids layout-driven paging and duplicate repaint boundaries', () {
       final source = File(

@@ -3579,4 +3579,14 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get settings_playback_mpv_linux_help =>
       'Linux は埋め込み libmpv を使用し、gpu-next やウィンドウ出力は使用しません。ソフトウェア出力は低速で GPU 描画設定を無視します。デコーダー対応は GPU とドライバーによって異なります。コピーバック方式はソフトウェア出力でも使えます。非対応の場合はソフトウェアデコードに切り替わります。';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer => 'ミニプレーヤー下部の余白';
+
+  @override
+  String get settings_interface_miniplayer_bottom_spacer_subtitle =>
+      'システムのタスクバーに隠れる場合に、ミニプレーヤーとフローティング操作ボタンの下に余白を追加します。';
+
+  @override
+  String get settings_interface_miniplayer_bottom_offset => '下端からの距離';
 }

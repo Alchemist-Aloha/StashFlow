@@ -1247,5 +1247,8 @@
   "settings_playback_mpv_nvdec": "Decodificación NVIDIA (nvdec)",
   "settings_playback_mpv_nvdec_copy": "Decodificación NVIDIA con copia a RAM (nvdec-copy)",
   "settings_playback_mpv_vdpau_copy": "Decodificación VDPAU con copia a RAM (vdpau-copy)",
-  "settings_playback_mpv_linux_help": "Linux usa libmpv integrado, no gpu-next ni salidas en ventanas. La salida por software es más lenta e ignora ajustes GPU. Los decodificadores dependen de la GPU y los controladores; los modos con copia a RAM también funcionan con salida por software. Si no están disponibles, se usa decodificación por software."
+  "settings_playback_mpv_linux_help": "Linux usa libmpv integrado, no gpu-next ni salidas en ventanas. La salida por software es más lenta e ignora ajustes GPU. Los decodificadores dependen de la GPU y los controladores; los modos con copia a RAM también funcionan con salida por software. Si no están disponibles, se usa decodificación por software.",
+  "settings_interface_miniplayer_bottom_spacer": "Espacio inferior del minirreproductor",
+  "settings_interface_miniplayer_bottom_spacer_subtitle": "Añade espacio debajo del minirreproductor y los controles flotantes cuando la barra de tareas del sistema los oculta.",
+  "settings_interface_miniplayer_bottom_offset": "Separación inferior"
 }

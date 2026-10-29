@@ -4,6 +4,56 @@ import '../../data/preferences/shared_preferences_provider.dart';
 
 part 'layout_settings_provider.g.dart';
 
+/// Opt-in clearance for system taskbars that do not report a usable inset.
+@riverpod
+class MiniPlayerBottomSpacerEnabled extends _$MiniPlayerBottomSpacerEnabled {
+  @override
+  bool build() {
+    return ref
+            .watch(sharedPreferencesProvider)
+            .getBool('mini_player_bottom_spacer_enabled') ??
+        false;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    await ref
+        .read(sharedPreferencesProvider)
+        .setBool('mini_player_bottom_spacer_enabled', value);
+  }
+}
+
+/// Extra bottom clearance in logical pixels, independent of the app UI scale.
+/// The chosen offset is retained while the spacer is disabled.
+@riverpod
+class MiniPlayerBottomOffset extends _$MiniPlayerBottomOffset {
+  static const defaultValue = 64.0;
+  static const maxValue = 200.0;
+
+  @override
+  double build() {
+    return _normalize(
+      ref
+              .watch(sharedPreferencesProvider)
+              .getDouble('mini_player_bottom_offset') ??
+          defaultValue,
+    );
+  }
+
+  double _normalize(double value) =>
+      value.isFinite ? value.clamp(0.0, maxValue) : defaultValue;
+
+  Future<void> set(double value) async {
+    final offset = _normalize(value);
+    if (state == offset) return;
+    state = offset;
+    await ref
+        .read(sharedPreferencesProvider)
+        .setDouble('mini_player_bottom_offset', offset);
+  }
+}
+
 enum GridLayoutSetting {
   performerMedia('performer_media_grid_layout', true),
   performerGalleries('performer_galleries_grid_layout', true),

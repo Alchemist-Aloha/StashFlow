@@ -1247,5 +1247,8 @@
   "settings_playback_mpv_nvdec": "NVIDIA 解码（nvdec）",
   "settings_playback_mpv_nvdec_copy": "NVIDIA 解码并回拷（nvdec-copy）",
   "settings_playback_mpv_vdpau_copy": "VDPAU 解码并回拷（vdpau-copy）",
-  "settings_playback_mpv_linux_help": "Linux 使用嵌入式 libmpv，不支持 gpu-next 或独立窗口输出。软件输出较慢，会忽略 GPU 渲染设置。解码器支持取决于 GPU 和驱动；回拷模式也适用于软件输出。不可用的解码器会回退到软件解码。"
+  "settings_playback_mpv_linux_help": "Linux 使用嵌入式 libmpv，不支持 gpu-next 或独立窗口输出。软件输出较慢，会忽略 GPU 渲染设置。解码器支持取决于 GPU 和驱动；回拷模式也适用于软件输出。不可用的解码器会回退到软件解码。",
+  "settings_interface_miniplayer_bottom_spacer": "迷你播放器底部留白",
+  "settings_interface_miniplayer_bottom_spacer_subtitle": "当系统任务栏遮挡迷你播放器和悬浮控件时，在它们下方添加空白。",
+  "settings_interface_miniplayer_bottom_offset": "底部偏移量"
 }

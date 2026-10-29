@@ -1,13 +1,13 @@
 name: stash_app_flutter
 description: "A modern Flutter client app for browsing and managing your Stash library."
 publish_to: 'none'
-version: 1.40.0+113
+version: 1.41.0+114
 
 msix_config:
   display_name: StashFlow
   identity_name: com.stashflow.app
   publisher_display_name: StashFlow
-  msix_version: 1.40.0.113
+  msix_version: 1.41.0.114
   logo_path: asset/stashfluttericon.png
 
 environment:
@@ -26,12 +26,12 @@ dependencies:
   media_kit:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: d9830182a8225674aeb5e236fdf330c1191925fb
+      ref: 31de3525af6841df5e999a37cb8da83a34b3f87b
       path: ./media_kit
   media_kit_video:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: d9830182a8225674aeb5e236fdf330c1191925fb
+      ref: 31de3525af6841df5e999a37cb8da83a34b3f87b
       path: ./media_kit_video
   audio_service: ^0.18.19
   audio_service_mpris: ^0.2.1

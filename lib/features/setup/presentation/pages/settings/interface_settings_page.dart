@@ -273,6 +273,10 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomSpacerEnabled = ref.watch(
+      miniPlayerBottomSpacerEnabledProvider,
+    );
+    final bottomOffset = ref.watch(miniPlayerBottomOffsetProvider);
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
       child: _loading
@@ -454,6 +458,70 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             await _saveSettings();
                           },
                         ),
+                        Divider(height: context.dimensions.spacingLarge),
+                        SwitchListTile.adaptive(
+                          key: const Key('mini-player-bottom-spacer-toggle'),
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context
+                                .l10n
+                                .settings_interface_miniplayer_bottom_spacer,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_miniplayer_bottom_spacer_subtitle,
+                          ),
+                          value: bottomSpacerEnabled,
+                          onChanged: (value) => ref
+                              .read(
+                                miniPlayerBottomSpacerEnabledProvider.notifier,
+                              )
+                              .set(value),
+                        ),
+                        if (bottomSpacerEnabled)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: context.dimensions.spacingSmall),
+                              Text(
+                                context
+                                    .l10n
+                                    .settings_interface_miniplayer_bottom_offset,
+                                style: context.textTheme.titleSmall,
+                              ),
+                              Text(
+                                context.l10n.common_px(bottomOffset.round()),
+                                style: context.textTheme.labelLarge?.copyWith(
+                                  color: context.colors.primary,
+                                ),
+                              ),
+                              Semantics(
+                                label: context
+                                    .l10n
+                                    .settings_interface_miniplayer_bottom_offset,
+                                child: Slider(
+                                  key: const Key(
+                                    'mini-player-bottom-offset-slider',
+                                  ),
+                                  value: bottomOffset,
+                                  min: 0,
+                                  max: MiniPlayerBottomOffset.maxValue,
+                                  divisions: 50,
+                                  label: context.l10n.common_px(
+                                    bottomOffset.round(),
+                                  ),
+                                  semanticFormatterCallback: (value) =>
+                                      context.l10n.common_px(value.round()),
+                                  onChanged: (value) => ref
+                                      .read(
+                                        miniPlayerBottomOffsetProvider.notifier,
+                                      )
+                                      .set(value),
+                                ),
+                              ),
+                            ],
+                          ),
                         Divider(height: context.dimensions.spacingLarge),
                         ListTile(
                           contentPadding: EdgeInsets.zero,

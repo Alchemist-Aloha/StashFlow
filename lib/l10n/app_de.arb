@@ -1268,5 +1268,8 @@
   "settings_playback_mpv_nvdec": "NVIDIA-Dekodierung (nvdec)",
   "settings_playback_mpv_nvdec_copy": "NVIDIA-Dekodierung, Rückkopieren (nvdec-copy)",
   "settings_playback_mpv_vdpau_copy": "VDPAU-Dekodierung, Rückkopieren (vdpau-copy)",
-  "settings_playback_mpv_linux_help": "Linux nutzt eingebettetes libmpv, nicht gpu-next oder Fensterausgaben. Softwareausgabe ist langsamer und ignoriert GPU-Rendering-Einstellungen. Decoder hängen von GPU und Treibern ab; Rückkopiermodi funktionieren auch mit Softwareausgabe. Nicht verfügbare Decoder nutzen Softwaredekodierung."
+  "settings_playback_mpv_linux_help": "Linux nutzt eingebettetes libmpv, nicht gpu-next oder Fensterausgaben. Softwareausgabe ist langsamer und ignoriert GPU-Rendering-Einstellungen. Decoder hängen von GPU und Treibern ab; Rückkopiermodi funktionieren auch mit Softwareausgabe. Nicht verfügbare Decoder nutzen Softwaredekodierung.",
+  "settings_interface_miniplayer_bottom_spacer": "Abstand unter dem Miniplayer",
+  "settings_interface_miniplayer_bottom_spacer_subtitle": "Fügt unter dem Miniplayer und schwebenden Bedienelementen Platz hinzu, wenn eine Systemtaskleiste sie verdeckt.",
+  "settings_interface_miniplayer_bottom_offset": "Abstand zum unteren Rand"
 }

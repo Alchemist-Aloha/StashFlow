@@ -73,6 +73,57 @@ void main() {
   );
 
   testWidgets(
+    'bottom spacer defaults off and retains its offset across toggles and reloads',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 1800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final toggle = find.byKey(const Key('mini-player-bottom-spacer-toggle'));
+      final slider = find.byKey(const Key('mini-player-bottom-offset-slider'));
+      Future<void> pumpSettings() async {
+        await pumpTestWidget(
+          tester,
+          prefs: prefs,
+          child: const InterfaceSettingsPage(),
+        );
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(toggle, 200);
+        await tester.pumpAndSettle();
+      }
+
+      await pumpSettings();
+      expect(tester.widget<SwitchListTile>(toggle).value, isFalse);
+      expect(slider, findsNothing);
+
+      await tester.tap(toggle);
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(slider);
+      expect(tester.widget<Slider>(slider).value, 64);
+      tester.widget<Slider>(slider).onChanged!(120);
+      await tester.pumpAndSettle();
+      expect(prefs.getBool('mini_player_bottom_spacer_enabled'), isTrue);
+      expect(prefs.getDouble('mini_player_bottom_offset'), 120);
+
+      await tester.ensureVisible(toggle);
+      await tester.pumpAndSettle();
+      await tester.tap(toggle);
+      await tester.pumpAndSettle();
+      expect(slider, findsNothing);
+      expect(prefs.getBool('mini_player_bottom_spacer_enabled'), isFalse);
+      expect(prefs.getDouble('mini_player_bottom_offset'), 120);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await pumpSettings();
+      await tester.tap(toggle);
+      await tester.pumpAndSettle();
+      expect(tester.widget<Slider>(slider).value, 120);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'InterfaceSettingsPage exposes and saves group and marker layout settings',
     (tester) async {
       tester.view.physicalSize = const Size(1200, 1800);

@@ -89,6 +89,15 @@ sheets, saved-filter UI, `StashImage`, and common state views.
   so default Scaffold FAB placement also clears it. Pages
   inherit the shell body's remaining safe area; system padding already consumed
   by the navigation bar must not be restored below their content or sheets.
+- Interface Settings offers an off-by-default mini-player bottom spacer for
+  taskbars that obscure bottom controls. Its 0–200 logical-pixel offset defaults
+  to 64 and remains independent of the app UI scale. The shell moves the
+  mini-player and publishes the same extra clearance through both bottom inset
+  fields, preserving the gaps to action pills, random buttons, and filter/sort
+  panels. The clearance also applies without active playback, but not in
+  fullscreen. Disabling the spacer retains the selected offset. The layout
+  providers own `mini_player_bottom_spacer_enabled` and
+  `mini_player_bottom_offset`; both are included in configuration backups.
 
 Canonical implementation:
 

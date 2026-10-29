@@ -1247,5 +1247,8 @@
   "settings_playback_mpv_nvdec": "NVIDIA 디코딩 (nvdec)",
   "settings_playback_mpv_nvdec_copy": "NVIDIA 디코딩, 복사 방식 (nvdec-copy)",
   "settings_playback_mpv_vdpau_copy": "VDPAU 디코딩, 복사 방식 (vdpau-copy)",
-  "settings_playback_mpv_linux_help": "Linux는 gpu-next나 창 출력 대신 내장 libmpv를 사용합니다. 소프트웨어 출력은 느리며 GPU 렌더링 설정을 무시합니다. 디코더 지원은 GPU와 드라이버에 따라 다릅니다. 복사 방식은 소프트웨어 출력에서도 작동합니다. 지원하지 않으면 소프트웨어 디코딩으로 전환합니다."
+  "settings_playback_mpv_linux_help": "Linux는 gpu-next나 창 출력 대신 내장 libmpv를 사용합니다. 소프트웨어 출력은 느리며 GPU 렌더링 설정을 무시합니다. 디코더 지원은 GPU와 드라이버에 따라 다릅니다. 복사 방식은 소프트웨어 출력에서도 작동합니다. 지원하지 않으면 소프트웨어 디코딩으로 전환합니다.",
+  "settings_interface_miniplayer_bottom_spacer": "미니 플레이어 하단 여백",
+  "settings_interface_miniplayer_bottom_spacer_subtitle": "시스템 작업 표시줄에 가려질 때 미니 플레이어와 플로팅 컨트롤 아래에 여백을 추가합니다.",
+  "settings_interface_miniplayer_bottom_offset": "하단 간격"
 }
