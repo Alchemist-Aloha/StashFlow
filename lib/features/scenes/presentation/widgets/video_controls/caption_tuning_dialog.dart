@@ -104,182 +104,234 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
     final canStart =
         validSpeech &&
         (!_options.translate || validPair) &&
+        !settings.loading &&
         settings.downloading == null;
+    final downloading = settings.find(settings.downloading);
     final detected = ref.watch(localCaptionsProvider).frame.language;
     final space = context.dimensions.spacingMedium;
-    return AlertDialog(
-      scrollable: true,
-      title: Text(context.l10n.local_captions_configure),
-      content: SizedBox(
-        width: 520 * context.dimensions.fontSizeFactor,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          namesRoute: true,
+          header: true,
+          child: Text(
+            context.l10n.local_captions_configure,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        SizedBox(height: space),
+        if (settings.loading) const LinearProgressIndicator(),
+        if (settings.downloading != null) ...[
+          Text(
+            downloading == null
+                ? context.l10n.common_download
+                : localCaptionModelLabel(context, downloading),
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          SizedBox(height: context.dimensions.spacingSmall),
+          LinearProgressIndicator(
+            value: settings.progress,
+            semanticsLabel: context.l10n.common_download,
+            semanticsValue: NumberFormat.percentPattern(
+              context.l10n.localeName,
+            ).format(settings.progress),
+          ),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              onPressed: ref
+                  .read(localCaptionSettingsProvider.notifier)
+                  .cancelDownload,
+              icon: const Icon(Icons.close),
+              label: Text(context.l10n.local_captions_cancel_download),
+            ),
+          ),
+          SizedBox(height: space),
+        ],
+        if (speechModels.isEmpty)
+          Text(context.l10n.local_captions_model_missing)
+        else
+          DropdownButtonFormField<String>(
+            key: ValueKey(validSpeech ? _speech!.id : null),
+            initialValue: validSpeech ? _speech!.id : null,
+            isExpanded: true,
+            decoration: InputDecoration(
+              label: Text(
+                context.l10n.local_captions_speech_models,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            items: speechModels
+                .map(
+                  (m) => DropdownMenuItem(
+                    value: m.id,
+                    child: Text(
+                      localCaptionModelLabel(context, m),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )
+                .toList(),
+            onChanged: (id) => setState(() {
+              _speech = settings.find(id);
+              _normalizeSource();
+            }),
+          ),
+        ExpansionTile(
+          key: const ValueKey('speech-downloads'),
+          tilePadding: EdgeInsets.zero,
+          expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+          childrenPadding: EdgeInsets.symmetric(vertical: space),
+          initiallyExpanded: speechModels.isEmpty,
+          title: Text(context.l10n.local_captions_download_speech),
           children: [
-            if (speechModels.isEmpty)
-              Text(context.l10n.local_captions_model_missing)
-            else
-              DropdownButtonFormField<String>(
-                key: ValueKey(_speech?.id),
-                initialValue: _speech?.id,
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: context.l10n.local_captions_speech_models,
+            CaptionModelPicker(
+              translation: false,
+              selectedId: _speech?.id,
+              onSelected: (model) => setState(() {
+                _speech = model;
+                _normalizeSource();
+              }),
+            ),
+            if (settings.error)
+              Text(
+                context.l10n.local_captions_model_error,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+          ],
+        ),
+        SizedBox(height: space),
+        if (validSpeech)
+          _language(
+            context.l10n.local_captions_source,
+            _options.sourceLanguage,
+            sourceChoices,
+            (value) => setState(
+              () => _options = _options.copyWith(sourceLanguage: value),
+            ),
+          ),
+        if (validSpeech &&
+            _speech!.canDetectLanguage &&
+            _options.sourceLanguage == 'auto') ...[
+          SizedBox(height: space),
+          Text(context.l10n.local_captions_auto_help),
+        ],
+        if (_options.sourceLanguage == 'auto' &&
+            detected != null &&
+            detected != 'und')
+          Text(
+            context.l10n.local_captions_detected(
+              localCaptionLanguageLabel(context, detected),
+            ),
+          ),
+        Divider(height: context.dimensions.spacingLarge),
+        SwitchListTile.adaptive(
+          contentPadding: EdgeInsets.zero,
+          value: _options.translate,
+          title: Text(context.l10n.local_captions_translate),
+          onChanged: (value) =>
+              setState(() => _options = _options.copyWith(translate: value)),
+        ),
+        if (_options.translate) ...[
+          SizedBox(height: space),
+          _language(
+            context.l10n.local_captions_output,
+            _options.outputLanguage,
+            captionOutputLanguages,
+            (value) => setState(
+              () => _options = _options.copyWith(outputLanguage: value),
+            ),
+          ),
+          if (translations.isNotEmpty) ...[
+            SizedBox(height: space),
+            DropdownButtonFormField<String>(
+              key: ValueKey(
+                'translation-$preferred-${_options.outputLanguage}-${_options.sourceLanguage}',
+              ),
+              initialValue: preferred ?? 'auto',
+              isExpanded: true,
+              decoration: InputDecoration(
+                label: Text(
+                  context.l10n.local_captions_translation_models,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                items: speechModels
-                    .map(
-                      (m) => DropdownMenuItem(
-                        value: m.id,
-                        child: Text(
-                          localCaptionModelLabel(context, m),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (id) => setState(() {
-                  _speech = settings.find(id);
-                  _normalizeSource();
+              ),
+              items: [
+                DropdownMenuItem(
+                  value: 'auto',
+                  child: Text(
+                    context.l10n.local_captions_auto_model,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                ...translations.map(
+                  (m) => DropdownMenuItem(
+                    value: m.id,
+                    child: Text(
+                      localCaptionModelLabel(context, m),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ],
+              onChanged: (id) =>
+                  setState(() => _translationId = id == 'auto' ? null : id),
+            ),
+          ],
+          ExpansionTile(
+            key: const ValueKey('translation-downloads'),
+            tilePadding: EdgeInsets.zero,
+            expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+            childrenPadding: EdgeInsets.symmetric(vertical: space),
+            initiallyExpanded: !validPair,
+            title: Text(context.l10n.local_captions_download_translation),
+            children: [
+              CaptionModelPicker(
+                translation: true,
+                selectedId: _translationId,
+                onSelected: (model) => setState(() {
+                  _translationId = model.id;
+                  if (!model.supportsOutput(_options.outputLanguage)) {
+                    _options = _options.copyWith(outputLanguage: model.target);
+                  }
                 }),
               ),
-            ExpansionTile(
-              tilePadding: EdgeInsets.zero,
-              title: Text(context.l10n.common_download),
-              children: [
-                CaptionModelPicker(
-                  translation: false,
-                  selectedId: _speech?.id,
-                  onSelected: (model) => setState(() {
-                    _speech = model;
-                    _normalizeSource();
-                  }),
+              if (settings.error)
+                Text(
+                  context.l10n.local_captions_model_error,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
-                if (settings.error)
-                  Text(
-                    context.l10n.local_captions_model_error,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-              ],
-            ),
-            SizedBox(height: space),
-            if (_speech != null)
-              _language(
-                context.l10n.local_captions_source,
-                _options.sourceLanguage,
-                sourceChoices,
-                (value) => setState(
-                  () => _options = _options.copyWith(sourceLanguage: value),
-                ),
-              ),
-            if ((_speech?.canDetectLanguage ?? false) &&
-                _options.sourceLanguage == 'auto') ...[
-              SizedBox(height: space),
-              Text(context.l10n.local_captions_auto_help),
             ],
-            if (_options.sourceLanguage == 'auto' &&
-                detected != null &&
-                detected != 'und')
-              Text(
-                context.l10n.local_captions_detected(
-                  localCaptionLanguageLabel(context, detected),
-                ),
-              ),
-            SwitchListTile.adaptive(
-              contentPadding: EdgeInsets.zero,
-              value: _options.translate,
-              title: Text(context.l10n.local_captions_translate),
-              onChanged: (value) => setState(
-                () => _options = _options.copyWith(translate: value),
+          ),
+          if (!validPair)
+            Padding(
+              padding: EdgeInsets.only(top: space),
+              child: Text(
+                context.l10n.local_captions_mismatch,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
-            if (_options.translate) ...[
-              SizedBox(height: space),
-              _language(
-                context.l10n.local_captions_output,
-                _options.outputLanguage,
-                captionOutputLanguages,
-                (value) => setState(
-                  () => _options = _options.copyWith(outputLanguage: value),
-                ),
-              ),
-              if (translations.isNotEmpty) ...[
-                SizedBox(height: space),
-                DropdownButtonFormField<String>(
-                  key: ValueKey(
-                    'translation-$preferred-${_options.outputLanguage}-${_options.sourceLanguage}',
-                  ),
-                  initialValue: preferred ?? 'auto',
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.local_captions_translation_models,
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      value: 'auto',
-                      child: Text(
-                        context.l10n.local_captions_auto_model,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    ...translations.map(
-                      (m) => DropdownMenuItem(
-                        value: m.id,
-                        child: Text(
-                          localCaptionModelLabel(context, m),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ],
-                  onChanged: (id) =>
-                      setState(() => _translationId = id == 'auto' ? null : id),
-                ),
-              ],
-              ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                title: Text(context.l10n.common_download),
-                children: [
-                  CaptionModelPicker(
-                    translation: true,
-                    selectedId: _translationId,
-                    onSelected: (model) => setState(() {
-                      _translationId = model.id;
-                      if (!model.supportsOutput(_options.outputLanguage)) {
-                        _options = _options.copyWith(
-                          outputLanguage: model.target,
-                        );
-                      }
-                    }),
-                  ),
-                  if (settings.error)
-                    Text(
-                      context.l10n.local_captions_model_error,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                ],
-              ),
-              if (!validPair)
-                Padding(
-                  padding: EdgeInsets.only(top: space),
-                  child: Text(context.l10n.local_captions_mismatch),
-                ),
-              SwitchListTile.adaptive(
-                contentPadding: EdgeInsets.zero,
-                value: _options.bilingual,
-                title: Text(context.l10n.local_captions_bilingual),
-                onChanged: (value) => setState(
-                  () => _options = _options.copyWith(bilingual: value),
-                ),
-              ),
-            ],
-            SizedBox(height: space),
+          SwitchListTile.adaptive(
+            contentPadding: EdgeInsets.zero,
+            value: _options.bilingual,
+            title: Text(context.l10n.local_captions_bilingual),
+            onChanged: (value) =>
+                setState(() => _options = _options.copyWith(bilingual: value)),
+          ),
+        ],
+        Divider(height: context.dimensions.spacingLarge),
+        ExpansionTile(
+          key: const ValueKey('caption-advanced'),
+          tilePadding: EdgeInsets.zero,
+          title: Text(context.l10n.local_captions_advanced),
+          children: [
             _slider(
               context.l10n.local_captions_window,
               _options.windowSeconds.toDouble(),
@@ -331,13 +383,23 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
             ),
           ],
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () =>
-              Navigator.pop(context, const CaptionConfiguration.settings()),
-          child: Text(context.l10n.local_captions_manage),
+        SizedBox(height: space),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton.icon(
+            onPressed: () =>
+                Navigator.pop(context, const CaptionConfiguration.settings()),
+            icon: const Icon(Icons.storage_rounded),
+            label: Text(context.l10n.local_captions_manage),
+          ),
         ),
+      ],
+    );
+    final actions = OverflowBar(
+      spacing: context.dimensions.spacingSmall,
+      overflowSpacing: context.dimensions.spacingSmall,
+      alignment: MainAxisAlignment.end,
+      children: [
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(context.l10n.common_cancel),
@@ -360,6 +422,42 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
         ),
       ],
     );
+    return Dialog(
+      insetPadding: EdgeInsets.all(context.dimensions.spacingSmall),
+      constraints: const BoxConstraints(maxWidth: 800),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // A keyboard or landscape window must not squeeze out the form.
+          final scrollActions =
+              constraints.maxHeight < context.dimensions.buttonHeight * 4;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Flexible(
+                child: SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.all(space),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      content,
+                      if (scrollActions) ...[SizedBox(height: space), actions],
+                    ],
+                  ),
+                ),
+              ),
+              if (!scrollActions)
+                Padding(
+                  padding: EdgeInsets.fromLTRB(space, 0, space, space),
+                  child: actions,
+                ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Widget _language(
@@ -367,31 +465,49 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
     String value,
     List<String> languages,
     ValueChanged<String> select,
-  ) => DropdownMenu<String>(
-    key: ValueKey('$title-$value'),
-    initialSelection: value,
-    expandedInsets: EdgeInsets.zero,
-    menuHeight: MediaQuery.sizeOf(context).height * 0.4,
-    label: Text(title),
-    hintText: context.l10n.common_search,
-    enableFilter: true,
-    requestFocusOnTap: true,
-    filterCallback: (entries, query) => entries
-        .where(
-          (entry) => '${entry.value} ${entry.label}'.toLowerCase().contains(
-            query.trim().toLowerCase(),
+  ) => LayoutBuilder(
+    builder: (context, constraints) {
+      final menuHeight =
+          (MediaQuery.sizeOf(context).height -
+              MediaQuery.viewInsetsOf(context).bottom) *
+          0.4;
+      return DropdownMenu<String>(
+        key: ValueKey('$title-$value'),
+        initialSelection: value,
+        expandedInsets: EdgeInsets.zero,
+        menuHeight: menuHeight,
+        menuStyle: MenuStyle(
+          maximumSize: WidgetStatePropertyAll(
+            Size(constraints.maxWidth, menuHeight),
           ),
-        )
-        .toList(),
-    dropdownMenuEntries: [
-      for (final code in languages)
-        DropdownMenuEntry(
-          value: code,
-          label: localCaptionLanguageLabel(context, code),
         ),
-    ],
-    onSelected: (code) {
-      if (code != null) select(code);
+        label: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        hintText: context.l10n.common_search,
+        enableFilter: true,
+        requestFocusOnTap: true,
+        filterCallback: (entries, query) => entries
+            .where(
+              (entry) => '${entry.value} ${entry.label}'.toLowerCase().contains(
+                query.trim().toLowerCase(),
+              ),
+            )
+            .toList(),
+        dropdownMenuEntries: [
+          for (final code in languages)
+            DropdownMenuEntry(
+              value: code,
+              label: localCaptionLanguageLabel(context, code),
+              labelWidget: Text(
+                localCaptionLanguageLabel(context, code),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ],
+        onSelected: (code) {
+          if (code != null) select(code);
+        },
+      );
     },
   );
 

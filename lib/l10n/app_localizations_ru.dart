@@ -9,6 +9,18 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get local_captions_cancel_download => 'Отменить загрузку';
+
+  @override
+  String get local_captions_download_speech => 'Скачать речевые модели';
+
+  @override
+  String get local_captions_download_translation => 'Скачать модели перевода';
+
+  @override
+  String get local_captions_advanced => 'Дополнительные настройки';
+
+  @override
   String get local_captions_auto_model => 'Автоматически (загруженные модели)';
 
   @override

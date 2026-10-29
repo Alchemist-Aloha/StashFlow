@@ -44,23 +44,29 @@ class _Store extends CaptionModelStore {
 }
 
 class _Catalog extends CaptionModelCatalog {
-  _Catalog({this.cancelInspection = false}) : super(Dio());
-  final bool cancelInspection;
+  _Catalog({this.cancelInspection = false, this.failListing = false})
+    : super(Dio());
+  final bool cancelInspection, failListing;
+  int listRequests = 0;
   @override
-  Future<List<CaptionHubModel>> list(bool translation) async =>
-      LocalCaptionModel.catalog
-          .where((m) => m.isTranslation == translation)
-          .map(
-            (m) => CaptionHubModel(
-              m.repository,
-              m.engine,
-              m.source,
-              m.target,
-              m.sourceLanguages,
-              m.license,
-            ),
-          )
-          .toList();
+  Future<List<CaptionHubModel>> list(bool translation) async {
+    listRequests++;
+    if (failListing) throw StateError('offline');
+    return LocalCaptionModel.catalog
+        .where((m) => m.isTranslation == translation)
+        .map(
+          (m) => CaptionHubModel(
+            m.repository,
+            m.engine,
+            m.source,
+            m.target,
+            m.sourceLanguages,
+            m.license,
+          ),
+        )
+        .toList();
+  }
+
   @override
   Future<LocalCaptionModel> resolve(
     CaptionHubModel entry, {
@@ -209,9 +215,13 @@ void main() {
       Future<void> download(bool translation, String id) async {
         final expansion = find.byType(ExpansionTile).at(translation ? 1 : 0);
         await tester.ensureVisible(expansion);
-        await tester.tap(
-          find.descendant(of: expansion, matching: find.text('Download')).first,
-        );
+        if (!tester.widget<ExpansionTile>(expansion).initiallyExpanded) {
+          await tester.tap(
+            find
+                .descendant(of: expansion, matching: find.byType(ListTile))
+                .first,
+          );
+        }
         await tester.pumpAndSettle();
         final picker = find.byWidgetPredicate(
           (w) => w is CaptionModelPicker && w.translation == translation,
@@ -270,6 +280,70 @@ void main() {
         before.options.toJson(),
       );
       expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'catalog error and retry scroll above the keyboard with large text',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      addTearDown(tester.view.resetViewInsets);
+      final store = _Store(), catalog = _Catalog(failListing: true);
+      addTearDown(store.dio.close);
+      addTearDown(catalog.dio.close);
+      await pumpTestWidget(
+        tester,
+        overrides: [
+          captionModelStoreProvider.overrideWith((_) async => store),
+          captionModelCatalogProvider.overrideWithValue(catalog),
+          localCaptionsProvider.overrideWith(_IdleCaptions.new),
+        ],
+        child: Theme(
+          data: AppTheme.buildTheme(
+            Brightness.dark,
+            Colors.teal,
+            fontSizeFactor: 2,
+          ),
+          child: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => showCaptionTuningDialog(context),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      final field = find
+          .descendant(
+            of: find.byType(CaptionModelPicker).first,
+            matching: find.byType(InputDecorator),
+          )
+          .first;
+      await tester.ensureVisible(field);
+      await tester.tap(field);
+      await tester.pumpAndSettle();
+      tester.view.viewInsets = const FakeViewPadding(bottom: 250);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      final retry = find.widgetWithText(TextButton, 'Retry');
+      await tester.ensureVisible(retry);
+      await tester.pumpAndSettle();
+      expect(tester.getBottomLeft(retry).dy, lessThanOrEqualTo(318));
+      final requests = catalog.listRequests;
+      await tester.tap(retry);
+      await tester.pumpAndSettle();
+      expect(catalog.listRequests, greaterThan(requests));
+      expect(tester.takeException(), isNull);
+      expect(find.textContaining('Cannot load model catalog'), findsOneWidget);
     },
   );
 

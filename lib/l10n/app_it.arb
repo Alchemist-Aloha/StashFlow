@@ -1,5 +1,9 @@
 {
   "@@locale": "it",
+  "local_captions_cancel_download": "Annulla download",
+  "local_captions_download_speech": "Scarica modelli vocali",
+  "local_captions_download_translation": "Scarica modelli di traduzione",
+  "local_captions_advanced": "Impostazioni avanzate",
   "local_captions_auto_model": "Automatico (modelli scaricati)",
   "local_captions_catalog_help": "Sfoglia i modelli compatibili Whisper, Transducer, SenseVoice, Paraformer e Marian OPUS-MT su Hugging Face. Controlla scheda e licenza; i modelli grandi possono superare la memoria del dispositivo.",
   "local_captions_catalog_error": "Impossibile caricare il catalogo. Controlla la connessione e riprova.",

@@ -114,6 +114,30 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @local_captions_cancel_download.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel download'**
+  String get local_captions_cancel_download;
+
+  /// No description provided for @local_captions_download_speech.
+  ///
+  /// In en, this message translates to:
+  /// **'Download speech models'**
+  String get local_captions_download_speech;
+
+  /// No description provided for @local_captions_download_translation.
+  ///
+  /// In en, this message translates to:
+  /// **'Download translation models'**
+  String get local_captions_download_translation;
+
+  /// No description provided for @local_captions_advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced settings'**
+  String get local_captions_advanced;
+
   /// No description provided for @local_captions_auto_model.
   ///
   /// In en, this message translates to:

@@ -565,7 +565,18 @@ codes. Speech and translation models can be inspected and downloaded directly
 inside the dialog using the shared catalog, with progress, cancellation and
 error recovery. Downloads install weights but stage model selection in the
 dialog until Apply; cancelling the dialog retains completed downloads, not
-configuration changes. Apply is disabled while a download is in progress.
+configuration changes. Apply is disabled while models are loading or a download
+is in progress. The responsive dialog keeps speech and optional translation
+controls separate from collapsed advanced tuning. Missing-model download panels
+open automatically; clearly named panels distinguish speech from translation.
+Expanded download sections stretch to the full form width with scalable vertical
+padding, and the desktop dialog allows a wider model-management area. Their
+height follows the model details and actions rather than a clipped fixed box.
+Progress and cancellation remain available even if translation is collapsed.
+Content, long labels, and actions adapt to narrow widths, large UI/system text,
+landscape and keyboard insets. Actions stay below the scrollable form when
+height permits and join its scroll area on short viewports. Model catalogs
+scroll their loading/error/retry states as well as results.
 The dialog stages speech-model, source/output-language, preferred downloaded
 translation-model, ASR-thread (1–8), audio-window (4–12 seconds), VAD-threshold
 (0.2–0.8), subtitle-delay (±5 seconds) and bilingual-display settings. Cancel

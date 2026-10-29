@@ -45,6 +45,19 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant CaptionModelPicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.onSelected != null &&
+        oldWidget.selectedId != widget.selectedId) {
+      _inspection?.cancel();
+      _inspection = null;
+      _model = null;
+      _repository = null;
+      _changed = _resolving = _error = _incompatible = false;
+    }
+  }
+
   Future<void> _choose(CaptionHubModel entry) async {
     _search.closeView(entry.repository);
     _inspection?.cancel();
@@ -137,7 +150,11 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
                     },
               child: InputDecorator(
                 decoration: InputDecoration(
-                  labelText: label,
+                  label: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   enabled: !busy,
                   suffixIcon: const Icon(Icons.arrow_drop_down),
                   errorMaxLines: 4,
@@ -198,61 +215,71 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
                               .contains(query),
                     )
                     .toList();
-                return Column(
-                  children: [
-                    if (remote.isLoading) const LinearProgressIndicator(),
-                    if (remote.hasError)
-                      ListTile(
-                        title: Text(context.l10n.local_captions_catalog_error),
-                        trailing: TextButton(
-                          onPressed: () => ref.invalidate(
-                            captionHubModelsProvider(widget.translation),
-                          ),
-                          child: Text(context.l10n.common_retry),
+                return ListView.builder(
+                  primary: false,
+                  itemCount: matches.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimensions.spacingMedium,
                         ),
-                      ),
-                    Expanded(
-                      child:
-                          matches.isEmpty &&
-                              !remote.isLoading &&
-                              !remote.hasError
-                          ? Center(
-                              child: Text(context.l10n.scenes_no_results_found),
-                            )
-                          : ListView.builder(
-                              primary: false,
-                              itemCount: matches.length,
-                              itemBuilder: (context, index) {
-                                final item = matches[index];
-                                return ListTile(
-                                  title: Text(item.repository),
-                                  subtitle: Text(
-                                    item.target == null
-                                        ? item.languages.length > 1
-                                              ? context
-                                                    .l10n
-                                                    .local_captions_multilingual
-                                              : names[item.source] ??
-                                                    context
-                                                        .l10n
-                                                        .local_captions_model_default
-                                        : context.l10n.local_captions_pair(
-                                            localCaptionLanguageLabel(
-                                              context,
-                                              item.source,
-                                            ),
-                                            localCaptionLanguageLabel(
-                                              context,
-                                              item.target!,
-                                            ),
-                                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (remote.isLoading)
+                              const LinearProgressIndicator(),
+                            if (remote.hasError) ...[
+                              Text(context.l10n.local_captions_catalog_error),
+                              Align(
+                                alignment: AlignmentDirectional.centerStart,
+                                child: TextButton(
+                                  onPressed: () => ref.invalidate(
+                                    captionHubModelsProvider(
+                                      widget.translation,
+                                    ),
                                   ),
-                                  onTap: () => unawaited(_choose(item)),
-                                );
-                              },
-                            ),
-                    ),
-                  ],
+                                  child: Text(context.l10n.common_retry),
+                                ),
+                              ),
+                            ],
+                            if (matches.isEmpty &&
+                                !remote.isLoading &&
+                                !remote.hasError)
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: context.dimensions.spacingMedium,
+                                ),
+                                child: Text(
+                                  context.l10n.scenes_no_results_found,
+                                ),
+                              ),
+                          ],
+                        ),
+                      );
+                    }
+                    final item = matches[index - 1];
+                    return ListTile(
+                      title: Text(item.repository),
+                      subtitle: Text(
+                        item.target == null
+                            ? item.languages.length > 1
+                                  ? context.l10n.local_captions_multilingual
+                                  : names[item.source] ??
+                                        context
+                                            .l10n
+                                            .local_captions_model_default
+                            : context.l10n.local_captions_pair(
+                                localCaptionLanguageLabel(context, item.source),
+                                localCaptionLanguageLabel(
+                                  context,
+                                  item.target!,
+                                ),
+                              ),
+                      ),
+                      onTap: () => unawaited(_choose(item)),
+                    );
+                  },
                 );
               },
             ),
@@ -290,7 +317,7 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
             ),
             TextButton(
               onPressed: notifier.cancelDownload,
-              child: Text(context.l10n.common_cancel),
+              child: Text(context.l10n.local_captions_cancel_download),
             ),
           ] else
             Wrap(

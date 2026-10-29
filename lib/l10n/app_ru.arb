@@ -1,5 +1,9 @@
 {
   "@@locale": "ru",
+  "local_captions_cancel_download": "Отменить загрузку",
+  "local_captions_download_speech": "Скачать речевые модели",
+  "local_captions_download_translation": "Скачать модели перевода",
+  "local_captions_advanced": "Дополнительные настройки",
   "local_captions_auto_model": "Автоматически (загруженные модели)",
   "local_captions_catalog_help": "Ищите совместимые модели Whisper, Transducer, SenseVoice, Paraformer и Marian OPUS-MT на Hugging Face. Проверьте карточку и лицензию; большие модели могут превышать объём памяти устройства.",
   "local_captions_catalog_error": "Не удалось загрузить каталог. Проверьте подключение и повторите.",

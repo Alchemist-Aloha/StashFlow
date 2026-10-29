@@ -9,6 +9,18 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get local_captions_cancel_download => '取消下载';
+
+  @override
+  String get local_captions_download_speech => '下载语音模型';
+
+  @override
+  String get local_captions_download_translation => '下载翻译模型';
+
+  @override
+  String get local_captions_advanced => '高级设置';
+
+  @override
   String get local_captions_auto_model => '自动选择（已下载模型）';
 
   @override
@@ -3788,6 +3800,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   AppLocalizationsZhHans() : super('zh_Hans');
 
   @override
+  String get local_captions_cancel_download => '取消下载';
+
+  @override
+  String get local_captions_download_speech => '下载语音模型';
+
+  @override
+  String get local_captions_download_translation => '下载翻译模型';
+
+  @override
+  String get local_captions_advanced => '高级设置';
+
+  @override
   String get local_captions_auto_model => '自动选择（已下载模型）';
 
   @override
@@ -7565,6 +7589,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 /// The translations for Chinese, using the Han script (`zh_Hant`).
 class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
+
+  @override
+  String get local_captions_cancel_download => '取消下載';
+
+  @override
+  String get local_captions_download_speech => '下載語音模型';
+
+  @override
+  String get local_captions_download_translation => '下載翻譯模型';
+
+  @override
+  String get local_captions_advanced => '進階設定';
 
   @override
   String get local_captions_auto_model => '自動選擇（已下載模型）';

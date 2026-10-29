@@ -61,16 +61,18 @@ class LocalCaptionsNotifier extends Notifier<LocalCaptions> {
     });
     ref.listen(
       localCaptionSettingsProvider.select(
-        (s) => (
-          s.selected,
-          s.translation,
-          s.canTranscribe,
-          s.canTranslate,
-          s.options,
-        ),
+        (s) => (s.selected, s.translation, s.canTranscribe, s.options),
       ),
       (_, next) => unawaited(stop()),
     );
+    ref.listen(localCaptionSettingsProvider.select((s) => s.canTranslate), (
+      _,
+      available,
+    ) {
+      if (!available && state.mode == LocalCaptionMode.translate) {
+        unawaited(stop());
+      }
+    });
     ref.listen(castServiceProvider.select((s) => s.isCasting), (_, casting) {
       if (casting) unawaited(stop());
     });

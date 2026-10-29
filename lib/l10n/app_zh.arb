@@ -1,5 +1,9 @@
 {
   "@@locale": "zh",
+  "local_captions_cancel_download": "取消下载",
+  "local_captions_download_speech": "下载语音模型",
+  "local_captions_download_translation": "下载翻译模型",
+  "local_captions_advanced": "高级设置",
   "local_captions_auto_model": "自动选择（已下载模型）",
   "local_captions_catalog_help": "浏览 Hugging Face 上兼容的 Whisper、Transducer、SenseVoice、Paraformer 和 Marian OPUS-MT 模型。下载前请检查模型说明和许可证；大模型可能超出设备内存。",
   "local_captions_catalog_error": "无法加载模型目录。请检查网络连接后重试。",

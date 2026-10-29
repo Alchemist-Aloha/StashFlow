@@ -9,6 +9,18 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get local_captions_cancel_download => 'ダウンロードをキャンセル';
+
+  @override
+  String get local_captions_download_speech => '音声モデルをダウンロード';
+
+  @override
+  String get local_captions_download_translation => '翻訳モデルをダウンロード';
+
+  @override
+  String get local_captions_advanced => '詳細設定';
+
+  @override
   String get local_captions_auto_model => '自動（ダウンロード済みモデル）';
 
   @override

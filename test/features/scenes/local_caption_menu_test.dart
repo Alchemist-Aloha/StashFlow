@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stash_app_flutter/features/scenes/data/local_captions/caption_options.dart';
 import 'package:go_router/go_router.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
@@ -79,7 +81,64 @@ class _Captions extends LocalCaptionsNotifier {
   }
 }
 
+class _AvailableModels extends LocalCaptionSettingsNotifier {
+  @override
+  LocalCaptionSettings build() => const LocalCaptionSettings(
+    selected: 'zipformer-en',
+    installed: {'zipformer-en'},
+    options: CaptionOptions(outputLanguage: 'zh'),
+  );
+
+  void translationAvailable(bool available) {
+    state = LocalCaptionSettings(
+      selected: state.selected,
+      options: state.options,
+      installed: {'zipformer-en', if (available) 'marian-en-zh'},
+    );
+  }
+}
+
+class _ObservedCaptions extends LocalCaptionsNotifier {
+  @override
+  LocalCaptions build() {
+    super.build();
+    return const LocalCaptions(mode: LocalCaptionMode.transcribe);
+  }
+
+  void showTranslation() {
+    state = const LocalCaptions(mode: LocalCaptionMode.translate);
+  }
+}
+
 void main() {
+  testWidgets('installing a translation model does not stop transcription', (
+    tester,
+  ) async {
+    final models = _AvailableModels(), captions = _ObservedCaptions();
+    final player = _Player(), scene = _Scene();
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        playerStateProvider.overrideWith(() => _Playback(player, scene)),
+        localCaptionSettingsProvider.overrideWith(() => models),
+        localCaptionsProvider.overrideWith(() => captions),
+      ],
+      child: Consumer(
+        builder: (context, ref, _) =>
+            Text(ref.watch(localCaptionsProvider).mode.name),
+      ),
+    );
+    expect(find.text('transcribe'), findsOneWidget);
+    models.translationAvailable(true);
+    await tester.pumpAndSettle();
+    expect(find.text('transcribe'), findsOneWidget);
+    captions.showTranslation();
+    await tester.pumpAndSettle();
+    models.translationAvailable(false);
+    await tester.pumpAndSettle();
+    expect(find.text('off'), findsOneWidget);
+  });
+
   testWidgets(
     'one transcription action offers optional translation and None stops both',
     (tester) async {
@@ -116,7 +175,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.byType(Dialog), findsOneWidget);
       await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
       await tester.pumpAndSettle();
       expect(find.text('generated phrase'), findsOneWidget);
@@ -146,7 +205,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.byType(Dialog), findsOneWidget);
       final translate = find.widgetWithText(SwitchListTile, 'Translate audio');
       await tester.ensureVisible(translate);
       await tester.tap(translate);

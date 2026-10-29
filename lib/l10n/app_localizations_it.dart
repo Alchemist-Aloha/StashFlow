@@ -9,6 +9,19 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get local_captions_cancel_download => 'Annulla download';
+
+  @override
+  String get local_captions_download_speech => 'Scarica modelli vocali';
+
+  @override
+  String get local_captions_download_translation =>
+      'Scarica modelli di traduzione';
+
+  @override
+  String get local_captions_advanced => 'Impostazioni avanzate';
+
+  @override
   String get local_captions_auto_model => 'Automatico (modelli scaricati)';
 
   @override

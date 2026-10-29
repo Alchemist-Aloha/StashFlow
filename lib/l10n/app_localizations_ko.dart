@@ -9,6 +9,18 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get local_captions_cancel_download => '다운로드 취소';
+
+  @override
+  String get local_captions_download_speech => '음성 모델 다운로드';
+
+  @override
+  String get local_captions_download_translation => '번역 모델 다운로드';
+
+  @override
+  String get local_captions_advanced => '고급 설정';
+
+  @override
   String get local_captions_auto_model => '자동(다운로드한 모델)';
 
   @override

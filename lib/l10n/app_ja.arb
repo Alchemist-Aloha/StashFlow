@@ -1,5 +1,9 @@
 {
   "@@locale": "ja",
+  "local_captions_cancel_download": "ダウンロードをキャンセル",
+  "local_captions_download_speech": "音声モデルをダウンロード",
+  "local_captions_download_translation": "翻訳モデルをダウンロード",
+  "local_captions_advanced": "詳細設定",
   "local_captions_auto_model": "自動（ダウンロード済みモデル）",
   "local_captions_catalog_help": "Hugging Face の対応する Whisper、Transducer、SenseVoice、Paraformer、Marian OPUS-MT モデルを検索できます。モデルカードとライセンスを確認してください。大きいモデルは端末のメモリ容量を超える場合があります。",
   "local_captions_catalog_error": "モデル一覧を読み込めません。接続を確認して再試行してください。",
