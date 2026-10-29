@@ -8,6 +8,7 @@ Welcome to the **StashFlow** wiki — a modern, multi-platform client for your [
 |------|-------------|
 | [Installation](Installation) | Install StashFlow on Android, Desktop (Windows/macOS/Linux), or Web |
 | [Settings Reference](Settings-Reference) | Every settings page and option explained |
+| [Transcription and Translation](Transcription-and-Translation) | Generate on-device subtitles, choose models, and translate speech |
 | [Building from Source](Building-from-Source) | Developer guide: build, package, and test StashFlow |
 | [Mobile Usage & Gestures](Mobile-Usage-Gestures) | Touch gestures and controls on Android |
 | [Desktop Usage & Key Bindings](Desktop-Usage-Key-Bindings) | Keyboard shortcuts for Windows, macOS, Linux, and Web |
