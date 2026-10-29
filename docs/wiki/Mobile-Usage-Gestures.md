@@ -56,6 +56,13 @@ A percentage overlay appears while you drag.
 | **Two-finger pinch** | Zoom the video |
 | **Two-finger rotate** | Freely rotate the video |
 
+### On-device subtitles
+
+Open the subtitle menu and choose **Transcribe audio** to generate captions, with optional
+translation. Models run on the CPU only and must be downloaded first. See
+**[Transcription and Translation](Transcription-and-Translation)** for the recommended speech
+model and source-language setup. Generation is unavailable while casting.
+
 ### Fullscreen
 
 | Gesture | Action |

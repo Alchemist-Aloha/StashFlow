@@ -41,9 +41,25 @@ Video shortcuts work while the player has keyboard focus. Click the player once 
 | `Backspace` | Reset playback speed to 1× |
 | `Esc` | Stop and close the player |
 
-Desktop fullscreen uses the operating system window through `window_manager`. `Esc` also exits the viewer through the configured player action.
+Desktop fullscreen uses the operating system window. Windows uses the app's native fullscreen
+controller to restore the previous window position and maximized state; macOS and Linux use
+`window_manager`. `Esc` exits the viewer through the configured player action.
 
 While the desktop PiP window is active, drag the video to move it, double-click it or press `Esc` to exit PiP, and hover for previous, play/pause, next, seek, and exit-PiP controls.
+
+## Mouse Navigation and Browsing
+
+- In native apps, the mouse **Back** button follows the normal Back action, including dismissing
+  dialogs and leaving fullscreen. At the root page it does nothing. Web keeps browser history behavior.
+- In grids with a column setting, hold **Ctrl** and scroll the mouse wheel to change the column
+  count. Wheel up makes cards larger; wheel down adds columns. The matching layout setting is saved.
+- Thin progress bars below scene thumbnails show saved playback positions. Toggle them in
+  **Settings → Interface → Show scene playback progress**.
+- If a taskbar covers the mini-player or floating controls, enable **Settings → Interface →
+  Mini-player bottom spacer** and adjust its offset. Fullscreen is unaffected.
+
+For CPU-only speech transcription and translation during native playback, see
+**[Transcription and Translation](Transcription-and-Translation)**.
 
 ## Image Viewer
 

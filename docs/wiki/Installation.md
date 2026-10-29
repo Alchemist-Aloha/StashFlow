@@ -44,10 +44,12 @@ You can store credentials for multiple servers as profiles and switch between th
 
 ## Desktop — Windows
 
-Choose one of the two downloads from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page:
+Choose an **x64** or **ARM64** build matching your Windows device from the
+[Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
+Replace `<arch>` with `x64` or `arm64`:
 
-- **`StashFlow-<version>-windows-x64.exe`** — installer. Run it, follow the prompts, then launch **StashFlow** from the Start menu.
-- **`StashFlow-<version>-windows-x64.zip`** — portable build. Extract anywhere and run `StashFlow.exe`.
+- **`StashFlow-<version>-windows-<arch>.exe`** — installer. Run it, follow the prompts, then launch **StashFlow** from the Start menu.
+- **`StashFlow-<version>-windows-<arch>.zip`** — portable build. Extract anywhere and run `StashFlow.exe`.
 
 Then open **Settings → Server → Add Profile**, enter your **Stash URL** and credentials, and click **Save**.
 
@@ -66,14 +68,16 @@ Then open **Settings → Server → Add Profile**, enter your **Stash URL** and 
 
 ## Desktop — Linux
 
-Pick the package that matches your distribution from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page:
+Pick the package matching your distribution and CPU from the
+[Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
+Both **x64** and **ARM64** builds are available; replace `<arch>` with `x64` or `arm64`:
 
 | File | Distribution |
 |------|--------------|
-| `StashFlow-<version>-linux-x64.AppImage` | Any distro — mark executable and run |
-| `StashFlow-<version>-linux-x64.deb` | Debian, Ubuntu, and derivatives |
-| `StashFlow-<version>-linux-x64.pkg.tar.zst` | Arch Linux and derivatives |
-| `StashFlow-<version>-linux-x64.zip` | Portable bundle — extract and run `StashFlow` |
+| `StashFlow-<version>-linux-<arch>.AppImage` | Any distro — mark executable and run |
+| `StashFlow-<version>-linux-<arch>.deb` | Debian, Ubuntu, and derivatives |
+| `StashFlow-<version>-linux-<arch>.pkg.tar.zst` | Arch Linux and derivatives |
+| `StashFlow-<version>-linux-<arch>.zip` | Portable bundle — extract and run `StashFlow` |
 
 Example for the portable bundle:
 
@@ -110,6 +114,13 @@ See [Building from Source](Building-from-Source) for instructions on producing a
 output you can deploy to any static host. Remember to build with the correct base href for your host path.
 
 ---
+
+## Download names and checksums
+
+Stable downloads include the full app version and build number in `<version>` (for example,
+`1.41.0+114`). Nightly and release-candidate downloads use fixed `nightly` and `rc` names instead.
+Linux AppImage, Debian, and pacman downloads include adjacent `.sha256` files. Download both files
+into the same directory and verify with `sha256sum -c <package-filename>.sha256`.
 
 ## Next steps
 
