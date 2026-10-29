@@ -114,6 +114,108 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @local_captions_title.
+  ///
+  /// In en, this message translates to:
+  /// **'On-device subtitles'**
+  String get local_captions_title;
+
+  /// No description provided for @local_captions_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Download speech and matching translation models. Audio and text stay on this device. Downloads may use mobile data; starting and seeking need preparation time.'**
+  String get local_captions_help;
+
+  /// No description provided for @local_captions_speech_models.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech models'**
+  String get local_captions_speech_models;
+
+  /// No description provided for @local_captions_translation_models.
+  ///
+  /// In en, this message translates to:
+  /// **'Translation models'**
+  String get local_captions_translation_models;
+
+  /// No description provided for @local_captions_model.
+  ///
+  /// In en, this message translates to:
+  /// **'{model} — {language}'**
+  String local_captions_model(String model, String language);
+
+  /// No description provided for @local_captions_pair.
+  ///
+  /// In en, this message translates to:
+  /// **'{source} → {target}'**
+  String local_captions_pair(String source, String target);
+
+  /// No description provided for @local_captions_size.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} MB · {license}'**
+  String local_captions_size(String size, String license);
+
+  /// No description provided for @local_captions_chinese_simplified.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese (Simplified)'**
+  String get local_captions_chinese_simplified;
+
+  /// No description provided for @local_captions_select.
+  ///
+  /// In en, this message translates to:
+  /// **'Use model'**
+  String get local_captions_select;
+
+  /// No description provided for @local_captions_model_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Model operation failed. Check storage and connection, then retry.'**
+  String get local_captions_model_error;
+
+  /// No description provided for @local_captions_mismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech and translation models must use the same source language.'**
+  String get local_captions_mismatch;
+
+  /// No description provided for @local_captions_transcribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcribe audio'**
+  String get local_captions_transcribe;
+
+  /// No description provided for @local_captions_translate.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate audio'**
+  String get local_captions_translate;
+
+  /// No description provided for @local_captions_preparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing on-device subtitles…'**
+  String get local_captions_preparing;
+
+  /// No description provided for @local_captions_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitles failed. Retry from the subtitle menu.'**
+  String get local_captions_failed;
+
+  /// No description provided for @local_captions_unsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'On-device subtitles require a native player. Web and casting are not supported.'**
+  String get local_captions_unsupported;
+
+  /// No description provided for @local_captions_manage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage subtitle models'**
+  String get local_captions_manage;
+
   /// No description provided for @video_debug_format.
   ///
   /// In en, this message translates to:

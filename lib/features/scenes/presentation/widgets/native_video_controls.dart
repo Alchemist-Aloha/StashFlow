@@ -1661,10 +1661,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                               colorScheme,
                                             )
                                           : null,
-                                      selectedSubtitleLanguage:
-                                          playerState.selectedSubtitleLanguage,
-                                      selectedSubtitleType:
-                                          playerState.selectedSubtitleType,
                                       onSpeedTap: () {
                                         setState(
                                           () => _showSpeedSlider =

@@ -9,6 +9,68 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get local_captions_title => 'On-device subtitles';
+
+  @override
+  String get local_captions_help =>
+      'Download speech and matching translation models. Audio and text stay on this device. Downloads may use mobile data; starting and seeking need preparation time.';
+
+  @override
+  String get local_captions_speech_models => 'Speech models';
+
+  @override
+  String get local_captions_translation_models => 'Translation models';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size MB · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => 'Chinese (Simplified)';
+
+  @override
+  String get local_captions_select => 'Use model';
+
+  @override
+  String get local_captions_model_error =>
+      'Model operation failed. Check storage and connection, then retry.';
+
+  @override
+  String get local_captions_mismatch =>
+      'Speech and translation models must use the same source language.';
+
+  @override
+  String get local_captions_transcribe => 'Transcribe audio';
+
+  @override
+  String get local_captions_translate => 'Translate audio';
+
+  @override
+  String get local_captions_preparing => 'Preparing on-device subtitles…';
+
+  @override
+  String get local_captions_failed =>
+      'Subtitles failed. Retry from the subtitle menu.';
+
+  @override
+  String get local_captions_unsupported =>
+      'On-device subtitles require a native player. Web and casting are not supported.';
+
+  @override
+  String get local_captions_manage => 'Manage subtitle models';
+
+  @override
   String get video_debug_format => 'MIME type';
 
   @override

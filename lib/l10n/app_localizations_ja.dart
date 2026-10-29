@@ -9,6 +9,66 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get local_captions_title => '端末内字幕';
+
+  @override
+  String get local_captions_help =>
+      '音声モデルと対応する翻訳モデルをダウンロードします。音声とテキストはこの端末内に留まります。ダウンロードにはモバイルデータが使われる場合があり、開始時とシーク後には準備時間が必要です。';
+
+  @override
+  String get local_captions_speech_models => '音声モデル';
+
+  @override
+  String get local_captions_translation_models => '翻訳モデル';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size MB · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => '中国語（簡体字）';
+
+  @override
+  String get local_captions_select => 'このモデルを使用';
+
+  @override
+  String get local_captions_model_error =>
+      'モデルの操作に失敗しました。空き容量と接続を確認して再試行してください。';
+
+  @override
+  String get local_captions_mismatch => '音声モデルと翻訳モデルの元言語を一致させてください。';
+
+  @override
+  String get local_captions_transcribe => '音声を書き起こす';
+
+  @override
+  String get local_captions_translate => '音声を翻訳';
+
+  @override
+  String get local_captions_preparing => '端末内字幕を準備中…';
+
+  @override
+  String get local_captions_failed => '字幕の生成に失敗しました。字幕メニューから再試行してください。';
+
+  @override
+  String get local_captions_unsupported =>
+      '端末内字幕にはネイティブプレーヤーが必要です。Webとキャストには対応していません。';
+
+  @override
+  String get local_captions_manage => '字幕モデルを管理';
+
+  @override
   String get video_debug_format => 'MIME タイプ';
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import 'local_caption_overlay.dart';
 
 class TransformableVideoSurface extends StatefulWidget {
   const TransformableVideoSurface({
@@ -93,6 +94,14 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
           backgroundColor: Colors.black.withValues(alpha: 0.4),
         ),
       ),
+    );
+
+    content = Stack(
+      fit: StackFit.expand,
+      children: [
+        content,
+        GeneratedCaptionOverlay(player: widget.controller.player),
+      ],
     );
 
     if (widget.fit == BoxFit.fill) {

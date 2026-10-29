@@ -539,6 +539,48 @@ unsupported metrics are shown as unavailable, not zero. Startup and prewarm
 latencies retain their existing session meaning. The panel never displays media
 URLs or authentication headers.
 
+### On-device transcription and translation
+
+Playback Settings provides explicit, cancellable model downloads, installed-model
+selection and removal. Downloads use pinned upstream revisions, exact sizes and
+SHA-256 verification; only complete, atomically installed models are selectable.
+Speech models cover English and Mandarin (streaming Zipformer), and Japanese
+(Whisper tiny with Silero VAD, using phrase-level VAD timing rather than token
+timestamps). Marian translation
+models initially cover English → Simplified Chinese, Mandarin → English, and
+Japanese → English. Translation requires matching source languages. Model
+selections are backed up; downloaded weights and generated text are not.
+
+The shared subtitle menu is available even without server captions, including
+the feed. Transcribe and Translate are opt-in, session-scoped modes and disable
+the selected server subtitle track. None or selecting a server track stops
+generation. Web and casting cannot generate subtitles. Native inline,
+fullscreen, feed and PiP surfaces share timed Flutter-rendered cues and existing
+subtitle font, alignment and position preferences.
+
+A separate, silent, untimed mpv PCM decoder reads bounded six-second windows
+with one-second context around them. It reuses the active media URL, headers
+and audio-track ID; it never changes audible playback settings. PCM output must
+be accepted before opening media. ASR (sherpa-onnx) and translation
+(CTranslate2/Marian with SentencePiece) run on a worker isolate. No microphone,
+cloud inference, Google ML Kit, or extra FFmpeg distribution is involved.
+Initial generation and uncached seeks show preparation status; real-time
+throughput and accuracy depend on hardware and models, not guaranteed latency.
+
+Seeks invalidate pending results. Scene/controller, audio-track, server/auth or
+model-selection changes stop the session and clear cues; inline/fullscreen/PiP
+handoffs of the same controller do not. At most 32 windows of text are kept in
+session memory; temporary PCM is removed after each extraction. Native errors
+are replaced with localized recovery messages, never authenticated URLs or
+transcript logs. Model removal first stops inference and releases its resources.
+
+The local `packages/stashflow_translation` package builds pinned CTranslate2
+and SentencePiece sources using CMake and Dart code assets, with a CPU Ruy
+backend, no Python runtime and no bundled weights. Android retains all three
+release ABIs and its existing minimum SDK. Native changes require host smoke
+tests and split-ABI APK builds; sustained performance, GPU/driver behavior,
+mobile PiP and non-host platforms require device/platform acceptance.
+
 ### Native video output and decoding
 
 - `media_kit` and `media_kit_video` come from the same revision of the

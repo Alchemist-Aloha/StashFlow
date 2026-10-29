@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../features/scenes/presentation/providers/player_settings.dart';
+import '../../../features/scenes/data/local_captions/local_caption_model.dart';
 import '../../utils/app_log_store.dart';
 
 final class AppConfigSettingException implements Exception {
@@ -155,6 +156,20 @@ final class AppConfigSettingsRegistry {
     _bool('video_gravity_orientation'),
     _bool('use_actual_scene_video_in_miniplayer'),
     _string('default_subtitle_language'),
+    _string(
+      'local_caption_model',
+      allowed: {
+        for (final model in LocalCaptionModel.catalog)
+          if (!model.isTranslation) model.id,
+      },
+    ),
+    _string(
+      'local_caption_translation_model',
+      allowed: {
+        for (final model in LocalCaptionModel.catalog)
+          if (model.isTranslation) model.id,
+      },
+    ),
     _double('subtitle_font_size', min: 8, max: 96),
     _double('subtitle_position_bottom_ratio', min: 0, max: 1),
     _string('subtitle_text_alignment', allowed: {'left', 'center', 'right'}),

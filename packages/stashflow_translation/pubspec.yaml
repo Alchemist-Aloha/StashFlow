@@ -1,0 +1,10 @@
+name: stashflow_translation
+description: Private on-device Marian inference for StashFlow.
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: '>=3.11.0 <4.0.0'
+dependencies:
+  code_assets: ^2.0.0
+  hooks: ^2.0.0
+  ffi: ^2.1.4

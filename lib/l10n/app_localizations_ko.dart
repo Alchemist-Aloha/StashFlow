@@ -9,6 +9,66 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get local_captions_title => '기기 내 자막';
+
+  @override
+  String get local_captions_help =>
+      '음성 모델과 호환되는 번역 모델을 다운로드하세요. 오디오와 텍스트는 이 기기에만 남습니다. 다운로드 시 모바일 데이터가 사용될 수 있으며 시작과 탐색 후 준비 시간이 필요합니다.';
+
+  @override
+  String get local_captions_speech_models => '음성 모델';
+
+  @override
+  String get local_captions_translation_models => '번역 모델';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size MB · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => '중국어(간체)';
+
+  @override
+  String get local_captions_select => '모델 사용';
+
+  @override
+  String get local_captions_model_error =>
+      '모델 작업에 실패했습니다. 저장 공간과 연결을 확인한 후 다시 시도하세요.';
+
+  @override
+  String get local_captions_mismatch => '음성 모델과 번역 모델의 원본 언어가 같아야 합니다.';
+
+  @override
+  String get local_captions_transcribe => '오디오 받아쓰기';
+
+  @override
+  String get local_captions_translate => '오디오 번역';
+
+  @override
+  String get local_captions_preparing => '기기 내 자막 준비 중…';
+
+  @override
+  String get local_captions_failed => '자막 생성에 실패했습니다. 자막 메뉴에서 다시 시도하세요.';
+
+  @override
+  String get local_captions_unsupported =>
+      '기기 내 자막에는 네이티브 플레이어가 필요합니다. 웹과 캐스팅은 지원하지 않습니다.';
+
+  @override
+  String get local_captions_manage => '자막 모델 관리';
+
+  @override
   String get video_debug_format => 'MIME 유형';
 
   @override

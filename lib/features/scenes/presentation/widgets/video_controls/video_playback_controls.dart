@@ -8,6 +8,7 @@ import 'package:media_kit_video/media_kit_video.dart';
 import '../../../domain/entities/scene.dart';
 import '../../../domain/entities/scene_title_utils.dart';
 import 'cast_selection_sheet.dart';
+import 'scene_subtitle_menu.dart';
 import '../../providers/video_player_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -159,8 +160,6 @@ class VideoPlaybackControls extends ConsumerWidget {
     required this.enableNativePip,
     required this.onInteract,
     required this.desktopVolumeControl,
-    required this.selectedSubtitleLanguage,
-    required this.selectedSubtitleType,
     required this.onSpeedTap,
     required this.isSpeedSliderVisible,
     this.onStopCast,
@@ -177,8 +176,6 @@ class VideoPlaybackControls extends ConsumerWidget {
   final bool enableNativePip;
   final VoidCallback onInteract;
   final Widget? desktopVolumeControl;
-  final String? selectedSubtitleLanguage;
-  final String? selectedSubtitleType;
   final VoidCallback onSpeedTap;
   final bool isSpeedSliderVisible;
   final VoidCallback? onStopCast;
@@ -215,7 +212,6 @@ class VideoPlaybackControls extends ConsumerWidget {
     final buttonMinSize = context.dimensions.buttonHeight;
     final buttonGap = context.dimensions.spacingSmall;
     final colorScheme = Theme.of(context).colorScheme;
-    final canSelectSubtitles = scene.captions.isNotEmpty;
     final castState = ref.watch(castServiceProvider);
 
     return LayoutBuilder(
@@ -234,114 +230,13 @@ class VideoPlaybackControls extends ConsumerWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (canSelectSubtitles)
-                      PopupMenuButton<String?>(
-                        tooltip: context.l10n.common_select_subtitle,
-                        padding: EdgeInsets.zero,
-                        initialValue: selectedSubtitleLanguage,
-                        color: colorScheme.surfaceContainerHigh,
-                        surfaceTintColor: colorScheme.surfaceTint,
-                        onSelected: (value) {
-                          onSubtitleSelected(value);
-                          onInteract();
-                        },
-                        itemBuilder: (context) {
-                          final items = <PopupMenuEntry<String?>>[
-                            PopupMenuItem<String?>(
-                              value: 'none',
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    (selectedSubtitleLanguage == null ||
-                                            selectedSubtitleLanguage == 'none')
-                                        ? Icons.check_circle
-                                        : Icons.circle_outlined,
-                                    size: 16,
-                                    color:
-                                        (selectedSubtitleLanguage == null ||
-                                            selectedSubtitleLanguage == 'none')
-                                        ? colorScheme.primary
-                                        : colorScheme.onSurfaceVariant,
-                                  ),
-                                  Text(
-                                    context.l10n.common_none,
-                                    style: TextStyle(
-                                      color: colorScheme.onSurface,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ];
-
-                          for (final c in scene.captions) {
-                            final selectedLang = selectedSubtitleLanguage ?? '';
-                            final selectedType = selectedSubtitleType ?? '';
-                            final captionLang = c.languageCode;
-                            final captionType = c.captionType;
-                            final isUnknownLangSelection =
-                                (selectedLang.isEmpty ||
-                                    selectedLang == '00') &&
-                                (captionLang.isEmpty || captionLang == '00');
-                            final isSelected =
-                                (selectedLang == captionLang ||
-                                    isUnknownLangSelection) &&
-                                (selectedType == captionType ||
-                                    (selectedType.isEmpty &&
-                                        isUnknownLangSelection));
-
-                            final label =
-                                c.languageCode == '00' || c.languageCode.isEmpty
-                                ? '${context.l10n.common_unknown} (${c.captionType})'
-                                : '${c.languageCode.toUpperCase()} (${c.captionType})';
-
-                            items.add(
-                              PopupMenuItem<String?>(
-                                value: '${c.languageCode}:${c.captionType}',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      isSelected
-                                          ? Icons.check_circle
-                                          : Icons.circle_outlined,
-                                      size: 16,
-                                      color: isSelected
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurfaceVariant,
-                                    ),
-                                    Text(
-                                      label,
-                                      style: TextStyle(
-                                        color: colorScheme.onSurface,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-                          return items;
-                        },
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minWidth: buttonMinSize,
-                            minHeight: buttonMinSize,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Icon(
-                              Icons.subtitles_rounded,
-                              size: controlIconSize,
-                              color:
-                                  selectedSubtitleLanguage != null &&
-                                      selectedSubtitleLanguage != 'none'
-                                  ? colorScheme.primary
-                                  : Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (canSelectSubtitles) SizedBox(width: buttonGap),
+                    SceneSubtitleMenu(
+                      controller: controller,
+                      scene: scene,
+                      onSubtitleSelected: onSubtitleSelected,
+                      onInteract: onInteract,
+                    ),
+                    SizedBox(width: buttonGap),
                     PopupMenuButton<double>(
                       tooltip: context.l10n.common_playback_speed,
                       initialValue: playbackSpeed,

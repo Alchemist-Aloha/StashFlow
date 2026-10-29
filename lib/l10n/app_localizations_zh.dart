@@ -9,6 +9,64 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get local_captions_title => '设备端字幕';
+
+  @override
+  String get local_captions_help =>
+      '下载语音模型和匹配的翻译模型。音频和文本仅在此设备上处理。下载可能消耗移动数据；启动和跳转后需要准备时间。';
+
+  @override
+  String get local_captions_speech_models => '语音模型';
+
+  @override
+  String get local_captions_translation_models => '翻译模型';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size MB · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => '中文（简体）';
+
+  @override
+  String get local_captions_select => '使用模型';
+
+  @override
+  String get local_captions_model_error => '模型操作失败。请检查存储空间和网络连接后重试。';
+
+  @override
+  String get local_captions_mismatch => '语音模型和翻译模型必须使用相同的源语言。';
+
+  @override
+  String get local_captions_transcribe => '转录音频';
+
+  @override
+  String get local_captions_translate => '翻译音频';
+
+  @override
+  String get local_captions_preparing => '正在准备设备端字幕…';
+
+  @override
+  String get local_captions_failed => '字幕生成失败。请从字幕菜单重试。';
+
+  @override
+  String get local_captions_unsupported => '设备端字幕需要原生播放器。不支持网页和投屏。';
+
+  @override
+  String get local_captions_manage => '管理字幕模型';
+
+  @override
   String get video_debug_format => 'MIME 类型';
 
   @override
@@ -3552,6 +3610,64 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   AppLocalizationsZhHans() : super('zh_Hans');
 
   @override
+  String get local_captions_title => '设备端字幕';
+
+  @override
+  String get local_captions_help =>
+      '下载语音模型和匹配的翻译模型。音频和文本仅在此设备上处理。下载可能消耗移动数据；启动和跳转后需要准备时间。';
+
+  @override
+  String get local_captions_speech_models => '语音模型';
+
+  @override
+  String get local_captions_translation_models => '翻译模型';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size MB · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => '中文（简体）';
+
+  @override
+  String get local_captions_select => '使用模型';
+
+  @override
+  String get local_captions_model_error => '模型操作失败。请检查存储空间和网络连接后重试。';
+
+  @override
+  String get local_captions_mismatch => '语音模型和翻译模型必须使用相同的源语言。';
+
+  @override
+  String get local_captions_transcribe => '转录音频';
+
+  @override
+  String get local_captions_translate => '翻译音频';
+
+  @override
+  String get local_captions_preparing => '正在准备设备端字幕…';
+
+  @override
+  String get local_captions_failed => '字幕生成失败。请从字幕菜单重试。';
+
+  @override
+  String get local_captions_unsupported => '设备端字幕需要原生播放器。不支持网页和投屏。';
+
+  @override
+  String get local_captions_manage => '管理字幕模型';
+
+  @override
   String get video_debug_format => 'MIME 类型';
 
   @override
@@ -7093,6 +7209,64 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 /// The translations for Chinese, using the Han script (`zh_Hant`).
 class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
+
+  @override
+  String get local_captions_title => '裝置端字幕';
+
+  @override
+  String get local_captions_help =>
+      '下載語音模型與相符的翻譯模型。音訊與文字僅在此裝置上處理。下載可能使用行動數據；啟動與跳轉後需要準備時間。';
+
+  @override
+  String get local_captions_speech_models => '語音模型';
+
+  @override
+  String get local_captions_translation_models => '翻譯模型';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size MB · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => '中文（簡體）';
+
+  @override
+  String get local_captions_select => '使用模型';
+
+  @override
+  String get local_captions_model_error => '模型操作失敗。請檢查儲存空間與網路連線後重試。';
+
+  @override
+  String get local_captions_mismatch => '語音模型與翻譯模型必須使用相同的來源語言。';
+
+  @override
+  String get local_captions_transcribe => '轉錄音訊';
+
+  @override
+  String get local_captions_translate => '翻譯音訊';
+
+  @override
+  String get local_captions_preparing => '正在準備裝置端字幕…';
+
+  @override
+  String get local_captions_failed => '字幕產生失敗。請從字幕選單重試。';
+
+  @override
+  String get local_captions_unsupported => '裝置端字幕需要原生播放器。不支援網頁與投放。';
+
+  @override
+  String get local_captions_manage => '管理字幕模型';
 
   @override
   String get video_debug_format => 'MIME 類型';

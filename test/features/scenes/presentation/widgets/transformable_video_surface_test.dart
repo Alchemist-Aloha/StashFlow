@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/local_captions_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/transformable_video_surface.dart';
+
+class _NoCaptions extends LocalCaptionsNotifier {
+  @override
+  LocalCaptions build() => const LocalCaptions();
+}
+
+class _CaptionTestApp extends StatelessWidget {
+  const _CaptionTestApp({required this.home});
+  final Widget home;
+  @override
+  Widget build(BuildContext context) => ProviderScope(
+    overrides: [localCaptionsProvider.overrideWith(_NoCaptions.new)],
+    child: MaterialApp(home: home),
+  );
+}
 
 class ManualMockVideoController extends Mock implements VideoController {
   @override
@@ -88,7 +105,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
+      _CaptionTestApp(
         home: Scaffold(
           body: Center(
             child: SizedBox(
@@ -126,7 +143,7 @@ void main() {
       final controller = ManualMockVideoController();
 
       await tester.pumpWidget(
-        MaterialApp(
+        _CaptionTestApp(
           home: Scaffold(
             body: Center(
               child: SizedBox(

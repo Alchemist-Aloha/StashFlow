@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -45,6 +46,17 @@ StashMediaHandler _buildMediaHandler() => StashMediaHandler();
 Future<void> main() async {
   final startupStopwatch = Stopwatch()..start();
   WidgetsFlutterBinding.ensureInitialized();
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks([
+      'CTranslate2',
+      'SentencePiece',
+      'sherpa-onnx',
+      'ONNX Runtime',
+      'Silero VAD',
+      'Whisper',
+      'OPUS-MT',
+    ], await rootBundle.loadString('asset/licenses/local_captions.txt'));
+  });
 
   // TEMP perf audit hook (revert after emulator profiling).
   if (kProfileMode) {

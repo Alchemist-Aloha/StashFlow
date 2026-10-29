@@ -9,6 +9,68 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get local_captions_title => 'Sottotitoli sul dispositivo';
+
+  @override
+  String get local_captions_help =>
+      'Scarica modelli vocali e di traduzione compatibili. Audio e testo restano su questo dispositivo. I download possono usare dati mobili; avvio e salti richiedono preparazione.';
+
+  @override
+  String get local_captions_speech_models => 'Modelli vocali';
+
+  @override
+  String get local_captions_translation_models => 'Modelli di traduzione';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size MB · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => 'Cinese semplificato';
+
+  @override
+  String get local_captions_select => 'Usa modello';
+
+  @override
+  String get local_captions_model_error =>
+      'Operazione non riuscita. Controlla spazio e connessione, poi riprova.';
+
+  @override
+  String get local_captions_mismatch =>
+      'I modelli vocali e di traduzione devono avere la stessa lingua di origine.';
+
+  @override
+  String get local_captions_transcribe => 'Trascrivi audio';
+
+  @override
+  String get local_captions_translate => 'Traduci audio';
+
+  @override
+  String get local_captions_preparing => 'Preparazione dei sottotitoli locali…';
+
+  @override
+  String get local_captions_failed =>
+      'Sottotitoli non riusciti. Riprova dal menu dei sottotitoli.';
+
+  @override
+  String get local_captions_unsupported =>
+      'I sottotitoli locali richiedono un lettore nativo. Web e trasmissione remota non sono supportati.';
+
+  @override
+  String get local_captions_manage => 'Gestisci modelli dei sottotitoli';
+
+  @override
   String get video_debug_format => 'Tipo MIME';
 
   @override

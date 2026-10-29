@@ -8,7 +8,28 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/video_p
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/playback_settings_page.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 
-import '../../../../../helpers/test_helpers.dart';
+import '../../../../../helpers/test_helpers.dart' as helpers;
+import 'package:stash_app_flutter/features/scenes/presentation/providers/local_caption_settings.dart';
+
+class _NoDownloadedModels extends LocalCaptionSettingsNotifier {
+  @override
+  LocalCaptionSettings build() => const LocalCaptionSettings(loading: false);
+}
+
+Future<void> pumpTestWidget(
+  WidgetTester tester, {
+  SharedPreferences? prefs,
+  required Widget child,
+  List<dynamic> overrides = const [],
+}) => helpers.pumpTestWidget(
+  tester,
+  prefs: prefs,
+  child: child,
+  overrides: [
+    localCaptionSettingsProvider.overrideWith(_NoDownloadedModels.new),
+    ...overrides,
+  ],
+);
 
 void main() {
   late SharedPreferences prefs;

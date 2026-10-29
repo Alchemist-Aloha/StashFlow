@@ -6,6 +6,8 @@ import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'
+    show UncontrolledProviderScope;
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -24,6 +26,7 @@ import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
 import 'player_view_mode.dart';
 import 'player_settings.dart';
+import '../widgets/local_caption_overlay.dart';
 import '../widgets/desktop_pip_window_stub.dart'
     if (dart.library.io) '../widgets/desktop_pip_window.dart';
 import '../../../../core/utils/pip_mode.dart';
@@ -921,6 +924,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     final activeSceneId = state.activeScene?.id;
     return DesktopPipPlaybackSource(
       controller: controller,
+      subtitleOverlay: UncontrolledProviderScope(
+        container: ref.container,
+        child: GeneratedCaptionOverlay(player: controller.player),
+      ),
       canPlayPrevious:
           findQueuePlaybackTarget(
             queueState: queueState,

@@ -9,6 +9,68 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get local_captions_title => 'Субтитры на устройстве';
+
+  @override
+  String get local_captions_help =>
+      'Загрузите речевую модель и совместимую модель перевода. Звук и текст остаются на этом устройстве. Загрузка может использовать мобильный интернет; запуск и перемотка требуют подготовки.';
+
+  @override
+  String get local_captions_speech_models => 'Речевые модели';
+
+  @override
+  String get local_captions_translation_models => 'Модели перевода';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size МБ · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => 'Китайский (упрощённый)';
+
+  @override
+  String get local_captions_select => 'Использовать модель';
+
+  @override
+  String get local_captions_model_error =>
+      'Операция с моделью не удалась. Проверьте память и подключение, затем повторите.';
+
+  @override
+  String get local_captions_mismatch =>
+      'Речевая модель и модель перевода должны иметь один исходный язык.';
+
+  @override
+  String get local_captions_transcribe => 'Распознать речь';
+
+  @override
+  String get local_captions_translate => 'Перевести речь';
+
+  @override
+  String get local_captions_preparing => 'Подготовка локальных субтитров…';
+
+  @override
+  String get local_captions_failed =>
+      'Не удалось создать субтитры. Повторите в меню субтитров.';
+
+  @override
+  String get local_captions_unsupported =>
+      'Локальным субтитрам нужен нативный плеер. Веб и трансляция на другие устройства не поддерживаются.';
+
+  @override
+  String get local_captions_manage => 'Управление моделями субтитров';
+
+  @override
   String get video_debug_format => 'Тип MIME';
 
   @override

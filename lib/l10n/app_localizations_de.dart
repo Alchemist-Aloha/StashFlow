@@ -9,6 +9,69 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get local_captions_title => 'Untertitel auf dem Gerät';
+
+  @override
+  String get local_captions_help =>
+      'Sprachmodelle und passende Übersetzungsmodelle herunterladen. Audio und Text bleiben auf diesem Gerät. Downloads können mobile Daten nutzen; Start und Suchsprünge benötigen Vorbereitungszeit.';
+
+  @override
+  String get local_captions_speech_models => 'Sprachmodelle';
+
+  @override
+  String get local_captions_translation_models => 'Übersetzungsmodelle';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size MB · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => 'Chinesisch (vereinfacht)';
+
+  @override
+  String get local_captions_select => 'Modell verwenden';
+
+  @override
+  String get local_captions_model_error =>
+      'Modellaktion fehlgeschlagen. Speicher und Verbindung prüfen und erneut versuchen.';
+
+  @override
+  String get local_captions_mismatch =>
+      'Sprach- und Übersetzungsmodell müssen dieselbe Ausgangssprache verwenden.';
+
+  @override
+  String get local_captions_transcribe => 'Audio transkribieren';
+
+  @override
+  String get local_captions_translate => 'Audio übersetzen';
+
+  @override
+  String get local_captions_preparing =>
+      'Lokale Untertitel werden vorbereitet…';
+
+  @override
+  String get local_captions_failed =>
+      'Untertitel fehlgeschlagen. Im Untertitelmenü erneut versuchen.';
+
+  @override
+  String get local_captions_unsupported =>
+      'Lokale Untertitel benötigen einen nativen Player. Web und Casting werden nicht unterstützt.';
+
+  @override
+  String get local_captions_manage => 'Untertitelmodelle verwalten';
+
+  @override
   String get video_debug_format => 'MIME-Typ';
 
   @override
