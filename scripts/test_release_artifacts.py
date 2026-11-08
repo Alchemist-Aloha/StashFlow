@@ -100,7 +100,7 @@ class ReleaseArtifactsTest(unittest.TestCase):
             root = Path(directory)
             for version in ["1.38.1+110", "1.39.0-beta.1"]:
                 (root / "pubspec.yaml").write_text(f"version: {version}\n")
-                for suffix in ["", "-rc", "-nightly"]:
+                for suffix in ["", "-nightly"]:
                     with self.subTest(version=version, suffix=suffix):
                         env_file = root / "env"
                         env_file.write_text("")

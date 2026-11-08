@@ -216,7 +216,6 @@ GitHub Actions under `.github/workflows/` build and publish every platform:
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | `release.yml` | Tag push `v*` | Stable GitHub Release |
-| `release-candidate.yml` | Push to `main` | Prerelease under the rolling `release-candidate` tag |
 | `nightly-release.yml` | Push to `dev` | Nightly prerelease under the rolling `nightly` tag |
 | `reusable-release.yml` | Called by the above | Build matrix: android, windows, linux, macos, web |
 
@@ -226,8 +225,8 @@ Linux x64 and ARM64 (`.zip` + `.deb` + `.AppImage` + `.pkg.tar.zst`), macOS Appl
 ARM64 Dart rather than using an x64 SDK archive. Desktop packaging checks binary architectures.
 
 Stable artifact names retain the full `pubspec.yaml` version, including the build number, using
-`StashFlow-<version>-<platform>[-<arch>].<ext>`. Nightly and release-candidate assets use fixed
-`nightly` and `rc` names. Linux distribution packages include `.sha256` checksum files.
+`StashFlow-<version>-<platform>[-<arch>].<ext>`. Nightly assets use fixed `nightly` names.
+Linux distribution packages include `.sha256` checksum files.
 The current Linux/Android/web CI host is Ubuntu 26.04; check `reusable-release.yml` for the exact
 runner and toolchain pins before reproducing a release.
 
