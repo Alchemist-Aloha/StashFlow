@@ -8,6 +8,7 @@ Welcome to the **StashFlow** wiki — a modern, multi-platform client for your [
 |------|-------------|
 | [Installation](Installation) | Install StashFlow on Android, Desktop (Windows/macOS/Linux), or Web |
 | [Settings Reference](Settings-Reference) | Every settings page and option explained |
+| [Transcription and Translation](Transcription-and-Translation) | Generate on-device subtitles, choose models, and translate speech |
 | [Building from Source](Building-from-Source) | Developer guide: build, package, and test StashFlow |
 | [Mobile Usage & Gestures](Mobile-Usage-Gestures) | Touch gestures and controls on Android |
 | [Desktop Usage & Key Bindings](Desktop-Usage-Key-Bindings) | Keyboard shortcuts for Windows, macOS, Linux, and Web |
@@ -28,6 +29,7 @@ It runs on **Android**, **Windows**, **macOS**, **Linux**, and the **Web**.
 
 - 📱 **Adaptive UI** — mobile-first on phones; navigation rail, wide grids, hover feedback, and keyboard shortcuts on desktop and web
 - 🎬 **Playback** — autoplay queue continuity, next/previous navigation, subtitles and styling, playback speed, PiP (Android and desktop) and background audio (Android), casting (prefer Chromecast), and a mini-player
+- 💬 **On-device subtitles** — CPU-only speech transcription and optional translation; see [Transcription and Translation](Transcription-and-Translation) for models and setup
 - 🖼️ **Image viewer** — swipe navigation, pinch/double-tap zoom, slideshow, and inline rating
 - 🎞️ **Media browsing** — Scenes, Markers, Images, Galleries, Performers, Studios, Tags, and Groups
 - 🔎 **Filtering & sorting** — typed filters with advanced operators, per-page defaults, and server-backed saved presets
@@ -44,4 +46,4 @@ It runs on **Android**, **Windows**, **macOS**, **Linux**, and the **Web**.
 - [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) — pre-built APKs, desktop installers, and Linux packages
 - [Live Web App](https://alchemist-aloha.github.io/StashFlow/) — demo build (API-key auth only)
 - [Issue Tracker](https://github.com/Alchemist-Aloha/StashFlow/issues)
-- [License (GPL v3)](../../LICENSE)
+- [License (GPL v3)](https://github.com/Alchemist-Aloha/StashFlow/blob/dev/LICENSE)

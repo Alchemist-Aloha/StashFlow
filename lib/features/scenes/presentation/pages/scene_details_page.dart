@@ -1536,59 +1536,97 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         ? marker.screenshot
         : marker.preview;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-          child: SizedBox(
-            width: 96,
-            height: 54,
-            child: imageUrl?.isNotEmpty == true
-                ? StashImage(imageUrl: imageUrl, fit: BoxFit.cover)
-                : ColoredBox(
-                    color: context.colors.surfaceVariant,
-                    child: Icon(
-                      Icons.bookmark_outline,
-                      color: context.colors.onSurfaceVariant,
+    return InkWell(
+      onTap: () => _jumpToMarker(scene, marker),
+      borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+            child: SizedBox(
+              width: 96,
+              height: 54,
+              child: imageUrl?.isNotEmpty == true
+                  ? StashImage(imageUrl: imageUrl, fit: BoxFit.cover)
+                  : ColoredBox(
+                      color: context.colors.surfaceVariant,
+                      child: Icon(
+                        Icons.bookmark_outline,
+                        color: context.colors.onSurfaceVariant,
+                      ),
                     ),
+            ),
+          ),
+          const SizedBox(width: AppTheme.spacingSmall),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  marker.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-          ),
-        ),
-        const SizedBox(width: AppTheme.spacingSmall),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                marker.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                _formatMarkerRange(marker),
-                style: context.textTheme.bodySmall?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+                const SizedBox(height: 2),
+                Text(
+                  _formatMarkerRange(marker),
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        IconButton(
-          tooltip: context.l10n.scene_details_delete_marker_tooltip(
-            marker.title,
+          IconButton(
+            tooltip: context.l10n.scene_details_delete_marker_tooltip(
+              marker.title,
+            ),
+            icon: const Icon(Icons.delete_outline),
+            color: context.colors.error,
+            onPressed: () =>
+                _showDeleteMarkerDialog(scene: scene, marker: marker),
           ),
-          icon: const Icon(Icons.delete_outline),
-          color: context.colors.error,
-          onPressed: () =>
-              _showDeleteMarkerDialog(scene: scene, marker: marker),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  Future<void> _jumpToMarker(Scene scene, SceneMarker marker) async {
+    final position = Duration(milliseconds: (marker.seconds * 1000).round());
+    try {
+      final notifier = ref.read(playerStateProvider.notifier);
+      if (ref.read(playerStateProvider).activeScene?.id == scene.id) {
+        await notifier.seek(position);
+      } else {
+        final choice = await ref.read(streamResolverProvider)(scene);
+        if (!mounted) return;
+        if (choice == null) throw StateError('No stream URL found');
+        await notifier.playScene(
+          scene,
+          choice.url,
+          mimeType: choice.mimeType,
+          streamLabel: choice.label,
+          streamSource: 'manual-start',
+          httpHeaders: ref.read(mediaPlaybackHeadersProvider),
+          initialPosition: position,
+        );
+      }
+    } on Object catch (e, stackTrace) {
+      AppLogStore.instance.addError(
+        'jumpToMarker',
+        e,
+        stackTrace,
+        source: 'scene_details_page',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.common_error(e.toString()))),
+      );
+    }
   }
 
   String _formatMarkerRange(SceneMarker marker) {

@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 /// Playback state shared with the native desktop PiP window implementation.
@@ -7,8 +7,10 @@ class DesktopPipPlaybackSource {
     required this.controller,
     required this.canPlayPrevious,
     required this.canPlayNext,
+    this.subtitleOverlay,
   });
 
+  final Widget? subtitleOverlay;
   final VideoController controller;
   final bool canPlayPrevious;
   final bool canPlayNext;

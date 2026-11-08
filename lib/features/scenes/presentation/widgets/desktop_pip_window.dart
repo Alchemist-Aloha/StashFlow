@@ -122,8 +122,10 @@ class DesktopPipPlaybackSource {
     required this.controller,
     required this.canPlayPrevious,
     required this.canPlayNext,
+    this.subtitleOverlay,
   });
 
+  final Widget? subtitleOverlay;
   final VideoController controller;
   final bool canPlayPrevious;
   final bool canPlayNext;
@@ -383,6 +385,8 @@ class _DesktopPipPlayerWindowState extends State<_DesktopPipPlayerWindow> {
             pauseUponEnteringBackgroundMode: false,
           ),
         ),
+        if (source.subtitleOverlay != null)
+          Positioned.fill(child: source.subtitleOverlay!),
         IgnorePointer(
           ignoring: !_showControls,
           child: AnimatedOpacity(

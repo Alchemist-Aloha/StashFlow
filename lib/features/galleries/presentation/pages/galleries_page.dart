@@ -25,6 +25,7 @@ import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 
@@ -201,6 +202,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   @override
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
+    final imagesTabVisible = ref
+        .watch(navigationTabsProvider)
+        .any((tab) => tab.type == NavigationTabType.images && tab.visible);
     final isGridView = ref.watch(
       gridLayoutSettingProvider(GridLayoutSetting.gallery),
     );
@@ -290,14 +294,15 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
           icon: const Icon(Icons.bookmarks_outlined),
           onPressed: _showSavedFilterDialog,
         ),
-        IconButton(
-          icon: const Icon(Icons.image),
-          tooltip: context.l10n.galleries_all_images,
-          onPressed: () {
-            ref.read(imageFilterStateProvider.notifier).clear();
-            context.go('/galleries/images');
-          },
-        ),
+        if (!imagesTabVisible)
+          IconButton(
+            icon: const Icon(Icons.image),
+            tooltip: context.l10n.galleries_all_images,
+            onPressed: () {
+              ref.read(imageFilterStateProvider.notifier).clear();
+              context.go('/galleries/images');
+            },
+          ),
       ],
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: _onSearchChanged,

@@ -33,6 +33,7 @@ import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'transformable_video_surface.dart';
+import 'video_controls/scene_subtitle_menu.dart';
 
 class FullScreenMode extends Notifier<bool> {
   @override
@@ -1168,6 +1169,13 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  SceneSubtitleMenu(
+                                    controller: controller,
+                                    scene: widget.scene,
+                                  ),
+                                  SizedBox(
+                                    height: context.dimensions.spacingSmall,
+                                  ),
                                   FeedActionMenu(actions: widget.actions),
                                   SizedBox(
                                     height: context.dimensions.spacingSmall,

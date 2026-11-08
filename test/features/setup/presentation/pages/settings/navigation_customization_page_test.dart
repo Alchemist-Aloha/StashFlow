@@ -34,16 +34,16 @@ void main() {
           );
           await tester.pumpAndSettle();
           await tester.scrollUntilVisible(
-            find.byKey(const ValueKey('images')),
+            find.byKey(const ValueKey('markers')),
             100,
           );
           expect(find.byType(SettingsPanelCard), findsOneWidget);
-          expect(find.byKey(const ValueKey('images')), findsOneWidget);
+          expect(find.byKey(const ValueKey('markers')), findsOneWidget);
           expect(
             tester
                 .widget<Switch>(
                   find.descendant(
-                    of: find.byKey(const ValueKey('images')),
+                    of: find.byKey(const ValueKey('markers')),
                     matching: find.byType(Switch),
                   ),
                 )
@@ -112,6 +112,22 @@ void main() {
               .cast<Map<String, dynamic>>();
       expect(
         updated.singleWhere((tab) => tab['id'] == 'images')['visible'],
+        isTrue,
+      );
+      final markers = find.byKey(const ValueKey('markers'));
+      await tester.scrollUntilVisible(markers, 100);
+      final markerSwitch = find.descendant(
+        of: markers,
+        matching: find.byType(Switch),
+      );
+      expect(tester.widget<Switch>(markerSwitch).value, isFalse);
+      await tester.tap(markerSwitch);
+      await tester.pumpAndSettle();
+      final savedMarkers =
+          (jsonDecode(prefs.getString('navigation_tabs_config')!) as List)
+              .cast<Map<String, dynamic>>();
+      expect(
+        savedMarkers.singleWhere((tab) => tab['id'] == 'markers')['visible'],
         isTrue,
       );
       expect(tester.takeException(), isNull);

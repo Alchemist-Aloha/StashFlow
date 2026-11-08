@@ -7,6 +7,7 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import '../../widgets/settings_page_shell.dart';
+import '../../widgets/local_caption_settings_section.dart';
 
 /// Persistent playback preferences, including native mpv output and decoding.
 class PlaybackSettingsPage extends ConsumerStatefulWidget {
@@ -296,6 +297,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                       ],
                     ),
                   ),
+                  SizedBox(height: context.dimensions.spacingLarge),
+                  const LocalCaptionSettingsSection(),
                   SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_playback_seek,

@@ -66,6 +66,10 @@ dependencies:
   share_plus: ^13.0.0
   json_annotation: ^4.12.0
   cupertino_icons: ^2.0.0
+  sherpa_onnx: ^2.0.1
+  crypto: ^3.0.8
+  stashflow_translation:
+    path: packages/stashflow_translation
 
 dev_dependencies:
   msix: ^3.18.0
@@ -122,6 +126,7 @@ flutter:
       fonts:
         - asset: asset/fonts/jetbrains_mono/JetBrainsMono.ttf
   assets:
+    - asset/licenses/local_captions.txt
     - asset/fonts/manrope/OFL.txt
     - asset/fonts/outfit/OFL.txt
     - asset/fonts/space_grotesk/OFL.txt

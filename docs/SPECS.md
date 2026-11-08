@@ -143,7 +143,7 @@ states, and overlays must retain accessible contrast.
 must preserve feature state while switching branches and keep the global player
 outside individual route lifecycles.
 
-The customizable navigation model contains seven tab types:
+The customizable navigation model contains eight tab types:
 
 - Scenes
 - Performers
@@ -152,8 +152,10 @@ The customizable navigation model contains seven tab types:
 - Galleries
 - Groups
 - Images
+- Markers
 
-Groups and Images are hidden by default. Users may reorder tabs and change
+Groups, Images, and Markers are hidden by default, including when absent from
+an older saved configuration. Users may reorder tabs and change
 visibility, but at least one usable destination must remain. UI indices must map
 explicitly to the router's fixed branch indices. Re-selecting an active top-level destination
 scrolls its primary list to the top rather than duplicating the route.
@@ -161,6 +163,12 @@ Images reuses the existing `/galleries/images` list and fullscreen child routes
 in its own shell branch, retaining saved tab order and existing image links.
 When Images is hidden, those routes retain Galleries as the selected visible
 navigation destination when available.
+Markers likewise owns a shell branch at the existing `/scenes/markers` path;
+when hidden, it selects Scenes when available. Its tab visibility and order
+persist through Customize Tabs, and re-selecting it scrolls the list to the top.
+The Scenes action-pill Markers shortcut and Galleries action-pill All Images
+shortcut appear only while their corresponding tab is hidden. Changing tab
+visibility updates these shortcuts without reopening the list page.
 
 Canonical implementation:
 
@@ -392,6 +400,11 @@ Layout contract:
   available.
 - Loading or failure of a secondary section must not hide the primary scene.
 
+Scene marker rows jump playback to the marker's start time, preserving fractional
+seconds. If the scene is not active, selecting a marker starts it at that time
+instead of its saved resume position. The separate delete action only opens
+confirmation and must not seek playback.
+
 The scene media section exposes cover and preview content only when available.
 Cover images open the dedicated fullscreen cover viewer with zoom/pan and a
 predictable exit gesture/action.
@@ -538,6 +551,98 @@ It distinguishes source/output frame rates and decoder/output dropped frames;
 unsupported metrics are shown as unavailable, not zero. Startup and prewarm
 latencies retain their existing session meaning. The panel never displays media
 URLs or authentication headers.
+
+### On-device transcription and translation
+
+Playback Settings provides searchable Hub catalogs, explicit cancellable downloads,
+and installed-model selection/removal. Search results fill the available search
+view, resizing above the mobile keyboard rather than using a fixed screen-height
+fraction. Public repository discovery is paginated
+and scoped to known sherpa-onnx Whisper, transducer, SenseVoice and Paraformer
+export conventions, plus CTranslate2 Marian OPUS-MT language pairs; this is not
+support for arbitrary Hugging Face architectures. Selecting a repository inspects
+its layout and pins its revision, file sizes, SHA-256 hashes, languages and license
+before download. Unsupported layouts are rejected; only complete, atomically
+installed models are usable. Existing snapshots remain selectable offline, and
+a repository already installed reuses that snapshot until removed. Model cards
+remain with downloaded files; large models may exceed device memory. Selections,
+validated manifests and inference options are backed up, never weights or text.
+
+The subtitle menu offers one Transcribe action, opening a transcription dialog
+with translation as an optional switch, not a separate mode selector or menu
+action. Model management is available from the dialog and Playback Settings,
+not as a subtitle-menu action. The dialog remains accessible without downloaded
+models so users can reach model management; Apply requires installed models.
+Source and output language lists support searching localized names and language
+codes. Speech and translation models can be inspected and downloaded directly
+inside the dialog using the shared catalog, with progress, cancellation and
+error recovery. Downloads install weights but stage model selection in the
+dialog until Apply; cancelling the dialog retains completed downloads, not
+configuration changes. Apply is disabled while models are loading or a download
+is in progress. The responsive dialog keeps speech and optional translation
+controls separate from collapsed advanced tuning. Missing-model download panels
+open automatically; clearly named panels distinguish speech from translation.
+Expanded download sections stretch to the full form width with scalable vertical
+padding, and the desktop dialog allows a wider model-management area. Their
+height follows the model details and actions rather than a clipped fixed box.
+Progress and cancellation remain available even if translation is collapsed.
+Content, long labels, and actions adapt to narrow widths, large UI/system text,
+landscape and keyboard insets. Actions stay below the scrollable form when
+height permits and join its scroll area on short viewports. Model catalogs
+scroll their loading/error/retry states as well as results.
+The dialog stages speech-model, source/output-language, preferred downloaded
+translation-model, ASR-thread (1–8), audio-window (4–12 seconds), VAD-threshold
+(0.2–0.8), subtitle-delay (±5 seconds) and bilingual-display settings. Cancel
+changes neither preferences nor active inference; Apply commits one configuration.
+The next dialog restores the last applied models and inference options, including
+the translation switch and preferred model when applying transcription; these
+survive app restarts. Existing saved options without the switch default to
+transcription without translation.
+Multilingual Whisper, including tiny, detects language per VAD phrase when Auto
+is selected; English-only `.en` exports do not. SenseVoice also supports detection
+for its trained languages. Short/noisy/mixed-language phrases may need a fixed
+language. A fixed source language disables automatic language detection and
+its dialog status; recognizer metadata cannot override the chosen language or
+translation routing. Selecting Auto enables detection again when applied.
+Offline recognizers use phrase-level VAD timing, not token timestamps.
+Translation lazily loads one downloaded Marian model matching each phrase's
+source and selected output language. A missing pair stops with a localized recovery
+message, never a wrong-language fallback; same-language output passes through.
+
+The shared subtitle menu is available even without server captions, including
+the feed. Transcription, with or without translation, is opt-in and session-scoped and disables
+the selected server subtitle track. None or selecting a server track stops
+generation. Web and casting cannot generate subtitles. Native inline,
+fullscreen, feed and PiP surfaces share timed Flutter-rendered cues and existing
+subtitle font, alignment and position preferences. Server and generated captions
+use one shared text style and padding recipe; the configured font size is scaled
+once by the UI scale, without a server-subtitle-only multiplier. Both use the
+ambient system text scaler; media-kit's default viewport-relative subtitle
+shrinking must be overridden so external SRT and generated captions retain the
+same configured font size even in small video surfaces.
+
+A separate, silent, untimed mpv PCM decoder reads bounded configured windows
+with one-second context around them. It reuses the active media URL, headers
+and audio-track ID; it never changes audible playback settings. PCM output must
+be accepted before opening media. ASR (sherpa-onnx) and translation
+(CTranslate2/Marian with SentencePiece) run on a worker isolate. No microphone,
+cloud inference, Google ML Kit, or extra FFmpeg distribution is involved.
+Initial generation and uncached seeks show preparation status; real-time
+throughput and accuracy depend on hardware and models, not guaranteed latency.
+
+Seeks invalidate pending results. Scene/controller, audio-track, server/auth or
+model-selection or inference-option changes stop the session and clear cues; inline/fullscreen/PiP
+handoffs of the same controller do not. At most 32 windows of text are kept in
+session memory; temporary PCM is removed after each extraction. Native errors
+are replaced with localized recovery messages, never authenticated URLs or
+transcript logs. Model removal first stops inference and releases its resources.
+
+The local `packages/stashflow_translation` package builds pinned CTranslate2
+and SentencePiece sources using CMake and Dart code assets, with a CPU Ruy
+backend, no Python runtime and no bundled weights. Android retains all three
+release ABIs and its existing minimum SDK. Native changes require host smoke
+tests and split-ABI APK builds; sustained performance, GPU/driver behavior,
+mobile PiP and non-host platforms require device/platform acceptance.
 
 ### Native video output and decoding
 
@@ -914,6 +1019,11 @@ ARM64 installers allow ARM64 systems and use 64-bit installation paths. Both
 bundles must contain matching-architecture executables and DLLs, including the
 Flutter engine and bundled mpv, checked before packaging and after Fastforge's
 rebuild.
+
+The on-device translation DLL and its static CTranslate2/SentencePiece
+dependencies use the same static MSVC runtime. Windows ARM64 uses Ruy's fallback
+CPU detection because the pinned cpuinfo does not support that platform; other
+targets retain CPU detection.
 
 Windows builds require the Visual Studio C++ desktop toolchain and C++ ATL
 for the active MSVC toolset and target architecture (x86/x64 or ARM64).

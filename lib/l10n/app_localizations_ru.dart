@@ -9,6 +9,262 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get local_captions_cancel_download => 'Отменить загрузку';
+
+  @override
+  String get local_captions_download_speech => 'Скачать речевые модели';
+
+  @override
+  String get local_captions_download_translation => 'Скачать модели перевода';
+
+  @override
+  String get local_captions_advanced => 'Дополнительные настройки';
+
+  @override
+  String get local_captions_auto_model => 'Автоматически (загруженные модели)';
+
+  @override
+  String get local_captions_catalog_help =>
+      'Ищите совместимые модели Whisper, Transducer, SenseVoice, Paraformer и Marian OPUS-MT на Hugging Face. Проверьте карточку и лицензию; большие модели могут превышать объём памяти устройства.';
+
+  @override
+  String get local_captions_catalog_error =>
+      'Не удалось загрузить каталог. Проверьте подключение и повторите.';
+
+  @override
+  String get local_captions_incompatible =>
+      'Этот репозиторий не содержит совместимого формата модели.';
+
+  @override
+  String get local_captions_downloaded => 'Загруженные модели';
+
+  @override
+  String get local_captions_multilingual => 'Многоязычная';
+
+  @override
+  String get local_captions_configure => 'Распознавание и перевод';
+
+  @override
+  String get local_captions_source => 'Исходный язык';
+
+  @override
+  String get local_captions_output => 'Язык вывода';
+
+  @override
+  String get local_captions_automatic => 'Определять автоматически';
+
+  @override
+  String get local_captions_model_default => 'По умолчанию модели';
+
+  @override
+  String get local_captions_auto_help =>
+      'Многоязычные Whisper и SenseVoice определяют язык каждого речевого сегмента. Английские модели .en этого не делают. Для смешанной или очень короткой речи может потребоваться указать язык.';
+
+  @override
+  String get local_captions_window => 'Окно аудио';
+
+  @override
+  String get local_captions_threads => 'Потоки распознавания речи';
+
+  @override
+  String get local_captions_threshold => 'Порог обнаружения речи';
+
+  @override
+  String get local_captions_threshold_help =>
+      'Низкие значения учитывают тихую речь; высокие отсекают больше шума.';
+
+  @override
+  String get local_captions_delay => 'Задержка субтитров';
+
+  @override
+  String get local_captions_bilingual => 'Показывать оригинал с переводом';
+
+  @override
+  String local_captions_missing_pair(String source, String target) {
+    return 'Модель $source → $target не загружена. Выберите подходящую модель перевода в настройках.';
+  }
+
+  @override
+  String local_captions_detected(String language) {
+    return 'Определённый язык: $language';
+  }
+
+  @override
+  String get local_captions_model_missing =>
+      'Загрузите речевую модель, чтобы начать.';
+
+  @override
+  String local_captions_language_name(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'af': 'африкаанс',
+      'am': 'амхарский',
+      'ar': 'арабский',
+      'as': 'ассамский',
+      'az': 'азербайджанский',
+      'ba': 'башкирский',
+      'be': 'белорусский',
+      'bg': 'болгарский',
+      'bn': 'бенгальский',
+      'bo': 'тибетский',
+      'br': 'бретонский',
+      'bs': 'боснийский',
+      'ca': 'каталанский',
+      'cs': 'чешский',
+      'cy': 'валлийский',
+      'da': 'датский',
+      'de': 'немецкий',
+      'el': 'греческий',
+      'en': 'английский',
+      'es': 'испанский',
+      'et': 'эстонский',
+      'eu': 'баскский',
+      'fa': 'персидский',
+      'fi': 'финский',
+      'fo': 'фарерский',
+      'fr': 'французский',
+      'gl': 'галисийский',
+      'gu': 'гуджарати',
+      'ha': 'хауса',
+      'haw': 'гавайский',
+      'he': 'иврит',
+      'hi': 'хинди',
+      'hr': 'хорватский',
+      'ht': 'гаитянский',
+      'hu': 'венгерский',
+      'hy': 'армянский',
+      'id': 'индонезийский',
+      'is': 'исландский',
+      'it': 'итальянский',
+      'ja': 'японский',
+      'jw': 'яванский',
+      'ka': 'грузинский',
+      'kk': 'казахский',
+      'km': 'кхмерский',
+      'kn': 'каннада',
+      'ko': 'корейский',
+      'la': 'латинский',
+      'lb': 'люксембургский',
+      'ln': 'лингала',
+      'lo': 'лаосский',
+      'lt': 'литовский',
+      'lv': 'латышский',
+      'mg': 'малагасийский',
+      'mi': 'маори',
+      'mk': 'македонский',
+      'ml': 'малаялам',
+      'mn': 'монгольский',
+      'mr': 'маратхи',
+      'ms': 'малайский',
+      'mt': 'мальтийский',
+      'my': 'бирманский',
+      'ne': 'непальский',
+      'nl': 'нидерландский',
+      'nn': 'нюнорск',
+      'no': 'норвежский',
+      'oc': 'окситанский',
+      'pa': 'панджаби',
+      'pl': 'польский',
+      'ps': 'пушту',
+      'pt': 'португальский',
+      'ro': 'румынский',
+      'ru': 'русский',
+      'sa': 'санскрит',
+      'sd': 'синдхи',
+      'si': 'сингальский',
+      'sk': 'словацкий',
+      'sl': 'словенский',
+      'sn': 'шона',
+      'so': 'сомали',
+      'sq': 'албанский',
+      'sr': 'сербский',
+      'su': 'сунданский',
+      'sv': 'шведский',
+      'sw': 'суахили',
+      'ta': 'тамильский',
+      'te': 'телугу',
+      'tg': 'таджикский',
+      'th': 'тайский',
+      'tk': 'туркменский',
+      'tl': 'филиппинский',
+      'tr': 'турецкий',
+      'tt': 'татарский',
+      'uk': 'украинский',
+      'ur': 'урду',
+      'uz': 'узбекский',
+      'vi': 'вьетнамский',
+      'yi': 'идиш',
+      'yo': 'йоруба',
+      'zh': 'китайский',
+      'yue': 'кантонский',
+      'zh_Hant': 'китайский, традиционное письмо',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get local_captions_title => 'Субтитры на устройстве';
+
+  @override
+  String get local_captions_help =>
+      'Загрузите речевую модель и совместимую модель перевода. Звук и текст остаются на этом устройстве. Загрузка может использовать мобильный интернет; запуск и перемотка требуют подготовки.';
+
+  @override
+  String get local_captions_speech_models => 'Речевые модели';
+
+  @override
+  String get local_captions_translation_models => 'Модели перевода';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size МБ · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => 'Китайский (упрощённый)';
+
+  @override
+  String get local_captions_select => 'Использовать модель';
+
+  @override
+  String get local_captions_model_error =>
+      'Операция с моделью не удалась. Проверьте память и подключение, затем повторите.';
+
+  @override
+  String get local_captions_mismatch =>
+      'Загрузите модель перевода для исходного языка и языка вывода.';
+
+  @override
+  String get local_captions_transcribe => 'Распознать речь';
+
+  @override
+  String get local_captions_translate => 'Перевести речь';
+
+  @override
+  String get local_captions_preparing => 'Подготовка локальных субтитров…';
+
+  @override
+  String get local_captions_failed =>
+      'Не удалось создать субтитры. Повторите в меню субтитров.';
+
+  @override
+  String get local_captions_unsupported =>
+      'Локальным субтитрам нужен нативный плеер. Веб и трансляция на другие устройства не поддерживаются.';
+
+  @override
+  String get local_captions_manage => 'Управление моделями субтитров';
+
+  @override
   String get video_debug_format => 'Тип MIME';
 
   @override

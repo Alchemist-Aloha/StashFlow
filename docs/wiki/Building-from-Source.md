@@ -8,7 +8,7 @@ This guide explains how to build StashFlow from source for any supported platfor
 
 | Tool | Version | Notes |
 |------|---------|-------|
-| [Flutter SDK](https://docs.flutter.dev/get-started/install) | stable channel | Bundles the Dart SDK |
+| [Flutter SDK](https://docs.flutter.dev/get-started/install) | 3.47.6 or newer | Bundles Dart; current CI pins 3.47.7 |
 | Dart SDK | `^3.11.0` | Declared in `pubspec.yaml` |
 | [Android Studio](https://developer.android.com/studio) | latest | Android SDK; StashFlow targets API 24+ |
 | [Xcode](https://developer.apple.com/xcode/) | latest | macOS builds only |
@@ -20,14 +20,25 @@ Verify your toolchain:
 flutter doctor -v
 ```
 
-All components for your target platform must show a green checkmark.
+Resolve toolchain errors for your target platform before building. `flutter doctor` does not
+check every native dependency listed below.
+
+### On-device subtitle build dependencies
+
+The local `packages/stashflow_translation` build hook compiles pinned CTranslate2 and SentencePiece
+sources. Install **CMake 3.22+**, **Git**, and a **C++17 compiler** on the build host. The first native
+build fetches upstream sources and submodules, so it requires network access. Android uses Flutter's
+configured NDK. Speech and translation inference are CPU-only; model weights are downloaded by the
+app, not bundled during the build. See the package's
+[build requirements](https://github.com/Alchemist-Aloha/StashFlow/blob/dev/packages/stashflow_translation/README.md).
 
 ### Windows build dependencies
 
 Install Visual Studio's **Desktop development with C++** workload, including
 MSVC, a Windows SDK, and C++ CMake tools. In **Individual components**, also
 select **C++ ATL for latest build tools (x86 & x64)** for the installed MSVC
-toolset (`Microsoft.VisualStudio.Component.VC.ATL`).
+toolset (`Microsoft.VisualStudio.Component.VC.ATL`). For ARM64, install the corresponding ARM64
+compiler and ATL components. Translation dependencies and the bridge use the static MSVC runtime.
 
 The Windows secure-storage plugin requires ATL even when `flutter doctor -v`
 reports a working Windows toolchain. If compilation fails with
@@ -40,9 +51,13 @@ Linux desktop builds additionally need GTK and media libraries. On Debian/Ubuntu
 
 ```bash
 sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev \
-  liblzma-dev libstdc++-12-dev libsecret-1-dev libmpv-dev \
-  libavcodec-dev libavformat-dev libavutil-dev libswresample-dev
+  liblzma-dev libstdc++-12-dev libsecret-1-dev \
+  libva-drm2 libva-x11-2 libva-wayland2 libvdpau1 libpulse0 \
+  libxss1 libxv1 libegl1 libgbm1 libwayland-egl1
 ```
+
+The pinned media-kit fork downloads, verifies, and bundles mpv and FFmpeg through its native-assets
+hook; system mpv/FFmpeg development packages and `media_kit_libs_*` packages are not required.
 
 Packaging `.deb`, `.AppImage`, and `.pkg.tar.zst` also needs `libarchive-tools`, `fakeroot`, and `zstd`.
 
@@ -153,7 +168,8 @@ flutter build macos --release
 # Output: build/macos/Build/Products/Release/StashFlow.app
 ```
 
-Zip the `.app` bundle for distribution. The build is unsigned by default.
+Zip the `.app` bundle for distribution. The build is unsigned by default. The minimum deployment
+target is macOS 13.
 
 ### Linux
 
@@ -204,9 +220,16 @@ GitHub Actions under `.github/workflows/` build and publish every platform:
 | `nightly-release.yml` | Push to `dev` | Nightly prerelease under the rolling `nightly` tag |
 | `reusable-release.yml` | Called by the above | Build matrix: android, windows, linux, macos, web |
 
-The matrix builds Android (split-per-ABI APKs), Windows (`.zip` + `.exe`), Linux (`.zip` + `.deb` +
-`.AppImage` + `.pkg.tar.zst`), macOS (`.zip`), and Web (`.zip`, also deployed to GitHub Pages).
-Artifacts follow the `StashFlow-<version>-<platform>[-<arch>].<ext>` naming convention.
+The matrix builds Android (all three split-per-ABI APKs), Windows x64 and ARM64 (`.zip` + `.exe`),
+Linux x64 and ARM64 (`.zip` + `.deb` + `.AppImage` + `.pkg.tar.zst`), macOS Apple Silicon and Intel
+(`.zip`), and Web (`.zip`, also deployed to GitHub Pages). Windows/Linux ARM64 jobs bootstrap native
+ARM64 Dart rather than using an x64 SDK archive. Desktop packaging checks binary architectures.
+
+Stable artifact names retain the full `pubspec.yaml` version, including the build number, using
+`StashFlow-<version>-<platform>[-<arch>].<ext>`. Nightly and release-candidate assets use fixed
+`nightly` and `rc` names. Linux distribution packages include `.sha256` checksum files.
+The current Linux/Android/web CI host is Ubuntu 26.04; check `reusable-release.yml` for the exact
+runner and toolchain pins before reproducing a release.
 
 ---
 

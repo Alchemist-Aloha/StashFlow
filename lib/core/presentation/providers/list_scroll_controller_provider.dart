@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum ListScrollTarget { scene, performer, studio, tag, gallery, image, group }
+enum ListScrollTarget {
+  scene,
+  performer,
+  studio,
+  tag,
+  gallery,
+  image,
+  group,
+  marker,
+}
 
 final listScrollControllerProvider =
     NotifierProvider.family<

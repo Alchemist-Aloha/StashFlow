@@ -16,6 +16,7 @@ import '../providers/video_player_provider.dart';
 import '../widgets/scene_card.dart';
 import '../widgets/tiktok_scenes_view.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 
@@ -313,6 +314,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       gridColumnSettingProvider(GridColumnSetting.scene),
     );
     final scenesAsync = ref.watch(sceneListProvider);
+    final markersTabVisible = ref
+        .watch(navigationTabsProvider)
+        .any((tab) => tab.type == NavigationTabType.markers && tab.visible);
 
     // Use select for more granular watching where possible
     final filterActive = ref.watch(
@@ -413,11 +417,12 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         icon: const Icon(Icons.bookmarks_outlined),
         onPressed: _showSavedFilterDialog,
       ),
-      IconButton(
-        tooltip: context.l10n.scenes_page_markers_tooltip,
-        icon: const Icon(Icons.sell_outlined),
-        onPressed: () => context.push('/scenes/markers'),
-      ),
+      if (!markersTabVisible)
+        IconButton(
+          tooltip: context.l10n.scenes_page_markers_tooltip,
+          icon: const Icon(Icons.sell_outlined),
+          onPressed: () => context.go('/scenes/markers'),
+        ),
     ];
 
     return ListPageScaffold<Scene>(

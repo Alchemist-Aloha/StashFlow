@@ -436,36 +436,36 @@ void main() {
   });
 
   testWidgets(
-    'hides subtitle button when no captions and caption path is null',
+    'shows subtitle generation menu when no captions and caption path is null',
     (tester) async {
       final scene = _buildScene(captions: const [], captionPath: null);
       await _pumpControls(tester, scene: scene);
 
-      expect(find.byIcon(Icons.subtitles_rounded), findsNothing);
+      expect(find.byIcon(Icons.subtitles_rounded), findsOneWidget);
     },
   );
 
   testWidgets(
-    'hides subtitle button when no captions and caption path is empty',
+    'shows subtitle generation menu when no captions and caption path is empty',
     (tester) async {
       final scene = _buildScene(captions: const [], captionPath: '   ');
       await _pumpControls(tester, scene: scene);
 
-      expect(find.byIcon(Icons.subtitles_rounded), findsNothing);
+      expect(find.byIcon(Icons.subtitles_rounded), findsOneWidget);
     },
   );
 
-  testWidgets('hides subtitle button when only vtt path is present', (
+  testWidgets('shows subtitle generation menu when only vtt path is present', (
     tester,
   ) async {
     final scene = _buildScene(captions: const [], vttPath: '/api/vtt');
     await _pumpControls(tester, scene: scene);
 
-    expect(find.byIcon(Icons.subtitles_rounded), findsNothing);
+    expect(find.byIcon(Icons.subtitles_rounded), findsOneWidget);
   });
 
   testWidgets(
-    'hides subtitle button when only caption endpoint exists but no vtt/metadata',
+    'shows subtitle generation menu when only caption endpoint exists but no vtt/metadata',
     (tester) async {
       final scene = _buildScene(
         captions: const [],
@@ -473,7 +473,7 @@ void main() {
       );
       await _pumpControls(tester, scene: scene);
 
-      expect(find.byIcon(Icons.subtitles_rounded), findsNothing);
+      expect(find.byIcon(Icons.subtitles_rounded), findsOneWidget);
     },
   );
 

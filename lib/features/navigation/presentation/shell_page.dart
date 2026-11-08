@@ -311,6 +311,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         branchToUiMap[navigationShell.currentIndex] ??
         (navigationShell.currentIndex == NavigationTabType.images.index
             ? branchToUiMap[NavigationTabType.galleries.index]
+            : navigationShell.currentIndex == NavigationTabType.markers.index
+            ? branchToUiMap[NavigationTabType.scenes.index]
             : null) ??
         0;
 
@@ -379,6 +381,15 @@ class _ShellPageState extends ConsumerState<ShellPage> {
             ref
                 .read(
                   listScrollControllerProvider(ListScrollTarget.image).notifier,
+                )
+                .scrollToTop();
+            break;
+          case NavigationTabType.markers:
+            ref
+                .read(
+                  listScrollControllerProvider(
+                    ListScrollTarget.marker,
+                  ).notifier,
                 )
                 .scrollToTop();
             break;

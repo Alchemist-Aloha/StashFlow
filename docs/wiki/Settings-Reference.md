@@ -65,6 +65,7 @@ the current **Authentication status**.
 | Setting | Default | Description |
 |---------|---------|-------------|
 | **Start Feed from random position** | Off | In Feed mode, begin each scene at a random point between 0% and 90% |
+| **Player controls auto-hide delay** | 2 seconds | 1–10 seconds before controls hide during playback |
 | **Play End Behavior** | Stop | What happens when a scene ends: `Stop`, `Loop current scene`, or `Play next scene` |
 | **Background Playback** | Off | Keep audio playing when the app is backgrounded (Android) |
 | **Native Picture-in-Picture** | Off | Show the PiP button and auto-enter PiP on background (Android); enables the PiP button on Windows, macOS, and Linux |
@@ -76,10 +77,21 @@ the current **Authentication status**.
 
 | Setting | Options / range | Default |
 |---------|-----------------|---------|
-| **Default Subtitle Language** | `None (Disabled)`, `Auto (If only one)`, English, Chinese, German, French, Spanish, Italian, Japanese, Korean | Auto |
+| **Default Subtitle Language** | `None (Disabled)`, `Auto (If only one)`, English, Chinese, German, French, Spanish, Italian, Japanese, Korean | None (Disabled) |
 | **Subtitle Font Size** | 12–32 px | 18 |
 | **Subtitle Vertical Position** | 5%–40% from the bottom | 15% |
 | **Subtitle Text Alignment** | Left / Center / Right | Center |
+
+### On-device subtitles (native playback only)
+
+Download, select, and remove speech and translation models under **On-device subtitles**.
+Choose **Transcribe audio** from the player's subtitle menu to generate captions, with optional
+translation and bilingual display. Both models run on the CPU only, without GPU acceleration or
+cloud inference. Web and casting cannot generate captions.
+
+Start with `sherpa-onnx-whisper-small` and set the spoken source language explicitly when translating.
+See **[Transcription and Translation](Transcription-and-Translation)** for setup, tuning, and
+troubleshooting. Model weights are not included in configuration backups.
 
 ### Seek interaction
 
@@ -93,13 +105,31 @@ the current **Authentication status**.
 Hidden on web. Controls the underlying mpv player used by media-kit. Selecting a value changes
 newly created controllers; restart the app to apply it everywhere.
 
-| Setting | Android | Desktop (Windows/macOS/Linux) |
-|---------|---------|-------------------------------|
-| **mpv vo** (video output) | `default`, `gpu`, `mediacodec_embed` | `default`, `libmpv` |
-| **mpv hwdec** (hardware decoding) | `default`, `no`, `auto`, `auto-safe`, `auto-copy`, `mediacodec`, `mediacodec-copy` | `default`, `no`, `auto`, `auto-safe`, `auto-copy` |
+| Setting | Android | Windows / macOS | Linux |
+|---------|---------|-----------------|-------|
+| **mpv vo** (video output) | `default`, `gpu`, `gpu-next`, `mediacodec_embed` | `default`, `libmpv` | `default`, `libmpv`, `libmpv-software` |
+| **mpv hwdec** (hardware decoding) | `default`, `no`, `auto`, `auto-safe`, `auto-copy`, `mediacodec`, `mediacodec-copy` | `default`, `no`, `auto`, `auto-safe`, `auto-copy` | `default`, `no`, `auto`, `auto-safe`, `auto-copy`, `vaapi`, `vaapi-copy`, `nvdec`, `nvdec-copy`, `vdpau-copy` |
+
+`default` preserves platform defaults. Linux's `libmpv-software` uses the software render API,
+not a standalone output driver. Hardware decoder availability depends on your GPU and drivers;
+copy-back modes can also work with software output.
 
 > Choosing **`mediacodec_embed`** for `vo` forces hardware decoding to `mediacodec`. Use
 > **`hwdec = no`** (software decoding) if a device has trouble with HEVC hardware decoders.
+
+### Rendering and custom mpv configuration
+
+Native builds offer interpolation, video synchronization, temporal scaling, upscaling,
+downscaling, chroma scaling, and debanding selectors. All preserve native defaults initially.
+Interpolation selects `display-resample` synchronization unless explicitly overridden;
+smooth interpolation is not guaranteed with every embedded renderer or display setup.
+
+The **mpv.conf** editor accepts supported playback-tuning options, one per line, up to 16,384
+characters. Custom values override the selectors. Profiles, includes, scripts, paths,
+authentication, and app-owned output/decoder/lifecycle options are rejected; the editor lists
+allowed options. Clearing and saving removes custom overrides without resetting the selectors.
+Direct MediaCodec and Linux software rendering omit rendering overrides but retain supported
+audio/cache tuning. Changes apply to newly created controllers, not existing or preloaded players.
 
 ---
 
@@ -117,6 +147,7 @@ customization, and conflict rules. This page is only shown on desktop and web.
 | **Theme Mode** | System / Light / Dark | Follows the OS by default |
 | **True Black (AMOLED)** | On / Off | Uses pure black surfaces in dark mode on OLED screens |
 | **Primary Color** | Teal, Blue, Purple, Orange, Red, Green, or a custom hex | Seeds the Material 3 palette |
+| **Font** | System, Serif, Monospace, Manrope, Outfit, Space Grotesk, Inter, Lora, JetBrains Mono | Applies throughout the app; System is the default |
 | **Global UI Scale** | 80%–150% (slider) | Scales typography and spacing across the whole app |
 
 Custom colors accept an 8-digit ARGB hex code. Theme changes apply immediately without a restart.
@@ -137,10 +168,13 @@ Choose **System Default** or one of ten languages: English, Español, 简体中�
 | **Show Random Navigation Buttons** | On | Floating "casino" buttons for random navigation on lists and details |
 | **Hide top app bar while scrolling** | Off | Collapse the app bar when scrolling down, reveal it when scrolling up |
 | **Hide scene metadata by default** | On | Show technical scene metadata only after tapping **Show metadata** |
+| **Show scene playback progress** | On | Display saved playback progress below scene thumbnails |
 | **Respect active filters for random scene** | On | Random scene navigation uses the current scene filters |
 | **Entity image filtering** | Direct entity | `Direct entity` or `Related galleries` for entity detail image grids |
 | **Gravity-controlled orientation (main pages)** | On | Let main pages rotate with the device sensor |
 | **Use actual scene video in miniplayer** | On | Show live video in the mini-player instead of a screenshot |
+| **Mini-player bottom spacer** | Off | Raise the mini-player and floating controls above overlapping taskbars; does not affect fullscreen |
+| **Mini-player bottom offset** | 64 logical px | 0–200 logical px; independent of UI scale and retained when the spacer is disabled |
 | **Customize Tabs** | — | Opens the tab reordering page (see below) |
 
 ### Customize Tabs
@@ -153,6 +187,7 @@ Reorder the visible top-level destinations and toggle each one on or off. Availa
 - Tags
 - Galleries
 - Groups **(hidden by default)**
+- Images **(hidden by default)**
 
 At least one tab must remain visible. The order here determines the numbered keyboard shortcuts
 (`Ctrl+1` … `Ctrl+9`) on desktop and web.
@@ -225,7 +260,7 @@ Cache operations run in the background and never touch unrelated settings or act
 | Item | Description |
 |------|-------------|
 | **Update Available** | Appears when a newer release exists; opens the GitHub release page |
-| **Version** | Installed version (e.g. `StashFlow 1.33.0`) |
+| **Version** | Installed app version and build information |
 | **GitHub Repository** | Opens the source repository |
 | **Report an Issue** | Opens the issue tracker |
 

@@ -9,6 +9,263 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get local_captions_cancel_download => 'Cancel download';
+
+  @override
+  String get local_captions_download_speech => 'Download speech models';
+
+  @override
+  String get local_captions_download_translation =>
+      'Download translation models';
+
+  @override
+  String get local_captions_advanced => 'Advanced settings';
+
+  @override
+  String get local_captions_auto_model => 'Automatic (downloaded models)';
+
+  @override
+  String get local_captions_catalog_help =>
+      'Browse compatible Whisper, transducer, SenseVoice, Paraformer and Marian OPUS-MT models on Hugging Face. Check the model card and license; large models may exceed device memory.';
+
+  @override
+  String get local_captions_catalog_error =>
+      'Cannot load model catalog. Check your connection and retry.';
+
+  @override
+  String get local_captions_incompatible =>
+      'This repository does not contain a compatible model layout.';
+
+  @override
+  String get local_captions_downloaded => 'Downloaded models';
+
+  @override
+  String get local_captions_multilingual => 'Multilingual';
+
+  @override
+  String get local_captions_configure => 'Transcription and translation';
+
+  @override
+  String get local_captions_source => 'Source language';
+
+  @override
+  String get local_captions_output => 'Output language';
+
+  @override
+  String get local_captions_automatic => 'Detect automatically';
+
+  @override
+  String get local_captions_model_default => 'Model default';
+
+  @override
+  String get local_captions_auto_help =>
+      'Multilingual Whisper and SenseVoice detect each speech segment. English-only .en models do not. Mixed or very short speech may need a fixed language.';
+
+  @override
+  String get local_captions_window => 'Audio window';
+
+  @override
+  String get local_captions_threads => 'Speech recognition threads';
+
+  @override
+  String get local_captions_threshold => 'Speech detection threshold';
+
+  @override
+  String get local_captions_threshold_help =>
+      'Lower values include quieter speech; higher values reject more noise.';
+
+  @override
+  String get local_captions_delay => 'Subtitle delay';
+
+  @override
+  String get local_captions_bilingual => 'Show original with translation';
+
+  @override
+  String local_captions_missing_pair(String source, String target) {
+    return 'No downloaded model for $source → $target. Choose a matching translation model in settings.';
+  }
+
+  @override
+  String local_captions_detected(String language) {
+    return 'Detected language: $language';
+  }
+
+  @override
+  String get local_captions_model_missing =>
+      'Download a speech model to begin.';
+
+  @override
+  String local_captions_language_name(String code) {
+    String _temp0 = intl.Intl.selectLogic(code, {
+      'af': 'Afrikaans',
+      'am': 'Amharic',
+      'ar': 'Arabic',
+      'as': 'Assamese',
+      'az': 'Azerbaijani',
+      'ba': 'Bashkir',
+      'be': 'Belarusian',
+      'bg': 'Bulgarian',
+      'bn': 'Bangla',
+      'bo': 'Tibetan',
+      'br': 'Breton',
+      'bs': 'Bosnian',
+      'ca': 'Catalan',
+      'cs': 'Czech',
+      'cy': 'Welsh',
+      'da': 'Danish',
+      'de': 'German',
+      'el': 'Greek',
+      'en': 'English',
+      'es': 'Spanish',
+      'et': 'Estonian',
+      'eu': 'Basque',
+      'fa': 'Persian',
+      'fi': 'Finnish',
+      'fo': 'Faroese',
+      'fr': 'French',
+      'gl': 'Galician',
+      'gu': 'Gujarati',
+      'ha': 'Hausa',
+      'haw': 'Hawaiian',
+      'he': 'Hebrew',
+      'hi': 'Hindi',
+      'hr': 'Croatian',
+      'ht': 'Haitian Creole',
+      'hu': 'Hungarian',
+      'hy': 'Armenian',
+      'id': 'Indonesian',
+      'is': 'Icelandic',
+      'it': 'Italian',
+      'ja': 'Japanese',
+      'jw': 'Javanese',
+      'ka': 'Georgian',
+      'kk': 'Kazakh',
+      'km': 'Khmer',
+      'kn': 'Kannada',
+      'ko': 'Korean',
+      'la': 'Latin',
+      'lb': 'Luxembourgish',
+      'ln': 'Lingala',
+      'lo': 'Lao',
+      'lt': 'Lithuanian',
+      'lv': 'Latvian',
+      'mg': 'Malagasy',
+      'mi': 'Māori',
+      'mk': 'Macedonian',
+      'ml': 'Malayalam',
+      'mn': 'Mongolian',
+      'mr': 'Marathi',
+      'ms': 'Malay',
+      'mt': 'Maltese',
+      'my': 'Burmese',
+      'ne': 'Nepali',
+      'nl': 'Dutch',
+      'nn': 'Norwegian Nynorsk',
+      'no': 'Norwegian',
+      'oc': 'Occitan',
+      'pa': 'Punjabi',
+      'pl': 'Polish',
+      'ps': 'Pashto',
+      'pt': 'Portuguese',
+      'ro': 'Romanian',
+      'ru': 'Russian',
+      'sa': 'Sanskrit',
+      'sd': 'Sindhi',
+      'si': 'Sinhala',
+      'sk': 'Slovak',
+      'sl': 'Slovenian',
+      'sn': 'Shona',
+      'so': 'Somali',
+      'sq': 'Albanian',
+      'sr': 'Serbian',
+      'su': 'Sundanese',
+      'sv': 'Swedish',
+      'sw': 'Swahili',
+      'ta': 'Tamil',
+      'te': 'Telugu',
+      'tg': 'Tajik',
+      'th': 'Thai',
+      'tk': 'Turkmen',
+      'tl': 'Filipino',
+      'tr': 'Turkish',
+      'tt': 'Tatar',
+      'uk': 'Ukrainian',
+      'ur': 'Urdu',
+      'uz': 'Uzbek',
+      'vi': 'Vietnamese',
+      'yi': 'Yiddish',
+      'yo': 'Yoruba',
+      'zh': 'Chinese',
+      'yue': 'Cantonese',
+      'zh_Hant': 'Traditional Chinese',
+      'other': '$code',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get local_captions_title => 'On-device subtitles';
+
+  @override
+  String get local_captions_help =>
+      'Download speech and matching translation models. Audio and text stay on this device. Downloads may use mobile data; starting and seeking need preparation time.';
+
+  @override
+  String get local_captions_speech_models => 'Speech models';
+
+  @override
+  String get local_captions_translation_models => 'Translation models';
+
+  @override
+  String local_captions_model(String model, String language) {
+    return '$model — $language';
+  }
+
+  @override
+  String local_captions_pair(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String local_captions_size(String size, String license) {
+    return '$size MB · $license';
+  }
+
+  @override
+  String get local_captions_chinese_simplified => 'Chinese (Simplified)';
+
+  @override
+  String get local_captions_select => 'Use model';
+
+  @override
+  String get local_captions_model_error =>
+      'Model operation failed. Check storage and connection, then retry.';
+
+  @override
+  String get local_captions_mismatch =>
+      'Download a translation model matching the source and output languages.';
+
+  @override
+  String get local_captions_transcribe => 'Transcribe audio';
+
+  @override
+  String get local_captions_translate => 'Translate audio';
+
+  @override
+  String get local_captions_preparing => 'Preparing on-device subtitles…';
+
+  @override
+  String get local_captions_failed =>
+      'Subtitles failed. Retry from the subtitle menu.';
+
+  @override
+  String get local_captions_unsupported =>
+      'On-device subtitles require a native player. Web and casting are not supported.';
+
+  @override
+  String get local_captions_manage => 'Manage subtitle models';
+
+  @override
   String get video_debug_format => 'MIME type';
 
   @override
