@@ -32,7 +32,10 @@ enum _MarkerSortField {
 }
 
 class SceneMarkersPage extends ConsumerStatefulWidget {
-  const SceneMarkersPage({super.key});
+  const SceneMarkersPage({super.key, this.leading});
+
+  /// Optional app-bar navigation control supplied by the containing route.
+  final Widget? leading;
 
   @override
   ConsumerState<SceneMarkersPage> createState() => _SceneMarkersPageState();
@@ -208,6 +211,7 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
         _sortField != _MarkerSortField.createdAt || !_sortDescending;
 
     return ListPageScaffold<SceneMarkerSummary>(
+      leading: widget.leading,
       gridColumnSetting: GridColumnSetting.sceneMarker,
       scrollController: ref.watch(
         listScrollControllerProvider(ListScrollTarget.marker),

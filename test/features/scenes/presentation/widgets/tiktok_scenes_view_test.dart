@@ -591,7 +591,7 @@ void main() {
               IconButton(
                 key: const Key('marker_action'),
                 onPressed: () {},
-                icon: const Icon(Icons.sell_outlined),
+                icon: const Icon(Icons.place_rounded),
               ),
             ],
           ),

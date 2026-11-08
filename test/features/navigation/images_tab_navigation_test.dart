@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/providers/list_scroll_controller_provider.dart';
+import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
     as entity;
 import 'package:stash_app_flutter/features/images/presentation/pages/image_fullscreen_page.dart';
@@ -78,6 +80,7 @@ void main() {
               MockGraphQLSceneRepository(),
             ),
             imageRepositoryProvider.overrideWithValue(images),
+            galleryListProvider.overrideWith(_EmptyGalleries.new),
           ],
           child: Consumer(
             builder: (context, ref, _) => MaterialApp.router(
@@ -108,6 +111,18 @@ void main() {
           router.routeInformationProvider.value.uri.path,
           '/galleries/images',
         );
+        final backButton = find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byType(BackButton),
+        );
+        expect(backButton, imagesVisible ? findsNothing : findsOneWidget);
+        final tabs = container.read(navigationTabsProvider.notifier);
+        await tabs.toggleTab(NavigationTabType.images, !imagesVisible);
+        await tester.pumpAndSettle();
+        expect(backButton, imagesVisible ? findsOneWidget : findsNothing);
+        await tabs.toggleTab(NavigationTabType.images, imagesVisible);
+        await tester.pumpAndSettle();
+        expect(backButton, imagesVisible ? findsNothing : findsOneWidget);
         int selectedIndex() => width < 600
             ? tester.widget<NavigationBar>(navigation).selectedIndex
             : tester.widget<NavigationRail>(navigation).selectedIndex!;
@@ -122,7 +137,7 @@ void main() {
           ).uri.path,
           '/galleries/images/image-0',
         );
-        router.pop();
+        await tester.binding.handlePopRoute();
         await tester.pumpAndSettle();
         expect(find.byType(ImageFullscreenPage), findsNothing);
         expect(selectedIndex(), 1);
@@ -137,9 +152,28 @@ void main() {
           );
           await tester.pumpAndSettle();
           expect(controller.offset, 0);
+          expect(await router.routerDelegate.popRoute(), isFalse);
+          expect(
+            router.routeInformationProvider.value.uri.path,
+            '/galleries/images',
+          );
+        } else {
+          await tester.tap(backButton);
+          await tester.pumpAndSettle();
+          expect(router.routeInformationProvider.value.uri.path, '/galleries');
+          router.go('/galleries/images');
+          await tester.pumpAndSettle();
+          await tester.binding.handlePopRoute();
+          await tester.pumpAndSettle();
+          expect(router.routeInformationProvider.value.uri.path, '/galleries');
         }
         expect(tester.takeException(), isNull);
       });
     }
   }
+}
+
+class _EmptyGalleries extends GalleryList {
+  @override
+  Future<List<Gallery>> build() async => [];
 }

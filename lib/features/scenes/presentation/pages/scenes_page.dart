@@ -420,7 +420,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       if (!markersTabVisible)
         IconButton(
           tooltip: context.l10n.scenes_page_markers_tooltip,
-          icon: const Icon(Icons.sell_outlined),
+          icon: const Icon(Icons.place_rounded),
           onPressed: () => context.go('/scenes/markers'),
         ),
     ];

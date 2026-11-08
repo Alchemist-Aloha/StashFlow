@@ -45,6 +45,7 @@ enum _ImageSortOption {
 class ImagesPage extends ConsumerStatefulWidget {
   const ImagesPage({
     super.key,
+    this.leading,
     this.title,
     this.showAppBarTitle = true,
     this.searchOnlyAppBar = false,
@@ -52,6 +53,9 @@ class ImagesPage extends ConsumerStatefulWidget {
     this.scrollController,
     this.onRefresh,
   });
+
+  /// Optional app-bar navigation control supplied by the containing route.
+  final Widget? leading;
 
   /// Optional title used when the image browser is embedded in another page.
   final String? title;
@@ -388,6 +392,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return ListPageScaffold<entity.Image>(
+      leading: widget.leading,
       gridColumnSetting: GridColumnSetting.image,
       title: widget.title ?? context.l10n.images_title,
       showAppBarTitle: widget.showAppBarTitle,

@@ -316,6 +316,16 @@ class _ShellPageState extends ConsumerState<ShellPage> {
             : null) ??
         0;
 
+    final hiddenListParent = switch (currentPath) {
+      '/scenes/markers'
+          when !branchToUiMap.containsKey(NavigationTabType.markers.index) =>
+        '/scenes',
+      '/galleries/images'
+          when !branchToUiMap.containsKey(NavigationTabType.images.index) =>
+        '/galleries',
+      _ => null,
+    };
+
     final onScenesPage = currentPath == '/scenes';
 
     final hideMiniPlayer =
@@ -560,7 +570,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
 
     return PopScope(
-      canPop: !isFullScreen,
+      canPop: !isFullScreen && hiddenListParent == null,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && isFullScreen) {
           // Back gesture was blocked because canPop=false in fullscreen mode.
@@ -572,6 +582,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           } else if (isTiktokFullScreen) {
             ref.read(fullScreenModeProvider.notifier).set(false);
           }
+        } else if (!didPop && hiddenListParent != null) {
+          context.go(hiddenListParent);
         }
       },
       child: Scaffold(

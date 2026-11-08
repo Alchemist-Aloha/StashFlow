@@ -34,6 +34,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   const ListPageScaffold({
     super.key,
     required this.title,
+    this.leading,
     this.titleTextStyle,
     this.showAppBarTitle = true,
     this.searchOnlyAppBar = false,
@@ -63,6 +64,9 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.memCacheWidthBuilder,
     this.loadingItemBuilder,
   });
+
+  /// Optional app-bar navigation control; null retains automatic leading behavior.
+  final Widget? leading;
 
   /// Page identity used for the visible title and default search-history key.
   final String title;
@@ -291,6 +295,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 
     final appBar = _FrostedAppBar(
       bar: AppBar(
+        leading: widget.leading,
         // The frosted layer behind the bar is the elevation: no surface tint
         // and no scroll lift, so the header carries one depth signal.
         backgroundColor: Colors.transparent,
