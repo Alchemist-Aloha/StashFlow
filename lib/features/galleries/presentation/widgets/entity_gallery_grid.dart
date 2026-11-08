@@ -14,7 +14,6 @@ import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../../core/utils/l10n_extensions.dart';
-import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
 import '../../domain/entities/gallery_saved_filter_config.dart';
@@ -265,18 +264,11 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
   }
 
   void _openAllEntityImages() {
-    final method = ref.read(entityImageFilterMethodSettingProvider);
-    ref.read(imageFilterStateProvider.notifier).clear();
-    ref
-        .read(imageFilterStateProvider.notifier)
-        .updateFilter(
-          imageFilterForEntityGalleries(
-            kind: widget.filterKind,
-            entityId: widget.entityId,
-            method: method,
-          ),
-        );
-    unawaited(context.push('/galleries/images'));
+    unawaited(
+      context.push(
+        '/entity-images/${widget.filterKind.name}/${Uri.encodeComponent(widget.entityId)}',
+      ),
+    );
   }
 
   @override

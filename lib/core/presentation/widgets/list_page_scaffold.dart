@@ -181,7 +181,10 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   void _measureActionPill() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final height = _actionPillKey.currentContext?.size?.height ?? 0;
+      final box = _actionPillKey.currentContext?.findRenderObject();
+      // Covered routes can build their pill without laying it out yet.
+      if (box is! RenderBox || !box.hasSize) return;
+      final height = box.size.height;
       if (height != _actionPillHeight) {
         setState(() => _actionPillHeight = height);
       }

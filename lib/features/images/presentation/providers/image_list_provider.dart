@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -7,10 +8,11 @@ import '../../domain/entities/image_filter.dart';
 import '../../data/repositories/graphql_image_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
-import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/utils/app_log_store.dart';
+import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
+import 'image_browser_context.dart';
 
 part 'image_list_provider.g.dart';
 
@@ -19,12 +21,54 @@ final imageRepositoryProvider = Provider<GraphQLImageRepository>((ref) {
   return GraphQLImageRepository(client);
 });
 
-final imageRandomSeedProvider = listRandomSeedProvider('image');
+@Riverpod(keepAlive: true, dependencies: [imageBrowserContext])
+class ImageRandomSeed extends _$ImageRandomSeed {
+  @override
+  int build() => Random().nextInt(10000000);
+
+  void next() => state = Random().nextInt(10000000);
+}
+
+/// Broadcasts confirmed edits to every live browser without refetching its query.
+final imageChangedProvider = NotifierProvider<ImageChanged, entity.Image?>(
+  ImageChanged.new,
+);
+
+class ImageChanged extends Notifier<entity.Image?> {
+  @override
+  entity.Image? build() {
+    ref.watch(imageRepositoryProvider);
+    return null;
+  }
+
+  void publish(entity.Image image) => state = image;
+
+  /// Completes independently of the viewer, but never publishes to another server.
+  Future<void> updateRating(entity.Image image, int rating) async {
+    final repository = ref.read(imageRepositoryProvider);
+    await repository.updateImageRating(image.id, rating);
+    if (ref.mounted &&
+        identical(repository, ref.read(imageRepositoryProvider))) {
+      publish(image.copyWith(rating100: rating));
+    }
+  }
+}
+
+/// Resolves library deep links outside the currently loaded page without
+/// substituting the first image in the library.
+final imageByIdProvider = FutureProvider.autoDispose
+    .family<entity.Image, String>((ref, id) {
+      final repository = ref.watch(imageRepositoryProvider);
+      final changed = ref.watch(imageChangedProvider);
+      if (changed?.id == id) return changed!;
+      return repository.getImageById(id);
+    });
 
 /// Tracks the image currently shown by the fullscreen viewer for return focus.
 final imageFullscreenCurrentIdProvider =
     NotifierProvider<ImageFullscreenCurrentId, String?>(
       ImageFullscreenCurrentId.new,
+      dependencies: [imageBrowserContextProvider],
     );
 
 /// Owns the transient fullscreen image selection shared with the source grid.
@@ -35,13 +79,16 @@ class ImageFullscreenCurrentId extends Notifier<String?> {
   void setCurrent(String imageId) => state = imageId;
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [imageBrowserContext, ImageRandomSeed])
 class ImageSort extends _$ImageSort {
   static const _sortKey = 'image_sort_field';
   static const _descKey = 'image_sort_descending';
 
   @override
   ({String? sort, bool descending, int? randomSeed}) build() {
+    if (ref.watch(imageBrowserContextProvider) != null) {
+      return (sort: 'path', descending: false, randomSeed: null);
+    }
     final prefs = ref.read(sharedPreferencesProvider);
     final sort = prefs.getString(_sortKey) ?? 'path';
     final descending = prefs.getBool(_descKey) ?? false;
@@ -57,13 +104,14 @@ class ImageSort extends _$ImageSort {
   }
 
   Future<void> saveAsDefault() async {
+    if (ref.read(imageBrowserContextProvider) != null) return;
     final prefs = ref.read(sharedPreferencesProvider);
     if (state.sort != null) await prefs.setString(_sortKey, state.sort!);
     await prefs.setBool(_descKey, state.descending);
   }
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [imageBrowserContext])
 class ImageSearchQuery extends _$ImageSearchQuery {
   @override
   String build() => '';
@@ -71,12 +119,16 @@ class ImageSearchQuery extends _$ImageSearchQuery {
   void update(String query) => state = query;
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [imageBrowserContext])
 class ImageFilterState extends _$ImageFilterState {
   static const _storageKey = 'image_filter_state';
 
   @override
   ({String? galleryId, ImageFilter filter}) build() {
+    final browser = ref.watch(imageBrowserContextProvider);
+    if (browser != null) {
+      return (galleryId: browser.galleryId, filter: const ImageFilter());
+    }
     final prefs = ref.watch(sharedPreferencesProvider);
     final jsonString = prefs.getString(_storageKey);
     if (jsonString != null) {
@@ -101,25 +153,38 @@ class ImageFilterState extends _$ImageFilterState {
     return (galleryId: null, filter: ImageFilter.empty());
   }
 
-  void setGalleryId(String? id) =>
-      state = (galleryId: id, filter: state.filter);
+  void setGalleryId(String? id) {
+    final browser = ref.read(imageBrowserContextProvider);
+    state = (
+      galleryId: browser == null ? id : browser.galleryId,
+      filter: state.filter,
+    );
+  }
+
   void updateFilter(ImageFilter filter) =>
       state = (galleryId: state.galleryId, filter: filter);
-  void clear() => state = (galleryId: null, filter: const ImageFilter());
-  void clearGalleryId() => state = (galleryId: null, filter: state.filter);
+  void clear() => state = (
+    galleryId: ref.read(imageBrowserContextProvider)?.galleryId,
+    filter: const ImageFilter(),
+  );
+  void clearGalleryId() => setGalleryId(null);
 
   Future<void> saveAsDefault() async {
     final prefs = ref.read(sharedPreferencesProvider);
+    if (ref.read(imageBrowserContextProvider) != null) return;
     await prefs.setString(_storageKey, jsonEncode(state.filter.toJson()));
   }
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [imageBrowserContext])
 class ImageOrganizedOnly extends _$ImageOrganizedOnly {
   static const _organizedKey = 'image_organized_only_v2';
 
   @override
   OrganizedFilter build() {
+    if (ref.watch(imageBrowserContextProvider) != null) {
+      return OrganizedFilter.all;
+    }
     final prefs = ref.watch(sharedPreferencesProvider);
     final val = prefs.getString(_organizedKey);
     return OrganizedFilter.values.firstWhere(
@@ -137,11 +202,48 @@ class ImageOrganizedOnly extends _$ImageOrganizedOnly {
 
   Future<void> saveAsDefault() async {
     final prefs = ref.read(sharedPreferencesProvider);
+    if (ref.read(imageBrowserContextProvider) != null) return;
     await prefs.setString(_organizedKey, state.name);
   }
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(
+  keepAlive: true,
+  dependencies: [ImageFilterState, ImageOrganizedOnly, imageBrowserContext],
+)
+ImageFilter imageEffectiveFilter(Ref ref) {
+  final filter = ref.watch(imageFilterStateProvider).filter;
+  final organized = ref.watch(imageOrganizedOnlyProvider);
+  var effective = filter.copyWith(
+    organized: organized.toBool() ?? filter.organized,
+  );
+  final browser = ref.watch(imageBrowserContextProvider);
+  if (browser?.entityKind != null) {
+    final restriction = imageFilterForEntityGalleries(
+      kind: browser!.entityKind!,
+      entityId: browser.entityId!,
+      method: ref.watch(entityImageFilterMethodSettingProvider),
+    );
+    effective = effective.copyWith(
+      performers: restriction.performers ?? effective.performers,
+      studios: restriction.studios ?? effective.studios,
+      tags: restriction.tags ?? effective.tags,
+      galleriesFilter: restriction.galleriesFilter ?? effective.galleriesFilter,
+    );
+  }
+  return effective;
+}
+
+@Riverpod(
+  keepAlive: true,
+  dependencies: [
+    ImageSearchQuery,
+    ImageSort,
+    ImageFilterState,
+    imageEffectiveFilter,
+    ImageRandomSeed,
+  ],
+)
 class ImageList extends _$ImageList {
   int _currentPage = 1;
   int _perPage = kDefaultPageSize;
@@ -159,8 +261,11 @@ class ImageList extends _$ImageList {
     final query = ref.watch(imageSearchQueryProvider);
     final sortConfig = ref.watch(imageSortProvider);
     final filterState = ref.watch(imageFilterStateProvider);
-    final organizedFilter = ref.watch(imageOrganizedOnlyProvider);
-    final repository = ref.read(imageRepositoryProvider);
+    final imageFilter = ref.watch(imageEffectiveFilterProvider);
+    final repository = ref.watch(imageRepositoryProvider);
+    ref.listen(imageChangedProvider, (_, image) {
+      if (image != null) updateImageInList(image);
+    });
 
     String? effectiveSort = sortConfig.sort;
     if (effectiveSort == 'random') {
@@ -174,9 +279,7 @@ class ImageList extends _$ImageList {
       sort: effectiveSort,
       descending: sortConfig.descending,
       galleryId: filterState.galleryId,
-      imageFilter: filterState.filter.copyWith(
-        organized: organizedFilter.toBool() ?? filterState.filter.organized,
-      ),
+      imageFilter: imageFilter,
     );
   }
 
@@ -218,7 +321,7 @@ class ImageList extends _$ImageList {
     final query = ref.read(imageSearchQueryProvider);
     final sortConfig = ref.read(imageSortProvider);
     final filterState = ref.read(imageFilterStateProvider);
-    final organizedFilter = ref.read(imageOrganizedOnlyProvider);
+    final imageFilter = ref.read(imageEffectiveFilterProvider);
 
     String? effectiveSort = sortConfig.sort;
     if (effectiveSort == 'random') {
@@ -234,12 +337,10 @@ class ImageList extends _$ImageList {
         sort: effectiveSort,
         descending: sortConfig.descending,
         galleryId: filterState.galleryId,
-        imageFilter: filterState.filter.copyWith(
-          organized: organizedFilter.toBool() ?? filterState.filter.organized,
-        ),
+        imageFilter: imageFilter,
       );
 
-      if (generation != _requestGeneration) return;
+      if (!ref.mounted || generation != _requestGeneration) return;
 
       if (nextImages.isEmpty) {
         _hasMore = false;
@@ -248,7 +349,9 @@ class ImageList extends _$ImageList {
         state = AsyncData([...state.value ?? [], ...nextImages]);
       }
     } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
+      if (ref.mounted && generation == _requestGeneration) {
+        _isLoadingMore = false;
+      }
     }
   }
 

@@ -11,7 +11,6 @@ import '../../domain/entities/gallery.dart';
 import 'gallery_details_bottom_sheet.dart';
 import '../../../scenes/presentation/widgets/scene_card.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
-import '../../../images/presentation/providers/image_list_provider.dart';
 
 /// A card widget that displays a summary of a [Gallery].
 class GalleryCard extends ConsumerWidget {
@@ -253,7 +252,6 @@ class GalleryCard extends ConsumerWidget {
   }
 
   void _openDetails(BuildContext context, WidgetRef ref) {
-    ref.read(imageFilterStateProvider.notifier).setGalleryId(gallery.id);
     unawaited(context.push('/galleries/gallery/${gallery.id}'));
   }
 

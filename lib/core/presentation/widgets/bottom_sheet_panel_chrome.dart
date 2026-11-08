@@ -128,19 +128,21 @@ class BottomSheetPanelActions extends StatelessWidget {
               child: Text(primaryLabel),
             ),
           ),
-          SizedBox(height: context.dimensions.spacingSmall),
-          SizedBox(
-            width: double.infinity,
-            child: TextButton(
-              onPressed: onSecondary,
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  vertical: context.dimensions.spacingMedium,
+          if (onSecondary != null) ...[
+            SizedBox(height: context.dimensions.spacingSmall),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: onSecondary,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.dimensions.spacingMedium,
+                  ),
                 ),
+                child: Text(secondaryLabel),
               ),
-              child: Text(secondaryLabel),
             ),
-          ),
+          ],
         ],
       ),
     );

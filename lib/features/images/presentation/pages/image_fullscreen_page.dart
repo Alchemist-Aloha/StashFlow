@@ -26,6 +26,7 @@ import '../../../galleries/presentation/providers/gallery_details_provider.dart'
 import '../../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../domain/entities/image.dart' as entity;
 import '../providers/image_list_provider.dart';
+import '../providers/image_browser_context.dart';
 import '../widgets/image_details_bottom_sheet.dart';
 
 enum _SlideshowDirection { forward, backward }
@@ -53,6 +54,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   final _keyboardFocusNode = FocusNode(debugLabel: 'image_keyboard_shortcuts');
   Map<ShortcutActivator, VoidCallback> _keyBindings = const {};
   int _currentIndex = 0;
+  String? _currentImageId;
+  bool _standalone = false;
   // Repeated manual input advances from its destination while the page is moving.
   int? _manualNavigationTarget;
   int _manualNavigationRevision = 0;
@@ -186,13 +189,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     List<entity.Image> items,
     Map<String, String> headers,
   ) {
+    if (index < 0 || index >= items.length) return;
+    _currentImageId = items[index].id;
     ref
         .read(imageFullscreenCurrentIdProvider.notifier)
         .setCurrent(items[index].id);
     setState(() => _currentIndex = index);
     _warmAdjacentFiles(items, index, headers);
 
-    if (index >= items.length - 5) {
+    if (!_standalone && index >= items.length - 5) {
       unawaited(ref.read(imageListProvider.notifier).fetchNextPage());
     }
   }
@@ -693,18 +698,23 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     try {
       if (selectedTarget == _RatingTarget.image) {
         await ref
-            .read(imageRepositoryProvider)
-            .updateImageRating(image.id, selectedRating);
-        ref
-            .read(imageListProvider.notifier)
-            .updateImageInList(image.copyWith(rating100: selectedRating));
+            .read(imageChangedProvider.notifier)
+            .updateRating(image, selectedRating);
       } else {
         if (galleryId == null) {
           throw Exception('No gallery context available.');
         }
-        await ref
-            .read(galleryRepositoryProvider)
-            .updateGalleryRating(galleryId, selectedRating);
+        final repository = ref.read(galleryRepositoryProvider);
+        await repository.updateGalleryRating(galleryId, selectedRating);
+        final updatedGallery = await repository.getGalleryById(
+          galleryId,
+          refresh: true,
+        );
+        if (!mounted) return;
+        ref
+            .read(galleryListProvider.notifier)
+            .updateGalleryInList(updatedGallery);
+        ref.invalidate(galleryDetailsProvider(galleryId));
       }
 
       if (!mounted) return;
@@ -1034,9 +1044,47 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     );
   }
 
+  Widget _statusPage(String message) {
+    _slideshowTimer?.cancel();
+    _isSlideshowPlaying = false;
+    final close = ref.read(keybindsProvider).binds[KeybindAction.closeImage];
+    void closeViewer() {
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go('/galleries/images');
+      }
+    }
+
+    _keyBindings = {if (close != null) close.toActivator(): closeViewer};
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        leading: CloseButton(onPressed: closeViewer),
+      ),
+      body: Center(
+        child: Text(message, style: const TextStyle(color: Colors.white)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final imagesAsync = ref.watch(imageListProvider);
+    var imagesAsync = ref.watch(imageListProvider);
+    if (ref.watch(imageBrowserContextProvider) == null &&
+        (_standalone ||
+            (!_initialPageSet &&
+                imagesAsync.hasValue &&
+                !imagesAsync.value!.any(
+                  (image) => image.id == widget.imageId,
+                )))) {
+      _standalone = true;
+      imagesAsync = ref
+          .watch(imageByIdProvider(widget.imageId))
+          .whenData((image) => [image]);
+    }
     final headers = ref.watch(mediaHeadersProvider);
     final galleryId = ref.watch(
       imageFilterStateProvider.select((value) => value.galleryId),
@@ -1054,15 +1102,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         backgroundColor: Colors.black,
         body: Center(child: CircularProgressIndicator()),
       ),
-      error: (e, s) => Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: Text(
-            context.l10n.common_error(e.toString()),
-            style: const TextStyle(color: Colors.white),
-          ),
-        ),
-      ),
+      error: (e, s) => _statusPage(context.l10n.common_error(e.toString())),
       data: (items) {
         final Map<ShortcutActivator, VoidCallback> bindings = {};
         for (var entry in keybinds.binds.entries) {
@@ -1095,9 +1135,18 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           }
         }
 
-        if (!_initialPageSet && items.isNotEmpty) {
-          _currentIndex = items.indexWhere((i) => i.id == widget.imageId);
-          if (_currentIndex == -1) _currentIndex = 0;
+        final selectedId = _currentImageId ?? widget.imageId;
+        final selectedIndex = items.indexWhere(
+          (image) => image.id == selectedId,
+        );
+        if (selectedIndex == -1) {
+          return _statusPage(
+            context.l10n.common_not_found(context.l10n.images_title),
+          );
+        }
+        if (!_initialPageSet || selectedIndex != _currentIndex) {
+          _currentIndex = selectedIndex;
+          _currentImageId = selectedId;
           _pageController.dispose();
           _pageController = ExtendedPageController(initialPage: _currentIndex);
           _initialPageSet = true;

@@ -36,7 +36,6 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_handleScroll);
-    _scheduleGalleryImages();
   }
 
   @override
@@ -49,7 +48,6 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
   void didUpdateWidget(covariant GalleryDetailsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.galleryId == widget.galleryId) return;
-    _scheduleGalleryImages();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _scrollController.hasClients) {
         _scrollController.jumpTo(0);
@@ -63,14 +61,6 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
       ..removeListener(_handleScroll)
       ..dispose();
     super.dispose();
-  }
-
-  void _scheduleGalleryImages() {
-    final galleryId = widget.galleryId;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || galleryId != widget.galleryId) return;
-      ref.read(imageFilterStateProvider.notifier).setGalleryId(galleryId);
-    });
   }
 
   void _handleScroll({bool scrollEnded = false}) {
@@ -103,6 +93,7 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
     await ref
         .read(galleryRepositoryProvider)
         .getGalleryById(widget.galleryId, refresh: true);
+    if (!mounted) return;
     ref.invalidate(galleryDetailsProvider(widget.galleryId));
     await Future.wait([
       ref.read(galleryDetailsProvider(widget.galleryId).future),

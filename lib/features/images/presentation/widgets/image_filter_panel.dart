@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/image_filter.dart';
 import '../../../../core/domain/entities/criterion.dart';
 import '../providers/image_list_provider.dart';
+import '../providers/image_browser_context.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
 import '../../../../core/presentation/widgets/filter_widgets.dart';
@@ -57,14 +58,18 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
         ref.read(imageFilterStateProvider.notifier).updateFilter(_tempFilter);
         ref.read(imageOrganizedOnlyProvider.notifier).set(_tempOrganized);
       },
-      onSaveDefault: () async {
-        ref.read(imageFilterStateProvider.notifier).updateFilter(_tempFilter);
-        ref.read(imageOrganizedOnlyProvider.notifier).set(_tempOrganized);
-        await Future.wait([
-          ref.read(imageFilterStateProvider.notifier).saveAsDefault(),
-          ref.read(imageOrganizedOnlyProvider.notifier).saveAsDefault(),
-        ]);
-      },
+      onSaveDefault: ref.watch(imageBrowserContextProvider) != null
+          ? null
+          : () async {
+              ref
+                  .read(imageFilterStateProvider.notifier)
+                  .updateFilter(_tempFilter);
+              ref.read(imageOrganizedOnlyProvider.notifier).set(_tempOrganized);
+              await Future.wait([
+                ref.read(imageFilterStateProvider.notifier).saveAsDefault(),
+                ref.read(imageOrganizedOnlyProvider.notifier).saveAsDefault(),
+              ]);
+            },
       saveDefaultSuccessMessage: context.l10n.images_filter_saved,
     );
   }
