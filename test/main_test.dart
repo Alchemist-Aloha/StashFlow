@@ -37,6 +37,40 @@ void main() {
     });
   });
 
+  test('Linux configures MPRIS controls before starting the audio service', () {
+    final source = File('lib/main.dart').readAsStringSync();
+    final linuxGuard = source.indexOf(
+      'if (!kIsWeb && defaultTargetPlatform == TargetPlatform.linux)',
+    );
+    final mprisInit = source.indexOf('AudioServiceMpris.init(');
+    final serviceInit = source.indexOf(
+      'mediaHandler = await AudioService.init(',
+    );
+
+    expect(linuxGuard, greaterThanOrEqualTo(0));
+    expect(mprisInit, greaterThan(linuxGuard));
+    expect(serviceInit, greaterThan(mprisInit));
+    final config = source
+        .substring(mprisInit, serviceInit)
+        .replaceAll(RegExp(r'\s+'), ' ');
+    expect(
+      config,
+      contains(
+        "dBusName: 'com.github.alchemistaloha.stash_app_flutter.channel.audio'",
+      ),
+    );
+    expect(config, contains("identity: 'StashFlow Playback'"));
+    for (final capability in [
+      'canControl',
+      'canPlay',
+      'canPause',
+      'canGoNext',
+      'canGoPrevious',
+    ]) {
+      expect(config, contains('$capability: true'));
+    }
+  });
+
   test('Windows startup waits until the configured window is ready', () {
     final source = File('lib/main.dart').readAsStringSync();
 

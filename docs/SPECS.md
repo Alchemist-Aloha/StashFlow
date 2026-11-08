@@ -887,6 +887,13 @@ scene label. Artwork publication and duration refreshes preserve this fallback.
 Artwork caching must avoid deletion races while notification metadata still
 references a file.
 
+Linux uses the pinned `audio_service_mpris` 1.0.0-beta.3 with `wakelock_plus`
+1.8.2 and their compatible D-Bus 0.8 dependency. Before `AudioService.init`,
+Linux startup explicitly configures the existing D-Bus name and StashFlow
+identity and enables play, pause, next, previous, and general media control;
+the beta's disabled-by-default capabilities must not hide transport controls.
+Other platforms retain their existing audio-service initialization.
+
 ## Settings, authentication, and local data
 
 ### Settings information architecture

@@ -34,8 +34,8 @@ dependencies:
       ref: 31de3525af6841df5e999a37cb8da83a34b3f87b
       path: ./media_kit_video
   audio_service: ^0.18.19
-  audio_service_mpris: ^0.2.1
-  wakelock_plus: ^1.8.0
+  audio_service_mpris: 1.0.0-beta.3
+  wakelock_plus: ^1.8.2
   shared_preferences: ^2.5.5
   path_provider: ^2.1.6
   path: ^1.9.1

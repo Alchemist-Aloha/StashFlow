@@ -21,6 +21,7 @@ import 'core/utils/pip_mode.dart';
 import 'core/utils/media_handler.dart';
 import 'core/utils/root_app_runner.dart' as root_app_runner;
 import 'package:audio_service/audio_service.dart';
+import 'package:audio_service_mpris/audio_service_mpris.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -118,6 +119,19 @@ Future<void> main() async {
 
     if (!isTestMode) {
       try {
+        if (!kIsWeb && defaultTargetPlatform == TargetPlatform.linux) {
+          // The MPRIS beta disables transport controls unless configured.
+          AudioServiceMpris.init(
+            dBusName:
+                'com.github.alchemistaloha.stash_app_flutter.channel.audio',
+            identity: 'StashFlow Playback',
+            canControl: true,
+            canPlay: true,
+            canPause: true,
+            canGoNext: true,
+            canGoPrevious: true,
+          );
+        }
         mediaHandler = await AudioService.init(
           builder: _buildMediaHandler,
           config: const AudioServiceConfig(
