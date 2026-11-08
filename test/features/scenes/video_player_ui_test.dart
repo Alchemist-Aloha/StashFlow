@@ -683,6 +683,60 @@ void main() {
     expect(find.text('01:05 - 01:35'), findsOneWidget);
   });
 
+  for (final active in [true, false]) {
+    testWidgets('marker jumps to fractional time (active: $active)', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final scene = testScene.copyWith(
+        markers: const [
+          SceneMarker(
+            id: 'jump',
+            title: 'Jump here',
+            seconds: 65.25,
+            endSeconds: null,
+            screenshot: null,
+            preview: null,
+            stream: null,
+            primaryTagId: null,
+            primaryTagName: null,
+            tagIds: [],
+            tagNames: [],
+          ),
+        ],
+      );
+      final player = _MarkerPlayerState(active ? scene : null);
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(
+            MockGraphQLSceneRepository()..withData([scene]),
+          ),
+          playerStateProvider.overrideWith(() => player),
+        ],
+        child: SceneDetailsPage(sceneId: scene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+      await tester.ensureVisible(find.text('Jump here'));
+      await tester.tap(find.text('Jump here'));
+      await tester.pump();
+      expect(player.target, const Duration(milliseconds: 65250));
+      expect(player.startedScene?.id, active ? null : scene.id);
+      expect(find.text('Delete marker'), findsNothing);
+
+      player.target = null;
+      await tester.tap(find.byTooltip('Delete marker Jump here'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('Delete marker'), findsOneWidget);
+      expect(player.target, isNull);
+    });
+  }
+
   testWidgets('SceneDetailsPage creates marker then refreshes scene details', (
     tester,
   ) async {
@@ -1255,6 +1309,38 @@ void main() {
       expect(shouldRouteToNextScene('s1', testScene, 's1', null), isFalse);
     },
   );
+}
+
+class _MarkerPlayerState extends PlayerState {
+  _MarkerPlayerState(this.activeScene);
+
+  final Scene? activeScene;
+  Duration? target;
+  Scene? startedScene;
+
+  @override
+  GlobalPlayerState build() => GlobalPlayerState(activeScene: activeScene);
+
+  @override
+  Future<void> seek(Duration position) async => target = position;
+
+  @override
+  Future<void> playScene(
+    Scene scene,
+    String streamUrl, {
+    String? mimeType,
+    String? streamLabel,
+    String? streamSource,
+    Map<String, String>? httpHeaders,
+    bool? prewarmAttempted,
+    bool? prewarmSucceeded,
+    int? prewarmLatencyMs,
+    Duration? initialPosition,
+    bool force = false,
+  }) async {
+    startedScene = scene;
+    target = initialPosition;
+  }
 }
 
 class _TestPlayerState extends PlayerState {

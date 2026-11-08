@@ -12,6 +12,12 @@
 
 - Server and generated subtitles now share consistent font sizing, alignment, and positioning. Removed the extra fourfold font-size multiplier from server subtitles so the configured size follows interface scaling consistently.
 
+## 🔖 Markers and Browsing
+
+- Select a marker on a scene’s details page to jump to its marked time. If the scene is not playing, playback starts at that point instead of its saved resume position.
+- Added an optional **Markers** navigation tab. Enable or reorder it in **Customize Tabs**; it is hidden by default, including for existing configurations.
+- The Scenes **Markers** and Galleries **All Images** shortcuts now hide when their corresponding navigation tabs are visible, and return when those tabs are hidden.
+
 ## 📐 Interface and Mini-player
 
 - Added an optional **Settings → Interface → Mini-player bottom spacer** to keep the mini-player and floating controls clear of system taskbars that cover them.

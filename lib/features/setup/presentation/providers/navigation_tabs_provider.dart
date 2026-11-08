@@ -13,7 +13,8 @@ enum NavigationTabType {
   tags('tags', 'Tags', Icons.local_offer),
   galleries('galleries', 'Galleries', Icons.perm_media),
   groups('groups', 'Groups', Icons.group_work),
-  images('images', 'Images', Icons.image);
+  images('images', 'Images', Icons.image),
+  markers('markers', 'Markers', Icons.bookmarks_outlined);
 
   final String id;
   final String label;
@@ -30,6 +31,7 @@ enum NavigationTabType {
     galleries => context.l10n.nav_galleries,
     groups => context.l10n.groups_title,
     images => context.l10n.images_title,
+    markers => context.l10n.markers_title,
   };
 
   static NavigationTabType fromId(String id) {
@@ -66,7 +68,9 @@ class NavigationTabsNotifier extends Notifier<List<NavigationTab>> {
   static const _key = 'navigation_tabs_config';
 
   static bool _defaultVisibilityFor(NavigationTabType type) {
-    return type != NavigationTabType.groups && type != NavigationTabType.images;
+    return type != NavigationTabType.groups &&
+        type != NavigationTabType.images &&
+        type != NavigationTabType.markers;
   }
 
   List<NavigationTab> _defaultTabs() {

@@ -25,6 +25,7 @@ void main() {
       await notifier.toggleTab(NavigationTabType.performers, false);
       await notifier.toggleTab(NavigationTabType.groups, true);
       await notifier.toggleTab(NavigationTabType.images, true);
+      await notifier.toggleTab(NavigationTabType.markers, true);
       final expected = container
           .read(navigationTabsProvider)
           .map((tab) => tab.toJson())
@@ -72,6 +73,7 @@ void main() {
           NavigationTabType.tags,
           NavigationTabType.groups,
           NavigationTabType.images,
+          NavigationTabType.markers,
         ]);
         expect(
           tabs.where((tab) => tab.visible).single.type,
@@ -84,25 +86,29 @@ void main() {
       },
     );
 
-    test('defaults groups and images to hidden in a fresh config', () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
+    test(
+      'defaults groups, images and markers to hidden in a fresh config',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
 
-      final container = ProviderContainer(
-        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-      );
-      addTearDown(container.dispose);
+        final container = ProviderContainer(
+          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        );
+        addTearDown(container.dispose);
 
-      final tabs = container.read(navigationTabsProvider);
+        final tabs = container.read(navigationTabsProvider);
 
-      expect(tabs.where((tab) => !tab.visible).map((tab) => tab.type), [
-        NavigationTabType.groups,
-        NavigationTabType.images,
-      ]);
-    });
+        expect(tabs.where((tab) => !tab.visible).map((tab) => tab.type), [
+          NavigationTabType.groups,
+          NavigationTabType.images,
+          NavigationTabType.markers,
+        ]);
+      },
+    );
 
     test(
-      'appends missing groups tab as hidden when restoring older config',
+      'appends missing optional tabs as hidden when restoring older config',
       () async {
         SharedPreferences.setMockInitialValues({
           'navigation_tabs_config': jsonEncode([
@@ -123,6 +129,12 @@ void main() {
         final tabs = container.read(navigationTabsProvider);
 
         expect(tabs.map((tab) => tab.type), contains(NavigationTabType.groups));
+        expect(
+          tabs
+              .singleWhere((tab) => tab.type == NavigationTabType.markers)
+              .visible,
+          isFalse,
+        );
         expect(
           tabs
               .singleWhere((tab) => tab.type == NavigationTabType.images)

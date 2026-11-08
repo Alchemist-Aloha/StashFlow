@@ -143,7 +143,7 @@ states, and overlays must retain accessible contrast.
 must preserve feature state while switching branches and keep the global player
 outside individual route lifecycles.
 
-The customizable navigation model contains seven tab types:
+The customizable navigation model contains eight tab types:
 
 - Scenes
 - Performers
@@ -152,8 +152,10 @@ The customizable navigation model contains seven tab types:
 - Galleries
 - Groups
 - Images
+- Markers
 
-Groups and Images are hidden by default. Users may reorder tabs and change
+Groups, Images, and Markers are hidden by default, including when absent from
+an older saved configuration. Users may reorder tabs and change
 visibility, but at least one usable destination must remain. UI indices must map
 explicitly to the router's fixed branch indices. Re-selecting an active top-level destination
 scrolls its primary list to the top rather than duplicating the route.
@@ -161,6 +163,12 @@ Images reuses the existing `/galleries/images` list and fullscreen child routes
 in its own shell branch, retaining saved tab order and existing image links.
 When Images is hidden, those routes retain Galleries as the selected visible
 navigation destination when available.
+Markers likewise owns a shell branch at the existing `/scenes/markers` path;
+when hidden, it selects Scenes when available. Its tab visibility and order
+persist through Customize Tabs, and re-selecting it scrolls the list to the top.
+The Scenes action-pill Markers shortcut and Galleries action-pill All Images
+shortcut appear only while their corresponding tab is hidden. Changing tab
+visibility updates these shortcuts without reopening the list page.
 
 Canonical implementation:
 
@@ -391,6 +399,11 @@ Layout contract:
 - Editing and scraping entry points appear only when their prerequisites are
   available.
 - Loading or failure of a secondary section must not hide the primary scene.
+
+Scene marker rows jump playback to the marker's start time, preserving fractional
+seconds. If the scene is not active, selecting a marker starts it at that time
+instead of its saved resume position. The separate delete action only opens
+confirmation and must not seek playback.
 
 The scene media section exposes cover and preview content only when available.
 Cover images open the dedicated fullscreen cover viewer with zoom/pan and a

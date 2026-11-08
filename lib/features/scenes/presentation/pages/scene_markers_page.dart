@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
@@ -208,6 +209,9 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
 
     return ListPageScaffold<SceneMarkerSummary>(
       gridColumnSetting: GridColumnSetting.sceneMarker,
+      scrollController: ref.watch(
+        listScrollControllerProvider(ListScrollTarget.marker),
+      ),
       title: context.l10n.markers_title,
       searchHint: context.l10n.markers_search_hint,
       onSearchChanged: _onSearchChanged,

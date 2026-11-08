@@ -81,10 +81,6 @@ GoRouter router(Ref ref) {
                 builder: (context, state) => const ScenesPage(),
                 routes: [
                   GoRoute(
-                    path: 'markers',
-                    builder: (context, state) => const SceneMarkersPage(),
-                  ),
-                  GoRoute(
                     path: 'scene/:id',
                     pageBuilder: (context, state) => CustomTransitionPage(
                       key: state.pageKey,
@@ -293,6 +289,14 @@ GoRouter router(Ref ref) {
                     ),
                   ),
                 ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/scenes/markers',
+                builder: (context, state) => const SceneMarkersPage(),
               ),
             ],
           ),
