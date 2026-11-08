@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../setup/presentation/providers/navigation_tabs_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/data/graphql/graphql_client.dart';
@@ -280,7 +282,20 @@ GoRouter router(Ref ref) {
               // Keep existing image links while giving Images its own tab state.
               GoRoute(
                 path: '/galleries/images',
-                builder: (context, state) => const ImagesPage(),
+                builder: (context, state) => Consumer(
+                  builder: (context, ref, _) => ImagesPage(
+                    leading:
+                        ref
+                            .watch(navigationTabsProvider)
+                            .any(
+                              (tab) =>
+                                  tab.type == NavigationTabType.images &&
+                                  tab.visible,
+                            )
+                        ? null
+                        : BackButton(onPressed: () => context.go('/galleries')),
+                  ),
+                ),
                 routes: [
                   GoRoute(
                     path: ':id',
@@ -296,7 +311,20 @@ GoRouter router(Ref ref) {
             routes: [
               GoRoute(
                 path: '/scenes/markers',
-                builder: (context, state) => const SceneMarkersPage(),
+                builder: (context, state) => Consumer(
+                  builder: (context, ref, _) => SceneMarkersPage(
+                    leading:
+                        ref
+                            .watch(navigationTabsProvider)
+                            .any(
+                              (tab) =>
+                                  tab.type == NavigationTabType.markers &&
+                                  tab.visible,
+                            )
+                        ? null
+                        : BackButton(onPressed: () => context.go('/scenes')),
+                  ),
+                ),
               ),
             ],
           ),

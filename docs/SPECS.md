@@ -169,6 +169,13 @@ persist through Customize Tabs, and re-selecting it scrolls the list to the top.
 The Scenes action-pill Markers shortcut and Galleries action-pill All Images
 shortcut appear only while their corresponding tab is hidden. Changing tab
 visibility updates these shortcuts without reopening the list page.
+When their tab is hidden, the top-level Markers and All Images lists show an
+app-bar back button to Scenes and Galleries respectively, including direct
+links without a navigation history. System back gestures and hardware back
+return to the same parent lists rather than exiting the app. Enabling the tab
+removes that button and restores normal top-level back behavior reactively.
+Fullscreen exits and child-route pops take precedence. Embedded gallery-detail
+image browsing keeps its existing navigation.
 
 Canonical implementation:
 

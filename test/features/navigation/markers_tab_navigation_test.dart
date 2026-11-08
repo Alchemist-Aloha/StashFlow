@@ -83,6 +83,18 @@ void main() {
           router.routeInformationProvider.value.uri.path,
           '/scenes/markers',
         );
+        final backButton = find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byType(BackButton),
+        );
+        expect(backButton, visible ? findsNothing : findsOneWidget);
+        final tabs = container.read(navigationTabsProvider.notifier);
+        await tabs.toggleTab(NavigationTabType.markers, !visible);
+        await tester.pumpAndSettle();
+        expect(backButton, visible ? findsOneWidget : findsNothing);
+        await tabs.toggleTab(NavigationTabType.markers, visible);
+        await tester.pumpAndSettle();
+        expect(backButton, visible ? findsNothing : findsOneWidget);
         final selected = width < 600
             ? tester.widget<NavigationBar>(navigation).selectedIndex
             : tester.widget<NavigationRail>(navigation).selectedIndex;
@@ -106,13 +118,18 @@ void main() {
           await tester.tap(markerTab);
           await tester.pumpAndSettle();
           expect(controller.offset, 0);
-        } else {
-          await tester.tap(
-            find.descendant(
-              of: navigation,
-              matching: find.byIcon(Icons.video_library),
-            ),
+          expect(await router.routerDelegate.popRoute(), isFalse);
+          expect(
+            router.routeInformationProvider.value.uri.path,
+            '/scenes/markers',
           );
+        } else {
+          await tester.tap(backButton);
+          await tester.pumpAndSettle();
+          expect(router.routeInformationProvider.value.uri.path, '/scenes');
+          router.go('/scenes/markers');
+          await tester.pumpAndSettle();
+          await tester.binding.handlePopRoute();
           await tester.pumpAndSettle();
           expect(router.routeInformationProvider.value.uri.path, '/scenes');
         }
