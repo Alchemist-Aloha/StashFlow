@@ -983,9 +983,11 @@ Encryption and cloud synchronization are outside the current backup scope.
 
 ## Platform and build behavior
 
-Release, release-candidate, and nightly builds share
-`.github/workflows/reusable-release.yml`. Android, Linux, web, and release jobs
-use Ubuntu 26.04. CI uses Flutter 3.47.6 and resolves dependencies with
+Stable and nightly builds share `.github/workflows/reusable-release.yml`.
+Version-tag pushes (`v*`) publish stable releases; pushes to `dev` publish
+nightly builds. Pushes to `main` do not create release candidates.
+Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.47.6
+and resolves dependencies with
 `flutter pub get`
 Pub fetches the media-kit fork rather than
 using the ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
@@ -996,10 +998,10 @@ The app requires Flutter 3.47.6 or newer and Dart 3.11 or newer within Dart 3.x.
 
 Stable release artifact filenames retain the full `pubspec.yaml` version,
 including the build number, plus platform and architecture where applicable.
-Rolling RC and nightly artifact filenames use a fixed channel label without a
-version or commit SHA, for example `StashFlow-nightly-linux-x64.AppImage` or
-`StashFlow-rc-linux-x64.AppImage`. Successful rolling publications overwrite
-matching assets and then remove obsolete assets not present in the new build.
+Rolling nightly artifact filenames use a fixed channel label without a version
+or commit SHA, for example `StashFlow-nightly-linux-x64.AppImage`.
+Successful rolling publications overwrite matching assets and then remove
+obsolete assets not present in the new build.
 The release title/body retains commit information. Concurrent runs for the same
 rolling channel cancel older runs so older builds cannot publish over newer ones.
 Linux distribution packages (AppImage, deb, and pacman) ship with adjacent
@@ -1011,7 +1013,7 @@ verified together with `sha256sum -c <filename>.sha256`.
 The minimum deployment target is macOS 13, matching the native frameworks emitted
 by the pinned Flutter SDK.
 
-Release, release-candidate, and nightly workflows build Apple Silicon on
+Stable and nightly workflows build Apple Silicon on
 `macos-26` and Intel on `macos-26-intel`, explicitly selecting `arm64` and
 `x86_64` through Flutter's Xcode build settings. ZIP filenames end in
 `macos-arm64` or `macos-x86_64`, and upload artifact names are distinct.
@@ -1041,7 +1043,7 @@ not an existing supported build target.
 
 ### Windows build prerequisites
 
-Release, release-candidate, and nightly workflows build Windows x64 and ARM64
+Stable and nightly workflows build Windows x64 and ARM64
 ZIP bundles and EXE installers in separate jobs. ARM64 uses `windows-11-arm`
 and bootstraps the pinned Flutter tag with native ARM64 Dart; the x64 release
 archive must not determine the target architecture on the ARM runner. Artifact
@@ -1096,7 +1098,7 @@ changes, taskbar visibility, title-bar controls after exit, and desktop PiP.
 
 ### Linux desktop
 
-Release, release-candidate, and nightly workflows build native Linux x64 and
+Stable and nightly workflows build native Linux x64 and
 ARM64 jobs on Ubuntu 26.04 runners. ARM64 bootstraps the pinned Flutter tag with
 native Dart. Both architectures ship ZIP, deb, AppImage, and pacman packages,
 with distinct artifact names and `linux-x64` or `linux-arm64` filenames. Debian
@@ -1122,9 +1124,9 @@ launcher resolves libraries relative to itself rather than CI build paths.
 
 ### Web and GitHub Pages
 
-Web builds use the correct `/StashFlow/` base href for GitHub Pages. Release,
-release-candidate, and nightly workflows publish the built web artifact with the
-permissions and branch behavior defined in `.github/workflows/`.
+Web builds use the correct `/StashFlow/` base href for GitHub Pages. Stable and
+nightly workflows publish the built web artifact with the permissions and branch
+behavior defined in `.github/workflows/`.
 
 Deployment verification includes asset loading without 404s, application
 startup, routing/refresh behavior under the subpath, and basic authenticated UI

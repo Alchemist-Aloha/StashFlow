@@ -118,7 +118,7 @@ output you can deploy to any static host. Remember to build with the correct bas
 ## Download names and checksums
 
 Stable downloads include the full app version and build number in `<version>` (for example,
-`1.41.0+114`). Nightly and release-candidate downloads use fixed `nightly` and `rc` names instead.
+`1.41.0+114`). Nightly downloads use fixed `nightly` names instead.
 Linux AppImage, Debian, and pacman downloads include adjacent `.sha256` files. Download both files
 into the same directory and verify with `sha256sum -c <package-filename>.sha256`.
 
