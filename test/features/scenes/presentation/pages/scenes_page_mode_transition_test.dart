@@ -253,7 +253,7 @@ void main() {
     expect(find.byIcon(Icons.sort), findsNothing);
     expect(find.byIcon(Icons.filter_list), findsNothing);
     expect(find.byIcon(Icons.bookmarks_outlined), findsNothing);
-    expect(find.byIcon(Icons.sell_outlined), findsNothing);
+    expect(find.byIcon(Icons.place_rounded), findsNothing);
     expect(playerNotifier.stopCalls, 0);
 
     await container.read(sceneTiktokLayoutProvider.notifier).set(false);

@@ -14,7 +14,7 @@ enum NavigationTabType {
   galleries('galleries', 'Galleries', Icons.perm_media),
   groups('groups', 'Groups', Icons.group_work),
   images('images', 'Images', Icons.image),
-  markers('markers', 'Markers', Icons.bookmarks_outlined);
+  markers('markers', 'Markers', Icons.place_rounded);
 
   final String id;
   final String label;

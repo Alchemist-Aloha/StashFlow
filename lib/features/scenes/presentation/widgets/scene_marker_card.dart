@@ -145,7 +145,7 @@ class _MarkerImage extends StatelessWidget {
             ColoredBox(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               child: Icon(
-                Icons.bookmark_outline_rounded,
+                Icons.place_rounded,
                 color: context.colors.onSurfaceVariant,
                 size: context.dimensions.spacingLarge,
               ),

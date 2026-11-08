@@ -1171,7 +1171,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 BottomSheetPanelHeader(title: context.l10n.common_more),
                 ListTile(
                   key: const Key('scene_action_add_marker'),
-                  leading: const Icon(Icons.bookmark_add_outlined),
+                  leading: const Icon(Icons.add_location_alt_rounded),
                   title: Text(context.l10n.scene_details_add_marker),
                   onTap: () => Navigator.of(sheetContext).pop('marker'),
                 ),
@@ -1325,7 +1325,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   key: const Key('scene_action_add_marker'),
                   tooltip: context.l10n.scene_details_add_marker,
                   icon: Icon(
-                    Icons.bookmark_add_outlined,
+                    Icons.add_location_alt_rounded,
                     size: 24 * dims.fontSizeFactor,
                   ),
                   onPressed: () => _showAddMarkerDialog(
@@ -1552,7 +1552,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   : ColoredBox(
                       color: context.colors.surfaceVariant,
                       child: Icon(
-                        Icons.bookmark_outline,
+                        Icons.place_rounded,
                         color: context.colors.onSurfaceVariant,
                       ),
                     ),
@@ -1894,7 +1894,7 @@ class _AddMarkerDialogState extends State<_AddMarkerDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      icon: const Icon(Icons.bookmark_add_outlined),
+      icon: const Icon(Icons.add_location_alt_rounded),
       title: Text(context.l10n.scene_details_add_marker),
       content: TextField(
         controller: _controller,

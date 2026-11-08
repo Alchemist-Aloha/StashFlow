@@ -69,7 +69,7 @@ void main() {
         final router = container.read(routerProvider);
         final markerTab = find.descendant(
           of: navigation,
-          matching: find.byIcon(Icons.bookmarks_outlined),
+          matching: find.byIcon(Icons.place_rounded),
         );
         if (visible) {
           await tester.tap(markerTab);

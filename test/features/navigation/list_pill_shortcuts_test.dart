@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,6 +54,15 @@ void main() {
         await tester.pumpAndSettle();
         final shortcut = find.byTooltip(tooltip);
         expect(shortcut, initiallyVisible ? findsNothing : findsOneWidget);
+        if (tab == NavigationTabType.markers && !initiallyVisible) {
+          expect(
+            find.descendant(
+              of: shortcut,
+              matching: find.byIcon(Icons.place_rounded),
+            ),
+            findsOneWidget,
+          );
+        }
         final tabs = ProviderScope.containerOf(
           tester.element(find.byWidget(page)),
         ).read(navigationTabsProvider.notifier);

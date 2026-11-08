@@ -400,6 +400,11 @@ Layout contract:
   available.
 - Loading or failure of a secondary section must not hide the primary scene.
 
+Marker destinations, shortcuts, and image placeholders use a map-pin icon
+(`Icons.place_rounded`), matching the official Stash web UI's `faMapMarkerAlt`;
+creation actions use `Icons.add_location_alt_rounded`. Saved-filter bookmarks
+remain distinct.
+
 Scene marker rows jump playback to the marker's start time, preserving fractional
 seconds. If the scene is not active, selecting a marker starts it at that time
 instead of its saved resume position. The separate delete action only opens
