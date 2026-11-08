@@ -1030,8 +1030,9 @@ contain the target architecture; embedded universal libraries are allowed.
   Dart JNI using literal JVM names, including `Continuation` in shared-preferences
   method signatures. Keep rules remain scoped to these bridge types rather than
   entire plugin packages; release artifact inspection complements host tests.
-- Java/Gradle/plugin versions must remain compatible with the checked-in build
-  configuration and CI.
+- The Android build uses Java 21, Gradle 9.9.0 (with a verified distribution
+  checksum), Android Gradle Plugin 9.5.1, and Kotlin 2.4.21. Toolchain upgrades
+  must remain compatible with the checked-in build configuration and CI.
 - Manifest permissions must be justified by current features; do not restore
   removed broad storage or obsolete permissions.
 - Audio service, PiP, and notification behavior must continue to work after

@@ -413,10 +413,10 @@ packages:
     dependency: "direct dev"
     description:
       name: fastforge
-      sha256: df33fecad3b2a4628fa7c48b5e8568ed81ed4db575d3f7bd6c62d944655455df
+      sha256: a6971dd1a5aed9ad773be9da30020349c923f7ec71c32990df503ee331513ce9
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.13"
+    version: "0.6.14"
   ffi:
     dependency: transitive
     description:
@@ -530,10 +530,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_app_packager
-      sha256: fc68d74d7b47934c6d495c981066a656d04357a4b6420044bd12ae03464ccb5f
+      sha256: "76cf57d10e4c554ec2936ce076fa43106b68d5a12722f89fd60d17e268a2a744"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.12"
+    version: "0.6.13"
   flutter_app_publisher:
     dependency: transitive
     description:
@@ -841,10 +841,10 @@ packages:
     dependency: transitive
     description:
       name: hive_ce
-      sha256: "8b6eea82b06a7e2bb298a6a279139c45838b82491a66f3972bf609d48681392a"
+      sha256: "72fdeccc40b89d9f05d6c16185c233d5a23781e6e77661eccaa6680deb22c9bf"
       url: "https://pub.dev"
     source: hosted
-    version: "2.22.0"
+    version: "2.23.2"
   hooks:
     dependency: transitive
     description:
@@ -913,10 +913,10 @@ packages:
     dependency: transitive
     description:
       name: isolate_channel
-      sha256: a9d3d620695bc984244dafae00b95e4319d6974b2d77f4b9e1eb4f2efe099094
+      sha256: bd56e1bb2787bed914158c2696943dc7254732bfea2c207aafca6bc930580fd4
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.1"
+    version: "0.6.2"
   jni:
     dependency: transitive
     description:
@@ -1863,10 +1863,10 @@ packages:
     dependency: transitive
     description:
       name: unified_distributor
-      sha256: b86af602308e906a0e095602326e3fccb3a77079b83c530c1dad7bb2cfd9e100
+      sha256: "7915672b63a3d958299df7be67884a7ea4b64e84447f598d32dc3fdba8e2f0a0"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.13"
+    version: "0.2.14"
   universal_io:
     dependency: transitive
     description:
