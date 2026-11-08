@@ -12,6 +12,7 @@ import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
     as entity;
 import 'package:stash_app_flutter/features/images/presentation/pages/image_fullscreen_page.dart';
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
+import 'package:stash_app_flutter/features/images/presentation/providers/image_browser_context.dart';
 import 'package:stash_app_flutter/features/images/presentation/widgets/image_details_bottom_sheet.dart';
 
 import '../../../../helpers/test_helpers.dart';
@@ -63,6 +64,111 @@ void main() {
   });
 
   group('ImageFullscreenPage', () {
+    testWidgets(
+      'library deep link resolves its image instead of the first result',
+      (tester) async {
+        mockRepository.withData([
+          const entity.Image(
+            id: 'first',
+            title: 'Wrong image',
+            files: [],
+            paths: entity.ImagePaths(),
+          ),
+        ]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: 'requested'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+            imageByIdProvider('requested').overrideWith(
+              (ref) async => const entity.Image(
+                id: 'requested',
+                title: 'Requested image',
+                files: [],
+                paths: entity.ImagePaths(),
+              ),
+            ),
+          ],
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Requested image'), findsOneWidget);
+        expect(find.text('Wrong image'), findsNothing);
+        expect(_currentImageId(tester), 'requested');
+      },
+    );
+
+    testWidgets(
+      'scoped missing image never substitutes another gallery image',
+      (tester) async {
+        mockRepository.withData([
+          const entity.Image(
+            id: 'first',
+            title: 'Wrong image',
+            files: [],
+            paths: entity.ImagePaths(),
+          ),
+        ]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: 'missing'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+            imageBrowserContextProvider.overrideWithValue(
+              const ImageBrowserContext.gallery(
+                'gallery',
+                path: '/gallery/gallery',
+              ),
+            ),
+          ],
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Wrong image'), findsNothing);
+        expect(find.byType(CloseButton), findsOneWidget);
+        expect(find.textContaining('not found'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'removing the current image does not index outside a changed list',
+      (tester) async {
+        mockRepository.withData([
+          const entity.Image(
+            id: 'first',
+            files: [],
+            paths: entity.ImagePaths(),
+          ),
+          const entity.Image(
+            id: 'selected',
+            files: [],
+            paths: entity.ImagePaths(),
+          ),
+        ]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: 'selected'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+        );
+        await tester.pumpAndSettle();
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(ImageFullscreenPage)),
+        );
+        mockRepository.withData([
+          const entity.Image(
+            id: 'other',
+            files: [],
+            paths: entity.ImagePaths(),
+          ),
+        ]);
+        await container.read(imageListProvider.notifier).refresh();
+        await tester.pumpAndSettle();
+        expect(find.textContaining('not found'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     test('warms adjacent files without decoding them', () {
       final source = File(
         'lib/features/images/presentation/pages/image_fullscreen_page.dart',

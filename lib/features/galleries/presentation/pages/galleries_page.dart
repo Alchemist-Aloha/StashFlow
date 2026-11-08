@@ -12,7 +12,6 @@ import '../../../../core/data/repositories/graphql_saved_filter_repository.dart'
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../gallery_sort.dart';
 import '../providers/gallery_list_provider.dart';
-import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../domain/entities/gallery.dart';
 
 import '../widgets/gallery_card.dart';
@@ -78,8 +77,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     _lastRandomGalleryId = gallery.id;
 
     // Set the filter and navigate.
-    ref.read(imageFilterStateProvider.notifier).setGalleryId(gallery.id);
-    unawaited(context.push('/galleries/images'));
+    unawaited(
+      context.push('/galleries/gallery/${Uri.encodeComponent(gallery.id)}'),
+    );
   }
 
   void _showSortPanel() {
@@ -299,7 +299,6 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
             icon: const Icon(Icons.image),
             tooltip: context.l10n.galleries_all_images,
             onPressed: () {
-              ref.read(imageFilterStateProvider.notifier).clear();
               context.go('/galleries/images');
             },
           ),

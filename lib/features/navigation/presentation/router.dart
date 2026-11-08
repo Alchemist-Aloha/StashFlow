@@ -24,6 +24,8 @@ import '../../studios/presentation/pages/studio_edit_page.dart';
 import '../../tags/presentation/pages/tags_page.dart';
 import '../../tags/presentation/pages/tag_details_page.dart';
 import '../../images/presentation/pages/images_page.dart';
+import '../../images/presentation/providers/image_browser_context.dart';
+import '../../images/presentation/widgets/image_browser_scope.dart';
 import '../../images/presentation/pages/image_fullscreen_page.dart';
 import '../../galleries/presentation/pages/entity_gallery_grid_page.dart';
 import '../../galleries/presentation/pages/galleries_page.dart';
@@ -47,6 +49,39 @@ import '../../tools/presentation/pages/tools_page.dart';
 import 'shell_page.dart';
 
 part 'router.g.dart';
+
+RouteBase _galleryBrowserRoute(String path, String prefix) =>
+    _scopedImageBrowserRoute(
+      path: path,
+      browser: (state) => ImageBrowserContext.gallery(
+        state.pathParameters['id']!,
+        path: '$prefix/${Uri.encodeComponent(state.pathParameters['id']!)}',
+      ),
+      builder: (context, state) =>
+          GalleryDetailsPage(galleryId: state.pathParameters['id']!),
+    );
+
+RouteBase _scopedImageBrowserRoute({
+  required String path,
+  required ImageBrowserContext Function(GoRouterState) browser,
+  required GoRouterWidgetBuilder builder,
+}) => ShellRoute(
+  builder: (context, state, child) =>
+      ImageBrowserScope(browser: browser(state), child: child),
+  routes: [
+    GoRoute(
+      path: path,
+      builder: builder,
+      routes: [
+        GoRoute(
+          path: 'image/:imageId',
+          builder: (context, state) =>
+              ImageFullscreenPage(imageId: state.pathParameters['imageId']!),
+        ),
+      ],
+    ),
+  ],
+);
 
 /// Central application router defined using GoRouter and Riverpod.
 ///
@@ -243,12 +278,7 @@ GoRouter router(Ref ref) {
                 path: '/galleries',
                 builder: (context, state) => const GalleriesPage(),
                 routes: [
-                  GoRoute(
-                    path: 'gallery/:id',
-                    builder: (context, state) => GalleryDetailsPage(
-                      galleryId: state.pathParameters['id']!,
-                    ),
-                  ),
+                  _galleryBrowserRoute('gallery/:id', '/galleries/gallery'),
                 ],
               ),
             ],
@@ -415,11 +445,18 @@ GoRouter router(Ref ref) {
           ),
         ],
       ),
-      GoRoute(
-        path: '/gallery/:id',
-        builder: (context, state) =>
-            GalleryDetailsPage(galleryId: state.pathParameters['id']!),
-      ),
+      _galleryBrowserRoute('/gallery/:id', '/gallery'),
+      for (final kind in EntityGalleryFilterKind.values)
+        _scopedImageBrowserRoute(
+          path: '/entity-images/${kind.name}/:id',
+          browser: (state) => ImageBrowserContext.entity(
+            kind,
+            state.pathParameters['id']!,
+            path:
+                '/entity-images/${kind.name}/${Uri.encodeComponent(state.pathParameters['id']!)}',
+          ),
+          builder: (context, state) => const ImagesPage(),
+        ),
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsHubPage(),

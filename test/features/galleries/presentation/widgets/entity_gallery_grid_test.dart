@@ -15,6 +15,8 @@ import 'package:stash_app_flutter/features/galleries/presentation/providers/enti
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/entity_gallery_grid.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
+import 'package:stash_app_flutter/features/images/presentation/providers/image_browser_context.dart';
+import 'package:stash_app_flutter/features/images/presentation/widgets/image_browser_scope.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 void main() {
@@ -43,6 +45,7 @@ void main() {
               tags: HierarchicalMultiCriterion(value: ['old-tag']),
             ),
           );
+      late ProviderContainer scoped;
       final router = GoRouter(
         initialLocation: '/galleries',
         routes: [
@@ -60,8 +63,20 @@ void main() {
             ),
           ),
           GoRoute(
-            path: '/galleries/images',
-            builder: (_, _) => const Text('images destination'),
+            path: '/entity-images/${testCase.kind.name}/${testCase.id}',
+            builder: (_, _) => ImageBrowserScope(
+              browser: ImageBrowserContext.entity(
+                testCase.kind,
+                testCase.id,
+                path: '/entity-images/${testCase.kind.name}/${testCase.id}',
+              ),
+              child: Consumer(
+                builder: (context, ref, _) {
+                  scoped = ProviderScope.containerOf(context);
+                  return const Text('images destination');
+                },
+              ),
+            ),
           ),
         ],
       );
@@ -83,7 +98,14 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('images destination'), findsOneWidget);
-      final state = container.read(imageFilterStateProvider);
+      expect(container.read(imageFilterStateProvider).galleryId, 'old-gallery');
+      expect(container.read(imageFilterStateProvider).filter.tags?.value, [
+        'old-tag',
+      ]);
+      final state = (
+        galleryId: scoped.read(imageFilterStateProvider).galleryId,
+        filter: scoped.read(imageEffectiveFilterProvider),
+      );
       expect(state.galleryId, isNull);
 
       if (method == EntityImageFilterMethod.directEntity) {

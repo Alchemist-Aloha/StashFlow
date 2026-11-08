@@ -13,7 +13,6 @@ import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/performer_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
-import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
@@ -561,13 +560,10 @@ class PerformerDetailsPage extends ConsumerWidget {
                                   GalleryStrip(
                                     galleries: galleries,
                                     onTap: (gallery) {
-                                      ref
-                                          .read(
-                                            imageFilterStateProvider.notifier,
-                                          )
-                                          .setGalleryId(gallery.id);
                                       unawaited(
-                                        context.push('/galleries/images'),
+                                        context.push(
+                                          '/galleries/gallery/${Uri.encodeComponent(gallery.id)}',
+                                        ),
                                       );
                                     },
                                   ),

@@ -16,7 +16,7 @@ class ListSortBottomSheet<T> extends StatefulWidget {
     required this.resetDescending,
     required this.optionLabel,
     required this.onApply,
-    required this.onSaveDefault,
+    this.onSaveDefault,
     this.saveDefaultSuccessMessage,
   });
 
@@ -32,7 +32,9 @@ class ListSortBottomSheet<T> extends StatefulWidget {
   final bool resetDescending;
   final String Function(T option) optionLabel;
   final void Function(T option, bool descending) onApply;
-  final Future<void> Function() onSaveDefault;
+
+  /// Omitted in transient browsers that cannot change library defaults.
+  final Future<void> Function()? onSaveDefault;
   final String? saveDefaultSuccessMessage;
 
   @override
@@ -65,7 +67,7 @@ class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
 
   Future<void> _saveDefault() async {
     widget.onApply(_tempOption, _tempDescending);
-    await widget.onSaveDefault();
+    await widget.onSaveDefault?.call();
     if (!mounted) return;
 
     Navigator.pop(context);
@@ -222,7 +224,9 @@ class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
                   primaryLabel: context.l10n.common_apply_sort,
                   secondaryLabel: context.l10n.common_save_default,
                   onPrimary: _apply,
-                  onSecondary: _saveDefault,
+                  onSecondary: widget.onSaveDefault == null
+                      ? null
+                      : _saveDefault,
                 ),
               ],
             ),

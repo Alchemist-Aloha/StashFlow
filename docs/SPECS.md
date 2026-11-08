@@ -453,7 +453,26 @@ leave the last confirmed value visible and provide localized feedback.
 ### Images and galleries
 
 Images and Galleries are separate top-level features with independent filters,
-sorting, pagination, and layout state.
+sorting, pagination, and layout state. Gallery Details and entity All Images
+browsers additionally own route-lifetime image query sessions: search, filters,
+organized state, sorting, random seed, pagination, fullscreen selection, and
+scroll position never overwrite the Images library or another browser. They
+start with empty optional filters/search and path-ascending order, enforce their
+gallery/entity restriction on every page (including after Reset or preset Apply),
+and dispose their session when popped or when the active server changes. Layout
+preferences and repositories remain shared. Only the library may save image
+filter/sort defaults; scoped browsers may still use saved filter presets.
+
+Gallery cards, gallery strips, and random-gallery actions open Gallery Details
+without changing the Images library query. The hidden Images-tab fallback opens
+the existing library session without clearing its filters. Scoped fullscreen
+routes remain within the originating browser so Back, keyboard navigation,
+slideshow, pagination, rating targets, and return focus use that browser's query.
+Confirmed image ratings update all live image lists without refetching or
+reshuffling them. Existing library URLs (`/galleries/images`, `/image/:id`) remain
+supported; a library deep link outside the loaded page resolves that image as a
+single-image view. A missing scoped image shows an explicit dismissible state,
+never an unrelated first image.
 
 Gallery Details exposes the shared single-star rating button in both its expanded
 and collapsed headers, including for unrated galleries. The expanded section

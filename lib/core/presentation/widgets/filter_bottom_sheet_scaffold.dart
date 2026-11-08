@@ -11,7 +11,7 @@ class FilterBottomSheetScaffold extends StatelessWidget {
     required this.onReset,
     required this.body,
     required this.onApply,
-    required this.onSaveDefault,
+    this.onSaveDefault,
     this.saveDefaultSuccessMessage,
   });
 
@@ -19,7 +19,9 @@ class FilterBottomSheetScaffold extends StatelessWidget {
   final VoidCallback onReset;
   final Widget body;
   final VoidCallback onApply;
-  final Future<void> Function() onSaveDefault;
+
+  /// Omitted in transient browsers that cannot change library defaults.
+  final Future<void> Function()? onSaveDefault;
   final String? saveDefaultSuccessMessage;
 
   @override
@@ -58,18 +60,20 @@ class FilterBottomSheetScaffold extends StatelessWidget {
                   onApply();
                   Navigator.pop(context);
                 },
-                onSecondary: () async {
-                  await onSaveDefault();
-                  if (!context.mounted) return;
+                onSecondary: onSaveDefault == null
+                    ? null
+                    : () async {
+                        await onSaveDefault!();
+                        if (!context.mounted) return;
 
-                  Navigator.pop(context);
-                  final message = saveDefaultSuccessMessage;
-                  if (message != null) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(message)));
-                  }
-                },
+                        Navigator.pop(context);
+                        final message = saveDefaultSuccessMessage;
+                        if (message != null) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(message)));
+                        }
+                      },
               ),
             ],
           ),

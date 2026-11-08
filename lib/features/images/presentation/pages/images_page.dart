@@ -16,6 +16,7 @@ import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../providers/image_list_provider.dart';
+import '../providers/image_browser_context.dart';
 import '../widgets/image_card.dart';
 import '../../domain/entities/image.dart' as entity;
 
@@ -85,6 +86,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   final _returnedImageFocusNode = FocusNode(
     debugLabel: 'returned_fullscreen_image',
   );
+  final _scopedScrollController = ScrollController();
   GlobalKey _focusedImageKey = GlobalKey();
   String? _focusedImageId;
 
@@ -107,12 +109,19 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   @override
   void dispose() {
     _returnedImageFocusNode.dispose();
+    _scopedScrollController.dispose();
     super.dispose();
   }
 
   Future<void> _openImage(entity.Image image) async {
     ref.read(imageFullscreenCurrentIdProvider.notifier).setCurrent(image.id);
-    await context.push<void>('/galleries/images/${image.id}');
+    final browser = ref.read(imageBrowserContextProvider);
+    final imageId = Uri.encodeComponent(image.id);
+    await context.push<void>(
+      browser == null
+          ? '/galleries/images/$imageId'
+          : '${browser.path}/image/$imageId',
+    );
     if (!mounted) return;
 
     final focusedId = ref.read(imageFullscreenCurrentIdProvider);
@@ -135,7 +144,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   Future<void> _restoreImageFocus(int index, int itemCount) async {
     final ScrollController controller =
         widget.scrollController ??
-        ref.read(listScrollControllerProvider(ListScrollTarget.image));
+        (ref.read(imageBrowserContextProvider) != null
+            ? _scopedScrollController
+            : ref.read(listScrollControllerProvider(ListScrollTarget.image)));
 
     if (_focusedImageKey.currentContext == null && controller.hasClients) {
       final position = controller.position;
@@ -234,14 +245,18 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   Future<void> _openRandomGallery() async {
     final gallery = await ref
         .read(galleryListProvider.notifier)
-        .getRandomGallery(excludeGalleryId: _lastRandomGalleryId);
+        .getRandomGallery(
+          excludeGalleryId:
+              _lastRandomGalleryId ??
+              ref.read(imageBrowserContextProvider)?.galleryId,
+        );
     if (!mounted || gallery == null) return;
 
     _lastRandomGalleryId = gallery.id;
 
-    // Set the filter and refresh.
-    ref.read(imageFilterStateProvider.notifier).setGalleryId(gallery.id);
-    context.go('/galleries/images');
+    unawaited(
+      context.push('/galleries/gallery/${Uri.encodeComponent(gallery.id)}'),
+    );
   }
 
   void _showSortPanel() {
@@ -272,8 +287,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
             });
             _applyServerSort();
           },
-          onSaveDefault: () =>
-              ref.read(imageSortProvider.notifier).saveAsDefault(),
+          onSaveDefault: ref.read(imageBrowserContextProvider) != null
+              ? null
+              : () => ref.read(imageSortProvider.notifier).saveAsDefault(),
           saveDefaultSuccessMessage: context.l10n.images_sort_saved,
         ),
       ),
@@ -281,10 +297,14 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   }
 
   void _showFilterPanel() {
+    final container = ProviderScope.containerOf(context);
     unawaited(
       showFrostedPanelBottomSheet<void>(
         context: context,
-        builder: (context) => const ImageFilterPanel(),
+        builder: (context) => UncontrolledProviderScope(
+          container: container,
+          child: const ImageFilterPanel(),
+        ),
       ),
     );
   }
@@ -371,6 +391,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final browser = ref.watch(imageBrowserContextProvider);
     final imagesAsync = ref.watch(imageListProvider);
     final gridColumns = ref.watch(
       gridColumnSettingProvider(GridColumnSetting.image),
@@ -392,7 +413,24 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return ListPageScaffold<entity.Image>(
-      leading: widget.leading,
+      // The scoped navigator cannot infer Back from the containing route stack.
+      leading:
+          widget.leading ??
+          (browser == null
+              ? null
+              : BackButton(
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go(
+                        browser.entityKind == null
+                            ? '/galleries'
+                            : '/${browser.entityKind!.name}/${Uri.encodeComponent(browser.entityId!)}',
+                      );
+                    }
+                  },
+                )),
       gridColumnSetting: GridColumnSetting.image,
       title: widget.title ?? context.l10n.images_title,
       showAppBarTitle: widget.showAppBarTitle,
@@ -498,11 +536,13 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                     children: [
                       InputChip(
                         label: Text(context.l10n.images_filtered_by_gallery),
-                        onDeleted: () {
-                          ref
-                              .read(imageFilterStateProvider.notifier)
-                              .clearGalleryId();
-                        },
+                        onDeleted: browser != null
+                            ? null
+                            : () {
+                                ref
+                                    .read(imageFilterStateProvider.notifier)
+                                    .clearGalleryId();
+                              },
                       ),
                     ],
                   ),
@@ -510,7 +550,11 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               : null),
       scrollController:
           widget.scrollController ??
-          ref.watch(listScrollControllerProvider(ListScrollTarget.image)),
+          (browser != null
+              ? _scopedScrollController
+              : ref.watch(
+                  listScrollControllerProvider(ListScrollTarget.image),
+                )),
       padding: EdgeInsets.all(context.dimensions.spacingSmall),
     );
   }

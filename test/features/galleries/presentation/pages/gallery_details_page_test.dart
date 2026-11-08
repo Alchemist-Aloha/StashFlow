@@ -13,6 +13,8 @@ import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
     as entity;
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
 import 'package:stash_app_flutter/features/images/presentation/widgets/image_card.dart';
+import 'package:stash_app_flutter/features/images/presentation/providers/image_browser_context.dart';
+import 'package:stash_app_flutter/features/images/presentation/widgets/image_browser_scope.dart';
 
 import '../../../../helpers/test_helpers.dart';
 
@@ -90,7 +92,13 @@ void main() {
           Colors.teal,
           fontSizeFactor: scale,
         ).copyWith(platform: platform),
-        child: const GalleryDetailsPage(galleryId: 'gallery-1'),
+        child: const ImageBrowserScope(
+          browser: ImageBrowserContext.gallery(
+            'gallery-1',
+            path: '/gallery/gallery-1',
+          ),
+          child: GalleryDetailsPage(galleryId: 'gallery-1'),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -202,7 +210,13 @@ void main() {
           galleryRepositoryProvider.overrideWithValue(galleries),
           imageRepositoryProvider.overrideWithValue(images),
         ],
-        child: const GalleryDetailsPage(galleryId: 'gallery-1'),
+        child: const ImageBrowserScope(
+          browser: ImageBrowserContext.gallery(
+            'gallery-1',
+            path: '/gallery/gallery-1',
+          ),
+          child: GalleryDetailsPage(galleryId: 'gallery-1'),
+        ),
       );
       await tester.pumpAndSettle();
       final container = ProviderScope.containerOf(
@@ -276,7 +290,13 @@ void main() {
               const Color(0xFF0F766E),
               fontSizeFactor: scale,
             ),
-            child: const GalleryDetailsPage(galleryId: 'gallery-1'),
+            child: const ImageBrowserScope(
+              browser: ImageBrowserContext.gallery(
+                'gallery-1',
+                path: '/gallery/gallery-1',
+              ),
+              child: GalleryDetailsPage(galleryId: 'gallery-1'),
+            ),
           ),
         );
         await tester.pumpAndSettle();
@@ -355,7 +375,13 @@ void main() {
                 ),
               ),
             ),
-            child: const GalleryDetailsPage(galleryId: 'gallery-1'),
+            child: const ImageBrowserScope(
+              browser: ImageBrowserContext.gallery(
+                'gallery-1',
+                path: '/gallery/gallery-1',
+              ),
+              child: GalleryDetailsPage(galleryId: 'gallery-1'),
+            ),
           );
         },
       ),
