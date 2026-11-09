@@ -186,11 +186,10 @@ jobs:
           python3 scripts/test_linux_bundle.py
 
       - name: Build
+        if: matrix.target != 'windows'
         run: |
           if [ "${{ matrix.target }}" = "android" ]; then
             flutter build apk --release --split-per-abi
-          elif [ "${{ matrix.target }}" = "windows" ]; then
-            flutter build windows --release
           elif [ "${{ matrix.target }}" = "linux" ]; then
             flutter build linux --release
           elif [ "${{ matrix.target }}" = "web" ]; then
@@ -204,14 +203,6 @@ jobs:
             # CTranslate2/Ruy also inspect CMake's processor, not just OSX_ARCHITECTURES.
             CMAKE_APPLE_SILICON_PROCESSOR="$macos_arch" FLUTTER_MACOS_ARM64_ONLY=false FLUTTER_XCODE_ARCHS="$macos_arch" flutter build macos --release
           fi
-        shell: bash
-
-      - name: Package Windows
-        if: matrix.target == 'windows'
-        run: |
-          python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
-          cd build/windows/${{ matrix.arch }}/runner/Release
-          7z a ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-windows-${{ matrix.arch }}.zip *
         shell: bash
 
       - name: Package Linux
@@ -336,6 +327,7 @@ jobs:
             )
           done
 
+      # Fastforge builds Windows once; the ZIP below reuses that output.
       - name: Package Windows dists
         if: matrix.target == 'windows'
         shell: pwsh
@@ -353,6 +345,14 @@ jobs:
           python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Get-ChildItem dist -Recurse -Filter *.exe | Rename-Item -NewName "StashFlow-$env:STASHFLOW_ARTIFACT_VERSION-windows-${{ matrix.arch }}.exe"
+
+      - name: Package Windows
+        if: matrix.target == 'windows'
+        run: |
+          python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
+          cd build/windows/${{ matrix.arch }}/runner/Release
+          7z a ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-windows-${{ matrix.arch }}.zip *
+        shell: bash
 
       - name: Upload dist packages
         if: matrix.target == 'linux' || matrix.target == 'windows'

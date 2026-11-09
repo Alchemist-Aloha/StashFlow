@@ -22,6 +22,29 @@ def workflow_script(name):
 
 
 class ReleaseArtifactsTest(unittest.TestCase):
+    def test_windows_builds_once_and_zips_the_fastforge_output(self):
+        self.assertIn("      - name: Build\n        if: matrix.target != 'windows'\n", WORKFLOW)
+        self.assertNotIn("flutter build windows", WORKFLOW)
+        self.assertEqual(WORKFLOW.count("fastforge package --platform windows"), 1)
+        installer = WORKFLOW.index("      - name: Package Windows dists\n")
+        archive = WORKFLOW.index("      - name: Package Windows\n")
+        self.assertLess(installer, archive)
+        for upload in ["Upload dist packages", "Upload Artifact"]:
+            self.assertLess(archive, WORKFLOW.index(f"      - name: {upload}\n"))
+
+        validation = (
+            "python scripts/validate_windows_bundle.py "
+            "build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}"
+        )
+        installer_script = workflow_script("Package Windows dists")
+        self.assertLess(installer_script.index("fastforge package"),
+                        installer_script.index(validation))
+        self.assertIn(validation + "\nif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
+                      installer_script)
+        archive_script = workflow_script("Package Windows")
+        self.assertLess(archive_script.index(validation), archive_script.index("7z a"))
+        self.assertIn("cd build/windows/${{ matrix.arch }}/runner/Release", archive_script)
+
     def test_macos_configurations_inherit_cocoapods_settings(self):
         root = Path(__file__).resolve().parents[1]
         for mode in ["Debug", "Release"]:

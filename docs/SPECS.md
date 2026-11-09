@@ -1074,8 +1074,10 @@ archive must not determine the target architecture on the ARM runner. Artifact
 filenames end in `windows-x64` or `windows-arm64`, and upload names are distinct.
 ARM64 installers allow ARM64 systems and use 64-bit installation paths. Both
 bundles must contain matching-architecture executables and DLLs, including the
-Flutter engine and bundled mpv, checked before packaging and after Fastforge's
-rebuild.
+Flutter engine and bundled mpv. Fastforge performs the only Windows release
+build while creating the EXE installer; the ZIP then reuses that same Release
+bundle. Architecture validation runs after Fastforge and before ZIP packaging
+and artifact uploads; there is no separate standalone Windows build.
 
 The on-device translation DLL and its static CTranslate2/SentencePiece
 dependencies use the same static MSVC runtime. Windows ARM64 uses Ruy's fallback
