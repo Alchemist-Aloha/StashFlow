@@ -1020,9 +1020,13 @@ verified together with `sha256sum -c <filename>.sha256`.
 The minimum deployment target is macOS 13, matching the native frameworks emitted
 by the pinned Flutter SDK.
 
-Stable and nightly workflows build Apple Silicon on
-`macos-26` and Intel on `macos-26-intel`, explicitly selecting `arm64` and
-`x86_64` through Flutter's Xcode build settings. ZIP filenames end in
+Stable and nightly workflows build both macOS artifacts on Apple Silicon
+`macos-26` runners using native host Flutter/Dart tools, cross-compiling the
+Intel artifact. They explicitly select `arm64` and `x86_64` through Flutter's
+Xcode build settings, and align `CMAKE_APPLE_SILICON_PROCESSOR` with the target
+so CTranslate2/Ruy select matching CPU kernels. The release build generates its
+own ephemeral configuration; there is no separate configuration-only build.
+ZIP filenames end in
 `macos-arm64` or `macos-x86_64`, and upload artifact names are distinct.
 Before packaging, the app executable and every bundled Mach-O binary must
 contain the target architecture; embedded universal libraries are allowed.

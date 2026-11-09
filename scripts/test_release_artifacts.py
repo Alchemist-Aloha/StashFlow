@@ -22,13 +22,27 @@ def workflow_script(name):
 
 
 class ReleaseArtifactsTest(unittest.TestCase):
+    def test_macos_builds_use_apple_silicon_without_duplicate_configuration(self):
+        targets = re.findall(
+            r"          - target: macos\n"
+            r"            os: (\S+)\n"
+            r"            artifact_name: (\S+)\n"
+            r"            arch: (\S+)",
+            WORKFLOW,
+        )
+        self.assertEqual(targets, [
+            ("macos-26", "macos", "arm64"),
+            ("macos-26", "macos-x64", "x64"),
+        ])
+        self.assertNotIn("--config-only", WORKFLOW)
+
     def test_macos_build_selects_requested_xcode_architecture(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             flutter = root / "flutter"
             flutter.write_text(
                 '#!/usr/bin/env bash\nset -euo pipefail\n'
-                'printf "%s:%s\\n" "$FLUTTER_XCODE_ARCHS" "$FLUTTER_MACOS_ARM64_ONLY"\n'
+                'printf "%s:%s:%s\\n" "$FLUTTER_XCODE_ARCHS" "$FLUTTER_MACOS_ARM64_ONLY" "$CMAKE_APPLE_SILICON_PROCESSOR"\n'
             )
             flutter.chmod(0o755)
             for architecture, cpu in [("x64", "x86_64"), ("arm64", "arm64")]:
@@ -39,7 +53,7 @@ class ReleaseArtifactsTest(unittest.TestCase):
                         env={**os.environ, "PATH": f"{root}:{os.environ['PATH']}",
                              "TARGET_ARCH": architecture}, text=True,
                     )
-                    self.assertEqual(result, f"{cpu}:false\n")
+                    self.assertEqual(result, f"{cpu}:false:{cpu}\n")
 
     def test_macos_packaging_checks_runner_and_embedded_frameworks(self):
         for architecture, cpu in [("x64", "x86_64"), ("arm64", "arm64")]:
