@@ -22,6 +22,20 @@ def workflow_script(name):
 
 
 class ReleaseArtifactsTest(unittest.TestCase):
+    def test_macos_configurations_inherit_cocoapods_settings(self):
+        root = Path(__file__).resolve().parents[1]
+        for mode in ["Debug", "Release"]:
+            with self.subTest(mode=mode):
+                config = (root / f"macos/Flutter/Flutter-{mode}.xcconfig").read_text()
+                pods = (
+                    '#include? "Pods/Target Support Files/Pods-Runner/'
+                    f'Pods-Runner.{mode.lower()}.xcconfig"'
+                )
+                generated = '#include "ephemeral/Flutter-Generated.xcconfig"'
+                self.assertIn(pods, config)
+                self.assertIn(generated, config)
+                self.assertLess(config.index(pods), config.index(generated))
+
     def test_macos_builds_use_apple_silicon_without_duplicate_configuration(self):
         targets = re.findall(
             r"          - target: macos\n"

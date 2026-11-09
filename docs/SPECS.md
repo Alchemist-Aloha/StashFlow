@@ -1018,7 +1018,10 @@ verified together with `sha256sum -c <filename>.sha256`.
 ### macOS
 
 The minimum deployment target is macOS 13, matching the native frameworks emitted
-by the pinned Flutter SDK.
+by the pinned Flutter SDK. While the Podfile remains, Debug and Release Flutter
+xcconfigs must include the matching CocoaPods xcconfig before Flutter's generated
+settings; Profile inherits Release. This supplies `PODS_ROOT` to CocoaPods build
+phases even when plugins resolve through Swift Package Manager.
 
 Stable and nightly workflows build both macOS artifacts on Apple Silicon
 `macos-26` runners using native host Flutter/Dart tools, cross-compiling the
