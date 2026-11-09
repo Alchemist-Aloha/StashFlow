@@ -826,6 +826,15 @@ presentation that was active before entering.
   or invalid metadata retains the last valid ratio. Desktop PiP is an ordinary
   window: `P` toggles it, and its minimal
   controls expose previous, play/pause, next, seeking, and exit-PiP actions.
+  While focused, desktop PiP honors the configured player bindings for
+  play/pause (Space), seeking (Left/Right by 5 seconds, J/L by 10 seconds),
+  previous/next scene (Shift+P/Shift+N), and exit (P or Escape). Seeks stay
+  within the known duration, and unavailable queue directions do nothing.
+  These shortcuts remain available while the transport overlay is hidden.
+  On Linux, native window focus/blur events are bridged to Flutter's per-view
+  focus tree after its view frame mounts, so initial activation and switching
+  between PiP and the main window route keyboard input to the active window
+  without requiring a click on a control.
 - Desktop window placement is best-effort. In particular, Wayland compositors
   choose window positions and may ignore always-on-top requests, so the PiP
   window may open where the compositor decides and can be dragged. Hyprland
@@ -867,9 +876,9 @@ Background playback follows the persisted preference:
 
 - when enabled, playback may continue while the app is backgrounded and the
   media notification remains synchronized;
-- explicit system media commands take effect immediately after backgrounding;
-  Pause suppresses background keepalive until an explicit Play or foreground
-  resume;
+- explicit pause commands from system media controls, desktop PiP, and the
+  mini player suppress background keepalive until an explicit Play or foreground
+  resume, including while the app is inactive;
 - controller initialization must not require a Flutter render frame, so
   notification queue changes and auto-next can start while frames are suspended;
 - when disabled, an active global player pauses on backgrounding unless the app

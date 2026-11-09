@@ -39,6 +39,7 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/data/services/cast_service.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
+import '../../../../core/presentation/providers/keybinds_provider.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -453,6 +454,14 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         exit: DesktopPipWindowSession.close,
       );
     }
+
+    ref.listen(keybindsProvider, (previous, next) {
+      if (!PipMode.isWindowed || !PipMode.isInPipMode.value) return;
+      final controller = state.videoController;
+      if (controller != null) {
+        DesktopPipWindowSession.updateSource(_desktopPipSource(controller));
+      }
+    });
 
     ref.listen(playbackQueueProvider, (previous, next) {
       if (!PipMode.isWindowed || !PipMode.isInPipMode.value) return;
@@ -924,6 +933,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     final activeSceneId = state.activeScene?.id;
     return DesktopPipPlaybackSource(
       controller: controller,
+      keybinds: ref.read(keybindsProvider),
       subtitleOverlay: UncontrolledProviderScope(
         container: ref.container,
         child: GeneratedCaptionOverlay(player: controller.player),
@@ -1679,20 +1689,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
   void togglePlayPause() {
     final player = state.player;
-    if (player != null) {
-      if (player.state.playing) {
-        unawaited(player.pause());
-        state = state.copyWith(isPlaying: false);
-        if (!isTestMode) {
-          unawaited(WakelockPlus.disable());
-        }
-      } else {
-        unawaited(player.play());
-        state = state.copyWith(isPlaying: true);
-        if (!isTestMode) {
-          unawaited(WakelockPlus.enable());
-        }
-      }
+    if (player == null) return;
+    if (player.state.playing) {
+      pause();
+    } else {
+      play();
     }
   }
 

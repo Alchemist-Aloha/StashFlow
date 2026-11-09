@@ -128,7 +128,9 @@ void main() {
       contains("if (dart.library.io) 'root_app_runner_native.dart'"),
     );
     expect(rootRunnerSource, contains('platform.runRootApp(app)'));
-    expect(nativeRootRunnerSource, contains('runMultiApp(home:'));
+    expect(nativeRootRunnerSource, contains('runMultiApp('));
+    expect(nativeRootRunnerSource, contains('home: (context, viewId) => app'));
+    expect(nativeRootRunnerSource, contains('LinuxWindowFocusObserver('));
     for (final platform in ['windows', 'linux', 'macOS']) {
       expect(nativeRootRunnerSource, contains('TargetPlatform.$platform'));
     }

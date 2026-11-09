@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
@@ -9,6 +10,7 @@ import 'package:multiview_desktop/multiview_desktop.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/desktop_pip_window.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/pip_mode.dart';
+import 'package:stash_app_flutter/core/presentation/providers/keybinds_provider.dart';
 
 class _FakeVideoController extends Mock implements VideoController {
   _FakeVideoController(this.fakePlayer);
@@ -20,14 +22,16 @@ class _FakeVideoController extends Mock implements VideoController {
 }
 
 class _FakePlayer extends Mock implements mk.Player {
+  mk.PlayerState playbackState = const mk.PlayerState(
+    position: Duration(seconds: 20),
+    duration: Duration(seconds: 100),
+  );
+
   @override
   mk.PlayerStream get stream => _FakePlayerStream();
 
   @override
-  mk.PlayerState get state => const mk.PlayerState(
-    position: Duration(seconds: 20),
-    duration: Duration(seconds: 100),
-  );
+  mk.PlayerState get state => playbackState;
 }
 
 class _FakePlayerStream extends Fake implements mk.PlayerStream {
@@ -83,6 +87,133 @@ class _FakePipWindow extends Mock implements MultiViewDesktop {
 }
 
 void main() {
+  testWidgets(
+    'PiP keyboard seeks use player steps and clamp to known duration',
+    (tester) async {
+      final player = _FakePlayer();
+      final seeks = <Duration>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DesktopPipKeyboardControls(
+            source: DesktopPipPlaybackSource(
+              controller: _FakeVideoController(player),
+              canPlayPrevious: false,
+              canPlayNext: false,
+              keybinds: Keybinds(Keybinds.defaultBinds),
+            ),
+            onTogglePlayback: () {},
+            onSeek: (position) async => seeks.add(position),
+            onPrevious: () async {},
+            onNext: () async {},
+            onExit: () {},
+            child: const SizedBox.expand(),
+          ),
+        ),
+      );
+      await tester.pump();
+      for (final key in [
+        LogicalKeyboardKey.arrowLeft,
+        LogicalKeyboardKey.arrowRight,
+        LogicalKeyboardKey.keyJ,
+        LogicalKeyboardKey.keyL,
+      ]) {
+        await tester.sendKeyEvent(key);
+      }
+      expect(seeks, [15, 25, 10, 30].map((s) => Duration(seconds: s)).toList());
+
+      player.playbackState = const mk.PlayerState(
+        position: Duration(seconds: 2),
+        duration: Duration(seconds: 100),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyJ);
+      expect(seeks.last, Duration.zero);
+      player.playbackState = const mk.PlayerState(
+        position: Duration(seconds: 98),
+        duration: Duration(seconds: 100),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyL);
+      expect(seeks.last, const Duration(seconds: 100));
+      player.playbackState = const mk.PlayerState();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      expect(seeks, hasLength(6));
+    },
+  );
+
+  testWidgets(
+    'PiP keyboard toggles playback, navigates and follows rebinding',
+    (tester) async {
+      var toggles = 0;
+      var previous = 0;
+      var next = 0;
+      var exits = 0;
+      final controller = _FakeVideoController(_FakePlayer());
+      Future<void> mount({
+        required bool canNavigate,
+        Keybinds? keybinds,
+      }) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: DesktopPipKeyboardControls(
+              source: DesktopPipPlaybackSource(
+                controller: controller,
+                canPlayPrevious: canNavigate,
+                canPlayNext: canNavigate,
+                keybinds: keybinds ?? Keybinds(Keybinds.defaultBinds),
+              ),
+              onTogglePlayback: () => toggles++,
+              onSeek: (_) async {},
+              onPrevious: () async => previous++,
+              onNext: () async => next++,
+              onExit: () => exits++,
+              // No visible transport is needed for shortcuts to work.
+              child: const SizedBox.expand(),
+            ),
+          ),
+        );
+        await tester.pump();
+      }
+
+      Future<void> navigate() async {
+        await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+        await tester.sendKeyEvent(LogicalKeyboardKey.keyP);
+        await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
+        await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+      }
+
+      await mount(canNavigate: true);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      expect(toggles, 2);
+      await navigate();
+      expect(previous, 1);
+      expect(next, 1);
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyP);
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      expect(exits, 2);
+
+      await mount(canNavigate: false);
+      await navigate();
+      expect(previous, 1);
+      expect(next, 1);
+
+      await mount(
+        canNavigate: true,
+        keybinds: Keybinds({
+          KeybindAction.playPause: const Keybind(LogicalKeyboardKey.keyK),
+          KeybindAction.nextScene: const Keybind(LogicalKeyboardKey.keyN),
+        }),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      expect(toggles, 2);
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyK);
+      expect(toggles, 3);
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
+      expect(next, 2);
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      expect(exits, 2, reason: 'unbound actions must stay disabled');
+    },
+  );
+
   testWidgets('Wayland PiP waits for resize then restores resizable bounds', (
     tester,
   ) async {

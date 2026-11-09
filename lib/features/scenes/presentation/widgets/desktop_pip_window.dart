@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart' show VideoParams;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:multiview_desktop/multiview_desktop.dart';
 
+import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/pip_mode.dart';
 import 'video_controls/video_progress_bar.dart';
@@ -122,6 +122,7 @@ class DesktopPipPlaybackSource {
     required this.controller,
     required this.canPlayPrevious,
     required this.canPlayNext,
+    required this.keybinds,
     this.subtitleOverlay,
   });
 
@@ -129,6 +130,7 @@ class DesktopPipPlaybackSource {
   final VideoController controller;
   final bool canPlayPrevious;
   final bool canPlayNext;
+  final Keybinds keybinds;
 }
 
 /// Owns the one secondary desktop view used for picture-in-picture playback.
@@ -340,29 +342,26 @@ class _DesktopPipPlayerWindowState extends State<_DesktopPipPlayerWindow> {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.black,
-      child: CallbackShortcuts(
-        bindings: {
-          const SingleActivator(LogicalKeyboardKey.escape): () =>
-              unawaited(_exitPip()),
-          const SingleActivator(LogicalKeyboardKey.space):
-              widget.onTogglePlayback,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _showControls = true),
+        onHover: (_) {
+          if (!_showControls) setState(() => _showControls = true);
         },
-        child: Focus(
-          autofocus: true,
-          child: MouseRegion(
-            onEnter: (_) => setState(() => _showControls = true),
-            onHover: (_) {
-              if (!_showControls) setState(() => _showControls = true);
-            },
-            onExit: (_) => setState(() => _showControls = false),
-            child: ValueListenableBuilder<DesktopPipPlaybackSource?>(
-              valueListenable: widget.source,
-              builder: (context, source, _) {
-                if (source == null) return const SizedBox.expand();
-                return _buildPlayer(context, source);
-              },
-            ),
-          ),
+        onExit: (_) => setState(() => _showControls = false),
+        child: ValueListenableBuilder<DesktopPipPlaybackSource?>(
+          valueListenable: widget.source,
+          builder: (context, source, _) {
+            if (source == null) return const SizedBox.expand();
+            return DesktopPipKeyboardControls(
+              source: source,
+              onTogglePlayback: widget.onTogglePlayback,
+              onSeek: widget.onSeek,
+              onPrevious: widget.onPrevious,
+              onNext: widget.onNext,
+              onExit: () => unawaited(_exitPip()),
+              child: _buildPlayer(context, source),
+            );
+          },
         ),
       ),
     );
@@ -426,6 +425,65 @@ class _DesktopPipPlayerWindowState extends State<_DesktopPipPlayerWindow> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Applies the configured player shortcuts within the focused PiP window.
+class DesktopPipKeyboardControls extends StatelessWidget {
+  const DesktopPipKeyboardControls({
+    super.key,
+    required this.source,
+    required this.onTogglePlayback,
+    required this.onSeek,
+    required this.onPrevious,
+    required this.onNext,
+    required this.onExit,
+    required this.child,
+  });
+
+  final DesktopPipPlaybackSource source;
+  final VoidCallback onTogglePlayback;
+  final Future<void> Function(Duration position) onSeek;
+  final Future<void> Function() onPrevious;
+  final Future<void> Function() onNext;
+  final VoidCallback onExit;
+  final Widget child;
+
+  void _seekRelative(int seconds) {
+    final state = source.controller.player.state;
+    if (state.duration <= Duration.zero) return;
+    final target = (state.position.inMilliseconds + seconds * 1000).clamp(
+      0,
+      state.duration.inMilliseconds,
+    );
+    unawaited(onSeek(Duration(milliseconds: target)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final callbacks = <KeybindAction, VoidCallback>{
+      KeybindAction.playPause: onTogglePlayback,
+      KeybindAction.seekForward: () => _seekRelative(5),
+      KeybindAction.seekBackward: () => _seekRelative(-5),
+      KeybindAction.seekForwardLarge: () => _seekRelative(10),
+      KeybindAction.seekBackwardLarge: () => _seekRelative(-10),
+      KeybindAction.previousScene: () {
+        if (source.canPlayPrevious) unawaited(onPrevious());
+      },
+      KeybindAction.nextScene: () {
+        if (source.canPlayNext) unawaited(onNext());
+      },
+      KeybindAction.togglePip: onExit,
+      KeybindAction.closePlayer: onExit,
+    };
+    return CallbackShortcuts(
+      bindings: {
+        for (final entry in source.keybinds.binds.entries)
+          if (callbacks.containsKey(entry.key))
+            entry.value.toActivator(): callbacks[entry.key]!,
+      },
+      child: Focus(autofocus: true, child: child),
     );
   }
 }

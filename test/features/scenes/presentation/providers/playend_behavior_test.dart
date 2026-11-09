@@ -606,6 +606,51 @@ void main() {
     },
   );
 
+  for (final lifecycle in [
+    AppLifecycleState.inactive,
+    AppLifecycleState.hidden,
+    AppLifecycleState.paused,
+  ]) {
+    test('PiP toggle honors pause and resume in $lifecycle', () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      var playback = PlayerStateData(playing: true);
+      when(mockPlayer.state).thenAnswer((_) => playback);
+      when(mockPlayer.pause()).thenAnswer((_) async {
+        playback = PlayerStateData(playing: false);
+        playingStream.add(false);
+      });
+      when(mockPlayer.play()).thenAnswer((_) async {
+        playback = PlayerStateData(playing: true);
+        playingStream.add(true);
+      });
+      await notifier.attachController(
+        createTestScene('pip-toggle'),
+        mockPlayer,
+        mockVideoController,
+      );
+      notifier.setEnableBackgroundPlayback(true);
+      notifier.didChangeAppLifecycleState(lifecycle);
+
+      notifier.togglePlayPause();
+      positionStream.add(const Duration(seconds: 1));
+      await Future<void>.delayed(Duration.zero);
+      verify(mockPlayer.pause()).called(1);
+      verifyNever(mockPlayer.play());
+      expect(container.read(playerStateProvider).isPlaying, isFalse);
+
+      notifier.togglePlayPause();
+      await Future<void>.delayed(Duration.zero);
+      verify(mockPlayer.play()).called(1);
+      expect(container.read(playerStateProvider).isPlaying, isTrue);
+
+      // Explicit resume must re-enable recovery of unintentional pauses.
+      playback = PlayerStateData(playing: false);
+      playingStream.add(false);
+      await Future<void>.delayed(Duration.zero);
+      verify(mockPlayer.play()).called(1);
+    });
+  }
+
   test('background playback off pauses an active player', () async {
     final notifier = container.read(playerStateProvider.notifier);
     final scene = createTestScene('background-off');
