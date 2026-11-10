@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import '../../../../core/presentation/providers/keybinds_provider.dart';
 
 /// Playback state shared with the native desktop PiP window implementation.
 class DesktopPipPlaybackSource {
@@ -7,6 +8,7 @@ class DesktopPipPlaybackSource {
     required this.controller,
     required this.canPlayPrevious,
     required this.canPlayNext,
+    required this.keybinds,
     this.subtitleOverlay,
   });
 
@@ -14,6 +16,7 @@ class DesktopPipPlaybackSource {
   final VideoController controller;
   final bool canPlayPrevious;
   final bool canPlayNext;
+  final Keybinds keybinds;
 }
 
 /// Web has no separate native window for the desktop PiP implementation.

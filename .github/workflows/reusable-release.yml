@@ -65,8 +65,9 @@ jobs:
             os: macos-26
             artifact_name: macos
             arch: arm64
+          # Cross-compile Intel binaries with native Apple Silicon build tools.
           - target: macos
-            os: macos-26-intel
+            os: macos-26
             artifact_name: macos-x64
             arch: x64
 
@@ -103,7 +104,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: "3.47.7"
+          flutter-version: "3.47.9"
           cache: true
 
       # The release archive bundles x64 Dart; bootstrap native Dart on ARM64.
@@ -112,7 +113,7 @@ jobs:
         shell: pwsh
         run: |
           $flutterRoot = Join-Path $env:RUNNER_TEMP 'flutter-arm64'
-          git clone --depth 1 --branch 3.47.7 https://github.com/flutter/flutter.git $flutterRoot
+          git clone --depth 1 --branch 3.47.9 https://github.com/flutter/flutter.git $flutterRoot
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "$flutterRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           "FLUTTER_ROOT=$flutterRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
@@ -160,6 +161,8 @@ jobs:
             ninja-build \
             pkg-config \
             libgtk-3-dev \
+            libx11-dev \
+            libxi-dev \
             liblzma-dev \
             libstdc++-12-dev \
             libsecret-1-dev \
@@ -184,16 +187,11 @@ jobs:
           python3 scripts/test_windows_bundle.py
           python3 scripts/test_linux_bundle.py
 
-      - name: Generate macOS Flutter ephemeral files
-        if: matrix.target == 'macos'
-        run: flutter build macos --config-only
-
       - name: Build
+        if: matrix.target != 'windows'
         run: |
           if [ "${{ matrix.target }}" = "android" ]; then
             flutter build apk --release --split-per-abi
-          elif [ "${{ matrix.target }}" = "windows" ]; then
-            flutter build windows --release
           elif [ "${{ matrix.target }}" = "linux" ]; then
             flutter build linux --release
           elif [ "${{ matrix.target }}" = "web" ]; then
@@ -204,16 +202,9 @@ jobs:
               arm64) macos_arch=arm64 ;;
               *) echo "Unsupported macOS architecture: $TARGET_ARCH" >&2; exit 1 ;;
             esac
-            FLUTTER_MACOS_ARM64_ONLY=false FLUTTER_XCODE_ARCHS="$macos_arch" flutter build macos --release
+            # CTranslate2/Ruy also inspect CMake's processor, not just OSX_ARCHITECTURES.
+            CMAKE_APPLE_SILICON_PROCESSOR="$macos_arch" FLUTTER_MACOS_ARM64_ONLY=false FLUTTER_XCODE_ARCHS="$macos_arch" flutter build macos --release
           fi
-        shell: bash
-
-      - name: Package Windows
-        if: matrix.target == 'windows'
-        run: |
-          python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
-          cd build/windows/${{ matrix.arch }}/runner/Release
-          7z a ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-windows-${{ matrix.arch }}.zip *
         shell: bash
 
       - name: Package Linux
@@ -338,6 +329,7 @@ jobs:
             )
           done
 
+      # Fastforge builds Windows once; the ZIP below reuses that output.
       - name: Package Windows dists
         if: matrix.target == 'windows'
         shell: pwsh
@@ -355,6 +347,14 @@ jobs:
           python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Get-ChildItem dist -Recurse -Filter *.exe | Rename-Item -NewName "StashFlow-$env:STASHFLOW_ARTIFACT_VERSION-windows-${{ matrix.arch }}.exe"
+
+      - name: Package Windows
+        if: matrix.target == 'windows'
+        run: |
+          python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
+          cd build/windows/${{ matrix.arch }}/runner/Release
+          7z a ../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-windows-${{ matrix.arch }}.zip *
+        shell: bash
 
       - name: Upload dist packages
         if: matrix.target == 'linux' || matrix.target == 'windows'

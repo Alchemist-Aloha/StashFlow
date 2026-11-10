@@ -23,16 +23,12 @@ final class AppConfigReplaceException implements Exception {
 final class AppConfigService {
   AppConfigService({
     required this.preferences,
-    required AppSecureStorageStore secureStorage,
+    required this._secureStorage,
     required this.appVersion,
-    required DateTime Function() now,
-    AppConfigSettingsRegistry settingsRegistry =
-        const AppConfigSettingsRegistry(),
-    AppConfigBackupCodec codec = const AppConfigBackupCodec(),
-  }) : _secureStorage = secureStorage,
-       _now = now,
-       _settingsRegistry = settingsRegistry,
-       _codec = codec;
+    required this._now,
+    this._settingsRegistry = const AppConfigSettingsRegistry(),
+    this._codec = const AppConfigBackupCodec(),
+  });
 
   static const _profilesKey = 'server_profiles';
   static const _activeProfileKey = 'active_server_profile_id';

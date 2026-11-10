@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +14,9 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_l
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+
 import '../../../../helpers/test_helpers.dart';
+
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/tiktok_scenes_view.dart';
 
 class _FeedPlayer extends Mock implements mk.Player {
@@ -115,13 +118,23 @@ class _FeedScenes extends SceneList {
 }
 
 class _FeedState extends PlayerState {
-  _FeedState(this.scene);
+  _FeedState(this.scene, {this.player});
   final Scene scene;
+  final mk.Player? player;
+
+  @override
+  void togglePlayPause() {
+    final current = player;
+    if (current == null) return;
+    unawaited(current.state.playing ? current.pause() : current.play());
+  }
+
   @override
   VideoController? get currentVideoController => null;
   @override
   GlobalPlayerState build() => GlobalPlayerState(
     activeScene: scene,
+    player: player,
     viewMode: PlayerViewMode.tiktok,
     streamSource: 'tiktok-promotion',
     startupLatencyMs: 0,
@@ -175,9 +188,9 @@ void main() {
         ],
       );
       final startContext = tester.element(find.text('start'));
-      ProviderScope.containerOf(
-        startContext,
-      ).read(playbackQueueProvider.notifier).setSequence(scenes, 0);
+      ProviderScope.containerOf(startContext)
+          .read(playbackQueueProvider.notifier)
+          .setSequence(scenes, 0);
       final router = GoRouter.of(startContext);
       router.go('/scenes');
       await tester.pump();
@@ -288,9 +301,8 @@ void main() {
                         global.activeScene!,
                         mode: PlayerViewMode.inline,
                       );
-                      GoRouter.of(
-                        context,
-                      ).go('/scenes/scene/${global.activeScene!.id}');
+                      GoRouter.of(context)
+                          .go('/scenes/scene/${global.activeScene!.id}');
                     },
                     child: Scaffold(
                       appBar: AppBar(
@@ -373,29 +385,44 @@ void main() {
     }
   });
 
-  test(
-    'feed navigation pauses all inactive players in both directions and at the last item',
-    () {
-      final players = {
-        for (final id in ['first', 'middle', 'last']) id: _FeedPlayer(),
-      };
-      final controllers = {
-        for (final entry in players.entries)
-          entry.key: _FeedController(entry.value),
-      };
-      for (final current in ['first', 'middle', 'last', 'middle', 'first']) {
-        syncTiktokPlayback(controllers, current, VideoEndBehavior.next);
-        expect(
-          players.entries
-              .where((entry) => entry.value.playing)
-              .map((entry) => entry.key),
-          [current],
-        );
-      }
-      expect(players['first']!.pauseCalls, 1);
-      expect(players['last']!.pauseCalls, 2);
-    },
-  );
+  test('feed navigation pauses all inactive players in both directions and at the last item', () {
+    final players = {
+      for (final id in ['first', 'middle', 'last']) id: _FeedPlayer(),
+    };
+    final controllers = {
+      for (final entry in players.entries)
+        entry.key: _FeedController(entry.value),
+    };
+    for (final current in ['first', 'middle', 'last', 'middle', 'first']) {
+      syncTiktokPlayback(controllers, current, VideoEndBehavior.next);
+      expect(
+        players.entries
+            .where((entry) => entry.value.playing)
+            .map((entry) => entry.key),
+        [current],
+      );
+    }
+    expect(players['first']!.pauseCalls, 1);
+    expect(players['last']!.pauseCalls, 2);
+  });
+
+  test('feed delegates active play to focus owner, never preloads', () {
+    final current = _FeedPlayer()..playing = false;
+    final preload = _FeedPlayer();
+    final requests = <mk.Player>[];
+    syncTiktokPlayback(
+      {
+        'current': _FeedController(current),
+        'preload': _FeedController(preload),
+      },
+      'current',
+      VideoEndBehavior.next,
+      onPlayCurrent: requests.add,
+    );
+    expect(requests, [current]);
+    expect(current.playCalls, 0);
+    expect(preload.playing, isFalse);
+  });
 
   test('unloaded next feed item still pauses the previous video', () {
     final previous = _FeedPlayer();
@@ -490,7 +517,11 @@ void main() {
     final controller = _UiFeedController(player);
     await pumpTestWidget(
       tester,
-      overrides: [playerStateProvider.overrideWith(() => _FeedState(scene))],
+      overrides: [
+        playerStateProvider.overrideWith(
+          () => _FeedState(scene, player: player),
+        ),
+      ],
       child: StatefulBuilder(
         builder: (context, setState) {
           rebuild = setState;

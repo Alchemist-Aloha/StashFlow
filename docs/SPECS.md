@@ -324,7 +324,10 @@ serialization differences.
 
 ### Image and preview loading
 
-- `StashImage` is the common authenticated/cached image boundary.
+- `StashImage` is the common authenticated/cached image boundary. Native images
+  and VTT sprite sheets share its `cached_network_image_ce` manager (7-day
+  freshness, 100 entries) and Dio transport with persistent session cookies.
+  Web display retains its existing `Image.network` authentication fallback.
 - List and strip callers provide appropriate `memCacheWidth`/height hints.
 - Prefetch only the visible region plus a small forward buffer.
 - Deduplicate concurrent requests for the same URL and decode size.
@@ -503,6 +506,27 @@ The fullscreen image viewer supports:
 - authenticated original-image loading;
 - download/save actions with platform-appropriate permission handling;
 - prefetch of nearby images without loading the entire result set.
+
+ImageClips are identified by the primary `visual_files` entry's `VideoFile`
+type, not by URL extensions. GIFs are an exception: the source format or a
+case-insensitive `.gif` source-file suffix keeps them in the animated-image
+viewer and image-saving path, even when reported as `VideoFile`. GIFs have no
+video controls or play indicator. Gallery/image grids retain static thumbnails
+with a play indicator for clips. The fullscreen viewer loops the authenticated original clip with
+a dedicated play/pause and seek row in a viewer-owned media-kit session, separate
+from the scene queue. Clips fill the same viewport as still images beneath the
+viewer overlays. A compact floating play/seek bar sits above the measured viewer
+navigation when shown, or at the bottom safe area when hidden. Clearance follows
+navigation size, UI scale, orientation, and system insets without resizing the
+video or recreating its session. Short layouts compact the bar while retaining
+48dp minimum touch targets. Scrubbing commits one seek on release, keeps the
+preview position until completion, and neither pages nor toggles viewer chrome.
+Recoverable decoder errors do not tear down the surface or repeatedly pause it.
+Only the selected clip mounts a player; paging away or closing detaches the
+surface before releasing it, even during startup. Backgrounding pauses it once
+and foregrounding resumes only previously playing media. Clips are excluded from still-image prefetch and are
+saved as videos with their source extension (or server-reported MP4/WebM type).
+Still images retain zoom/pan and their existing loading behavior.
 
 Saving through `gal` must request only required access, use a recognizable
 StashFlow album where supported, and report success/failure without exposing
@@ -808,9 +832,9 @@ presentation that was active before entering.
   metadata arrives or the active playback controller changes. Missing metadata
   must not overwrite a known ratio with the initial fallback. It can be resized
   freely down to a small minimum, so the minimum never inflates the short side
-  of portrait or ultra-wide videos. A minimum size set through
-  `window_manager` applies to every window in the shared engine on Windows, so
-  the main window's minimum is enforced by the Windows runner instead.
+  of portrait or ultra-wide videos. The main window's minimum remains independent
+  of PiP: it is enforced by the Windows runner and by the bound main native
+  window on Linux and macOS.
 - Android PiP is entered through the system window and can only be left by the
   user. Preparing Android PiP's video-only presentation and displaying PiP must
   not change the activity's screen orientation. Fullscreen orientation policy
@@ -826,6 +850,15 @@ presentation that was active before entering.
   or invalid metadata retains the last valid ratio. Desktop PiP is an ordinary
   window: `P` toggles it, and its minimal
   controls expose previous, play/pause, next, seeking, and exit-PiP actions.
+  While focused, desktop PiP honors the configured player bindings for
+  play/pause (Space), seeking (Left/Right by 5 seconds, J/L by 10 seconds),
+  previous/next scene (Shift+P/Shift+N), and exit (P or Escape). Seeks stay
+  within the known duration, and unavailable queue directions do nothing.
+  These shortcuts remain available while the transport overlay is hidden.
+  On Linux, native window focus/blur events are bridged to Flutter's per-view
+  focus tree after its view frame mounts, so initial activation and switching
+  between PiP and the main window route keyboard input to the active window
+  without requiring a click on a control.
 - Desktop window placement is best-effort. In particular, Wayland compositors
   choose window positions and may ignore always-on-top requests, so the PiP
   window may open where the compositor decides and can be dragged. Hyprland
@@ -867,14 +900,29 @@ Background playback follows the persisted preference:
 
 - when enabled, playback may continue while the app is backgrounded and the
   media notification remains synchronized;
-- explicit system media commands take effect immediately after backgrounding;
-  Pause suppresses background keepalive until an explicit Play or foreground
-  resume;
+- explicit pause commands from system media controls, desktop PiP, and the
+  mini player suppress background keepalive until an explicit Play or foreground
+  resume, including while the app is inactive;
 - controller initialization must not require a Flutter render frame, so
   notification queue changes and auto-next can start while frames are suspended;
 - when disabled, an active global player pauses on backgrounding unless the app
   is entering an allowed picture-in-picture path;
 - preview/local auxiliary players do not inherit global background ownership.
+
+Android Playback Settings owns the independent `video_respect_audio_focus`
+boolean through PlayerSettingsStore/PlayerState. Missing or invalid values default
+to enabled, including existing installs; configuration backups include the key.
+“Pause when other apps play media” requests audio focus before local scene/feed
+playback and pauses on focus loss (including duck requests). Background keepalive,
+seek restoration, and view handoffs must not undo that pause, even after foreground
+resume. A temporary interruption may resume only the same previously playing
+session, with no intervening manual pause/stop or session change, and only when
+lifecycle/PiP policy permits. Permanent loss or a denied/failed request requires
+explicit Play. Focus is released on pause, stop, casting, or disabling the setting.
+Disabling it permits simultaneous playback but does not restart a paused video.
+Casting and preloaded/auxiliary players do not acquire global session focus.
+Android can still enforce interruptions regardless of this opt-out; background
+focus requests are subject to OS foreground-service restrictions.
 
 The Android media session publishes current title, artwork, duration, position,
 playing state, and supported actions. Notification seeking performs true player
@@ -886,6 +934,13 @@ scene label. Artwork publication and duration refreshes preserve this fallback.
 
 Artwork caching must avoid deletion races while notification metadata still
 references a file.
+
+Linux uses the pinned `audio_service_mpris` 1.0.0-beta.3 with `wakelock_plus`
+1.8.2 and their compatible D-Bus 0.8 dependency. Before `AudioService.init`,
+Linux startup explicitly configures the existing D-Bus name and StashFlow
+identity and enables play, pause, next, previous, and general media control;
+the beta's disabled-by-default capabilities must not hide transport controls.
+Other platforms retain their existing audio-service initialization.
 
 ## Settings, authentication, and local data
 
@@ -901,8 +956,9 @@ Settings pages use the shared shell and panel components in
 dynamic spacing, section hierarchy, loading/error presentation, and navigation
 behavior. Server Settings may keep its specialized profile-list interactions,
 but must retain the same overall visual language.
-The hub spaces its action tiles and uses two columns when available width can
-fit readable tiles at the current UI scale; compact layouts use one column.
+The hub matches the Tools list layout: a single column of full-width action
+cards inside a shared section panel, with medium spacing between actions at
+every window width and UI scale. Keyboard settings remain desktop-only.
 
 New settings require:
 
@@ -911,6 +967,30 @@ New settings require:
 - migration or fallback behavior for renamed keys;
 - localized label, description, and feedback;
 - inclusion in configuration backup only when safe and user-facing.
+
+### Library maintenance tools
+
+The Tools hub links to `/tools/library-scan` and `/tools/generate-content`.
+Both use the shared Material 3 settings shell, expose the official web app's
+library scan/generate options, and support the whole library or selected server
+folders. Folder selection supports configured library roots, remote directory
+browsing, manual paths, deduplication, and removal; an empty selection cannot run.
+
+`LibraryTasksRepository` owns configuration, directory, and job operations through
+the active profile's GraphQL client. Each page loads fresh server configuration;
+`ui.taskDefaults.scan`/`generate` take precedence over legacy `defaults`, with the
+official task fallbacks when neither exists. Each option change patches its task
+branch using `configureUI(partial:)`, preserving unrelated UI/task settings.
+Saves serialize interaction, failures restore the displayed value, and launching
+is disabled until saving finishes. Generation fetches current general preview
+parameters immediately before submission. Refresh reloads remote task defaults.
+Task settings are remote, not part of local configuration backups.
+
+Successful submission reports the queued job ID, not completion. The shared
+server queue polls without overlapping requests while mounted, displays status,
+progress, estimated remaining time, subtasks and failures, and supports stopping
+one or all jobs. Switching profiles resets forms/queue and closes folder pickers;
+stale responses cannot launch work on the newly selected server.
 
 ### Server profiles and authentication
 
@@ -943,6 +1023,11 @@ measurement and clearing. Storage Settings displays sizes, clear actions, and
 supported limits.
 
 - Cache work must remain asynchronous and tolerate missing/locked files.
+- Image accounting includes `cached_network_image_ce` and legacy image-cache
+  directories. Clearing empties the shared manager before removing leftover
+  image files; clearing and size-limit trimming must preserve its open Hive
+  metadata files. Limits apply to image files, not metadata overhead. Old cache
+  entries are not imported and may download again.
 - Clearing one cache type must not delete unrelated user settings or active
   media required for playback.
 - Size displays refresh after clear/limit changes.
@@ -986,15 +1071,25 @@ Encryption and cloud synchronization are outside the current backup scope.
 Stable and nightly builds share `.github/workflows/reusable-release.yml`.
 Version-tag pushes (`v*`) publish stable releases; pushes to `dev` publish
 nightly builds. Pushes to `main` do not create release candidates.
-Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.47.6
+Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.47.9
 and resolves dependencies with
 `flutter pub get`
 Pub fetches the media-kit fork rather than
 using the ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
 libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
 
-The app requires Flutter 3.47.6 or newer and Dart 3.11 or newer within Dart 3.x.
+The app requires Flutter 3.47.6 or newer and Dart 3.13 or newer within Dart 3.x.
 `msix` and `fastforge` are development dependencies used only for packaging.
+
+Desktop window control uses the `window_manager` 0.6 native API, not its legacy
+MethodChannel bridge. Startup captures the main native window before PiP can
+open; later fullscreen requests must use that same window rather than the
+currently focused window. Windows obtains its initially hidden HWND from the
+runner through `getWindowHandle` on `stash_app_flutter/fullscreen`, then sizes,
+maximizes, shows, and focuses it. Linux and macOS set the main window's minimum,
+size, and maximized state before the runner shows it. Web builds exclude the FFI
+handle bridge. Linux native compilation requires GTK3, X11, and XInput headers
+(`libgtk-3-dev`, `libx11-dev`, and `libxi-dev` on Debian/Ubuntu).
 
 Stable release artifact filenames retain the full `pubspec.yaml` version,
 including the build number, plus platform and architecture where applicable.
@@ -1011,11 +1106,18 @@ verified together with `sha256sum -c <filename>.sha256`.
 ### macOS
 
 The minimum deployment target is macOS 13, matching the native frameworks emitted
-by the pinned Flutter SDK.
+by the pinned Flutter SDK. While the Podfile remains, Debug and Release Flutter
+xcconfigs must include the matching CocoaPods xcconfig before Flutter's generated
+settings; Profile inherits Release. This supplies `PODS_ROOT` to CocoaPods build
+phases even when plugins resolve through Swift Package Manager.
 
-Stable and nightly workflows build Apple Silicon on
-`macos-26` and Intel on `macos-26-intel`, explicitly selecting `arm64` and
-`x86_64` through Flutter's Xcode build settings. ZIP filenames end in
+Stable and nightly workflows build both macOS artifacts on Apple Silicon
+`macos-26` runners using native host Flutter/Dart tools, cross-compiling the
+Intel artifact. They explicitly select `arm64` and `x86_64` through Flutter's
+Xcode build settings, and align `CMAKE_APPLE_SILICON_PROCESSOR` with the target
+so CTranslate2/Ruy select matching CPU kernels. The release build generates its
+own ephemeral configuration; there is no separate configuration-only build.
+ZIP filenames end in
 `macos-arm64` or `macos-x86_64`, and upload artifact names are distinct.
 Before packaging, the app executable and every bundled Mach-O binary must
 contain the target architecture; embedded universal libraries are allowed.
@@ -1030,8 +1132,9 @@ contain the target architecture; embedded universal libraries are allowed.
   Dart JNI using literal JVM names, including `Continuation` in shared-preferences
   method signatures. Keep rules remain scoped to these bridge types rather than
   entire plugin packages; release artifact inspection complements host tests.
-- Java/Gradle/plugin versions must remain compatible with the checked-in build
-  configuration and CI.
+- The Android build uses Java 21, Gradle 9.9.0 (with a verified distribution
+  checksum), Android Gradle Plugin 9.5.1, and Kotlin 2.4.21. Toolchain upgrades
+  must remain compatible with the checked-in build configuration and CI.
 - Manifest permissions must be justified by current features; do not restore
   removed broad storage or obsolete permissions.
 - Audio service, PiP, and notification behavior must continue to work after
@@ -1050,8 +1153,10 @@ archive must not determine the target architecture on the ARM runner. Artifact
 filenames end in `windows-x64` or `windows-arm64`, and upload names are distinct.
 ARM64 installers allow ARM64 systems and use 64-bit installation paths. Both
 bundles must contain matching-architecture executables and DLLs, including the
-Flutter engine and bundled mpv, checked before packaging and after Fastforge's
-rebuild.
+Flutter engine and bundled mpv. Fastforge performs the only Windows release
+build while creating the EXE installer; the ZIP then reuses that same Release
+bundle. Architecture validation runs after Fastforge and before ZIP packaging
+and artifact uploads; there is no separate standalone Windows build.
 
 The on-device translation DLL and its static CTranslate2/SentencePiece
 dependencies use the same static MSVC runtime. Windows ARM64 uses Ruy's fallback
@@ -1072,8 +1177,8 @@ styles and `WINDOWPLACEMENT`, removes its frame/zoom state, and sizes it directl
 to the current monitor's `rcMonitor` without an intermediate unmaximize or inset
 resize. Exit restores the saved styles and placement. It must preserve normal
 versus maximized restore state, window bounds, monitor placement, title-bar
-controls, and taskbar behavior. Fullscreen frame messages bypass window_manager
-only for the main HWND; separate PiP windows retain their own handling.
+controls, and taskbar behavior. Fullscreen frame messages bypass normal frame
+handling only for the main HWND; separate PiP windows retain their own handling.
 
 Entering and exiting fullscreen are asynchronous transactions. Flutter must not
 mark exit complete before native restoration succeeds. Failures return to a
@@ -1081,7 +1186,10 @@ coherent, retryable state and are logged. Repeated toggles, Alt+Tab, secondary
 monitors, and entry from a maximized window must remain safe.
 
 Do not mix a second independent `window_manager` fullscreen transition into the
-native Windows path. Linux and macOS continue to use window_manager fullscreen.
+native Windows path. Linux and macOS use the bound `window_manager` native
+window's fullscreen property and await its matching entered/exited event. The
+listener is removed on success, failure, or a 10-second timeout; no native event
+must leave the shared transition queue permanently blocked.
 
 The standalone Win32 regression test in `test/windows/runner/` checks normal and
 maximized restoration, repeated toggles, full-monitor client bounds, and every

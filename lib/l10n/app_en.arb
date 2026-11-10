@@ -640,6 +640,8 @@
   "settings_playback_autoplay_subtitle": "Automatically play the next scene when current playback ends",
   "settings_playback_background": "Background Playback",
   "settings_playback_background_subtitle": "Keep video audio playing when the app is in the background",
+  "settings_playback_audio_focus": "Pause when other apps play media",
+  "settings_playback_audio_focus_subtitle": "Pause StashFlow when another app takes audio focus. Turn off to allow simultaneous playback.",
   "settings_playback_pip": "Native Picture-in-Picture",
   "settings_playback_pip_subtitle": "Enable the Picture-in-Picture button and auto-enter on background",
   "settings_playback_subtitles": "Subtitle settings",
@@ -1703,5 +1705,66 @@
   "settings_playback_mpv_linux_help": "Linux uses embedded libmpv, not gpu-next or window-based outputs. Software output is slower and ignores GPU rendering settings. Decoder support depends on GPU and drivers; copy-back modes also work with software output. Unavailable decoders fall back to software decoding.",
   "settings_interface_miniplayer_bottom_spacer": "Mini-player bottom spacer",
   "settings_interface_miniplayer_bottom_spacer_subtitle": "Add space below the mini-player and floating controls when a system taskbar covers them.",
-  "settings_interface_miniplayer_bottom_offset": "Bottom offset"
+  "settings_interface_miniplayer_bottom_offset": "Bottom offset",
+  "tools_library_scan": "Library scan",
+  "tools_generate_content": "Generate content",
+  "tools_scan_description": "Find new and changed files on the server.",
+  "tools_generate_description": "Generate media for your library using current server preview settings.",
+  "tools_run_all": "Run for entire library",
+  "tools_run_selected": "Run for selected folders",
+  "tools_task_options": "Task options",
+  "tools_options_sync": "Changes are saved automatically to the active server and shared with its web app.",
+  "tools_option_covers": "Scene covers",
+  "tools_option_previews": "Video previews",
+  "tools_option_image_previews": "Animated image previews",
+  "tools_option_sprites": "Sprites and VTT files",
+  "tools_option_phashes": "Video perceptual hashes",
+  "tools_option_image_thumbnails": "Image thumbnails",
+  "tools_option_image_phashes": "Image perceptual hashes",
+  "tools_option_clip_previews": "Clip previews",
+  "tools_option_rescan": "Rescan unchanged files",
+  "tools_option_markers": "Marker videos",
+  "tools_option_marker_previews": "Animated marker previews",
+  "tools_option_marker_screenshots": "Marker screenshots",
+  "tools_option_transcodes": "Transcodes",
+  "tools_option_heatmaps": "Interactive heatmaps and speeds",
+  "tools_option_overwrite": "Overwrite existing generated files",
+  "tools_overwrite_warning": "Existing generated media will be replaced.",
+  "tools_load_failed": "Could not load server task settings. Check the connection and retry.",
+  "tools_save_failed": "Could not save this change to the server. The previous value was restored; try again.",
+  "tools_start_failed": "Could not confirm the job was queued. Check the server queue before trying again.",
+  "tools_job_queued": "Job {id} queued on the server.",
+  "tools_select_folders": "Select server folders",
+  "tools_server_folders": "Browse or enter paths on the server, then add each folder to the selection.",
+  "tools_server_path": "Server folder path",
+  "tools_browse": "Browse",
+  "tools_parent_folder": "Up to parent folder",
+  "tools_directory_failed": "Could not list this server folder. Check the path and retry, or enter a path manually.",
+  "tools_job_queue": "Server job queue",
+  "tools_jobs_empty": "No jobs in the server queue.",
+  "tools_jobs_failed": "Could not load the server queue. Check the connection and retry.",
+  "tools_job_ready": "Queued",
+  "tools_job_running": "Running",
+  "tools_job_stopping": "Stopping",
+  "tools_job_finished": "Finished",
+  "tools_job_cancelled": "Cancelled",
+  "tools_job_failed": "Job failed",
+  "tools_job_eta": "About {seconds} seconds remaining",
+  "tools_stop_job": "Stop job",
+  "tools_stop_all_jobs": "Stop all server jobs",
+  "tools_stop_failed": "Could not stop the job. Check the server queue and retry.",
+  "@tools_job_queued": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "@tools_job_eta": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  }
 }

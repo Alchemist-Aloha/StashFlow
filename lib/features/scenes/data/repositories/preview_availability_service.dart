@@ -49,7 +49,7 @@ final previewAvailabilityCheckProvider = Provider<PreviewAvailabilityCheck>((
 /// ranged GET cancelled after the response headers is the cheapest way to tell
 /// a real preview from a dead URL before the player tries to open it.
 class PreviewAvailabilityService {
-  PreviewAvailabilityService({http.Client? client}) : _client = client;
+  PreviewAvailabilityService({this._client});
 
   final http.Client? _client;
 

@@ -12,6 +12,7 @@ class PlayerSettings {
   final bool useDoubleTapSeek;
   final int controlsAutoHideSeconds;
   final bool enableBackgroundPlayback;
+  final bool respectAudioFocus;
   final bool enableNativePip;
   final bool videoGravityOrientation;
   final bool useActualSceneVideoInMiniPlayer;
@@ -35,6 +36,7 @@ class PlayerSettings {
     this.useDoubleTapSeek = false,
     this.controlsAutoHideSeconds = 2,
     this.enableBackgroundPlayback = false,
+    this.respectAudioFocus = true,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
     this.useActualSceneVideoInMiniPlayer = true,
@@ -62,6 +64,7 @@ class PlayerSettingsStore {
       value >= minControlsAutoHideSeconds &&
       value <= maxControlsAutoHideSeconds;
   static const enableBackgroundPlaybackKey = 'video_background_playback';
+  static const respectAudioFocusKey = 'video_respect_audio_focus';
   static const enableNativePipKey = 'video_native_pip';
   static const videoGravityOrientationKey = 'video_gravity_orientation';
 
@@ -341,6 +344,9 @@ class PlayerSettingsStore {
           : 2,
       enableBackgroundPlayback:
           prefs.getBool(enableBackgroundPlaybackKey) ?? false,
+      respectAudioFocus: prefs.get(respectAudioFocusKey) is bool
+          ? prefs.getBool(respectAudioFocusKey)!
+          : true,
       enableNativePip: prefs.getBool(enableNativePipKey) ?? false,
       videoGravityOrientation:
           prefs.getBool(videoGravityOrientationKey) ?? true,
@@ -423,6 +429,9 @@ class PlayerSettingsStore {
 
   Future<void> saveEnableBackgroundPlayback(bool value) =>
       prefs.setBool(enableBackgroundPlaybackKey, value);
+
+  Future<void> saveRespectAudioFocus(bool value) =>
+      prefs.setBool(respectAudioFocusKey, value);
 
   Future<void> saveEnableNativePip(bool value) =>
       prefs.setBool(enableNativePipKey, value);

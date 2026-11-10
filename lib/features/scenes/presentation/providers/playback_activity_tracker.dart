@@ -6,23 +6,13 @@ typedef ResumePositionProvider = Duration Function();
 
 class PlaybackActivityTracker {
   PlaybackActivityTracker({
-    required DateTime Function() now,
-    required bool Function() isMounted,
-    required Future<void> Function(String sceneId) incrementPlayCount,
-    required Future<void> Function(
-      String sceneId,
-      double resumeTime,
-      double playDuration,
-    )
-    saveSceneActivity,
-    required void Function(String sceneId) refreshSceneDetails,
-    required void Function(String message) log,
-  }) : _now = now,
-       _isMounted = isMounted,
-       _incrementPlayCount = incrementPlayCount,
-       _saveSceneActivity = saveSceneActivity,
-       _refreshSceneDetails = refreshSceneDetails,
-       _log = log;
+    required this._now,
+    required this._isMounted,
+    required this._incrementPlayCount,
+    required this._saveSceneActivity,
+    required this._refreshSceneDetails,
+    required this._log,
+  });
 
   final DateTime Function() _now;
   final bool Function() _isMounted;

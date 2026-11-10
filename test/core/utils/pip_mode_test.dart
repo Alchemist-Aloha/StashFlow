@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,26 +10,18 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/desktop_p
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const windowManagerChannel = MethodChannel('window_manager');
   const pipChannel = MethodChannel('stash_app_flutter/pip');
   final pipCalls = <MethodCall>[];
-  final mainWindowCalls = <MethodCall>[];
 
   setUp(() {
     debugDefaultTargetPlatformOverride = TargetPlatform.linux;
     PipMode.isInPipMode.value = false;
     PipMode.clearWindowedHandlers();
-    mainWindowCalls.clear();
     pipCalls.clear();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(pipChannel, (call) async {
           pipCalls.add(call);
           return true;
-        });
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(windowManagerChannel, (call) async {
-          mainWindowCalls.add(call);
-          return null;
         });
   });
 
@@ -35,8 +29,6 @@ void main() {
     PipMode.clearWindowedHandlers();
     PipMode.isInPipMode.value = false;
     debugDefaultTargetPlatformOverride = null;
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(windowManagerChannel, null);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(pipChannel, null);
   });
@@ -60,14 +52,23 @@ void main() {
       expect(await PipMode.enterIfAvailable(aspectRatio: 2), isTrue);
       expect(receivedAspectRatio, 2);
       expect(PipMode.isInPipMode.value, isTrue);
-      expect(mainWindowCalls, isEmpty);
 
       expect(await PipMode.exitIfAvailable(), isTrue);
       expect(exitCalls, 1);
       expect(PipMode.isInPipMode.value, isFalse);
-      expect(mainWindowCalls, isEmpty);
     },
   );
+
+  test('PiP never imports main-window controls', () {
+    for (final path in [
+      'lib/core/utils/pip_mode.dart',
+      'lib/features/scenes/presentation/widgets/desktop_pip_window.dart',
+    ]) {
+      final source = File(path).readAsStringSync();
+      expect(source, isNot(contains('desktop_window')));
+      expect(source, isNot(contains('package:window_manager/')));
+    }
+  });
 
   test('supports windowed PiP on every desktop platform', () {
     for (final platform in <TargetPlatform>[

@@ -1,0 +1,83 @@
+query LibraryTaskConfiguration {
+  configuration {
+    general {
+      stashes { path }
+      previewSegments
+      previewSegmentDuration
+      previewExcludeStart
+      previewExcludeEnd
+      previewPreset
+    }
+    defaults {
+      scan {
+        scanGenerateCovers
+        scanGeneratePreviews
+        scanGenerateImagePreviews
+        scanGenerateSprites
+        scanGeneratePhashes
+        scanGenerateThumbnails
+        scanGenerateImagePhashes
+        scanGenerateClipPreviews
+        rescan
+      }
+      generate {
+        covers
+        previews
+        imagePreviews
+        sprites
+        markers
+        markerImagePreviews
+        markerScreenshots
+        transcodes
+        phashes
+        interactiveHeatmapsSpeeds
+        clipPreviews
+        imageThumbnails
+        previewOptions {
+          previewSegments
+          previewSegmentDuration
+          previewExcludeStart
+          previewExcludeEnd
+          previewPreset
+        }
+      }
+    }
+    ui
+  }
+}
+
+mutation SaveLibraryTaskOptions($partial: Map!) {
+  configureUI(partial: $partial)
+}
+
+mutation StartLibraryScan($input: ScanMetadataInput!) {
+  metadataScan(input: $input)
+}
+
+mutation StartLibraryGenerate($input: GenerateMetadataInput!) {
+  metadataGenerate(input: $input)
+}
+
+query LibraryTaskDirectory($path: String!) {
+  directory(path: $path) { path parent directories }
+}
+
+fragment LibraryTaskJob on Job {
+  id status description progress subTasks error startTime
+}
+
+query LibraryTaskJobs {
+  jobQueue { ...LibraryTaskJob }
+}
+
+query FindLibraryTaskJob($id: ID!) {
+  findJob(input: { id: $id }) { ...LibraryTaskJob }
+}
+
+mutation StopLibraryJob($id: ID!) {
+  stopJob(job_id: $id)
+}
+
+mutation StopAllLibraryJobs {
+  stopAllJobs
+}

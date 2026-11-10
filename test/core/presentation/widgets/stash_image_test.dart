@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image_ce/cached_network_image.dart';
+
 import '../../../helpers/test_helpers.dart';
 
 void main() {
   test('prefetch deduplication only tracks active work', () {
-    final source = File(
-      'lib/core/presentation/widgets/stash_image.dart',
-    ).readAsStringSync();
+    final source = File('lib/core/presentation/widgets/stash_image.dart')
+        .readAsStringSync();
 
     expect(source, contains('static final Set<String> _prefetching'));
     expect(source, contains('_prefetching.remove(dedupeKey);'));
@@ -18,9 +18,8 @@ void main() {
   });
 
   test('prefetch uses a bounded FIFO queue', () {
-    final source = File(
-      'lib/core/presentation/widgets/stash_image.dart',
-    ).readAsStringSync();
+    final source = File('lib/core/presentation/widgets/stash_image.dart')
+        .readAsStringSync();
 
     expect(source, contains('Queue<Completer<void>>'));
     expect(source, contains('_prefetchWaiters.removeFirst().complete();'));
@@ -30,9 +29,8 @@ void main() {
   });
 
   test('image retries reset for new input and do not overlap', () {
-    final source = File(
-      'lib/core/presentation/widgets/stash_image.dart',
-    ).readAsStringSync();
+    final source = File('lib/core/presentation/widgets/stash_image.dart')
+        .readAsStringSync();
 
     expect(
       source,

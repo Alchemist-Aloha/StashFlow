@@ -22,13 +22,64 @@ def workflow_script(name):
 
 
 class ReleaseArtifactsTest(unittest.TestCase):
+    def test_windows_builds_once_and_zips_the_fastforge_output(self):
+        self.assertIn("      - name: Build\n        if: matrix.target != 'windows'\n", WORKFLOW)
+        self.assertNotIn("flutter build windows", WORKFLOW)
+        self.assertEqual(WORKFLOW.count("fastforge package --platform windows"), 1)
+        installer = WORKFLOW.index("      - name: Package Windows dists\n")
+        archive = WORKFLOW.index("      - name: Package Windows\n")
+        self.assertLess(installer, archive)
+        for upload in ["Upload dist packages", "Upload Artifact"]:
+            self.assertLess(archive, WORKFLOW.index(f"      - name: {upload}\n"))
+
+        validation = (
+            "python scripts/validate_windows_bundle.py "
+            "build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}"
+        )
+        installer_script = workflow_script("Package Windows dists")
+        self.assertLess(installer_script.index("fastforge package"),
+                        installer_script.index(validation))
+        self.assertIn(validation + "\nif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
+                      installer_script)
+        archive_script = workflow_script("Package Windows")
+        self.assertLess(archive_script.index(validation), archive_script.index("7z a"))
+        self.assertIn("cd build/windows/${{ matrix.arch }}/runner/Release", archive_script)
+
+    def test_macos_configurations_inherit_cocoapods_settings(self):
+        root = Path(__file__).resolve().parents[1]
+        for mode in ["Debug", "Release"]:
+            with self.subTest(mode=mode):
+                config = (root / f"macos/Flutter/Flutter-{mode}.xcconfig").read_text()
+                pods = (
+                    '#include? "Pods/Target Support Files/Pods-Runner/'
+                    f'Pods-Runner.{mode.lower()}.xcconfig"'
+                )
+                generated = '#include "ephemeral/Flutter-Generated.xcconfig"'
+                self.assertIn(pods, config)
+                self.assertIn(generated, config)
+                self.assertLess(config.index(pods), config.index(generated))
+
+    def test_macos_builds_use_apple_silicon_without_duplicate_configuration(self):
+        targets = re.findall(
+            r"          - target: macos\n"
+            r"            os: (\S+)\n"
+            r"            artifact_name: (\S+)\n"
+            r"            arch: (\S+)",
+            WORKFLOW,
+        )
+        self.assertEqual(targets, [
+            ("macos-26", "macos", "arm64"),
+            ("macos-26", "macos-x64", "x64"),
+        ])
+        self.assertNotIn("--config-only", WORKFLOW)
+
     def test_macos_build_selects_requested_xcode_architecture(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             flutter = root / "flutter"
             flutter.write_text(
                 '#!/usr/bin/env bash\nset -euo pipefail\n'
-                'printf "%s:%s\\n" "$FLUTTER_XCODE_ARCHS" "$FLUTTER_MACOS_ARM64_ONLY"\n'
+                'printf "%s:%s:%s\\n" "$FLUTTER_XCODE_ARCHS" "$FLUTTER_MACOS_ARM64_ONLY" "$CMAKE_APPLE_SILICON_PROCESSOR"\n'
             )
             flutter.chmod(0o755)
             for architecture, cpu in [("x64", "x86_64"), ("arm64", "arm64")]:
@@ -39,7 +90,7 @@ class ReleaseArtifactsTest(unittest.TestCase):
                         env={**os.environ, "PATH": f"{root}:{os.environ['PATH']}",
                              "TARGET_ARCH": architecture}, text=True,
                     )
-                    self.assertEqual(result, f"{cpu}:false\n")
+                    self.assertEqual(result, f"{cpu}:false:{cpu}\n")
 
     def test_macos_packaging_checks_runner_and_embedded_frameworks(self):
         for architecture, cpu in [("x64", "x86_64"), ("arm64", "arm64")]:

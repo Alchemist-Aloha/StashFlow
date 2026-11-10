@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2064,6 +2065,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Garder l\'audio de la vidéo pendant que l\'application est en arrière-plan';
 
   @override
+  String get settings_playback_audio_focus =>
+      'Mettre en pause quand une autre app lit un média';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      'Met StashFlow en pause lorsqu’une autre app prend le focus audio. Désactivez cette option pour autoriser la lecture simultanée.';
+
+  @override
   String get settings_playback_pip => 'Image dans l\'image native';
 
   @override
@@ -3993,4 +4002,161 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settings_interface_miniplayer_bottom_offset =>
       'Décalage inférieur';
+
+  @override
+  String get tools_library_scan => 'Analyser la bibliothèque';
+
+  @override
+  String get tools_generate_content => 'Générer du contenu';
+
+  @override
+  String get tools_scan_description =>
+      'Rechercher les fichiers nouveaux et modifiés sur le serveur.';
+
+  @override
+  String get tools_generate_description =>
+      'Générer les médias de la bibliothèque avec les paramètres d’aperçu actuels du serveur.';
+
+  @override
+  String get tools_run_all => 'Lancer sur toute la bibliothèque';
+
+  @override
+  String get tools_run_selected => 'Lancer sur les dossiers sélectionnés';
+
+  @override
+  String get tools_task_options => 'Options de la tâche';
+
+  @override
+  String get tools_options_sync =>
+      'Les modifications sont enregistrées automatiquement sur le serveur actif et partagées avec son application web.';
+
+  @override
+  String get tools_option_covers => 'Couvertures des scènes';
+
+  @override
+  String get tools_option_previews => 'Aperçus vidéo';
+
+  @override
+  String get tools_option_image_previews => 'Aperçus d’images animées';
+
+  @override
+  String get tools_option_sprites => 'Sprites et fichiers VTT';
+
+  @override
+  String get tools_option_phashes => 'Empreintes perceptuelles vidéo';
+
+  @override
+  String get tools_option_image_thumbnails => 'Miniatures d’images';
+
+  @override
+  String get tools_option_image_phashes => 'Empreintes perceptuelles d’images';
+
+  @override
+  String get tools_option_clip_previews => 'Aperçus de clips';
+
+  @override
+  String get tools_option_rescan => 'Réanalyser les fichiers inchangés';
+
+  @override
+  String get tools_option_markers => 'Vidéos des marqueurs';
+
+  @override
+  String get tools_option_marker_previews => 'Aperçus animés des marqueurs';
+
+  @override
+  String get tools_option_marker_screenshots => 'Captures des marqueurs';
+
+  @override
+  String get tools_option_transcodes => 'Transcodages';
+
+  @override
+  String get tools_option_heatmaps =>
+      'Cartes thermiques et vitesses interactives';
+
+  @override
+  String get tools_option_overwrite => 'Écraser les fichiers générés existants';
+
+  @override
+  String get tools_overwrite_warning =>
+      'Les médias générés existants seront remplacés.';
+
+  @override
+  String get tools_load_failed =>
+      'Impossible de charger les paramètres des tâches du serveur. Vérifiez la connexion et réessayez.';
+
+  @override
+  String get tools_save_failed =>
+      'Impossible d’enregistrer cette modification sur le serveur. La valeur précédente a été rétablie ; réessayez.';
+
+  @override
+  String get tools_start_failed =>
+      'Impossible de confirmer la mise en file de la tâche. Vérifiez la file du serveur avant de réessayer.';
+
+  @override
+  String tools_job_queued(String id) {
+    return 'Tâche $id mise en file sur le serveur.';
+  }
+
+  @override
+  String get tools_select_folders => 'Sélectionner les dossiers du serveur';
+
+  @override
+  String get tools_server_folders =>
+      'Parcourez ou saisissez les chemins du serveur, puis ajoutez chaque dossier à la sélection.';
+
+  @override
+  String get tools_server_path => 'Chemin du dossier sur le serveur';
+
+  @override
+  String get tools_browse => 'Parcourir';
+
+  @override
+  String get tools_parent_folder => 'Dossier parent';
+
+  @override
+  String get tools_directory_failed =>
+      'Impossible de lister ce dossier du serveur. Vérifiez le chemin et réessayez, ou saisissez un chemin manuellement.';
+
+  @override
+  String get tools_job_queue => 'File des tâches du serveur';
+
+  @override
+  String get tools_jobs_empty => 'Aucune tâche dans la file du serveur.';
+
+  @override
+  String get tools_jobs_failed =>
+      'Impossible de charger la file du serveur. Vérifiez la connexion et réessayez.';
+
+  @override
+  String get tools_job_ready => 'En attente';
+
+  @override
+  String get tools_job_running => 'En cours';
+
+  @override
+  String get tools_job_stopping => 'Arrêt en cours';
+
+  @override
+  String get tools_job_finished => 'Terminée';
+
+  @override
+  String get tools_job_cancelled => 'Annulée';
+
+  @override
+  String get tools_job_failed => 'Échec';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return 'Environ $seconds secondes restantes';
+  }
+
+  @override
+  String get tools_stop_job => 'Arrêter la tâche';
+
+  @override
+  String get tools_stop_all_jobs => 'Arrêter toutes les tâches du serveur';
+
+  @override
+  String get tools_stop_failed =>
+      'Impossible d’arrêter la tâche. Vérifiez la file du serveur et réessayez.';
 }

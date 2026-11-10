@@ -3624,6 +3624,18 @@ abstract class AppLocalizations {
   /// **'Keep video audio playing when the app is in the background'**
   String get settings_playback_background_subtitle;
 
+  /// No description provided for @settings_playback_audio_focus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause when other apps play media'**
+  String get settings_playback_audio_focus;
+
+  /// No description provided for @settings_playback_audio_focus_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause StashFlow when another app takes audio focus. Turn off to allow simultaneous playback.'**
+  String get settings_playback_audio_focus_subtitle;
+
   /// No description provided for @settings_playback_pip.
   ///
   /// In en, this message translates to:
@@ -6881,6 +6893,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bottom offset'**
   String get settings_interface_miniplayer_bottom_offset;
+
+  /// No description provided for @tools_library_scan.
+  ///
+  /// In en, this message translates to:
+  /// **'Library scan'**
+  String get tools_library_scan;
+
+  /// No description provided for @tools_generate_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate content'**
+  String get tools_generate_content;
+
+  /// No description provided for @tools_scan_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Find new and changed files on the server.'**
+  String get tools_scan_description;
+
+  /// No description provided for @tools_generate_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate media for your library using current server preview settings.'**
+  String get tools_generate_description;
+
+  /// No description provided for @tools_run_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Run for entire library'**
+  String get tools_run_all;
+
+  /// No description provided for @tools_run_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Run for selected folders'**
+  String get tools_run_selected;
+
+  /// No description provided for @tools_task_options.
+  ///
+  /// In en, this message translates to:
+  /// **'Task options'**
+  String get tools_task_options;
+
+  /// No description provided for @tools_options_sync.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes are saved automatically to the active server and shared with its web app.'**
+  String get tools_options_sync;
+
+  /// No description provided for @tools_option_covers.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene covers'**
+  String get tools_option_covers;
+
+  /// No description provided for @tools_option_previews.
+  ///
+  /// In en, this message translates to:
+  /// **'Video previews'**
+  String get tools_option_previews;
+
+  /// No description provided for @tools_option_image_previews.
+  ///
+  /// In en, this message translates to:
+  /// **'Animated image previews'**
+  String get tools_option_image_previews;
+
+  /// No description provided for @tools_option_sprites.
+  ///
+  /// In en, this message translates to:
+  /// **'Sprites and VTT files'**
+  String get tools_option_sprites;
+
+  /// No description provided for @tools_option_phashes.
+  ///
+  /// In en, this message translates to:
+  /// **'Video perceptual hashes'**
+  String get tools_option_phashes;
+
+  /// No description provided for @tools_option_image_thumbnails.
+  ///
+  /// In en, this message translates to:
+  /// **'Image thumbnails'**
+  String get tools_option_image_thumbnails;
+
+  /// No description provided for @tools_option_image_phashes.
+  ///
+  /// In en, this message translates to:
+  /// **'Image perceptual hashes'**
+  String get tools_option_image_phashes;
+
+  /// No description provided for @tools_option_clip_previews.
+  ///
+  /// In en, this message translates to:
+  /// **'Clip previews'**
+  String get tools_option_clip_previews;
+
+  /// No description provided for @tools_option_rescan.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescan unchanged files'**
+  String get tools_option_rescan;
+
+  /// No description provided for @tools_option_markers.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker videos'**
+  String get tools_option_markers;
+
+  /// No description provided for @tools_option_marker_previews.
+  ///
+  /// In en, this message translates to:
+  /// **'Animated marker previews'**
+  String get tools_option_marker_previews;
+
+  /// No description provided for @tools_option_marker_screenshots.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker screenshots'**
+  String get tools_option_marker_screenshots;
+
+  /// No description provided for @tools_option_transcodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcodes'**
+  String get tools_option_transcodes;
+
+  /// No description provided for @tools_option_heatmaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Interactive heatmaps and speeds'**
+  String get tools_option_heatmaps;
+
+  /// No description provided for @tools_option_overwrite.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite existing generated files'**
+  String get tools_option_overwrite;
+
+  /// No description provided for @tools_overwrite_warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing generated media will be replaced.'**
+  String get tools_overwrite_warning;
+
+  /// No description provided for @tools_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load server task settings. Check the connection and retry.'**
+  String get tools_load_failed;
+
+  /// No description provided for @tools_save_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save this change to the server. The previous value was restored; try again.'**
+  String get tools_save_failed;
+
+  /// No description provided for @tools_start_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not confirm the job was queued. Check the server queue before trying again.'**
+  String get tools_start_failed;
+
+  /// No description provided for @tools_job_queued.
+  ///
+  /// In en, this message translates to:
+  /// **'Job {id} queued on the server.'**
+  String tools_job_queued(String id);
+
+  /// No description provided for @tools_select_folders.
+  ///
+  /// In en, this message translates to:
+  /// **'Select server folders'**
+  String get tools_select_folders;
+
+  /// No description provided for @tools_server_folders.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse or enter paths on the server, then add each folder to the selection.'**
+  String get tools_server_folders;
+
+  /// No description provided for @tools_server_path.
+  ///
+  /// In en, this message translates to:
+  /// **'Server folder path'**
+  String get tools_server_path;
+
+  /// No description provided for @tools_browse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get tools_browse;
+
+  /// No description provided for @tools_parent_folder.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to parent folder'**
+  String get tools_parent_folder;
+
+  /// No description provided for @tools_directory_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not list this server folder. Check the path and retry, or enter a path manually.'**
+  String get tools_directory_failed;
+
+  /// No description provided for @tools_job_queue.
+  ///
+  /// In en, this message translates to:
+  /// **'Server job queue'**
+  String get tools_job_queue;
+
+  /// No description provided for @tools_jobs_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs in the server queue.'**
+  String get tools_jobs_empty;
+
+  /// No description provided for @tools_jobs_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the server queue. Check the connection and retry.'**
+  String get tools_jobs_failed;
+
+  /// No description provided for @tools_job_ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued'**
+  String get tools_job_ready;
+
+  /// No description provided for @tools_job_running.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get tools_job_running;
+
+  /// No description provided for @tools_job_stopping.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopping'**
+  String get tools_job_stopping;
+
+  /// No description provided for @tools_job_finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished'**
+  String get tools_job_finished;
+
+  /// No description provided for @tools_job_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get tools_job_cancelled;
+
+  /// No description provided for @tools_job_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Job failed'**
+  String get tools_job_failed;
+
+  /// No description provided for @tools_job_eta.
+  ///
+  /// In en, this message translates to:
+  /// **'About {seconds} seconds remaining'**
+  String tools_job_eta(int seconds);
+
+  /// No description provided for @tools_stop_job.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop job'**
+  String get tools_stop_job;
+
+  /// No description provided for @tools_stop_all_jobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop all server jobs'**
+  String get tools_stop_all_jobs;
+
+  /// No description provided for @tools_stop_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not stop the job. Check the server queue and retry.'**
+  String get tools_stop_failed;
 }
 
 class _AppLocalizationsDelegate

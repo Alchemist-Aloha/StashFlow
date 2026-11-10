@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1990,6 +1991,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'アプリがバックグラウンドに移動しても動画の音声を再生し続けます';
 
   @override
+  String get settings_playback_audio_focus => '他のアプリの再生時に一時停止';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '他のアプリがオーディオフォーカスを取得したらStashFlowを一時停止します。オフにすると同時再生を許可します。';
+
+  @override
   String get settings_playback_pip => 'ネイティブ ピクチャー・イン・ピクチャー';
 
   @override
@@ -3839,4 +3847,151 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_interface_miniplayer_bottom_offset => '下端からの距離';
+
+  @override
+  String get tools_library_scan => 'ライブラリをスキャン';
+
+  @override
+  String get tools_generate_content => 'コンテンツを生成';
+
+  @override
+  String get tools_scan_description => 'サーバー上の新規・変更ファイルを検出します。';
+
+  @override
+  String get tools_generate_description => 'サーバーの現在のプレビュー設定でライブラリのメディアを生成します。';
+
+  @override
+  String get tools_run_all => 'ライブラリ全体で実行';
+
+  @override
+  String get tools_run_selected => '選択したフォルダーで実行';
+
+  @override
+  String get tools_task_options => 'タスクのオプション';
+
+  @override
+  String get tools_options_sync => '変更は使用中のサーバーに自動保存され、ウェブアプリと共有されます。';
+
+  @override
+  String get tools_option_covers => 'シーンのカバー';
+
+  @override
+  String get tools_option_previews => '動画プレビュー';
+
+  @override
+  String get tools_option_image_previews => 'アニメーション画像プレビュー';
+
+  @override
+  String get tools_option_sprites => 'スプライトとVTTファイル';
+
+  @override
+  String get tools_option_phashes => '動画の知覚ハッシュ';
+
+  @override
+  String get tools_option_image_thumbnails => '画像のサムネイル';
+
+  @override
+  String get tools_option_image_phashes => '画像の知覚ハッシュ';
+
+  @override
+  String get tools_option_clip_previews => 'クリップのプレビュー';
+
+  @override
+  String get tools_option_rescan => '未変更のファイルも再スキャン';
+
+  @override
+  String get tools_option_markers => 'マーカー動画';
+
+  @override
+  String get tools_option_marker_previews => 'マーカーのアニメーションプレビュー';
+
+  @override
+  String get tools_option_marker_screenshots => 'マーカーのスクリーンショット';
+
+  @override
+  String get tools_option_transcodes => 'トランスコード';
+
+  @override
+  String get tools_option_heatmaps => 'インタラクティブヒートマップと速度';
+
+  @override
+  String get tools_option_overwrite => '既存の生成ファイルを上書き';
+
+  @override
+  String get tools_overwrite_warning => '既存の生成メディアは置き換えられます。';
+
+  @override
+  String get tools_load_failed => 'サーバーのタスク設定を読み込めませんでした。接続を確認して再試行してください。';
+
+  @override
+  String get tools_save_failed => '変更をサーバーに保存できませんでした。元の値に戻しました。再試行してください。';
+
+  @override
+  String get tools_start_failed =>
+      'ジョブの登録を確認できませんでした。再試行する前にサーバーのキューを確認してください。';
+
+  @override
+  String tools_job_queued(String id) {
+    return 'ジョブ $id をサーバーのキューに登録しました。';
+  }
+
+  @override
+  String get tools_select_folders => 'サーバーのフォルダーを選択';
+
+  @override
+  String get tools_server_folders => 'サーバーのパスを参照または入力し、フォルダーを選択に追加してください。';
+
+  @override
+  String get tools_server_path => 'サーバーのフォルダーパス';
+
+  @override
+  String get tools_browse => '参照';
+
+  @override
+  String get tools_parent_folder => '親フォルダーへ';
+
+  @override
+  String get tools_directory_failed =>
+      'サーバーのフォルダー一覧を取得できませんでした。パスを確認して再試行するか、手動で入力してください。';
+
+  @override
+  String get tools_job_queue => 'サーバーのジョブキュー';
+
+  @override
+  String get tools_jobs_empty => 'サーバーのキューにジョブはありません。';
+
+  @override
+  String get tools_jobs_failed => 'サーバーのキューを読み込めませんでした。接続を確認して再試行してください。';
+
+  @override
+  String get tools_job_ready => '待機中';
+
+  @override
+  String get tools_job_running => '実行中';
+
+  @override
+  String get tools_job_stopping => '停止中';
+
+  @override
+  String get tools_job_finished => '完了';
+
+  @override
+  String get tools_job_cancelled => 'キャンセル済み';
+
+  @override
+  String get tools_job_failed => '失敗';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return '残り約 $seconds 秒';
+  }
+
+  @override
+  String get tools_stop_job => 'ジョブを停止';
+
+  @override
+  String get tools_stop_all_jobs => 'サーバーの全ジョブを停止';
+
+  @override
+  String get tools_stop_failed => 'ジョブを停止できませんでした。サーバーのキューを確認して再試行してください。';
 }

@@ -20,7 +20,9 @@ import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/web_helpers.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+
 import 'package:media_kit_video/media_kit_video.dart';
+
 import 'player_surface.dart';
 
 bool _isSceneFullscreenPath(String path, {String? sceneId}) {
@@ -156,7 +158,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       if (!ref.read(castServiceProvider).isCasting &&
           playerState.player != null &&
           !playerState.player!.state.playing) {
-        await playerState.player!.play();
+        final notifier = ref.read(playerStateProvider.notifier);
+        if (force) {
+          notifier.play();
+        } else {
+          await notifier.resumePlayer(playerState.player!);
+        }
         if (!mounted) return;
       }
       _enterPreferredFullscreenIfNeeded();

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/image.dart' as entity;
 import 'image_details_bottom_sheet.dart';
 
@@ -77,6 +79,26 @@ class ImageCard extends StatelessWidget {
                     fit: BoxFit.cover,
                     memCacheWidth: memCacheWidth,
                   ),
+                  if (image.isClip)
+                    Center(
+                      child: DecoratedBox(
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(
+                            context.dimensions.spacingSmall,
+                          ),
+                          child: Icon(
+                            Icons.play_arrow_rounded,
+                            color: Colors.white,
+                            size: 32 * context.dimensions.fontSizeFactor,
+                            semanticLabel: context.l10n.common_play,
+                          ),
+                        ),
+                      ),
+                    ),
                   if (image.rating100 != null && image.rating100! > 0)
                     Positioned(
                       bottom: 4,

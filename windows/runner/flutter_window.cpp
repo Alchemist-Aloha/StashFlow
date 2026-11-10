@@ -42,6 +42,11 @@ bool FlutterWindow::OnCreate() {
           &flutter::StandardMethodCodec::GetInstance());
   fullscreen_channel_->SetMethodCallHandler(
       [this](const auto& call, auto result) {
+        if (call.method_name() == "getWindowHandle") {
+          result->Success(flutter::EncodableValue(
+              reinterpret_cast<int64_t>(GetHandle())));
+          return;
+        }
         if (call.method_name() != "setFullScreen") {
           result->NotImplemented();
           return;
@@ -82,8 +87,7 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
                               LPARAM const lparam) noexcept {
   LRESULT result = 0;
   if (fullscreen_ && fullscreen_->is_fullscreen()) {
-    // Bypass window_manager's normal/maximized frame calculations only for the
-    // main HWND. Its process-wide delegate must still handle other windows.
+    // Keep the main HWND borderless without changing secondary-window handling.
     if (message == WM_NCCALCSIZE) return 0;
     if (message == WM_NCHITTEST) return HTCLIENT;
     if (message == WM_GETMINMAXINFO) return 0;
@@ -107,11 +111,7 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
   if (message == WM_FONTCHANGE) {
     FlutterDesktopEngineReloadSystemFonts(MultiViewDesktopGetEngineRef());
   }
-  // window_manager registers a single process-wide top-level window proc
-  // delegate, so a minimum size set through it also constrains
-  // multiview_desktop's secondary windows such as the desktop PiP window.
-  // Enforce the main window's minimum here, where it can only affect the main
-  // window, and leave the PiP window free to follow the video's aspect ratio.
+  // Keep the main window's minimum independent of PiP's video aspect ratio.
   if (message == WM_GETMINMAXINFO) {
     const double scale =
         FlutterDesktopGetDpiForMonitor(

@@ -1,16 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:window_manager/window_manager.dart';
+
 import 'app_log_store.dart';
+import 'desktop_window.dart';
 
 /// Serializes desktop fullscreen transactions across image and video viewers.
 /// Windows restoration belongs to the runner, not to window_manager.
 class DesktopFullscreen {
-  DesktopFullscreen._();
+  DesktopFullscreen._()
+    : _setWindowFullScreen = DesktopWindow.instance.setFullScreen;
+
+  /// Substitutes the Linux/macOS transition while retaining routing and queuing.
+  @visibleForTesting
+  DesktopFullscreen.withWindow(this._setWindowFullScreen);
 
   static final instance = DesktopFullscreen._();
   static const _channel = MethodChannel('stash_app_flutter/fullscreen');
 
+  final Future<void> Function(bool) _setWindowFullScreen;
   Future<void>? _activeTransition;
 
   Future<void> enter() => _serialize(() => _setFullScreen(true));
@@ -22,7 +29,7 @@ class DesktopFullscreen {
       if (defaultTargetPlatform == TargetPlatform.windows) {
         await _channel.invokeMethod<void>('setFullScreen', fullscreen);
       } else {
-        await windowManager.setFullScreen(fullscreen);
+        await _setWindowFullScreen(fullscreen);
       }
     } on Object catch (error, stackTrace) {
       AppLogStore.instance.addError(

@@ -4,12 +4,13 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+
 import '../../../features/setup/domain/models/server_profile.dart';
 import 'server_certificate_policy.dart';
 import '../../utils/app_log_store.dart';
 
 class AuthService {
-  AuthService({required Dio dio, required this.cookieJar}) : _dio = dio;
+  AuthService({required this._dio, required this.cookieJar});
 
   static Future<CookieJar>? _sharedCookieJarFuture;
 

@@ -1,7 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/vtt_service.dart';
 import '../../domain/entities/sprite_info.dart';
@@ -168,6 +170,7 @@ class _SpriteImage extends StatelessWidget {
     return CachedNetworkImage(
       imageUrl: sprite.url,
       httpHeaders: headers,
+      cacheManager: StashImage.cacheManager,
       imageBuilder: (context, imageProvider) => buildImage(imageProvider),
       placeholder: (context, url) => const Center(
         child: SizedBox(
@@ -176,9 +179,9 @@ class _SpriteImage extends StatelessWidget {
           child: CircularProgressIndicator(strokeWidth: 2),
         ),
       ),
-      errorWidget: (context, url, error) {
+      errorBuilder: (context, error, stackTrace) {
         AppLogStore.instance.add(
-          'Error loading sprite sheet: $url, error: $error',
+          'Error loading sprite sheet: ${sprite.url}, error: $error',
           source: 'SpriteImage',
         );
         return const Icon(Icons.error);

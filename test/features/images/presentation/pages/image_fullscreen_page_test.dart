@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:media_kit_video/media_kit_video.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
     as entity;
@@ -14,8 +18,10 @@ import 'package:stash_app_flutter/features/images/presentation/pages/image_fulls
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
 import 'package:stash_app_flutter/features/images/presentation/providers/image_browser_context.dart';
 import 'package:stash_app_flutter/features/images/presentation/widgets/image_details_bottom_sheet.dart';
+import 'package:stash_app_flutter/features/images/presentation/widgets/image_clip_player.dart';
 
 import '../../../../helpers/test_helpers.dart';
+import '../../../../helpers/image_clip_test_helpers.dart';
 import 'image_fullscreen_page_test.mocks.dart';
 
 class MockHttpOverrides extends HttpOverrides {
@@ -48,9 +54,8 @@ void main() {
     when(mockRequest.close()).thenAnswer((_) async => mockResponse);
     when(mockResponse.statusCode).thenReturn(HttpStatus.ok);
     when(mockResponse.contentLength).thenReturn(0);
-    when(
-      mockResponse.compressionState,
-    ).thenReturn(HttpClientResponseCompressionState.notCompressed);
+    when(mockResponse.compressionState)
+        .thenReturn(HttpClientResponseCompressionState.notCompressed);
     when(mockResponse.listen(any)).thenAnswer((Invocation invocation) {
       final onData =
           invocation.positionalArguments[0] as void Function(List<int>);
@@ -64,6 +69,370 @@ void main() {
   });
 
   group('ImageFullscreenPage', () {
+    for (final size in [const Size(360, 800), const Size(800, 360)]) {
+      for (final scale in [0.5, 2.0]) {
+        for (final vertical in [true, false]) {
+          testWidgets(
+            'clip fills viewer and controls avoid chrome: $size scale=$scale vertical=$vertical',
+            (tester) async {
+              tester.view.physicalSize = size;
+              tester.view.devicePixelRatio = 1;
+              addTearDown(tester.view.resetPhysicalSize);
+              addTearDown(tester.view.resetDevicePixelRatio);
+              tester.view.padding = FakeViewPadding(
+                top: 24,
+                bottom: 24,
+                left: size.width > size.height ? 24 : 0,
+                right: size.width > size.height ? 16 : 0,
+              );
+              addTearDown(tester.view.resetPadding);
+              SharedPreferences.setMockInitialValues({
+                'image_fullscreen_vertical_swipe': vertical,
+              });
+              final prefs = await SharedPreferences.getInstance();
+              final player = FakeClipPlayer();
+              var sessions = 0;
+              mockRepository.withData([
+                const entity.Image(
+                  id: 'clip',
+                  title: 'Clip title',
+                  files: [
+                    entity.ImageFile(
+                      width: 640,
+                      height: 360,
+                      path: 'clip.mp4',
+                      typename: 'VideoFile',
+                    ),
+                  ],
+                  paths: entity.ImagePaths(image: 'http://localhost/clip'),
+                ),
+                const entity.Image(
+                  id: 'still',
+                  files: [],
+                  paths: entity.ImagePaths(),
+                ),
+              ]);
+              await pumpTestWidget(
+                tester,
+                prefs: prefs,
+                child: Theme(
+                  data: AppTheme.buildTheme(
+                    Brightness.dark,
+                    Colors.teal,
+                    fontSizeFactor: scale,
+                  ),
+                  child: const ImageFullscreenPage(imageId: 'clip'),
+                ),
+                overrides: [
+                  imageRepositoryProvider.overrideWithValue(mockRepository),
+                  imageClipSessionFactoryProvider.overrideWithValue(() {
+                    sessions++;
+                    return fakeClipSession(player);
+                  }),
+                ],
+              );
+              await tester.pumpAndSettle();
+              final header = find.byKey(const Key('image_viewer_header'));
+              final footer = find.byKey(const Key('image_viewer_footer'));
+              final media = find.byType(Video);
+              final slider = find.byType(Slider);
+              final controls = find.byKey(const Key('image_clip_controls'));
+              final videoRect = tester.getRect(media);
+              final videoState = tester.state(media);
+              expect(videoRect, Offset.zero & size);
+              expect(videoRect.overlaps(tester.getRect(header)), isTrue);
+              expect(videoRect.overlaps(tester.getRect(footer)), isTrue);
+              expect(
+                tester.getRect(controls).bottom,
+                lessThan(tester.getRect(footer).top),
+              );
+              expect(
+                tester.getRect(controls).top,
+                greaterThanOrEqualTo(tester.getRect(header).bottom),
+                reason:
+                    'header=${tester.getRect(header)}, controls=${tester.getRect(controls)}, footer=${tester.getRect(footer)}',
+              );
+              final dockedControls = tester.getRect(controls);
+              final rect = tester.getRect(slider);
+              await tester.dragFrom(
+                Offset(rect.left + 30, rect.center.dy),
+                Offset(rect.width - 60, 0),
+              );
+              await tester.pumpAndSettle();
+              expect(player.seeks, hasLength(1));
+              expect(header, findsOneWidget);
+              expect(footer, findsOneWidget);
+              expect(find.text('1 / 2'), findsOneWidget);
+              final videoTap = Offset(
+                dockedControls.right + 1,
+                size.height / 2,
+              );
+              await tester.tapAt(videoTap);
+              await tester.pumpAndSettle();
+              expect(header, findsNothing);
+              expect(footer, findsNothing);
+              expect(tester.getRect(media), videoRect);
+              expect(tester.state(media), same(videoState));
+              expect(
+                tester.getRect(controls).top,
+                greaterThan(dockedControls.top),
+              );
+              expect(
+                tester.getRect(controls).bottom,
+                lessThanOrEqualTo(size.height - 24),
+              );
+              expect(sessions, 1);
+              await tester.tap(find.byKey(const Key('image_clip_play_pause')));
+              await tester.pumpAndSettle();
+              expect(player.playing, isFalse);
+              expect(header, findsNothing);
+              await tester.tapAt(videoTap);
+              await tester.pumpAndSettle();
+              expect(header, findsOneWidget);
+              expect(footer, findsOneWidget);
+              expect(tester.getRect(media), videoRect);
+              expect(tester.getRect(controls), dockedControls);
+              expect(tester.state(media), same(videoState));
+              expect(sessions, 1);
+              mockRepository.withEmpty();
+              await tester.flingFrom(
+                videoTap,
+                vertical
+                    ? Offset(
+                        0,
+                        -tester
+                                .getSize(
+                                  find.byKey(const Key('image_viewer_media')),
+                                )
+                                .height *
+                            0.8,
+                      )
+                    : Offset(-size.width * 0.8, 0),
+                1500,
+              );
+              await tester.pumpAndSettle();
+              expect(find.byType(ImageClipPlayer), findsNothing);
+              expect(find.text('2 / 2'), findsOneWidget);
+              expect(player.disposeCalls, 1);
+              expect(tester.takeException(), isNull);
+              await tester.pumpWidget(const SizedBox());
+              await tester.pumpAndSettle();
+              expect(player.disposeCalls, 1);
+            },
+          );
+        }
+      }
+    }
+
+    testWidgets(
+      'clip clearance tracks rotation, scale, theme and system insets without restarting',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetPadding);
+        final theme = ValueNotifier(
+          AppTheme.buildTheme(Brightness.dark, Colors.teal),
+        );
+        addTearDown(theme.dispose);
+        final player = FakeClipPlayer();
+        var sessions = 0;
+        mockRepository.withData([
+          const entity.Image(
+            id: 'clip',
+            title: 'Clip title',
+            files: [
+              entity.ImageFile(
+                width: 640,
+                height: 360,
+                path: 'clip.mp4',
+                typename: 'VideoFile',
+              ),
+            ],
+            paths: entity.ImagePaths(image: 'http://localhost/clip'),
+          ),
+        ]);
+        await pumpTestWidget(
+          tester,
+          child: ValueListenableBuilder<ThemeData>(
+            valueListenable: theme,
+            builder: (context, value, child) =>
+                Theme(data: value, child: child!),
+            child: const ImageFullscreenPage(imageId: 'clip'),
+          ),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+            imageClipSessionFactoryProvider.overrideWithValue(() {
+              sessions++;
+              return fakeClipSession(player);
+            }),
+          ],
+        );
+        await tester.pumpAndSettle();
+        final media = find.byType(Video);
+        final videoState = tester.state(media);
+        for (final (size, scale, brightness, bottomInset) in [
+          (const Size(360, 800), 0.5, Brightness.dark, 24.0),
+          (const Size(800, 360), 2.0, Brightness.light, 24.0),
+          (const Size(800, 360), 1.5, Brightness.dark, 16.0),
+          (const Size(360, 800), 1.0, Brightness.light, 48.0),
+        ]) {
+          tester.view.physicalSize = size;
+          tester.view.padding = FakeViewPadding(top: 24, bottom: bottomInset);
+          theme.value = AppTheme.buildTheme(
+            brightness,
+            Colors.teal,
+            fontSizeFactor: scale,
+          );
+          await tester.pumpAndSettle();
+          final controls = tester.getRect(
+            find.byKey(const Key('image_clip_controls')),
+          );
+          expect(tester.getRect(media), Offset.zero & size);
+          expect(tester.state(media), same(videoState));
+          expect(
+            controls.top,
+            greaterThanOrEqualTo(
+              tester
+                  .getRect(find.byKey(const Key('image_viewer_header')))
+                  .bottom,
+            ),
+          );
+          expect(
+            controls.bottom,
+            lessThanOrEqualTo(
+              tester.getRect(find.byKey(const Key('image_viewer_footer'))).top,
+            ),
+          );
+          final playTarget = tester.getSize(
+            find.byKey(const Key('image_clip_play_pause')),
+          );
+          expect(
+            playTarget.width,
+            greaterThanOrEqualTo(kMinInteractiveDimension),
+          );
+          expect(
+            playTarget.height,
+            greaterThanOrEqualTo(kMinInteractiveDimension),
+          );
+          expect(sessions, 1);
+          expect(player.playing, isTrue);
+          expect(tester.takeException(), isNull);
+        }
+        await tester.pumpWidget(const SizedBox());
+        await tester.pumpAndSettle();
+        expect(player.disposeCalls, 1);
+      },
+    );
+
+    testWidgets('GIFs use the image decoder without creating a clip session', (
+      tester,
+    ) async {
+      mockRepository.withData([
+        const entity.Image(
+          id: 'gif',
+          files: [
+            entity.ImageFile(
+              width: 320,
+              height: 240,
+              path: '/images/animation',
+              format: 'gif',
+              typename: 'VideoFile',
+            ),
+          ],
+          paths: entity.ImagePaths(image: 'http://localhost/gif'),
+        ),
+      ]);
+      var sessions = 0;
+      await pumpTestWidget(
+        tester,
+        child: const ImageFullscreenPage(imageId: 'gif'),
+        overrides: [
+          imageRepositoryProvider.overrideWithValue(mockRepository),
+          imageClipSessionFactoryProvider.overrideWithValue(() {
+            sessions++;
+            return fakeClipSession(FakeClipPlayer());
+          }),
+        ],
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byType(ExtendedImage), findsOneWidget);
+      expect(find.byType(ImageClipPlayer), findsNothing);
+      expect(find.byType(Video), findsNothing);
+      expect(find.byKey(const Key('image_clip_controls')), findsNothing);
+      expect(sessions, 0);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('adjacent clips are not decoded or prefetched as images', (
+      tester,
+    ) async {
+      mockRepository.withData([
+        const entity.Image(id: 'still', files: [], paths: entity.ImagePaths()),
+        const entity.Image(
+          id: 'clip',
+          files: [
+            entity.ImageFile(
+              width: 320,
+              height: 240,
+              path: 'clip.mp4',
+              typename: 'VideoFile',
+            ),
+          ],
+          paths: entity.ImagePaths(image: 'http://localhost/clip'),
+        ),
+      ]);
+      await pumpTestWidget(
+        tester,
+        child: const ImageFullscreenPage(imageId: 'still'),
+        overrides: [imageRepositoryProvider.overrideWithValue(mockRepository)],
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(ImageClipPlayer), findsNothing);
+      verifyNever(mockHttpClient.getUrl(Uri.parse('http://localhost/clip')));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+      'selected clip uses video and handles unavailable native playback',
+      (tester) async {
+        mockRepository.withData([
+          const entity.Image(
+            id: 'clip',
+            files: [
+              entity.ImageFile(
+                width: 320,
+                height: 240,
+                path: 'clip.mp4',
+                typename: 'VideoFile',
+              ),
+            ],
+            paths: entity.ImagePaths(image: 'http://localhost/clip'),
+          ),
+        ]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: 'clip'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+        );
+        await tester.pumpAndSettle();
+        expect(find.byType(ImageClipPlayer), findsOneWidget);
+        expect(find.byType(ExtendedImage), findsNothing);
+        expect(find.byIcon(Icons.refresh), findsOneWidget);
+        await tester.tap(find.byIcon(Icons.refresh));
+        await tester.pumpAndSettle();
+        expect(find.byIcon(Icons.refresh), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+        await tester.pumpAndSettle();
+      },
+    );
+
     testWidgets(
       'library deep link resolves its image instead of the first result',
       (tester) async {
@@ -714,6 +1083,6 @@ Future<void> _pumpKeyboardGallery(
 Focus _keyboardFocus(WidgetTester tester) =>
     tester.widget<Focus>(find.byKey(const Key('image_keyboard_shortcuts')));
 
-String? _currentImageId(WidgetTester tester) => ProviderScope.containerOf(
-  tester.element(find.byType(ImageFullscreenPage)),
-).read(imageFullscreenCurrentIdProvider);
+String? _currentImageId(WidgetTester tester) =>
+    ProviderScope.containerOf(tester.element(find.byType(ImageFullscreenPage)))
+        .read(imageFullscreenCurrentIdProvider);

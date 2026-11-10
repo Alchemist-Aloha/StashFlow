@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2059,6 +2060,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Video-Audio weiter abspielen, wenn die App im Hintergrund ist';
 
   @override
+  String get settings_playback_audio_focus =>
+      'Pausieren, wenn andere Apps Medien abspielen';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      'StashFlow pausieren, wenn eine andere App den Audiofokus übernimmt. Deaktivieren, um gleichzeitige Wiedergabe zu erlauben.';
+
+  @override
   String get settings_playback_pip => 'Natives Bild-im-Bild';
 
   @override
@@ -3974,4 +3983,162 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settings_interface_miniplayer_bottom_offset =>
       'Abstand zum unteren Rand';
+
+  @override
+  String get tools_library_scan => 'Bibliothek scannen';
+
+  @override
+  String get tools_generate_content => 'Inhalte generieren';
+
+  @override
+  String get tools_scan_description =>
+      'Neue und geänderte Dateien auf dem Server finden.';
+
+  @override
+  String get tools_generate_description =>
+      'Medien für die Bibliothek mit den aktuellen Vorschau-Einstellungen des Servers generieren.';
+
+  @override
+  String get tools_run_all => 'Für gesamte Bibliothek starten';
+
+  @override
+  String get tools_run_selected => 'Für ausgewählte Ordner starten';
+
+  @override
+  String get tools_task_options => 'Aufgabenoptionen';
+
+  @override
+  String get tools_options_sync =>
+      'Änderungen werden automatisch auf dem aktiven Server gespeichert und mit dessen Web-App geteilt.';
+
+  @override
+  String get tools_option_covers => 'Szenencover';
+
+  @override
+  String get tools_option_previews => 'Videovorschauen';
+
+  @override
+  String get tools_option_image_previews => 'Animierte Bildvorschauen';
+
+  @override
+  String get tools_option_sprites => 'Sprites und VTT-Dateien';
+
+  @override
+  String get tools_option_phashes => 'Wahrnehmungshashes für Videos';
+
+  @override
+  String get tools_option_image_thumbnails => 'Bildminiaturen';
+
+  @override
+  String get tools_option_image_phashes => 'Wahrnehmungshashes für Bilder';
+
+  @override
+  String get tools_option_clip_previews => 'Clip-Vorschauen';
+
+  @override
+  String get tools_option_rescan => 'Unveränderte Dateien erneut scannen';
+
+  @override
+  String get tools_option_markers => 'Marker-Videos';
+
+  @override
+  String get tools_option_marker_previews => 'Animierte Marker-Vorschauen';
+
+  @override
+  String get tools_option_marker_screenshots => 'Marker-Screenshots';
+
+  @override
+  String get tools_option_transcodes => 'Transkodierungen';
+
+  @override
+  String get tools_option_heatmaps =>
+      'Interaktive Heatmaps und Geschwindigkeiten';
+
+  @override
+  String get tools_option_overwrite =>
+      'Vorhandene generierte Dateien überschreiben';
+
+  @override
+  String get tools_overwrite_warning =>
+      'Vorhandene generierte Medien werden ersetzt.';
+
+  @override
+  String get tools_load_failed =>
+      'Server-Aufgabeneinstellungen konnten nicht geladen werden. Verbindung prüfen und erneut versuchen.';
+
+  @override
+  String get tools_save_failed =>
+      'Änderung konnte nicht auf dem Server gespeichert werden. Vorheriger Wert wiederhergestellt; erneut versuchen.';
+
+  @override
+  String get tools_start_failed =>
+      'Aufnahme in die Warteschlange nicht bestätigt. Vor erneutem Versuch die Server-Warteschlange prüfen.';
+
+  @override
+  String tools_job_queued(String id) {
+    return 'Aufgabe $id auf dem Server eingereiht.';
+  }
+
+  @override
+  String get tools_select_folders => 'Serverordner auswählen';
+
+  @override
+  String get tools_server_folders =>
+      'Pfade auf dem Server durchsuchen oder eingeben und jeden Ordner zur Auswahl hinzufügen.';
+
+  @override
+  String get tools_server_path => 'Server-Ordnerpfad';
+
+  @override
+  String get tools_browse => 'Durchsuchen';
+
+  @override
+  String get tools_parent_folder => 'Zum übergeordneten Ordner';
+
+  @override
+  String get tools_directory_failed =>
+      'Serverordner konnte nicht aufgelistet werden. Pfad prüfen und erneut versuchen oder manuell eingeben.';
+
+  @override
+  String get tools_job_queue => 'Server-Aufgabenwarteschlange';
+
+  @override
+  String get tools_jobs_empty => 'Keine Aufgaben in der Server-Warteschlange.';
+
+  @override
+  String get tools_jobs_failed =>
+      'Server-Warteschlange konnte nicht geladen werden. Verbindung prüfen und erneut versuchen.';
+
+  @override
+  String get tools_job_ready => 'Eingereiht';
+
+  @override
+  String get tools_job_running => 'Wird ausgeführt';
+
+  @override
+  String get tools_job_stopping => 'Wird gestoppt';
+
+  @override
+  String get tools_job_finished => 'Abgeschlossen';
+
+  @override
+  String get tools_job_cancelled => 'Abgebrochen';
+
+  @override
+  String get tools_job_failed => 'Fehlgeschlagen';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return 'Noch etwa $seconds Sekunden';
+  }
+
+  @override
+  String get tools_stop_job => 'Aufgabe stoppen';
+
+  @override
+  String get tools_stop_all_jobs => 'Alle Serveraufgaben stoppen';
+
+  @override
+  String get tools_stop_failed =>
+      'Aufgabe konnte nicht gestoppt werden. Server-Warteschlange prüfen und erneut versuchen.';
 }

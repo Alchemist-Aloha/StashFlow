@@ -9,6 +9,7 @@ import 'package:stash_app_flutter/features/setup/presentation/pages/settings/pla
 import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 
 import '../../../../../helpers/test_helpers.dart' as helpers;
+
 import 'package:stash_app_flutter/features/scenes/presentation/providers/local_caption_settings.dart';
 
 class _NoDownloadedModels extends LocalCaptionSettingsNotifier {
@@ -38,6 +39,71 @@ void main() {
     SharedPreferences.setMockInitialValues({'video_gravity_orientation': true});
     prefs = await SharedPreferences.getInstance();
   });
+
+  for (final scale in [0.5, 2.0]) {
+    testWidgets(
+      'Android audio focus defaults on and persists independently at scale $scale',
+      (tester) async {
+        tester.view.physicalSize = const Size(400, 900);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        Future<void> open() async {
+          await pumpTestWidget(
+            tester,
+            prefs: prefs,
+            child: Theme(
+              data: AppTheme.buildTheme(
+                Brightness.light,
+                Colors.teal,
+                fontSizeFactor: scale,
+              ),
+              child: const PlaybackSettingsPage(),
+            ),
+          );
+          await tester.pumpAndSettle();
+        }
+
+        await open();
+        final tile = find.widgetWithText(
+          SwitchListTile,
+          'Pause when other apps play media',
+        );
+        await tester.ensureVisible(tile);
+        await tester.pumpAndSettle();
+        expect(tester.widget<SwitchListTile>(tile).value, isTrue);
+        expect(
+          PlayerSettingsStore(prefs).load().enableBackgroundPlayback,
+          isFalse,
+        );
+        await tester.tap(tile);
+        await tester.pumpAndSettle();
+        expect(
+          prefs.getBool(PlayerSettingsStore.respectAudioFocusKey),
+          isFalse,
+        );
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(PlaybackSettingsPage)),
+        );
+        expect(container.read(playerStateProvider).respectAudioFocus, isFalse);
+        await tester.pumpWidget(const SizedBox());
+        await open();
+        expect(tester.widget<SwitchListTile>(tile).value, isFalse);
+        expect(tester.takeException(), isNull);
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+  }
+
+  testWidgets('audio focus switch is Android-only', (tester) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const PlaybackSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Pause when other apps play media'), findsNothing);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
   testWidgets(
     'mpv selectors persist, pair direct output, and restore defaults',

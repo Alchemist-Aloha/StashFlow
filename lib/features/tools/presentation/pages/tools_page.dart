@@ -62,6 +62,20 @@ class _ToolsActions extends StatelessWidget {
     return Column(
       children: [
         SettingsActionCard(
+          icon: Icons.manage_search_rounded,
+          title: context.l10n.tools_library_scan,
+          subtitle: context.l10n.tools_scan_description,
+          onTap: () => context.push('/tools/library-scan'),
+        ),
+        SizedBox(height: context.dimensions.spacingMedium),
+        SettingsActionCard(
+          icon: Icons.auto_awesome_rounded,
+          title: context.l10n.tools_generate_content,
+          subtitle: context.l10n.tools_generate_description,
+          onTap: () => context.push('/tools/generate-content'),
+        ),
+        SizedBox(height: context.dimensions.spacingMedium),
+        SettingsActionCard(
           icon: Icons.difference_rounded,
           title: context.l10n.scene_deduplication,
           subtitle: context.l10n.tools_scene_deduplication_subtitle,

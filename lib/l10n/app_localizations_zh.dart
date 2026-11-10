@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1968,6 +1969,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_background_subtitle => '应用在后台时继续播放视频音频';
 
   @override
+  String get settings_playback_audio_focus => '其他应用播放媒体时暂停';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。';
+
+  @override
   String get settings_playback_pip => '原生画中画';
 
   @override
@@ -3793,6 +3801,151 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_interface_miniplayer_bottom_offset => '底部偏移量';
+
+  @override
+  String get tools_library_scan => '扫描媒体库';
+
+  @override
+  String get tools_generate_content => '生成内容';
+
+  @override
+  String get tools_scan_description => '查找服务器上新增和更改的文件。';
+
+  @override
+  String get tools_generate_description => '使用服务器当前的预览设置为媒体库生成内容。';
+
+  @override
+  String get tools_run_all => '对整个媒体库运行';
+
+  @override
+  String get tools_run_selected => '对所选文件夹运行';
+
+  @override
+  String get tools_task_options => '任务选项';
+
+  @override
+  String get tools_options_sync => '更改会自动保存到当前服务器，并与其网页应用共享。';
+
+  @override
+  String get tools_option_covers => '场景封面';
+
+  @override
+  String get tools_option_previews => '视频预览';
+
+  @override
+  String get tools_option_image_previews => '动态图像预览';
+
+  @override
+  String get tools_option_sprites => '精灵图和 VTT 文件';
+
+  @override
+  String get tools_option_phashes => '视频感知哈希';
+
+  @override
+  String get tools_option_image_thumbnails => '图像缩略图';
+
+  @override
+  String get tools_option_image_phashes => '图像感知哈希';
+
+  @override
+  String get tools_option_clip_previews => '片段预览';
+
+  @override
+  String get tools_option_rescan => '重新扫描未更改的文件';
+
+  @override
+  String get tools_option_markers => '标记视频';
+
+  @override
+  String get tools_option_marker_previews => '标记动画预览';
+
+  @override
+  String get tools_option_marker_screenshots => '标记截图';
+
+  @override
+  String get tools_option_transcodes => '转码';
+
+  @override
+  String get tools_option_heatmaps => '交互式热力图和速度';
+
+  @override
+  String get tools_option_overwrite => '覆盖已生成的文件';
+
+  @override
+  String get tools_overwrite_warning => '将替换现有的已生成媒体。';
+
+  @override
+  String get tools_load_failed => '无法加载服务器任务设置。请检查连接后重试。';
+
+  @override
+  String get tools_save_failed => '无法将更改保存到服务器。已恢复原值，请重试。';
+
+  @override
+  String get tools_start_failed => '无法确认任务是否已加入队列。请先检查服务器队列再重试。';
+
+  @override
+  String tools_job_queued(String id) {
+    return '任务 $id 已加入服务器队列。';
+  }
+
+  @override
+  String get tools_select_folders => '选择服务器文件夹';
+
+  @override
+  String get tools_server_folders => '浏览或输入服务器上的路径，然后逐个添加文件夹。';
+
+  @override
+  String get tools_server_path => '服务器文件夹路径';
+
+  @override
+  String get tools_browse => '浏览';
+
+  @override
+  String get tools_parent_folder => '上一级文件夹';
+
+  @override
+  String get tools_directory_failed => '无法列出此服务器文件夹。请检查路径后重试，或手动输入路径。';
+
+  @override
+  String get tools_job_queue => '服务器任务队列';
+
+  @override
+  String get tools_jobs_empty => '服务器队列中没有任务。';
+
+  @override
+  String get tools_jobs_failed => '无法加载服务器队列。请检查连接后重试。';
+
+  @override
+  String get tools_job_ready => '排队中';
+
+  @override
+  String get tools_job_running => '运行中';
+
+  @override
+  String get tools_job_stopping => '正在停止';
+
+  @override
+  String get tools_job_finished => '已完成';
+
+  @override
+  String get tools_job_cancelled => '已取消';
+
+  @override
+  String get tools_job_failed => '失败';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return '预计还需 $seconds 秒';
+  }
+
+  @override
+  String get tools_stop_job => '停止任务';
+
+  @override
+  String get tools_stop_all_jobs => '停止服务器上的所有任务';
+
+  @override
+  String get tools_stop_failed => '无法停止任务。请检查服务器队列后重试。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5759,6 +5912,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_playback_background_subtitle => '应用在后台时继续播放视频音频';
 
   @override
+  String get settings_playback_audio_focus => '其他应用播放媒体时暂停';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。';
+
+  @override
   String get settings_playback_pip => '原生画中画';
 
   @override
@@ -7584,6 +7744,151 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_interface_miniplayer_bottom_offset => '底部偏移量';
+
+  @override
+  String get tools_library_scan => '扫描媒体库';
+
+  @override
+  String get tools_generate_content => '生成内容';
+
+  @override
+  String get tools_scan_description => '查找服务器上新增和更改的文件。';
+
+  @override
+  String get tools_generate_description => '使用服务器当前的预览设置为媒体库生成内容。';
+
+  @override
+  String get tools_run_all => '对整个媒体库运行';
+
+  @override
+  String get tools_run_selected => '对所选文件夹运行';
+
+  @override
+  String get tools_task_options => '任务选项';
+
+  @override
+  String get tools_options_sync => '更改会自动保存到当前服务器，并与其网页应用共享。';
+
+  @override
+  String get tools_option_covers => '场景封面';
+
+  @override
+  String get tools_option_previews => '视频预览';
+
+  @override
+  String get tools_option_image_previews => '动态图像预览';
+
+  @override
+  String get tools_option_sprites => '精灵图和 VTT 文件';
+
+  @override
+  String get tools_option_phashes => '视频感知哈希';
+
+  @override
+  String get tools_option_image_thumbnails => '图像缩略图';
+
+  @override
+  String get tools_option_image_phashes => '图像感知哈希';
+
+  @override
+  String get tools_option_clip_previews => '片段预览';
+
+  @override
+  String get tools_option_rescan => '重新扫描未更改的文件';
+
+  @override
+  String get tools_option_markers => '标记视频';
+
+  @override
+  String get tools_option_marker_previews => '标记动画预览';
+
+  @override
+  String get tools_option_marker_screenshots => '标记截图';
+
+  @override
+  String get tools_option_transcodes => '转码';
+
+  @override
+  String get tools_option_heatmaps => '交互式热力图和速度';
+
+  @override
+  String get tools_option_overwrite => '覆盖已生成的文件';
+
+  @override
+  String get tools_overwrite_warning => '将替换现有的已生成媒体。';
+
+  @override
+  String get tools_load_failed => '无法加载服务器任务设置。请检查连接后重试。';
+
+  @override
+  String get tools_save_failed => '无法将更改保存到服务器。已恢复原值，请重试。';
+
+  @override
+  String get tools_start_failed => '无法确认任务是否已加入队列。请先检查服务器队列再重试。';
+
+  @override
+  String tools_job_queued(String id) {
+    return '任务 $id 已加入服务器队列。';
+  }
+
+  @override
+  String get tools_select_folders => '选择服务器文件夹';
+
+  @override
+  String get tools_server_folders => '浏览或输入服务器上的路径，然后逐个添加文件夹。';
+
+  @override
+  String get tools_server_path => '服务器文件夹路径';
+
+  @override
+  String get tools_browse => '浏览';
+
+  @override
+  String get tools_parent_folder => '上一级文件夹';
+
+  @override
+  String get tools_directory_failed => '无法列出此服务器文件夹。请检查路径后重试，或手动输入路径。';
+
+  @override
+  String get tools_job_queue => '服务器任务队列';
+
+  @override
+  String get tools_jobs_empty => '服务器队列中没有任务。';
+
+  @override
+  String get tools_jobs_failed => '无法加载服务器队列。请检查连接后重试。';
+
+  @override
+  String get tools_job_ready => '排队中';
+
+  @override
+  String get tools_job_running => '运行中';
+
+  @override
+  String get tools_job_stopping => '正在停止';
+
+  @override
+  String get tools_job_finished => '已完成';
+
+  @override
+  String get tools_job_cancelled => '已取消';
+
+  @override
+  String get tools_job_failed => '失败';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return '预计还需 $seconds 秒';
+  }
+
+  @override
+  String get tools_stop_job => '停止任务';
+
+  @override
+  String get tools_stop_all_jobs => '停止服务器上的所有任务';
+
+  @override
+  String get tools_stop_failed => '无法停止任务。请检查服务器队列后重试。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9554,6 +9859,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_playback_background_subtitle => '應用程式在背景執行時保持音訊播放';
 
   @override
+  String get settings_playback_audio_focus => '其他應用程式播放媒體時暫停';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '當其他應用程式取得音訊焦點時暫停 StashFlow。關閉後允許同時播放。';
+
+  @override
   String get settings_playback_pip => '原生子母畫面';
 
   @override
@@ -11384,4 +11696,149 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_interface_miniplayer_bottom_offset => '底部位移量';
+
+  @override
+  String get tools_library_scan => '掃描媒體庫';
+
+  @override
+  String get tools_generate_content => '產生內容';
+
+  @override
+  String get tools_scan_description => '尋找伺服器上新增和變更的檔案。';
+
+  @override
+  String get tools_generate_description => '使用伺服器目前的預覽設定為媒體庫產生內容。';
+
+  @override
+  String get tools_run_all => '對整個媒體庫執行';
+
+  @override
+  String get tools_run_selected => '對所選資料夾執行';
+
+  @override
+  String get tools_task_options => '工作選項';
+
+  @override
+  String get tools_options_sync => '變更會自動儲存至目前的伺服器，並與其網頁應用程式共用。';
+
+  @override
+  String get tools_option_covers => '場景封面';
+
+  @override
+  String get tools_option_previews => '影片預覽';
+
+  @override
+  String get tools_option_image_previews => '動態影像預覽';
+
+  @override
+  String get tools_option_sprites => '精靈圖與 VTT 檔案';
+
+  @override
+  String get tools_option_phashes => '影片感知雜湊';
+
+  @override
+  String get tools_option_image_thumbnails => '影像縮圖';
+
+  @override
+  String get tools_option_image_phashes => '影像感知雜湊';
+
+  @override
+  String get tools_option_clip_previews => '片段預覽';
+
+  @override
+  String get tools_option_rescan => '重新掃描未變更的檔案';
+
+  @override
+  String get tools_option_markers => '標記影片';
+
+  @override
+  String get tools_option_marker_previews => '標記動畫預覽';
+
+  @override
+  String get tools_option_marker_screenshots => '標記擷取畫面';
+
+  @override
+  String get tools_option_transcodes => '轉碼';
+
+  @override
+  String get tools_option_heatmaps => '互動式熱圖與速度';
+
+  @override
+  String get tools_option_overwrite => '覆寫已產生的檔案';
+
+  @override
+  String get tools_overwrite_warning => '將取代現有的已產生媒體。';
+
+  @override
+  String get tools_load_failed => '無法載入伺服器工作設定。請檢查連線後重試。';
+
+  @override
+  String get tools_save_failed => '無法將變更儲存至伺服器。已還原原值，請重試。';
+
+  @override
+  String get tools_start_failed => '無法確認工作是否已加入佇列。請先檢查伺服器佇列再重試。';
+
+  @override
+  String tools_job_queued(String id) {
+    return '工作 $id 已加入伺服器佇列。';
+  }
+
+  @override
+  String get tools_select_folders => '選擇伺服器資料夾';
+
+  @override
+  String get tools_server_folders => '瀏覽或輸入伺服器上的路徑，然後逐一新增資料夾。';
+
+  @override
+  String get tools_server_path => '伺服器資料夾路徑';
+
+  @override
+  String get tools_browse => '瀏覽';
+
+  @override
+  String get tools_parent_folder => '上一層資料夾';
+
+  @override
+  String get tools_directory_failed => '無法列出此伺服器資料夾。請檢查路徑後重試，或手動輸入路徑。';
+
+  @override
+  String get tools_job_queue => '伺服器工作佇列';
+
+  @override
+  String get tools_jobs_empty => '伺服器佇列中沒有工作。';
+
+  @override
+  String get tools_jobs_failed => '無法載入伺服器佇列。請檢查連線後重試。';
+
+  @override
+  String get tools_job_ready => '排隊中';
+
+  @override
+  String get tools_job_running => '執行中';
+
+  @override
+  String get tools_job_stopping => '正在停止';
+
+  @override
+  String get tools_job_finished => '已完成';
+
+  @override
+  String get tools_job_cancelled => '已取消';
+
+  @override
+  String get tools_job_failed => '失敗';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return '預計還需 $seconds 秒';
+  }
+
+  @override
+  String get tools_stop_job => '停止工作';
+
+  @override
+  String get tools_stop_all_jobs => '停止伺服器上的所有工作';
+
+  @override
+  String get tools_stop_failed => '無法停止工作。請檢查伺服器佇列後重試。';
 }

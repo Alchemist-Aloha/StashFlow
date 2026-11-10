@@ -4,12 +4,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/gestures.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:go_router/go_router.dart';
 import 'package:screen_brightness/screen_brightness.dart';
+
 import 'video_controls/video_progress_bar.dart';
 import 'video_controls/video_debug_overlay.dart';
 import 'video_controls/video_playback_controls.dart';
@@ -30,6 +33,7 @@ import 'playlist_floating_panel.dart';
 import 'scrubbing_preview.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/services/cast_service.dart';
+
 import 'package:media_kit_video/media_kit_video.dart';
 
 class NativeVideoControls extends ConsumerStatefulWidget {
@@ -282,6 +286,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
       return;
     }
 
+    final notifier = ref.read(playerStateProvider.notifier);
+    if (ref.read(playerStateProvider).player == widget.controller.player) {
+      await notifier.seek(target);
+      return;
+    }
     await widget.controller.player.seek(target);
     if (!mounted || !keepPlayingAfterSeek) return;
     if (!widget.controller.player.state.playing) {
@@ -308,7 +317,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
       final message = context.l10n.cast_stopped_resuming_locally;
       await widget.controller.player.seek(resumePosition);
       if (shouldResume) {
-        await widget.controller.player.play();
+        await _play();
       }
 
       messenger.showSnackBar(SnackBar(content: Text(message)));
@@ -433,7 +442,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
       await ref.read(castServiceProvider.notifier).play();
       return;
     }
-    await widget.controller.player.play();
+    if (ref.read(playerStateProvider).player == widget.controller.player) {
+      ref.read(playerStateProvider.notifier).play();
+    } else {
+      await widget.controller.player.play();
+    }
   }
 
   Future<void> _pause() async {
@@ -442,7 +455,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
       await ref.read(castServiceProvider.notifier).pause();
       return;
     }
-    await widget.controller.player.pause();
+    if (ref.read(playerStateProvider).player == widget.controller.player) {
+      ref.read(playerStateProvider.notifier).pause();
+    } else {
+      await widget.controller.player.pause();
+    }
   }
 
   void _togglePlay() {
@@ -1177,17 +1194,16 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                   );
                                 } else if (Platform.isAndroid) {
                                   unawaited(
-                                    SystemMediaVolume.adjustMediaVolume(
-                                      delta,
-                                    ).then((volume) {
-                                      if (!mounted || volume == null) {
-                                        return;
-                                      }
-                                      _showFeedback(
-                                        Icons.volume_up,
-                                        '${(volume * 100).round()}%',
-                                      );
-                                    }),
+                                    SystemMediaVolume.adjustMediaVolume(delta)
+                                        .then((volume) {
+                                          if (!mounted || volume == null) {
+                                            return;
+                                          }
+                                          _showFeedback(
+                                            Icons.volume_up,
+                                            '${(volume * 100).round()}%',
+                                          );
+                                        }),
                                   );
                                 } else {
                                   // Volume

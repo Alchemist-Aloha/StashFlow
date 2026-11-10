@@ -1,17 +1,17 @@
 name: stash_app_flutter
 description: "A modern Flutter client app for browsing and managing your Stash library."
 publish_to: 'none'
-version: 1.41.0+114
+version: 1.42.0+115
 
 msix_config:
   display_name: StashFlow
   identity_name: com.stashflow.app
   publisher_display_name: StashFlow
-  msix_version: 1.41.0.114
+  msix_version: 1.42.0.115
   logo_path: asset/stashfluttericon.png
 
 environment:
-  sdk: ^3.11.0
+  sdk: ^3.13.0
   flutter: ">=3.47.6"
 
 dependencies:
@@ -33,9 +33,10 @@ dependencies:
       url: https://github.com/Alchemist-Aloha/media-kit.git
       ref: 31de3525af6841df5e999a37cb8da83a34b3f87b
       path: ./media_kit_video
+  audio_session: ^0.2.4
   audio_service: ^0.18.19
-  audio_service_mpris: ^0.2.1
-  wakelock_plus: ^1.6.1
+  audio_service_mpris: 1.0.0-beta.3
+  wakelock_plus: ^1.8.2
   shared_preferences: ^2.5.5
   path_provider: ^2.1.6
   path: ^1.9.1
@@ -44,8 +45,7 @@ dependencies:
   riverpod_annotation: ^4.0.3
   graphql: ^5.2.4
   url_launcher: ^6.3.2
-  cached_network_image: ^4.0.0
-  flutter_cache_manager: ^3.4.1
+  cached_network_image_ce: ^4.13.2
   http: ^1.6.0
   flutter_staggered_grid_view: ^0.7.0
   skeletonizer: ^3.0.0
@@ -53,7 +53,7 @@ dependencies:
   flutter_secure_storage: ^11.0.0
   package_info_plus: ^10.1.0
   pub_semver: ^2.2.0
-  window_manager: ^0.5.2
+  window_manager: ^0.6.0
   multiview_desktop: ^2.0.2
   dio: ^5.10.0
   dio_cookie_manager: ^3.4.0
@@ -73,11 +73,11 @@ dependencies:
 
 dev_dependencies:
   msix: ^3.18.0
-  fastforge: ^0.6.12
+  fastforge: ^0.6.14
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  build_runner: ^2.16.0
+  build_runner: ^2.16.2
   freezed: ^4.0.1
   json_serializable: ^6.15.1
   riverpod_generator: ^4.0.4

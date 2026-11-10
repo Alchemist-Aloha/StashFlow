@@ -28,6 +28,8 @@ import '../../domain/entities/image.dart' as entity;
 import '../providers/image_list_provider.dart';
 import '../providers/image_browser_context.dart';
 import '../widgets/image_details_bottom_sheet.dart';
+import '../widgets/image_clip_player.dart';
+import '../../../../core/presentation/widgets/stash_image.dart';
 
 enum _SlideshowDirection { forward, backward }
 
@@ -69,6 +71,30 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   Offset? _pointerDownPosition;
   DateTime? _pointerDownTime;
   bool _ignoreNextOverlayToggle = false;
+  final _headerKey = GlobalKey();
+  final _footerKey = GlobalKey();
+  EdgeInsets _chromeInsets = EdgeInsets.zero;
+
+  void _measureChrome() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final header = _headerKey.currentContext?.findRenderObject();
+      final footer = _footerKey.currentContext?.findRenderObject();
+      if (header is! RenderBox ||
+          !header.hasSize ||
+          footer is! RenderBox ||
+          !footer.hasSize) {
+        return;
+      }
+      final insets = EdgeInsets.only(
+        top: header.size.height,
+        bottom: footer.size.height,
+      );
+      if (insets != _chromeInsets) {
+        setState(() => _chromeInsets = insets);
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -341,9 +367,18 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       );
 
       // Determine extension from Content-Type
-      String extension = 'jpg';
+      String extension = image.isClip
+          ? image.files.first.path.split('.').last.toLowerCase()
+          : (image.isGif ? 'gif' : 'jpg');
+      if (!RegExp(r'^[a-z0-9]{1,10}$').hasMatch(extension)) {
+        extension = image.isClip ? 'mp4' : 'jpg';
+      }
       if (contentType != null) {
-        if (contentType.contains('webp')) {
+        if (contentType.contains('video/mp4')) {
+          extension = 'mp4';
+        } else if (contentType.contains('video/webm')) {
+          extension = 'webm';
+        } else if (contentType.contains('webp')) {
           extension = 'webp';
         } else if (contentType.contains('png')) {
           extension = 'png';
@@ -389,7 +424,11 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
       try {
         debugPrint('Saving to gallery via putImage: $savePath');
-        await Gal.putImage(savePath, album: 'StashFlow');
+        if (image.isClip) {
+          await Gal.putVideo(savePath, album: 'StashFlow');
+        } else {
+          await Gal.putImage(savePath, album: 'StashFlow');
+        }
       } finally {
         if (await file.exists()) {
           await file.delete();
@@ -398,9 +437,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.saved_to_album)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(context.l10n.saved_to_album)));
       }
     } on GalException catch (e, stackTrace) {
       AppLogStore.instance.addError(
@@ -754,7 +792,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
     // Warm raw files without decoding full-resolution images into memory.
     for (var i = 1; i <= 2; i++) {
-      if (index + i < items.length) {
+      if (index + i < items.length && !items[index + i].isClip) {
         final url =
             items[index + i].paths.image ?? items[index + i].paths.preview;
         if (url != null) {
@@ -766,7 +804,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         }
       }
     }
-    if (index - 1 >= 0) {
+    if (index - 1 >= 0 && !items[index - 1].isClip) {
       final url =
           items[index - 1].paths.image ?? items[index - 1].paths.preview;
       if (url != null) {
@@ -792,10 +830,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     final hasRating = rating100 != null && rating100 > 0;
     final ratingLabel = hasRating ? (rating100 / 20).toStringAsFixed(1) : '';
 
-    return Positioned(
-      top: context.dimensions.spacingSmall,
-      left: 0,
-      right: 0,
+    return Padding(
+      key: const Key('image_viewer_header'),
+      padding: EdgeInsets.only(top: context.dimensions.spacingSmall),
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: _onOverlayPointerDown,
@@ -933,10 +970,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     final canGoPrevious = _currentIndex > 0;
     final canGoNext = _currentIndex < loadedItemCount - 1;
 
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: context.dimensions.spacingSmall,
+    return Padding(
+      key: const Key('image_viewer_footer'),
+      padding: EdgeInsets.only(bottom: context.dimensions.spacingSmall),
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: _onOverlayPointerDown,
@@ -1194,166 +1230,223 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                     ? context.dimensions.spacingLarge
                     : context.dimensions.spacingSmall;
 
+                if (_showOverlays) _measureChrome();
+                final header = _buildOverlayHeader(
+                  context,
+                  currentImage,
+                  displayTitle,
+                  totalItemCount,
+                  maxOverlayWidth,
+                  horizontalPadding,
+                );
+                final footer = _buildOverlayFooter(
+                  context,
+                  currentImage,
+                  items.length,
+                  totalItemCount,
+                  maxOverlayWidth,
+                  horizontalPadding,
+                );
                 return Listener(
                   behavior: HitTestBehavior.translucent,
                   onPointerDown: _onPointerDown,
                   onPointerUp: _onPointerUp,
-                  child: Stack(
-                    children: [
-                      NotificationListener<ScrollStartNotification>(
-                        onNotification: (notification) {
-                          if (notification.depth == 0 &&
-                              notification.dragDetails != null) {
-                            _clearManualNavigationTarget();
-                          }
-                          return false;
-                        },
-                        child: ExtendedImageGesturePageView.builder(
-                          controller: _pageController,
-                          scrollDirection: scrollDirection,
-                          itemCount: items.length,
-                          physics: const BouncingScrollPhysics(),
-                          onPageChanged: (index) {
-                            _handlePageChanged(index, items, headers);
-                          },
-                          itemBuilder: (context, index) {
-                            final image = items[index];
-                            final imageUrl =
-                                image.paths.image ?? image.paths.preview;
+                  child: NotificationListener<SizeChangedLayoutNotification>(
+                    onNotification: (_) {
+                      _measureChrome();
+                      return false;
+                    },
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          key: const Key('image_viewer_media'),
+                          child: NotificationListener<ScrollStartNotification>(
+                            onNotification: (notification) {
+                              if (notification.depth == 0 &&
+                                  notification.dragDetails != null) {
+                                _clearManualNavigationTarget();
+                              }
+                              return false;
+                            },
+                            child: ExtendedImageGesturePageView.builder(
+                              controller: _pageController,
+                              scrollDirection: scrollDirection,
+                              itemCount: items.length,
+                              physics: const BouncingScrollPhysics(),
+                              onPageChanged: (index) {
+                                _handlePageChanged(index, items, headers);
+                              },
+                              itemBuilder: (context, index) {
+                                final image = items[index];
+                                final imageUrl =
+                                    image.paths.image ?? image.paths.preview;
 
-                            if (imageUrl == null || imageUrl.isEmpty) {
-                              return const Center(
-                                child: Icon(
-                                  Icons.broken_image,
-                                  color: Colors.white54,
-                                  size: 64,
-                                ),
-                              );
-                            }
-
-                            return RepaintBoundary(
-                              child: ExtendedImage.network(
-                                imageUrl,
-                                excludeFromSemantics: true,
-                                headers: headers,
-                                fit: BoxFit.contain,
-                                mode: ExtendedImageMode.gesture,
-                                cache: true,
-                                initGestureConfigHandler: (state) {
-                                  return GestureConfig(
-                                    minScale: 0.9,
-                                    animationMinScale: 0.7,
-                                    maxScale: 5.0,
-                                    animationMaxScale: 6.0,
-                                    speed: 1.0,
-                                    inertialSpeed: 100.0,
-                                    initialScale: 1.0,
-                                    inPageView: true,
-                                    initialAlignment: InitialAlignment.center,
+                                if (imageUrl == null || imageUrl.isEmpty) {
+                                  return const Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      color: Colors.white54,
+                                      size: 64,
+                                    ),
                                   );
-                                },
-                                onDoubleTap: (ExtendedImageGestureState state) {
-                                  final pointerDownPosition =
-                                      state.pointerDownPosition;
-                                  final begin =
-                                      state.gestureDetails!.totalScale;
-                                  final end = begin == 1.0 ? 3.0 : 1.0;
+                                }
 
-                                  state.handleDoubleTap(
-                                    scale: end,
-                                    doubleTapPosition: pointerDownPosition,
-                                  );
-                                },
-                                loadStateChanged: (ExtendedImageState state) {
-                                  switch (state.extendedImageLoadState) {
-                                    case LoadState.loading:
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
+                                if (image.isClip) {
+                                  return index == _currentIndex
+                                      ? Listener(
+                                          onPointerDown: _onOverlayPointerDown,
+                                          child: ImageClipPlayer(
+                                            key: ValueKey((
+                                              image.id,
+                                              imageUrl,
+                                              headers,
+                                            )),
+                                            url: imageUrl,
+                                            onTap: _toggleOverlays,
+                                            controlsInsets: _showOverlays
+                                                ? _chromeInsets
+                                                : EdgeInsets.zero,
+                                          ),
+                                        )
+                                      : StashImage(
+                                          imageUrl: image.paths.thumbnail,
+                                          fit: BoxFit.contain,
+                                        );
+                                }
+
+                                return RepaintBoundary(
+                                  child: ExtendedImage.network(
+                                    imageUrl,
+                                    excludeFromSemantics: true,
+                                    headers: headers,
+                                    fit: BoxFit.contain,
+                                    mode: ExtendedImageMode.gesture,
+                                    cache: true,
+                                    initGestureConfigHandler: (state) {
+                                      return GestureConfig(
+                                        minScale: 0.9,
+                                        animationMinScale: 0.7,
+                                        maxScale: 5.0,
+                                        animationMaxScale: 6.0,
+                                        speed: 1.0,
+                                        inertialSpeed: 100.0,
+                                        initialScale: 1.0,
+                                        inPageView: true,
+                                        initialAlignment:
+                                            InitialAlignment.center,
                                       );
-                                    case LoadState.completed:
-                                      return state.completedWidget;
-                                    case LoadState.failed:
-                                      return Center(
-                                        child: Semantics(
-                                          button: true,
-                                          label: context
-                                              .l10n
-                                              .failed_to_load_tap_to_retry,
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              onTap: () => state.reLoadImage(),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    context
-                                                        .dimensions
-                                                        .spacingMedium,
-                                                  ),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(
-                                                  context
-                                                      .dimensions
-                                                      .spacingLarge,
-                                                ),
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.broken_image,
-                                                      color: Colors.white54,
-                                                      size:
-                                                          64 *
-                                                          context
-                                                              .dimensions
-                                                              .fontSizeFactor,
-                                                    ),
-                                                    SizedBox(
-                                                      height: context
-                                                          .dimensions
-                                                          .spacingMedium,
-                                                    ),
-                                                    Text(
-                                                      context
-                                                          .l10n
-                                                          .failed_to_load_tap_to_retry,
-                                                      style: const TextStyle(
-                                                        color: Colors.white70,
+                                    },
+                                    onDoubleTap:
+                                        (ExtendedImageGestureState state) {
+                                          final pointerDownPosition =
+                                              state.pointerDownPosition;
+                                          final begin =
+                                              state.gestureDetails!.totalScale;
+                                          final end = begin == 1.0 ? 3.0 : 1.0;
+
+                                          state.handleDoubleTap(
+                                            scale: end,
+                                            doubleTapPosition:
+                                                pointerDownPosition,
+                                          );
+                                        },
+                                    loadStateChanged: (ExtendedImageState state) {
+                                      switch (state.extendedImageLoadState) {
+                                        case LoadState.loading:
+                                          return const Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        case LoadState.completed:
+                                          return state.completedWidget;
+                                        case LoadState.failed:
+                                          return Center(
+                                            child: Semantics(
+                                              button: true,
+                                              label: context
+                                                  .l10n
+                                                  .failed_to_load_tap_to_retry,
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  onTap: () =>
+                                                      state.reLoadImage(),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        context
+                                                            .dimensions
+                                                            .spacingMedium,
                                                       ),
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(
+                                                      context
+                                                          .dimensions
+                                                          .spacingLarge,
                                                     ),
-                                                  ],
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.broken_image,
+                                                          color: Colors.white54,
+                                                          size:
+                                                              64 *
+                                                              context
+                                                                  .dimensions
+                                                                  .fontSizeFactor,
+                                                        ),
+                                                        SizedBox(
+                                                          height: context
+                                                              .dimensions
+                                                              .spacingMedium,
+                                                        ),
+                                                        Text(
+                                                          context
+                                                              .l10n
+                                                              .failed_to_load_tap_to_retry,
+                                                          style:
+                                                              const TextStyle(
+                                                                color: Colors
+                                                                    .white70,
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      );
-                                  }
-                                },
-                              ),
-                            );
-                          },
+                                          );
+                                      }
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ),
-                      ),
-                      if (_showOverlays) ...[
-                        _buildOverlayHeader(
-                          context,
-                          currentImage,
-                          displayTitle,
-                          totalItemCount,
-                          maxOverlayWidth,
-                          horizontalPadding,
-                        ),
-                        _buildOverlayFooter(
-                          context,
-                          currentImage,
-                          items.length,
-                          totalItemCount,
-                          maxOverlayWidth,
-                          horizontalPadding,
-                        ),
+                        if (_showOverlays) ...[
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: SizeChangedLayoutNotifier(
+                              key: _headerKey,
+                              child: header,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: SizeChangedLayoutNotifier(
+                              key: _footerKey,
+                              child: footer,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 );
               },

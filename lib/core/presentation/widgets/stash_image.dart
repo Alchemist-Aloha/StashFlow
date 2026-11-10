@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image_ce/cached_network_image.dart';
+// shortcut: CE 4.13's public stub omits httpClientFactory; use its export once fixed.
+// ignore: implementation_imports
+import 'package:cached_network_image_ce/src/cache/default_cache_manager.dart'
+    if (dart.library.js_interop) 'package:cached_network_image_ce/src/cache/default_cache_manager_web.dart'
+    as image_cache;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../theme/app_theme.dart';
-import '../../data/auth/dio_file_service.dart';
+import '../../data/auth/dio_image_client.dart';
 import '../../data/auth/auth_provider.dart';
 import '../../data/graphql/media_headers_provider.dart';
 import '../../data/graphql/url_resolver.dart';
@@ -162,7 +166,7 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
           ),
         ),
       ),
-      errorWidget: (context, url, error) {
+      errorBuilder: (context, error, stackTrace) {
         // Kick off async cleanup + retry; show the standard error UI immediately.
         unawaited(_handleError());
         return _buildError(context);
@@ -185,13 +189,10 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
 }
 
 class StashImage extends ConsumerWidget {
-  static final CacheManager cacheManager = CacheManager(
-    Config(
-      'stashImageCache',
-      stalePeriod: const Duration(days: 7),
-      maxNrOfCacheObjects: 100,
-      fileService: DioFileService(),
-    ),
+  static final CacheManager cacheManager = image_cache.DefaultCacheManager(
+    stalePeriod: const Duration(days: 7),
+    maxNrOfCacheObjects: 100,
+    httpClientFactory: DioImageClient.new,
   );
 
   const StashImage({

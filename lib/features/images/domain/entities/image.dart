@@ -5,6 +5,18 @@ part 'image.g.dart';
 
 @freezed
 abstract class Image with _$Image {
+  const Image._();
+
+  /// GIFs retain image decoding even when Stash reports them as VideoFile.
+  bool get isGif =>
+      files.isNotEmpty &&
+      (files.first.format?.toLowerCase() == 'gif' ||
+          files.first.path.toLowerCase().endsWith('.gif'));
+
+  /// Stash serves the primary visual file through paths.image, including clips.
+  bool get isClip =>
+      files.isNotEmpty && files.first.typename == 'VideoFile' && !isGif;
+
   const factory Image({
     required String id,
     String? title,
@@ -31,6 +43,8 @@ abstract class ImageFile with _$ImageFile {
     required int width,
     required int height,
     required String path,
+    @JsonKey(name: '__typename') @Default('ImageFile') String typename,
+    String? format,
     int? size,
   }) = _ImageFile;
 

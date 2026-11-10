@@ -32,6 +32,23 @@ class _TestPlayer implements Player {
 
 void main() {
   group('PlayerSettingsStore', () {
+    test('audio focus defaults on, validates, and persists opt-out', () async {
+      for (final value in <Object?>[null, 'false', 0]) {
+        SharedPreferences.setMockInitialValues({
+          PlayerSettingsStore.respectAudioFocusKey: ?value,
+        });
+        final store = PlayerSettingsStore(
+          await SharedPreferences.getInstance(),
+        );
+        expect(const PlayerSettings().respectAudioFocus, isTrue);
+        expect(store.load().respectAudioFocus, isTrue);
+        await store.saveRespectAudioFocus(false);
+        expect(store.load().respectAudioFocus, isFalse);
+        await store.saveRespectAudioFocus(true);
+        expect(store.load().respectAudioFocus, isTrue);
+      }
+    });
+
     test('control auto-hide delay defaults, validates, and persists', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();

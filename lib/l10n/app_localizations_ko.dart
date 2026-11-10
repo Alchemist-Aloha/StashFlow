@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1990,6 +1991,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '앱이 백그라운드로 전환되어도 동영상 오디오를 계속 재생합니다';
 
   @override
+  String get settings_playback_audio_focus => '다른 앱에서 미디어 재생 시 일시 정지';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '다른 앱이 오디오 포커스를 가져오면 StashFlow를 일시 정지합니다. 동시 재생을 허용하려면 끄세요.';
+
+  @override
   String get settings_playback_pip => '네이티브 화면 속 화면 (PiP)';
 
   @override
@@ -3839,4 +3847,152 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_interface_miniplayer_bottom_offset => '하단 간격';
+
+  @override
+  String get tools_library_scan => '라이브러리 스캔';
+
+  @override
+  String get tools_generate_content => '콘텐츠 생성';
+
+  @override
+  String get tools_scan_description => '서버에서 새 파일과 변경된 파일을 찾습니다.';
+
+  @override
+  String get tools_generate_description => '서버의 현재 미리보기 설정으로 라이브러리 미디어를 생성합니다.';
+
+  @override
+  String get tools_run_all => '전체 라이브러리에서 실행';
+
+  @override
+  String get tools_run_selected => '선택한 폴더에서 실행';
+
+  @override
+  String get tools_task_options => '작업 옵션';
+
+  @override
+  String get tools_options_sync => '변경 사항은 현재 서버에 자동 저장되며 웹 앱과 공유됩니다.';
+
+  @override
+  String get tools_option_covers => '장면 커버';
+
+  @override
+  String get tools_option_previews => '동영상 미리보기';
+
+  @override
+  String get tools_option_image_previews => '움직이는 이미지 미리보기';
+
+  @override
+  String get tools_option_sprites => '스프라이트 및 VTT 파일';
+
+  @override
+  String get tools_option_phashes => '동영상 지각 해시';
+
+  @override
+  String get tools_option_image_thumbnails => '이미지 썸네일';
+
+  @override
+  String get tools_option_image_phashes => '이미지 지각 해시';
+
+  @override
+  String get tools_option_clip_previews => '클립 미리보기';
+
+  @override
+  String get tools_option_rescan => '변경되지 않은 파일도 다시 스캔';
+
+  @override
+  String get tools_option_markers => '마커 동영상';
+
+  @override
+  String get tools_option_marker_previews => '움직이는 마커 미리보기';
+
+  @override
+  String get tools_option_marker_screenshots => '마커 스크린샷';
+
+  @override
+  String get tools_option_transcodes => '트랜스코딩';
+
+  @override
+  String get tools_option_heatmaps => '인터랙티브 히트맵 및 속도';
+
+  @override
+  String get tools_option_overwrite => '기존 생성 파일 덮어쓰기';
+
+  @override
+  String get tools_overwrite_warning => '기존 생성 미디어가 교체됩니다.';
+
+  @override
+  String get tools_load_failed => '서버 작업 설정을 불러오지 못했습니다. 연결을 확인하고 다시 시도하세요.';
+
+  @override
+  String get tools_save_failed =>
+      '서버에 변경 사항을 저장하지 못했습니다. 이전 값으로 복원했습니다. 다시 시도하세요.';
+
+  @override
+  String get tools_start_failed =>
+      '작업 대기열 등록을 확인하지 못했습니다. 다시 시도하기 전에 서버 대기열을 확인하세요.';
+
+  @override
+  String tools_job_queued(String id) {
+    return '작업 $id이(가) 서버 대기열에 등록되었습니다.';
+  }
+
+  @override
+  String get tools_select_folders => '서버 폴더 선택';
+
+  @override
+  String get tools_server_folders => '서버 경로를 탐색하거나 입력한 다음 각 폴더를 선택 목록에 추가하세요.';
+
+  @override
+  String get tools_server_path => '서버 폴더 경로';
+
+  @override
+  String get tools_browse => '찾아보기';
+
+  @override
+  String get tools_parent_folder => '상위 폴더로';
+
+  @override
+  String get tools_directory_failed =>
+      '서버 폴더 목록을 가져오지 못했습니다. 경로를 확인하고 다시 시도하거나 직접 입력하세요.';
+
+  @override
+  String get tools_job_queue => '서버 작업 대기열';
+
+  @override
+  String get tools_jobs_empty => '서버 대기열에 작업이 없습니다.';
+
+  @override
+  String get tools_jobs_failed => '서버 대기열을 불러오지 못했습니다. 연결을 확인하고 다시 시도하세요.';
+
+  @override
+  String get tools_job_ready => '대기 중';
+
+  @override
+  String get tools_job_running => '실행 중';
+
+  @override
+  String get tools_job_stopping => '중지 중';
+
+  @override
+  String get tools_job_finished => '완료';
+
+  @override
+  String get tools_job_cancelled => '취소됨';
+
+  @override
+  String get tools_job_failed => '실패';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return '약 $seconds초 남음';
+  }
+
+  @override
+  String get tools_stop_job => '작업 중지';
+
+  @override
+  String get tools_stop_all_jobs => '서버의 모든 작업 중지';
+
+  @override
+  String get tools_stop_failed => '작업을 중지하지 못했습니다. 서버 대기열을 확인하고 다시 시도하세요.';
 }

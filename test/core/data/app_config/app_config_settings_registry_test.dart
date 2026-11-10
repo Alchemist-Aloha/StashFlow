@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/features/scenes/data/local_captions/local_caption_model.dart';
 import 'package:stash_app_flutter/features/scenes/data/local_captions/caption_options.dart';
@@ -172,6 +173,23 @@ void main() {
     await registry.replace(prefs, {});
     expect(prefs.containsKey('show_scene_playback_progress'), isFalse);
   });
+
+  test(
+    'audio focus preference round-trips and rejects invalid backup values',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      await registry.replace(prefs, {'video_respect_audio_focus': false});
+      expect(await registry.read(prefs), {'video_respect_audio_focus': false});
+      expect(
+        () => registry.replace(prefs, {'video_respect_audio_focus': 'false'}),
+        throwsA(isA<AppConfigSettingException>()),
+      );
+      expect(prefs.getBool('video_respect_audio_focus'), isFalse);
+      await registry.replace(prefs, {});
+      expect(prefs.containsKey('video_respect_audio_focus'), isFalse);
+    },
+  );
 
   test('catalog is explicit and stable', () {
     expect(
