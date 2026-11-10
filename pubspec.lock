@@ -697,10 +697,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "5a44b0bd6131888bda5f770be5db2e08a59063724c6fa534ea4ec7c9fc3f841b"
+      sha256: d4105f50c438c37d0d1372b1fbf1617fe9be398b559fa29d2067756ebbd42b69
       url: "https://pub.dev"
     source: hosted
-    version: "18.1.3"
+    version: "18.1.4"
   google_identity_services_web:
     dependency: transitive
     description:
@@ -841,10 +841,10 @@ packages:
     dependency: transitive
     description:
       name: hive_ce
-      sha256: "72fdeccc40b89d9f05d6c16185c233d5a23781e6e77661eccaa6680deb22c9bf"
+      sha256: c2692c07b780d5eaec78c4f9317e9bfbb952700ef60bfdbca9e52c496300b967
       url: "https://pub.dev"
     source: hosted
-    version: "2.23.2"
+    version: "2.23.3"
   hooks:
     dependency: transitive
     description:
@@ -1041,10 +1041,10 @@ packages:
     dependency: transitive
     description:
       name: material_ui
-      sha256: a30f5d0625b6b83770f53ca3f7aafd6fd9d147cb3853f54a70668541046fe5d6
+      sha256: "474c135fd46b56ff1d35ca982155e8863d28fbc6464d1192acf4ee53a738680e"
       url: "https://pub.dev"
     source: hosted
-    version: "1.10.0"
+    version: "1.11.0"
   media_kit:
     dependency: "direct main"
     description:
@@ -1171,10 +1171,10 @@ packages:
     dependency: transitive
     description:
       name: octo_image
-      sha256: "1db70031049945ac032e3d1c7a53739ce8c3f721d0e3c15aecfc2858ea5112a4"
+      sha256: "9c9e56f655c301fd2e6c26390461b4fbd23be861b29607c5e2e4d16e8231ce50"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.3"
+    version: "2.1.4"
   package_config:
     dependency: transitive
     description:
@@ -1744,42 +1744,42 @@ packages:
     dependency: transitive
     description:
       name: sqflite
-      sha256: "21a9750de2deb464946e9f41c7ddf176e25553618afdfc774868cd454990c06a"
+      sha256: ed2ff27268e051bde8f0848d6ab86e0f6c01566484d3d358a46ff5e842b36216
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.5"
+    version: "2.4.6"
   sqflite_android:
     dependency: transitive
     description:
       name: sqflite_android
-      sha256: "3986f4cbdde19ca538aae877981c5a53400dcc4601499df18e7ed9e848a0bdd4"
+      sha256: e75917dbfe721e6938fc4ff18d3e61549f17cf88a4eba189e2b270290d0c9be3
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.5"
+    version: "2.4.6"
   sqflite_common:
     dependency: transitive
     description:
       name: sqflite_common
-      sha256: cf0cfe7c12786394bc20433ecb6d7ff3cf2c4e458dc075c1e56c8666d6a2deb4
+      sha256: "35a65713b6695fbc5f3596921c8af1dfe767942c96b6c5c80a739b16a10d47eb"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.15"
+    version: "2.5.17"
   sqflite_darwin:
     dependency: transitive
     description:
       name: sqflite_darwin
-      sha256: "5652e66a7db9996e8604b70b34b5876714b9dd1257f557041f718a153f995d28"
+      sha256: "6ef57df819b502e306d0b58ba6cb614952d294b825c003feba3c47764c20a825"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.5"
+    version: "2.4.6"
   sqflite_platform_interface:
     dependency: transitive
     description:
       name: sqflite_platform_interface
-      sha256: "5b611dbcb9bab33e7073594ecac111bf0a86ffc342652c2081160d7038a45fb6"
+      sha256: "7bfeb7f9e09761147e8e3a4ff3f1d8979fe46a736f03f3805f572599ade69308"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.3"
+    version: "2.4.4"
   stack_trace:
     dependency: transitive
     description:
@@ -1831,10 +1831,10 @@ packages:
     dependency: transitive
     description:
       name: synchronized
-      sha256: "0ce4712bd3be1fccfab14458059baebb400ba6c6239b65398e3464945fabbae7"
+      sha256: a77637ebe1460f3b48cac89a790d2eb634f0a8593cab0d3f340c6db174ba9b94
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.1"
+    version: "3.6.1+1"
   term_glyph:
     dependency: transitive
     description:
