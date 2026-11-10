@@ -4000,4 +4000,160 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get settings_interface_miniplayer_bottom_offset =>
       'Distanza dal bordo inferiore';
+
+  @override
+  String get tools_library_scan => 'Scansione libreria';
+
+  @override
+  String get tools_generate_content => 'Genera contenuti';
+
+  @override
+  String get tools_scan_description =>
+      'Trova file nuovi e modificati sul server.';
+
+  @override
+  String get tools_generate_description =>
+      'Genera i media della libreria con le impostazioni di anteprima attuali del server.';
+
+  @override
+  String get tools_run_all => 'Esegui su tutta la libreria';
+
+  @override
+  String get tools_run_selected => 'Esegui sulle cartelle selezionate';
+
+  @override
+  String get tools_task_options => 'Opzioni attività';
+
+  @override
+  String get tools_options_sync =>
+      'Le modifiche vengono salvate automaticamente sul server attivo e condivise con la sua app web.';
+
+  @override
+  String get tools_option_covers => 'Copertine scene';
+
+  @override
+  String get tools_option_previews => 'Anteprime video';
+
+  @override
+  String get tools_option_image_previews => 'Anteprime immagini animate';
+
+  @override
+  String get tools_option_sprites => 'Sprite e file VTT';
+
+  @override
+  String get tools_option_phashes => 'Hash percettivi video';
+
+  @override
+  String get tools_option_image_thumbnails => 'Miniature immagini';
+
+  @override
+  String get tools_option_image_phashes => 'Hash percettivi immagini';
+
+  @override
+  String get tools_option_clip_previews => 'Anteprime clip';
+
+  @override
+  String get tools_option_rescan => 'Ripeti scansione dei file invariati';
+
+  @override
+  String get tools_option_markers => 'Video dei marcatori';
+
+  @override
+  String get tools_option_marker_previews => 'Anteprime animate dei marcatori';
+
+  @override
+  String get tools_option_marker_screenshots => 'Schermate dei marcatori';
+
+  @override
+  String get tools_option_transcodes => 'Transcodifiche';
+
+  @override
+  String get tools_option_heatmaps => 'Mappe di calore e velocità interattive';
+
+  @override
+  String get tools_option_overwrite => 'Sovrascrivi i file generati esistenti';
+
+  @override
+  String get tools_overwrite_warning =>
+      'I media generati esistenti verranno sostituiti.';
+
+  @override
+  String get tools_load_failed =>
+      'Impossibile caricare le impostazioni attività del server. Controlla la connessione e riprova.';
+
+  @override
+  String get tools_save_failed =>
+      'Impossibile salvare la modifica sul server. Il valore precedente è stato ripristinato; riprova.';
+
+  @override
+  String get tools_start_failed =>
+      'Impossibile confermare l\'accodamento. Controlla la coda del server prima di riprovare.';
+
+  @override
+  String tools_job_queued(String id) {
+    return 'Attività $id accodata sul server.';
+  }
+
+  @override
+  String get tools_select_folders => 'Seleziona cartelle del server';
+
+  @override
+  String get tools_server_folders =>
+      'Sfoglia o inserisci i percorsi sul server, poi aggiungi ogni cartella alla selezione.';
+
+  @override
+  String get tools_server_path => 'Percorso cartella sul server';
+
+  @override
+  String get tools_browse => 'Sfoglia';
+
+  @override
+  String get tools_parent_folder => 'Cartella superiore';
+
+  @override
+  String get tools_directory_failed =>
+      'Impossibile elencare la cartella sul server. Controlla il percorso e riprova, oppure inseriscilo manualmente.';
+
+  @override
+  String get tools_job_queue => 'Coda attività del server';
+
+  @override
+  String get tools_jobs_empty => 'Nessuna attività nella coda del server.';
+
+  @override
+  String get tools_jobs_failed =>
+      'Impossibile caricare la coda del server. Controlla la connessione e riprova.';
+
+  @override
+  String get tools_job_ready => 'In coda';
+
+  @override
+  String get tools_job_running => 'In esecuzione';
+
+  @override
+  String get tools_job_stopping => 'Arresto in corso';
+
+  @override
+  String get tools_job_finished => 'Completata';
+
+  @override
+  String get tools_job_cancelled => 'Annullata';
+
+  @override
+  String get tools_job_failed => 'Non riuscita';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return 'Circa $seconds secondi rimanenti';
+  }
+
+  @override
+  String get tools_stop_job => 'Interrompi attività';
+
+  @override
+  String get tools_stop_all_jobs => 'Interrompi tutte le attività del server';
+
+  @override
+  String get tools_stop_failed =>
+      'Impossibile interrompere l\'attività. Controlla la coda del server e riprova.';
 }

@@ -1,5 +1,11 @@
 # StashFlow v1.42.0
 
+## 🧰 Library Tools
+
+- Added **Tools → Library scan** and **Generate content** with the official web app’s library task options and Material 3 layouts. Run tasks for the entire library or selected server folders using remote browsing or manually entered paths.
+- Task options load from the active server, and changes save automatically back to it for use in the web app. Content generation uses the server’s current preview settings.
+- View the server job queue, progress, estimated remaining time, subtasks, and errors, with controls to stop individual jobs or all server jobs. Submission confirms the queued job ID rather than reporting the task as complete.
+
 ## 🖼️ ImageClips and GIFs
 
 - ImageClips now open as looping videos from image and gallery grids, with play badges on thumbnails and dedicated play/pause and seek controls.

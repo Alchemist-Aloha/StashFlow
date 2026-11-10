@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../setup/presentation/providers/navigation_tabs_provider.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/data/graphql/graphql_client.dart';
 import '../../scenes/domain/entities/scene.dart';
 import '../../scenes/presentation/pages/scenes_page.dart';
@@ -46,6 +49,8 @@ import '../../setup/presentation/pages/settings/storage_settings_page.dart';
 import '../../setup/presentation/pages/settings/security_settings_page.dart';
 import '../../setup/presentation/debug_log_viewer_page.dart';
 import '../../tools/presentation/pages/tools_page.dart';
+import '../../tools/presentation/pages/library_task_page.dart';
+import '../../tools/domain/library_task.dart';
 import 'shell_page.dart';
 
 part 'router.g.dart';
@@ -127,9 +132,12 @@ GoRouter router(Ref ref) {
                             ? state.extra as bool
                             : false,
                       ),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) =>
-                              FadeTransition(opacity: animation, child: child),
+                      transitionsBuilder: (
+                        context,
+                        animation,
+                        secondaryAnimation,
+                        child,
+                      ) => FadeTransition(opacity: animation, child: child),
                     ),
                     routes: [
                       GoRoute(
@@ -514,6 +522,16 @@ GoRouter router(Ref ref) {
         path: '/tools',
         builder: (context, state) => const ToolsPage(),
         routes: [
+          GoRoute(
+            path: 'library-scan',
+            builder: (context, state) =>
+                const LibraryTaskPage(task: LibraryTask.scan),
+          ),
+          GoRoute(
+            path: 'generate-content',
+            builder: (context, state) =>
+                const LibraryTaskPage(task: LibraryTask.generate),
+          ),
           GoRoute(
             path: 'scene-deduplication',
             builder: (context, state) => const SceneDeduplicationPage(),

@@ -3934,4 +3934,160 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_interface_miniplayer_bottom_offset => 'Bottom offset';
+
+  @override
+  String get tools_library_scan => 'Library scan';
+
+  @override
+  String get tools_generate_content => 'Generate content';
+
+  @override
+  String get tools_scan_description =>
+      'Find new and changed files on the server.';
+
+  @override
+  String get tools_generate_description =>
+      'Generate media for your library using current server preview settings.';
+
+  @override
+  String get tools_run_all => 'Run for entire library';
+
+  @override
+  String get tools_run_selected => 'Run for selected folders';
+
+  @override
+  String get tools_task_options => 'Task options';
+
+  @override
+  String get tools_options_sync =>
+      'Changes are saved automatically to the active server and shared with its web app.';
+
+  @override
+  String get tools_option_covers => 'Scene covers';
+
+  @override
+  String get tools_option_previews => 'Video previews';
+
+  @override
+  String get tools_option_image_previews => 'Animated image previews';
+
+  @override
+  String get tools_option_sprites => 'Sprites and VTT files';
+
+  @override
+  String get tools_option_phashes => 'Video perceptual hashes';
+
+  @override
+  String get tools_option_image_thumbnails => 'Image thumbnails';
+
+  @override
+  String get tools_option_image_phashes => 'Image perceptual hashes';
+
+  @override
+  String get tools_option_clip_previews => 'Clip previews';
+
+  @override
+  String get tools_option_rescan => 'Rescan unchanged files';
+
+  @override
+  String get tools_option_markers => 'Marker videos';
+
+  @override
+  String get tools_option_marker_previews => 'Animated marker previews';
+
+  @override
+  String get tools_option_marker_screenshots => 'Marker screenshots';
+
+  @override
+  String get tools_option_transcodes => 'Transcodes';
+
+  @override
+  String get tools_option_heatmaps => 'Interactive heatmaps and speeds';
+
+  @override
+  String get tools_option_overwrite => 'Overwrite existing generated files';
+
+  @override
+  String get tools_overwrite_warning =>
+      'Existing generated media will be replaced.';
+
+  @override
+  String get tools_load_failed =>
+      'Could not load server task settings. Check the connection and retry.';
+
+  @override
+  String get tools_save_failed =>
+      'Could not save this change to the server. The previous value was restored; try again.';
+
+  @override
+  String get tools_start_failed =>
+      'Could not confirm the job was queued. Check the server queue before trying again.';
+
+  @override
+  String tools_job_queued(String id) {
+    return 'Job $id queued on the server.';
+  }
+
+  @override
+  String get tools_select_folders => 'Select server folders';
+
+  @override
+  String get tools_server_folders =>
+      'Browse or enter paths on the server, then add each folder to the selection.';
+
+  @override
+  String get tools_server_path => 'Server folder path';
+
+  @override
+  String get tools_browse => 'Browse';
+
+  @override
+  String get tools_parent_folder => 'Up to parent folder';
+
+  @override
+  String get tools_directory_failed =>
+      'Could not list this server folder. Check the path and retry, or enter a path manually.';
+
+  @override
+  String get tools_job_queue => 'Server job queue';
+
+  @override
+  String get tools_jobs_empty => 'No jobs in the server queue.';
+
+  @override
+  String get tools_jobs_failed =>
+      'Could not load the server queue. Check the connection and retry.';
+
+  @override
+  String get tools_job_ready => 'Queued';
+
+  @override
+  String get tools_job_running => 'Running';
+
+  @override
+  String get tools_job_stopping => 'Stopping';
+
+  @override
+  String get tools_job_finished => 'Finished';
+
+  @override
+  String get tools_job_cancelled => 'Cancelled';
+
+  @override
+  String get tools_job_failed => 'Job failed';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return 'About $seconds seconds remaining';
+  }
+
+  @override
+  String get tools_stop_job => 'Stop job';
+
+  @override
+  String get tools_stop_all_jobs => 'Stop all server jobs';
+
+  @override
+  String get tools_stop_failed =>
+      'Could not stop the job. Check the server queue and retry.';
 }

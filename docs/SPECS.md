@@ -967,6 +967,30 @@ New settings require:
 - localized label, description, and feedback;
 - inclusion in configuration backup only when safe and user-facing.
 
+### Library maintenance tools
+
+The Tools hub links to `/tools/library-scan` and `/tools/generate-content`.
+Both use the shared Material 3 settings shell, expose the official web app's
+library scan/generate options, and support the whole library or selected server
+folders. Folder selection supports configured library roots, remote directory
+browsing, manual paths, deduplication, and removal; an empty selection cannot run.
+
+`LibraryTasksRepository` owns configuration, directory, and job operations through
+the active profile's GraphQL client. Each page loads fresh server configuration;
+`ui.taskDefaults.scan`/`generate` take precedence over legacy `defaults`, with the
+official task fallbacks when neither exists. Each option change patches its task
+branch using `configureUI(partial:)`, preserving unrelated UI/task settings.
+Saves serialize interaction, failures restore the displayed value, and launching
+is disabled until saving finishes. Generation fetches current general preview
+parameters immediately before submission. Refresh reloads remote task defaults.
+Task settings are remote, not part of local configuration backups.
+
+Successful submission reports the queued job ID, not completion. The shared
+server queue polls without overlapping requests while mounted, displays status,
+progress, estimated remaining time, subtasks and failures, and supports stopping
+one or all jobs. Switching profiles resets forms/queue and closes folder pickers;
+stale responses cannot launch work on the newly selected server.
+
 ### Server profiles and authentication
 
 Users can maintain multiple server profiles and switch the active profile.

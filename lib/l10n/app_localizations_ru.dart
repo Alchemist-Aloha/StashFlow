@@ -3978,4 +3978,159 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_interface_miniplayer_bottom_offset => 'Отступ снизу';
+
+  @override
+  String get tools_library_scan => 'Сканирование библиотеки';
+
+  @override
+  String get tools_generate_content => 'Генерация содержимого';
+
+  @override
+  String get tools_scan_description =>
+      'Поиск новых и изменённых файлов на сервере.';
+
+  @override
+  String get tools_generate_description =>
+      'Генерация медиа с текущими настройками предпросмотра сервера.';
+
+  @override
+  String get tools_run_all => 'Запустить для всей библиотеки';
+
+  @override
+  String get tools_run_selected => 'Запустить для выбранных папок';
+
+  @override
+  String get tools_task_options => 'Параметры задачи';
+
+  @override
+  String get tools_options_sync =>
+      'Изменения автоматически сохраняются на активном сервере и доступны в его веб-приложении.';
+
+  @override
+  String get tools_option_covers => 'Обложки сцен';
+
+  @override
+  String get tools_option_previews => 'Видеопревью';
+
+  @override
+  String get tools_option_image_previews => 'Анимированные превью';
+
+  @override
+  String get tools_option_sprites => 'Спрайты и файлы VTT';
+
+  @override
+  String get tools_option_phashes => 'Перцептивные хеши видео';
+
+  @override
+  String get tools_option_image_thumbnails => 'Миниатюры изображений';
+
+  @override
+  String get tools_option_image_phashes => 'Перцептивные хеши изображений';
+
+  @override
+  String get tools_option_clip_previews => 'Превью клипов';
+
+  @override
+  String get tools_option_rescan => 'Пересканировать неизменённые файлы';
+
+  @override
+  String get tools_option_markers => 'Видео маркеров';
+
+  @override
+  String get tools_option_marker_previews => 'Анимированные превью маркеров';
+
+  @override
+  String get tools_option_marker_screenshots => 'Снимки маркеров';
+
+  @override
+  String get tools_option_transcodes => 'Перекодирование';
+
+  @override
+  String get tools_option_heatmaps => 'Интерактивные тепловые карты и скорости';
+
+  @override
+  String get tools_option_overwrite => 'Перезаписать созданные файлы';
+
+  @override
+  String get tools_overwrite_warning => 'Ранее созданные медиа будут заменены.';
+
+  @override
+  String get tools_load_failed =>
+      'Не удалось загрузить настройки задач сервера. Проверьте соединение и повторите попытку.';
+
+  @override
+  String get tools_save_failed =>
+      'Не удалось сохранить изменение на сервере. Восстановлено предыдущее значение; попробуйте ещё раз.';
+
+  @override
+  String get tools_start_failed =>
+      'Не удалось подтвердить добавление задачи. Перед повтором проверьте очередь сервера.';
+
+  @override
+  String tools_job_queued(String id) {
+    return 'Задача $id добавлена в очередь сервера.';
+  }
+
+  @override
+  String get tools_select_folders => 'Выбор папок сервера';
+
+  @override
+  String get tools_server_folders =>
+      'Выберите или введите пути на сервере, затем добавьте папки в список.';
+
+  @override
+  String get tools_server_path => 'Путь к папке сервера';
+
+  @override
+  String get tools_browse => 'Обзор';
+
+  @override
+  String get tools_parent_folder => 'В родительскую папку';
+
+  @override
+  String get tools_directory_failed =>
+      'Не удалось получить список папок сервера. Проверьте путь и повторите попытку или введите путь вручную.';
+
+  @override
+  String get tools_job_queue => 'Очередь задач сервера';
+
+  @override
+  String get tools_jobs_empty => 'Очередь задач сервера пуста.';
+
+  @override
+  String get tools_jobs_failed =>
+      'Не удалось загрузить очередь сервера. Проверьте соединение и повторите попытку.';
+
+  @override
+  String get tools_job_ready => 'В очереди';
+
+  @override
+  String get tools_job_running => 'Выполняется';
+
+  @override
+  String get tools_job_stopping => 'Останавливается';
+
+  @override
+  String get tools_job_finished => 'Завершено';
+
+  @override
+  String get tools_job_cancelled => 'Отменено';
+
+  @override
+  String get tools_job_failed => 'Ошибка';
+
+  @override
+  String tools_job_eta(int seconds) {
+    return 'Осталось примерно $seconds сек.';
+  }
+
+  @override
+  String get tools_stop_job => 'Остановить задачу';
+
+  @override
+  String get tools_stop_all_jobs => 'Остановить все задачи сервера';
+
+  @override
+  String get tools_stop_failed =>
+      'Не удалось остановить задачу. Проверьте очередь сервера и повторите попытку.';
 }
