@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../utils/app_log_store.dart';
 
 abstract interface class AppSecureStorageStore {
@@ -15,9 +16,8 @@ abstract interface class AppSecureStorageStore {
 class AppSecureStorage implements AppSecureStorageStore {
   AppSecureStorage({
     FlutterSecureStorage? secureStorage,
-    SharedPreferences? sharedPreferences,
-  }) : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
-       _sharedPreferences = sharedPreferences;
+    this._sharedPreferences,
+  }) : _secureStorage = secureStorage ?? const FlutterSecureStorage();
 
   static const String _fallbackPrefix = 'secure_fallback_';
 

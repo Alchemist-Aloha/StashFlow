@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+
 import '../../features/scenes/domain/entities/sprite_info.dart';
 import '../data/graphql/url_resolver.dart';
 import '../data/graphql/graphql_client.dart';
@@ -11,7 +12,7 @@ final vttServiceProvider = Provider<VttService>((ref) {
 });
 
 class VttService {
-  VttService({this.apiKey, http.Client? client}) : _client = client;
+  VttService({this.apiKey, this._client});
 
   static final _spriteRegExp = RegExp(
     r'^([^#]*)#xywh=(\d+),(\d+),(\d+),(\d+)$',

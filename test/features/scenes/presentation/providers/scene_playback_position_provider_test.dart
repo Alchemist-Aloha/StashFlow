@@ -36,7 +36,7 @@ void main() {
     subscription.close();
     await container.pump();
 
-    expect(container.exists(unplayed), isFalse);
+    expect(container.read(unplayed.exists), isFalse);
     expect(container.read(played), 12.5);
     expect(container.read(scenePlaybackPositionProvider('other')), isNull);
   });

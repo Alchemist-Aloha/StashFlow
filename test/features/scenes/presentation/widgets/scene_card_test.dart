@@ -303,7 +303,7 @@ void main() {
         final container = ProviderScope.containerOf(
           tester.element(find.byType(SceneCard)),
         );
-        expect(container.exists(playerStateProvider), isFalse);
+        expect(container.read(playerStateProvider.exists), isFalse);
         final image = tester.widget<StashImage>(find.byType(StashImage));
         final position = container.read(
           scenePlaybackPositionProvider(scene.id).notifier,
@@ -339,7 +339,7 @@ void main() {
               .value,
           0.25,
         );
-        expect(container.exists(playerStateProvider), isFalse);
+        expect(container.read(playerStateProvider.exists), isFalse);
         expect(tester.takeException(), isNull);
       },
     );
