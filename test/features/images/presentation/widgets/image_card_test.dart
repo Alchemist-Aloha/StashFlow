@@ -10,6 +10,53 @@ import 'package:stash_app_flutter/features/images/presentation/widgets/image_det
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
+  testWidgets('clips show a play indicator without starting a player', (
+    tester,
+  ) async {
+    const image = entity.Image(
+      id: 'clip',
+      files: [
+        entity.ImageFile(
+          width: 320,
+          height: 240,
+          path: 'clip.mp4',
+          typename: 'VideoFile',
+        ),
+      ],
+      paths: entity.ImagePaths(),
+    );
+    await pumpTestWidget(
+      tester,
+      child: const Scaffold(body: ImageCard(image: image)),
+    );
+    expect(find.byIcon(Icons.play_arrow_rounded), findsOneWidget);
+    expect(find.bySemanticsLabel('Play'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('GIFs reported as VideoFile have no video badge', (tester) async {
+    const image = entity.Image(
+      id: 'gif',
+      files: [
+        entity.ImageFile(
+          width: 320,
+          height: 240,
+          path: 'animation.GIF',
+          format: 'gif',
+          typename: 'VideoFile',
+        ),
+      ],
+      paths: entity.ImagePaths(),
+    );
+    await pumpTestWidget(
+      tester,
+      child: const Scaffold(body: ImageCard(image: image)),
+    );
+    expect(find.byIcon(Icons.play_arrow_rounded), findsNothing);
+    expect(find.bySemanticsLabel('Play'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('long press opens image details without rating controls', (
     tester,
   ) async {

@@ -54,6 +54,7 @@ void main() {
                   'width': 100,
                   'height': 100,
                   'path': '/path/to/img.jpg',
+                  'format': 'mjpeg',
                   'size': 1572864,
                   '__typename': 'ImageFile',
                 },
@@ -90,9 +91,8 @@ void main() {
         options: options,
       );
 
-      when(
-        mockClient.query<Query$FindImages>(any),
-      ).thenAnswer((_) async => mockQueryResult);
+      when(mockClient.query<Query$FindImages>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.findImages(page: 1, perPage: 20);
 
@@ -101,6 +101,8 @@ void main() {
       expect(result.first.id, '1');
       expect(result.first.title, 'Test Image');
       expect(result.first.files.single.size, 1572864);
+      expect(result.first.files.single.format, 'mjpeg');
+      expect(result.first.isClip, isFalse);
       expect(result.first.paths.thumbnail, 'http://localhost:9999/thumb.jpg');
       expect(result.first.studioName, 'Studio One');
       expect(result.first.performerNames, ['Performer One']);
@@ -128,9 +130,8 @@ void main() {
         },
         options: options,
       );
-      when(
-        mockClient.query<Query$FindImages>(any),
-      ).thenAnswer((_) async => mockQueryResult);
+      when(mockClient.query<Query$FindImages>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       await repository.findImages(
         imageFilter: const ImageFilter(
@@ -205,7 +206,8 @@ void main() {
             {
               'width': 100,
               'height': 100,
-              'path': '/path/to/img.jpg',
+              'path': '/path/to/clip.mp4',
+              'format': 'mov,mp4,m4a,3gp,3g2,mj2',
               'size': 3221225472,
               '__typename': 'VideoFile',
             },
@@ -231,9 +233,8 @@ void main() {
         options: options,
       );
 
-      when(
-        mockClient.query<Query$FindImage>(any),
-      ).thenAnswer((_) async => mockQueryResult);
+      when(mockClient.query<Query$FindImage>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.getImageById('1');
 
@@ -241,8 +242,54 @@ void main() {
       expect(result.id, '1');
       expect(result.title, 'Test Image');
       expect(result.files.single.size, 3221225472);
+      expect(result.isClip, isTrue);
+      expect(result.files.single.typename, 'VideoFile');
       expect(result.paths.thumbnail, 'http://localhost:9999/thumb.jpg');
     });
+
+    test(
+      'GIF format survives VideoFile mapping and remains an image',
+      () async {
+        final options = Options$Query$FindImage(
+          variables: Variables$Query$FindImage(id: 'gif'),
+        );
+        final result = QueryResult<Query$FindImage>(
+          source: QueryResultSource.network,
+          options: options,
+          data: const {
+            'findImage': {
+              'id': 'gif',
+              'urls': <String>[],
+              'performers': <dynamic>[],
+              'visual_files': [
+                {
+                  'width': 320,
+                  'height': 240,
+                  'path': '/images/animation',
+                  'format': 'gif',
+                  'size': 1024,
+                  '__typename': 'VideoFile',
+                },
+              ],
+              'paths': {
+                'image': '/image/gif/image',
+                '__typename': 'ImagePathsType',
+              },
+              '__typename': 'Image',
+            },
+            '__typename': 'Query',
+          },
+        );
+        when(mockClient.query<Query$FindImage>(any))
+            .thenAnswer((_) async => result);
+
+        final image = await repository.getImageById('gif');
+        expect(image.files.single.format, 'gif');
+        expect(image.files.single.typename, 'VideoFile');
+        expect(image.isGif, isTrue);
+        expect(image.isClip, isFalse);
+      },
+    );
 
     test('findImages throws exception on GraphQL error', () async {
       final options = Options$Query$FindImages(
@@ -260,9 +307,8 @@ void main() {
         ),
       );
 
-      when(
-        mockClient.query<Query$FindImages>(any),
-      ).thenAnswer((_) async => mockQueryResult);
+      when(mockClient.query<Query$FindImages>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       expect(
         () => repository.findImages(),

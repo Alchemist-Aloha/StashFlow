@@ -507,6 +507,27 @@ The fullscreen image viewer supports:
 - download/save actions with platform-appropriate permission handling;
 - prefetch of nearby images without loading the entire result set.
 
+ImageClips are identified by the primary `visual_files` entry's `VideoFile`
+type, not by URL extensions. GIFs are an exception: the source format or a
+case-insensitive `.gif` source-file suffix keeps them in the animated-image
+viewer and image-saving path, even when reported as `VideoFile`. GIFs have no
+video controls or play indicator. Gallery/image grids retain static thumbnails
+with a play indicator for clips. The fullscreen viewer loops the authenticated original clip with
+a dedicated play/pause and seek row in a viewer-owned media-kit session, separate
+from the scene queue. Clips fill the same viewport as still images beneath the
+viewer overlays. A compact floating play/seek bar sits above the measured viewer
+navigation when shown, or at the bottom safe area when hidden. Clearance follows
+navigation size, UI scale, orientation, and system insets without resizing the
+video or recreating its session. Short layouts compact the bar while retaining
+48dp minimum touch targets. Scrubbing commits one seek on release, keeps the
+preview position until completion, and neither pages nor toggles viewer chrome.
+Recoverable decoder errors do not tear down the surface or repeatedly pause it.
+Only the selected clip mounts a player; paging away or closing detaches the
+surface before releasing it, even during startup. Backgrounding pauses it once
+and foregrounding resumes only previously playing media. Clips are excluded from still-image prefetch and are
+saved as videos with their source extension (or server-reported MP4/WebM type).
+Still images retain zoom/pan and their existing loading behavior.
+
 Saving through `gal` must request only required access, use a recognizable
 StashFlow album where supported, and report success/failure without exposing
 credentials or internal URLs.
