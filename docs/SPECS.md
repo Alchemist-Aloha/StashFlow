@@ -808,9 +808,9 @@ presentation that was active before entering.
   metadata arrives or the active playback controller changes. Missing metadata
   must not overwrite a known ratio with the initial fallback. It can be resized
   freely down to a small minimum, so the minimum never inflates the short side
-  of portrait or ultra-wide videos. A minimum size set through
-  `window_manager` applies to every window in the shared engine on Windows, so
-  the main window's minimum is enforced by the Windows runner instead.
+  of portrait or ultra-wide videos. The main window's minimum remains independent
+  of PiP: it is enforced by the Windows runner and by the bound main native
+  window on Linux and macOS.
 - Android PiP is entered through the system window and can only be left by the
   user. Preparing Android PiP's video-only presentation and displaying PiP must
   not change the activity's screen orientation. Fullscreen orientation policy
@@ -1002,15 +1002,25 @@ Encryption and cloud synchronization are outside the current backup scope.
 Stable and nightly builds share `.github/workflows/reusable-release.yml`.
 Version-tag pushes (`v*`) publish stable releases; pushes to `dev` publish
 nightly builds. Pushes to `main` do not create release candidates.
-Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.47.6
+Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.47.7
 and resolves dependencies with
 `flutter pub get`
 Pub fetches the media-kit fork rather than
 using the ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
 libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
 
-The app requires Flutter 3.47.6 or newer and Dart 3.11 or newer within Dart 3.x.
+The app requires Flutter 3.47.6 or newer and Dart 3.13 or newer within Dart 3.x.
 `msix` and `fastforge` are development dependencies used only for packaging.
+
+Desktop window control uses the `window_manager` 0.6 native API, not its legacy
+MethodChannel bridge. Startup captures the main native window before PiP can
+open; later fullscreen requests must use that same window rather than the
+currently focused window. Windows obtains its initially hidden HWND from the
+runner through `getWindowHandle` on `stash_app_flutter/fullscreen`, then sizes,
+maximizes, shows, and focuses it. Linux and macOS set the main window's minimum,
+size, and maximized state before the runner shows it. Web builds exclude the FFI
+handle bridge. Linux native compilation requires GTK3, X11, and XInput headers
+(`libgtk-3-dev`, `libx11-dev`, and `libxi-dev` on Debian/Ubuntu).
 
 Stable release artifact filenames retain the full `pubspec.yaml` version,
 including the build number, plus platform and architecture where applicable.
@@ -1098,8 +1108,8 @@ styles and `WINDOWPLACEMENT`, removes its frame/zoom state, and sizes it directl
 to the current monitor's `rcMonitor` without an intermediate unmaximize or inset
 resize. Exit restores the saved styles and placement. It must preserve normal
 versus maximized restore state, window bounds, monitor placement, title-bar
-controls, and taskbar behavior. Fullscreen frame messages bypass window_manager
-only for the main HWND; separate PiP windows retain their own handling.
+controls, and taskbar behavior. Fullscreen frame messages bypass normal frame
+handling only for the main HWND; separate PiP windows retain their own handling.
 
 Entering and exiting fullscreen are asynchronous transactions. Flutter must not
 mark exit complete before native restoration succeeds. Failures return to a
@@ -1107,7 +1117,10 @@ coherent, retryable state and are logged. Repeated toggles, Alt+Tab, secondary
 monitors, and entry from a maximized window must remain safe.
 
 Do not mix a second independent `window_manager` fullscreen transition into the
-native Windows path. Linux and macOS continue to use window_manager fullscreen.
+native Windows path. Linux and macOS use the bound `window_manager` native
+window's fullscreen property and await its matching entered/exited event. The
+listener is removed on success, failure, or a 10-second timeout; no native event
+must leave the shared transition queue permanently blocked.
 
 The standalone Win32 regression test in `test/windows/runner/` checks normal and
 maximized restoration, repeated toggles, full-monitor client bounds, and every

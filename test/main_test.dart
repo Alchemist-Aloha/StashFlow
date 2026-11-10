@@ -71,27 +71,36 @@ void main() {
     }
   });
 
-  test('Windows startup waits until the configured window is ready', () {
+  test('startup binds the hidden Windows main HWND before showing it', () {
     final source = File('lib/main.dart').readAsStringSync();
+    final windowSource = File('lib/core/utils/desktop_window_native.dart')
+        .readAsStringSync();
+    final runnerSource = File('windows/runner/flutter_window.cpp')
+        .readAsStringSync();
 
-    expect(source, contains('const windowOptions = WindowOptions('));
-    expect(source, contains('windowManager.waitUntilReadyToShow('));
-    expect(source, contains('await windowManager.maximize()'));
-    expect(source, contains('await windowManager.show()'));
-    expect(source, contains('await windowManager.focus()'));
+    expect(source, contains('await DesktopWindow.instance.initialize()'));
+    expect(windowSource, contains("invokeMethod<int>('getWindowHandle')"));
+    expect(windowSource, contains('Window.createWithNativeWindow('));
+    expect(runnerSource, contains('reinterpret_cast<int64_t>(GetHandle())'));
+    expect(
+      windowSource.indexOf('window.maximize()'),
+      lessThan(windowSource.indexOf('window.show()')),
+    );
+    expect(
+      windowSource.indexOf('window.show()'),
+      lessThan(windowSource.indexOf('window.focus()')),
+    );
   });
 
-  test('Windows main-window minimum stays out of the global window rules', () {
-    final dartSource = File('lib/main.dart').readAsStringSync();
-    final windowsRunnerSource = File(
-      'windows/runner/flutter_window.cpp',
-    ).readAsStringSync();
+  test('Windows main-window minimum remains runner-owned', () {
+    final dartSource = File('lib/core/utils/desktop_window_native.dart')
+        .readAsStringSync();
+    final windowsRunnerSource = File('windows/runner/flutter_window.cpp')
+        .readAsStringSync();
 
-    // window_manager's minimum applies to every multiview_desktop window on
-    // Windows, so the main window's minimum is enforced by the runner instead.
     expect(
       dartSource,
-      isNot(contains('minimumSize: kDesktopMinimumWindowSize')),
+      contains('if (defaultTargetPlatform != TargetPlatform.windows)'),
     );
     expect(windowsRunnerSource, contains('WM_GETMINMAXINFO'));
     expect(windowsRunnerSource, contains('ptMinTrackSize'));
@@ -100,27 +109,21 @@ void main() {
 
   test('desktop startup runs the shared-engine multi-view root', () {
     final dartSource = File('lib/main.dart').readAsStringSync();
-    final rootRunnerSource = File(
-      'lib/core/utils/root_app_runner.dart',
-    ).readAsStringSync();
+    final rootRunnerSource = File('lib/core/utils/root_app_runner.dart')
+        .readAsStringSync();
     final nativeRootRunnerSource = File(
       'lib/core/utils/root_app_runner_native.dart',
     ).readAsStringSync();
-    final linuxRunnerSource = File(
-      'linux/runner/my_application.cc',
-    ).readAsStringSync();
-    final windowsRunnerSource = File(
-      'windows/runner/flutter_window.cpp',
-    ).readAsStringSync();
-    final windowsMainSource = File(
-      'windows/runner/main.cpp',
-    ).readAsStringSync();
-    final macosWindowSource = File(
-      'macos/Runner/MainFlutterWindow.swift',
-    ).readAsStringSync();
-    final macosDelegateSource = File(
-      'macos/Runner/AppDelegate.swift',
-    ).readAsStringSync();
+    final linuxRunnerSource = File('linux/runner/my_application.cc')
+        .readAsStringSync();
+    final windowsRunnerSource = File('windows/runner/flutter_window.cpp')
+        .readAsStringSync();
+    final windowsMainSource = File('windows/runner/main.cpp')
+        .readAsStringSync();
+    final macosWindowSource = File('macos/Runner/MainFlutterWindow.swift')
+        .readAsStringSync();
+    final macosDelegateSource = File('macos/Runner/AppDelegate.swift')
+        .readAsStringSync();
 
     expect(dartSource, contains('root_app_runner.runRootApp(app)'));
     expect(

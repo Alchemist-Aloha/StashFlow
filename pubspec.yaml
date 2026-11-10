@@ -11,7 +11,7 @@ msix_config:
   logo_path: asset/stashfluttericon.png
 
 environment:
-  sdk: ^3.11.0
+  sdk: ^3.13.0
   flutter: ">=3.47.6"
 
 dependencies:
@@ -53,7 +53,7 @@ dependencies:
   flutter_secure_storage: ^11.0.0
   package_info_plus: ^10.1.0
   pub_semver: ^2.2.0
-  window_manager: ^0.5.2
+  window_manager: ^0.6.0
   multiview_desktop: ^2.0.2
   dio: ^5.10.0
   dio_cookie_manager: ^3.4.0

@@ -9,7 +9,7 @@ This guide explains how to build StashFlow from source for any supported platfor
 | Tool | Version | Notes |
 |------|---------|-------|
 | [Flutter SDK](https://docs.flutter.dev/get-started/install) | 3.47.6 or newer | Bundles Dart; current CI pins 3.47.7 |
-| Dart SDK | `^3.11.0` | Declared in `pubspec.yaml` |
+| Dart SDK | `^3.13.0` | Declared in `pubspec.yaml` |
 | [Android Studio](https://developer.android.com/studio) | latest | Android SDK; StashFlow targets API 24+ |
 | [Xcode](https://developer.apple.com/xcode/) | latest | macOS builds only |
 | [Git](https://git-scm.com/) | any | |
@@ -47,11 +47,12 @@ Installer, then rerun `flutter build windows --release`.
 
 ### Linux build dependencies
 
-Linux desktop builds additionally need GTK and media libraries. On Debian/Ubuntu:
+Linux desktop builds additionally need GTK, X11/XInput development headers for
+`window_manager`'s native build hook, and media libraries. On Debian/Ubuntu:
 
 ```bash
 sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev \
-  liblzma-dev libstdc++-12-dev libsecret-1-dev \
+  libx11-dev libxi-dev liblzma-dev libstdc++-12-dev libsecret-1-dev \
   libva-drm2 libva-x11-2 libva-wayland2 libvdpau1 libpulse0 \
   libxss1 libxv1 libegl1 libgbm1 libwayland-egl1
 ```

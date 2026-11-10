@@ -12,6 +12,7 @@ import 'package:stash_app_flutter/core/presentation/providers/app_language_provi
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+
 import 'core/data/cache/app_cache_service.dart';
 import 'features/navigation/presentation/router.dart';
 import 'core/data/preferences/secure_storage_provider.dart';
@@ -20,10 +21,12 @@ import 'core/utils/app_log_store.dart';
 import 'core/utils/pip_mode.dart';
 import 'core/utils/media_handler.dart';
 import 'core/utils/root_app_runner.dart' as root_app_runner;
+
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_service_mpris/audio_service_mpris.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:window_manager/window_manager.dart';
+
+import 'core/utils/desktop_window.dart';
 
 import 'core/presentation/theme/app_theme.dart';
 import 'core/presentation/theme/theme_mode_provider.dart';
@@ -78,25 +81,8 @@ Future<void> main() async {
         (defaultTargetPlatform == TargetPlatform.windows ||
             defaultTargetPlatform == TargetPlatform.linux ||
             defaultTargetPlatform == TargetPlatform.macOS)) {
-      await windowManager.ensureInitialized();
       try {
-        if (defaultTargetPlatform == TargetPlatform.windows) {
-          // window_manager registers one top-level window proc delegate per
-          // engine, so its minimum size would also clamp every
-          // multiview_desktop window, including the desktop PiP window. The
-          // Windows runner enforces the main window's minimum instead; see
-          // windows/runner/flutter_window.cpp.
-          const windowOptions = WindowOptions(size: kDesktopMinimumWindowSize);
-          await windowManager.waitUntilReadyToShow(windowOptions, () async {
-            await windowManager.maximize();
-            await windowManager.show();
-            await windowManager.focus();
-          });
-        } else {
-          await windowManager.setMinimumSize(kDesktopMinimumWindowSize);
-          await windowManager.setSize(kDesktopMinimumWindowSize);
-          await windowManager.maximize();
-        }
+        await DesktopWindow.instance.initialize();
       } on Object catch (e, stackTrace) {
         AppLogStore.instance.addError('main', e, stackTrace, source: 'main');
         // Startup fallbacks must also handle binding and plugin errors.
@@ -303,9 +289,9 @@ class StartupErrorApp extends StatelessWidget {
                       const SizedBox(height: 16),
                       DecoratedBox(
                         decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Padding(

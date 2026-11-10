@@ -10,21 +10,16 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const nativeChannel = MethodChannel('stash_app_flutter/fullscreen');
-  const windowManagerChannel = MethodChannel('window_manager');
   final messenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
 
   setUp(() {
     debugDefaultTargetPlatformOverride = TargetPlatform.windows;
-    messenger.setMockMethodCallHandler(windowManagerChannel, (call) async {
-      fail('Windows must not call window_manager: ${call.method}');
-    });
   });
 
   tearDown(() {
     debugDefaultTargetPlatformOverride = null;
     messenger.setMockMethodCallHandler(nativeChannel, null);
-    messenger.setMockMethodCallHandler(windowManagerChannel, null);
   });
 
   test('delegates Windows entry and restoration to the runner', () async {
@@ -120,29 +115,24 @@ void main() {
   });
 
   for (final platform in [TargetPlatform.linux, TargetPlatform.macOS]) {
-    test('keeps window_manager fullscreen on $platform', () async {
+    test('awaits the bound main-window fullscreen on $platform', () async {
       debugDefaultTargetPlatformOverride = platform;
-      final calls = <MethodCall>[];
+      final calls = <bool>[];
+      final entered = Completer<void>();
       messenger.setMockMethodCallHandler(nativeChannel, (call) async {
         fail('Non-Windows must not call the runner fullscreen channel');
       });
-      messenger.setMockMethodCallHandler(windowManagerChannel, (call) async {
-        calls.add(call);
-        return null;
+      final fullscreen = DesktopFullscreen.withWindow((value) async {
+        calls.add(value);
+        if (value) await entered.future;
       });
 
-      await DesktopFullscreen.instance.enter();
-      await DesktopFullscreen.instance.exit();
-      expect(calls.map((call) => call.method), [
-        'setFullScreen',
-        'setFullScreen',
-      ]);
-      expect(
-        calls.map(
-          (call) => (call.arguments as Map<Object?, Object?>)['isFullScreen'],
-        ),
-        [true, false],
-      );
+      final enter = fullscreen.enter();
+      final exit = fullscreen.exit();
+      expect(calls, [true]);
+      entered.complete();
+      await Future.wait([enter, exit]);
+      expect(calls, [true, false]);
     });
   }
 }
