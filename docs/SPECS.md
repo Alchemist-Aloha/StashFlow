@@ -1071,7 +1071,7 @@ Encryption and cloud synchronization are outside the current backup scope.
 Stable and nightly builds share `.github/workflows/reusable-release.yml`.
 Version-tag pushes (`v*`) publish stable releases; pushes to `dev` publish
 nightly builds. Pushes to `main` do not create release candidates.
-Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.47.7
+Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.47.9
 and resolves dependencies with
 `flutter pub get`
 Pub fetches the media-kit fork rather than
