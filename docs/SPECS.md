@@ -956,8 +956,9 @@ Settings pages use the shared shell and panel components in
 dynamic spacing, section hierarchy, loading/error presentation, and navigation
 behavior. Server Settings may keep its specialized profile-list interactions,
 but must retain the same overall visual language.
-The hub spaces its action tiles and uses two columns when available width can
-fit readable tiles at the current UI scale; compact layouts use one column.
+The hub matches the Tools list layout: a single column of full-width action
+cards inside a shared section panel, with medium spacing between actions at
+every window width and UI scale. Keyboard settings remain desktop-only.
 
 New settings require:
 
