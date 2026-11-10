@@ -324,7 +324,10 @@ serialization differences.
 
 ### Image and preview loading
 
-- `StashImage` is the common authenticated/cached image boundary.
+- `StashImage` is the common authenticated/cached image boundary. Native images
+  and VTT sprite sheets share its `cached_network_image_ce` manager (7-day
+  freshness, 100 entries) and Dio transport with persistent session cookies.
+  Web display retains its existing `Image.network` authentication fallback.
 - List and strip callers provide appropriate `memCacheWidth`/height hints.
 - Prefetch only the visible region plus a small forward buffer.
 - Deduplicate concurrent requests for the same URL and decode size.
@@ -959,6 +962,11 @@ measurement and clearing. Storage Settings displays sizes, clear actions, and
 supported limits.
 
 - Cache work must remain asynchronous and tolerate missing/locked files.
+- Image accounting includes `cached_network_image_ce` and legacy image-cache
+  directories. Clearing empties the shared manager before removing leftover
+  image files; clearing and size-limit trimming must preserve its open Hive
+  metadata files. Limits apply to image files, not metadata overhead. Old cache
+  entries are not imported and may download again.
 - Clearing one cache type must not delete unrelated user settings or active
   media required for playback.
 - Size displays refresh after clear/limit changes.

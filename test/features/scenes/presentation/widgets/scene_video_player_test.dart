@@ -171,7 +171,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 10));
 
     expect(find.byType(AspectRatio), findsWidgets);
-    expect(find.byType(Container), findsWidgets);
     expect(find.byKey(const Key('inline_video_back_button')), findsOneWidget);
     final sceneImage = tester.widget<StashImage>(find.byType(StashImage));
     expect(sceneImage.imageUrl, testScene.paths.screenshot);

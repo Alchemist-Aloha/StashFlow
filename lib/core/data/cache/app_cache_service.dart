@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'dart:isolate';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:extended_image/extended_image.dart' as extended_image;
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
 import '../../presentation/widgets/stash_image.dart';
 import '../../utils/app_log_store.dart';
 
@@ -63,6 +64,7 @@ class AppCacheService {
             Directory(p.join(root.path, 'cache')),
             Directory(p.join(root.path, 'stashImageCache')),
             Directory(p.join(root.path, 'libCachedImageData')),
+            Directory(p.join(root.path, 'cached_network_image_ce')),
           ],
         )
         .toList();
@@ -165,7 +167,6 @@ class AppCacheService {
       // 1. Library methods
       final results = await Future.wait<Object?>([
         StashImage.cacheManager.emptyCache(),
-        DefaultCacheManager().emptyCache(),
         extended_image.clearDiskCachedImages(),
       ]);
       debugPrint('AppCacheService: Library clear calls finished: $results');
@@ -448,8 +449,9 @@ List<Object> _clearDirectoriesSync(List<String> dirPaths) {
     try {
       final dir = Directory(dirPath);
       if (!dir.existsSync()) continue;
-      for (final entity in dir.listSync(followLinks: false)) {
-        entity.deleteSync(recursive: true);
+      for (final entity in dir.listSync(recursive: true, followLinks: false)) {
+        if (entity is Directory || _isImageCacheMetadata(entity.path)) continue;
+        entity.deleteSync();
       }
     } on FileSystemException catch (e, stackTrace) {
       AppLogStore.instance.addError(
@@ -505,7 +507,7 @@ _CacheLimitEnforcementResult _enforceCacheLimitSync(
       final dir = Directory(dirPath);
       if (!dir.existsSync()) continue;
       for (final entity in dir.listSync(recursive: true, followLinks: false)) {
-        if (entity is! File) continue;
+        if (entity is! File || _isImageCacheMetadata(entity.path)) continue;
         if (!_matchesExtension(entity.path, extensions)) continue;
         final stat = entity.statSync();
         final length = stat.size;
@@ -570,6 +572,11 @@ _CacheLimitEnforcementResult _enforceCacheLimitSync(
     deleteErrors: deleteErrors,
   );
 }
+
+// Hive owns these open files; only the cache manager may clear their contents.
+bool _isImageCacheMetadata(String path) =>
+    p.basename(p.dirname(path)) == 'hive' &&
+    p.basename(p.dirname(p.dirname(path))) == 'cached_network_image_ce';
 
 bool _matchesExtension(String path, Set<String>? extensions) {
   if (extensions == null) return true;
