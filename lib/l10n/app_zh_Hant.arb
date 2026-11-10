@@ -524,6 +524,8 @@
   "settings_playback_autoplay_subtitle": "當目前播放結束時自動播放下一個場景",
   "settings_playback_background": "背景播放",
   "settings_playback_background_subtitle": "應用程式在背景執行時保持音訊播放",
+  "settings_playback_audio_focus": "其他應用程式播放媒體時暫停",
+  "settings_playback_audio_focus_subtitle": "當其他應用程式取得音訊焦點時暫停 StashFlow。關閉後允許同時播放。",
   "settings_playback_pip": "原生子母畫面",
   "settings_playback_pip_subtitle": "啟用子母畫面按鈕，並在背景執行時自動進入子母畫面",
   "settings_playback_subtitles": "字幕設定",

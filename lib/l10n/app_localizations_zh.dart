@@ -1969,6 +1969,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_background_subtitle => '应用在后台时继续播放视频音频';
 
   @override
+  String get settings_playback_audio_focus => '其他应用播放媒体时暂停';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。';
+
+  @override
   String get settings_playback_pip => '原生画中画';
 
   @override
@@ -5758,6 +5765,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_playback_background_subtitle => '应用在后台时继续播放视频音频';
+
+  @override
+  String get settings_playback_audio_focus => '其他应用播放媒体时暂停';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。';
 
   @override
   String get settings_playback_pip => '原生画中画';
@@ -9553,6 +9567,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_playback_background_subtitle => '應用程式在背景執行時保持音訊播放';
+
+  @override
+  String get settings_playback_audio_focus => '其他應用程式播放媒體時暫停';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '當其他應用程式取得音訊焦點時暫停 StashFlow。關閉後允許同時播放。';
 
   @override
   String get settings_playback_pip => '原生子母畫面';

@@ -552,6 +552,8 @@
   "settings_playback_autoplay_subtitle": "当前播放结束时自动播放下一个场景",
   "settings_playback_background": "后台播放",
   "settings_playback_background_subtitle": "应用在后台时继续播放视频音频",
+  "settings_playback_audio_focus": "其他应用播放媒体时暂停",
+  "settings_playback_audio_focus_subtitle": "当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。",
   "settings_playback_pip": "原生画中画",
   "settings_playback_pip_subtitle": "启用画中画按钮，并在进入后台时自动进入画中画",
   "settings_playback_subtitles": "字幕设置",

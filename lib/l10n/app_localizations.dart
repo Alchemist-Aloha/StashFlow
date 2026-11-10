@@ -3624,6 +3624,18 @@ abstract class AppLocalizations {
   /// **'Keep video audio playing when the app is in the background'**
   String get settings_playback_background_subtitle;
 
+  /// No description provided for @settings_playback_audio_focus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause when other apps play media'**
+  String get settings_playback_audio_focus;
+
+  /// No description provided for @settings_playback_audio_focus_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause StashFlow when another app takes audio focus. Turn off to allow simultaneous playback.'**
+  String get settings_playback_audio_focus_subtitle;
+
   /// No description provided for @settings_playback_pip.
   ///
   /// In en, this message translates to:

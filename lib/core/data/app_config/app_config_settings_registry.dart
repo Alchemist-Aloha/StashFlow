@@ -153,6 +153,7 @@ final class AppConfigSettingsRegistry {
       max: PlayerSettingsStore.maxControlsAutoHideSeconds,
     ),
     _bool('video_background_playback'),
+    _bool('video_respect_audio_focus'),
     _bool('video_native_pip'),
     _bool('video_gravity_orientation'),
     _bool('use_actual_scene_video_in_miniplayer'),

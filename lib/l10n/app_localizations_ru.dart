@@ -2053,6 +2053,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Продолжать воспроизведение звука видео при сворачивании приложения';
 
   @override
+  String get settings_playback_audio_focus =>
+      'Пауза при воспроизведении в других приложениях';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      'Приостанавливать StashFlow, когда другое приложение получает аудиофокус. Отключите для одновременного воспроизведения.';
+
+  @override
   String get settings_playback_pip => 'Нативная «Картинка в картинке»';
 
   @override

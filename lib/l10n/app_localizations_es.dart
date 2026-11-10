@@ -2073,6 +2073,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Mantener el audio del video reproduciéndose cuando la aplicación está en segundo plano';
 
   @override
+  String get settings_playback_audio_focus =>
+      'Pausar cuando otras apps reproduzcan contenido';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      'Pausa StashFlow cuando otra app tome el foco de audio. Desactívalo para permitir la reproducción simultánea.';
+
+  @override
   String get settings_playback_pip => 'Imagen en imagen nativa';
 
   @override

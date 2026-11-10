@@ -33,6 +33,7 @@ dependencies:
       url: https://github.com/Alchemist-Aloha/media-kit.git
       ref: 31de3525af6841df5e999a37cb8da83a34b3f87b
       path: ./media_kit_video
+  audio_session: ^0.2.4
   audio_service: ^0.18.19
   audio_service_mpris: 1.0.0-beta.3
   wakelock_plus: ^1.8.2

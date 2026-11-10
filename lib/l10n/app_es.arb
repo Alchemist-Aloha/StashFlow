@@ -497,6 +497,8 @@
   "settings_playback_autoplay_subtitle": "Reproducir automáticamente la siguiente escena cuando finalice la reproducción actual",
   "settings_playback_background": "Reproducción en segundo plano",
   "settings_playback_background_subtitle": "Mantener el audio del video reproduciéndose cuando la aplicación está en segundo plano",
+  "settings_playback_audio_focus": "Pausar cuando otras apps reproduzcan contenido",
+  "settings_playback_audio_focus_subtitle": "Pausa StashFlow cuando otra app tome el foco de audio. Desactívalo para permitir la reproducción simultánea.",
   "settings_playback_pip": "Imagen en imagen nativa",
   "settings_playback_pip_subtitle": "Habilitar el botón de imagen en imagen y entrar automáticamente al pasar a segundo plano",
   "settings_playback_subtitles": "Ajustes de subtítulos",

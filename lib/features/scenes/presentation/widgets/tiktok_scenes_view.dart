@@ -5,11 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../navigation/presentation/current_route_provider.dart';
+
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../domain/entities/scene.dart';
@@ -49,12 +53,14 @@ final fullScreenModeProvider = NotifierProvider<FullScreenMode, bool>(
 
 /// Pauses inactive feed controllers even when the visible one is still loading.
 /// Page changes start the active controller; handoffs can preserve user pause
-/// with [playCurrent]. Both paths apply the current loop policy.
+/// with [playCurrent]. [onPlayCurrent] routes active playback through the global
+/// audio-focus owner; preloads never request focus. Both paths apply loop policy.
 void syncTiktokPlayback(
   Map<String, VideoController> controllers,
   String currentSceneId,
   VideoEndBehavior endBehavior, {
   bool playCurrent = true,
+  void Function(Player player)? onPlayCurrent,
 }) {
   final current = controllers[currentSceneId];
   _pauseInactiveControllers(controllers, current);
@@ -66,7 +72,13 @@ void syncTiktokPlayback(
     if (player.state.playlistMode != mode) {
       unawaited(player.setPlaylistMode(mode));
     }
-    if (playCurrent && !player.state.playing) unawaited(player.play());
+    if (playCurrent && !player.state.playing) {
+      if (onPlayCurrent != null) {
+        onPlayCurrent(player);
+      } else {
+        unawaited(player.play());
+      }
+    }
   }
 }
 
@@ -318,20 +330,20 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         'TiktokScenesView: promoting local controller to global for $currentSceneId',
         source: 'TiktokScenesView',
       );
-      unawaited(
-        playerNotifier.attachController(
-          scenes[_currentIndex],
-          currentController.player,
-          currentController,
-          streamSource: 'tiktok-promotion',
-        ),
+      await playerNotifier.attachController(
+        scenes[_currentIndex],
+        currentController.player,
+        currentController,
+        streamSource: 'tiktok-promotion',
       );
+      if (!mounted || scenes[_currentIndex].id != currentSceneId) return;
     }
 
     syncTiktokPlayback(
       _controllers,
       currentSceneId,
       ref.read(playerStateProvider).playEndBehavior,
+      onPlayCurrent: (player) => unawaited(playerNotifier.resumePlayer(player)),
       playCurrent:
           !(globalPlayer.videoController == _controllers[currentSceneId] &&
               globalPlayer.activeScene?.id == currentSceneId &&
@@ -391,9 +403,8 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       final player = Player();
       final controller = VideoController(
         player,
-        configuration: PlayerSettingsStore(
-          ref.read(sharedPreferencesProvider),
-        ).loadVideoConfiguration(),
+        configuration: PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+            .loadVideoConfiguration(),
       );
 
       _players[scene.id] = player;
@@ -425,9 +436,8 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         }
       }
 
-      await PlayerSettingsStore(
-        ref.read(sharedPreferencesProvider),
-      ).applyMpvProperties(player);
+      await PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+          .applyMpvProperties(player);
       await player.open(
         createPlaybackMedia(
           effectiveUrl,
@@ -566,6 +576,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
                   _controllers,
                   scenes[index].id,
                   ref.read(playerStateProvider).playEndBehavior,
+                  playCurrent: false,
                 );
               }
             },
@@ -644,7 +655,6 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   // Scrubbing state
   bool _isScrubbing = false;
   double _scrubMs = 0;
-  bool _wasPlayingBeforeScrub = false;
 
   @override
   void initState() {
@@ -960,10 +970,11 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                             widget.onFeedUiVisibilityChanged(true);
                             return;
                           }
-                          if (controller.player.state.playing) {
-                            unawaited(controller.player.pause());
-                          } else {
-                            unawaited(controller.player.play());
+                          if (ref.read(playerStateProvider).player ==
+                              controller.player) {
+                            ref
+                                .read(playerStateProvider.notifier)
+                                .togglePlayPause();
                           }
                         },
                         onLongPressStart: (_) {
@@ -1283,8 +1294,6 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                   value: position.clamp(0.0, duration),
                                   max: duration > 0 ? duration : 1.0,
                                   onChangeStart: (val) {
-                                    _wasPlayingBeforeScrub =
-                                        controller.player.state.playing;
                                     setState(() {
                                       _isScrubbing = true;
                                       _scrubMs = val;
@@ -1297,14 +1306,12 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                   },
                                   onChangeEnd: (val) {
                                     unawaited(
-                                      controller.player.seek(
-                                        Duration(milliseconds: val.toInt()),
-                                      ),
+                                      ref
+                                          .read(playerStateProvider.notifier)
+                                          .seek(
+                                            Duration(milliseconds: val.toInt()),
+                                          ),
                                     );
-                                    if (_wasPlayingBeforeScrub &&
-                                        !controller.player.state.playing) {
-                                      unawaited(controller.player.play());
-                                    }
                                     setState(() {
                                       _isScrubbing = false;
                                     });

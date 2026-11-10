@@ -1991,6 +1991,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'アプリがバックグラウンドに移動しても動画の音声を再生し続けます';
 
   @override
+  String get settings_playback_audio_focus => '他のアプリの再生時に一時停止';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '他のアプリがオーディオフォーカスを取得したらStashFlowを一時停止します。オフにすると同時再生を許可します。';
+
+  @override
   String get settings_playback_pip => 'ネイティブ ピクチャー・イン・ピクチャー';
 
   @override

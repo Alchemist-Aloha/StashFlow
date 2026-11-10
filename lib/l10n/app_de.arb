@@ -480,6 +480,8 @@
   "settings_playback_autoplay_subtitle": "Nächste Szene automatisch abspielen, wenn die aktuelle endet",
   "settings_playback_background": "Hintergrund-Wiedergabe",
   "settings_playback_background_subtitle": "Video-Audio weiter abspielen, wenn die App im Hintergrund ist",
+  "settings_playback_audio_focus": "Pausieren, wenn andere Apps Medien abspielen",
+  "settings_playback_audio_focus_subtitle": "StashFlow pausieren, wenn eine andere App den Audiofokus übernimmt. Deaktivieren, um gleichzeitige Wiedergabe zu erlauben.",
   "settings_playback_pip": "Natives Bild-im-Bild",
   "settings_playback_pip_subtitle": "Bild-im-Bild-Schaltfläche aktivieren und automatisch bei Hintergrundwechsel starten",
   "settings_playback_subtitles": "Untertitel-Einstellungen",

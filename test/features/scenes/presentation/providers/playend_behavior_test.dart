@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:audio_session/audio_session.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_audio_focus.dart';
 import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
@@ -45,6 +47,7 @@ void main() {
   late StreamController<bool> completedStream;
   StreamChoice? resolvedChoice;
   Completer<StreamChoice?>? pendingResolution;
+  late _FakeAudioFocus audioFocus;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -61,6 +64,7 @@ void main() {
     resolvedChoice = null;
     pendingResolution = null;
     app.mediaHandler = StashMediaHandler();
+    audioFocus = _FakeAudioFocus();
 
     final playerStream = CustomPlayerStream(
       playingStream.stream,
@@ -76,6 +80,7 @@ void main() {
     container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPrefs),
+        playbackAudioFocusProvider.overrideWithValue(audioFocus),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         streamResolverProvider.overrideWithValue(
           (scene) => pendingResolution?.future ?? Future.value(resolvedChoice),
@@ -304,9 +309,9 @@ void main() {
           mockVideoController,
         );
         await Future<void>.delayed(Duration.zero);
-        final prewarmer =
-            container.read(streamPrewarmerProvider.notifier)
-                as _RecordingPrewarmer;
+        final prewarmer = container.read(
+          streamPrewarmerProvider.notifier,
+        ) as _RecordingPrewarmer;
         prewarmer.warmed.clear();
         if (next) {
           expect(await notifier.playNext(), isTrue);
@@ -320,54 +325,45 @@ void main() {
     );
   }
 
-  test(
-    'same-controller TikTok handoff transfers completion without restarting playback',
-    () async {
-      final scenes = [createTestScene('1'), createTestScene('2')];
-      container.read(playbackQueueProvider.notifier).setSequence(scenes, 0);
-      resolvedChoice = const StreamChoice(
-        url: 'https://example.test/2.mp4',
-        mimeType: 'video/mp4',
-      );
-      final notifier = container.read(playerStateProvider.notifier);
-      await notifier.attachController(
-        scenes.first,
-        mockPlayer,
-        mockVideoController,
-        streamSource: 'tiktok-promotion',
-      );
-      await notifier.attachController(
-        scenes.first,
-        mockPlayer,
-        mockVideoController,
-        streamSource: 'tiktok-handoff',
-      );
-      expect(
-        container.read(playerStateProvider).streamSource,
-        'tiktok-handoff',
-      );
-      expect(
-        container.read(playerStateProvider).viewMode,
-        PlayerViewMode.inline,
-      );
-      verifyNever(mockPlayer.pause());
-      verifyNever(mockPlayer.dispose());
-      final navigation = <String>[];
-      container.listen(
-        playerStateProvider.select((s) => s.navigationReplacementPath),
-        (_, path) {
-          if (path != null) navigation.add(path);
-        },
-      );
-      notifier.setPlayEndBehavior(VideoEndBehavior.next);
-      completedStream.add(true);
-      completedStream.add(true);
-      await Future<void>.delayed(const Duration(milliseconds: 10));
-      expect(container.read(playbackQueueProvider).currentIndex, 1);
-      expect(container.read(playerStateProvider).activeScene?.id, '2');
-      expect(navigation, ['/scenes/scene/2']);
-    },
-  );
+  test('same-controller TikTok handoff transfers completion without restarting playback', () async {
+    final scenes = [createTestScene('1'), createTestScene('2')];
+    container.read(playbackQueueProvider.notifier).setSequence(scenes, 0);
+    resolvedChoice = const StreamChoice(
+      url: 'https://example.test/2.mp4',
+      mimeType: 'video/mp4',
+    );
+    final notifier = container.read(playerStateProvider.notifier);
+    await notifier.attachController(
+      scenes.first,
+      mockPlayer,
+      mockVideoController,
+      streamSource: 'tiktok-promotion',
+    );
+    await notifier.attachController(
+      scenes.first,
+      mockPlayer,
+      mockVideoController,
+      streamSource: 'tiktok-handoff',
+    );
+    expect(container.read(playerStateProvider).streamSource, 'tiktok-handoff');
+    expect(container.read(playerStateProvider).viewMode, PlayerViewMode.inline);
+    verifyNever(mockPlayer.pause());
+    verifyNever(mockPlayer.dispose());
+    final navigation = <String>[];
+    container.listen(
+      playerStateProvider.select((s) => s.navigationReplacementPath),
+      (_, path) {
+        if (path != null) navigation.add(path);
+      },
+    );
+    notifier.setPlayEndBehavior(VideoEndBehavior.next);
+    completedStream.add(true);
+    completedStream.add(true);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    expect(container.read(playbackQueueProvider).currentIndex, 1);
+    expect(container.read(playerStateProvider).activeScene?.id, '2');
+    expect(navigation, ['/scenes/scene/2']);
+  });
 
   for (final presentation in ['feed', 'inline', 'fullscreen', 'pip']) {
     test(
@@ -418,52 +414,44 @@ void main() {
     );
   }
 
-  test(
-    'stale URL resolutions do not restart prewarming after scene change or stop',
-    () async {
-      final scenes = [for (var i = 1; i <= 3; i++) createTestScene('$i')];
-      container.read(playbackQueueProvider.notifier).setSequence(scenes, 0);
-      pendingResolution = Completer<StreamChoice?>();
-      final notifier = container.read(playerStateProvider.notifier);
-      await notifier.attachController(
-        scenes.first,
-        mockPlayer,
-        mockVideoController,
-      );
-      await notifier.attachController(
-        scenes[1],
-        mockPlayer,
-        mockVideoController,
-      );
-      pendingResolution!.complete(
-        const StreamChoice(
-          url: 'https://example.test/stream.mp4',
-          mimeType: 'video/mp4',
-        ),
-      );
-      await Future<void>.delayed(Duration.zero);
-      final prewarmer =
-          container.read(streamPrewarmerProvider.notifier)
-              as _RecordingPrewarmer;
-      expect(prewarmer.warmed, ['3']);
-      prewarmer.warmed.clear();
-      pendingResolution = Completer<StreamChoice?>();
-      await notifier.attachController(
-        scenes.first,
-        mockPlayer,
-        mockVideoController,
-      );
-      notifier.stop();
-      pendingResolution!.complete(
-        const StreamChoice(
-          url: 'https://example.test/stream.mp4',
-          mimeType: 'video/mp4',
-        ),
-      );
-      await Future<void>.delayed(Duration.zero);
-      expect(prewarmer.warmed, isEmpty);
-    },
-  );
+  test('stale URL resolutions do not restart prewarming after scene change or stop', () async {
+    final scenes = [for (var i = 1; i <= 3; i++) createTestScene('$i')];
+    container.read(playbackQueueProvider.notifier).setSequence(scenes, 0);
+    pendingResolution = Completer<StreamChoice?>();
+    final notifier = container.read(playerStateProvider.notifier);
+    await notifier.attachController(
+      scenes.first,
+      mockPlayer,
+      mockVideoController,
+    );
+    await notifier.attachController(scenes[1], mockPlayer, mockVideoController);
+    pendingResolution!.complete(
+      const StreamChoice(
+        url: 'https://example.test/stream.mp4',
+        mimeType: 'video/mp4',
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+    final prewarmer =
+        container.read(streamPrewarmerProvider.notifier) as _RecordingPrewarmer;
+    expect(prewarmer.warmed, ['3']);
+    prewarmer.warmed.clear();
+    pendingResolution = Completer<StreamChoice?>();
+    await notifier.attachController(
+      scenes.first,
+      mockPlayer,
+      mockVideoController,
+    );
+    notifier.stop();
+    pendingResolution!.complete(
+      const StreamChoice(
+        url: 'https://example.test/stream.mp4',
+        mimeType: 'video/mp4',
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(prewarmer.warmed, isEmpty);
+  });
 
   for (final next in [true, false]) {
     test(
@@ -651,6 +639,236 @@ void main() {
     });
   }
 
+  group('Android audio focus', () {
+    Future<PlayerState> prepare() async {
+      audioFocus.enabled = true;
+      var playback = PlayerStateData();
+      when(mockPlayer.state).thenAnswer((_) => playback);
+      when(mockPlayer.pause()).thenAnswer((_) async {
+        playback = PlayerStateData();
+        playingStream.add(false);
+      });
+      when(mockPlayer.play()).thenAnswer((_) async {
+        playback = PlayerStateData(playing: true);
+        playingStream.add(true);
+      });
+      final notifier = container.read(playerStateProvider.notifier);
+      await notifier.attachController(
+        createTestScene('focus'),
+        mockPlayer,
+        mockVideoController,
+      );
+      audioFocus.operations.clear();
+      return notifier;
+    }
+
+    Future<void> tick() => Future<void>.delayed(Duration.zero);
+    void interrupt(AudioInterruptionType type, {bool begin = true}) {
+      audioFocus.onInterruption?.call(AudioInterruptionEvent(begin, type));
+    }
+
+    test(
+      'waits for focus before play and cancels a late grant on pause',
+      () async {
+        final notifier = await prepare();
+        audioFocus.pending = Completer<bool>();
+        notifier.play();
+        verifyNever(mockPlayer.play());
+        expect(container.read(playerStateProvider).isPlaying, isFalse);
+        notifier.pause();
+        audioFocus.pending!.complete(true);
+        await tick();
+        verifyNever(mockPlayer.play());
+        expect(audioFocus.operations, [true, false]);
+        expect(container.read(playerStateProvider).isPlaying, isFalse);
+      },
+    );
+
+    for (final fails in [false, true]) {
+      test('denied or failed focus blocks retries (error: $fails)', () async {
+        final notifier = await prepare();
+        audioFocus.granted = false;
+        audioFocus.fail = fails;
+        notifier.setEnableBackgroundPlayback(true);
+        notifier.didChangeAppLifecycleState(AppLifecycleState.paused);
+        notifier.play();
+        await tick();
+        positionStream.add(const Duration(seconds: 1));
+        await tick();
+        await notifier.resumePlayer(mockPlayer);
+        verifyNever(mockPlayer.play());
+        expect(audioFocus.operations.where((active) => active), [true]);
+        expect(container.read(playerStateProvider).isPlaying, isFalse);
+        audioFocus.granted = true;
+        audioFocus.fail = false;
+        notifier.play();
+        await tick();
+        verify(mockPlayer.play()).called(1);
+      });
+    }
+
+    test(
+      'permanent loss survives keepalive, handoff, and foreground resume',
+      () async {
+        final notifier = await prepare();
+        notifier.setEnableBackgroundPlayback(true);
+        notifier.play();
+        await tick();
+        notifier.didChangeAppLifecycleState(AppLifecycleState.paused);
+        interrupt(AudioInterruptionType.unknown);
+        positionStream.add(const Duration(seconds: 1));
+        await tick();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        notifier.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        await notifier.attachController(
+          createTestScene('focus'),
+          mockPlayer,
+          mockVideoController,
+          streamSource: 'tiktok-handoff',
+        );
+        await notifier.resumePlayer(mockPlayer);
+        interrupt(AudioInterruptionType.pause, begin: false);
+        await tick();
+        verify(mockPlayer.play()).called(1);
+        expect(container.read(playerStateProvider).isPlaying, isFalse);
+        notifier.play();
+        await tick();
+        verify(mockPlayer.play()).called(1);
+        expect(container.read(playerStateProvider).isPlaying, isTrue);
+      },
+    );
+
+    for (final type in [
+      AudioInterruptionType.pause,
+      AudioInterruptionType.duck,
+    ]) {
+      test('temporary $type resumes the previously playing session', () async {
+        final notifier = await prepare();
+        notifier.play();
+        await tick();
+        interrupt(type);
+        await tick();
+        expect(container.read(playerStateProvider).isPlaying, isFalse);
+        interrupt(type, begin: false);
+        await tick();
+        verify(mockPlayer.play()).called(2);
+        expect(audioFocus.operations.where((active) => active), [true]);
+        expect(container.read(playerStateProvider).isPlaying, isTrue);
+      });
+    }
+
+    for (final action in ['pause', 'stop', 'disable', 'replace']) {
+      test('$action cancels temporary interruption auto-resume', () async {
+        final notifier = await prepare();
+        notifier.play();
+        await tick();
+        interrupt(AudioInterruptionType.pause);
+        await tick();
+        switch (action) {
+          case 'pause':
+            notifier.pause();
+          case 'stop':
+            notifier.stop();
+          case 'disable':
+            notifier.setRespectAudioFocus(false);
+          case 'replace':
+            final next = MockPlayer();
+            final controller = MockVideoController();
+            when(next.state).thenReturn(PlayerStateData());
+            when(next.stream).thenReturn(mockPlayer.stream);
+            when(controller.player).thenReturn(next);
+            await notifier.attachController(
+              createTestScene('replacement'),
+              next,
+              controller,
+            );
+        }
+        interrupt(AudioInterruptionType.pause, begin: false);
+        await tick();
+        verify(mockPlayer.play()).called(1);
+        expect(container.read(playerStateProvider).isPlaying, isFalse);
+      });
+    }
+
+    test('focus gain respects background-disabled policy', () async {
+      final notifier = await prepare();
+      notifier.play();
+      await tick();
+      interrupt(AudioInterruptionType.pause);
+      notifier.didChangeAppLifecycleState(AppLifecycleState.paused);
+      interrupt(AudioInterruptionType.pause, begin: false);
+      notifier.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      await notifier.resumePlayer(mockPlayer);
+      await tick();
+      verify(mockPlayer.play()).called(1);
+    });
+
+    test(
+      'opt-out does not restart paused video and bypasses focus on Play',
+      () async {
+        final notifier = await prepare();
+        notifier.play();
+        await tick();
+        interrupt(AudioInterruptionType.unknown);
+        notifier.setRespectAudioFocus(false);
+        await tick();
+        verify(mockPlayer.play()).called(1);
+        expect(container.read(playerStateProvider).isPlaying, isFalse);
+        notifier.play();
+        await tick();
+        verify(mockPlayer.play()).called(1);
+        interrupt(AudioInterruptionType.pause);
+        expect(container.read(playerStateProvider).isPlaying, isTrue);
+        audioFocus.granted = false;
+        notifier.setRespectAudioFocus(true);
+        await tick();
+        expect(container.read(playerStateProvider).isPlaying, isFalse);
+        expect(audioFocus.operations.where((active) => active), [true, true]);
+      },
+    );
+
+    test('focus loss during seek or loop cannot restore playback', () async {
+      final notifier = await prepare();
+      notifier.play();
+      await tick();
+      final seek = Completer<void>();
+      when(mockPlayer.seek(any)).thenAnswer((_) => seek.future);
+      final seeking = app.mediaHandler!.seek(const Duration(seconds: 5));
+      interrupt(AudioInterruptionType.unknown);
+      seek.complete();
+      await seeking;
+      await tick();
+      verify(mockPlayer.play()).called(1);
+
+      notifier.play();
+      await tick();
+      final loopSeek = Completer<void>();
+      when(mockPlayer.seek(any)).thenAnswer((_) => loopSeek.future);
+      notifier.setPlayEndBehavior(VideoEndBehavior.loop);
+      completedStream.add(true);
+      await tick();
+      interrupt(AudioInterruptionType.unknown);
+      loopSeek.complete();
+      await tick();
+      verify(mockPlayer.play()).called(1);
+      expect(container.read(playerStateProvider).isPlaying, isFalse);
+    });
+
+    test('remote casting neither requests nor reacts to phone focus', () async {
+      final notifier = await prepare();
+      final cast =
+          container.read(castServiceProvider.notifier) as _FakeAppCastService;
+      cast.activate();
+      audioFocus.operations.clear();
+      notifier.play();
+      interrupt(AudioInterruptionType.unknown);
+      await tick();
+      expect(audioFocus.operations.where((active) => active), isEmpty);
+      verifyNever(mockPlayer.play());
+      verifyNever(mockPlayer.pause());
+    });
+  });
+
   test('background playback off pauses an active player', () async {
     final notifier = container.read(playerStateProvider.notifier);
     final scene = createTestScene('background-off');
@@ -713,6 +931,7 @@ void main() {
     await notifier.attachController(scene1, mockPlayer, mockVideoController);
     notifier.setFullScreen(true);
     notifier.setFeedStartRandom(true);
+    notifier.setRespectAudioFocus(false);
     notifier.setResumePlayPosition(false);
     notifier.setPlayEndBehavior(VideoEndBehavior.next);
 
@@ -724,6 +943,9 @@ void main() {
     expect(container.read(playerStateProvider).isFullScreen, isTrue);
     expect(container.read(playerStateProvider).feedStartRandom, isTrue);
     expect(container.read(playerStateProvider).resumePlayPosition, isFalse);
+    expect(container.read(playerStateProvider).respectAudioFocus, isFalse);
+    notifier.stop();
+    expect(container.read(playerStateProvider).respectAudioFocus, isFalse);
   });
 
   test('next advances without leaving the mini player', () async {
@@ -789,49 +1011,46 @@ void main() {
     );
   });
 
-  test(
-    'details page still navigates when the mini player mounts mid-transition',
-    () async {
-      final notifier = container.read(playerStateProvider.notifier);
-      final queue = container.read(playbackQueueProvider.notifier);
-      final scene1 = createTestScene('race-1');
-      final scene2 = createTestScene('race-2');
-      resolvedChoice = const StreamChoice(
-        url: 'https://example.test/race-2.mp4',
-        mimeType: 'video/mp4',
-      );
+  test('details page still navigates when the mini player mounts mid-transition', () async {
+    final notifier = container.read(playerStateProvider.notifier);
+    final queue = container.read(playbackQueueProvider.notifier);
+    final scene1 = createTestScene('race-1');
+    final scene2 = createTestScene('race-2');
+    resolvedChoice = const StreamChoice(
+      url: 'https://example.test/race-2.mp4',
+      mimeType: 'video/mp4',
+    );
 
-      queue.setSequence([scene1, scene2], 0);
-      await notifier.attachController(scene1, mockPlayer, mockVideoController);
-      // Details page: the mini player is not mounted when playback ends.
-      notifier.setMiniPlayerVisible(false);
-      notifier.setPlayEndBehavior(VideoEndBehavior.next);
+    queue.setSequence([scene1, scene2], 0);
+    await notifier.attachController(scene1, mockPlayer, mockVideoController);
+    // Details page: the mini player is not mounted when playback ends.
+    notifier.setMiniPlayerVisible(false);
+    notifier.setPlayEndBehavior(VideoEndBehavior.next);
 
-      final navigationPaths = <String?>[];
-      container.listen<String?>(
-        playerStateProvider.select((s) => s.navigationReplacementPath),
-        (_, next) => navigationPaths.add(next),
-      );
-      // Mimic the shell briefly mounting the mini player once the new scene goes
-      // active, before playNext decides whether to replace the route.
-      final transientMount = container.listen<String?>(
-        playerStateProvider.select((s) => s.activeScene?.id),
-        (_, next) {
-          if (next == 'race-2') notifier.setMiniPlayerVisible(true);
-        },
-      );
+    final navigationPaths = <String?>[];
+    container.listen<String?>(
+      playerStateProvider.select((s) => s.navigationReplacementPath),
+      (_, next) => navigationPaths.add(next),
+    );
+    // Mimic the shell briefly mounting the mini player once the new scene goes
+    // active, before playNext decides whether to replace the route.
+    final transientMount = container.listen<String?>(
+      playerStateProvider.select((s) => s.activeScene?.id),
+      (_, next) {
+        if (next == 'race-2') notifier.setMiniPlayerVisible(true);
+      },
+    );
 
-      completedStream.add(true);
-      await Future<void>.delayed(const Duration(milliseconds: 10));
-      transientMount.close();
+    completedStream.add(true);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    transientMount.close();
 
-      expect(container.read(playerStateProvider).activeScene?.id, 'race-2');
-      expect(
-        navigationPaths.whereType<String>(),
-        contains('/scenes/scene/race-2'),
-      );
-    },
-  );
+    expect(container.read(playerStateProvider).activeScene?.id, 'race-2');
+    expect(
+      navigationPaths.whereType<String>(),
+      contains('/scenes/scene/race-2'),
+    );
+  });
 
   test(
     'remote completion advances and switches the active cast media',
@@ -1014,9 +1233,8 @@ void main() {
       final notifier = container.read(playerStateProvider.notifier);
       final scene = createTestScene('duration');
 
-      when(
-        mockPlayer.state,
-      ).thenReturn(PlayerStateData(duration: Duration.zero));
+      when(mockPlayer.state)
+          .thenReturn(PlayerStateData(duration: Duration.zero));
       await notifier.attachController(scene, mockPlayer, mockVideoController);
       expect(app.mediaHandler!.mediaItem.value?.duration, Duration.zero);
 
@@ -1219,6 +1437,30 @@ class _FakeCastSession extends dc.CastSession {
   Future<void> setVolume(double volume) async {}
   @override
   Future<void> stop() async {}
+}
+
+class _FakeAudioFocus extends PlaybackAudioFocus {
+  bool enabled = false;
+  bool granted = true;
+  bool fail = false;
+  Completer<bool>? pending;
+  final operations = <bool>[];
+
+  @override
+  bool get supported => enabled;
+
+  @override
+  Future<bool> setActive(bool active) async {
+    operations.add(active);
+    if (active && fail) throw StateError('focus request failed');
+    return active ? (pending?.future ?? Future.value(granted)) : true;
+  }
+
+  @override
+  Future<void> dispose() async {
+    onInterruption = null;
+    await setActive(false);
+  }
 }
 
 // Minimal mock for PlayerState (media_kit)

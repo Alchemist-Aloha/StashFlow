@@ -497,6 +497,8 @@
   "settings_playback_autoplay_subtitle": "Lire automatiquement la scène suivante à la fin de la lecture actuelle",
   "settings_playback_background": "Lecture en arrière-plan",
   "settings_playback_background_subtitle": "Garder l'audio de la vidéo pendant que l'application est en arrière-plan",
+  "settings_playback_audio_focus": "Mettre en pause quand une autre app lit un média",
+  "settings_playback_audio_focus_subtitle": "Met StashFlow en pause lorsqu’une autre app prend le focus audio. Désactivez cette option pour autoriser la lecture simultanée.",
   "settings_playback_pip": "Image dans l'image native",
   "settings_playback_pip_subtitle": "Activer le bouton image dans l'image et l'entrée automatique en arrière-plan",
   "settings_playback_subtitles": "Paramètres des sous-titres",

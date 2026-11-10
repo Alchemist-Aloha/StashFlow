@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../../core/utils/l10n_extensions.dart';
+
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
+
 import '../../widgets/settings_page_shell.dart';
 import '../../widgets/local_caption_settings_section.dart';
 
@@ -36,6 +39,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _useDoubleTapSeek = false;
   int _controlsAutoHideSeconds = 2;
   bool _enableBackgroundPlayback = false;
+  bool _respectAudioFocus = true;
   bool _enableNativePip = false;
   bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
@@ -81,11 +85,12 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     }
 
     _useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? false;
-    _controlsAutoHideSeconds = PlayerSettingsStore(
-      prefs,
-    ).load().controlsAutoHideSeconds;
+    _controlsAutoHideSeconds = PlayerSettingsStore(prefs)
+        .load()
+        .controlsAutoHideSeconds;
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
+    _respectAudioFocus = PlayerSettingsStore(prefs).load().respectAudioFocus;
     _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
     _videoGravityOrientation =
         prefs.getBool(_videoGravityOrientationKey) ?? true;
@@ -101,9 +106,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         false;
     _feedStartRandom = prefs.getBool(_feedStartRandomKey) ?? false;
     _resumePlayPosition = prefs.getBool(_resumePlayPositionKey) ?? true;
-    final videoConfiguration = PlayerSettingsStore(
-      prefs,
-    ).loadVideoConfiguration();
+    final videoConfiguration = PlayerSettingsStore(prefs)
+        .loadVideoConfiguration();
     _mpvVo = !videoConfiguration.enableHardwareAcceleration
         ? 'libmpv-software'
         : videoConfiguration.vo ?? 'default';
@@ -121,9 +125,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString(_playEndBehaviorKey, _playEndBehavior.name);
     await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);
-    await PlayerSettingsStore(
-      prefs,
-    ).saveControlsAutoHideSeconds(_controlsAutoHideSeconds);
+    await PlayerSettingsStore(prefs)
+        .saveControlsAutoHideSeconds(_controlsAutoHideSeconds);
     await prefs.setBool(
       _enableBackgroundPlaybackKey,
       _enableBackgroundPlayback,
@@ -152,6 +155,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     playerStateNotifier.setUseDoubleTapSeek(_useDoubleTapSeek);
     playerStateNotifier.setControlsAutoHideSeconds(_controlsAutoHideSeconds);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
+    playerStateNotifier.setRespectAudioFocus(_respectAudioFocus);
     playerStateNotifier.setEnableNativePip(_enableNativePip);
     playerStateNotifier.setVideoGravityOrientation(_videoGravityOrientation);
     playerStateNotifier.setDefaultSubtitleLanguage(_defaultSubtitleLanguage);
@@ -212,6 +216,27 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             await _saveToggleSettings();
                           },
                         ),
+                        if (!kIsWeb &&
+                            defaultTargetPlatform ==
+                                TargetPlatform.android) ...[
+                          Divider(height: context.dimensions.spacingLarge),
+                          SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              context.l10n.settings_playback_audio_focus,
+                            ),
+                            subtitle: Text(
+                              context
+                                  .l10n
+                                  .settings_playback_audio_focus_subtitle,
+                            ),
+                            value: _respectAudioFocus,
+                            onChanged: (value) async {
+                              setState(() => _respectAudioFocus = value);
+                              await _saveToggleSettings();
+                            },
+                          ),
+                        ],
                         Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
@@ -413,9 +438,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                   ),
               ],
               onChanged: (value) async {
-                await PlayerSettingsStore(
-                  ref.read(sharedPreferencesProvider),
-                ).saveMpvOption(entry.key, value);
+                await PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+                    .saveMpvOption(entry.key, value);
                 if (mounted) setState(() => _mpvOptions[entry.key] = value);
               },
             ),
@@ -442,8 +466,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
             enableSuggestions: false,
             decoration: InputDecoration(
               labelText: l10n.settings_playback_mpv_conf,
-              hintText:
-                  'interpolation=yes\nvideo-sync=display-resample\ntscale=oversample',
+              hintText: 'interpolation=yes\nvideo-sync=display-resample\ntscale=oversample',
               errorText: _mpvConfError,
             ),
           ),
@@ -487,9 +510,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     if (nextVo == 'mediacodec_embed' && nextHwdec != 'mediacodec') {
       nextVo = 'default';
     }
-    await PlayerSettingsStore(
-      ref.read(sharedPreferencesProvider),
-    ).saveMpvConfiguration(vo: nextVo, hwdec: nextHwdec);
+    await PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+        .saveMpvConfiguration(vo: nextVo, hwdec: nextHwdec);
     if (!mounted) return;
     setState(() {
       _mpvVo = nextVo;

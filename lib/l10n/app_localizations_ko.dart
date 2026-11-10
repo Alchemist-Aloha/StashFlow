@@ -1991,6 +1991,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '앱이 백그라운드로 전환되어도 동영상 오디오를 계속 재생합니다';
 
   @override
+  String get settings_playback_audio_focus => '다른 앱에서 미디어 재생 시 일시 정지';
+
+  @override
+  String get settings_playback_audio_focus_subtitle =>
+      '다른 앱이 오디오 포커스를 가져오면 StashFlow를 일시 정지합니다. 동시 재생을 허용하려면 끄세요.';
+
+  @override
   String get settings_playback_pip => '네이티브 화면 속 화면 (PiP)';
 
   @override

@@ -640,6 +640,8 @@
   "settings_playback_autoplay_subtitle": "Automatically play the next scene when current playback ends",
   "settings_playback_background": "Background Playback",
   "settings_playback_background_subtitle": "Keep video audio playing when the app is in the background",
+  "settings_playback_audio_focus": "Pause when other apps play media",
+  "settings_playback_audio_focus_subtitle": "Pause StashFlow when another app takes audio focus. Turn off to allow simultaneous playback.",
   "settings_playback_pip": "Native Picture-in-Picture",
   "settings_playback_pip_subtitle": "Enable the Picture-in-Picture button and auto-enter on background",
   "settings_playback_subtitles": "Subtitle settings",

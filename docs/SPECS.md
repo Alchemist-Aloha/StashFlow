@@ -909,6 +909,21 @@ Background playback follows the persisted preference:
   is entering an allowed picture-in-picture path;
 - preview/local auxiliary players do not inherit global background ownership.
 
+Android Playback Settings owns the independent `video_respect_audio_focus`
+boolean through PlayerSettingsStore/PlayerState. Missing or invalid values default
+to enabled, including existing installs; configuration backups include the key.
+“Pause when other apps play media” requests audio focus before local scene/feed
+playback and pauses on focus loss (including duck requests). Background keepalive,
+seek restoration, and view handoffs must not undo that pause, even after foreground
+resume. A temporary interruption may resume only the same previously playing
+session, with no intervening manual pause/stop or session change, and only when
+lifecycle/PiP policy permits. Permanent loss or a denied/failed request requires
+explicit Play. Focus is released on pause, stop, casting, or disabling the setting.
+Disabling it permits simultaneous playback but does not restart a paused video.
+Casting and preloaded/auxiliary players do not acquire global session focus.
+Android can still enforce interruptions regardless of this opt-out; background
+focus requests are subject to OS foreground-service restrictions.
+
 The Android media session publishes current title, artwork, duration, position,
 playing state, and supported actions. Notification seeking performs true player
 seeks and keeps position/duration synchronized. Playback completion follows the

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import 'playback_queue_provider.dart';
@@ -24,6 +26,7 @@ import '../../data/repositories/playback_media.dart';
 import '../../data/repositories/stream_prewarmer.dart';
 import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
+import 'playback_audio_focus.dart';
 import 'player_view_mode.dart';
 import 'player_settings.dart';
 import '../widgets/local_caption_overlay.dart';
@@ -40,6 +43,7 @@ import '../../../../core/data/services/cast_service.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
+
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -137,6 +141,9 @@ class GlobalPlayerState {
   /// User preference: whether to keep audio playing when the app is backgrounded.
   final bool enableBackgroundPlayback;
 
+  /// Android preference: pause local playback when another app takes focus.
+  final bool respectAudioFocus;
+
   /// User preference: whether to trigger native Android PiP on minimize.
   final bool enableNativePip;
 
@@ -199,6 +206,7 @@ class GlobalPlayerState {
     this.useDoubleTapSeek = false,
     this.controlsAutoHideSeconds = 2,
     this.enableBackgroundPlayback = false,
+    this.respectAudioFocus = true,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
     this.useActualSceneVideoInMiniPlayer = true,
@@ -246,6 +254,7 @@ class GlobalPlayerState {
     bool? useDoubleTapSeek,
     int? controlsAutoHideSeconds,
     bool? enableBackgroundPlayback,
+    bool? respectAudioFocus,
     bool? enableNativePip,
     bool? videoGravityOrientation,
     bool? useActualSceneVideoInMiniPlayer,
@@ -300,6 +309,7 @@ class GlobalPlayerState {
           controlsAutoHideSeconds ?? this.controlsAutoHideSeconds,
       enableBackgroundPlayback:
           enableBackgroundPlayback ?? this.enableBackgroundPlayback,
+      respectAudioFocus: respectAudioFocus ?? this.respectAudioFocus,
       enableNativePip: enableNativePip ?? this.enableNativePip,
       videoGravityOrientation:
           videoGravityOrientation ?? this.videoGravityOrientation,
@@ -390,6 +400,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   int _backgroundRecoveryToken = 0;
   bool _backgroundRecoverySuppressed = false;
   bool _backgroundRecoveryInFlight = false;
+  late final PlaybackAudioFocus _audioFocus;
+  bool _hasAudioFocus = false;
+  bool _focusInterrupted = false;
+  Player? _resumeAfterFocus;
+  int _localPlayToken = 0;
   int _playSceneGeneration = 0;
   int _queuePrewarmGeneration = 0;
 
@@ -402,12 +417,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     // This is called here instead of main() to improve initial app startup performance.
     MediaKit.ensureInitialized();
     WidgetsBinding.instance.addObserver(this);
+    _audioFocus = ref.watch(playbackAudioFocusProvider);
+    _audioFocus.onInterruption = _onAudioInterruption;
     _sessionController = PlaybackSessionController(
       createVideoController: (player) => VideoController(
         player,
-        configuration: PlayerSettingsStore(
-          ref.read(sharedPreferencesProvider),
-        ).loadVideoConfiguration(),
+        configuration: PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+            .loadVideoConfiguration(),
       ),
     );
 
@@ -433,6 +449,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     );
     ref.onDispose(() {
       WidgetsBinding.instance.removeObserver(this);
+      _localPlayToken++;
+      unawaited(_audioFocus.dispose().catchError(_logAudioFocusError));
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
       PipMode.clearWindowedHandlers();
       unawaited(DesktopPipWindowSession.close());
@@ -486,6 +504,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     // follow the remote renderer instead of the local player's ticks.
     ref.listen(castServiceProvider, (previous, next) {
       if (!next.isCasting) return;
+      if (previous?.isCasting != true) _releaseAudioFocus();
       final sceneId = state.activeScene?.id;
       if (sceneId != null) {
         ref
@@ -542,6 +561,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       useDoubleTapSeek: loadedSettings.useDoubleTapSeek,
       controlsAutoHideSeconds: loadedSettings.controlsAutoHideSeconds,
       enableBackgroundPlayback: loadedSettings.enableBackgroundPlayback,
+      respectAudioFocus: loadedSettings.respectAudioFocus,
       enableNativePip: loadedSettings.enableNativePip,
       videoGravityOrientation: loadedSettings.videoGravityOrientation,
       useActualSceneVideoInMiniPlayer:
@@ -772,6 +792,19 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
     state = state.copyWith(controlsAutoHideSeconds: value);
     unawaited(_settingsStore.saveControlsAutoHideSeconds(value));
+  }
+
+  /// Changes focus policy without restarting an interrupted or manually paused video.
+  void setRespectAudioFocus(bool value) {
+    if (state.respectAudioFocus == value) return;
+    state = state.copyWith(respectAudioFocus: value);
+    unawaited(_settingsStore.saveRespectAudioFocus(value));
+    if (!value) {
+      _releaseAudioFocus();
+    } else {
+      final player = state.player;
+      if (player != null && player.state.playing) unawaited(_playLocal(player));
+    }
   }
 
   void setEnableBackgroundPlayback(bool value) {
@@ -1339,6 +1372,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     late Player player;
     late VideoController videoController;
     var startupSessionCreated = false;
+    var startupPlayToken = _localPlayToken;
 
     Future<void> openStartupAttempt(int attempt) async {
       if (!ref.mounted || startupToken != _playSceneGeneration) {
@@ -1359,6 +1393,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       player = session.player;
       videoController = session.controller;
       startupSessionCreated = true;
+      startupPlayToken = _localPlayToken;
       _activeSceneRef = scene;
       _firstFrameLoggedSceneId = null;
       _lastIsPlaying = null;
@@ -1389,6 +1424,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         useDoubleTapSeek: state.useDoubleTapSeek,
         controlsAutoHideSeconds: state.controlsAutoHideSeconds,
         enableBackgroundPlayback: state.enableBackgroundPlayback,
+        respectAudioFocus: state.respectAudioFocus,
         enableNativePip: state.enableNativePip,
         videoGravityOrientation: state.videoGravityOrientation,
         useActualSceneVideoInMiniPlayer: state.useActualSceneVideoInMiniPlayer,
@@ -1413,9 +1449,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         return;
       }
 
-      await PlayerSettingsStore(
-        ref.read(sharedPreferencesProvider),
-      ).applyMpvProperties(player);
+      await PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+          .applyMpvProperties(player);
       await player.open(
         createPlaybackMedia(
           effectiveStreamUrl,
@@ -1475,7 +1510,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
 
       state = state.copyWith(
-        isPlaying: !switchActiveCast,
+        isPlaying: isTestMode && !switchActiveCast,
         startupLatencyMs: initializeElapsedMs,
       );
 
@@ -1509,7 +1544,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
             );
           },
         );
-        if (!switchActiveCast) unawaited(player.play());
+        if (!switchActiveCast && startupPlayToken == _localPlayToken) {
+          unawaited(_playLocal(player));
+        }
       }
 
       if (switchActiveCast) {
@@ -1534,8 +1571,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
             'PlayerState: failed to switch cast to scene ${scene.id}: $e',
             source: 'player_provider',
           );
-          if (!isTestMode) unawaited(player.play());
-          state = state.copyWith(isPlaying: true);
+          if (!isTestMode && startupPlayToken == _localPlayToken) {
+            unawaited(_playLocal(player));
+          }
         }
       }
 
@@ -1664,6 +1702,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       },
     );
 
+    if (player.state.playing) await _playLocal(player);
     _videoListener();
 
     if (player.state.playing) {
@@ -1699,16 +1738,108 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
   void play() {
     final player = state.player;
-    if (player == null || player.state.playing) return;
+    if (player == null) return;
     _backgroundRecoverySuppressed = false;
-    unawaited(player.play());
+    _focusInterrupted = false;
+    _resumeAfterFocus = null;
+    unawaited(_playLocal(player));
+  }
+
+  /// Restores playback after seeks/handoffs without overriding an interruption.
+  Future<void> resumePlayer(Player player) => _playLocal(player);
+
+  Future<void> _playLocal(Player player) async {
+    if (!ref.mounted ||
+        state.player != player ||
+        _focusInterrupted ||
+        ref.read(castServiceProvider).isCasting) {
+      return;
+    }
+    final token = ++_localPlayToken;
+    if (_audioFocus.supported && state.respectAudioFocus && !_hasAudioFocus) {
+      bool granted;
+      try {
+        granted = await _audioFocus.setActive(true);
+      } on Object catch (error) {
+        _logAudioFocusError(error);
+        granted = false;
+      }
+      if (!ref.mounted || token != _localPlayToken || state.player != player) {
+        return;
+      }
+      _hasAudioFocus = granted;
+      if (!granted) {
+        _focusInterrupted = true;
+        _backgroundRecoveryToken++;
+        unawaited(player.pause());
+        state = state.copyWith(isPlaying: false);
+        return;
+      }
+    }
+    if (!player.state.playing) unawaited(player.play());
     state = state.copyWith(isPlaying: true);
-    if (!isTestMode) {
-      unawaited(WakelockPlus.enable());
+    if (!isTestMode) unawaited(WakelockPlus.enable());
+  }
+
+  void _onAudioInterruption(AudioInterruptionEvent event) {
+    if (!ref.mounted ||
+        !state.respectAudioFocus ||
+        ref.read(castServiceProvider).isCasting) {
+      return;
+    }
+    final player = state.player;
+    if (event.begin) {
+      final wasPlaying =
+          player != null && (player.state.playing || state.isPlaying);
+      _resumeAfterFocus =
+          event.type != AudioInterruptionType.unknown &&
+              (wasPlaying || _resumeAfterFocus == player)
+          ? player
+          : null;
+      _focusInterrupted = true;
+      _hasAudioFocus = false;
+      _localPlayToken++;
+      _backgroundRecoveryToken++;
+      if (player != null) unawaited(player.pause());
+      state = state.copyWith(isPlaying: false);
+    } else if (_focusInterrupted &&
+        player != null &&
+        _resumeAfterFocus == player) {
+      _resumeAfterFocus = null;
+      _hasAudioFocus = true;
+      final canPlayInBackground =
+          _appLifecycleState == AppLifecycleState.resumed ||
+          state.enableBackgroundPlayback ||
+          state.isInPipMode ||
+          PipMode.isInPipMode.value;
+      if (canPlayInBackground && !_backgroundRecoverySuppressed) {
+        _focusInterrupted = false;
+        unawaited(_playLocal(player));
+      }
     }
   }
 
+  void _releaseAudioFocus() {
+    _localPlayToken++;
+    _resumeAfterFocus = null;
+    _hasAudioFocus = false;
+    unawaited(
+      _audioFocus.setActive(false).catchError((Object error) {
+        _logAudioFocusError(error);
+        return false;
+      }),
+    );
+  }
+
+  void _logAudioFocusError(Object error) {
+    AppLogStore.instance.add(
+      'PlayerState: audio focus failed: $error',
+      source: 'player_provider',
+    );
+  }
+
   void pause({bool suppressBackgroundRecovery = true}) {
+    _releaseAudioFocus();
     final player = state.player;
     if (player == null) return;
     if (_appLifecycleState != AppLifecycleState.resumed &&
@@ -1762,7 +1893,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
   Future<void> _enforceBackgroundPlayback(int token) async {
     try {
-      // Retry a few times to survive lifecycle/audio-focus races on Android.
+      // Retry lifecycle glitches, never an intentional audio-focus interruption.
       for (var attempt = 0; attempt < 20; attempt++) {
         if (!ref.mounted || token != _backgroundRecoveryToken) return;
         if (_appLifecycleState == AppLifecycleState.resumed) return;
@@ -1770,14 +1901,14 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         final player = state.player;
         if (player == null) return;
         if (!state.enableBackgroundPlayback) return;
-        if (_backgroundRecoverySuppressed) return;
+        if (_backgroundRecoverySuppressed || _focusInterrupted) return;
 
         if (!player.state.playing) {
           AppLogStore.instance.add(
             'PlayerState: background keepalive resume attempt=${attempt + 1}',
             source: 'player_provider',
           );
-          await player.play();
+          await _playLocal(player);
         } else {
           return;
         }
@@ -1868,12 +1999,17 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       target = duration;
     }
 
+    final playToken = _localPlayToken;
     await player.seek(target);
-    if (!ref.mounted || state.player != player) return;
+    if (!ref.mounted ||
+        state.player != player ||
+        playToken != _localPlayToken) {
+      return;
+    }
 
     if (beforeSeek.playing != player.state.playing) {
       if (beforeSeek.playing) {
-        await player.play();
+        await _playLocal(player);
       } else {
         await player.pause();
       }
@@ -1928,6 +2064,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       useDoubleTapSeek: state.useDoubleTapSeek,
       controlsAutoHideSeconds: state.controlsAutoHideSeconds,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
+      respectAudioFocus: state.respectAudioFocus,
       enableNativePip: state.enableNativePip,
       videoGravityOrientation: state.videoGravityOrientation,
       useActualSceneVideoInMiniPlayer: state.useActualSceneVideoInMiniPlayer,
@@ -1946,6 +2083,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     Player? player,
     VideoController? controller,
   }) async {
+    _releaseAudioFocus();
     final effectiveSceneId =
         scene?.id ??
         _activeSceneRef?.id ??
@@ -2088,6 +2226,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           _appLifecycleState != AppLifecycleState.resumed &&
           state.enableBackgroundPlayback &&
           !_backgroundRecoverySuppressed &&
+          !_focusInterrupted &&
           !player.state.playing;
       if (shouldRecoverBackgroundPlayback) {
         _scheduleBackgroundPlaybackRecovery();
@@ -2150,8 +2289,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           return;
         }
         final completedPlayer = state.player;
+        final playToken = _localPlayToken;
         await completedPlayer?.seek(Duration.zero);
-        if (state.player == completedPlayer) await completedPlayer?.play();
+        if (completedPlayer != null &&
+            state.player == completedPlayer &&
+            playToken == _localPlayToken) {
+          await _playLocal(completedPlayer);
+        }
         return;
       case VideoEndBehavior.next:
         if (state.completionHandledByFeed) {
