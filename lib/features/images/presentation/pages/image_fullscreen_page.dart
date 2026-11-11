@@ -3,9 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:dio/dio.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart' show DeviceGestureSettings;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,6 +28,7 @@ import '../providers/image_list_provider.dart';
 import '../providers/image_browser_context.dart';
 import '../widgets/image_details_bottom_sheet.dart';
 import '../widgets/image_clip_player.dart';
+import '../widgets/zoomable_image.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 
 enum _SlideshowDirection { forward, backward }
@@ -52,7 +51,11 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       'image_fullscreen_vertical_swipe';
   static const _manualNavigationTransition = Duration(milliseconds: 180);
 
-  late ExtendedPageController _pageController;
+  late PageController _pageController;
+  // Locks the pager while this image is zoomed; its edge drags page instead.
+  String? _zoomedImageId;
+  // Bumped by a failed image's retry so its provider and widget reload.
+  final Map<String, int> _imageRetries = {};
   Timer? _slideshowTimer;
   final _keyboardFocusNode = FocusNode(debugLabel: 'image_keyboard_shortcuts');
   Map<ShortcutActivator, VoidCallback> _keyBindings = const {};
@@ -101,7 +104,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   void initState() {
     super.initState();
     FocusManager.instance.addEarlyKeyEventHandler(_handleKeyEvent);
-    _pageController = ExtendedPageController();
+    _pageController = PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) unawaited(_enterFullScreen());
     });
@@ -218,6 +221,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   ) {
     if (index < 0 || index >= items.length) return;
     _currentImageId = items[index].id;
+    _zoomedImageId = null;
     ref
         .read(imageFullscreenCurrentIdProvider.notifier)
         .setCurrent(items[index].id);
@@ -791,31 +795,66 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   ) {
     if (kIsWeb) return;
 
-    // Warm raw files without decoding full-resolution images into memory.
-    for (var i = 1; i <= 2; i++) {
-      if (index + i < items.length && !items[index + i].isClip) {
-        final url =
-            items[index + i].paths.image ?? items[index + i].paths.preview;
-        if (url != null) {
-          ExtendedNetworkImageProvider(
-            url,
-            headers: headers,
-            cache: true,
-          ).getNetworkImageData().ignore();
-        }
-      }
+    // Warm raw files on disk without decoding full-resolution images.
+    for (final i in [index + 1, index + 2, index - 1]) {
+      if (i < 0 || i >= items.length || items[i].isClip) continue;
+      final url = items[i].paths.image ?? items[i].paths.preview;
+      if (url == null || url.isEmpty) continue;
+      StashImage.cacheManager
+          .getFileStream(url, headers: headers)
+          .drain<void>()
+          .ignore();
     }
-    if (index - 1 >= 0 && !items[index - 1].isClip) {
-      final url =
-          items[index - 1].paths.image ?? items[index - 1].paths.preview;
-      if (url != null) {
-        ExtendedNetworkImageProvider(
-          url,
-          headers: headers,
-          cache: true,
-        ).getNetworkImageData().ignore();
-      }
+  }
+
+  Future<void> _retryImage(
+    String imageId,
+    String url,
+    Map<String, String> headers,
+  ) async {
+    // Drop the failed entry from memory and any partial file from disk.
+    await StashImage.provider(ref, url, headers: headers).evict();
+    if (!kIsWeb) {
+      await StashImage.cacheManager.removeFile(url).catchError((_) {});
     }
+    if (!mounted) return;
+    setState(() => _imageRetries[imageId] = (_imageRetries[imageId] ?? 0) + 1);
+  }
+
+  Widget _buildImageError(BuildContext context, VoidCallback onRetry) {
+    return Center(
+      child: Semantics(
+        button: true,
+        label: context.l10n.failed_to_load_tap_to_retry,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onRetry,
+            borderRadius: BorderRadius.circular(
+              context.dimensions.spacingMedium,
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(context.dimensions.spacingLarge),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.broken_image,
+                    color: Colors.white54,
+                    size: 64 * context.dimensions.fontSizeFactor,
+                  ),
+                  SizedBox(height: context.dimensions.spacingMedium),
+                  Text(
+                    context.l10n.failed_to_load_tap_to_retry,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildOverlayHeader(
@@ -1185,7 +1224,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           _currentIndex = selectedIndex;
           _currentImageId = selectedId;
           _pageController.dispose();
-          _pageController = ExtendedPageController(initialPage: _currentIndex);
+          _pageController = PageController(initialPage: _currentIndex);
           _initialPageSet = true;
 
           // Warm initial adjacent image files.
@@ -1269,11 +1308,17 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                               }
                               return false;
                             },
-                            child: ExtendedImageGesturePageView.builder(
+                            child: PageView.builder(
                               controller: _pageController,
                               scrollDirection: scrollDirection,
                               itemCount: items.length,
-                              physics: const BouncingScrollPhysics(),
+                              physics:
+                                  _zoomedImageId != null &&
+                                      _zoomedImageId == _currentImageId
+                                  ? const NeverScrollableScrollPhysics(
+                                      parent: BouncingScrollPhysics(),
+                                    )
+                                  : const BouncingScrollPhysics(),
                               onPageChanged: (index) {
                                 _handlePageChanged(index, items, headers);
                               },
@@ -1315,119 +1360,58 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                         );
                                 }
 
+                                final file = image.files.firstOrNull;
+                                final retry = _imageRetries[image.id] ?? 0;
                                 return RepaintBoundary(
-                                  child: _PageSwipeFriendlyGestures(
-                                    builder: (onGestureChanged) => ExtendedImage.network(
-                                      imageUrl,
+                                  child: ZoomableImage(
+                                    key: ValueKey((image.id, retry)),
+                                    pageController: _pageController,
+                                    axis: scrollDirection,
+                                    contentSize:
+                                        file == null ||
+                                            file.width <= 0 ||
+                                            file.height <= 0
+                                        ? null
+                                        : Size(
+                                            file.width.toDouble(),
+                                            file.height.toDouble(),
+                                          ),
+                                    onZoomChanged: (zoomed) {
+                                      final id = zoomed ? image.id : null;
+                                      if (!zoomed &&
+                                          _zoomedImageId != image.id) {
+                                        return;
+                                      }
+                                      setState(() => _zoomedImageId = id);
+                                    },
+                                    child: Image(
+                                      image: StashImage.provider(
+                                        ref,
+                                        imageUrl,
+                                        headers: headers,
+                                      ),
                                       excludeFromSemantics: true,
-                                      headers: headers,
                                       fit: BoxFit.contain,
-                                      mode: ExtendedImageMode.gesture,
-                                      cache: true,
-                                      initGestureConfigHandler: (state) {
-                                        return GestureConfig(
-                                          minScale: 0.9,
-                                          animationMinScale: 0.7,
-                                          maxScale: 5.0,
-                                          animationMaxScale: 6.0,
-                                          speed: 1.0,
-                                          inertialSpeed: 100.0,
-                                          initialScale: 1.0,
-                                          inPageView: true,
-                                          initialAlignment:
-                                              InitialAlignment.center,
-                                          gestureDetailsIsChanged:
-                                              onGestureChanged,
-                                        );
-                                      },
-                                      onDoubleTap:
-                                          (ExtendedImageGestureState state) {
-                                            final pointerDownPosition =
-                                                state.pointerDownPosition;
-                                            final begin = state
-                                                .gestureDetails!
-                                                .totalScale;
-                                            final end = begin == 1.0
-                                                ? 3.0
-                                                : 1.0;
-
-                                            state.handleDoubleTap(
-                                              scale: end,
-                                              doubleTapPosition:
-                                                  pointerDownPosition,
-                                            );
-                                          },
-                                      loadStateChanged: (ExtendedImageState state) {
-                                        switch (state.extendedImageLoadState) {
-                                          case LoadState.loading:
+                                      gaplessPlayback: true,
+                                      frameBuilder:
+                                          (context, child, frame, sync) {
+                                            if (frame != null || sync) {
+                                              return child;
+                                            }
                                             return const Center(
                                               child:
                                                   CircularProgressIndicator(),
                                             );
-                                          case LoadState.completed:
-                                            return state.completedWidget;
-                                          case LoadState.failed:
-                                            return Center(
-                                              child: Semantics(
-                                                button: true,
-                                                label: context
-                                                    .l10n
-                                                    .failed_to_load_tap_to_retry,
-                                                child: Material(
-                                                  color: Colors.transparent,
-                                                  child: InkWell(
-                                                    onTap: () =>
-                                                        state.reLoadImage(),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          context
-                                                              .dimensions
-                                                              .spacingMedium,
-                                                        ),
-                                                    child: Padding(
-                                                      padding: EdgeInsets.all(
-                                                        context
-                                                            .dimensions
-                                                            .spacingLarge,
-                                                      ),
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Icon(
-                                                            Icons.broken_image,
-                                                            color:
-                                                                Colors.white54,
-                                                            size:
-                                                                64 *
-                                                                context
-                                                                    .dimensions
-                                                                    .fontSizeFactor,
-                                                          ),
-                                                          SizedBox(
-                                                            height: context
-                                                                .dimensions
-                                                                .spacingMedium,
-                                                          ),
-                                                          Text(
-                                                            context
-                                                                .l10n
-                                                                .failed_to_load_tap_to_retry,
-                                                            style:
-                                                                const TextStyle(
-                                                                  color: Colors
-                                                                      .white70,
-                                                                ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                        }
-                                      },
+                                          },
+                                      errorBuilder: (context, error, stack) =>
+                                          _buildImageError(
+                                            context,
+                                            () => _retryImage(
+                                              image.id,
+                                              imageUrl,
+                                              headers,
+                                            ),
+                                          ),
                                     ),
                                   ),
                                 );
@@ -1464,49 +1448,6 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           ),
         );
       },
-    );
-  }
-}
-
-/// Keeps an unzoomed image's one-finger pan out of the gesture arena.
-///
-/// At 1x the image has nothing to pan, yet its scale recognizer still claims
-/// steep or curved swipes before the page view's axis-locked drag does, and
-/// the package then drops them. An unreachable pan slop leaves those swipes to
-/// the page view; pinch still starts because scale slop is a separate constant.
-class _PageSwipeFriendlyGestures extends StatefulWidget {
-  const _PageSwipeFriendlyGestures({required this.builder});
-
-  final Widget Function(GestureDetailsIsChanged onGestureChanged) builder;
-
-  @override
-  State<_PageSwipeFriendlyGestures> createState() =>
-      _PageSwipeFriendlyGesturesState();
-}
-
-class _PageSwipeFriendlyGesturesState
-    extends State<_PageSwipeFriendlyGestures> {
-  bool _zoomed = false;
-
-  void _onGestureChanged(GestureDetails? details) {
-    // Mirrors the page view's own `totalScale <= 1` drag check.
-    final zoomed = (details?.totalScale ?? 1).greaterThan(1);
-    if (zoomed != _zoomed) setState(() => _zoomed = zoomed);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Always wrap so toggling zoom never reparents (and resets) the image.
-    final media = MediaQuery.of(context);
-    return MediaQuery(
-      data: _zoomed
-          ? media
-          : media.copyWith(
-              gestureSettings: const DeviceGestureSettings(
-                touchSlop: double.infinity,
-              ),
-            ),
-      child: widget.builder(_onGestureChanged),
     );
   }
 }

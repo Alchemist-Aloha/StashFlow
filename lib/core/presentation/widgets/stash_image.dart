@@ -191,7 +191,9 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
 class StashImage extends ConsumerWidget {
   static final CacheManager cacheManager = image_cache.DefaultCacheManager(
     stalePeriod: const Duration(days: 7),
-    maxNrOfCacheObjects: 100,
+    // Shared by grid thumbnails and full-size viewer originals; the package
+    // bounds file count only, so the 7-day stale period also caps disk use.
+    maxNrOfCacheObjects: 1000,
     httpClientFactory: DioImageClient.new,
   );
 

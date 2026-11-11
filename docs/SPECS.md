@@ -507,9 +507,11 @@ The fullscreen image viewer supports:
 - responsive manual transitions independent of slideshow timing, with repeated
   keyboard input advancing from the intended destination and touch swipes
   resynchronizing navigation to the displayed page;
-- zoom and pan, where an unzoomed image yields one-finger drags to page swipes
-  at any angle and a zoomed image keeps them for panning;
-- authenticated original-image loading;
+- pinch, double-tap, and mouse-wheel zoom with panning bounded by the fitted
+  image; an unzoomed image yields one-finger drags to page swipes at any
+  angle, while a zoomed image locks the pager and pans until a drag passes its
+  edge, which then continues into the page swipe;
+- authenticated original-image loading through the shared `StashImage` cache;
 - download/save actions with platform-appropriate permission handling;
 - prefetch of nearby images without loading the entire result set.
 

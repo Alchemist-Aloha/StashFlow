@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:extended_image/extended_image.dart' as extended_image;
 
 import '../../presentation/widgets/stash_image.dart';
 import '../../utils/app_log_store.dart';
@@ -70,6 +70,8 @@ class AppCacheService {
     'stashImageCache',
     'libCachedImageData',
     'cached_network_image_ce',
+    // Left behind by the removed extended_image viewer cache.
+    'cacheimage',
   ];
   static const List<String> _genericImageCacheNames = ['cache'];
   static const List<String> _videoCacheNames = [
@@ -183,13 +185,12 @@ class AppCacheService {
       );
 
       // 1. Library methods
-      final results = await Future.wait<Object?>([
-        StashImage.cacheManager.emptyCache(),
-        extended_image.clearDiskCachedImages(),
-      ]);
-      debugPrint('AppCacheService: Library clear calls finished: $results');
+      await StashImage.cacheManager.emptyCache();
+      debugPrint('AppCacheService: Library clear call finished');
 
-      extended_image.clearMemoryImageCache();
+      PaintingBinding.instance.imageCache
+        ..clear()
+        ..clearLiveImages();
 
       // 2. Manual brute force for the directories we scan
       final manualErrors = await _clearDirectoriesInBackground(

@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'dart:ui' as ui;
 
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +18,7 @@ import 'package:stash_app_flutter/features/images/presentation/providers/image_l
 import 'package:stash_app_flutter/features/images/presentation/providers/image_browser_context.dart';
 import 'package:stash_app_flutter/features/images/presentation/widgets/image_details_bottom_sheet.dart';
 import 'package:stash_app_flutter/features/images/presentation/widgets/image_clip_player.dart';
+import 'package:stash_app_flutter/features/images/presentation/widgets/zoomable_image.dart';
 
 import '../../../../helpers/test_helpers.dart';
 import '../../../../helpers/image_clip_test_helpers.dart';
@@ -358,7 +357,7 @@ void main() {
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-      expect(find.byType(ExtendedImage), findsOneWidget);
+      expect(find.byType(ZoomableImage), findsOneWidget);
       expect(find.byType(ImageClipPlayer), findsNothing);
       expect(find.byType(Video), findsNothing);
       expect(find.byKey(const Key('image_clip_controls')), findsNothing);
@@ -423,7 +422,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.byType(ImageClipPlayer), findsOneWidget);
-        expect(find.byType(ExtendedImage), findsNothing);
+        expect(find.byType(ZoomableImage), findsNothing);
         expect(find.byIcon(Icons.refresh), findsOneWidget);
         await tester.tap(find.byIcon(Icons.refresh));
         await tester.pumpAndSettle();
@@ -548,7 +547,8 @@ void main() {
         source,
         contains('_warmAdjacentFiles(items, _currentIndex, headers);'),
       );
-      expect(source, contains('.getNetworkImageData().ignore()'));
+      expect(source, contains('StashImage.cacheManager'));
+      expect(source, contains('.drain<void>()'));
       expect(source, isNot(contains('precacheImage(')));
     });
 
@@ -749,52 +749,14 @@ void main() {
       await tester.pump();
       expect(find.text('Image 1'), findsOneWidget);
 
-      await tester.drag(
-        find.byType(ExtendedImageGesturePageView),
-        const Offset(0, -1000),
-      );
+      await tester.drag(find.byType(PageView), const Offset(0, -1000));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
     });
 
     testWidgets(
-      'unzoomed images let off-axis swipes page; zoomed images keep panning',
+      'off-axis swipes page; zoom locks the pager until a drag passes the edge',
       (tester) async {
-        late Uint8List png;
-        await tester.runAsync(() async {
-          final recorder = ui.PictureRecorder();
-          Canvas(recorder).drawRect(
-            const Rect.fromLTWH(0, 0, 40, 80),
-            Paint()..color = Colors.red,
-          );
-          final image = await recorder.endRecording().toImage(40, 80);
-          final data = await image.toByteData(format: ui.ImageByteFormat.png);
-          png = data!.buffer.asUint8List();
-        });
-        final request = MockHttpClientRequest();
-        final response = MockHttpClientResponse();
-        when(mockHttpClient.getUrl(any)).thenAnswer((_) async => request);
-        when(request.close()).thenAnswer((_) async => response);
-        when(response.statusCode).thenReturn(HttpStatus.ok);
-        when(response.contentLength).thenReturn(png.length);
-        when(response.compressionState)
-            .thenReturn(HttpClientResponseCompressionState.notCompressed);
-        when(response.headers).thenReturn(MockHttpHeaders());
-        when(
-          response.listen(
-            any,
-            onError: anyNamed('onError'),
-            onDone: anyNamed('onDone'),
-            cancelOnError: anyNamed('cancelOnError'),
-          ),
-        ).thenAnswer((invocation) {
-          return Stream<Uint8List>.fromIterable([png]).listen(
-            invocation.positionalArguments[0] as void Function(List<int>),
-            onError: invocation.namedArguments[#onError] as Function?,
-            onDone: invocation.namedArguments[#onDone] as void Function()?,
-            cancelOnError: invocation.namedArguments[#cancelOnError] as bool?,
-          );
-        });
         mockRepository.withData([
           for (final id in ['1', '2', '3'])
             entity.Image(
@@ -811,39 +773,44 @@ void main() {
             imageRepositoryProvider.overrideWithValue(mockRepository),
           ],
         );
-        await _loadImages(tester);
+        await _pumpFrames(tester);
         mockRepository.withEmpty();
-        expect(find.byType(ExtendedImageGesture), findsWidgets);
-        final media = tester.getCenter(
-          find.byKey(const Key('image_viewer_media')),
-        );
+        final viewer = find.byKey(const Key('image_viewer_media'));
+        final media = tester.getCenter(viewer);
+        final height = tester.getSize(viewer).height;
 
-        // Vertical paging (default): a swipe 65 degrees off that axis used to
-        // be claimed by the image's pan recognizer and dropped.
+        // Vertical paging (default): 65 degrees off the paging axis.
         await tester.flingFrom(media, const Offset(-181, -85), 1000);
         await _pumpFrames(tester);
         expect(_currentImageId(tester), '2');
-        await _loadImages(tester);
 
-        // Once zoomed, one-finger drags pan the image instead of paging.
         await tester.tapAt(media);
         await tester.pump(const Duration(milliseconds: 50));
         await tester.tapAt(media);
         await _pumpFrames(tester);
-        final gesture = tester.state<ExtendedImageGestureState>(
-          find.byType(ExtendedImageGesture),
+        final zoom = tester.state<ZoomableImageState>(
+          find.byType(ZoomableImage),
         );
-        expect(gesture.gestureDetails!.totalScale, greaterThan(1));
-        final offset = gesture.gestureDetails!.offset;
-        final pan = await tester.startGesture(media);
-        for (var i = 0; i < 6; i++) {
-          await pan.moveBy(const Offset(-10, -20));
-          await tester.pump(const Duration(milliseconds: 16));
-        }
-        await pan.up();
-        await _pumpFrames(tester);
-        expect(gesture.gestureDetails!.offset, isNot(offset));
+        expect(zoom.scale, ZoomableImage.doubleTapScale);
+        expect(
+          tester.widget<PageView>(find.byType(PageView)).physics,
+          isA<NeverScrollableScrollPhysics>(),
+        );
+
+        // Zoomed drags pan the image, even along the paging axis.
+        final offset = zoom.offset;
+        await _dragInSteps(tester, media, const Offset(-10, -20), 6);
+        expect(zoom.offset, isNot(offset));
         expect(_currentImageId(tester), '2');
+
+        // Past the image edge the same drag continues into the pager.
+        await _dragInSteps(tester, media, Offset(0, -height / 8), 16);
+        await _pumpFrames(tester);
+        expect(_currentImageId(tester), '3');
+        expect(
+          tester.widget<PageView>(find.byType(PageView)).physics,
+          isA<BouncingScrollPhysics>(),
+        );
         expect(tester.takeException(), isNull);
       },
     );
@@ -863,12 +830,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
       expect(_currentImageId(tester), '2');
       expect(
-        tester
-            .widget<ExtendedImageGesturePageView>(
-              find.byType(ExtendedImageGesturePageView),
-            )
-            .controller
-            .page,
+        tester.widget<PageView>(find.byType(PageView)).controller!.page,
         closeTo(1, 0.01),
       );
       expect(focus.focusNode!.hasFocus, isTrue);
@@ -992,10 +954,7 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
 
-      await tester.drag(
-        find.byType(ExtendedImageGesturePageView),
-        const Offset(1000, 0),
-      );
+      await tester.drag(find.byType(PageView), const Offset(1000, 0));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       expect(_currentImageId(tester), '1');
@@ -1172,14 +1131,18 @@ Future<void> _pumpKeyboardGallery(
   repository.withEmpty();
 }
 
-/// Lets real image fetch and decode finish, which fake async cannot advance.
-Future<void> _loadImages(WidgetTester tester) async {
-  for (var i = 0; i < 5; i++) {
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 50)),
-    );
-    await tester.pump();
+Future<void> _dragInSteps(
+  WidgetTester tester,
+  Offset start,
+  Offset step,
+  int steps,
+) async {
+  final gesture = await tester.startGesture(start);
+  for (var i = 0; i < steps; i++) {
+    await gesture.moveBy(step);
+    await tester.pump(const Duration(milliseconds: 16));
   }
+  await gesture.up();
 }
 
 /// Steps frame by frame; a spinning loader keeps pumpAndSettle from settling.
