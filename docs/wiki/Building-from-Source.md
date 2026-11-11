@@ -197,6 +197,9 @@ Deploy `build/web/` to any static host. The `--base-href` must match the path th
 
 Release artifacts are produced from the release build output:
 
+`fastforge` is a global tool, not a project dependency; install it the way CI
+does with `dart pub global activate fastforge 0.6.12`.
+
 | Platform | Command / tool | Output |
 |----------|----------------|--------|
 | Windows | `fastforge package --platform windows --targets exe` (Inno Setup) | `StashFlow-<version>-windows-x64.exe` |

@@ -1104,7 +1104,8 @@ using the ignored local `media-kit/` checkout. Linux installs system graphics/au
 libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
 
 The app requires Flutter 3.47.6 or newer and Dart 3.13 or newer within Dart 3.x.
-`msix` and `fastforge` are development dependencies used only for packaging.
+`msix` is a development dependency used only for packaging. `fastforge` runs as a
+globally activated tool so its `archive` 3 pin stays out of app resolution.
 
 Desktop window control uses the `window_manager` 0.6 native API, not its legacy
 MethodChannel bridge. Startup captures the main native window before PiP can

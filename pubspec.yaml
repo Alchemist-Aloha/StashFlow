@@ -26,12 +26,12 @@ dependencies:
   media_kit:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: 31de3525af6841df5e999a37cb8da83a34b3f87b
+      ref: 1462489429c6f54b691b8253c21cfef4c77d6ec0
       path: ./media_kit
   media_kit_video:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: 31de3525af6841df5e999a37cb8da83a34b3f87b
+      ref: 1462489429c6f54b691b8253c21cfef4c77d6ec0
       path: ./media_kit_video
   audio_session: ^0.2.4
   audio_service: ^0.18.19
@@ -73,7 +73,6 @@ dependencies:
 
 dev_dependencies:
   msix: ^3.18.0
-  fastforge: ^0.6.14
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
