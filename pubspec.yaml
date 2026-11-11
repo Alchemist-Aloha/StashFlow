@@ -26,16 +26,16 @@ dependencies:
   media_kit:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: 1462489429c6f54b691b8253c21cfef4c77d6ec0
+      ref: c45c5b75eead1eb00f3cea5182302da612006269
       path: ./media_kit
   media_kit_video:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: 1462489429c6f54b691b8253c21cfef4c77d6ec0
+      ref: c45c5b75eead1eb00f3cea5182302da612006269
       path: ./media_kit_video
   audio_session: ^0.2.4
   audio_service: ^0.18.19
-  audio_service_mpris: 1.0.0-beta.3
+  audio_service_mpris: 1.0.0-beta.4
   wakelock_plus: ^1.8.2
   shared_preferences: ^2.5.5
   path_provider: ^2.1.6
