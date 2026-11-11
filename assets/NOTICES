@@ -2995,8 +2995,14 @@ file_selector_macos
 file_selector_platform_interface
 file_selector_web
 file_selector_windows
+flutter_plugin_android_lifecycle
 go_router
 listen
+local_auth
+local_auth_android
+local_auth_darwin
+local_auth_platform_interface
+local_auth_windows
 material_ui
 multicast_dns
 path_provider
