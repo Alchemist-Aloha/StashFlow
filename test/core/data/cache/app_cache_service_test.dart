@@ -199,5 +199,22 @@ void main() {
       expect(await ownedNew.exists(), isTrue);
       expect(await service.getVideoCacheSizeMb(), 0);
     });
+    test('clearDatabaseCache keeps unrelated files in documents', () async {
+      final legacy = File('${docsRoot.path}/graphqlclientstore.hive')
+        ..writeAsStringSync('old');
+      final legacyLock = File('${docsRoot.path}/graphqlclientstore.lock')
+        ..writeAsStringSync('old');
+      final userHive = File('${docsRoot.path}/notes.hive')
+        ..writeAsStringSync('keep');
+      final userLock = File('${docsRoot.path}/project.lock')
+        ..writeAsStringSync('keep');
+
+      await service.clearDatabaseCache();
+
+      expect(await legacy.exists(), isFalse);
+      expect(await legacyLock.exists(), isFalse);
+      expect(await userHive.exists(), isTrue);
+      expect(await userLock.exists(), isTrue);
+    });
   });
 }

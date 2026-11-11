@@ -124,7 +124,7 @@ class TagList extends _$TagList {
       effectiveSort = 'random_${ref.watch(tagRandomSeedProvider)}';
     }
 
-    return repository.findTags(
+    final firstPage = await repository.findTags(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
@@ -132,6 +132,9 @@ class TagList extends _$TagList {
       descending: sortConfig.descending,
       tagFilter: tagFilter,
     );
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    return firstPage;
   }
 
   /// Manually refreshes the tag list and generates a new random seed.
@@ -199,9 +202,8 @@ class TagList extends _$TagList {
 
       if (generation != _requestGeneration) return;
 
-      if (nextTags.isEmpty) {
-        _hasMore = false;
-      } else {
+      _hasMore = nextTags.length >= _perPage;
+      if (nextTags.isNotEmpty) {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextTags]);
       }

@@ -649,6 +649,26 @@ void main() {
       expect(find.text(emptyMessage), findsOneWidget);
     });
 
+    testWidgets('requests the next page when the first page fits on screen', (
+      WidgetTester tester,
+    ) async {
+      var fetches = 0;
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.data(['Only item']),
+          onFetchNextPage: () => fetches++,
+          itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(fetches, greaterThan(0));
+    });
+
     testWidgets('shows list view when gridDelegate is null', (
       WidgetTester tester,
     ) async {

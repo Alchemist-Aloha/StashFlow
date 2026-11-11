@@ -272,7 +272,7 @@ class ImageList extends _$ImageList {
       effectiveSort = 'random_${ref.watch(imageRandomSeedProvider)}';
     }
 
-    return repository.findImages(
+    final firstPage = await repository.findImages(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
@@ -281,6 +281,9 @@ class ImageList extends _$ImageList {
       galleryId: filterState.galleryId,
       imageFilter: imageFilter,
     );
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    return firstPage;
   }
 
   /// Manually refreshes the image list and generates a new random seed.
@@ -342,9 +345,8 @@ class ImageList extends _$ImageList {
 
       if (!ref.mounted || generation != _requestGeneration) return;
 
-      if (nextImages.isEmpty) {
-        _hasMore = false;
-      } else {
+      _hasMore = nextImages.length >= _perPage;
+      if (nextImages.isNotEmpty) {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextImages]);
       }

@@ -25,6 +25,11 @@ class TestAppLockSettingsNotifier extends AppLockSettingsNotifier {
   }
 }
 
+class LaunchLockSettingsNotifier extends TestAppLockSettingsNotifier {
+  @override
+  AppLockSettings build() => super.build().copyWith(lockOnLaunch: true);
+}
+
 class BiometricAppLockSettingsNotifier extends TestAppLockSettingsNotifier {
   @override
   AppLockSettings build() => super.build().copyWith(biometricEnabled: true);
@@ -81,6 +86,42 @@ void main() {
     await pumpLockedApp(tester);
 
     expect(find.byType(Navigator), findsOneWidget);
+  });
+
+  testWidgets('lock on launch never draws an unlocked first frame', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appLockSettingsProvider.overrideWith(LaunchLockSettingsNotifier.new),
+        ],
+        child: MaterialApp(
+          builder: (context, child) => AppLockGate(child: child!),
+          home: const Scaffold(body: Text('Content')),
+        ),
+      ),
+    );
+
+    expect(find.text('App Locked'), findsOneWidget);
+  });
+
+  testWidgets('locks on resume when a frozen app missed its timer', (
+    tester,
+  ) async {
+    var wallClock = DateTime(2026, 1, 1);
+    AppLockGate.clock = () => wallClock;
+    addTearDown(() => AppLockGate.clock = DateTime.now);
+    await pumpLockedApp(tester);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    // No pump: the timer never runs, as when the OS freezes the process.
+    wallClock = wallClock.add(const Duration(minutes: 10));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+
+    expect(find.text('App Locked'), findsOneWidget);
   });
 
   testWidgets('shows lock screen after background timeout', (tester) async {

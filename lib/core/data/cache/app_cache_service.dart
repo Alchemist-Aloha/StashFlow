@@ -285,15 +285,14 @@ class AppCacheService {
     // Also clean up any legacy hive files in the old app documents location
     try {
       final appDir = await _applicationDocumentsDirectoryProvider();
-      await for (final entity in appDir.list(recursive: false)) {
-        final path = entity.path;
-        if (entity is File &&
-            (path.endsWith('.hive') || path.endsWith('.lock'))) {
-          if (!path.contains('shared_preferences') &&
-              !path.contains('flutter_secure_storage')) {
-            await entity.delete();
-          }
-        }
+      // Desktop documents is the user's own folder; only the legacy
+      // initHiveForFlutter default box may be removed from it.
+      for (final name in const [
+        'graphqlclientstore.hive',
+        'graphqlclientstore.lock',
+      ]) {
+        final legacy = File(p.join(appDir.path, name));
+        if (await legacy.exists()) await legacy.delete();
       }
       // Also try the old stash_hive directory if it still exists
       final oldHiveDir = Directory(p.join(appDir.path, 'stash_hive'));

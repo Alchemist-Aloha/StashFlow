@@ -217,6 +217,9 @@ class SceneList extends _$SceneList {
       sceneFilter: filter,
     );
 
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = scenes.length >= _perPage;
+
     // Initialize playback queue sequence with the initial load.
     // We use index -1 to allow the queue to recover its index if the
     // user is already playing something and just refreshed the list.
@@ -297,9 +300,8 @@ class SceneList extends _$SceneList {
       );
       if (generation != _requestGeneration) return;
 
-      if (nextScenes.isEmpty) {
-        _hasMore = false;
-      } else {
+      _hasMore = nextScenes.length >= _perPage;
+      if (nextScenes.isNotEmpty) {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextScenes]);
         AppLogStore.instance.add(

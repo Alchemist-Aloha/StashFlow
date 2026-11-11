@@ -246,7 +246,17 @@ class EntityGalleryGrid extends _$EntityGalleryGrid {
     _entityId = entityId;
     _currentPage = 1;
     _hasMore = true;
-    return _fetchPage(kind: kind, entityId: entityId, page: _currentPage);
+    return _fetchFirstPage(kind, entityId);
+  }
+
+  Future<List<Gallery>> _fetchFirstPage(
+    EntityGalleryFilterKind kind,
+    String entityId,
+  ) async {
+    final firstPage = await _fetchPage(kind: kind, entityId: entityId, page: 1);
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    return firstPage;
   }
 
   Future<List<Gallery>> _fetchPage({
@@ -298,9 +308,8 @@ class EntityGalleryGrid extends _$EntityGalleryGrid {
         page: nextPage,
       );
 
-      if (nextItems.isEmpty) {
-        _hasMore = false;
-      } else {
+      _hasMore = nextItems.length >= _perPage;
+      if (nextItems.isNotEmpty) {
         _currentPage = nextPage;
         state = AsyncData([...(state.value ?? <Gallery>[]), ...nextItems]);
       }

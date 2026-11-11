@@ -43,6 +43,34 @@ class _DelayedPaginationRepository extends MockGraphQLSceneRepository {
   }
 }
 
+/// One full entity-media page (30 scenes), so the grid asks for page 2.
+List<Scene> _fullPage() => [
+  for (var i = 0; i < 30; i++)
+    Scene(
+      id: 'scene-$i',
+      title: 'Scene $i',
+      date: DateTime(2024),
+      rating100: null,
+      oCounter: 0,
+      organized: false,
+      interactive: false,
+      resumeTime: 0,
+      playCount: 0,
+      playDuration: 0,
+      files: const [],
+      paths: const ScenePaths(screenshot: '', preview: '', stream: ''),
+      urls: const [],
+      studioId: null,
+      studioName: null,
+      studioImagePath: null,
+      performerIds: const [],
+      performerNames: const [],
+      performerImagePaths: const [],
+      tagIds: const [],
+      tagNames: const [],
+    ),
+];
+
 Future<ProviderContainer> _containerWith(
   MockGraphQLSceneRepository repository, [
   Map<String, Object> initialValues = const {},
@@ -61,7 +89,7 @@ Future<ProviderContainer> _containerWith(
 
 void main() {
   test('applying a query ignores an old in-flight pagination result', () async {
-    final repository = _DelayedPaginationRepository();
+    final repository = _DelayedPaginationRepository()..withData(_fullPage());
     final container = await _containerWith(repository);
     const kind = EntityMediaFilterKind.performer;
     final provider = entityMediaGridProvider(kind, 'page-performer');
@@ -147,7 +175,7 @@ void main() {
     });
 
     test('$kind media grid reloads when query settings are applied', () async {
-      final repository = MockGraphQLSceneRepository();
+      final repository = MockGraphQLSceneRepository()..withData(_fullPage());
       final container = await _containerWith(repository);
       final provider = entityMediaGridProvider(kind, 'page-entity');
       container.listen(provider, (_, _) {});
@@ -204,38 +232,34 @@ void main() {
     });
   }
 
-  test(
-    'performer media grid overwrites saved performer filter with page performer',
-    () async {
-      final repository = MockGraphQLSceneRepository();
-      final container = await _containerWith(repository);
+  test('performer media grid overwrites saved performer filter with page performer', () async {
+    final repository = MockGraphQLSceneRepository();
+    final container = await _containerWith(repository);
 
-      container
-          .read(
-            entityMediaFilterStateProvider(
-              EntityMediaFilterKind.performer,
-            ).notifier,
-          )
-          .update(
-            const SceneFilter(
-              performers: MultiCriterion(value: ['preset-performer']),
-              tags: HierarchicalMultiCriterion(value: ['preset-tag']),
-            ),
-          );
+    container
+        .read(
+          entityMediaFilterStateProvider(EntityMediaFilterKind.performer)
+              .notifier,
+        )
+        .update(
+          const SceneFilter(
+            performers: MultiCriterion(value: ['preset-performer']),
+            tags: HierarchicalMultiCriterion(value: ['preset-tag']),
+          ),
+        );
 
-      await container.read(
-        entityMediaGridProvider(
-          EntityMediaFilterKind.performer,
-          'page-performer',
-        ).future,
-      );
-
-      expect(repository.lastFindScenesSceneFilter?.performers?.value, [
+    await container.read(
+      entityMediaGridProvider(
+        EntityMediaFilterKind.performer,
         'page-performer',
-      ]);
-      expect(repository.lastFindScenesSceneFilter?.tags?.value, ['preset-tag']);
-    },
-  );
+      ).future,
+    );
+
+    expect(repository.lastFindScenesSceneFilter?.performers?.value, [
+      'page-performer',
+    ]);
+    expect(repository.lastFindScenesSceneFilter?.tags?.value, ['preset-tag']);
+  });
 
   test(
     'entity media grids do not inherit scene list sort and filters',

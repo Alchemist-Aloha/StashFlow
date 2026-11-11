@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/utils/pagination.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_marker.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_marker_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_marker_list_provider.dart';
@@ -56,9 +57,10 @@ void main() {
   );
 
   test('scene marker list appends next page', () async {
+    // One full page plus one, so a second page exists.
+    final ids = [for (var i = 0; i <= kDefaultPageSize; i++) 'm$i'];
     final repository = _FakeGraphQLSceneMarkerRepository([
-      _marker('m1'),
-      _marker('m2'),
+      for (final id in ids) _marker(id),
     ]);
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -74,7 +76,7 @@ void main() {
     await container.read(sceneMarkerListProvider.notifier).fetchNextPage();
 
     final markers = container.read(sceneMarkerListProvider).value!;
-    expect(markers.map((marker) => marker.id), ['m1', 'm2']);
+    expect(markers.map((marker) => marker.id), ids);
     expect(repository.calls.map((call) => call.page), [1, 2]);
   });
 
@@ -182,7 +184,7 @@ class _FakeGraphQLSceneMarkerRepository
       descending: descending,
       filter: filter,
     ));
-    if (responses.isEmpty) return const [];
-    return [responses[(page ?? 1) - 1]];
+    final size = perPage ?? responses.length;
+    return responses.skip(((page ?? 1) - 1) * size).take(size).toList();
   }
 }

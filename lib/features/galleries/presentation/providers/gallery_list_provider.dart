@@ -145,7 +145,7 @@ class GalleryList extends _$GalleryList {
       effectiveSort = 'random_${ref.watch(galleryRandomSeedProvider)}';
     }
 
-    return repository.findGalleries(
+    final firstPage = await repository.findGalleries(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
@@ -155,6 +155,9 @@ class GalleryList extends _$GalleryList {
         organized: organizedFilter.toBool() ?? filter.organized,
       ),
     );
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    return firstPage;
   }
 
   /// Manually refreshes the gallery list and generates a new random seed.
@@ -217,9 +220,8 @@ class GalleryList extends _$GalleryList {
 
       if (generation != _requestGeneration) return;
 
-      if (nextGalleries.isEmpty) {
-        _hasMore = false;
-      } else {
+      _hasMore = nextGalleries.length >= _perPage;
+      if (nextGalleries.isNotEmpty) {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextGalleries]);
       }

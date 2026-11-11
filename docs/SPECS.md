@@ -242,6 +242,8 @@ List invariants:
   server data.
 - Pagination appends without resetting the current scroll position or active
   playback context.
+- Pagination also reacts to layout changes, so a page that fits without
+  scrolling still loads the next one.
 - Duplicate fetches are coalesced or ignored while the same page is in flight.
 - Empty and error states provide an appropriate recovery action.
 - Grid/list layout and supported column preferences persist.
@@ -1001,6 +1003,10 @@ stale responses cannot launch work on the newly selected server.
 Users can maintain multiple server profiles and switch the active profile.
 Profile metadata is stored in SharedPreferences; credentials and the app-lock
 passcode are stored in secure storage.
+App-lock flags are read synchronously from SharedPreferences, so lock on
+launch covers the very first frame. The background timeout is decided by
+elapsed wall time on resume as well as a timer, so an app the OS froze in the
+background still locks.
 On Android devices with enrolled biometrics, Security Settings offers
 fingerprint/face unlock through `local_auth` (`BiometricAuthService`). It
 requires an enabled passcode lock, is confirmed by a successful prompt before

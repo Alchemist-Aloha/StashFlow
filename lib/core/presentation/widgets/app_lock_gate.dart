@@ -12,6 +12,10 @@ class AppLockGate extends ConsumerStatefulWidget {
 
   final Widget child;
 
+  /// Wall clock used for the background timeout; replaceable in tests.
+  @visibleForTesting
+  static DateTime Function() clock = DateTime.now;
+
   @override
   ConsumerState<AppLockGate> createState() => _AppLockGateState();
 }
@@ -19,6 +23,7 @@ class AppLockGate extends ConsumerStatefulWidget {
 class _AppLockGateState extends ConsumerState<AppLockGate>
     with WidgetsBindingObserver {
   Timer? _backgroundLockTimer;
+  DateTime? _hiddenAt;
   bool _locked = false;
   bool _launchLockShown = false;
   bool _lockFeatureEnabled = false;
@@ -44,6 +49,7 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
 
     if (state == AppLifecycleState.hidden && !_locked) {
       _backgroundLockTimer?.cancel();
+      _hiddenAt ??= AppLockGate.clock();
       final settings = ref.read(appLockSettingsProvider);
       _backgroundLockTimer = Timer(
         Duration(seconds: settings.backgroundLockSeconds),
@@ -53,6 +59,17 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
 
     if (state == AppLifecycleState.resumed) {
       _backgroundLockTimer?.cancel();
+      // The timer cannot fire while the OS freezes a background app, so the
+      // elapsed wall time decides on return.
+      final hiddenAt = _hiddenAt;
+      _hiddenAt = null;
+      final timeout = Duration(
+        seconds: ref.read(appLockSettingsProvider).backgroundLockSeconds,
+      );
+      if (hiddenAt != null &&
+          AppLockGate.clock().difference(hiddenAt) >= timeout) {
+        _showLockScreen();
+      }
     }
   }
 
@@ -88,9 +105,10 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
       return widget.child;
     }
 
-    if (settings.lockOnLaunch && !_launchLockShown && !_locked) {
+    if (settings.lockOnLaunch && !_launchLockShown) {
+      // Lock in this build so no unlocked frame of the library is drawn.
       _launchLockShown = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _showLockScreen());
+      _locked = true;
     }
 
     return Stack(

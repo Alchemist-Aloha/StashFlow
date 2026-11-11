@@ -48,22 +48,26 @@ class AppLockSettingsNotifier extends Notifier<AppLockSettings> {
 
   @override
   AppLockSettings build() {
-    unawaited(_load());
-    return const AppLockSettings();
-  }
-
-  Future<void> _load() async {
+    // Flags are read synchronously so the first frame is already locked.
+    // `enabled` implies a passcode (clearPasscode disables the lock), so
+    // `hasPasscode` is assumed until secure storage confirms it.
     final prefs = ref.read(sharedPreferencesProvider);
-    final storage = ref.read(secureStorageProvider);
-    final savedPasscode = await storage.read(key: _passcodeKey);
-
-    state = state.copyWith(
-      enabled: prefs.getBool(_enabledKey) ?? false,
+    final enabled = prefs.getBool(_enabledKey) ?? false;
+    unawaited(_loadPasscodeFlag());
+    return AppLockSettings(
+      enabled: enabled,
       backgroundLockSeconds: prefs.getInt(_backgroundLockSecondsKey) ?? 0,
       lockOnLaunch: prefs.getBool(_lockOnLaunchKey) ?? false,
-      hasPasscode: (savedPasscode ?? '').isNotEmpty,
+      hasPasscode: enabled,
       biometricEnabled: prefs.getBool(_biometricKey) ?? false,
     );
+  }
+
+  Future<void> _loadPasscodeFlag() async {
+    final storage = ref.read(secureStorageProvider);
+    final savedPasscode = await storage.read(key: _passcodeKey);
+    if (!ref.mounted) return;
+    state = state.copyWith(hasPasscode: (savedPasscode ?? '').isNotEmpty);
   }
 
   Future<bool> verifyPasscode(String input) async {

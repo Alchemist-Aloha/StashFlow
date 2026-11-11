@@ -766,6 +766,22 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                           );
                         }
 
+                        body = NotificationListener<ScrollMetricsNotification>(
+                          // A page that fits without scrolling never emits a
+                          // scroll event, so layout changes also ask for the
+                          // next page. Unthrottled: providers drop duplicates.
+                          onNotification: (notification) {
+                            final metrics = notification.metrics;
+                            if (notification.depth == 0 &&
+                                (metrics.maxScrollExtent <= 0 ||
+                                    shouldLoadNextPage(metrics))) {
+                              widget.onFetchNextPage?.call();
+                            }
+                            return false;
+                          },
+                          child: body,
+                        );
+
                         return NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
                             if (shouldLoadNextPage(scrollInfo.metrics)) {
