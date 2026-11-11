@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
@@ -756,6 +757,97 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
     });
 
+    testWidgets(
+      'unzoomed images let off-axis swipes page; zoomed images keep panning',
+      (tester) async {
+        late Uint8List png;
+        await tester.runAsync(() async {
+          final recorder = ui.PictureRecorder();
+          Canvas(recorder).drawRect(
+            const Rect.fromLTWH(0, 0, 40, 80),
+            Paint()..color = Colors.red,
+          );
+          final image = await recorder.endRecording().toImage(40, 80);
+          final data = await image.toByteData(format: ui.ImageByteFormat.png);
+          png = data!.buffer.asUint8List();
+        });
+        final request = MockHttpClientRequest();
+        final response = MockHttpClientResponse();
+        when(mockHttpClient.getUrl(any)).thenAnswer((_) async => request);
+        when(request.close()).thenAnswer((_) async => response);
+        when(response.statusCode).thenReturn(HttpStatus.ok);
+        when(response.contentLength).thenReturn(png.length);
+        when(response.compressionState)
+            .thenReturn(HttpClientResponseCompressionState.notCompressed);
+        when(response.headers).thenReturn(MockHttpHeaders());
+        when(
+          response.listen(
+            any,
+            onError: anyNamed('onError'),
+            onDone: anyNamed('onDone'),
+            cancelOnError: anyNamed('cancelOnError'),
+          ),
+        ).thenAnswer((invocation) {
+          return Stream<Uint8List>.fromIterable([png]).listen(
+            invocation.positionalArguments[0] as void Function(List<int>),
+            onError: invocation.namedArguments[#onError] as Function?,
+            onDone: invocation.namedArguments[#onDone] as void Function()?,
+            cancelOnError: invocation.namedArguments[#cancelOnError] as bool?,
+          );
+        });
+        mockRepository.withData([
+          for (final id in ['1', '2', '3'])
+            entity.Image(
+              id: id,
+              title: 'Image $id',
+              files: const [],
+              paths: entity.ImagePaths(image: 'http://stash.test/$id.png'),
+            ),
+        ]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: '1'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+        );
+        await _loadImages(tester);
+        mockRepository.withEmpty();
+        expect(find.byType(ExtendedImageGesture), findsWidgets);
+        final media = tester.getCenter(
+          find.byKey(const Key('image_viewer_media')),
+        );
+
+        // Vertical paging (default): a swipe 65 degrees off that axis used to
+        // be claimed by the image's pan recognizer and dropped.
+        await tester.flingFrom(media, const Offset(-181, -85), 1000);
+        await _pumpFrames(tester);
+        expect(_currentImageId(tester), '2');
+        await _loadImages(tester);
+
+        // Once zoomed, one-finger drags pan the image instead of paging.
+        await tester.tapAt(media);
+        await tester.pump(const Duration(milliseconds: 50));
+        await tester.tapAt(media);
+        await _pumpFrames(tester);
+        final gesture = tester.state<ExtendedImageGestureState>(
+          find.byType(ExtendedImageGesture),
+        );
+        expect(gesture.gestureDetails!.totalScale, greaterThan(1));
+        final offset = gesture.gestureDetails!.offset;
+        final pan = await tester.startGesture(media);
+        for (var i = 0; i < 6; i++) {
+          await pan.moveBy(const Offset(-10, -20));
+          await tester.pump(const Duration(milliseconds: 16));
+        }
+        await pan.up();
+        await _pumpFrames(tester);
+        expect(gesture.gestureDetails!.offset, isNot(offset));
+        expect(_currentImageId(tester), '2');
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     testWidgets('keyboard navigation moves promptly and settles quickly', (
       tester,
     ) async {
@@ -1078,6 +1170,23 @@ Future<void> _pumpKeyboardGallery(
   await tester.pump();
   // Keep automatic near-end pagination from appending the mock page again.
   repository.withEmpty();
+}
+
+/// Lets real image fetch and decode finish, which fake async cannot advance.
+Future<void> _loadImages(WidgetTester tester) async {
+  for (var i = 0; i < 5; i++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
+    await tester.pump();
+  }
+}
+
+/// Steps frame by frame; a spinning loader keeps pumpAndSettle from settling.
+Future<void> _pumpFrames(WidgetTester tester) async {
+  for (var i = 0; i < 30; i++) {
+    await tester.pump(const Duration(milliseconds: 50));
+  }
 }
 
 Focus _keyboardFocus(WidgetTester tester) =>

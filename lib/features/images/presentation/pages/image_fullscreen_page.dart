@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart' show DeviceGestureSettings;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1315,110 +1316,119 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                 }
 
                                 return RepaintBoundary(
-                                  child: ExtendedImage.network(
-                                    imageUrl,
-                                    excludeFromSemantics: true,
-                                    headers: headers,
-                                    fit: BoxFit.contain,
-                                    mode: ExtendedImageMode.gesture,
-                                    cache: true,
-                                    initGestureConfigHandler: (state) {
-                                      return GestureConfig(
-                                        minScale: 0.9,
-                                        animationMinScale: 0.7,
-                                        maxScale: 5.0,
-                                        animationMaxScale: 6.0,
-                                        speed: 1.0,
-                                        inertialSpeed: 100.0,
-                                        initialScale: 1.0,
-                                        inPageView: true,
-                                        initialAlignment:
-                                            InitialAlignment.center,
-                                      );
-                                    },
-                                    onDoubleTap:
-                                        (ExtendedImageGestureState state) {
-                                          final pointerDownPosition =
-                                              state.pointerDownPosition;
-                                          final begin =
-                                              state.gestureDetails!.totalScale;
-                                          final end = begin == 1.0 ? 3.0 : 1.0;
+                                  child: _PageSwipeFriendlyGestures(
+                                    builder: (onGestureChanged) => ExtendedImage.network(
+                                      imageUrl,
+                                      excludeFromSemantics: true,
+                                      headers: headers,
+                                      fit: BoxFit.contain,
+                                      mode: ExtendedImageMode.gesture,
+                                      cache: true,
+                                      initGestureConfigHandler: (state) {
+                                        return GestureConfig(
+                                          minScale: 0.9,
+                                          animationMinScale: 0.7,
+                                          maxScale: 5.0,
+                                          animationMaxScale: 6.0,
+                                          speed: 1.0,
+                                          inertialSpeed: 100.0,
+                                          initialScale: 1.0,
+                                          inPageView: true,
+                                          initialAlignment:
+                                              InitialAlignment.center,
+                                          gestureDetailsIsChanged:
+                                              onGestureChanged,
+                                        );
+                                      },
+                                      onDoubleTap:
+                                          (ExtendedImageGestureState state) {
+                                            final pointerDownPosition =
+                                                state.pointerDownPosition;
+                                            final begin = state
+                                                .gestureDetails!
+                                                .totalScale;
+                                            final end = begin == 1.0
+                                                ? 3.0
+                                                : 1.0;
 
-                                          state.handleDoubleTap(
-                                            scale: end,
-                                            doubleTapPosition:
-                                                pointerDownPosition,
-                                          );
-                                        },
-                                    loadStateChanged: (ExtendedImageState state) {
-                                      switch (state.extendedImageLoadState) {
-                                        case LoadState.loading:
-                                          return const Center(
-                                            child: CircularProgressIndicator(),
-                                          );
-                                        case LoadState.completed:
-                                          return state.completedWidget;
-                                        case LoadState.failed:
-                                          return Center(
-                                            child: Semantics(
-                                              button: true,
-                                              label: context
-                                                  .l10n
-                                                  .failed_to_load_tap_to_retry,
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: InkWell(
-                                                  onTap: () =>
-                                                      state.reLoadImage(),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        context
-                                                            .dimensions
-                                                            .spacingMedium,
-                                                      ),
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(
-                                                      context
-                                                          .dimensions
-                                                          .spacingLarge,
-                                                    ),
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.broken_image,
-                                                          color: Colors.white54,
-                                                          size:
-                                                              64 *
-                                                              context
-                                                                  .dimensions
-                                                                  .fontSizeFactor,
-                                                        ),
-                                                        SizedBox(
-                                                          height: context
+                                            state.handleDoubleTap(
+                                              scale: end,
+                                              doubleTapPosition:
+                                                  pointerDownPosition,
+                                            );
+                                          },
+                                      loadStateChanged: (ExtendedImageState state) {
+                                        switch (state.extendedImageLoadState) {
+                                          case LoadState.loading:
+                                            return const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          case LoadState.completed:
+                                            return state.completedWidget;
+                                          case LoadState.failed:
+                                            return Center(
+                                              child: Semantics(
+                                                button: true,
+                                                label: context
+                                                    .l10n
+                                                    .failed_to_load_tap_to_retry,
+                                                child: Material(
+                                                  color: Colors.transparent,
+                                                  child: InkWell(
+                                                    onTap: () =>
+                                                        state.reLoadImage(),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          context
                                                               .dimensions
                                                               .spacingMedium,
                                                         ),
-                                                        Text(
-                                                          context
-                                                              .l10n
-                                                              .failed_to_load_tap_to_retry,
-                                                          style:
-                                                              const TextStyle(
-                                                                color: Colors
-                                                                    .white70,
-                                                              ),
-                                                        ),
-                                                      ],
+                                                    child: Padding(
+                                                      padding: EdgeInsets.all(
+                                                        context
+                                                            .dimensions
+                                                            .spacingLarge,
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Icon(
+                                                            Icons.broken_image,
+                                                            color:
+                                                                Colors.white54,
+                                                            size:
+                                                                64 *
+                                                                context
+                                                                    .dimensions
+                                                                    .fontSizeFactor,
+                                                          ),
+                                                          SizedBox(
+                                                            height: context
+                                                                .dimensions
+                                                                .spacingMedium,
+                                                          ),
+                                                          Text(
+                                                            context
+                                                                .l10n
+                                                                .failed_to_load_tap_to_retry,
+                                                            style:
+                                                                const TextStyle(
+                                                                  color: Colors
+                                                                      .white70,
+                                                                ),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                      }
-                                    },
+                                            );
+                                        }
+                                      },
+                                    ),
                                   ),
                                 );
                               },
@@ -1454,6 +1464,49 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Keeps an unzoomed image's one-finger pan out of the gesture arena.
+///
+/// At 1x the image has nothing to pan, yet its scale recognizer still claims
+/// steep or curved swipes before the page view's axis-locked drag does, and
+/// the package then drops them. An unreachable pan slop leaves those swipes to
+/// the page view; pinch still starts because scale slop is a separate constant.
+class _PageSwipeFriendlyGestures extends StatefulWidget {
+  const _PageSwipeFriendlyGestures({required this.builder});
+
+  final Widget Function(GestureDetailsIsChanged onGestureChanged) builder;
+
+  @override
+  State<_PageSwipeFriendlyGestures> createState() =>
+      _PageSwipeFriendlyGesturesState();
+}
+
+class _PageSwipeFriendlyGesturesState
+    extends State<_PageSwipeFriendlyGestures> {
+  bool _zoomed = false;
+
+  void _onGestureChanged(GestureDetails? details) {
+    // Mirrors the page view's own `totalScale <= 1` drag check.
+    final zoomed = (details?.totalScale ?? 1).greaterThan(1);
+    if (zoomed != _zoomed) setState(() => _zoomed = zoomed);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Always wrap so toggling zoom never reparents (and resets) the image.
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: _zoomed
+          ? media
+          : media.copyWith(
+              gestureSettings: const DeviceGestureSettings(
+                touchSlop: double.infinity,
+              ),
+            ),
+      child: widget.builder(_onGestureChanged),
     );
   }
 }
