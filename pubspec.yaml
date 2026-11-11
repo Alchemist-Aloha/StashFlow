@@ -70,6 +70,7 @@ dependencies:
   crypto: ^3.0.8
   stashflow_translation:
     path: packages/stashflow_translation
+  local_auth: ^3.0.2
 
 dev_dependencies:
   msix: ^3.18.0

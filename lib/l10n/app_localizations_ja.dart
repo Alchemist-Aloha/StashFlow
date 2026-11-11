@@ -3051,6 +3051,19 @@ class AppLocalizationsJa extends AppLocalizations {
       'アプリを開いたらすぐにパスコードを要求します。';
 
   @override
+  String get settings_security_biometric_unlock => '生体認証でロック解除';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      '指紋認証または顔認証を使用します。パスコードは引き続き代替手段として使用できます。';
+
+  @override
+  String get auth_use_biometrics => '生体認証を使用';
+
+  @override
+  String get auth_biometric_reason => 'StashFlow のロックを解除';
+
+  @override
   String get settings_security_background_lock_timer => 'バックグラウンドロックタイマー';
 
   @override

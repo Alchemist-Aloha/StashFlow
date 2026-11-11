@@ -207,6 +207,7 @@ final class AppConfigSettingsRegistry {
     _bool('app_lock_enabled'),
     _int('app_lock_background_seconds', min: 0, max: 86400),
     _bool('app_lock_on_launch'),
+    _bool('app_lock_biometric'),
     _bool('scene_tiktok_layout'),
     _bool('scene_grid_layout'),
     _bool('gallery_grid_layout'),

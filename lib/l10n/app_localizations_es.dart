@@ -3181,6 +3181,19 @@ class AppLocalizationsEs extends AppLocalizations {
       'Solicite el código de acceso inmediatamente cuando se abra la aplicación.';
 
   @override
+  String get settings_security_biometric_unlock => 'Desbloquear con biometría';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      'Usa la huella digital o el desbloqueo facial. Tu código de acceso sigue disponible como alternativa.';
+
+  @override
+  String get auth_use_biometrics => 'Usar biometría';
+
+  @override
+  String get auth_biometric_reason => 'Desbloquear StashFlow';
+
+  @override
   String get settings_security_background_lock_timer =>
       'Temporizador de bloqueo de fondo';
 

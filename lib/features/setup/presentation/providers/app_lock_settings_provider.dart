@@ -10,11 +10,15 @@ class AppLockSettings {
   final bool lockOnLaunch;
   final bool hasPasscode;
 
+  /// Offer the system biometric prompt before the passcode on the lock screen.
+  final bool biometricEnabled;
+
   const AppLockSettings({
     this.enabled = false,
     this.backgroundLockSeconds = 0,
     this.lockOnLaunch = false,
     this.hasPasscode = false,
+    this.biometricEnabled = false,
   });
 
   AppLockSettings copyWith({
@@ -22,6 +26,7 @@ class AppLockSettings {
     int? backgroundLockSeconds,
     bool? lockOnLaunch,
     bool? hasPasscode,
+    bool? biometricEnabled,
   }) {
     return AppLockSettings(
       enabled: enabled ?? this.enabled,
@@ -29,6 +34,7 @@ class AppLockSettings {
           backgroundLockSeconds ?? this.backgroundLockSeconds,
       lockOnLaunch: lockOnLaunch ?? this.lockOnLaunch,
       hasPasscode: hasPasscode ?? this.hasPasscode,
+      biometricEnabled: biometricEnabled ?? this.biometricEnabled,
     );
   }
 }
@@ -38,6 +44,7 @@ class AppLockSettingsNotifier extends Notifier<AppLockSettings> {
   static const _backgroundLockSecondsKey = 'app_lock_background_seconds';
   static const _lockOnLaunchKey = 'app_lock_on_launch';
   static const _passcodeKey = 'app_lock_passcode';
+  static const _biometricKey = 'app_lock_biometric';
 
   @override
   AppLockSettings build() {
@@ -55,6 +62,7 @@ class AppLockSettingsNotifier extends Notifier<AppLockSettings> {
       backgroundLockSeconds: prefs.getInt(_backgroundLockSecondsKey) ?? 0,
       lockOnLaunch: prefs.getBool(_lockOnLaunchKey) ?? false,
       hasPasscode: (savedPasscode ?? '').isNotEmpty,
+      biometricEnabled: prefs.getBool(_biometricKey) ?? false,
     );
   }
 
@@ -93,6 +101,12 @@ class AppLockSettingsNotifier extends Notifier<AppLockSettings> {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool(_lockOnLaunchKey, enabled);
     state = state.copyWith(lockOnLaunch: enabled);
+  }
+
+  Future<void> setBiometricEnabled(bool enabled) async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_biometricKey, enabled);
+    state = state.copyWith(biometricEnabled: enabled);
   }
 }
 

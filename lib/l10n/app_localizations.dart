@@ -5586,6 +5586,30 @@ abstract class AppLocalizations {
   /// **'Ask for passcode immediately when app opens.'**
   String get settings_security_lock_on_launch_subtitle;
 
+  /// No description provided for @settings_security_biometric_unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with biometrics'**
+  String get settings_security_biometric_unlock;
+
+  /// No description provided for @settings_security_biometric_unlock_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use fingerprint or face unlock. Your passcode stays available as a fallback.'**
+  String get settings_security_biometric_unlock_subtitle;
+
+  /// No description provided for @auth_use_biometrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Use biometrics'**
+  String get auth_use_biometrics;
+
+  /// No description provided for @auth_biometric_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock StashFlow'**
+  String get auth_biometric_reason;
+
   /// No description provided for @settings_security_background_lock_timer.
   ///
   /// In en, this message translates to:

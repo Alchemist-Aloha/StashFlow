@@ -997,6 +997,14 @@ stale responses cannot launch work on the newly selected server.
 Users can maintain multiple server profiles and switch the active profile.
 Profile metadata is stored in SharedPreferences; credentials and the app-lock
 passcode are stored in secure storage.
+On Android devices with enrolled biometrics, Security Settings offers
+fingerprint/face unlock through `local_auth` (`BiometricAuthService`). It
+requires an enabled passcode lock, is confirmed by a successful prompt before
+being saved, and only adds a prompt to the lock screen: the passcode always
+remains the fallback. The prompt is shown automatically once per lock, only
+while the app is in the foreground. `MainActivity` must stay a
+`FlutterFragmentActivity` (via `AudioServiceFragmentActivity`) with an
+AppCompat `LaunchTheme` for the system prompt to work.
 Each profile can opt into accepting a self-signed HTTPS certificate for its own
 host and port on native platforms. The option defaults to off, is included in
 configuration backups, and cannot override browser certificate validation.

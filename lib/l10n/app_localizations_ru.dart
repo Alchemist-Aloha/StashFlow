@@ -3154,6 +3154,19 @@ class AppLocalizationsRu extends AppLocalizations {
       'Запросите пароль сразу после открытия приложения.';
 
   @override
+  String get settings_security_biometric_unlock => 'Разблокировка по биометрии';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      'Используйте отпечаток пальца или распознавание лица. Код доступа остаётся запасным вариантом.';
+
+  @override
+  String get auth_use_biometrics => 'Использовать биометрию';
+
+  @override
+  String get auth_biometric_reason => 'Разблокировать StashFlow';
+
+  @override
   String get settings_security_background_lock_timer =>
       'Таймер блокировки фона';
 

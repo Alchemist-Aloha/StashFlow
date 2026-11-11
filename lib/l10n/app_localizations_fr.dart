@@ -3173,6 +3173,20 @@ class AppLocalizationsFr extends AppLocalizations {
       'Demandez le mot de passe immédiatement lorsque l\'application s\'ouvre.';
 
   @override
+  String get settings_security_biometric_unlock =>
+      'Déverrouiller par biométrie';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      'Utilisez l\'empreinte digitale ou le déverrouillage facial. Votre code d\'accès reste disponible en secours.';
+
+  @override
+  String get auth_use_biometrics => 'Utiliser la biométrie';
+
+  @override
+  String get auth_biometric_reason => 'Déverrouiller StashFlow';
+
+  @override
   String get settings_security_background_lock_timer =>
       'Minuterie de verrouillage en arrière-plan';
 
