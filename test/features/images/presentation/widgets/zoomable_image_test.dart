@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,14 +17,16 @@ void main() {
     addTearDown(controller.dispose);
     await tester.pumpWidget(
       MaterialApp(
-        home: PageView.builder(
-          controller: controller,
-          itemCount: 2,
-          itemBuilder: (_, _) => ZoomableImage(
-            pageController: controller,
-            axis: Axis.horizontal,
-            contentSize: const Size(40, 80),
-            child: const ColoredBox(color: Colors.red),
+        home: ZoomablePagerPinch(
+          child: PageView.builder(
+            controller: controller,
+            itemCount: 2,
+            itemBuilder: (_, _) => ZoomableImage(
+              pageController: controller,
+              axis: Axis.horizontal,
+              contentSize: const Size(40, 80),
+              child: const ColoredBox(color: Colors.red),
+            ),
           ),
         ),
       ),
@@ -93,5 +97,37 @@ void main() {
     await tester.pump();
     expect(zoom.scale, closeTo(2, 0.01));
     expect(controller.page, 0);
+  });
+
+  testWidgets('pinch during a page animation zooms the settling page', (
+    tester,
+  ) async {
+    await pump(tester);
+    unawaited(
+      controller.animateToPage(
+        1,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.linear,
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(controller.page, greaterThan(0.5));
+
+    const center = Offset(400, 300);
+    final a = await tester.startGesture(center - const Offset(50, 0));
+    final b = await tester.startGesture(center + const Offset(50, 0));
+    for (var i = 0; i < 10; i++) {
+      await a.moveBy(const Offset(-5, 0));
+      await b.moveBy(const Offset(5, 0));
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    await a.up();
+    await b.up();
+    await tester.pumpAndSettle();
+
+    expect(controller.page, 1);
+    final zoom = tester.state<ZoomableImageState>(find.byType(ZoomableImage));
+    expect(zoom.scale, closeTo(2, 0.05));
   });
 }

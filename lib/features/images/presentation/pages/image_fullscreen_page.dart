@@ -1308,114 +1308,117 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                               }
                               return false;
                             },
-                            child: PageView.builder(
-                              controller: _pageController,
-                              scrollDirection: scrollDirection,
-                              itemCount: items.length,
-                              physics:
-                                  _zoomedImageId != null &&
-                                      _zoomedImageId == _currentImageId
-                                  ? const NeverScrollableScrollPhysics(
-                                      parent: BouncingScrollPhysics(),
-                                    )
-                                  : const BouncingScrollPhysics(),
-                              onPageChanged: (index) {
-                                _handlePageChanged(index, items, headers);
-                              },
-                              itemBuilder: (context, index) {
-                                final image = items[index];
-                                final imageUrl =
-                                    image.paths.image ?? image.paths.preview;
+                            child: ZoomablePagerPinch(
+                              child: PageView.builder(
+                                controller: _pageController,
+                                scrollDirection: scrollDirection,
+                                itemCount: items.length,
+                                physics:
+                                    _zoomedImageId != null &&
+                                        _zoomedImageId == _currentImageId
+                                    ? const NeverScrollableScrollPhysics(
+                                        parent: BouncingScrollPhysics(),
+                                      )
+                                    : const BouncingScrollPhysics(),
+                                onPageChanged: (index) {
+                                  _handlePageChanged(index, items, headers);
+                                },
+                                itemBuilder: (context, index) {
+                                  final image = items[index];
+                                  final imageUrl =
+                                      image.paths.image ?? image.paths.preview;
 
-                                if (imageUrl == null || imageUrl.isEmpty) {
-                                  return const Center(
-                                    child: Icon(
-                                      Icons.broken_image,
-                                      color: Colors.white54,
-                                      size: 64,
+                                  if (imageUrl == null || imageUrl.isEmpty) {
+                                    return const Center(
+                                      child: Icon(
+                                        Icons.broken_image,
+                                        color: Colors.white54,
+                                        size: 64,
+                                      ),
+                                    );
+                                  }
+
+                                  if (image.isClip) {
+                                    return index == _currentIndex
+                                        ? Listener(
+                                            onPointerDown:
+                                                _onOverlayPointerDown,
+                                            child: ImageClipPlayer(
+                                              key: ValueKey((
+                                                image.id,
+                                                imageUrl,
+                                                headers,
+                                              )),
+                                              url: imageUrl,
+                                              onTap: _toggleOverlays,
+                                              controlsInsets: _showOverlays
+                                                  ? _chromeInsets
+                                                  : EdgeInsets.zero,
+                                            ),
+                                          )
+                                        : StashImage(
+                                            imageUrl: image.paths.thumbnail,
+                                            fit: BoxFit.contain,
+                                          );
+                                  }
+
+                                  final file = image.files.firstOrNull;
+                                  final retry = _imageRetries[image.id] ?? 0;
+                                  return RepaintBoundary(
+                                    child: ZoomableImage(
+                                      key: ValueKey((image.id, retry)),
+                                      pageController: _pageController,
+                                      axis: scrollDirection,
+                                      contentSize:
+                                          file == null ||
+                                              file.width <= 0 ||
+                                              file.height <= 0
+                                          ? null
+                                          : Size(
+                                              file.width.toDouble(),
+                                              file.height.toDouble(),
+                                            ),
+                                      onZoomChanged: (zoomed) {
+                                        final id = zoomed ? image.id : null;
+                                        if (!zoomed &&
+                                            _zoomedImageId != image.id) {
+                                          return;
+                                        }
+                                        setState(() => _zoomedImageId = id);
+                                      },
+                                      child: Image(
+                                        image: StashImage.provider(
+                                          ref,
+                                          imageUrl,
+                                          headers: headers,
+                                        ),
+                                        excludeFromSemantics: true,
+                                        fit: BoxFit.contain,
+                                        gaplessPlayback: true,
+                                        frameBuilder:
+                                            (context, child, frame, sync) {
+                                              if (frame != null || sync) {
+                                                return child;
+                                              }
+                                              return const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            },
+                                        errorBuilder: (context, error, stack) =>
+                                            _buildImageError(
+                                              context,
+                                              () => _retryImage(
+                                                image.id,
+                                                imageUrl,
+                                                headers,
+                                              ),
+                                            ),
+                                      ),
                                     ),
                                   );
-                                }
-
-                                if (image.isClip) {
-                                  return index == _currentIndex
-                                      ? Listener(
-                                          onPointerDown: _onOverlayPointerDown,
-                                          child: ImageClipPlayer(
-                                            key: ValueKey((
-                                              image.id,
-                                              imageUrl,
-                                              headers,
-                                            )),
-                                            url: imageUrl,
-                                            onTap: _toggleOverlays,
-                                            controlsInsets: _showOverlays
-                                                ? _chromeInsets
-                                                : EdgeInsets.zero,
-                                          ),
-                                        )
-                                      : StashImage(
-                                          imageUrl: image.paths.thumbnail,
-                                          fit: BoxFit.contain,
-                                        );
-                                }
-
-                                final file = image.files.firstOrNull;
-                                final retry = _imageRetries[image.id] ?? 0;
-                                return RepaintBoundary(
-                                  child: ZoomableImage(
-                                    key: ValueKey((image.id, retry)),
-                                    pageController: _pageController,
-                                    axis: scrollDirection,
-                                    contentSize:
-                                        file == null ||
-                                            file.width <= 0 ||
-                                            file.height <= 0
-                                        ? null
-                                        : Size(
-                                            file.width.toDouble(),
-                                            file.height.toDouble(),
-                                          ),
-                                    onZoomChanged: (zoomed) {
-                                      final id = zoomed ? image.id : null;
-                                      if (!zoomed &&
-                                          _zoomedImageId != image.id) {
-                                        return;
-                                      }
-                                      setState(() => _zoomedImageId = id);
-                                    },
-                                    child: Image(
-                                      image: StashImage.provider(
-                                        ref,
-                                        imageUrl,
-                                        headers: headers,
-                                      ),
-                                      excludeFromSemantics: true,
-                                      fit: BoxFit.contain,
-                                      gaplessPlayback: true,
-                                      frameBuilder:
-                                          (context, child, frame, sync) {
-                                            if (frame != null || sync) {
-                                              return child;
-                                            }
-                                            return const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            );
-                                          },
-                                      errorBuilder: (context, error, stack) =>
-                                          _buildImageError(
-                                            context,
-                                            () => _retryImage(
-                                              image.id,
-                                              imageUrl,
-                                              headers,
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-                                );
-                              },
+                                },
+                              ),
                             ),
                           ),
                         ),

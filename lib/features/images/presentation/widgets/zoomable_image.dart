@@ -3,6 +3,14 @@ import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+const Set<PointerDeviceKind> _kPinchDevices = {
+  PointerDeviceKind.touch,
+  PointerDeviceKind.stylus,
+  PointerDeviceKind.invertedStylus,
+  PointerDeviceKind.trackpad,
+  PointerDeviceKind.unknown,
+};
+
 /// Pinch, double-tap, and mouse-wheel zoom for one page of an image pager.
 ///
 /// Panning is bounded by the fitted image, not the letterboxed viewport. A
@@ -48,13 +56,6 @@ class ZoomableImageState extends State<ZoomableImage>
   // Gestures may overshoot the limits and spring back when released.
   static const double _minGestureScale = 0.8;
   static const double _maxGestureScale = ZoomableImage.maxScale * 1.2;
-  static const Set<PointerDeviceKind> _pinchDevices = {
-    PointerDeviceKind.touch,
-    PointerDeviceKind.stylus,
-    PointerDeviceKind.invertedStylus,
-    PointerDeviceKind.trackpad,
-    PointerDeviceKind.unknown,
-  };
 
   late final AnimationController _animation = AnimationController(
     vsync: this,
@@ -159,11 +160,14 @@ class ZoomableImageState extends State<ZoomableImage>
   }
 
   void _onScaleUpdate(ScaleUpdateDetails details) {
-    final delta = details.focalPointDelta;
     if (_pageDrag != null) {
-      _updatePageDrag(details.focalPoint, delta);
+      _updatePageDrag(details.focalPoint, details.focalPointDelta);
       return;
     }
+    // Local delta: a forwarded pinch may run while the page still settles.
+    final focal = details.localFocalPoint;
+    final delta = focal - _lastFocal;
+    _lastFocal = focal;
     if (details.pointerCount == 1 && _zoomed && _isPastEdge(delta)) {
       _pageDrag = widget.pageController.position.drag(
         DragStartDetails(
@@ -172,7 +176,7 @@ class ZoomableImageState extends State<ZoomableImage>
         ),
         () => _pageDrag = null,
       );
-      _updatePageDrag(details.focalPoint, delta);
+      _updatePageDrag(details.focalPoint, details.focalPointDelta);
       return;
     }
 
@@ -180,14 +184,41 @@ class ZoomableImageState extends State<ZoomableImage>
       _minGestureScale,
       _maxGestureScale,
     );
-    final focal = details.localFocalPoint;
-    _lastFocal = focal;
     final panned = _offset + delta;
     _setTransform(
       scale,
       _clamp(focal - (focal - panned) * (scale / _scale), scale),
     );
   }
+
+  Offset _toLocal(Offset global) =>
+      (context.findRenderObject()! as RenderBox).globalToLocal(global);
+
+  /// Drives a pinch claimed by [ZoomablePagerPinch] in global coordinates.
+  void handleScaleStart(ScaleStartDetails details) => _onScaleStart(
+    ScaleStartDetails(
+      focalPoint: details.focalPoint,
+      localFocalPoint: _toLocal(details.focalPoint),
+      pointerCount: details.pointerCount,
+    ),
+  );
+
+  /// See [handleScaleStart].
+  void handleScaleUpdate(ScaleUpdateDetails details) => _onScaleUpdate(
+    ScaleUpdateDetails(
+      focalPoint: details.focalPoint,
+      localFocalPoint: _toLocal(details.focalPoint),
+      scale: details.scale,
+      horizontalScale: details.horizontalScale,
+      verticalScale: details.verticalScale,
+      rotation: details.rotation,
+      pointerCount: details.pointerCount,
+      focalPointDelta: details.focalPointDelta,
+    ),
+  );
+
+  /// See [handleScaleStart].
+  void handleScaleEnd(ScaleEndDetails details) => _onScaleEnd(details);
 
   /// Whether a drag mostly along [ZoomableImage.axis] cannot pan any further.
   bool _isPastEdge(Offset delta) {
@@ -298,7 +329,7 @@ class ZoomableImageState extends State<ZoomableImage>
                           : const DeviceGestureSettings(
                               touchSlop: double.infinity,
                             )
-                      ..supportedDevices = zoomed ? null : _pinchDevices
+                      ..supportedDevices = zoomed ? null : _kPinchDevices
                       ..onStart = _onScaleStart
                       ..onUpdate = _onScaleUpdate
                       ..onEnd = _onScaleEnd,
@@ -325,6 +356,83 @@ class ZoomableImageState extends State<ZoomableImage>
           ),
         );
       },
+    );
+  }
+}
+
+/// Pinch-to-zoom for a pager of [ZoomableImage]s that also works mid-animation.
+///
+/// While a [PageView] animates, its [Scrollable] ignores pointers for the
+/// pages, so a pinch's first finger never reaches the page's own recognizer.
+/// This sits above the pager, sees every finger, and forwards the pinch to
+/// the page nearest the viewport center, which is where the pager settles.
+/// It can never claim a one-finger drag, so scrolling is unaffected; when
+/// both recognizers see the pinch, the page's deeper one wins.
+class ZoomablePagerPinch extends StatefulWidget {
+  const ZoomablePagerPinch({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  State<ZoomablePagerPinch> createState() => _ZoomablePagerPinchState();
+}
+
+class _ZoomablePagerPinchState extends State<ZoomablePagerPinch> {
+  ZoomableImageState? _target;
+
+  ZoomableImageState? _nearestPage() {
+    final box = context.findRenderObject()! as RenderBox;
+    final center = box.localToGlobal(box.size.center(Offset.zero));
+    ZoomableImageState? best;
+    var bestDistance = double.infinity;
+    void visit(Element element) {
+      if (element is StatefulElement && element.state is ZoomableImageState) {
+        final page = element.renderObject! as RenderBox;
+        final distance =
+            (page.localToGlobal(page.size.center(Offset.zero)) - center)
+                .distance;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = element.state as ZoomableImageState;
+        }
+        return;
+      }
+      element.visitChildren(visit);
+    }
+
+    context.visitChildElements(visit);
+    return best;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RawGestureDetector(
+      gestures: {
+        ScaleGestureRecognizer:
+            GestureRecognizerFactoryWithHandlers<ScaleGestureRecognizer>(
+              () => ScaleGestureRecognizer(
+                debugOwner: this,
+                supportedDevices: _kPinchDevices,
+              ),
+              (recognizer) => recognizer
+                ..dragStartBehavior = DragStartBehavior.down
+                // Unreachable pan slop: only a span change can accept.
+                ..gestureSettings = const DeviceGestureSettings(
+                  touchSlop: double.infinity,
+                )
+                ..onStart = (details) {
+                  _target = _nearestPage()?..handleScaleStart(details);
+                }
+                ..onUpdate = (details) {
+                  _target?.handleScaleUpdate(details);
+                }
+                ..onEnd = (details) {
+                  _target?.handleScaleEnd(details);
+                  _target = null;
+                },
+            ),
+      },
+      child: widget.child,
     );
   }
 }

@@ -510,7 +510,8 @@ The fullscreen image viewer supports:
 - pinch, double-tap, and mouse-wheel zoom with panning bounded by the fitted
   image; an unzoomed image yields one-finger drags to page swipes at any
   angle, while a zoomed image locks the pager and pans until a drag passes its
-  edge, which then continues into the page swipe;
+  edge, which then continues into the page swipe; a pinch that starts while a
+  page transition is still animating zooms the page it settles on;
 - authenticated original-image loading through the shared `StashImage` cache;
 - download/save actions with platform-appropriate permission handling;
 - prefetch of nearby images without loading the entire result set.
