@@ -130,4 +130,31 @@ void main() {
     final zoom = tester.state<ZoomableImageState>(find.byType(ZoomableImage));
     expect(zoom.scale, closeTo(2, 0.05));
   });
+
+  testWidgets('one-finger-led pinch zooms instead of paging', (tester) async {
+    final zoom = await pump(tester);
+    // An anchored thumb while the other finger moves along the paging axis.
+    final thumb = await tester.startGesture(const Offset(350, 300));
+    final finger = await tester.startGesture(const Offset(450, 300));
+    for (var i = 0; i < 10; i++) {
+      await finger.moveBy(const Offset(10, 0));
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    await thumb.up();
+    await finger.up();
+    await tester.pumpAndSettle();
+    expect(zoom.scale, greaterThan(1.5));
+    expect(controller.page, 0);
+
+    // The pager drags again once both fingers have lifted (zoomed: edge
+    // hand-off; reset first so a plain swipe is tested).
+    await tester.tapAt(const Offset(400, 300));
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.tapAt(const Offset(400, 300));
+    await tester.pumpAndSettle();
+    expect(zoom.scale, 1);
+    await tester.flingFrom(const Offset(600, 300), const Offset(-300, 0), 1000);
+    await tester.pumpAndSettle();
+    expect(controller.page, 1);
+  });
 }

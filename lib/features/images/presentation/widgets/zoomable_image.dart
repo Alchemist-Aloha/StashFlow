@@ -368,6 +368,11 @@ class ZoomableImageState extends State<ZoomableImage>
 /// the page nearest the viewport center, which is where the pager settles.
 /// It can never claim a one-finger drag, so scrolling is unaffected; when
 /// both recognizers see the pinch, the page's deeper one wins.
+///
+/// A pinch's fingers rarely move apart evenly, so the pager's axis drag (about
+/// 8px on Android) would usually beat the 18px scale slop. This therefore
+/// claims the gesture as soon as a second finger lands, unless a one-finger
+/// swipe has already won.
 class ZoomablePagerPinch extends StatefulWidget {
   const ZoomablePagerPinch({required this.child, super.key});
 
@@ -379,7 +384,6 @@ class ZoomablePagerPinch extends StatefulWidget {
 
 class _ZoomablePagerPinchState extends State<ZoomablePagerPinch> {
   ZoomableImageState? _target;
-
   ZoomableImageState? _nearestPage() {
     final box = context.findRenderObject()! as RenderBox;
     final center = box.localToGlobal(box.size.center(Offset.zero));
@@ -391,7 +395,8 @@ class _ZoomablePagerPinchState extends State<ZoomablePagerPinch> {
         final distance =
             (page.localToGlobal(page.size.center(Offset.zero)) - center)
                 .distance;
-        if (distance < bestDistance) {
+        // Only the page in view; a clip page must not zoom a neighbor.
+        if (distance < bestDistance && distance < box.size.longestSide / 2) {
           bestDistance = distance;
           best = element.state as ZoomableImageState;
         }
@@ -408,12 +413,9 @@ class _ZoomablePagerPinchState extends State<ZoomablePagerPinch> {
   Widget build(BuildContext context) {
     return RawGestureDetector(
       gestures: {
-        ScaleGestureRecognizer:
-            GestureRecognizerFactoryWithHandlers<ScaleGestureRecognizer>(
-              () => ScaleGestureRecognizer(
-                debugOwner: this,
-                supportedDevices: _kPinchDevices,
-              ),
+        _EagerPinchGestureRecognizer:
+            GestureRecognizerFactoryWithHandlers<_EagerPinchGestureRecognizer>(
+              () => _EagerPinchGestureRecognizer(debugOwner: this),
               (recognizer) => recognizer
                 ..dragStartBehavior = DragStartBehavior.down
                 // Unreachable pan slop: only a span change can accept.
@@ -434,5 +436,41 @@ class _ZoomablePagerPinchState extends State<ZoomablePagerPinch> {
       },
       child: widget.child,
     );
+  }
+}
+
+/// Accepts as soon as it tracks two pointers, before any movement.
+class _EagerPinchGestureRecognizer extends ScaleGestureRecognizer {
+  _EagerPinchGestureRecognizer({super.debugOwner})
+    : super(supportedDevices: _kPinchDevices);
+
+  final Set<int> _tracked = {};
+
+  @override
+  void addAllowedPointer(PointerDownEvent event) {
+    super.addAllowedPointer(event);
+    _tracked.add(event.pointer);
+    if (_tracked.length >= 2) resolve(GestureDisposition.accepted);
+  }
+
+  @override
+  void handleEvent(PointerEvent event) {
+    if (event is PointerUpEvent || event is PointerCancelEvent) {
+      _tracked.remove(event.pointer);
+    }
+    super.handleEvent(event);
+  }
+
+  @override
+  void rejectGesture(int pointer) {
+    // A pointer an axis swipe already won no longer counts toward a pinch.
+    _tracked.remove(pointer);
+    super.rejectGesture(pointer);
+  }
+
+  @override
+  void didStopTrackingLastPointer(int pointer) {
+    _tracked.clear();
+    super.didStopTrackingLastPointer(pointer);
   }
 }
