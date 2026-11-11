@@ -65,6 +65,21 @@ String appendApiKey(String url, String apiKey) {
   return uri.replace(queryParameters: newParams).toString();
 }
 
+/// Masks credentials ([appendBasicAuth] user info and [appendApiKey] query
+/// parameter) so [url] is safe to write to the copyable debug log.
+String redactUrl(String url) {
+  final uri = Uri.tryParse(url);
+  if (uri == null) return '<unparseable url>';
+  var redacted = uri;
+  if (uri.userInfo.isNotEmpty) redacted = redacted.replace(userInfo: '***:***');
+  if (uri.queryParameters.containsKey('apikey')) {
+    redacted = redacted.replace(
+      queryParameters: {...uri.queryParameters, 'apikey': '***'},
+    );
+  }
+  return redacted.toString();
+}
+
 /// Applies a web-specific media auth fallback when custom headers are unavailable.
 ///
 /// Priority:

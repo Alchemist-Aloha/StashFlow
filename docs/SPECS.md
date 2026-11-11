@@ -949,7 +949,8 @@ Other platforms retain their existing audio-service initialization.
 The Settings hub links to focused pages for server, appearance, interface,
 playback, storage, security, keybinds, developer options, and support.
 Appearance Settings owns the app language choice alongside theme, color, font,
-and scale preferences. Interface Settings begins with navigation preferences.
+and scale preferences. On first launch (no server configured and no saved
+language), the same language sheet opens before the server setup prompt. Interface Settings begins with navigation preferences.
 
 Settings pages use the shared shell and panel components in
 `lib/features/setup/presentation/widgets/settings_page_shell.dart`. They share

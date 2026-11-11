@@ -7,10 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../core/utils/responsive.dart';
 import '../../../core/utils/l10n_extensions.dart';
 import '../../../core/utils/environment.dart' as env;
+
 import 'package:flutter/gestures.dart';
+
 import '../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../core/presentation/providers/list_scroll_controller_provider.dart';
@@ -23,6 +26,9 @@ import '../../setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../setup/presentation/providers/update_provider.dart';
 import '../../setup/domain/entities/update_info.dart';
+import '../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../core/presentation/providers/app_language_provider.dart';
+import '../../setup/presentation/widgets/app_language_picker.dart';
 import 'widgets/mini_player.dart';
 import '../../scenes/presentation/widgets/global_fullscreen_overlay.dart';
 import '../../../core/utils/app_log_store.dart';
@@ -109,7 +115,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     FocusManager.instance.addEarlyKeyEventHandler(_handleGlobalKeyEvent);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _checkServerConfiguration();
+      unawaited(_checkServerConfiguration());
       // Defer non-critical startup checks off the first frame.
       _deferredStartupTimer = Timer(const Duration(milliseconds: 1200), () {
         if (!mounted) return;
@@ -208,11 +214,17 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     );
   }
 
-  void _checkServerConfiguration() {
+  Future<void> _checkServerConfiguration() async {
     if (env.isTestMode) return;
     final serverUrl = ref.read(serverUrlProvider);
     if (serverUrl.isEmpty && !_dialogShown && mounted) {
       _dialogShown = true;
+      // First launch: let the user pick a language before the setup prompt.
+      final languageChosen = ref
+          .read(sharedPreferencesProvider)
+          .containsKey(appLanguagePreferenceKey);
+      if (!languageChosen) await showAppLanguagePicker(context, ref);
+      if (!mounted) return;
       unawaited(
         showDialog<void>(
           context: context,
@@ -346,9 +358,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
             if (!isTiktokLayout) {
               ref
                   .read(
-                    listScrollControllerProvider(
-                      ListScrollTarget.scene,
-                    ).notifier,
+                    listScrollControllerProvider(ListScrollTarget.scene)
+                        .notifier,
                   )
                   .scrollToTop();
             }
@@ -356,18 +367,16 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           case NavigationTabType.performers:
             ref
                 .read(
-                  listScrollControllerProvider(
-                    ListScrollTarget.performer,
-                  ).notifier,
+                  listScrollControllerProvider(ListScrollTarget.performer)
+                      .notifier,
                 )
                 .scrollToTop();
             break;
           case NavigationTabType.studios:
             ref
                 .read(
-                  listScrollControllerProvider(
-                    ListScrollTarget.studio,
-                  ).notifier,
+                  listScrollControllerProvider(ListScrollTarget.studio)
+                      .notifier,
                 )
                 .scrollToTop();
             break;
@@ -381,9 +390,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           case NavigationTabType.galleries:
             ref
                 .read(
-                  listScrollControllerProvider(
-                    ListScrollTarget.gallery,
-                  ).notifier,
+                  listScrollControllerProvider(ListScrollTarget.gallery)
+                      .notifier,
                 )
                 .scrollToTop();
             break;
@@ -397,9 +405,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           case NavigationTabType.markers:
             ref
                 .read(
-                  listScrollControllerProvider(
-                    ListScrollTarget.marker,
-                  ).notifier,
+                  listScrollControllerProvider(ListScrollTarget.marker)
+                      .notifier,
                 )
                 .scrollToTop();
             break;

@@ -27,8 +27,9 @@ class ErrorStateView extends StatelessWidget {
     final spacingSmall = dims?.spacingSmall ?? 8.0;
     final fontSizeFactor = dims?.fontSizeFactor ?? 1.0;
 
+    // Scrolls so long messages (e.g. stack traces) cannot overflow.
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: EdgeInsets.all(spacingLarge),
         child: Column(
           mainAxisSize: MainAxisSize.min,

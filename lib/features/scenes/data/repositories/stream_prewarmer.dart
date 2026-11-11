@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
 
@@ -65,7 +68,7 @@ class StreamPrewarmer extends _$StreamPrewarmer {
     }
 
     AppLogStore.instance.add(
-      'StreamPrewarmer: prewarming scene=${scene.id} url=$url',
+      'StreamPrewarmer: prewarming scene=${scene.id} url=${redactUrl(url)}',
       source: 'stream_prewarmer',
     );
 
@@ -110,7 +113,7 @@ class StreamPrewarmer extends _$StreamPrewarmer {
           if (!identical(_activeRequests[scene.id], operation)) return;
           finish();
           AppLogStore.instance.add(
-            'StreamPrewarmer: prewarm error for scene=${scene.id}: $e',
+            'StreamPrewarmer: prewarm error for scene=${scene.id}: ${e.runtimeType}',
             source: 'stream_prewarmer',
           );
         },
@@ -120,7 +123,7 @@ class StreamPrewarmer extends _$StreamPrewarmer {
       if (!identical(_activeRequests[scene.id], operation)) return;
       finish();
       AppLogStore.instance.add(
-        'StreamPrewarmer: prewarm exception for scene=${scene.id}: $e',
+        'StreamPrewarmer: prewarm exception for scene=${scene.id}: ${e.runtimeType}',
         source: 'stream_prewarmer',
       );
     }

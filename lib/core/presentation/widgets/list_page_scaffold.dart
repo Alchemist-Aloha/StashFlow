@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent, ScrollDirection;
 import 'package:flutter/services.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
+
 import '../theme/app_theme.dart';
 import '../../utils/responsive.dart';
 import '../providers/desktop_capabilities_provider.dart';
@@ -16,6 +19,7 @@ import 'error_state_view.dart';
 import 'frosted_surface.dart';
 import 'section_header.dart';
 import '../../utils/pagination.dart';
+import '../../data/graphql/graphql_client.dart';
 import '../../data/preferences/search_history_provider.dart';
 import '../../../features/scenes/presentation/widgets/scene_card.dart';
 import '../../../features/setup/presentation/providers/navigation_customization_provider.dart';
@@ -404,9 +408,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                   unawaited(
                                     ref
                                         .read(
-                                          searchHistoryProvider(
-                                            _historyKey,
-                                          ).notifier,
+                                          searchHistoryProvider(_historyKey)
+                                              .notifier,
                                         )
                                         .clearAll(),
                                   );
@@ -427,9 +430,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                     unawaited(
                                       ref
                                           .read(
-                                            searchHistoryProvider(
-                                              _historyKey,
-                                            ).notifier,
+                                            searchHistoryProvider(_historyKey)
+                                                .notifier,
                                           )
                                           .removeQuery(item),
                                     );
@@ -809,10 +811,23 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                               : SceneCard.skeleton(isGrid: false),
                         );
                       },
-                      error: (err, stack) => ErrorStateView(
-                        message: context.l10n.common_error(err.toString()),
-                        onRetry: widget.onRefresh,
-                      ),
+                      // A fresh install has no server yet; guide to setup
+                      // instead of surfacing the client's exception.
+                      error: (err, stack) => ref.read(serverUrlProvider).isEmpty
+                          ? ErrorStateView(
+                              message: context
+                                  .l10n
+                                  .to_get_started_configure_stash_server,
+                              retryLabel: context.l10n.common_configure_now,
+                              onRetry: () =>
+                                  unawaited(context.push('/settings/server')),
+                            )
+                          : ErrorStateView(
+                              message: context.l10n.common_error(
+                                err.toString(),
+                              ),
+                              onRetry: widget.onRefresh,
+                            ),
                     ),
                   ),
                 ],
@@ -841,9 +856,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.shadow.withValues(alpha: 0.2),
+                              color: Theme.of(context).colorScheme.shadow
+                                  .withValues(alpha: 0.2),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),

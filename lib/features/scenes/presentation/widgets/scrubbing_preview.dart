@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/vtt_service.dart';
 import '../../domain/entities/sprite_info.dart';
@@ -181,7 +182,7 @@ class _SpriteImage extends StatelessWidget {
       ),
       errorBuilder: (context, error, stackTrace) {
         AppLogStore.instance.add(
-          'Error loading sprite sheet: ${sprite.url}, error: $error',
+          'Error loading sprite sheet: ${redactUrl(sprite.url)}, error: ${error.runtimeType}',
           source: 'SpriteImage',
         );
         return const Icon(Icons.error);

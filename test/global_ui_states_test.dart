@@ -17,7 +17,10 @@ void main() {
   late SharedPreferences prefs;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({});
+    // Error tests need a configured server; otherwise lists show setup help.
+    SharedPreferences.setMockInitialValues({
+      'server_base_url': 'https://stash.local',
+    });
     prefs = await SharedPreferences.getInstance();
   });
 

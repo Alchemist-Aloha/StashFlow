@@ -201,4 +201,15 @@ void main() {
       expect(result, 'https://stash.host.tld/image/1?apikey=key123');
     });
   });
+
+  test('redactUrl masks api keys and basic auth but keeps the rest', () {
+    final redacted = redactUrl(
+      'https://user:pass@stash.tld/scene/1/vtt?apikey=secret&lang=en',
+    );
+
+    expect(redacted, isNot(contains('secret')));
+    expect(redacted, isNot(contains('pass')));
+    expect(redacted, contains('stash.tld/scene/1/vtt'));
+    expect(redacted, contains('lang=en'));
+  });
 }
