@@ -40,10 +40,12 @@ class AppCacheService {
     '.part',
   };
 
-  Future<List<Directory>> _cacheRootDirs() async {
-    final dirs = <Directory>{await _temporaryDirectoryProvider()};
+  /// Returns the temporary root and, when available, the app cache root.
+  Future<({Directory temp, Directory? appCache})> _cacheRoots() async {
+    final temp = await _temporaryDirectoryProvider();
+    Directory? appCache;
     try {
-      dirs.add(await _applicationCacheDirectoryProvider());
+      appCache = await _applicationCacheDirectoryProvider();
     } on Exception catch (error, stackTrace) {
       AppLogStore.instance.addError(
         'cacheRootDirs',
@@ -53,34 +55,50 @@ class AppCacheService {
       );
       // Some platforms may not expose an application cache directory.
     }
-    return dirs.toList();
+    if (appCache != null && p.equals(appCache.path, temp.path)) appCache = null;
+    return (temp: temp, appCache: appCache);
   }
 
+  // Linux and Windows temp folders are shared by every program, so only
+  // folder names this app owns may be scanned, trimmed, or cleared there.
+  static bool get _tempIsShared =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.windows);
+
+  static const List<String> _ownedImageCacheNames = [
+    'stashImageCache',
+    'libCachedImageData',
+    'cached_network_image_ce',
+  ];
+  static const List<String> _genericImageCacheNames = ['cache'];
+  static const List<String> _videoCacheNames = [
+    'video',
+    'videos',
+    'video_cache',
+  ];
+
   Future<List<Directory>> _imageCacheDirs() async {
-    final roots = await _cacheRootDirs();
-    return roots
-        .expand(
-          (root) => [
-            Directory(p.join(root.path, 'cache')),
-            Directory(p.join(root.path, 'stashImageCache')),
-            Directory(p.join(root.path, 'libCachedImageData')),
-            Directory(p.join(root.path, 'cached_network_image_ce')),
-          ],
-        )
-        .toList();
+    final roots = await _cacheRoots();
+    const all = [..._genericImageCacheNames, ..._ownedImageCacheNames];
+    return [
+      for (final name in _tempIsShared ? _ownedImageCacheNames : all)
+        Directory(p.join(roots.temp.path, name)),
+      if (roots.appCache case final appCache?)
+        for (final name in all) Directory(p.join(appCache.path, name)),
+    ];
   }
 
   Future<List<Directory>> _videoCacheDirs() async {
-    final roots = await _cacheRootDirs();
-    return roots
-        .expand(
-          (root) => [
-            Directory(p.join(root.path, 'video')),
-            Directory(p.join(root.path, 'videos')),
-            Directory(p.join(root.path, 'video_cache')),
-          ],
-        )
-        .toList();
+    final roots = await _cacheRoots();
+    return [
+      if (!_tempIsShared)
+        for (final name in _videoCacheNames)
+          Directory(p.join(roots.temp.path, name)),
+      if (roots.appCache case final appCache?)
+        for (final name in _videoCacheNames)
+          Directory(p.join(appCache.path, name)),
+    ];
   }
 
   Future<int> _calculateDirSize(Directory dir) async {

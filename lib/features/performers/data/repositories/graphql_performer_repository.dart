@@ -182,7 +182,7 @@ class GraphQLPerformerRepository {
       Options$Query$FindPerformers(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
-            : FetchPolicy.cacheAndNetwork,
+            : FetchPolicy.networkOnly,
         variables: Variables$Query$FindPerformers(
           filter: Input$FindFilterType(
             q: filter ?? performerFilter?.searchQuery,

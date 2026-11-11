@@ -237,6 +237,9 @@ and scroll ownership.
 List invariants:
 
 - Initial load, explicit refresh, and pagination are distinct states.
+- Entity list and scene-detail queries read from the network; the GraphQL cache
+  is updated but never served as the one-shot answer, so refresh shows current
+  server data.
 - Pagination appends without resetting the current scroll position or active
   playback context.
 - Duplicate fetches are coalesced or ignored while the same page is in flight.
@@ -1039,6 +1042,9 @@ supported limits.
   entries are not imported and may download again.
 - Clearing one cache type must not delete unrelated user settings or active
   media required for playback.
+- Linux and Windows temporary directories are shared with other programs, so
+  measuring, trimming, and clearing there touch only app-owned image cache
+  folders, never generic `cache` or video folder names.
 - Size displays refresh after clear/limit changes.
 - Media limits apply to their documented cache only; do not imply a strict
   database limit when none exists. Web skips filesystem media-limit enforcement;

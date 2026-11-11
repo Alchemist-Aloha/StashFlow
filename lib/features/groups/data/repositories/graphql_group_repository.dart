@@ -20,7 +20,7 @@ class GraphQLGroupRepository {
   }) async {
     final result = await _client.query$FindGroups(
       Options$Query$FindGroups(
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
+        fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$FindGroups(
           filter: Input$FindFilterType(
             q: filter,

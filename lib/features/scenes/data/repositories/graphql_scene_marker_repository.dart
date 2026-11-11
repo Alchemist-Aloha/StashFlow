@@ -80,7 +80,7 @@ class GraphQLSceneMarkerRepository {
         },
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
-            : FetchPolicy.cacheAndNetwork,
+            : FetchPolicy.networkOnly,
       ),
     );
     validateGraphQLResult(result);

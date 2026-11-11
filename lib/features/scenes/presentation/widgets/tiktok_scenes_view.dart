@@ -23,7 +23,6 @@ import '../providers/player_settings.dart';
 import '../providers/playback_queue_provider.dart';
 import '../providers/playback_session_controller.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
-import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
@@ -642,15 +641,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   double _originalSpeed = 1.0;
   double _currentSpeed = 5.0;
   bool _isSpeedingUp = false;
-  Timer? _playCountTimer;
-  bool _playCountIncremented = false;
   int? _localRating;
-
-  // Activity tracking
-  DateTime? _playStartTime;
-  double _accumulatedDuration = 0;
-  Timer? _periodicSaveTimer;
-  StreamSubscription<bool>? _playingSub;
 
   // Scrubbing state
   bool _isScrubbing = false;
@@ -660,19 +651,6 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   void initState() {
     super.initState();
     _localRating = widget.scene.rating100;
-    _playingSub = widget.controller?.player.stream.playing.listen(
-      _onControllerChanged,
-    );
-    if (widget.controller?.player.state.playing == true) {
-      _startActivityTracking();
-    }
-  }
-
-  @override
-  void dispose() {
-    unawaited(_playingSub?.cancel());
-    _stopActivityTracking();
-    super.dispose();
   }
 
   @override
@@ -684,119 +662,6 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         _localRating = widget.scene.rating100;
       });
     }
-    if (oldWidget.controller != widget.controller) {
-      unawaited(_playingSub?.cancel());
-      _stopActivityTracking();
-
-      _playingSub = widget.controller?.player.stream.playing.listen(
-        _onControllerChanged,
-      );
-      if (widget.controller?.player.state.playing == true) {
-        _startActivityTracking();
-      }
-    }
-  }
-
-  void _onControllerChanged(bool isPlaying) {
-    if (isPlaying) {
-      _startActivityTracking();
-    } else {
-      _stopActivityTracking();
-    }
-  }
-
-  void _startActivityTracking() {
-    if (_playStartTime != null) return; // Already tracking
-
-    _startPlayCountTimer();
-    _playStartTime = DateTime.now();
-
-    _periodicSaveTimer?.cancel();
-    _periodicSaveTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      unawaited(_saveActivity());
-    });
-  }
-
-  void _stopActivityTracking() {
-    _playCountTimer?.cancel();
-    _periodicSaveTimer?.cancel();
-    _periodicSaveTimer = null;
-
-    if (_playStartTime != null) {
-      final now = DateTime.now();
-      _accumulatedDuration +=
-          now.difference(_playStartTime!).inMilliseconds / 1000.0;
-      _playStartTime = null;
-    }
-
-    if (_accumulatedDuration > 0) {
-      unawaited(_saveActivity());
-    }
-  }
-
-  Future<void> _saveActivity() async {
-    final controller = widget.controller;
-    if (controller == null) return;
-
-    double durationToSave = _accumulatedDuration;
-    if (_playStartTime != null) {
-      final now = DateTime.now();
-      durationToSave += now.difference(_playStartTime!).inMilliseconds / 1000.0;
-      _playStartTime = now;
-    }
-
-    if (durationToSave < 0.1) return;
-
-    final resumeTime = controller.player.state.position.inMilliseconds / 1000.0;
-    _accumulatedDuration = 0;
-
-    try {
-      await ref
-          .read(sceneRepositoryProvider)
-          .saveSceneActivity(
-            widget.scene.id,
-            resumeTime: resumeTime,
-            playDuration: durationToSave,
-          );
-      if (mounted) {
-        unawaited(
-          ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh(),
-        );
-      }
-    } on Exception catch (e, stackTrace) {
-      AppLogStore.instance.addError(
-        'saveActivity',
-        e,
-        stackTrace,
-        source: 'tiktok_scenes_view',
-      );
-    }
-  }
-
-  void _startPlayCountTimer() {
-    if (_playCountIncremented) return;
-    _playCountTimer?.cancel();
-    _playCountTimer = Timer(const Duration(seconds: 5), () async {
-      if (!mounted) return;
-      try {
-        await ref
-            .read(sceneRepositoryProvider)
-            .incrementScenePlayCount(widget.scene.id);
-        _playCountIncremented = true;
-        if (mounted) {
-          unawaited(
-            ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh(),
-          );
-        }
-      } on Exception catch (e, stackTrace) {
-        AppLogStore.instance.addError(
-          'startPlayCountTimer',
-          e,
-          stackTrace,
-          source: 'tiktok_scenes_view',
-        );
-      }
-    });
   }
 
   void _showRatingPicker() {

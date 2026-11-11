@@ -213,7 +213,7 @@ class GraphQLSceneRepository {
   }) {
     return _client.query$FindScenes(
       Options$Query$FindScenes(
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
+        fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$FindScenes(
           filter: Input$FindFilterType(
             q: filter ?? sceneFilter?.searchQuery,
@@ -342,9 +342,7 @@ class GraphQLSceneRepository {
   Future<Scene> getSceneById(String id, {bool refresh = false}) async {
     final result = await _client.query$FindScene(
       Options$Query$FindScene(
-        fetchPolicy: refresh
-            ? FetchPolicy.networkOnly
-            : FetchPolicy.cacheAndNetwork,
+        fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$FindScene(id: id),
       ),
     );

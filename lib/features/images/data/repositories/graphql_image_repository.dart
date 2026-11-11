@@ -138,7 +138,7 @@ class GraphQLImageRepository {
       Options$Query$FindImages(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
-            : FetchPolicy.cacheAndNetwork,
+            : FetchPolicy.networkOnly,
         variables: Variables$Query$FindImages(
           filter: Input$FindFilterType(
             q: filter ?? imageFilter?.searchQuery,
