@@ -31,7 +31,6 @@ abstract class SceneFilter with _$SceneFilter {
     StringCriterion? audioCodec,
     StringCriterion? oshash,
     StringCriterion? checksum,
-    StringCriterion? phash,
     bool? hasMarkers,
     String? isMissing,
     IntCriterion? fileCount,

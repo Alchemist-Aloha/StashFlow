@@ -444,12 +444,6 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(checksum: val)),
         ),
-        StringCriterionInput(
-          label: context.l10n.scenes_field_phash,
-          value: _tempFilter.phash,
-          onChanged: (val) =>
-              setState(() => _tempFilter = _tempFilter.copyWith(phash: val)),
-        ),
         _buildDuplicatedFilter(),
         _buildBooleanFilter(
           'Has Markers',

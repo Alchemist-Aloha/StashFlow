@@ -248,12 +248,7 @@ class GraphQLSceneRepository {
               sceneFilter?.performerTags,
             ),
             groups: mapHierarchicalMultiCriterion(sceneFilter?.groups),
-            duplicated: sceneFilter?.duplicated != null
-                ? Input$DuplicationCriterionInput(
-                    phash: sceneFilter!.duplicated!.value.contains('phash'),
-                    // oshash: not supported in Input$DuplicationCriterionInput yet?
-                  )
-                : null,
+            duplicated: mapDuplicationCriterion(sceneFilter?.duplicated),
             performers: (performerId != null || sceneFilter?.performers != null)
                 ? mapMultiCriterion(
                     performerId != null
@@ -313,7 +308,6 @@ class GraphQLSceneRepository {
             audio_codec: mapStringCriterion(sceneFilter?.audioCodec),
             oshash: mapStringCriterion(sceneFilter?.oshash),
             checksum: mapStringCriterion(sceneFilter?.checksum),
-            phash: mapStringCriterion(sceneFilter?.phash),
             phash_distance: mapPhashCriterion(sceneFilter?.phashDistance),
             has_markers: sceneFilter?.hasMarkers?.toString(),
             is_missing: sceneFilter?.isMissing,
