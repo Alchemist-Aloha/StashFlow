@@ -104,7 +104,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: "3.47.9"
+          flutter-version: "3.50.0"
           cache: true
 
       # The release archive bundles x64 Dart; bootstrap native Dart on ARM64.
@@ -113,7 +113,7 @@ jobs:
         shell: pwsh
         run: |
           $flutterRoot = Join-Path $env:RUNNER_TEMP 'flutter-arm64'
-          git clone --depth 1 --branch 3.47.9 https://github.com/flutter/flutter.git $flutterRoot
+          git clone --depth 1 --branch 3.50.0 https://github.com/flutter/flutter.git $flutterRoot
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "$flutterRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           "FLUTTER_ROOT=$flutterRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
@@ -128,7 +128,7 @@ jobs:
         shell: bash
         run: |
           flutter_root="$RUNNER_TEMP/flutter-arm64"
-          git clone --depth 1 --branch 3.47.7 https://github.com/flutter/flutter.git "$flutter_root"
+          git clone --depth 1 --branch 3.50.0 https://github.com/flutter/flutter.git "$flutter_root"
           echo "$flutter_root/bin" >> "$GITHUB_PATH"
           echo "FLUTTER_ROOT=$flutter_root" >> "$GITHUB_ENV"
           "$flutter_root/bin/flutter" --version
