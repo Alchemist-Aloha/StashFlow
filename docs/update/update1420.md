@@ -13,6 +13,13 @@
 - Seeking holds the selected position while the seek completes without triggering image navigation. Only the selected clip plays; paging away or closing the viewer releases it, and returning from the background resumes only previously playing clips.
 - GIFs remain animated images without video badges or controls, even when the server identifies them as video files. Clips save as videos; GIFs use image saving.
 
+## 🔍 Image Viewer Gestures
+
+- Swiping between images now works at any angle when the image isn't zoomed, instead of ignoring diagonal swipes.
+- Pinch to zoom responds immediately, including when one finger moves first or the page is still settling after a swipe. Double-tap toggles between fit and 3× zoom, and desktop mouse-wheel zoom no longer scrolls to another image.
+- Zoomed images pan only within the picture, not the letterbox around it, and dragging past an edge continues into the next or previous image.
+- Original images now load through the shared authenticated image cache, with a retry button when loading fails.
+
 ## 🔊 Android Audio Focus
 
 - Added **Settings → Playback → Pause when other apps play media**, enabled by default for Android scene and feed playback. Turn it off if you prefer simultaneous playback with other apps; Android may still enforce interruptions.
@@ -21,6 +28,21 @@
 ## 🗂️ Image and Preview Caching
 
 - Thumbnails and seek previews on Android and desktop now share an authenticated image cache, including session-cookie logins. Cache clearing and size-limit handling have been updated to cover the shared cache.
+- The shared image cache now keeps up to 1,000 images, so recently viewed images and nearby pages reload less often.
+- Lists and scene details now refresh with current server data instead of showing stale cached results.
+- Lists that fit on screen without scrolling now load their next page automatically.
+- Clearing caches on Linux and Windows now removes only StashFlow's own cache folders from the shared temporary directory, and on desktop it no longer deletes unrelated `.hive` files from your Documents folder.
+
+## 🔒 App Lock and Privacy
+
+- Added fingerprint and face unlock for Android devices with enrolled biometrics. Enable it in **Settings → Security** after setting a passcode; the passcode remains available as a fallback.
+- Lock on launch now covers the very first frame, and the background timeout still locks the app when the system froze it in the background.
+- Credentials in server URLs are masked in the copyable debug log.
+
+## ⚙️ Settings
+
+- First launch now asks for your app language before server setup.
+- The Settings hub uses a single column of full-width cards, matching the Tools page.
 
 ## 🪟 Desktop Picture-in-Picture
 
