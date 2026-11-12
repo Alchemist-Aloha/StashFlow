@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/presentation/widgets/thumbnail_badge.dart';
+import '../../../../core/presentation/widgets/media_card_text.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../domain/entities/scene.dart';
@@ -273,6 +275,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       });
     }
 
+    final inset = ThumbnailBadge.inset(compact: widget.isGrid);
     Widget content = Stack(
       children: [
         StashImage(
@@ -311,20 +314,35 @@ class _SceneCardState extends ConsumerState<SceneCard> {
               onVttUnavailable: _markVttUnavailable,
             ),
           ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: _ThumbnailMetadataOverlay(
-            count: widget.scene.oCounter,
-            icon: Icons.water_drop_outlined,
-            rating: widget.scene.rating100,
-            duration: _isScrubbing
-                ? _formatDuration(_scrubTime)
-                : _formatDuration(duration),
-            isGrid: widget.isGrid,
+        if ((widget.scene.rating100 ?? 0) > 0)
+          Positioned(
+            top: inset,
+            right: inset,
+            child: ThumbnailBadge.rating(
+              context,
+              rating100: widget.scene.rating100!,
+              compact: widget.isGrid,
+            ),
           ),
-        ),
+        if (widget.scene.oCounter > 0)
+          Positioned(
+            bottom: inset,
+            left: inset,
+            child: ThumbnailBadge(
+              label: '${widget.scene.oCounter}',
+              compact: widget.isGrid,
+              icon: Icons.water_drop_outlined,
+            ),
+          ),
+        if (_isScrubbing || duration != null)
+          Positioned(
+            bottom: inset,
+            right: inset,
+            child: ThumbnailBadge(
+              label: _formatDuration(_isScrubbing ? _scrubTime : duration),
+              compact: widget.isGrid,
+            ),
+          ),
       ],
     );
 
@@ -594,21 +612,15 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                         children: [
                           Text(
                             widget.scene.displayTitle,
-                            style: context.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: context.dimensions.cardTitleFontSize,
-                            ),
-                            maxLines: 2,
+                            style: MediaCardText.title(context),
+                            maxLines: MediaCardText.titleMaxLines,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 2),
                           Text(
                             widget.scene.studioName ??
                                 context.l10n.common_unknown,
-                            style: context.textTheme.labelSmall?.copyWith(
-                              color: context.colors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: MediaCardText.subtitle(context),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -692,68 +704,6 @@ class _ScenePlaybackProgress extends ConsumerWidget {
       trackGap: 0,
       stopIndicatorRadius: 0,
       semanticsLabel: context.l10n.scene_playback_progress,
-    );
-  }
-}
-
-class _ThumbnailMetadataOverlay extends StatelessWidget {
-  const _ThumbnailMetadataOverlay({
-    required this.count,
-    required this.icon,
-    required this.rating,
-    required this.duration,
-    required this.isGrid,
-  });
-
-  final int count;
-  final IconData icon;
-  final int? rating;
-  final String duration;
-  final bool isGrid;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildItem(context, icon, count.toString()),
-          if (rating != null)
-            _buildItem(
-              context,
-              Icons.star,
-              (rating! / 20.0).toStringAsFixed(1),
-            ),
-          Text(
-            duration,
-            style:
-                (isGrid
-                        ? context.textTheme.labelSmall
-                        : context.textTheme.labelMedium)
-                    ?.copyWith(color: Colors.white),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildItem(BuildContext context, IconData icon, String text) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: Colors.white, size: isGrid ? 10 : 12),
-        const SizedBox(width: 2),
-        Text(
-          text,
-          style:
-              (isGrid
-                      ? context.textTheme.labelSmall
-                      : context.textTheme.labelMedium)
-                  ?.copyWith(color: Colors.white),
-        ),
-      ],
     );
   }
 }

@@ -10,6 +10,8 @@ import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../images/presentation/pages/images_page.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
+import '../../../scenes/presentation/providers/playback_queue_provider.dart';
+import '../../../scenes/presentation/widgets/scene_strip.dart';
 import '../../domain/entities/gallery.dart';
 import '../providers/gallery_details_provider.dart';
 import '../providers/gallery_list_provider.dart';
@@ -94,7 +96,9 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
         .read(galleryRepositoryProvider)
         .getGalleryById(widget.galleryId, refresh: true);
     if (!mounted) return;
-    ref.invalidate(galleryDetailsProvider(widget.galleryId));
+    ref
+      ..invalidate(galleryDetailsProvider(widget.galleryId))
+      ..invalidate(galleryScenesProvider(widget.galleryId));
     await Future.wait([
       ref.read(galleryDetailsProvider(widget.galleryId).future),
       ref.read(imageListProvider.notifier).refresh(),
@@ -274,7 +278,7 @@ class _CollapsedGalleryDetails extends StatelessWidget {
   }
 }
 
-class _CompactGalleryDetails extends StatelessWidget {
+class _CompactGalleryDetails extends ConsumerWidget {
   const _CompactGalleryDetails({
     required this.gallery,
     required this.onRatingSelected,
@@ -285,9 +289,10 @@ class _CompactGalleryDetails extends StatelessWidget {
   final ValueChanged<int> onRatingSelected;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final dims = context.dimensions;
     final colors = Theme.of(context).colorScheme;
+    final scenes = ref.watch(galleryScenesProvider(gallery.id)).value ?? [];
     return SizedBox(
       width: double.infinity,
       child: Padding(
@@ -445,6 +450,21 @@ class _CompactGalleryDetails extends StatelessWidget {
                         ],
                       ],
                     ),
+                  ),
+                ],
+                if (scenes.isNotEmpty) ...[
+                  SizedBox(height: dims.spacingMedium),
+                  SectionHeader(
+                    title: context.l10n.scenes_title,
+                    padding: EdgeInsets.zero,
+                  ),
+                  SizedBox(height: dims.spacingSmall),
+                  SceneStrip(
+                    key: const Key('gallery_linked_scenes'),
+                    scenes: scenes,
+                    queueId: PlaybackQueueIds.galleryScenes(gallery.id),
+                    onTap: (scene) =>
+                        context.push('/scenes/scene/${scene.id}', extra: true),
                   ),
                 ],
               ],

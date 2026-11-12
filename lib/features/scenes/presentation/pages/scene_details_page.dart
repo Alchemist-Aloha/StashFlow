@@ -37,6 +37,8 @@ import '../../domain/entities/scene.dart';
 import '../widgets/scene_performer_title.dart';
 import '../widgets/scene_video_player.dart';
 import '../widgets/scene_strip.dart';
+import '../../../galleries/presentation/providers/gallery_details_provider.dart';
+import '../../../galleries/presentation/widgets/gallery_strip.dart';
 
 /// A detailed view for a single scene,
 ///
@@ -833,6 +835,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                 _buildTagsSection(context, scene),
                                 _buildMarkersSection(context, scene),
                                 _buildPerformersSection(context, scene),
+                                _buildLinkedGalleriesSection(context, scene),
                                 _buildMoreFromStudioSection(context, scene),
                                 _buildMoreFromPerformersSections(
                                   context,
@@ -854,6 +857,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         .read(sceneRepositoryProvider)
                         .getSceneById(widget.sceneId, refresh: true);
                     ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                    ref.invalidate(sceneGalleriesProvider(widget.sceneId));
                     return ref.read(
                       sceneDetailsProvider(widget.sceneId).future,
                     );
@@ -878,6 +882,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                               _buildTagsSection(context, scene),
                               _buildMarkersSection(context, scene),
                               _buildPerformersSection(context, scene),
+                              _buildLinkedGalleriesSection(context, scene),
                               _buildMoreFromStudioSection(context, scene),
                               _buildMoreFromPerformersSections(context, scene),
                             ],
@@ -1723,6 +1728,31 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 },
               );
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLinkedGalleriesSection(BuildContext context, Scene scene) {
+    final galleries = ref.watch(sceneGalleriesProvider(scene.id)).value;
+    if (galleries == null || galleries.isEmpty) return const SizedBox.shrink();
+
+    return _buildSectionContainer(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            title: context.l10n.details_galleries,
+            padding: EdgeInsets.zero,
+          ),
+          SizedBox(height: context.dimensions.spacingSmall),
+          GalleryStrip(
+            galleries: galleries,
+            onTap: (gallery) => context.push(
+              '/galleries/gallery/${Uri.encodeComponent(gallery.id)}',
+            ),
           ),
         ],
       ),

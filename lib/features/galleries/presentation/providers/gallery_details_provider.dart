@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../domain/entities/gallery.dart';
+import '../../domain/entities/gallery_filter.dart';
 import '../../../images/domain/entities/image.dart' as entity;
 import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../../scenes/domain/entities/scene.dart';
@@ -36,5 +37,18 @@ FutureOr<List<Scene>> galleryScenes(Ref ref, String id) async {
         page: 1,
         perPage: 24,
         sceneFilter: SceneFilter(galleries: MultiCriterion(value: [id])),
+      );
+}
+
+/// Loads galleries linked to a scene for the scene details strip.
+@riverpod
+FutureOr<List<Gallery>> sceneGalleries(Ref ref, String sceneId) async {
+  ref.keepAlive();
+  return ref
+      .read(galleryRepositoryProvider)
+      .findGalleries(
+        page: 1,
+        perPage: 24,
+        galleryFilter: GalleryFilter(scenes: MultiCriterion(value: [sceneId])),
       );
 }

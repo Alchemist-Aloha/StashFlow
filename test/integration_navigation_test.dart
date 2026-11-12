@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -640,6 +641,7 @@ void main() {
           sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
           sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
           playerStateProvider.overrideWith(() => playerState),
+          sceneGalleriesProvider.overrideWith((ref, arg) => const []),
         ],
       );
       addTearDown(container.dispose);

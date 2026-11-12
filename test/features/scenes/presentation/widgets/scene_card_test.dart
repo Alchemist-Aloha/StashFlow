@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/thumbnail_badge.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/sprite_info.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
@@ -370,6 +371,69 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Test Scene'), findsOneWidget);
+  });
+
+  for (final isGrid in [true, false]) {
+    testWidgets('SceneCard metadata badges sit in thumbnail corners '
+        '(grid: $isGrid)', (tester) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          SizedBox(
+            width: 320,
+            child: SceneCard(
+              scene: defaultTestScene,
+              isGrid: isGrid,
+              useHero: false,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final thumb = tester.getRect(find.byType(StashImage).first);
+      Rect badge(String label) => tester.getRect(
+        find.ancestor(
+          of: find.text(label),
+          matching: find.byType(ThumbnailBadge),
+        ),
+      );
+      final rating = badge('2.0');
+      final oCount = badge('5');
+      final length = badge('1:01:05');
+      expect(rating.top - thumb.top, lessThan(10));
+      expect(thumb.right - rating.right, lessThan(10));
+      expect(oCount.left - thumb.left, lessThan(10));
+      expect(thumb.bottom - oCount.bottom, lessThan(10));
+      expect(thumb.right - length.right, lessThan(10));
+      expect(thumb.bottom - length.bottom, lessThan(10));
+      final star = tester.widget<Icon>(
+        find.descendant(
+          of: find.byType(ThumbnailBadge).first,
+          matching: find.byIcon(Icons.star),
+        ),
+      );
+      expect(
+        star.color,
+        tester.element(find.byType(SceneCard)).colors.ratingColor,
+      );
+    });
+  }
+
+  testWidgets('SceneCard omits empty rating and O-count badges', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestWidget(
+        SceneCard(
+          scene: defaultTestScene.copyWith(rating100: null, oCounter: 0),
+          isGrid: true,
+          useHero: false,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(ThumbnailBadge), findsOneWidget);
+    expect(find.text('1:01:05'), findsOneWidget);
   });
 
   testWidgets('square video thumbnail keeps native square layout bounds', (

@@ -9,6 +9,7 @@ import 'package:stash_app_flutter/features/galleries/presentation/providers/gall
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/pages/gallery_details_page.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
     as entity;
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
@@ -460,5 +461,60 @@ void main() {
     expect(find.byKey(const Key('gallery_details_expanded')), findsOneWidget);
     expect(find.byKey(const Key('gallery_action_rating')), findsOneWidget);
     expect(scrollPosition.pixels, offsetBeforeExpand);
+  });
+
+  testWidgets('expanded header shows scenes linked to the gallery', (
+    tester,
+  ) async {
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        galleryDetailsProvider('gallery-1')
+            .overrideWith((ref) => const Gallery(id: 'gallery-1', title: 'G')),
+        galleryScenesProvider('gallery-1').overrideWith(
+          (ref) => [
+            Scene(
+              id: 'scene-1',
+              title: 'Linked Scene',
+              date: DateTime(2024),
+              rating100: null,
+              oCounter: 0,
+              organized: false,
+              interactive: false,
+              resumeTime: null,
+              playCount: 0,
+              playDuration: 0,
+              files: [],
+              paths: const ScenePaths(
+                screenshot: null,
+                preview: null,
+                stream: null,
+              ),
+              urls: [],
+              studioId: null,
+              studioName: null,
+              studioImagePath: null,
+              performerIds: [],
+              performerNames: [],
+              performerImagePaths: [],
+              tagIds: [],
+              tagNames: [],
+            ),
+          ],
+        ),
+        imageRepositoryProvider.overrideWithValue(MockGraphQLImageRepository()),
+      ],
+      child: const ImageBrowserScope(
+        browser: ImageBrowserContext.gallery(
+          'gallery-1',
+          path: '/gallery/gallery-1',
+        ),
+        child: GalleryDetailsPage(galleryId: 'gallery-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('gallery_linked_scenes')), findsOneWidget);
+    expect(find.text('Linked Scene'), findsOneWidget);
   });
 }

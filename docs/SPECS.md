@@ -344,8 +344,12 @@ serialization differences.
 
 ### Scene cards
 
-Scene cards support grid/list layouts, localized metadata, duration/rating
-overlays, context actions, and optional performer avatars. The avatar count is
+Scene cards support grid/list layouts, localized metadata, thumbnail badges,
+context actions, and optional performer avatars. Scene and gallery cards share
+`ThumbnailBadge`: rounded translucent corner badges with the rating (yellow
+star) top-right; scenes show the O-count bottom-left and the length (or scrub
+position) bottom-right, galleries the image count bottom-right. Rating and
+count badges are omitted when empty. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
 scaling.
 
@@ -545,6 +549,16 @@ Entity details may show related galleries and gallery images through scoped
 gallery filters. These views must not overwrite the user's top-level Gallery or
 Image filter state. The entity image-filter-method preference controls the
 server strategy and refreshes only the affected scoped view.
+
+Scene–gallery links are many-to-many. Scene Details shows a Galleries strip
+(`GalleryStrip`, after Performers) and Gallery Details' expanded header shows a
+Scenes strip (`SceneStrip`, own playback queue) for the first 24 linked items,
+each hidden when there are none; tapping opens the linked details page. Each
+page's pull-to-refresh also reloads its strip.
+Scene and gallery strips size their row from the grid cards' shared text styles
+(`MediaCardText`: 16:9 thumbnail, two-line title, subtitle, and for scenes the
+resume bar) under the active UI and text scale, give every card the same
+slot width, and omit performer avatars so cards neither clip nor leave a gap.
 
 ## Video playback and media sessions
 

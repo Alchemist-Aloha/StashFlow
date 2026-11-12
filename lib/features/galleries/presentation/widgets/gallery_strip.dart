@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/media_card_text.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/gallery.dart';
 import 'gallery_card.dart';
@@ -81,9 +82,7 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
     final stride = effectiveItemWidth + separatorWidth;
 
     return SizedBox(
-      height:
-          effectiveItemWidth * (9 / 16) +
-          (80 * context.dimensions.fontSizeFactor),
+      height: MediaCardText.stripItemHeight(context, effectiveItemWidth),
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification.metrics.axis != Axis.horizontal ||
@@ -136,8 +135,11 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
           thumbVisibility: true,
           child: ListView.builder(
             controller: _scrollController,
-            padding: EdgeInsets.symmetric(
-              horizontal: context.dimensions.spacingMedium,
+            // Every slot is itemExtent wide, so each card keeps a trailing gap;
+            // trim it from the end padding to keep the edge inset unchanged.
+            padding: EdgeInsets.only(
+              left: contentPadding,
+              right: contentPadding - separatorWidth,
             ),
             scrollDirection: Axis.horizontal,
             itemExtent: stride,
@@ -146,14 +148,13 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
               final gallery = galleries[index];
 
               return Padding(
-                padding: EdgeInsets.only(
-                  right: index == galleries.length - 1 ? 0 : separatorWidth,
-                ),
+                padding: EdgeInsets.only(right: separatorWidth),
                 child: SizedBox(
                   width: effectiveItemWidth,
                   child: GalleryCard(
                     gallery: gallery,
                     isGrid: true,
+                    showPerformers: false,
                     onTap: onTap == null ? null : () => onTap(gallery),
                   ),
                 ),
