@@ -13,6 +13,12 @@
 - Seeking holds the selected position while the seek completes without triggering image navigation. Only the selected clip plays; paging away or closing the viewer releases it, and returning from the background resumes only previously playing clips.
 - GIFs remain animated images without video badges or controls, even when the server identifies them as video files. Clips save as videos; GIFs use image saving.
 
+## 🔗 Linked Scenes and Galleries
+
+- Scene details now show a **Galleries** row listing the galleries linked to that scene, and gallery details show a **Scenes** row in the header. Tap a card to open it; pull to refresh reloads the row.
+- Scene cards now match gallery cards: the rating appears as a yellow star at the top right, the O-count at the bottom left, and the length at the bottom right, each on a rounded badge. Empty ratings and O-counts are hidden.
+- Horizontal scene and gallery rows size themselves to their cards at every interface and text scale, fixing clipped gallery cards and the blank space under scene cards.
+
 ## 🔍 Image Viewer Gestures
 
 - Swiping between images now works at any angle when the image isn't zoomed, instead of ignoring diagonal swipes.
