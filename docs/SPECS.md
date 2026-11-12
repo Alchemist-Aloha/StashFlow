@@ -1164,6 +1164,19 @@ ZIP filenames end in
 Before packaging, the app executable and every bundled Mach-O binary must
 contain the target architecture; embedded universal libraries are allowed.
 
+### iOS
+
+- Bundle identifier is `com.github.alchemistaloha.stashflow`; minimum iOS is 15.
+- Debug and Release xcconfigs optionally include the CocoaPods xcconfig before
+  Flutter's generated settings, matching macOS.
+- `Info.plist` declares arbitrary loads, local-network, Face ID, photo-library,
+  and background-audio usage required by server access, `local_auth`, `gal`,
+  and `audio_service`.
+- Stable and nightly workflows build on `macos-26` with
+  `flutter build ios --release --no-codesign` and publish an unsigned
+  `ios-unsigned.ipa` (`Payload/Runner.app`) for sideloading tools that re-sign
+  on install. There is no App Store or TestFlight signing.
+
 ### Android
 
 - Application ID and namespace are `io.github.alchemistaloha.stashflow`.

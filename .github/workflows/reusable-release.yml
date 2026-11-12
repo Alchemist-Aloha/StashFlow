@@ -70,6 +70,9 @@ jobs:
             os: macos-26
             artifact_name: macos-x64
             arch: x64
+          - target: ios
+            os: macos-26
+            artifact_name: ios
 
     env:
       TARGET_ARCH: ${{ matrix.arch }}
@@ -204,6 +207,8 @@ jobs:
             esac
             # CTranslate2/Ruy also inspect CMake's processor, not just OSX_ARCHITECTURES.
             CMAKE_APPLE_SILICON_PROCESSOR="$macos_arch" FLUTTER_MACOS_ARM64_ONLY=false FLUTTER_XCODE_ARCHS="$macos_arch" flutter build macos --release
+          elif [ "${{ matrix.target }}" = "ios" ]; then
+            CMAKE_APPLE_SILICON_PROCESSOR=arm64 flutter build ios --release --no-codesign
           fi
         shell: bash
 
@@ -249,6 +254,18 @@ jobs:
             fi
           done
           zip -r "../../../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-macos-${macos_arch}.zip" StashFlow.app
+        shell: bash
+
+      # Unsigned IPA for sideloading tools (AltStore, Sideloadly) that re-sign on install.
+      - name: Package iOS
+        if: matrix.target == 'ios'
+        run: |
+          cd build/ios/iphoneos
+          test -d Runner.app
+          lipo Runner.app/Runner -verify_arch arm64
+          mkdir Payload
+          cp -R Runner.app Payload/
+          zip -qr "../../../StashFlow-${STASHFLOW_ARTIFACT_VERSION}-ios-unsigned.ipa" Payload
         shell: bash
 
       - name: Name Android binaries
@@ -370,6 +387,7 @@ jobs:
           path: |
             build/app/outputs/flutter-apk/StashFlow-*.apk
             StashFlow-*.zip
+            StashFlow-*.ipa
 
   release:
     needs: build

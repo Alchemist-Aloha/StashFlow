@@ -2,9 +2,9 @@
 
 # StashFlow
 
-A modern, multi-platform client for your [**Stash server**](https://github.com/stashapp/stash). Built for fast browsing, playback, and library management across **Android**, **Desktop** (Windows, macOS, Linux), and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
+A modern, multi-platform client for your [**Stash server**](https://github.com/stashapp/stash). Built for fast browsing, playback, and library management across **Android**, **Desktop** (Windows, macOS, Linux), **iOS**, and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
 
-The app is primarily tested on Android and Windows. The web build is best treated as a demo because browser restrictions limit authentication and playback behavior. For the full experience, use a native build.
+The app is primarily tested on Android, Linux and Windows. The MacOS and iOS builds are offered as is. The web build is best treated as a demo because browser restrictions limit authentication and playback behavior. For the full experience, use a native build.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.42.0-green.svg)](pubspec.yaml)
