@@ -1218,6 +1218,10 @@ dependencies use the same static MSVC runtime. Windows ARM64 uses Ruy's fallback
 CPU detection because the pinned cpuinfo does not support that platform; other
 targets retain CPU detection.
 
+The translation hook places Windows CMake intermediates under the repository's
+`build/tr/<hook-cache-key>/` directory. This preserves configuration isolation
+while avoiding MSBuild tracking-file path limits in nested Ruy targets.
+
 Windows builds require the Visual Studio C++ desktop toolchain and C++ ATL
 for the active MSVC toolset and target architecture (x86/x64 or ARM64).
 The Windows secure-storage plugin includes `atlstr.h`; `flutter doctor` alone
