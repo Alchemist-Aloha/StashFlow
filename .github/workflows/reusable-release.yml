@@ -208,7 +208,12 @@ jobs:
             # CTranslate2/Ruy also inspect CMake's processor, not just OSX_ARCHITECTURES.
             CMAKE_APPLE_SILICON_PROCESSOR="$macos_arch" FLUTTER_MACOS_ARM64_ONLY=false FLUTTER_XCODE_ARCHS="$macos_arch" flutter build macos --release
           elif [ "${{ matrix.target }}" = "ios" ]; then
-            CMAKE_APPLE_SILICON_PROCESSOR=arm64 flutter build ios --release --no-codesign
+            # Flutter hides Xcode's real error behind a generic signing hint; keep the verbose log.
+            CMAKE_APPLE_SILICON_PROCESSOR=arm64 flutter build ios --release --no-codesign -v > ios-build.log 2>&1 || {
+              grep -nE 'error:|Error:|FAILED|failed with|StateError|CMake Error' ios-build.log | grep -v 'warning:' | tail -80
+              tail -150 ios-build.log
+              exit 1
+            }
           fi
         shell: bash
 
