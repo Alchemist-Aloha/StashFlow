@@ -19,6 +19,8 @@ set(OPENMP_RUNTIME NONE CACHE STRING "" FORCE)
 set(ENABLE_CPU_DISPATCH OFF CACHE BOOL "" FORCE)
 set(BUILD_CLI OFF CACHE BOOL "" FORCE)
 set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+# Ruy's cpuinfo tools are unused, and their install rules lack an iOS bundle destination.
+set(CPUINFO_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(ct2
   GIT_REPOSITORY https://github.com/OpenNMT/CTranslate2.git
   GIT_TAG 617405f4b050e994e829d527da6caa0e0030afe7
@@ -42,6 +44,11 @@ FetchContent_Declare(spm
   GIT_REPOSITORY https://github.com/google/sentencepiece.git
   GIT_TAG 31646a467d2051eb904e0b45de3a73e91fe1c1e3
   GIT_SHALLOW TRUE)
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS" AND NOT COMMAND set_xcode_property)
+  # SentencePiece expects ios-cmake's helper for its unused CLI tools.
+  function(set_xcode_property)
+  endfunction()
+endif()
 FetchContent_MakeAvailable(spm)
 
 # CTranslate2 resets PIC internally after configuring Ruy.
