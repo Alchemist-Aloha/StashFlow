@@ -58757,14 +58757,14 @@ _.ch=0
 _.cx=_.CW=$
 _.dx=_.db=null
 _.dy=!1
-_.fx=_.fr=null
-_.fy=b
-_.go=0
-_.k1=_.id=!1
-_.k2=$
-_.k4=_.k3=!1
-_.ok=null
-_.p3=_.p2=_.p1=0
+_.fy=_.fx=_.fr=null
+_.go=b
+_.id=0
+_.k2=_.k1=!1
+_.k3=$
+_.ok=_.k4=!1
+_.p1=null
+_.p4=_.p3=_.p2=0
 _.b=null},
 byG:function byG(a){this.a=a},
 byH:function byH(a){this.a=a},
@@ -215743,8 +215743,8 @@ A.J(m).ln()
 A.doI()
 $.ar.dO$.push(m)
 s=A.J(m).S($.dgw(),t.o9)
-m.k2!==$&&A.bZ()
-m.k2=s
+m.k3!==$&&A.bZ()
+m.k3=s
 s.b=m.gbqe()
 s=A.b([],t.aU)
 m.cx!==$&&A.bZ()
@@ -215773,7 +215773,7 @@ o=new A.ku(A.J(m).p(0,$.b5(),t.C)).ae6(0)
 n=B.d.iH(B.Pi,new A.byO(o),new A.byP())
 return A.bhG(l,o.d,o.y,o.e,o.r,o.at,B.l_,!1,!1,s.a,!1,l,n,l,l,l,l,o.f,o.ax,l,l,o.b,l,l,l,l,o.z,o.Q,o.as,o.x,o.c,l,o.w,l,l,B.ob)},
 bqS(){var s,r,q,p,o=this,n=$.P2().a,m=o.gu(0).f,l=!n
-if(l)o.fr=null
+if(l)o.fx=null
 else o.aLF()
 if(m&&l){s=o.db
 r=o.dx
@@ -215904,8 +215904,8 @@ if(!p)return
 s=q.gu(0).b
 if(s==null)return
 r=A.dGx(s.a.gu(0).at)
-if(r==null||r===q.fr)return
-q.fr=r
+if(r==null||r===q.fx)return
+q.fx=r
 A.cTg(r).aY(new A.byB(q,s,r),t.H)},
 Ob(a,b){return this.b_C(a,b)},
 b_B(a){return this.Ob(a,null)},
@@ -216012,7 +216012,7 @@ case 3:s=5
 return A.e(o.fD(p.b?0:p.a*100),$async$Lu)
 case 5:case 4:return A.l(null,r)}})
 return A.m($async$Lu,r)},
-amu(){var s,r,q,p,o,n,m,l=this,k=++l.p3,j=A.J(l).p(0,$.lJ(),t.OA).giq().a,i=J.de(j),h=i.H5(j,new A.byw(l)),g=A.J(l).p(0,$.cQC().gU(),t.kX)
+amu(){var s,r,q,p,o,n,m,l=this,k=++l.p4,j=A.J(l).p(0,$.lJ(),t.OA).giq().a,i=J.de(j),h=i.H5(j,new A.byw(l)),g=A.J(l).p(0,$.cQC().gU(),t.kX)
 if(h===-1||l.gu(0).gabK()){g.apt(A.b9(t.N))
 return}s=h+1
 r=B.h.bE(s+1,0,i.gD(j))
@@ -216075,11 +216075,11 @@ b0=new A.CA()
 $.DM()
 b0.m8(0)
 l=b0
-k=++n.p2
+k=++n.p3
 j=A.cD()
 b1=A.cD()
 b5.b=!1
-b5.c=n.p1
+b5.c=n.p2
 i=new A.bz3(b5,n,k,c2,j,b1,c6,c7,c8,null,null,null,a4,a5,c4,c5,a7)
 p=7
 s=10
@@ -216114,7 +216114,7 @@ case 14:b6=n.cx
 b6===$&&A.a()
 s=15
 return A.e(b6.a1m(j.aW(),n.gaF5(),new A.bz2(c2),n.gaMR()),$async$wj)
-case 15:if(!m&&b5.c===n.p1)n.qC(j.aW())
+case 15:if(!m&&b5.c===n.p2)n.qC(j.aW())
 s=m?16:17
 break
 case 16:b6=A.cVZ(c3)
@@ -216132,7 +216132,7 @@ case 19:p=18
 c0=o.pop()
 e=A.X(c0)
 $.aN().cj(0,"PlayerState: failed to switch cast to scene "+c+": "+A.p(e),"player_provider")
-if(!$.ajN()&&b5.c===n.p1)n.qC(j.aW())
+if(!$.ajN()&&b5.c===n.p2)n.qC(j.aW())
 s=21
 break
 case 18:s=7
@@ -216146,7 +216146,7 @@ c1=o.pop()
 d=A.X(c1)
 $.fA.$1("Error initializing video player: "+A.p(d))
 $.aN().cj(0,"provider initialize error scene="+c+" error="+A.p(d),"player_provider")
-s=A.J(n).geB()&&J.d(k,n.p2)?23:25
+s=A.J(n).geB()&&J.d(k,n.p3)?23:25
 break
 case 23:n.dD(0)
 s=24
@@ -216226,15 +216226,15 @@ if(s.a.gu(0).b)this.df(0)
 else this.eO(0)},
 eO(a){var s=this,r=s.gu(0).b
 if(r==null)return
-s.k4=s.id=!1
-s.ok=null
+s.ok=s.k1=!1
+s.p1=null
 s.qC(r)},
 qC(a){return this.btU(a)},
 btU(a){var s=0,r=A.n(t.H),q,p=this
 var $async$qC=A.j(function(b,c){if(b===1)return A.k(c,r)
-for(;;)switch(s){case 0:if(!A.J(p).geB()||p.gu(0).b!==a||p.k4||A.J(p).p(0,$.i6(),t.nK).c){s=1
-break}++p.p1
-p.k2===$&&A.a()
+for(;;)switch(s){case 0:if(!A.J(p).geB()||p.gu(0).b!==a||p.ok||A.J(p).p(0,$.i6(),t.nK).c){s=1
+break}++p.p2
+p.k3===$&&A.a()
 if(!a.a.gu(0).b)a.eO(0)
 p.su(0,p.gu(0).aqc(!0))
 $.v3().kW(0,!0)
@@ -216246,20 +216246,20 @@ s=o.gu(0).b
 if(a.a){r=s!=null
 if(r)q=s.a.gu(0).b||o.gu(0).d
 else q=!1
-if(a.b!==B.ab9)p=q||o.ok==s
+if(a.b!==B.ab9)p=q||o.p1==s
 else p=!1
-o.ok=p?s:null
-o.k4=!0
-o.k3=!1;++o.p1;++o.go
+o.p1=p?s:null
+o.ok=!0
+o.k4=!1;++o.p2;++o.id
 if(r)s.df(0)
-o.su(0,o.gu(0).aqc(!1))}else if(o.k4&&s!=null&&o.ok===s){o.ok=null
-o.k3=!0
-if((o.fy===B.cf||o.gu(0).db||o.gu(0).f||$.P2().a)&&!o.id){o.k4=!1
+o.su(0,o.gu(0).aqc(!1))}else if(o.ok&&s!=null&&o.p1===s){o.p1=null
+o.k4=!0
+if((o.go===B.cf||o.gu(0).db||o.gu(0).f||$.P2().a)&&!o.k1){o.ok=!1
 o.qC(s)}}},
-a9v(){var s,r=this;++r.p1
-r.ok=null
-r.k3=!1
-s=r.k2
+a9v(){var s,r=this;++r.p2
+r.p1=null
+r.k4=!1
+s=r.k3
 s===$&&A.a()
 s.ax2(!1).eR(new A.byz(r))},
 boQ(a){$.aN().cj(0,"PlayerState: audio focus failed: "+A.p(a),"player_provider")},
@@ -216267,26 +216267,26 @@ au9(a,b){var s,r,q=this
 q.a9v()
 s=q.gu(0).b
 if(s==null)return
-if(q.fy!==B.cf)r=q.gu(0).db
+if(q.go!==B.cf)r=q.gu(0).db
 else r=!1
-if(r)q.id=!0
+if(r)q.k1=!0
 if(!s.a.gu(0).b)return
 s.df(0)
 q.su(0,q.gu(0).aqc(!1))
 $.v3().kW(0,!1)},
 df(a){return this.au9(0,!0)},
 G7(a){var s,r=this
-r.fy=a
-if(a===B.cf){++r.go
-r.id=!1
+r.go=a
+if(a===B.cf){++r.id
+r.k1=!1
 return}if(!(a===B.kl||a===B.mi||a===B.h3))return
 s=r.gu(0).b
 if(s==null||!s.a.gu(0).b)return
 r.b89(s)},
 aJl(){var s=this
-if(s.k1)return
-s.k1=!0
-s.ZT(++s.go)},
+if(s.k2)return
+s.k2=!0
+s.ZT(++s.id)},
 ZT(a){return this.be7(a)},
 be7(a){var s=0,r=A.n(t.H),q,p=2,o=[],n=[],m=this,l,k,j,i,h,g,f
 var $async$ZT=A.j(function(b,c){if(b===1){o.push(c)
@@ -216295,9 +216295,9 @@ l=0,j=t.H
 case 6:if(!(l<20)){s=8
 break}i=A.J(m)
 h=i.z
-if(!(!h.dy&&h.e===i)||a!==m.go){n=[1]
+if(!(!h.dy&&h.e===i)||a!==m.id){n=[1]
 s=4
-break}if(m.fy===B.cf){n=[1]
+break}if(m.go===B.cf){n=[1]
 s=4
 break}g=A.J(m)
 i=g.z
@@ -216310,7 +216310,7 @@ i=g.z
 if(!(!i.dy&&i.e===g))A.V(A.bPE(i.gnl(0)))
 if(!i.afB().ga53().db){n=[1]
 s=4
-break}if(m.id||m.k4){n=[1]
+break}if(m.k1||m.ok){n=[1]
 s=4
 break}i=k.a
 f=i.b
@@ -216334,7 +216334,7 @@ s=4
 break
 case 3:n=[2]
 case 4:p=2
-m.k1=!1
+m.k2=!1
 s=n.pop()
 break
 case 5:case 1:return A.l(q,r)
@@ -216381,10 +216381,10 @@ k=l.e
 j=a.a<0?B.H:a
 g=k.a
 if(g>0&&j.a>g)j=k
-i=p.p1
+i=p.p2
 s=6
 return A.e(m.dX(0,j),$async$Kw)
-case 6:if(!A.J(p).geB()||p.gu(0).b!==m||i!==p.p1){s=1
+case 6:if(!A.J(p).geB()||p.gu(0).b!==m||i!==p.p2){s=1
 break}g=l.b
 s=g!==m.a.gu(0).b?7:8
 break
@@ -216402,7 +216402,7 @@ g=$.DG
 if(g!=null){f=h.x?B.DX:B.vJ
 g.avm(h.y,h.b,j,f,h.r)}case 1:return A.l(q,r)}})
 return A.m($async$Kw,r)},
-axC(a,b){var s,r,q,p,o,n,m,l,k,j,i,h,g,f=this,e=null;++f.p3
+axC(a,b){var s,r,q,p,o,n,m,l,k,j,i,h,g,f=this,e=null;++f.p4
 if(A.J(f).geB()){A.J(f).p(0,$.cQC().gU(),t.kX).apt(A.b9(t.N))
 s=A.J(f)
 r=$.i6()
@@ -216505,7 +216505,7 @@ d===$&&A.a()
 b=a0.gu(0).a
 b=b==null?a1:b.a
 d.U5(0,new A.byD(s),b)}if(o)$.v3().kW(0,!0)
-else $.v3().kW(0,!1)}if(a0.fy!==B.cf&&a0.gu(0).db&&!a0.id&&!a0.k4&&!s.a.gu(0).b)a0.aJl()
+else $.v3().kW(0,!1)}if(a0.go!==B.cf&&a0.gu(0).db&&!a0.k1&&!a0.ok&&!s.a.gu(0).b)a0.aJl()
 if(!A.J(a0).p(0,$.i6(),t.nK).c){a=!0
 if(p){if(f)if(e){p=a0.at
 p=p==null||B.h.aq(new A.aV(k.a-p.a).Mq(0).a,1000)>1000}else p=a
@@ -216549,12 +216549,12 @@ return A.e(m.eO(0),$async$Kj)
 case 13:case 12:s=1
 break
 case 9:l=p.gu(0).b
-k=p.p1
+k=p.p2
 j=l==null
 o=j?null:l.dX(0,B.H)
 s=14
 return A.e(t.uz.b(o)?o:A.dv(o,t.H),$async$Kj)
-case 14:s=!j&&p.gu(0).b===l&&k===p.p1?15:16
+case 14:s=!j&&p.gu(0).b===l&&k===p.p2?15:16
 break
 case 15:s=17
 return A.e(p.qC(l),$async$Kj)
@@ -216693,8 +216693,8 @@ $1(a){$.aN().cj(0,a,"player_provider")},
 $S:11}
 A.byT.prototype={
 $0(){var s,r,q=this.a
-$.ar.jf(q);++q.p1
-s=q.k2
+$.ar.jf(q);++q.p2
+s=q.k3
 s===$&&A.a()
 s.n().eR(q.gboP())
 $.P2().X(0,q.gaH0())
@@ -216801,7 +216801,7 @@ $0(){return B.lZ},
 $S:553}
 A.byB.prototype={
 $1(a){var s=this.a
-if(A.J(s).geB()&&s.gu(0).b===this.b&&!a&&s.fr===this.c)s.fr=null},
+if(A.J(s).geB()&&s.gu(0).b===this.b&&!a&&s.fx===this.c)s.fx=null},
 $S:91}
 A.bz4.prototype={
 $1(a){return!1},
@@ -216826,7 +216826,7 @@ s=2
 return A.e(q.b.$1(o),$async$$0)
 case 2:n=b
 if(n!=null){p=q.a
-p=A.J(p).geB()&&q.d===p.p3}else p=!1
+p=A.J(p).geB()&&q.d===p.p4}else p=!1
 s=p?3:4
 break
 case 3:s=5
@@ -216846,7 +216846,7 @@ A.bz3.prototype={
 aWi(b0){var s=0,r=A.n(t.H),q=this,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6,a7,a8,a9
 var $async$$1=A.j(function(b1,b2){if(b1===1)return A.k(b2,r)
 for(;;)switch(s){case 0:a9=q.b
-if(!A.J(a9).geB()||q.c!==a9.p2)throw A.o(A.ab("stale playback startup"))
+if(!A.J(a9).geB()||q.c!==a9.p3)throw A.o(A.ab("stale playback startup"))
 s=b0===0&&a9.gu(0).b!=null?2:4
 break
 case 2:s=5
@@ -216871,7 +216871,7 @@ m=q.f
 m.b=n
 l=q.a
 l.b=!0
-l.c=a9.p1
+l.c=a9.p2
 k=a9.x=q.d
 a9.as=a9.y=null
 $.aN().cj(0,"PlayerState playScene: updating state.activeScene to "+k.a+" attempt="+(b0+1),"player_provider")
@@ -216903,7 +216903,7 @@ l=l.a
 s=10
 return A.e(J.b1B(g,A.ayd(l,null,q.ay),!1),$async$$1)
 case 10:m=!0
-if(A.J(a9).geB())if(q.c===a9.p2){a9=a9.gu(0).b
+if(A.J(a9).geB())if(q.c===a9.p3){a9=a9.gu(0).b
 m=p.aW()
 m=a9==null?m!=null:a9!==m
 a9=m}else a9=m
@@ -216943,7 +216943,7 @@ return A.m($async$$2,r)},
 $S:1677}
 A.bz_.prototype={
 $0(){var s=this.a,r=!1
-if(A.J(s).geB())if(this.b===s.p2){s=s.gu(0).a
+if(A.J(s).geB())if(this.b===s.p3){s=s.gu(0).a
 s=s==null?null:s.a
 s=s===this.c.a}else s=r
 else s=r
