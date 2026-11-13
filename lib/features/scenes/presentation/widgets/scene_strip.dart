@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/widgets/media_card_text.dart';
@@ -82,15 +83,19 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
     final contentPadding = context.dimensions.spacingMedium;
     final separatorWidth = context.dimensions.spacingSmall;
     final stride = effectiveItemWidth + separatorWidth;
+    // Equal breathing room above and below the cards.
+    final verticalPadding = context.dimensions.spacingSmall;
 
     return SizedBox(
       height: MediaCardText.stripItemHeight(
         context,
         effectiveItemWidth,
         // Room for the resume bar some cards draw under the thumbnail.
-        extra: ref.watch(showScenePlaybackProgressProvider)
-            ? context.dimensions.spacingSmall / 2
-            : 0,
+        extra:
+            2 * verticalPadding +
+            (ref.watch(showScenePlaybackProgressProvider)
+                ? context.dimensions.spacingSmall / 2
+                : 0),
       ),
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
@@ -148,6 +153,8 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
               padding: EdgeInsets.only(
                 left: contentPadding,
                 right: contentPadding - separatorWidth,
+                top: verticalPadding,
+                bottom: verticalPadding,
               ),
               scrollDirection: Axis.horizontal,
               itemExtent: stride,

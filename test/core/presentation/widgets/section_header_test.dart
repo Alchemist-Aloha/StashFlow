@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/section_header.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+
 import '../../../helpers/test_helpers.dart';
 
 void main() {
@@ -41,6 +42,56 @@ void main() {
         expect(tapped, isTrue);
       },
     );
+    for (final scale in [0.8, 1.5]) {
+      testWidgets('an action does not add space above the title at $scale', (
+        tester,
+      ) async {
+        await pumpTestWidget(
+          tester,
+          child: Theme(
+            data: AppTheme.buildTheme(
+              Brightness.dark,
+              const Color(0xFF0F766E),
+              fontSizeFactor: scale,
+            ),
+            child: Scaffold(
+              body: Column(
+                children: [
+                  const SectionHeader(
+                    key: Key('plain'),
+                    title: 'Galleries',
+                    padding: EdgeInsets.zero,
+                  ),
+                  SectionHeader(
+                    key: const Key('action'),
+                    title: 'More From Studio',
+                    padding: EdgeInsets.zero,
+                    onViewAll: () {},
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        double titleInset(String key) {
+          final header = find.byKey(Key(key));
+          final title = find.descendant(
+            of: header,
+            matching: find.byType(Text),
+          );
+          return tester.getTopLeft(title.first).dy -
+              tester.getTopLeft(header).dy;
+        }
+
+        expect(titleInset('action'), titleInset('plain'));
+        expect(
+          tester.getSize(find.byKey(const Key('action'))).height,
+          tester.getSize(find.byKey(const Key('plain'))).height,
+        );
+      });
+    }
+
     testWidgets('renders title correctly', (WidgetTester tester) async {
       await pumpTestWidget(
         tester,
@@ -68,9 +119,8 @@ void main() {
 
       expect(
         find.text(
-          AppLocalizations.of(
-            tester.element(find.byType(SectionHeader)),
-          )!.common_view_all,
+          AppLocalizations.of(tester.element(find.byType(SectionHeader)))!
+              .common_view_all,
         ),
         findsOneWidget,
       );
@@ -88,9 +138,8 @@ void main() {
 
       expect(
         find.text(
-          AppLocalizations.of(
-            tester.element(find.byType(SectionHeader)),
-          )!.common_view_all,
+          AppLocalizations.of(tester.element(find.byType(SectionHeader)))!
+              .common_view_all,
         ),
         findsNothing,
       );

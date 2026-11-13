@@ -6,7 +6,6 @@ import '../../setup/presentation/providers/navigation_tabs_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/data/graphql/graphql_client.dart';
 import '../../scenes/domain/entities/scene.dart';
 import '../../scenes/presentation/pages/scenes_page.dart';
 import '../../scenes/presentation/pages/scene_deduplication_page.dart';
@@ -93,23 +92,13 @@ RouteBase _scopedImageBrowserRoute({
 /// This provider creates a [GoRouter] instance that handles:
 /// 1. Tab-based navigation via [StatefulShellRoute].
 /// 2. Deep linking to scenes, performers, studios, and tags.
-/// 3. Redirection to the settings page if the Stash server is not configured.
-/// 4. Immersive fullscreen transitions for the video player.
+/// 3. Scoped gallery and image browsing sessions.
+///
+/// The provider owns the router's lifetime; preference changes must not recreate it.
 @riverpod
 GoRouter router(Ref ref) {
-  // Use listen to react to configuration changes without rebuilding the router itself.
-  // This prevents the app from resetting to the initial location when settings change.
-  ref.listen(serverUrlProvider, (previous, next) {
-    if ((previous == null || previous.isEmpty) && next.isNotEmpty) {
-      // If we just became configured, we might want to notify or refresh.
-    }
-  });
-
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: '/scenes',
-    redirect: (context, state) {
-      return null;
-    },
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -143,9 +132,9 @@ GoRouter router(Ref ref) {
                       GoRoute(
                         path: 'edit',
                         builder: (context, state) {
-                          final scene = state.extra as Scene?;
-                          if (scene != null) {
-                            return SceneEditPage(scene: scene);
+                          final extra = state.extra;
+                          if (extra is Scene) {
+                            return SceneEditPage(scene: extra);
                           }
                           return SceneDetailsPage(
                             sceneId: state.pathParameters['id']!,
@@ -176,9 +165,9 @@ GoRouter router(Ref ref) {
                       GoRoute(
                         path: 'edit',
                         builder: (context, state) {
-                          final performer = state.extra as Performer?;
-                          if (performer != null) {
-                            return PerformerEditPage(performer: performer);
+                          final extra = state.extra;
+                          if (extra is Performer) {
+                            return PerformerEditPage(performer: extra);
                           }
                           return PerformerDetailsPage(
                             performerId: state.pathParameters['id']!,
@@ -220,9 +209,9 @@ GoRouter router(Ref ref) {
                       GoRoute(
                         path: 'edit',
                         builder: (context, state) {
-                          final studio = state.extra as Studio?;
-                          if (studio != null) {
-                            return StudioEditPage(studio: studio);
+                          final extra = state.extra;
+                          if (extra is Studio) {
+                            return StudioEditPage(studio: extra);
                           }
                           return StudioDetailsPage(
                             studioId: state.pathParameters['id']!,
@@ -549,4 +538,6 @@ GoRouter router(Ref ref) {
       ),
     ],
   );
+  ref.onDispose(router.dispose);
+  return router;
 }

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+
 import '../theme/app_theme.dart';
 
 class SectionHeader extends StatelessWidget {
@@ -42,6 +43,16 @@ class SectionHeader extends StatelessWidget {
           ),
           if (onViewAll != null)
             TextButton(
+              // Compact so headers with an action match the height of those
+              // without one instead of padding the title by 12px each side.
+              style: TextButton.styleFrom(
+                minimumSize: Size.zero,
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.dimensions.spacingSmall,
+                ),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+              ),
               onPressed: onViewAll,
               child: Text(
                 actionLabel ?? AppLocalizations.of(context)!.common_view_all,

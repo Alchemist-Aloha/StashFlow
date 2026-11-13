@@ -127,9 +127,8 @@ void main() {
         await pumpTestWidget(
           tester,
           overrides: [
-            performerDetailsProvider(
-              'performer-1',
-            ).overrideWith((ref) => _performer.copyWith(rating100: 55)),
+            performerDetailsProvider('performer-1')
+                .overrideWith((ref) => _performer.copyWith(rating100: 55)),
             entityMediaPreviewProvider(
               EntityMediaFilterKind.performer,
               'performer-1',
@@ -191,9 +190,8 @@ void main() {
     await pumpTestWidget(
       tester,
       overrides: [
-        performerDetailsProvider(
-          'performer-1',
-        ).overrideWith((ref) => performer),
+        performerDetailsProvider('performer-1')
+            .overrideWith((ref) => performer),
         entityMediaPreviewProvider(
           EntityMediaFilterKind.performer,
           'performer-1',
@@ -208,5 +206,42 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.widget<AppBar>(find.byType(AppBar)).title, isNull);
+  });
+
+  testWidgets('performer links collapse to five with a show more toggle', (
+    tester,
+  ) async {
+    final urls = [for (var i = 0; i < 7; i++) 'https://example.com/$i'];
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        performerDetailsProvider('performer-1')
+            .overrideWith((ref) => _performer.copyWith(urls: urls)),
+        entityMediaPreviewProvider(
+          EntityMediaFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+        entityGalleryPreviewProvider(
+          EntityGalleryFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+      ],
+      child: const PerformerDetailsPage(performerId: 'performer-1'),
+    );
+    await tester.pumpAndSettle();
+    final links = find.textContaining(
+      'https://example.com/',
+      skipOffstage: false,
+    );
+    expect(links, findsNWidgets(5));
+    final toggle = find.descendant(
+      of: find.byKey(const Key('performer_links_header')),
+      matching: find.text('Show more'),
+    );
+    await tester.ensureVisible(toggle);
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    expect(links, findsNWidgets(7));
+    expect(find.text('Show less'), findsOneWidget);
   });
 }

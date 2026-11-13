@@ -157,8 +157,18 @@ The customizable navigation model contains eight tab types:
 Groups, Images, and Markers are hidden by default, including when absent from
 an older saved configuration. Users may reorder tabs and change
 visibility, but at least one usable destination must remain. UI indices must map
-explicitly to the router's fixed branch indices. Re-selecting an active top-level destination
-scrolls its primary list to the top rather than duplicating the route.
+explicitly to the router's fixed branch indices. Selecting a destination first
+unwinds trailing pages pushed from other features on the outgoing branch (for
+example, a gallery and image viewer opened from performer details). Returning
+to that branch restores its own details page and scroll state, not the borrowed
+pages. Re-selecting the active destination after unwinding stops at its own top
+page; re-selecting again resets it to the primary list and scrolls to the top.
+Unwinding uses normal guarded pops, completes pushed-route futures, and lets
+nested navigators reconcile between pops. A vetoed pop or superseding navigation
+cancels the tab change; rapid repeated selections must not race the unwind.
+Route ownership follows the configured branch routes, not URL prefixes.
+The router survives preference changes and is disposed with its provider.
+Edit routes without a correctly typed entity payload fall back to details.
 Images reuses the existing `/galleries/images` list and fullscreen child routes
 in its own shell branch, retaining saved tab order and existing image links.
 When Images is hidden, those routes retain Galleries as the selected visible
@@ -444,7 +454,9 @@ Header padding and action spacing follow the scaled theme dimensions. Aliases
 sit close to the performer identity with half the small theme spacing. Rating
 changes use the entity repository, refresh details, and invalidate affected
 lists after confirmation; cancellation or failed saves retain the confirmed
-value, with localized feedback on failure.
+value, with localized feedback on failure. Performer Details shows the first
+five links, with a Show more/Show less action in the section header when there
+are more.
 
 ### Scene rating and metadata mutation
 
@@ -564,6 +576,8 @@ Scene and gallery strips size their row from the grid cards' shared text styles
 (`MediaCardText`: 16:9 thumbnail, two-line title, subtitle, and for scenes the
 resume bar) under the active UI and text scale, give every card the same
 slot width, and omit performer avatars so cards neither clip nor leave a gap.
+The row adds equal small-spacing padding above and below the cards; the
+horizontal scrollbar sits in the bottom padding.
 
 ## Video playback and media sessions
 
@@ -827,7 +841,9 @@ removed manual-queue design.
 Fullscreen always renders `playerState.activeScene`. Entering from details must
 first establish that the page scene owns the global player. Exit cleanup must
 pair with every successful enter path and remain retryable after a platform
-failure.
+failure. Exit navigates to the active scene's details only when the current
+route (including pushed pages in any tab) is not already that scene, so a scene
+opened from another entity's details keeps its tab and Back history.
 
 Mobile fullscreen applies the configured gravity/aspect orientation behavior
 and restores the main-page orientation policy on exit. Desktop and web use
