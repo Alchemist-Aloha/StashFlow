@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
