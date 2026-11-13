@@ -883,6 +883,13 @@ presentation that was active before entering.
 
 - The PiP surface omits navigation chrome, details, and the mini player. Desktop
   builds show only a transient minimal transport overlay over the video.
+- Desktop PiP supplies its own page route factory because the multi-window
+  shell captures `material_ui` as a `WidgetsApp`. Entering from the fullscreen
+  player waits for native fullscreen restoration and the overlay's exit before
+  opening the PiP window. A failed exit or PiP entry restores the previous
+  presentation; closing PiP restores it through the normal fullscreen path.
+  PiP window creation waits until the current Flutter frame has ended so its
+  synchronous native frames cannot re-enter the rendering pipeline.
 - The desktop PiP window is frameless, always on top where supported, and
   omitted from the taskbar, dock window collection, or equivalent. Closing it
   leaves the main window geometry and decoration untouched, and stopping
@@ -931,6 +938,15 @@ presentation that was active before entering.
   and maximum dimensions, wait for native resize confirmation, then restore
   free resizing and the ratio lock. Hyprland's `keep_aspect_ratio` rule preserves
   those proportions during edge dragging without a forced initial `size`.
+
+The Windows PiP runtime smoke uses a local video of at least 30 seconds to check
+inline and fullscreen handoffs, native window geometry, playback continuity,
+keyboard transport, and window cleanup:
+
+```powershell
+flutter build windows --release --no-pub -t test/windows/pip_smoke.dart
+python scripts/test_windows_pip.py build/windows/x64/runner/Release path/to/video.mp4
+```
 
 ### Casting
 

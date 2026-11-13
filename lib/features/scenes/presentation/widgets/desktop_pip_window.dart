@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart' show SchedulerPhase;
 import 'package:material_ui/material_ui.dart';
 import 'package:media_kit/media_kit.dart' show VideoParams;
 import 'package:media_kit_video/media_kit_video.dart';
@@ -167,6 +168,12 @@ class DesktopPipWindowSession {
     );
     final minimumSize = desktopPipMinimumSize(ratio);
     try {
+      final binding = WidgetsBinding.instance;
+      if (binding.schedulerPhase != SchedulerPhase.idle) {
+        // Fullscreen exit may finish inside an animation frame. Native window
+        // creation can synchronously draw, so wait until that frame has ended.
+        await binding.endOfFrame;
+      }
       final viewId = await openWindow(
         (context, id) {
           _viewId ??= id;
@@ -191,6 +198,12 @@ class DesktopPipWindowSession {
           // Hyprland floats, pins, and preserves the aspect ratio of this view.
           title: kDesktopPipWindowTitle,
           alwaysOnTop: true,
+          // material_ui is captured as a WidgetsApp by multiview_desktop.
+          // Its secondary navigator needs an explicit page route factory.
+          shellOverrides: ViewShellOverrides(
+            pageRouteBuilder: <T>(settings, builder) =>
+                MaterialPageRoute<T>(settings: settings, builder: builder),
+          ),
         ),
       );
       _viewId = viewId;
