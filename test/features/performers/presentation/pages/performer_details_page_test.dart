@@ -8,7 +8,9 @@ import 'package:stash_app_flutter/features/galleries/presentation/providers/enti
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/performers/presentation/pages/performer_details_page.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_details_provider.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/entity_media_filter_scope.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 
 import '../../../../helpers/test_helpers.dart';
 
@@ -243,5 +245,61 @@ void main() {
     await tester.pumpAndSettle();
     expect(links, findsNWidgets(7));
     expect(find.text('Show less'), findsOneWidget);
+  });
+
+  testWidgets('media strip keeps the View all sort order', (tester) async {
+    // Shuffled ids catch any client-side reordering of the preview.
+    final scenes = [
+      for (final id in ['3', '1', '4', '2'])
+        Scene(
+          id: id,
+          title: 'Scene $id',
+          date: DateTime(2024, 1, 1),
+          rating100: null,
+          oCounter: 0,
+          organized: false,
+          interactive: false,
+          resumeTime: 0,
+          playCount: 0,
+          playDuration: 0,
+          files: const [],
+          paths: const ScenePaths(
+            screenshot: null,
+            preview: null,
+            stream: null,
+          ),
+          urls: const [],
+          studioId: null,
+          studioName: null,
+          studioImagePath: null,
+          performerIds: const [],
+          performerNames: const [],
+          performerImagePaths: const [],
+          tagIds: const [],
+          tagNames: const [],
+        ),
+    ];
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        performerDetailsProvider(
+          'performer-1',
+        ).overrideWith((ref) => _performer),
+        entityMediaPreviewProvider(
+          EntityMediaFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => scenes),
+        entityGalleryPreviewProvider(
+          EntityGalleryFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+      ],
+      child: const PerformerDetailsPage(performerId: 'performer-1'),
+    );
+    await tester.pumpAndSettle();
+    final strip = tester.widget<SceneStrip>(
+      find.byType(SceneStrip, skipOffstage: false),
+    );
+    expect(strip.scenes.map((scene) => scene.id), ['3', '1', '4', '2']);
   });
 }

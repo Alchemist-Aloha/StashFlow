@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'dart:math';
-
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/utils/l10n_extensions.dart';
@@ -12,7 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
-import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/performer_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
@@ -510,17 +507,19 @@ class PerformerDetailsPage extends ConsumerWidget {
                                       ),
                                     );
                                   }
-                                  final List<Scene> sceneList = scenes;
-                                  final shuffledItems = sceneList.toList()
-                                    ..shuffle(Random(performer.id.hashCode));
-                                  return SceneStrip(
-                                    scenes: shuffledItems,
-                                    queueId: PlaybackQueueIds.performerStrip(
-                                      performer.id,
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                      top: context.dimensions.spacingMedium,
                                     ),
-                                    onTap: (scene) => context.push(
-                                      '/scenes/scene/${scene.id}',
-                                      extra: true,
+                                    child: SceneStrip(
+                                      scenes: scenes,
+                                      queueId: PlaybackQueueIds.performerStrip(
+                                        performer.id,
+                                      ),
+                                      onTap: (scene) => context.push(
+                                        '/scenes/scene/${scene.id}',
+                                        extra: true,
+                                      ),
                                     ),
                                   );
                                 },
@@ -556,6 +555,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                                       '/performers/performer/${performer.id}/galleries',
                                     ),
                                     padding: EdgeInsets.zero,
+                                  ),
+                                  SizedBox(
+                                    height: context.dimensions.spacingMedium,
                                   ),
                                   GalleryStrip(
                                     galleries: galleries,

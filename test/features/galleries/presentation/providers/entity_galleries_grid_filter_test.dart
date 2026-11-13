@@ -166,4 +166,34 @@ void main() {
     expect(repository.lastFilter?.studios?.value, ['preset-studio']);
     expect(repository.lastFilter?.tags?.value, ['page-tag']);
   });
+
+  test('gallery preview uses the grid sort and entity filter', () async {
+    final repository = _FakeGraphQLGalleryRepository();
+    final container = await _containerWith(repository);
+    container
+        .read(
+          entityGallerySortProvider(EntityGalleryFilterKind.studio).notifier,
+        )
+        .setSort(sort: 'title', descending: true);
+
+    await container.read(
+      entityGalleryGridProvider(
+        EntityGalleryFilterKind.studio,
+        'studio-1',
+      ).future,
+    );
+    final gridSort = (repository.lastSort, repository.lastDescending);
+    final gridStudios = repository.lastFilter?.studios?.value;
+
+    await container.read(
+      entityGalleryPreviewProvider(
+        EntityGalleryFilterKind.studio,
+        'studio-1',
+      ).future,
+    );
+    expect((repository.lastSort, repository.lastDescending), gridSort);
+    expect(gridSort, ('title', true));
+    expect(repository.lastFilter?.studios?.value, gridStudios);
+    expect(repository.lastPage, 1);
+  });
 }

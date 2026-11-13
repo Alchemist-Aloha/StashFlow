@@ -578,6 +578,10 @@ resume bar) under the active UI and text scale, give every card the same
 slot width, and omit performer avatars so cards neither clip nor leave a gap.
 The row adds equal small-spacing padding above and below the cards; the
 horizontal scrollbar sits in the bottom padding.
+On details pages, a strip sits medium spacing below its section header.
+Details-page scene and gallery strips keep the preview's server order, which
+uses the same sort (including the random seed) and entity restriction as the
+View all grid, and never reorder it client-side.
 
 ## Video playback and media sessions
 

@@ -1,13 +1,10 @@
 import 'dart:async';
 
-import 'dart:math';
-
 import 'package:material_ui/material_ui.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
-import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/tag_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
@@ -235,15 +232,19 @@ class TagDetailsPage extends ConsumerWidget {
                                       ),
                                     );
                                   }
-                                  final List<Scene> sceneList = scenes;
-                                  final shuffledItems = sceneList.toList()
-                                    ..shuffle(Random(tag.id.hashCode));
-                                  return SceneStrip(
-                                    scenes: shuffledItems,
-                                    queueId: PlaybackQueueIds.tagStrip(tag.id),
-                                    onTap: (scene) => context.push(
-                                      '/scenes/scene/${scene.id}',
-                                      extra: true,
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                      top: context.dimensions.spacingMedium,
+                                    ),
+                                    child: SceneStrip(
+                                      scenes: scenes,
+                                      queueId: PlaybackQueueIds.tagStrip(
+                                        tag.id,
+                                      ),
+                                      onTap: (scene) => context.push(
+                                        '/scenes/scene/${scene.id}',
+                                        extra: true,
+                                      ),
                                     ),
                                   );
                                 },
@@ -279,6 +280,9 @@ class TagDetailsPage extends ConsumerWidget {
                                       '/tags/tag/${tag.id}/galleries',
                                     ),
                                     padding: EdgeInsets.zero,
+                                  ),
+                                  SizedBox(
+                                    height: context.dimensions.spacingMedium,
                                   ),
                                   GalleryStrip(
                                     galleries: galleries,

@@ -1,13 +1,10 @@
 import 'dart:async';
 
-import 'dart:math';
-
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
-import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/studio_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
@@ -308,17 +305,19 @@ class StudioDetailsPage extends ConsumerWidget {
                                       ),
                                     );
                                   }
-                                  final List<Scene> sceneList = scenes;
-                                  final shuffledItems = sceneList.toList()
-                                    ..shuffle(Random(studio.id.hashCode));
-                                  return SceneStrip(
-                                    scenes: shuffledItems,
-                                    queueId: PlaybackQueueIds.studioStrip(
-                                      studio.id,
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                      top: context.dimensions.spacingMedium,
                                     ),
-                                    onTap: (scene) => context.push(
-                                      '/scenes/scene/${scene.id}',
-                                      extra: true,
+                                    child: SceneStrip(
+                                      scenes: scenes,
+                                      queueId: PlaybackQueueIds.studioStrip(
+                                        studio.id,
+                                      ),
+                                      onTap: (scene) => context.push(
+                                        '/scenes/scene/${scene.id}',
+                                        extra: true,
+                                      ),
                                     ),
                                   );
                                 },
@@ -354,6 +353,9 @@ class StudioDetailsPage extends ConsumerWidget {
                                       '/studios/studio/${studio.id}/galleries',
                                     ),
                                     padding: EdgeInsets.zero,
+                                  ),
+                                  SizedBox(
+                                    height: context.dimensions.spacingMedium,
                                   ),
                                   GalleryStrip(
                                     galleries: galleries,

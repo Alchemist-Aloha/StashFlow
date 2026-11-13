@@ -1746,7 +1746,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             title: context.l10n.details_galleries,
             padding: EdgeInsets.zero,
           ),
-          SizedBox(height: context.dimensions.spacingSmall),
+          SizedBox(height: context.dimensions.spacingMedium),
           GalleryStrip(
             galleries: galleries,
             onTap: (gallery) => context.push(
