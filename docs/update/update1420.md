@@ -19,12 +19,18 @@
 - Scene cards now match gallery cards: the rating appears as a yellow star at the top right, the O-count at the bottom left, and the length at the bottom right, each on a rounded badge. Empty ratings and O-counts are hidden.
 - Horizontal scene and gallery rows size themselves to their cards at every interface and text scale, fixing clipped gallery cards and the blank space under scene cards.
 
-## 🔍 Image Viewer Gestures
+## 🔎 Scene Filters
+
+- The **Duplicated** scene filter now honors stash ID, title, and URL selections, not just phash. The redundant phash text filter was removed; the phash distance filter remains.
+
+## 🔍 Image Viewer
 
 - Swiping between images now works at any angle when the image isn't zoomed, instead of ignoring diagonal swipes.
 - Pinch to zoom responds immediately, including when one finger moves first or the page is still settling after a swipe. Double-tap toggles between fit and 3× zoom, and desktop mouse-wheel zoom no longer scrolls to another image.
 - Zoomed images pan only within the picture, not the letterbox around it, and dragging past an edge continues into the next or previous image.
 - Original images now load through the shared authenticated image cache, with a retry button when loading fails.
+- Android and iOS now open the viewer without hiding the status and navigation bars.
+- On desktop, the viewer now opens in a normal window. Use the new fullscreen button in the top bar, or press **F**, to switch fullscreen on and off; the shortcut can be changed in the keyboard settings' Image section. Closing the viewer only leaves fullscreen if the viewer turned it on.
 
 ## 🔊 Android Audio Focus
 
@@ -61,11 +67,13 @@
 
 - Updated Linux media-service integration and explicitly enabled play, pause, previous, and next controls so desktop media widgets retain their transport buttons with the newer audio-service dependencies.
 
-## 📦 Desktop Builds and Downloads
+## 📦 Builds and Downloads
 
+- Added an unsigned iOS build (`ios-unsigned.ipa`, iOS 15 or later) to stable and nightly releases, for sideloading tools such as AltStore or Sideloadly that re-sign the app on install. It is offered as is, without App Store or TestFlight distribution.
 - Windows ZIP bundles and installers now reuse a single release build, avoiding a second full compilation during packaging. Architecture checks remain in place for both x64 and ARM64 downloads.
 - Intel macOS releases now cross-compile on Apple Silicon runners, and macOS builds no longer repeat the configuration-only step. Separate Intel and Apple Silicon downloads are retained.
 - Fixed macOS builds failing with a CocoaPods sandbox or missing `Podfile.lock` error caused by missing build settings.
+- Fixed Windows builds of the translation component exceeding MSBuild path-length limits.
 - Simplified downloads to stable releases and nightly builds. Pushes to `main` no longer publish release-candidate builds.
 
 ## 🛠️ Build Compatibility
