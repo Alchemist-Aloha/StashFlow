@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../galleries/presentation/gallery_location.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
@@ -362,7 +363,7 @@ class StudioDetailsPage extends ConsumerWidget {
                                     onTap: (gallery) {
                                       unawaited(
                                         context.push(
-                                          '/galleries/gallery/${Uri.encodeComponent(gallery.id)}',
+                                          galleryLocation(context, gallery.id),
                                         ),
                                       );
                                     },

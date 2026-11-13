@@ -279,6 +279,13 @@ GoRouter router(Ref ref) {
                 builder: (context, state) => const GalleriesPage(),
                 routes: [
                   _galleryBrowserRoute('gallery/:id', '/galleries/gallery'),
+                  // One borrowed copy per source branch; see galleryLocation.
+                  for (final tab in NavigationTabType.values)
+                    if (tab != NavigationTabType.galleries)
+                      _galleryBrowserRoute(
+                        'from/${tab.name}/:id',
+                        '/galleries/from/${tab.name}',
+                      ),
                 ],
               ),
             ],

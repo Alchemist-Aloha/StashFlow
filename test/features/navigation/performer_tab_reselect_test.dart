@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/gallery_location.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/pages/gallery_details_page.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
@@ -30,6 +32,8 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/video_p
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_tabs_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
+
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 import '../../helpers/test_helpers.dart';
 
@@ -146,6 +150,8 @@ void main() {
       child: Consumer(
         builder: (context, ref, _) => MaterialApp.router(
           routerConfig: ref.watch(routerProvider),
+          // App theme: Android pages use the branch-aware predictive back.
+          theme: AppTheme.buildTheme(Brightness.light, Colors.blue),
           localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
@@ -198,7 +204,7 @@ void main() {
           var galleryClosed = false;
           unawaited(
             router
-                .push('/galleries/gallery/g1')
+                .push('/galleries/from/performers/g1')
                 .then((_) => galleryClosed = true),
           );
           await tester.pumpAndSettle();
@@ -264,6 +270,108 @@ void main() {
       });
     }
   }
+
+  testWidgets(
+    'borrowed gallery does not clash with one open in the Galleries tab',
+    (tester) async {
+      final router = await pumpPerformerDetails(tester);
+      final navigation = find.byType(NavigationBar);
+      final performersTab = find.descendant(
+        of: navigation,
+        matching: find.byIcon(Icons.people),
+      );
+      final galleriesTab = find.descendant(
+        of: navigation,
+        matching: find.byIcon(Icons.perm_media),
+      );
+      await tester.tap(galleriesTab);
+      await tester.pumpAndSettle();
+      unawaited(router.push('/galleries/gallery/g1'));
+      await tester.pumpAndSettle();
+      expect(find.byType(GalleryDetailsPage), findsOneWidget);
+      await tester.tap(performersTab);
+      await tester.pumpAndSettle();
+      expect(find.byType(PerformerDetailsPage), findsOneWidget);
+      final location = galleryLocation(
+        tester.element(find.byType(PerformerDetailsPage)),
+        'g1',
+      );
+      expect(location, '/galleries/from/performers/g1');
+      unawaited(router.push(location));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byType(ImageCard).first);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      await tester.tap(performersTab);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(router.state.uri.path, '/performers/performer/p1');
+      expect(find.byType(PerformerDetailsPage), findsOneWidget);
+      await tester.tap(galleriesTab);
+      await tester.pumpAndSettle();
+      expect(find.byType(GalleryDetailsPage), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'predictive back in another tab leaves hidden performer details alone',
+    (tester) async {
+      final router = await pumpPerformerDetails(tester);
+      final navigation = find.byType(NavigationBar);
+      Future<void> backGesture(String method, [Object? arguments]) =>
+          tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+            SystemChannels.backGesture.name,
+            SystemChannels.backGesture.codec.encodeMethodCall(
+              MethodCall(method, arguments),
+            ),
+            (_) {},
+          );
+
+      await tester.tap(
+        find.descendant(
+          of: navigation,
+          matching: find.byIcon(Icons.perm_media),
+        ),
+      );
+      await tester.pumpAndSettle();
+      unawaited(router.push('/galleries/gallery/g1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(ImageCard).first);
+      await tester.pumpAndSettle();
+      expect(find.byType(ImageFullscreenPage), findsOneWidget);
+
+      // Android 16 routes system Back through predictive back gestures.
+      await backGesture('startBackGesture', <String, Object?>{
+        'touchOffset': <double>[5, 300],
+        'progress': 0.0,
+        'swipeEdge': 0,
+      });
+      await tester.pump();
+      await backGesture('updateBackGestureProgress', <String, Object?>{
+        'touchOffset': <double>[200, 300],
+        'progress': 0.5,
+        'swipeEdge': 0,
+      });
+      await tester.pump();
+      await backGesture('commitBackGesture');
+      await tester.pumpAndSettle();
+      expect(find.byType(ImageFullscreenPage), findsNothing);
+      expect(find.byType(GalleryDetailsPage), findsOneWidget);
+
+      await tester.tap(
+        find.descendant(of: navigation, matching: find.byIcon(Icons.people)),
+      );
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/performers/performer/p1');
+      expect(find.byType(PerformerDetailsPage), findsOneWidget);
+      expect(find.byType(PerformersPage).hitTestable(), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets(
     'fullscreen exit keeps a scene pushed from performer details in place',

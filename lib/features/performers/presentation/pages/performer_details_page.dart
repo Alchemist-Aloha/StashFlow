@@ -6,6 +6,7 @@ import '../../../../core/utils/l10n_extensions.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../galleries/presentation/gallery_location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/presentation/widgets/stash_image.dart';
@@ -564,7 +565,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     onTap: (gallery) {
                                       unawaited(
                                         context.push(
-                                          '/galleries/gallery/${Uri.encodeComponent(gallery.id)}',
+                                          galleryLocation(context, gallery.id),
                                         ),
                                       );
                                     },

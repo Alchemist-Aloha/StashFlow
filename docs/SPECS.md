@@ -167,6 +167,13 @@ Unwinding uses normal guarded pops, completes pushed-route futures, and lets
 nested navigators reconcile between pops. A vetoed pop or superseding navigation
 cancels the tab change; rapid repeated selections must not race the unwind.
 Route ownership follows the configured branch routes, not URL prefixes.
+Galleries opened outside the Galleries branch use that source branch's own
+borrowed scoped route (`/galleries/from/<tab>/:id`, via `galleryLocation`), so
+its nested Navigator never duplicates one kept open in another branch.
+Android page transitions must ignore predictive back while their branch is
+hidden (`BranchAwarePredictiveBackPageTransitionsBuilder`): Flutter commits a
+back gesture on every accepting route, so a hidden branch's top page would
+otherwise be popped behind go_router and lost on return.
 The router survives preference changes and is disposed with its provider.
 Edit routes without a correctly typed entity payload fall back to details.
 Images reuses the existing `/galleries/images` list and fullscreen child routes

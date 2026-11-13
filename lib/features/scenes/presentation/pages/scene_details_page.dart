@@ -13,6 +13,7 @@ import '../../../../core/utils/l10n_extensions.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../galleries/presentation/gallery_location.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
@@ -1749,9 +1750,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           SizedBox(height: context.dimensions.spacingMedium),
           GalleryStrip(
             galleries: galleries,
-            onTap: (gallery) => context.push(
-              '/galleries/gallery/${Uri.encodeComponent(gallery.id)}',
-            ),
+            onTap: (gallery) =>
+                context.push(galleryLocation(context, gallery.id)),
           ),
         ],
       ),

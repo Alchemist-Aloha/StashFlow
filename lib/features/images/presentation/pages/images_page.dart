@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../galleries/presentation/gallery_location.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
@@ -254,9 +255,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     _lastRandomGalleryId = gallery.id;
 
-    unawaited(
-      context.push('/galleries/gallery/${Uri.encodeComponent(gallery.id)}'),
-    );
+    unawaited(context.push(galleryLocation(context, gallery.id)));
   }
 
   void _showSortPanel() {
