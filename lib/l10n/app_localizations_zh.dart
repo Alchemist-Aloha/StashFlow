@@ -3019,6 +3019,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_security_lock_on_launch_subtitle => '应用程序打开时立即询问密码。';
 
   @override
+  String get settings_security_biometric_unlock => '使用生物识别解锁';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      '使用指纹或面部解锁。密码仍可作为备用方式。';
+
+  @override
+  String get auth_use_biometrics => '使用生物识别';
+
+  @override
+  String get auth_biometric_reason => '解锁 StashFlow';
+
+  @override
   String get settings_security_background_lock_timer => '后台锁定定时器';
 
   @override
@@ -6960,6 +6973,19 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_security_lock_on_launch_subtitle => '应用程序打开时立即询问密码。';
+
+  @override
+  String get settings_security_biometric_unlock => '使用生物识别解锁';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      '使用指纹或面部解锁。密码仍可作为备用方式。';
+
+  @override
+  String get auth_use_biometrics => '使用生物识别';
+
+  @override
+  String get auth_biometric_reason => '解锁 StashFlow';
 
   @override
   String get settings_security_background_lock_timer => '后台锁定定时器';
@@ -10908,6 +10934,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_security_lock_on_launch_subtitle => '應用程式開啟時立即詢問密碼。';
+
+  @override
+  String get settings_security_biometric_unlock => '使用生物辨識解鎖';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      '使用指紋或臉部解鎖。密碼仍可作為備用方式。';
+
+  @override
+  String get auth_use_biometrics => '使用生物辨識';
+
+  @override
+  String get auth_biometric_reason => '解鎖 StashFlow';
 
   @override
   String get settings_security_background_lock_timer => '背景鎖定計時器';

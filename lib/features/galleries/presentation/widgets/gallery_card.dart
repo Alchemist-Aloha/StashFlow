@@ -1,10 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/presentation/widgets/thumbnail_badge.dart';
+import '../../../../core/presentation/widgets/media_card_text.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/gallery.dart';
@@ -26,7 +28,8 @@ class GalleryCard extends ConsumerWidget {
          id: 'skeleton',
          title: 'Loading',
        ), // Skeletonizer ignores
-       skeletonize = true;
+       skeletonize = true,
+       showPerformers = false;
 
   const GalleryCard({
     required this.gallery,
@@ -37,6 +40,7 @@ class GalleryCard extends ConsumerWidget {
     this.memCacheWidth,
     this.memCacheHeight,
     this.skeletonize = false,
+    this.showPerformers = true,
     super.key,
   });
 
@@ -63,6 +67,10 @@ class GalleryCard extends ConsumerWidget {
 
   /// Whether to render this card using skeleton placeholders.
   final bool skeletonize;
+
+  /// Whether the grid card shows the performer avatar row; fixed-height
+  /// strips disable it so the card fits their row height.
+  final bool showPerformers;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -197,24 +205,19 @@ class GalleryCard extends ConsumerWidget {
                         children: [
                           Text(
                             gallery.displayName,
-                            style: context.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: context.dimensions.cardTitleFontSize,
-                            ),
-                            maxLines: 2,
+                            style: MediaCardText.title(context),
+                            maxLines: MediaCardText.titleMaxLines,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 2),
                           Text(
                             gallery.studioName ?? context.l10n.common_unknown,
-                            style: context.textTheme.labelSmall?.copyWith(
-                              color: context.colors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: MediaCardText.subtitle(context),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (ref.watch(showPerformerAvatarsProvider) &&
+                          if (showPerformers &&
+                              ref.watch(showPerformerAvatarsProvider) &&
                               gallery.performerNames.isNotEmpty) ...[
                             const SizedBox(height: 4),
                             ScenePerformerAvatarRow(
@@ -272,75 +275,22 @@ class GalleryCard extends ConsumerWidget {
         ),
         if (gallery.rating100 != null && gallery.rating100! > 0)
           Positioned(
-            top: isGrid ? 4 : 8,
-            right: isGrid ? 4 : 8,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: isGrid ? 4 : 6,
-                vertical: isGrid ? 1 : 2,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.star,
-                    color: context.colors.ratingColor,
-                    size: isGrid ? 10 : 14,
-                  ),
-                  SizedBox(width: isGrid ? 2 : 4),
-                  Text(
-                    (gallery.rating100! / 20).toStringAsFixed(1),
-                    style:
-                        (isGrid
-                                ? context.textTheme.labelSmall
-                                : context.textTheme.labelMedium)
-                            ?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                  ),
-                ],
-              ),
+            top: ThumbnailBadge.inset(compact: isGrid),
+            right: ThumbnailBadge.inset(compact: isGrid),
+            child: ThumbnailBadge.rating(
+              context,
+              rating100: gallery.rating100!,
+              compact: isGrid,
             ),
           ),
         if (gallery.imageCount != null && gallery.imageCount! > 0)
           Positioned(
-            bottom: isGrid ? 4 : 8,
-            right: isGrid ? 4 : 8,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-              ),
-              child: isGrid
-                  ? Text(
-                      '${gallery.imageCount}',
-                      style: context.textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
-                      ),
-                    )
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.photo_library,
-                          color: Colors.white,
-                          size: 12,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${gallery.imageCount}',
-                          style: context.textTheme.labelMedium?.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
+            bottom: ThumbnailBadge.inset(compact: isGrid),
+            right: ThumbnailBadge.inset(compact: isGrid),
+            child: ThumbnailBadge(
+              label: '${gallery.imageCount}',
+              compact: isGrid,
+              icon: isGrid ? null : Icons.photo_library,
             ),
           ),
       ],

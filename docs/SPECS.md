@@ -237,8 +237,13 @@ and scroll ownership.
 List invariants:
 
 - Initial load, explicit refresh, and pagination are distinct states.
+- Entity list and scene-detail queries read from the network; the GraphQL cache
+  is updated but never served as the one-shot answer, so refresh shows current
+  server data.
 - Pagination appends without resetting the current scroll position or active
   playback context.
+- Pagination also reacts to layout changes, so a page that fits without
+  scrolling still loads the next one.
 - Duplicate fetches are coalesced or ignored while the same page is in flight.
 - Empty and error states provide an appropriate recovery action.
 - Grid/list layout and supported column preferences persist.
@@ -339,8 +344,12 @@ serialization differences.
 
 ### Scene cards
 
-Scene cards support grid/list layouts, localized metadata, duration/rating
-overlays, context actions, and optional performer avatars. The avatar count is
+Scene cards support grid/list layouts, localized metadata, thumbnail badges,
+context actions, and optional performer avatars. Scene and gallery cards share
+`ThumbnailBadge`: rounded translucent corner badges with the rating (yellow
+star) top-right; scenes show the O-count bottom-left and the length (or scrub
+position) bottom-right, galleries the image count bottom-right. Rating and
+count badges are omitted when empty. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
 scaling.
 
@@ -498,12 +507,21 @@ page, with no rating editor in that sheet.
 
 The fullscreen image viewer supports:
 
+- platform-specific window modes: Android and iOS open without immersive
+  system UI; desktop opens windowed and the header button or the image
+  fullscreen keybind (default F) toggles fullscreen,
+  leaving fullscreen on close only when the viewer entered it; web keeps
+  requesting immersive system UI on open;
 - previous/next navigation with correct endpoint behavior;
 - responsive manual transitions independent of slideshow timing, with repeated
   keyboard input advancing from the intended destination and touch swipes
   resynchronizing navigation to the displayed page;
-- zoom and pan;
-- authenticated original-image loading;
+- pinch, double-tap, and mouse-wheel zoom with panning bounded by the fitted
+  image; an unzoomed image yields one-finger drags to page swipes at any
+  angle, while a zoomed image locks the pager and pans until a drag passes its
+  edge, which then continues into the page swipe; a pinch that starts while a
+  page transition is still animating zooms the page it settles on;
+- authenticated original-image loading through the shared `StashImage` cache;
 - download/save actions with platform-appropriate permission handling;
 - prefetch of nearby images without loading the entire result set.
 
@@ -536,6 +554,16 @@ Entity details may show related galleries and gallery images through scoped
 gallery filters. These views must not overwrite the user's top-level Gallery or
 Image filter state. The entity image-filter-method preference controls the
 server strategy and refreshes only the affected scoped view.
+
+Scene–gallery links are many-to-many. Scene Details shows a Galleries strip
+(`GalleryStrip`, after Performers) and Gallery Details' expanded header shows a
+Scenes strip (`SceneStrip`, own playback queue) for the first 24 linked items,
+each hidden when there are none; tapping opens the linked details page. Each
+page's pull-to-refresh also reloads its strip.
+Scene and gallery strips size their row from the grid cards' shared text styles
+(`MediaCardText`: 16:9 thumbnail, two-line title, subtitle, and for scenes the
+resume bar) under the active UI and text scale, give every card the same
+slot width, and omit performer avatars so cards neither clip nor leave a gap.
 
 ## Video playback and media sessions
 
@@ -949,7 +977,8 @@ Other platforms retain their existing audio-service initialization.
 The Settings hub links to focused pages for server, appearance, interface,
 playback, storage, security, keybinds, developer options, and support.
 Appearance Settings owns the app language choice alongside theme, color, font,
-and scale preferences. Interface Settings begins with navigation preferences.
+and scale preferences. On first launch (no server configured and no saved
+language), the same language sheet opens before the server setup prompt. Interface Settings begins with navigation preferences.
 
 Settings pages use the shared shell and panel components in
 `lib/features/setup/presentation/widgets/settings_page_shell.dart`. They share
@@ -997,6 +1026,18 @@ stale responses cannot launch work on the newly selected server.
 Users can maintain multiple server profiles and switch the active profile.
 Profile metadata is stored in SharedPreferences; credentials and the app-lock
 passcode are stored in secure storage.
+App-lock flags are read synchronously from SharedPreferences, so lock on
+launch covers the very first frame. The background timeout is decided by
+elapsed wall time on resume as well as a timer, so an app the OS froze in the
+background still locks.
+On Android devices with enrolled biometrics, Security Settings offers
+fingerprint/face unlock through `local_auth` (`BiometricAuthService`). It
+requires an enabled passcode lock, is confirmed by a successful prompt before
+being saved, and only adds a prompt to the lock screen: the passcode always
+remains the fallback. The prompt is shown automatically once per lock, only
+while the app is in the foreground. `MainActivity` must stay a
+`FlutterFragmentActivity` (via `AudioServiceFragmentActivity`) with an
+AppCompat `LaunchTheme` for the system prompt to work.
 Each profile can opt into accepting a self-signed HTTPS certificate for its own
 host and port on native platforms. The option defaults to off, is included in
 configuration backups, and cannot override browser certificate validation.
@@ -1030,6 +1071,9 @@ supported limits.
   entries are not imported and may download again.
 - Clearing one cache type must not delete unrelated user settings or active
   media required for playback.
+- Linux and Windows temporary directories are shared with other programs, so
+  measuring, trimming, and clearing there touch only app-owned image cache
+  folders, never generic `cache` or video folder names.
 - Size displays refresh after clear/limit changes.
 - Media limits apply to their documented cache only; do not imply a strict
   database limit when none exists. Web skips filesystem media-limit enforcement;
@@ -1078,12 +1122,14 @@ Pub fetches the media-kit fork rather than
 using the ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
 libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
 
-The app requires Flutter 3.47.6 or newer and Dart 3.13 or newer within Dart 3.x.
-`msix` and `fastforge` are development dependencies used only for packaging.
+The app requires Flutter 3.47.9 or newer and Dart 3.13 or newer within Dart 3.x.
+`msix` is a development dependency used only for packaging. `fastforge` runs as a
+globally activated tool so its `archive` 3 pin stays out of app resolution.
 
 Desktop window control uses the `window_manager` 0.6 native API, not its legacy
-MethodChannel bridge. Startup captures the main native window before PiP can
-open; later fullscreen requests must use that same window rather than the
+MethodChannel bridge.
+Startup captures the main native window before PiP can open; later fullscreen
+requests must use that same window rather than the
 currently focused window. Windows obtains its initially hidden HWND from the
 runner through `getWindowHandle` on `stash_app_flutter/fullscreen`, then sizes,
 maximizes, shows, and focuses it. Linux and macOS set the main window's minimum,
@@ -1121,6 +1167,19 @@ ZIP filenames end in
 `macos-arm64` or `macos-x86_64`, and upload artifact names are distinct.
 Before packaging, the app executable and every bundled Mach-O binary must
 contain the target architecture; embedded universal libraries are allowed.
+
+### iOS
+
+- Bundle identifier is `com.github.alchemistaloha.stashflow`; minimum iOS is 15.
+- Debug and Release xcconfigs optionally include the CocoaPods xcconfig before
+  Flutter's generated settings, matching macOS.
+- `Info.plist` declares arbitrary loads, local-network, Face ID, photo-library,
+  and background-audio usage required by server access, `local_auth`, `gal`,
+  and `audio_service`.
+- Stable and nightly workflows build on `macos-26` with
+  `flutter build ios --release --no-codesign` and publish an unsigned
+  `ios-unsigned.ipa` (`Payload/Runner.app`) for sideloading tools that re-sign
+  on install. There is no App Store or TestFlight signing.
 
 ### Android
 
@@ -1163,6 +1222,10 @@ dependencies use the same static MSVC runtime. Windows ARM64 uses Ruy's fallback
 CPU detection because the pinned cpuinfo does not support that platform; other
 targets retain CPU detection.
 
+The translation hook places Windows CMake intermediates under the repository's
+`build/tr/<hook-cache-key>/` directory. This preserves configuration isolation
+while avoiding MSBuild tracking-file path limits in nested Ruy targets.
+
 Windows builds require the Visual Studio C++ desktop toolchain and C++ ATL
 for the active MSVC toolset and target architecture (x86/x64 or ARM64).
 The Windows secure-storage plugin includes `atlstr.h`; `flutter doctor` alone
@@ -1179,6 +1242,11 @@ resize. Exit restores the saved styles and placement. It must preserve normal
 versus maximized restore state, window bounds, monitor placement, title-bar
 controls, and taskbar behavior. Fullscreen frame messages bypass normal frame
 handling only for the main HWND; separate PiP windows retain their own handling.
+
+Startup initializes the native `WindowManager` observation using the bound main
+window's ID before showing it. Deferring that initialization until a fullscreen
+style change can recursively enter its initial occlusion scan and deadlock the
+Windows message loop.
 
 Entering and exiting fullscreen are asynchronous transactions. Flutter must not
 mark exit complete before native restoration succeeds. Failures return to a
@@ -1199,6 +1267,16 @@ attached monitor. Run it in a Windows desktop session:
 cmake -S test/windows/runner -B build/windows-fullscreen-test
 cmake --build build/windows-fullscreen-test --config Debug
 ctest --test-dir build/windows-fullscreen-test -C Debug --output-on-failure
+```
+
+The Flutter runtime smoke target exercises native observation startup,
+image navigation, Escape, repeated entry, and normal/maximized
+restoration. Its external watchdog detects native hangs that widget tests with a
+mocked fullscreen channel cannot catch. Build and run it in a desktop session:
+
+```powershell
+flutter build windows --debug --no-pub -t test/windows/image_fullscreen_smoke.dart
+python scripts/test_windows_image_fullscreen.py build/windows/x64/runner/Debug
 ```
 
 Also manually verify Windows 11 Alt+Tab/minimize/restore, mixed-DPI monitor

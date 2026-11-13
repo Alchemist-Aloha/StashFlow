@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:extended_image/extended_image.dart' as extended_image;
 
 import '../../presentation/widgets/stash_image.dart';
 import '../../utils/app_log_store.dart';
@@ -40,10 +40,12 @@ class AppCacheService {
     '.part',
   };
 
-  Future<List<Directory>> _cacheRootDirs() async {
-    final dirs = <Directory>{await _temporaryDirectoryProvider()};
+  /// Returns the temporary root and, when available, the app cache root.
+  Future<({Directory temp, Directory? appCache})> _cacheRoots() async {
+    final temp = await _temporaryDirectoryProvider();
+    Directory? appCache;
     try {
-      dirs.add(await _applicationCacheDirectoryProvider());
+      appCache = await _applicationCacheDirectoryProvider();
     } on Exception catch (error, stackTrace) {
       AppLogStore.instance.addError(
         'cacheRootDirs',
@@ -53,34 +55,52 @@ class AppCacheService {
       );
       // Some platforms may not expose an application cache directory.
     }
-    return dirs.toList();
+    if (appCache != null && p.equals(appCache.path, temp.path)) appCache = null;
+    return (temp: temp, appCache: appCache);
   }
 
+  // Linux and Windows temp folders are shared by every program, so only
+  // folder names this app owns may be scanned, trimmed, or cleared there.
+  static bool get _tempIsShared =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.windows);
+
+  static const List<String> _ownedImageCacheNames = [
+    'stashImageCache',
+    'libCachedImageData',
+    'cached_network_image_ce',
+    // Left behind by the removed extended_image viewer cache.
+    'cacheimage',
+  ];
+  static const List<String> _genericImageCacheNames = ['cache'];
+  static const List<String> _videoCacheNames = [
+    'video',
+    'videos',
+    'video_cache',
+  ];
+
   Future<List<Directory>> _imageCacheDirs() async {
-    final roots = await _cacheRootDirs();
-    return roots
-        .expand(
-          (root) => [
-            Directory(p.join(root.path, 'cache')),
-            Directory(p.join(root.path, 'stashImageCache')),
-            Directory(p.join(root.path, 'libCachedImageData')),
-            Directory(p.join(root.path, 'cached_network_image_ce')),
-          ],
-        )
-        .toList();
+    final roots = await _cacheRoots();
+    const all = [..._genericImageCacheNames, ..._ownedImageCacheNames];
+    return [
+      for (final name in _tempIsShared ? _ownedImageCacheNames : all)
+        Directory(p.join(roots.temp.path, name)),
+      if (roots.appCache case final appCache?)
+        for (final name in all) Directory(p.join(appCache.path, name)),
+    ];
   }
 
   Future<List<Directory>> _videoCacheDirs() async {
-    final roots = await _cacheRootDirs();
-    return roots
-        .expand(
-          (root) => [
-            Directory(p.join(root.path, 'video')),
-            Directory(p.join(root.path, 'videos')),
-            Directory(p.join(root.path, 'video_cache')),
-          ],
-        )
-        .toList();
+    final roots = await _cacheRoots();
+    return [
+      if (!_tempIsShared)
+        for (final name in _videoCacheNames)
+          Directory(p.join(roots.temp.path, name)),
+      if (roots.appCache case final appCache?)
+        for (final name in _videoCacheNames)
+          Directory(p.join(appCache.path, name)),
+    ];
   }
 
   Future<int> _calculateDirSize(Directory dir) async {
@@ -165,13 +185,12 @@ class AppCacheService {
       );
 
       // 1. Library methods
-      final results = await Future.wait<Object?>([
-        StashImage.cacheManager.emptyCache(),
-        extended_image.clearDiskCachedImages(),
-      ]);
-      debugPrint('AppCacheService: Library clear calls finished: $results');
+      await StashImage.cacheManager.emptyCache();
+      debugPrint('AppCacheService: Library clear call finished');
 
-      extended_image.clearMemoryImageCache();
+      PaintingBinding.instance.imageCache
+        ..clear()
+        ..clearLiveImages();
 
       // 2. Manual brute force for the directories we scan
       final manualErrors = await _clearDirectoriesInBackground(
@@ -267,15 +286,14 @@ class AppCacheService {
     // Also clean up any legacy hive files in the old app documents location
     try {
       final appDir = await _applicationDocumentsDirectoryProvider();
-      await for (final entity in appDir.list(recursive: false)) {
-        final path = entity.path;
-        if (entity is File &&
-            (path.endsWith('.hive') || path.endsWith('.lock'))) {
-          if (!path.contains('shared_preferences') &&
-              !path.contains('flutter_secure_storage')) {
-            await entity.delete();
-          }
-        }
+      // Desktop documents is the user's own folder; only the legacy
+      // initHiveForFlutter default box may be removed from it.
+      for (final name in const [
+        'graphqlclientstore.hive',
+        'graphqlclientstore.lock',
+      ]) {
+        final legacy = File(p.join(appDir.path, name));
+        if (await legacy.exists()) await legacy.delete();
       }
       // Also try the old stash_hive directory if it still exists
       final oldHiveDir = Directory(p.join(appDir.path, 'stash_hive'));

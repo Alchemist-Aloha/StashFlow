@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
@@ -63,9 +64,8 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
-              sceneDetailsProvider(
-                scene.id,
-              ).overrideWith(() => _SceneDetails(scene)),
+              sceneDetailsProvider(scene.id)
+                  .overrideWith(() => _SceneDetails(scene)),
               mediaHeadersProvider.overrideWithValue(const {}),
             ],
             child: MaterialApp(
@@ -74,7 +74,7 @@ void main() {
                 const Color(0xFF0F766E),
                 fontSizeFactor: scale,
               ),
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: appLocalizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               home: Scaffold(body: SceneInfoPage(scene: scene)),
             ),

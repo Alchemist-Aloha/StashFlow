@@ -108,7 +108,7 @@ class SceneMarkerList extends _$SceneMarkerList {
     final filter = ref.watch(sceneMarkerFilterStateProvider);
     final repository = ref.watch(sceneMarkerRepositoryProvider);
 
-    return repository.findSceneMarkers(
+    final firstPage = await repository.findSceneMarkers(
       page: _currentPage,
       perPage: _perPage,
       searchQuery: query.isEmpty ? null : query,
@@ -116,6 +116,9 @@ class SceneMarkerList extends _$SceneMarkerList {
       descending: sortConfig.descending,
       filter: filter,
     );
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    return firstPage;
   }
 
   Future<void> refresh() async {

@@ -32,6 +32,10 @@ class DesktopWindow {
         _window = Window.createWithNativeWindow(
           Pointer<Void>.fromAddress(handle),
         );
+        // Initialize native observation while the main window is still hidden.
+        // Lazy initialization during fullscreen's style change can re-enter the
+        // native singleton through its initial occlusion scan and deadlock.
+        _window = WindowManager.instance.get(_window!.id) ?? _window;
       } else {
         _window = WindowManager.instance.getCurrent();
       }

@@ -213,7 +213,7 @@ class GraphQLSceneRepository {
   }) {
     return _client.query$FindScenes(
       Options$Query$FindScenes(
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
+        fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$FindScenes(
           filter: Input$FindFilterType(
             q: filter ?? sceneFilter?.searchQuery,
@@ -248,12 +248,7 @@ class GraphQLSceneRepository {
               sceneFilter?.performerTags,
             ),
             groups: mapHierarchicalMultiCriterion(sceneFilter?.groups),
-            duplicated: sceneFilter?.duplicated != null
-                ? Input$DuplicationCriterionInput(
-                    phash: sceneFilter!.duplicated!.value.contains('phash'),
-                    // oshash: not supported in Input$DuplicationCriterionInput yet?
-                  )
-                : null,
+            duplicated: mapDuplicationCriterion(sceneFilter?.duplicated),
             performers: (performerId != null || sceneFilter?.performers != null)
                 ? mapMultiCriterion(
                     performerId != null
@@ -313,7 +308,6 @@ class GraphQLSceneRepository {
             audio_codec: mapStringCriterion(sceneFilter?.audioCodec),
             oshash: mapStringCriterion(sceneFilter?.oshash),
             checksum: mapStringCriterion(sceneFilter?.checksum),
-            phash: mapStringCriterion(sceneFilter?.phash),
             phash_distance: mapPhashCriterion(sceneFilter?.phashDistance),
             has_markers: sceneFilter?.hasMarkers?.toString(),
             is_missing: sceneFilter?.isMissing,
@@ -342,9 +336,7 @@ class GraphQLSceneRepository {
   Future<Scene> getSceneById(String id, {bool refresh = false}) async {
     final result = await _client.query$FindScene(
       Options$Query$FindScene(
-        fetchPolicy: refresh
-            ? FetchPolicy.networkOnly
-            : FetchPolicy.cacheAndNetwork,
+        fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$FindScene(id: id),
       ),
     );

@@ -3052,6 +3052,19 @@ class AppLocalizationsKo extends AppLocalizations {
       '앱이 열리면 즉시 비밀번호를 요청하세요.';
 
   @override
+  String get settings_security_biometric_unlock => '생체 인식으로 잠금 해제';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      '지문 또는 얼굴 인식을 사용합니다. 비밀번호는 대체 수단으로 계속 사용할 수 있습니다.';
+
+  @override
+  String get auth_use_biometrics => '생체 인식 사용';
+
+  @override
+  String get auth_biometric_reason => 'StashFlow 잠금 해제';
+
+  @override
   String get settings_security_background_lock_timer => '백그라운드 잠금 타이머';
 
   @override

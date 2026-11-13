@@ -1,10 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stash_app_flutter/core/data/auth/biometric_auth_service.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/app_lock_settings_provider.dart';
+
 import '../../widgets/settings_page_shell.dart';
 
 class SecuritySettingsPage extends ConsumerWidget {
@@ -16,6 +18,8 @@ class SecuritySettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(appLockSettingsProvider);
     final notifier = ref.read(appLockSettingsProvider.notifier);
+    final biometricAvailable =
+        ref.watch(biometricAvailableProvider).value ?? false;
 
     return SettingsPageShell(
       title: context.l10n.settings_security_title,
@@ -102,6 +106,37 @@ class SecuritySettingsPage extends ConsumerWidget {
                       await notifier.setEnabled(value);
                     },
                   ),
+                  if (biometricAvailable) ...[
+                    Divider(height: context.dimensions.spacingLarge),
+                    SwitchListTile.adaptive(
+                      contentPadding: EdgeInsets.zero,
+                      secondary: const Icon(Icons.fingerprint_rounded),
+                      title: Text(
+                        context.l10n.settings_security_biometric_unlock,
+                      ),
+                      subtitle: Text(
+                        context
+                            .l10n
+                            .settings_security_biometric_unlock_subtitle,
+                      ),
+                      value: settings.biometricEnabled,
+                      onChanged: settings.enabled && settings.hasPasscode
+                          ? (value) async {
+                              // Confirm the user can pass the prompt before
+                              // relying on it at the lock screen.
+                              if (value) {
+                                final ok = await ref
+                                    .read(biometricAuthServiceProvider)
+                                    .authenticate(
+                                      context.l10n.auth_biometric_reason,
+                                    );
+                                if (!ok) return;
+                              }
+                              await notifier.setBiometricEnabled(value);
+                            }
+                          : null,
+                    ),
+                  ],
                   Divider(height: context.dimensions.spacingLarge),
                   SwitchListTile.adaptive(
                     contentPadding: EdgeInsets.zero,

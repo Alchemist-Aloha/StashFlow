@@ -22,6 +22,17 @@ def workflow_script(name):
 
 
 class ReleaseArtifactsTest(unittest.TestCase):
+    def test_flutter_version_matches_native_arm64_bootstraps(self):
+        version = re.search(r'flutter-version: "([^"]+)"', WORKFLOW).group(1)
+        manifest = (Path(__file__).resolve().parents[1] / "pubspec.yaml").read_text()
+        minimum = re.search(r'flutter: ">=([^"]+)"', manifest).group(1)
+        self.assertGreaterEqual(tuple(map(int, version.split("."))),
+                                tuple(map(int, minimum.split("."))))
+        for platform in ["Windows", "Linux"]:
+            with self.subTest(platform=platform):
+                script = workflow_script(f"Setup Flutter on {platform} ARM64")
+                self.assertIn(f"git clone --depth 1 --branch {version} ", script)
+
     def test_windows_builds_once_and_zips_the_fastforge_output(self):
         self.assertIn("      - name: Build\n        if: matrix.target != 'windows'\n", WORKFLOW)
         self.assertNotIn("flutter build windows", WORKFLOW)

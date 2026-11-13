@@ -8,7 +8,7 @@ This guide explains how to build StashFlow from source for any supported platfor
 
 | Tool | Version | Notes |
 |------|---------|-------|
-| [Flutter SDK](https://docs.flutter.dev/get-started/install) | 3.47.6 or newer | Bundles Dart; current CI pins 3.47.7 |
+| [Flutter SDK](https://docs.flutter.dev/get-started/install) | 3.47.9 or newer | Bundles Dart; current CI pins 3.47.9 |
 | Dart SDK | `^3.13.0` | Declared in `pubspec.yaml` |
 | [Android Studio](https://developer.android.com/studio) | latest | Android SDK; StashFlow targets API 24+ |
 | [Xcode](https://developer.apple.com/xcode/) | latest | macOS builds only |
@@ -48,7 +48,8 @@ Installer, then rerun `flutter build windows --release`.
 ### Linux build dependencies
 
 Linux desktop builds additionally need GTK, X11/XInput development headers for
-`window_manager`'s native build hook, and media libraries. On Debian/Ubuntu:
+`window_manager`'s native build hook, and media libraries.
+On Debian/Ubuntu:
 
 ```bash
 sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev \
@@ -196,6 +197,9 @@ Deploy `build/web/` to any static host. The `--base-href` must match the path th
 ## Packaging Native Installers
 
 Release artifacts are produced from the release build output:
+
+`fastforge` is a global tool, not a project dependency; install it the way CI
+does with `dart pub global activate fastforge 0.6.12`.
 
 | Platform | Command / tool | Output |
 |----------|----------------|--------|

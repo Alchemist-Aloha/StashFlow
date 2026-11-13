@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/data/cache/app_cache_service.dart';
 import 'package:stash_app_flutter/core/utils/app_log_store.dart';
@@ -169,6 +170,51 @@ void main() {
 
       expect(await unownedFile.exists(), isTrue);
       expect(await ownedFile.exists(), isFalse);
+    });
+    test('shared desktop temp keeps unowned cache and video folders', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+
+      final foreignCache = Directory('${tempRoot.path}/cache')..createSync();
+      final foreignFile = File('${foreignCache.path}/other.bin')
+        ..writeAsBytesSync(List<int>.filled(2 * 1024 * 1024, 1));
+      final foreignVideos = Directory('${tempRoot.path}/videos')..createSync();
+      final foreignVideo = File('${foreignVideos.path}/home.mp4')
+        ..writeAsBytesSync(List<int>.filled(2 * 1024 * 1024, 1));
+      final ownedDir = Directory('${tempRoot.path}/libCachedImageData')
+        ..createSync();
+      final ownedOld = File('${ownedDir.path}/old.png')
+        ..writeAsBytesSync(List<int>.filled(1024 * 1024, 1));
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      final ownedNew = File('${ownedDir.path}/new.png')
+        ..writeAsBytesSync(List<int>.filled(1024 * 1024, 2));
+
+      await service.enforceImageCacheLimit(1);
+      await service.enforceVideoCacheLimit(1);
+      await service.clearVideoCache();
+
+      expect(await foreignFile.exists(), isTrue);
+      expect(await foreignVideo.exists(), isTrue);
+      expect(await ownedOld.exists(), isFalse);
+      expect(await ownedNew.exists(), isTrue);
+      expect(await service.getVideoCacheSizeMb(), 0);
+    });
+    test('clearDatabaseCache keeps unrelated files in documents', () async {
+      final legacy = File('${docsRoot.path}/graphqlclientstore.hive')
+        ..writeAsStringSync('old');
+      final legacyLock = File('${docsRoot.path}/graphqlclientstore.lock')
+        ..writeAsStringSync('old');
+      final userHive = File('${docsRoot.path}/notes.hive')
+        ..writeAsStringSync('keep');
+      final userLock = File('${docsRoot.path}/project.lock')
+        ..writeAsStringSync('keep');
+
+      await service.clearDatabaseCache();
+
+      expect(await legacy.exists(), isFalse);
+      expect(await legacyLock.exists(), isFalse);
+      expect(await userHive.exists(), isTrue);
+      expect(await userLock.exists(), isTrue);
     });
   });
 }

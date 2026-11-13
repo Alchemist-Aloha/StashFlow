@@ -115,7 +115,7 @@ class GraphQLTagRepository {
       Options$Query$FindTags(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
-            : FetchPolicy.cacheAndNetwork,
+            : FetchPolicy.networkOnly,
         variables: Variables$Query$FindTags(
           filter: Input$FindFilterType(
             q: filter,

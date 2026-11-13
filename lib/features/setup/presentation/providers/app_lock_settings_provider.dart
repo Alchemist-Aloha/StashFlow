@@ -10,11 +10,15 @@ class AppLockSettings {
   final bool lockOnLaunch;
   final bool hasPasscode;
 
+  /// Offer the system biometric prompt before the passcode on the lock screen.
+  final bool biometricEnabled;
+
   const AppLockSettings({
     this.enabled = false,
     this.backgroundLockSeconds = 0,
     this.lockOnLaunch = false,
     this.hasPasscode = false,
+    this.biometricEnabled = false,
   });
 
   AppLockSettings copyWith({
@@ -22,6 +26,7 @@ class AppLockSettings {
     int? backgroundLockSeconds,
     bool? lockOnLaunch,
     bool? hasPasscode,
+    bool? biometricEnabled,
   }) {
     return AppLockSettings(
       enabled: enabled ?? this.enabled,
@@ -29,6 +34,7 @@ class AppLockSettings {
           backgroundLockSeconds ?? this.backgroundLockSeconds,
       lockOnLaunch: lockOnLaunch ?? this.lockOnLaunch,
       hasPasscode: hasPasscode ?? this.hasPasscode,
+      biometricEnabled: biometricEnabled ?? this.biometricEnabled,
     );
   }
 }
@@ -38,24 +44,30 @@ class AppLockSettingsNotifier extends Notifier<AppLockSettings> {
   static const _backgroundLockSecondsKey = 'app_lock_background_seconds';
   static const _lockOnLaunchKey = 'app_lock_on_launch';
   static const _passcodeKey = 'app_lock_passcode';
+  static const _biometricKey = 'app_lock_biometric';
 
   @override
   AppLockSettings build() {
-    unawaited(_load());
-    return const AppLockSettings();
-  }
-
-  Future<void> _load() async {
+    // Flags are read synchronously so the first frame is already locked.
+    // `enabled` implies a passcode (clearPasscode disables the lock), so
+    // `hasPasscode` is assumed until secure storage confirms it.
     final prefs = ref.read(sharedPreferencesProvider);
-    final storage = ref.read(secureStorageProvider);
-    final savedPasscode = await storage.read(key: _passcodeKey);
-
-    state = state.copyWith(
-      enabled: prefs.getBool(_enabledKey) ?? false,
+    final enabled = prefs.getBool(_enabledKey) ?? false;
+    unawaited(_loadPasscodeFlag());
+    return AppLockSettings(
+      enabled: enabled,
       backgroundLockSeconds: prefs.getInt(_backgroundLockSecondsKey) ?? 0,
       lockOnLaunch: prefs.getBool(_lockOnLaunchKey) ?? false,
-      hasPasscode: (savedPasscode ?? '').isNotEmpty,
+      hasPasscode: enabled,
+      biometricEnabled: prefs.getBool(_biometricKey) ?? false,
     );
+  }
+
+  Future<void> _loadPasscodeFlag() async {
+    final storage = ref.read(secureStorageProvider);
+    final savedPasscode = await storage.read(key: _passcodeKey);
+    if (!ref.mounted) return;
+    state = state.copyWith(hasPasscode: (savedPasscode ?? '').isNotEmpty);
   }
 
   Future<bool> verifyPasscode(String input) async {
@@ -93,6 +105,12 @@ class AppLockSettingsNotifier extends Notifier<AppLockSettings> {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool(_lockOnLaunchKey, enabled);
     state = state.copyWith(lockOnLaunch: enabled);
+  }
+
+  Future<void> setBiometricEnabled(bool enabled) async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_biometricKey, enabled);
+    state = state.copyWith(biometricEnabled: enabled);
   }
 }
 

@@ -3158,6 +3158,19 @@ class AppLocalizationsDe extends AppLocalizations {
       'Fragen Sie sofort nach dem Passwort, wenn die App geöffnet wird.';
 
   @override
+  String get settings_security_biometric_unlock => 'Mit Biometrie entsperren';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      'Fingerabdruck oder Gesichtsentsperrung verwenden. Ihr Passcode bleibt als Alternative verfügbar.';
+
+  @override
+  String get auth_use_biometrics => 'Biometrie verwenden';
+
+  @override
+  String get auth_biometric_reason => 'StashFlow entsperren';
+
+  @override
   String get settings_security_background_lock_timer =>
       'Hintergrundsperr-Timer';
 

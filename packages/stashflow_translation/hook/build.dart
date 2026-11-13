@@ -14,7 +14,17 @@ void main(List<String> arguments) async {
     if (!input.config.buildCodeAssets) return;
     final os = input.config.code.targetOS;
     final arch = input.config.code.targetArchitecture;
-    final buildDir = Directory.fromUri(input.outputDirectory.resolve('cmake/'));
+    // MSBuild's tracking files still hit MAX_PATH inside Ruy's nested targets.
+    // Keep this private workspace package's Windows build near the repo root,
+    // retaining the hook cache key so different configurations never share it.
+    final cacheKey = input.outputDirectory.pathSegments
+        .where((segment) => segment.isNotEmpty)
+        .last;
+    final buildDir = Directory.fromUri(
+      os == OS.windows
+          ? input.packageRoot.resolve('../../build/tr/$cacheKey/')
+          : input.outputDirectory.resolve('cmake/'),
+    );
     final source = Directory.fromUri(input.packageRoot.resolve('src/'));
     await for (final file in source.list()) {
       if (file is File) output.dependencies.add(file.uri);
@@ -52,6 +62,7 @@ void main(List<String> arguments) async {
         flags.addAll([
           '-DCMAKE_SYSTEM_NAME=iOS',
           '-DCMAKE_OSX_SYSROOT=${result.stdout.toString().trim()}',
+          '-DCMAKE_OSX_DEPLOYMENT_TARGET=${input.config.code.iOS.targetVersion}',
         ]);
       }
     } else if (os == OS.windows) {

@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stash_app_flutter/core/data/auth/biometric_auth_service.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/app_lock_settings_provider.dart';
 
@@ -11,6 +12,10 @@ class AppLockGate extends ConsumerStatefulWidget {
 
   final Widget child;
 
+  /// Wall clock used for the background timeout; replaceable in tests.
+  @visibleForTesting
+  static DateTime Function() clock = DateTime.now;
+
   @override
   ConsumerState<AppLockGate> createState() => _AppLockGateState();
 }
@@ -18,6 +23,7 @@ class AppLockGate extends ConsumerStatefulWidget {
 class _AppLockGateState extends ConsumerState<AppLockGate>
     with WidgetsBindingObserver {
   Timer? _backgroundLockTimer;
+  DateTime? _hiddenAt;
   bool _locked = false;
   bool _launchLockShown = false;
   bool _lockFeatureEnabled = false;
@@ -43,6 +49,7 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
 
     if (state == AppLifecycleState.hidden && !_locked) {
       _backgroundLockTimer?.cancel();
+      _hiddenAt ??= AppLockGate.clock();
       final settings = ref.read(appLockSettingsProvider);
       _backgroundLockTimer = Timer(
         Duration(seconds: settings.backgroundLockSeconds),
@@ -52,6 +59,17 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
 
     if (state == AppLifecycleState.resumed) {
       _backgroundLockTimer?.cancel();
+      // The timer cannot fire while the OS freezes a background app, so the
+      // elapsed wall time decides on return.
+      final hiddenAt = _hiddenAt;
+      _hiddenAt = null;
+      final timeout = Duration(
+        seconds: ref.read(appLockSettingsProvider).backgroundLockSeconds,
+      );
+      if (hiddenAt != null &&
+          AppLockGate.clock().difference(hiddenAt) >= timeout) {
+        _showLockScreen();
+      }
     }
   }
 
@@ -87,9 +105,10 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
       return widget.child;
     }
 
-    if (settings.lockOnLaunch && !_launchLockShown && !_locked) {
+    if (settings.lockOnLaunch && !_launchLockShown) {
+      // Lock in this build so no unlocked frame of the library is drawn.
       _launchLockShown = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _showLockScreen());
+      _locked = true;
     }
 
     return Stack(
@@ -119,15 +138,74 @@ class _PasscodeLockScreen extends ConsumerStatefulWidget {
       _PasscodeLockScreenState();
 }
 
-class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
+class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen>
+    with WidgetsBindingObserver {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   String? _error;
   bool _submitting = false;
+  bool _biometricAvailable = false;
+  bool _biometricInFlight = false;
+
+  /// Set once the automatic prompt has been shown, so the lifecycle churn the
+  /// system prompt itself causes does not re-trigger it.
+  bool _autoPrompted = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    if (ref.read(appLockSettingsProvider).biometricEnabled) {
+      unawaited(_initBiometric());
+    } else {
+      _scheduleKeyboardFocus();
+    }
+  }
+
+  Future<void> _initBiometric() async {
+    final available = await ref.read(biometricAvailableProvider.future);
+    if (!mounted) return;
+    if (!available) {
+      _scheduleKeyboardFocus();
+      return;
+    }
+    setState(() => _biometricAvailable = true);
+    // The lock can engage while the app is in the background; the system
+    // prompt only works in the foreground, so wait for resume in that case.
+    final lifecycle = WidgetsBinding.instance.lifecycleState;
+    if (lifecycle == null || lifecycle == AppLifecycleState.resumed) {
+      _autoPrompted = true;
+      unawaited(_unlockWithBiometrics());
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        _biometricAvailable &&
+        !_autoPrompted) {
+      _autoPrompted = true;
+      unawaited(_unlockWithBiometrics());
+    }
+  }
+
+  Future<void> _unlockWithBiometrics() async {
+    if (_biometricInFlight) return;
+    _biometricInFlight = true;
+    _focusNode.unfocus();
+    final ok = await ref
+        .read(biometricAuthServiceProvider)
+        .authenticate(context.l10n.auth_biometric_reason);
+    _biometricInFlight = false;
+    if (!mounted) return;
+    if (ok) {
+      widget.onUnlocked();
+    } else {
+      _focusAndShowKeyboard();
+    }
+  }
+
+  void _scheduleKeyboardFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusAndShowKeyboard();
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -147,6 +225,7 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -205,7 +284,7 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
                     TextField(
                       controller: _controller,
                       focusNode: _focusNode,
-                      autofocus: true,
+                      autofocus: !_biometricAvailable,
                       keyboardType: TextInputType.number,
                       obscureText: true,
                       maxLength: 8,
@@ -232,6 +311,17 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
                             : Text(context.l10n.auth_unlock),
                       ),
                     ),
+                    if (_biometricAvailable) ...[
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: _submitting ? null : _unlockWithBiometrics,
+                          icon: const Icon(Icons.fingerprint_rounded),
+                          label: Text(context.l10n.auth_use_biometrics),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

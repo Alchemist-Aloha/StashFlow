@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/core/domain/entities/filter_options.dart';
+import 'package:stash_app_flutter/core/utils/pagination.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
@@ -19,6 +20,9 @@ const _image = Image(id: '1', files: [], paths: ImagePaths());
 class _DelayedImages extends MockGraphQLImageRepository {
   final nextPage = Completer<List<Image>>();
 
+  /// Gallery whose first page is full, so the provider asks for page 2.
+  String? fullPageGallery;
+
   @override
   Future<List<Image>> findImages({
     int? page,
@@ -30,15 +34,24 @@ class _DelayedImages extends MockGraphQLImageRepository {
     ImageFilter? imageFilter,
   }) {
     if (page == 2) return nextPage.future;
-    return super.findImages(
-      page: page,
-      perPage: perPage,
-      filter: filter,
-      sort: sort,
-      descending: descending,
-      galleryId: galleryId,
-      imageFilter: imageFilter,
-    );
+    return super
+        .findImages(
+          page: page,
+          perPage: perPage,
+          filter: filter,
+          sort: sort,
+          descending: descending,
+          galleryId: galleryId,
+          imageFilter: imageFilter,
+        )
+        .then(
+          (images) => galleryId != null && galleryId == fullPageGallery
+              ? [
+                  for (var i = 0; i < (perPage ?? 1); i++)
+                    _image.copyWith(id: 'page-$i'),
+                ]
+              : images,
+        );
   }
 }
 
@@ -76,6 +89,7 @@ void main() {
   test(
     'gallery queries, selection, random seed and pagination are independent',
     () async {
+      repository.fullPageGallery = 'a';
       library.read(imageSearchQueryProvider.notifier).update('library search');
       library
           .read(imageFilterStateProvider.notifier)
@@ -123,7 +137,10 @@ void main() {
       final pending = first.read(imageListProvider.notifier).fetchNextPage();
       repository.nextPage.complete([_image.copyWith(id: '2')]);
       await pending;
-      expect(first.read(imageListProvider).requireValue.length, 2);
+      expect(
+        first.read(imageListProvider).requireValue.length,
+        kDefaultPageSize + 1,
+      );
       expect(library.read(imageListProvider).requireValue, [_image]);
       expect(second.read(imageListProvider).requireValue, [_image]);
     },
@@ -218,6 +235,7 @@ void main() {
   );
 
   test('late pagination cannot overwrite a changed query', () async {
+    repository.fullPageGallery = 'a';
     final scope = gallery('a');
     await scope.read(imageListProvider.future);
     final pending = scope.read(imageListProvider.notifier).fetchNextPage();
@@ -225,12 +243,16 @@ void main() {
     await scope.read(imageListProvider.future);
     repository.nextPage.complete([_image.copyWith(id: 'stale')]);
     await pending;
-    expect(scope.read(imageListProvider).requireValue, [_image]);
+    expect(
+      scope.read(imageListProvider).requireValue.map((image) => image.id),
+      isNot(contains('stale')),
+    );
   });
 
   test(
     'late pagination safely finishes after its route scope is disposed',
     () async {
+      repository.fullPageGallery = 'a';
       final scope = ProviderContainer(
         parent: library,
         overrides: [

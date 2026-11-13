@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,7 +16,7 @@ void main() {
         contains(
           'WidgetsBinding.instance.addPostFrameCallback((_) {\n'
           '      if (!mounted) return;\n'
-          '      _checkServerConfiguration();',
+          '      unawaited(_checkServerConfiguration());',
         ),
       );
     });

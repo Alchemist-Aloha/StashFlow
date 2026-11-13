@@ -116,7 +116,7 @@ class StudioList extends _$StudioList {
       effectiveSort = 'random_${ref.watch(studioRandomSeedProvider)}';
     }
 
-    return repository.findStudios(
+    final firstPage = await repository.findStudios(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
@@ -124,6 +124,9 @@ class StudioList extends _$StudioList {
       descending: sortConfig.descending,
       studioFilter: filterState,
     );
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    return firstPage;
   }
 
   /// Manually refreshes the studio list and generates a new random seed.
@@ -194,9 +197,8 @@ class StudioList extends _$StudioList {
 
       if (generation != _requestGeneration) return;
 
-      if (nextStudios.isEmpty) {
-        _hasMore = false;
-      } else {
+      _hasMore = nextStudios.length >= _perPage;
+      if (nextStudios.isNotEmpty) {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextStudios]);
       }

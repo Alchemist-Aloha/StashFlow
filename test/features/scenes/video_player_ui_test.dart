@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -8,11 +8,15 @@ import 'package:media_kit/media_kit.dart' as mk;
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
+import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_video_player.dart';
@@ -111,6 +115,30 @@ void main() {
     );
   }
 
+  testWidgets('SceneDetailsPage shows linked galleries', (tester) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+        sceneGalleriesProvider(testScene.id).overrideWith(
+          (ref) => const [Gallery(id: 'g1', title: 'Linked Gallery')],
+        ),
+      ],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.byType(GalleryStrip), findsOneWidget);
+    expect(find.text('Linked Gallery'), findsOneWidget);
+  });
+
   testWidgets('SceneDetailsPage renders scene info', (tester) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;
@@ -134,9 +162,9 @@ void main() {
       tester
           .widget<IconButton>(find.byKey(const Key('scene_show_metadata')))
           .color,
-      Theme.of(
-        tester.element(find.byKey(const Key('scene_show_metadata'))),
-      ).colorScheme.onSurfaceVariant,
+      Theme.of(tester.element(find.byKey(const Key('scene_show_metadata'))))
+          .colorScheme
+          .onSurfaceVariant,
     );
     expect(
       find.descendant(
@@ -305,9 +333,8 @@ void main() {
     await tester.tap(find.byKey(const Key('scene_action_more')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('scene_action_refresh')), findsNothing);
-    Navigator.of(
-      tester.element(find.byKey(const Key('scene_action_edit'))),
-    ).pop();
+    Navigator.of(tester.element(find.byKey(const Key('scene_action_edit'))))
+        .pop();
     await tester.pumpAndSettle();
   });
 
@@ -928,6 +955,7 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
+        sceneGalleriesProvider.overrideWith((ref, arg) => const []),
       ],
     );
     addTearDown(container.dispose);
@@ -940,7 +968,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           routerConfig: GoRouter(
@@ -985,6 +1013,7 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
+        sceneGalleriesProvider.overrideWith((ref, arg) => const []),
       ],
     );
     addTearDown(container.dispose);
@@ -1013,7 +1042,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           routerConfig: router,
@@ -1052,6 +1081,7 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
+        sceneGalleriesProvider.overrideWith((ref, arg) => const []),
       ],
     );
     addTearDown(container.dispose);
@@ -1065,7 +1095,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           routerConfig: GoRouter(
@@ -1127,7 +1157,7 @@ void main() {
             sceneRepositoryProvider.overrideWithValue(mockRepo),
           ],
           child: MaterialApp.router(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             theme: AppTheme.lightTheme,
             routerConfig: router,
@@ -1182,7 +1212,7 @@ void main() {
           sceneRepositoryProvider.overrideWithValue(mockRepo),
         ],
         child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           routerConfig: router,

@@ -3117,6 +3117,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Ask for passcode immediately when app opens.';
 
   @override
+  String get settings_security_biometric_unlock => 'Unlock with biometrics';
+
+  @override
+  String get settings_security_biometric_unlock_subtitle =>
+      'Use fingerprint or face unlock. Your passcode stays available as a fallback.';
+
+  @override
+  String get auth_use_biometrics => 'Use biometrics';
+
+  @override
+  String get auth_biometric_reason => 'Unlock StashFlow';
+
+  @override
   String get settings_security_background_lock_timer => 'Background lock timer';
 
   @override

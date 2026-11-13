@@ -9,11 +9,11 @@ import android.os.Bundle
 import android.util.Rational
 import android.util.Log
 import io.flutter.embedding.engine.FlutterEngine
-import com.ryanheise.audioservice.AudioServiceActivity
+import com.ryanheise.audioservice.AudioServiceFragmentActivity
 import io.flutter.plugin.common.MethodChannel
 import kotlin.math.roundToInt
 
-open class MainActivity : AudioServiceActivity() {
+open class MainActivity : AudioServiceFragmentActivity() {
 	private val pipChannel = "stash_app_flutter/pip"
 	private val volumeChannel = "stash_app_flutter/media_volume"
 	private var channel: MethodChannel? = null
@@ -136,7 +136,7 @@ open class MainActivity : AudioServiceActivity() {
 		}
 	}
 
-	override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration?) {
+	override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
 		super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
 		channel?.invokeMethod("pipModeChanged", isInPictureInPictureMode)
 	}

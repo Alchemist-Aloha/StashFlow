@@ -18,6 +18,9 @@ Windows builds use the static MSVC runtime throughout the bridge, CTranslate2
 and SentencePiece. Windows ARM64 uses Ruy's fallback CPU detection because the
 pinned cpuinfo dependency does not implement that platform; other targets retain
 CPU detection.
+Windows CMake intermediates live in the workspace's `build/tr/<hook-cache-key>/`
+directory to keep Ruy's MSBuild tracking paths below Windows path limits. Other
+platforms keep their intermediates in the hook output directory.
 
 The hook configures native Linux, Windows and Apple builds. Only platforms
 actually built/tested in the handoff are verified; cross-host packaging and

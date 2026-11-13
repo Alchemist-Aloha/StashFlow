@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/scene_filter.dart';
@@ -443,12 +443,6 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           value: _tempFilter.checksum,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(checksum: val)),
-        ),
-        StringCriterionInput(
-          label: context.l10n.scenes_field_phash,
-          value: _tempFilter.phash,
-          onChanged: (val) =>
-              setState(() => _tempFilter = _tempFilter.copyWith(phash: val)),
         ),
         _buildDuplicatedFilter(),
         _buildBooleanFilter(

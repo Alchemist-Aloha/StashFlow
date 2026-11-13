@@ -1,17 +1,17 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/shell_page.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/frosted_surface.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
-import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
@@ -23,6 +23,7 @@ import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_c
 import 'package:stash_app_flutter/core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_sort_bottom_sheet.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+
 import '../../../helpers/test_helpers.dart';
 
 class _ActivePlayerState extends PlayerState {
@@ -113,9 +114,8 @@ void main() {
           tester,
           child: Builder(
             builder: (context) => MediaQuery(
-              data: MediaQuery.of(
-                context,
-              ).copyWith(padding: EdgeInsets.only(bottom: bottomInset)),
+              data: MediaQuery.of(context)
+                  .copyWith(padding: EdgeInsets.only(bottom: bottomInset)),
               child: ListPageScaffold<int>(
                 title: 'Test Title',
                 searchHint: 'Search...',
@@ -363,8 +363,7 @@ void main() {
                   desktopCapabilitiesProvider.overrideWithValue(false),
                 ],
                 child: MaterialApp.router(
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
+                  localizationsDelegates: appLocalizationsDelegates,
                   supportedLocales: AppLocalizations.supportedLocales,
                   theme: AppTheme.buildTheme(
                     Brightness.light,
@@ -503,6 +502,37 @@ void main() {
       }
     });
 
+    for (final configured in [false, true]) {
+      testWidgets('error state when server configured=$configured', (
+        tester,
+      ) async {
+        SharedPreferences.setMockInitialValues({
+          if (configured) 'server_base_url': 'https://stash.local',
+        });
+        await pumpTestWidget(
+          tester,
+          prefs: await SharedPreferences.getInstance(),
+          child: ListPageScaffold<String>(
+            title: 'Test Title',
+            searchHint: 'Search...',
+            onSearchChanged: (_) {},
+            provider: AsyncValue.error(Exception('boom'), StackTrace.empty),
+            itemBuilder: (context, item, mw, mh) => Text(item),
+          ),
+        );
+        await tester.pump();
+
+        expect(
+          find.text('Configure Now'),
+          configured ? findsNothing : findsOneWidget,
+        );
+        expect(
+          find.textContaining('boom'),
+          configured ? findsOneWidget : findsNothing,
+        );
+      });
+    }
+
     testWidgets('shows loading state correctly', (WidgetTester tester) async {
       await pumpTestWidget(
         tester,
@@ -564,9 +594,8 @@ void main() {
         child: Builder(
           builder: (context) => MediaQuery(
             // The shell publishes the mini player band as a bottom inset.
-            data: MediaQuery.of(
-              context,
-            ).copyWith(padding: const EdgeInsets.only(bottom: 66)),
+            data: MediaQuery.of(context)
+                .copyWith(padding: const EdgeInsets.only(bottom: 66)),
             child: ListPageScaffold<int>(
               title: 'Test Title',
               searchHint: 'Search...',
@@ -620,21 +649,24 @@ void main() {
       expect(find.text(emptyMessage), findsOneWidget);
     });
 
-    testWidgets('shows error state correctly', (WidgetTester tester) async {
+    testWidgets('requests the next page when the first page fits on screen', (
+      WidgetTester tester,
+    ) async {
+      var fetches = 0;
       await pumpTestWidget(
         tester,
         child: ListPageScaffold<String>(
           title: 'Test Title',
           searchHint: 'Search...',
           onSearchChanged: (_) {},
-          provider: AsyncValue.error('An error occurred', StackTrace.empty),
-          itemBuilder: (context, item, mw, mh) => Text(item),
+          provider: const AsyncValue.data(['Only item']),
+          onFetchNextPage: () => fetches++,
+          itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      expect(find.byType(ErrorStateView), findsOneWidget);
-      expect(find.textContaining('An error occurred'), findsOneWidget);
+      expect(fetches, greaterThan(0));
     });
 
     testWidgets('shows list view when gridDelegate is null', (
@@ -995,7 +1027,7 @@ void main() {
               languageCode: 'zh',
               scriptCode: 'Hans',
             ),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: ListPageScaffold<String>(
               title: 'Test Title',

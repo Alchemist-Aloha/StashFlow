@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../domain/entities/scene.dart';
 import '../../../../core/utils/app_log_store.dart';
 
@@ -22,6 +23,8 @@ class PlaybackQueueIds {
   }) {
     return 'scene:$sceneId:more-from-performer:$performerId';
   }
+
+  static String galleryScenes(String galleryId) => 'gallery:$galleryId:scenes';
 
   static String studioStrip(String studioId) => 'studio:$studioId:strip';
 

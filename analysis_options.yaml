@@ -5,6 +5,8 @@ analyzer:
     - '**/*.g.dart'
     - '**/*.freezed.dart'
     - '**/*.graphql.dart'
+    # gen-l10n hardcodes the deprecated flutter_localizations delegates.
+    - lib/l10n/app_localizations*.dart
     - media-kit/**
     - build/**
     - android/**

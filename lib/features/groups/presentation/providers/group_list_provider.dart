@@ -117,7 +117,7 @@ class GroupList extends _$GroupList {
       effectiveSort = 'random_${ref.watch(groupRandomSeedProvider)}';
     }
 
-    return repository.findGroups(
+    final firstPage = await repository.findGroups(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
@@ -125,6 +125,9 @@ class GroupList extends _$GroupList {
       descending: sortConfig.descending,
       groupFilter: groupFilter.isEmpty ? null : groupFilter,
     );
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    return firstPage;
   }
 
   /// Manually refreshes the group list and generates a new random seed.
@@ -192,9 +195,8 @@ class GroupList extends _$GroupList {
 
       if (generation != _requestGeneration) return;
 
-      if (nextGroups.isEmpty) {
-        _hasMore = false;
-      } else {
+      _hasMore = nextGroups.length >= _perPage;
+      if (nextGroups.isNotEmpty) {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextGroups]);
       }

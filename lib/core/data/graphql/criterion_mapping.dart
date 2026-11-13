@@ -134,6 +134,21 @@ List<Input$CustomFieldCriterionInput>? mapCustomFieldCriteria(
   ];
 }
 
+/// Maps the selected duplication fields (`phash`, `stash_id`, `title`, `url`)
+/// to `true`, leaving unselected ones unset like the web UI.
+Input$DuplicationCriterionInput? mapDuplicationCriterion(
+  MultiCriterion? criterion,
+) {
+  if (criterion == null || criterion.value.isEmpty) return null;
+  bool? selected(String field) => criterion.value.contains(field) ? true : null;
+  return Input$DuplicationCriterionInput(
+    phash: selected('phash'),
+    stash_id: selected('stash_id'),
+    title: selected('title'),
+    url: selected('url'),
+  );
+}
+
 Input$GenderCriterionInput? mapGenderCriterion(MultiCriterion? criterion) {
   if (criterion == null || criterion.value.isEmpty) return null;
   return Input$GenderCriterionInput(

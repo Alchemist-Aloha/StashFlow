@@ -157,7 +157,7 @@ class GraphQLStudioRepository {
       Options$Query$FindStudios(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
-            : FetchPolicy.cacheAndNetwork,
+            : FetchPolicy.networkOnly,
         variables: Variables$Query$FindStudios(
           filter: Input$FindFilterType(
             q: filter ?? studioFilter?.searchQuery,

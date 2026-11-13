@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/providers/list_scroll_controller_provider.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_marker.dart';
@@ -56,7 +57,7 @@ void main() {
           child: Consumer(
             builder: (context, ref, _) => MaterialApp.router(
               routerConfig: ref.watch(routerProvider),
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: appLocalizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
             ),
           ),

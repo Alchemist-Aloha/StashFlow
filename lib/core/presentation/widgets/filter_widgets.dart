@@ -1,5 +1,5 @@
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../features/performers/presentation/providers/performer_details_provider.dart';
 import '../../../features/tags/presentation/providers/tag_details_provider.dart';

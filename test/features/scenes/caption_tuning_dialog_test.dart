@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/caption_model_picker.dart';
@@ -8,6 +9,7 @@ import 'package:stash_app_flutter/features/scenes/data/local_captions/caption_op
 import 'package:stash_app_flutter/features/scenes/presentation/providers/local_caption_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/local_captions_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/caption_tuning_dialog.dart';
+
 import '../../helpers/test_helpers.dart';
 
 class _Models extends LocalCaptionSettingsNotifier {
@@ -145,7 +147,7 @@ void main() {
             ],
             child: MaterialApp(
               locale: Locale(locale),
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: appLocalizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               theme: AppTheme.buildTheme(
                 Brightness.dark,
@@ -197,9 +199,9 @@ void main() {
             matching: find.byType(CaptionModelPicker),
           );
           expect(tester.getSize(picker).width, tester.getSize(panel).width);
-          final space = Theme.of(
-            dialogContext,
-          ).extension<AppDimensions>()!.spacingMedium;
+          final space = Theme.of(dialogContext)
+              .extension<AppDimensions>()!
+              .spacingMedium;
           expect(
             tester.getTopLeft(picker).dy - tester.getBottomLeft(header).dy,
             greaterThanOrEqualTo(space - 0.01),

@@ -204,7 +204,17 @@ class EntityMediaGrid extends _$EntityMediaGrid {
     _entityId = entityId;
     _currentPage = 1;
     _hasMore = true;
-    return _fetchPage(kind: kind, entityId: entityId, page: _currentPage);
+    return _fetchFirstPage(kind, entityId);
+  }
+
+  Future<List<Scene>> _fetchFirstPage(
+    EntityMediaFilterKind kind,
+    String entityId,
+  ) async {
+    final firstPage = await _fetchPage(kind: kind, entityId: entityId, page: 1);
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    return firstPage;
   }
 
   Future<List<Scene>> _fetchPage({
@@ -261,9 +271,8 @@ class EntityMediaGrid extends _$EntityMediaGrid {
 
       if (!ref.mounted || generation != _requestGeneration) return;
 
-      if (nextItems.isEmpty) {
-        _hasMore = false;
-      } else {
+      _hasMore = nextItems.length >= _perPage;
+      if (nextItems.isNotEmpty) {
         _currentPage = nextPage;
         state = AsyncData([...(state.value ?? <Scene>[]), ...nextItems]);
       }

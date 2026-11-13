@@ -121,7 +121,7 @@ class PerformerList extends _$PerformerList {
       effectiveSort = 'random_${ref.watch(performerRandomSeedProvider)}';
     }
 
-    return repository.findPerformers(
+    final firstPage = await repository.findPerformers(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
@@ -129,6 +129,9 @@ class PerformerList extends _$PerformerList {
       descending: sortConfig.descending,
       performerFilter: filterState,
     );
+    // A short page is the last one; this also stops layout-driven paging.
+    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    return firstPage;
   }
 
   /// Manually refreshes the performer list and generates a new random seed.
@@ -198,9 +201,8 @@ class PerformerList extends _$PerformerList {
       );
       if (generation != _requestGeneration) return;
 
-      if (nextPerformers.isEmpty) {
-        _hasMore = false;
-      } else {
+      _hasMore = nextPerformers.length >= _perPage;
+      if (nextPerformers.isNotEmpty) {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextPerformers]);
       }

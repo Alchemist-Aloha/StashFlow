@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';

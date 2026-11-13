@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/theme_color_picker_dialog.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -34,7 +35,7 @@ void main() {
             fontSizeFactor: scale,
             fontFamily: 'Inter',
           ),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: Builder(
@@ -173,9 +174,8 @@ void main() {
               format: ui.ImageByteFormat.png,
             );
             await Directory(directory).create(recursive: true);
-            await File(
-              '$directory/${size.width}-$scale.png',
-            ).writeAsBytes(bytes!.buffer.asUint8List());
+            await File('$directory/${size.width}-$scale.png')
+                .writeAsBytes(bytes!.buffer.asUint8List());
             image.dispose();
           });
         }

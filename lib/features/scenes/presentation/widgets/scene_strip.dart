@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/presentation/widgets/media_card_text.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene.dart';
 import '../providers/playback_queue_provider.dart';
@@ -82,12 +84,14 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
     final stride = effectiveItemWidth + separatorWidth;
 
     return SizedBox(
-      height:
-          effectiveItemWidth * (9 / 16) +
-          (80 *
-              context
-                  .dimensions
-                  .fontSizeFactor), // Estimate height based on SceneCard needs
+      height: MediaCardText.stripItemHeight(
+        context,
+        effectiveItemWidth,
+        // Room for the resume bar some cards draw under the thumbnail.
+        extra: ref.watch(showScenePlaybackProgressProvider)
+            ? context.dimensions.spacingSmall / 2
+            : 0,
+      ),
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification.metrics.axis != Axis.horizontal || scenes.isEmpty) {
@@ -139,8 +143,11 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
             thumbVisibility: true,
             child: ListView.builder(
               controller: _scrollController,
-              padding: EdgeInsets.symmetric(
-                horizontal: context.dimensions.spacingMedium,
+              // Every slot is itemExtent wide, so each card keeps a trailing gap;
+              // trim it from the end padding to keep the edge inset unchanged.
+              padding: EdgeInsets.only(
+                left: contentPadding,
+                right: contentPadding - separatorWidth,
               ),
               scrollDirection: Axis.horizontal,
               itemExtent: stride,
@@ -149,9 +156,7 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
                 final scene = scenes[index];
 
                 return Padding(
-                  padding: EdgeInsets.only(
-                    right: index == scenes.length - 1 ? 0 : separatorWidth,
-                  ),
+                  padding: EdgeInsets.only(right: separatorWidth),
                   child: SizedBox(
                     width: effectiveItemWidth,
                     child: SceneCard(

@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +18,7 @@ import 'package:stash_app_flutter/features/images/presentation/providers/image_l
 import 'package:stash_app_flutter/features/images/presentation/providers/image_browser_context.dart';
 import 'package:stash_app_flutter/features/images/presentation/widgets/image_details_bottom_sheet.dart';
 import 'package:stash_app_flutter/features/images/presentation/widgets/image_clip_player.dart';
+import 'package:stash_app_flutter/features/images/presentation/widgets/zoomable_image.dart';
 
 import '../../../../helpers/test_helpers.dart';
 import '../../../../helpers/image_clip_test_helpers.dart';
@@ -357,7 +357,7 @@ void main() {
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-      expect(find.byType(ExtendedImage), findsOneWidget);
+      expect(find.byType(ZoomableImage), findsOneWidget);
       expect(find.byType(ImageClipPlayer), findsNothing);
       expect(find.byType(Video), findsNothing);
       expect(find.byKey(const Key('image_clip_controls')), findsNothing);
@@ -422,7 +422,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.byType(ImageClipPlayer), findsOneWidget);
-        expect(find.byType(ExtendedImage), findsNothing);
+        expect(find.byType(ZoomableImage), findsNothing);
         expect(find.byIcon(Icons.refresh), findsOneWidget);
         await tester.tap(find.byIcon(Icons.refresh));
         await tester.pumpAndSettle();
@@ -547,7 +547,8 @@ void main() {
         source,
         contains('_warmAdjacentFiles(items, _currentIndex, headers);'),
       );
-      expect(source, contains('.getNetworkImageData().ignore()'));
+      expect(source, contains('StashImage.cacheManager'));
+      expect(source, contains('.drain<void>()'));
       expect(source, isNot(contains('precacheImage(')));
     });
 
@@ -556,12 +557,85 @@ void main() {
         'lib/features/images/presentation/pages/image_fullscreen_page.dart',
       ).readAsStringSync();
 
-      expect(source, contains('if (mounted) unawaited(_enterFullScreen())'));
+      expect(
+        source,
+        contains('if (mounted && kIsWeb) unawaited(_enterFullScreen())'),
+      );
       expect(source, contains('await DesktopFullscreen.instance.enter()'));
       expect(source, contains('DesktopFullscreen.instance.exit()'));
       expect(source, isNot(contains('windowManager.unmaximize()')));
       expect(source, isNot(contains('windowManager.maximize()')));
     });
+
+    for (final platform in [TargetPlatform.android, TargetPlatform.windows]) {
+      testWidgets('opens non-fullscreen on ${platform.name}', (tester) async {
+        const nativeFullscreenChannel = MethodChannel(
+          'stash_app_flutter/fullscreen',
+        );
+        debugDefaultTargetPlatformOverride = platform;
+        final nativeCalls = <Object?>[];
+        final systemUiModes = <Object?>[];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(nativeFullscreenChannel, (call) async {
+              nativeCalls.add(call.arguments);
+              return null;
+            });
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+              if (call.method == 'SystemChrome.setEnabledSystemUIMode') {
+                systemUiModes.add(call.arguments);
+              }
+              return null;
+            });
+
+        try {
+          mockRepository.withData([
+            entity.Image(
+              id: 'windowed-test',
+              title: 'Windowed Test',
+              files: [],
+              paths: const entity.ImagePaths(image: 'http://test.com/a.jpg'),
+            ),
+          ]);
+          await pumpTestWidget(
+            tester,
+            child: const ImageFullscreenPage(imageId: 'windowed-test'),
+            overrides: [
+              imageRepositoryProvider.overrideWithValue(mockRepository),
+            ],
+          );
+          await tester.pump();
+
+          expect(
+            systemUiModes,
+            isNot(contains('SystemUiMode.immersiveSticky')),
+          );
+          expect(nativeCalls, isEmpty);
+          final toggle = find.byKey(
+            const Key('image_fullscreen_toggle_button'),
+          );
+          if (platform == TargetPlatform.android) {
+            expect(toggle, findsNothing);
+          } else {
+            await tester.tap(toggle);
+            await tester.pump();
+            await tester.tap(toggle);
+            await tester.pump();
+            expect(nativeCalls, [true, false]);
+            await tester.sendKeyEvent(LogicalKeyboardKey.keyF);
+            await tester.pump();
+            expect(nativeCalls, [true, false, true]);
+          }
+        } finally {
+          await tester.pumpWidget(const SizedBox.shrink());
+          debugDefaultTargetPlatformOverride = null;
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(nativeFullscreenChannel, null);
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(SystemChannels.platform, null);
+        }
+      });
+    }
 
     testWidgets('logs native exit failures during disposal', (tester) async {
       const nativeFullscreenChannel = MethodChannel(
@@ -601,6 +675,10 @@ void main() {
           overrides: [
             imageRepositoryProvider.overrideWithValue(mockRepository),
           ],
+        );
+        await tester.pump();
+        await tester.tap(
+          find.byKey(const Key('image_fullscreen_toggle_button')),
         );
         await tester.pump();
 
@@ -671,6 +749,10 @@ void main() {
           overrides: [
             imageRepositoryProvider.overrideWithValue(mockRepository),
           ],
+        );
+        await tester.pump();
+        await tester.tap(
+          find.byKey(const Key('image_fullscreen_toggle_button')),
         );
         await tester.pump();
 
@@ -748,13 +830,71 @@ void main() {
       await tester.pump();
       expect(find.text('Image 1'), findsOneWidget);
 
-      await tester.drag(
-        find.byType(ExtendedImageGesturePageView),
-        const Offset(0, -1000),
-      );
+      await tester.drag(find.byType(PageView), const Offset(0, -1000));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
     });
+
+    testWidgets(
+      'off-axis swipes page; zoom locks the pager until a drag passes the edge',
+      (tester) async {
+        mockRepository.withData([
+          for (final id in ['1', '2', '3'])
+            entity.Image(
+              id: id,
+              title: 'Image $id',
+              files: const [],
+              paths: entity.ImagePaths(image: 'http://stash.test/$id.png'),
+            ),
+        ]);
+        await pumpTestWidget(
+          tester,
+          child: const ImageFullscreenPage(imageId: '1'),
+          overrides: [
+            imageRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+        );
+        await _pumpFrames(tester);
+        mockRepository.withEmpty();
+        final viewer = find.byKey(const Key('image_viewer_media'));
+        final media = tester.getCenter(viewer);
+        final height = tester.getSize(viewer).height;
+
+        // Vertical paging (default): 65 degrees off the paging axis.
+        await tester.flingFrom(media, const Offset(-181, -85), 1000);
+        await _pumpFrames(tester);
+        expect(_currentImageId(tester), '2');
+
+        await tester.tapAt(media);
+        await tester.pump(const Duration(milliseconds: 50));
+        await tester.tapAt(media);
+        await _pumpFrames(tester);
+        final zoom = tester.state<ZoomableImageState>(
+          find.byType(ZoomableImage),
+        );
+        expect(zoom.scale, ZoomableImage.doubleTapScale);
+        expect(
+          tester.widget<PageView>(find.byType(PageView)).physics,
+          isA<NeverScrollableScrollPhysics>(),
+        );
+
+        // Zoomed drags pan the image, even along the paging axis.
+        final offset = zoom.offset;
+        await _dragInSteps(tester, media, const Offset(-10, -20), 6);
+        expect(zoom.offset, isNot(offset));
+        expect(_currentImageId(tester), '2');
+
+        // Past the image edge the same drag continues into the pager.
+        await _dragInSteps(tester, media, Offset(0, -height / 8), 16);
+        await _pumpFrames(tester);
+        expect(_currentImageId(tester), '3');
+        expect(
+          tester.widget<PageView>(find.byType(PageView)).physics,
+          isA<BouncingScrollPhysics>(),
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('keyboard navigation moves promptly and settles quickly', (
       tester,
@@ -771,12 +911,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
       expect(_currentImageId(tester), '2');
       expect(
-        tester
-            .widget<ExtendedImageGesturePageView>(
-              find.byType(ExtendedImageGesturePageView),
-            )
-            .controller
-            .page,
+        tester.widget<PageView>(find.byType(PageView)).controller!.page,
         closeTo(1, 0.01),
       );
       expect(focus.focusNode!.hasFocus, isTrue);
@@ -900,10 +1035,7 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
 
-      await tester.drag(
-        find.byType(ExtendedImageGesturePageView),
-        const Offset(1000, 0),
-      );
+      await tester.drag(find.byType(PageView), const Offset(1000, 0));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       expect(_currentImageId(tester), '1');
@@ -1078,6 +1210,27 @@ Future<void> _pumpKeyboardGallery(
   await tester.pump();
   // Keep automatic near-end pagination from appending the mock page again.
   repository.withEmpty();
+}
+
+Future<void> _dragInSteps(
+  WidgetTester tester,
+  Offset start,
+  Offset step,
+  int steps,
+) async {
+  final gesture = await tester.startGesture(start);
+  for (var i = 0; i < steps; i++) {
+    await gesture.moveBy(step);
+    await tester.pump(const Duration(milliseconds: 16));
+  }
+  await gesture.up();
+}
+
+/// Steps frame by frame; a spinning loader keeps pumpAndSettle from settling.
+Future<void> _pumpFrames(WidgetTester tester) async {
+  for (var i = 0; i < 30; i++) {
+    await tester.pump(const Duration(milliseconds: 50));
+  }
 }
 
 Focus _keyboardFocus(WidgetTester tester) =>

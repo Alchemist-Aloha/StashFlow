@@ -1327,7 +1327,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           );
     if (subtitleUrl != null) {
       AppLogStore.instance.add(
-        'provider playScene: subtitle url=$subtitleUrl lang=$effectiveSubtitleLanguage type=$effectiveSubtitleType',
+        'provider playScene: subtitle url=${redactUrl(subtitleUrl)} lang=$effectiveSubtitleLanguage type=$effectiveSubtitleType',
         source: 'player_provider',
       );
     } else if (effectiveSubtitleLanguage != null) {
@@ -1351,18 +1351,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         graphqlEndpoint: Uri.tryParse(serverUrl),
       );
 
-      final uri = Uri.tryParse(effectiveStreamUrl);
-      String maskedUrl = effectiveStreamUrl;
-      if (uri != null && uri.userInfo.isNotEmpty) {
-        maskedUrl = uri.replace(userInfo: '***:***').toString();
-      } else if (uri != null && uri.queryParameters.containsKey('apikey')) {
-        final params = Map<String, String>.from(uri.queryParameters);
-        params['apikey'] = '***';
-        maskedUrl = uri.replace(queryParameters: params).toString();
-      }
-
       AppLogStore.instance.add(
-        'provider playScene: web effective url=$maskedUrl',
+        'provider playScene: web effective url=${redactUrl(effectiveStreamUrl)}',
         source: 'player_provider',
       );
     }

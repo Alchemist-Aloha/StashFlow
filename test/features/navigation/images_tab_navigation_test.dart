@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/providers/list_scroll_controller_provider.dart';
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/pages/gallery_details_page.dart';
@@ -98,7 +99,7 @@ void main() {
           child: Consumer(
             builder: (context, ref, _) => MaterialApp.router(
               routerConfig: ref.watch(routerProvider),
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: appLocalizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
             ),
           ),
@@ -145,9 +146,9 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byType(ImageFullscreenPage), findsOneWidget);
         expect(
-          GoRouterState.of(
-            tester.element(find.byType(ImageFullscreenPage)),
-          ).uri.path,
+          GoRouterState.of(tester.element(find.byType(ImageFullscreenPage)))
+              .uri
+              .path,
           '/galleries/images/image-0',
         );
         await tester.binding.handlePopRoute();
@@ -249,9 +250,9 @@ void main() {
           same(scoped),
         );
         expect(
-          GoRouterState.of(
-            tester.element(find.byType(ImageFullscreenPage)),
-          ).uri.path,
+          GoRouterState.of(tester.element(find.byType(ImageFullscreenPage)))
+              .uri
+              .path,
           '/galleries/gallery/gallery-1/image/gallery-image-0',
         );
         await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
@@ -319,7 +320,7 @@ void main() {
         child: Consumer(
           builder: (context, ref, _) => MaterialApp.router(
             routerConfig: ref.watch(routerProvider),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           ),
         ),
