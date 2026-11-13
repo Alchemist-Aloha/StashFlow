@@ -1,6 +1,5 @@
 // Build with --release -t test/windows/pip_smoke.dart, then run with
 // scripts/test_windows_pip.py and a local video fixture.
-import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -8,17 +7,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:multiview_desktop/multiview_desktop.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/utils/desktop_window.dart';
+import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/utils/pip_mode.dart';
 import 'package:stash_app_flutter/core/utils/root_app_runner.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/widgets/desktop_pip_window.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_view_mode.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
@@ -37,6 +36,9 @@ class _SmokePlayerState extends PlayerState {
   GlobalPlayerState build() => super.build().copyWith(
     player: player,
     videoController: controller,
+    isPlaying: true,
+    videoWidth: 640,
+    videoHeight: 360,
     activeScene: Scene(
       id: 'pip-smoke',
       title: 'Local PiP fixture',
@@ -110,9 +112,13 @@ Future<void> main(List<String> arguments) async {
   };
   ui.PlatformDispatcher.instance.onError = (error, stack) {
     _record('FAIL $error\n$stack');
+    for (final entry in AppLogStore.instance.entries) {
+      _record('${entry.source}: ${entry.message}');
+    }
     exit(1);
   };
   try {
+    AppLogStore.instance.isEnabled = true;
     _check(arguments.length == 1, 'Supply a local video fixture');
     MediaKit.ensureInitialized();
     await DesktopWindow.instance.initialize();
@@ -168,8 +174,9 @@ Future<void> main(List<String> arguments) async {
     final mainWindow = MultiViewDesktop.fromId(1);
     final mainBounds = mainWindow.getBounds();
     for (var cycle = 0; cycle < 3; cycle++) {
-      final fromFullscreen = cycle > 0;
+      final fromFullscreen = cycle != 1;
       if (fromFullscreen) {
+        _record('FULLSCREEN $cycle');
         notifier.requestEnterFullscreen();
         await _wait(
           () =>
@@ -180,6 +187,7 @@ Future<void> main(List<String> arguments) async {
         await Future<void>.delayed(const Duration(milliseconds: 400));
       }
       final before = player.state.position;
+      _record('PIP $cycle');
       _check(await notifier.requestEnterPip(), 'PiP entry failed');
       _check(
         !container.read(playerStateProvider).isFullScreen,
