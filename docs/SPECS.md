@@ -496,7 +496,10 @@ Confirmed image ratings update all live image lists without refetching or
 reshuffling them. Existing library URLs (`/galleries/images`, `/image/:id`) remain
 supported; a library deep link outside the loaded page resolves that image as a
 single-image view. A missing scoped image shows an explicit dismissible state,
-never an unrelated first image.
+never an unrelated first image. In scoped browsers, system Back (including
+Android predictive Back) dismisses an open image-details or filter sheet before
+leaving the browser, preserving its route, query, and scroll state. Cancelling
+the gesture keeps the sheet open; a later Back can leave the browser normally.
 
 Gallery Details exposes the shared single-star rating button in both its expanded
 and collapsed headers, including for unrated galleries. The expanded section
@@ -582,6 +585,8 @@ On details pages, a strip sits medium spacing below its section header.
 Details-page scene and gallery strips keep the preview's server order, which
 uses the same sort (including the random seed) and entity restriction as the
 View all grid, and never reorder it client-side.
+Pull-to-refresh on a View all grid draws a new random seed, so a random sort
+reshuffles like the main lists; the matching details-page strip follows it.
 
 ## Video playback and media sessions
 

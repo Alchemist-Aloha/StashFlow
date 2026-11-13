@@ -70,8 +70,11 @@ RouteBase _scopedImageBrowserRoute({
   required ImageBrowserContext Function(GoRouterState) browser,
   required GoRouterWidgetBuilder builder,
 }) => ShellRoute(
-  builder: (context, state, child) =>
-      ImageBrowserScope(browser: browser(state), child: child),
+  // Include pageless sheets in the parent route's predictive Back guard.
+  // GoRouter already delegates ordinary Back to the nested Navigator.
+  builder: (context, state, child) => NavigatorPopHandler(
+    child: ImageBrowserScope(browser: browser(state), child: child),
+  ),
   routes: [
     GoRoute(
       path: path,

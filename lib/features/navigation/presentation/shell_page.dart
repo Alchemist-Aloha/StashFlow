@@ -368,7 +368,9 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           if (!router.canPop()) return;
           final expected = config.remove(last);
           if (!await router.routerDelegate.popRoute()) return;
-          // Let nested shell Navigators reconcile before popping their parent.
+          // Reconcile the nested Navigator, then its NavigationNotification
+          // pop guard, before attempting to pop the parent shell.
+          await WidgetsBinding.instance.endOfFrame;
           await WidgetsBinding.instance.endOfFrame;
           if (!mounted ||
               router.routerDelegate.currentConfiguration != expected) {

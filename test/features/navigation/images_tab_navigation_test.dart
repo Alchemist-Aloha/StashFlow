@@ -13,6 +13,7 @@ import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dar
 import 'package:stash_app_flutter/features/galleries/presentation/pages/gallery_details_page.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
 import 'package:stash_app_flutter/features/images/presentation/widgets/image_filter_panel.dart';
+import 'package:stash_app_flutter/features/images/presentation/widgets/image_details_bottom_sheet.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/server_profiles_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
@@ -231,6 +232,19 @@ void main() {
             .read(imageSortProvider.notifier)
             .setSort(sort: 'rating', descending: true);
         await tester.pumpAndSettle();
+        final galleryState = tester.state(find.byType(GalleryDetailsPage));
+        await tester.longPress(find.byType(ImageCard).first);
+        await tester.pumpAndSettle();
+        expect(find.byType(ImageDetailsBottomSheet), findsOneWidget);
+        await _backGesture(tester);
+        expect(find.byType(ImageDetailsBottomSheet), findsNothing);
+        expect(find.byType(GalleryDetailsPage), findsOneWidget);
+        expect(
+          tester.state(find.byType(GalleryDetailsPage)),
+          same(galleryState),
+        );
+        expect(router.state.uri.path, '/galleries/gallery/gallery-1');
+        expect(scoped.read(imageSearchQueryProvider), 'gallery search');
         await tester.tap(find.byIcon(Icons.filter_list));
         await tester.pumpAndSettle();
         expect(
@@ -239,8 +253,13 @@ void main() {
           ),
           same(scoped),
         );
-        Navigator.of(tester.element(find.byType(ImageFilterPanel))).pop();
-        await tester.pumpAndSettle();
+        await _backGesture(tester);
+        expect(find.byType(ImageFilterPanel), findsNothing);
+        expect(
+          tester.state(find.byType(GalleryDetailsPage)),
+          same(galleryState),
+        );
+        expect(scoped.read(imageSearchQueryProvider), 'gallery search');
         await tester.tap(find.byType(ImageCard).first);
         await tester.pumpAndSettle();
         expect(
@@ -261,8 +280,7 @@ void main() {
           scoped.read(imageFullscreenCurrentIdProvider),
           'gallery-image-1',
         );
-        await tester.binding.handlePopRoute();
-        await tester.pumpAndSettle();
+        await _backGesture(tester);
         expect(find.byType(GalleryDetailsPage), findsOneWidget);
         expect(scoped.read(imageSearchQueryProvider), 'gallery search');
         expect(scoped.read(imageSortProvider).sort, 'rating');
@@ -295,11 +313,12 @@ void main() {
   for (final path in [
     '/galleries/gallery/gallery-1',
     '/gallery/gallery-1',
+    'push:/galleries/gallery/gallery-1',
     '/entity-images/performer/entity-1',
     '/entity-images/studio/entity-1',
     '/entity-images/tag/entity-1',
   ]) {
-    testWidgets('Scoped browser Back works at $path', (tester) async {
+    testWidgets('Scoped browser sheet Back works at $path', (tester) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       await pumpTestWidget(
@@ -310,7 +329,14 @@ void main() {
             MockGraphQLSceneRepository(),
           ),
           imageRepositoryProvider.overrideWithValue(
-            MockGraphQLImageRepository(),
+            MockGraphQLImageRepository()..withData([
+              const entity.Image(
+                id: 'image-1',
+                title: 'Image One',
+                files: [entity.ImageFile(width: 100, height: 100, path: '')],
+                paths: entity.ImagePaths(image: '', thumbnail: ''),
+              ),
+            ]),
           ),
           galleryListProvider.overrideWith(_EmptyGalleries.new),
           galleryDetailsProvider('gallery-1').overrideWith(
@@ -334,26 +360,73 @@ void main() {
         ),
       );
       final router = container.read(routerProvider);
-      if (path.startsWith('/entity-images/')) {
+      if (path.startsWith('/entity-images/') || path.startsWith('push:')) {
         router.go('/galleries');
         await tester.pumpAndSettle();
-        unawaited(router.push<void>(path));
+        unawaited(router.push<void>(path.replaceFirst('push:', '')));
       } else {
         // Direct gallery links must offer a way back even without push history.
         router.go(path);
       }
       await tester.pumpAndSettle();
+      final browserState = tester.state(find.byType(ImagesPage));
+      await tester.longPress(find.byType(ImageCard).first);
+      await tester.pumpAndSettle();
+      expect(find.byType(ImageDetailsBottomSheet), findsOneWidget);
+      await _backGesture(tester, cancel: true);
+      expect(find.byType(ImageDetailsBottomSheet), findsOneWidget);
+      expect(tester.state(find.byType(ImagesPage)), same(browserState));
+      await _backGesture(tester);
+      expect(find.byType(ImageDetailsBottomSheet), findsNothing);
+      expect(find.byType(ImagesPage), findsOneWidget);
+      expect(tester.state(find.byType(ImagesPage)), same(browserState));
+      expect(router.state.uri.path, path.replaceFirst('push:', ''));
+      await tester.longPress(find.byType(ImageCard).first);
+      await tester.pumpAndSettle();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byType(ImageDetailsBottomSheet), findsNothing);
+      expect(tester.state(find.byType(ImagesPage)), same(browserState));
       final backButton = find.descendant(
         of: find.byType(AppBar),
         matching: find.byType(BackButton),
       );
       expect(backButton, findsOneWidget);
-      await tester.tap(backButton);
-      await tester.pumpAndSettle();
+      // Once the sheet is gone, Back can leave the gallery as usual.
+      if (path.contains('/galleries/gallery/')) {
+        await _backGesture(tester);
+      } else {
+        await tester.tap(backButton);
+        await tester.pumpAndSettle();
+      }
       expect(router.routeInformationProvider.value.uri.path, '/galleries');
       expect(tester.takeException(), isNull);
     });
   }
+}
+
+Future<void> _backGesture(WidgetTester tester, {bool cancel = false}) async {
+  for (final call in [
+    const MethodCall('startBackGesture', {
+      'touchOffset': [5.0, 300.0],
+      'progress': 0.0,
+      'swipeEdge': 0,
+    }),
+    const MethodCall('updateBackGestureProgress', {
+      'touchOffset': [100.0, 300.0],
+      'progress': 0.35,
+      'swipeEdge': 0,
+    }),
+    MethodCall(cancel ? 'cancelBackGesture' : 'commitBackGesture'),
+  ]) {
+    await tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+      'flutter/backgesture',
+      const StandardMethodCodec().encodeMethodCall(call),
+      (_) {},
+    );
+    await tester.pump();
+  }
+  await tester.pumpAndSettle();
 }
 
 class _EmptyGalleries extends GalleryList {

@@ -303,4 +303,28 @@ void main() {
     expect(scopedFilter.groups?.value, ['page-group']);
     expect(scopedFilter.studios?.value, ['preset-studio']);
   });
+
+  test('refresh reshuffles a random grid and its preview strip', () async {
+    final repository = MockGraphQLSceneRepository();
+    final container = await _containerWith(repository);
+    const kind = EntityMediaFilterKind.performer;
+    container
+        .read(entityMediaSortProvider(kind).notifier)
+        .setSort(sort: 'random', descending: false);
+    final provider = entityMediaGridProvider(kind, 'performer-1');
+    container.listen(provider, (_, _) {});
+    await container.read(provider.future);
+    final before = repository.lastFindScenesSort;
+    expect(before, startsWith('random_'));
+
+    await container.read(provider.notifier).refresh();
+    final after = repository.lastFindScenesSort;
+    expect(after, startsWith('random_'));
+    expect(after, isNot(before));
+
+    await container.read(
+      entityMediaPreviewProvider(kind, 'performer-1').future,
+    );
+    expect(repository.lastFindScenesSort, after);
+  });
 }

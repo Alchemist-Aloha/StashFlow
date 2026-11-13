@@ -196,4 +196,22 @@ void main() {
     expect(repository.lastFilter?.studios?.value, gridStudios);
     expect(repository.lastPage, 1);
   });
+
+  test('refresh reshuffles a random gallery grid', () async {
+    final repository = _FakeGraphQLGalleryRepository();
+    final container = await _containerWith(repository);
+    const kind = EntityGalleryFilterKind.tag;
+    container
+        .read(entityGallerySortProvider(kind).notifier)
+        .setSort(sort: 'random');
+    final provider = entityGalleryGridProvider(kind, 'tag-1');
+    container.listen(provider, (_, _) {});
+    await container.read(provider.future);
+    final before = repository.lastSort;
+    expect(before, startsWith('random_'));
+
+    await container.read(provider.notifier).refresh();
+    expect(repository.lastSort, startsWith('random_'));
+    expect(repository.lastSort, isNot(before));
+  });
 }

@@ -294,6 +294,18 @@ class EntityGalleryGrid extends _$EntityGalleryGrid {
     );
   }
 
+  /// Pull-to-refresh: reloads from the first page with a new random seed, so
+  /// random order reshuffles like the main lists. The seed is shared with the
+  /// details-page preview strip, which reshuffles with it.
+  Future<void> refresh() async {
+    final kind = _kind;
+    if (kind != null) {
+      ref.read(entityGalleryRandomSeedProvider(kind).notifier).next();
+    }
+    ref.invalidateSelf();
+    await future;
+  }
+
   Future<void> fetchNextPage() async {
     final kind = _kind;
     final entityId = _entityId;
