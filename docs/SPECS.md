@@ -883,6 +883,11 @@ presentation that was active before entering.
 
 - The PiP surface omits navigation chrome, details, and the mini player. Desktop
   builds show only a transient minimal transport overlay over the video.
+- Desktop PiP supplies its own page route factory because the multi-window
+  shell captures `material_ui` as a `WidgetsApp`. Entering from the fullscreen
+  player waits for native fullscreen restoration and the overlay's exit before
+  opening the PiP window. A failed exit or PiP entry restores the previous
+  presentation; closing PiP restores it through the normal fullscreen path.
 - The desktop PiP window is frameless, always on top where supported, and
   omitted from the taskbar, dock window collection, or equivalent. Closing it
   leaves the main window geometry and decoration untouched, and stopping

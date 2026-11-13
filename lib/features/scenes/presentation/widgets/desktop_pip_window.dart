@@ -191,6 +191,12 @@ class DesktopPipWindowSession {
           // Hyprland floats, pins, and preserves the aspect ratio of this view.
           title: kDesktopPipWindowTitle,
           alwaysOnTop: true,
+          // material_ui is captured as a WidgetsApp by multiview_desktop.
+          // Its secondary navigator needs an explicit page route factory.
+          shellOverrides: ViewShellOverrides(
+            pageRouteBuilder: <T>(settings, builder) =>
+                MaterialPageRoute<T>(settings: settings, builder: builder),
+          ),
         ),
       );
       _viewId = viewId;

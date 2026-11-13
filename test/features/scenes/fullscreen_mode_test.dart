@@ -183,15 +183,13 @@ void main() {
     final imageSource = File(
       'lib/features/images/presentation/pages/image_fullscreen_page.dart',
     ).readAsStringSync();
-    final desktopSource = File(
-      'lib/core/utils/desktop_fullscreen.dart',
-    ).readAsStringSync();
+    final desktopSource = File('lib/core/utils/desktop_fullscreen.dart')
+        .readAsStringSync();
     final controllerFile = File(
       'windows/runner/windows_fullscreen_controller.cpp',
     );
-    final cmakeSource = File(
-      'windows/runner/CMakeLists.txt',
-    ).readAsStringSync();
+    final cmakeSource = File('windows/runner/CMakeLists.txt')
+        .readAsStringSync();
 
     expect(overlaySource, contains('await DesktopFullscreen.instance.enter()'));
     expect(overlaySource, contains('await DesktopFullscreen.instance.exit()'));
@@ -208,6 +206,125 @@ void main() {
     expect(controllerFile.existsSync(), isTrue);
     expect(cmakeSource, contains('windows_fullscreen_controller'));
   });
+
+  testWidgets(
+    'desktop PiP waits for fullscreen exit before opening its window',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      final nativeExit = Completer<void>();
+      final fullscreenCalls = <bool>[];
+      var pipEntries = 0;
+      final playerState = _PipOrientationPlayerState(testScene);
+      addTearDown(() {
+        PipMode.isInPipMode.value = false;
+        PipMode.clearWindowedHandlers();
+        debugDefaultTargetPlatformOverride = null;
+      });
+      nativeFullscreenHandler = (call) async {
+        final fullscreen = call.arguments as bool;
+        fullscreenCalls.add(fullscreen);
+        if (!fullscreen) await nativeExit.future;
+        return null;
+      };
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [playerStateProvider.overrideWith(() => playerState)],
+        child: const GlobalFullscreenOverlay(),
+      );
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(GlobalFullscreenOverlay)),
+      );
+      PipMode.configureWindowedHandlers(
+        enter: (_) async {
+          pipEntries++;
+          final state = container.read(playerStateProvider);
+          expect(state.isFullScreen, isFalse);
+          expect(state.fullscreenPhase, FullscreenPhase.inline);
+          expect(fullscreenCalls, [true, false]);
+          return true;
+        },
+        exit: () async => true,
+      );
+      playerState.requestEnterFullscreen();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      final entry = playerState.requestEnterPip();
+      await tester.pump();
+      expect(fullscreenCalls, [true, false]);
+      expect(pipEntries, 0);
+      expect(
+        container.read(playerStateProvider).fullscreenPhase,
+        FullscreenPhase.exiting,
+      );
+      expect(await playerState.requestEnterPip(), isFalse);
+      nativeExit.complete();
+      await _pumpUntil(tester, () => pipEntries == 1);
+      expect(await entry, isTrue);
+      expect(container.read(playerStateProvider).isInPipMode, isTrue);
+      expect(container.read(playerStateProvider).isFullScreen, isFalse);
+
+      PipMode.windowedWindowClosed();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(container.read(playerStateProvider).isFullScreen, isTrue);
+      expect(container.read(playerStateProvider).isInPipMode, isFalse);
+      expect(fullscreenCalls, [true, false, true]);
+    },
+  );
+
+  for (final failure in ['fullscreen exit', 'PiP entry']) {
+    testWidgets('desktop PiP restores fullscreen after failed $failure', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      var pipEntries = 0;
+      final playerState = _PipOrientationPlayerState(testScene);
+      addTearDown(() {
+        PipMode.isInPipMode.value = false;
+        PipMode.clearWindowedHandlers();
+        debugDefaultTargetPlatformOverride = null;
+      });
+      nativeFullscreenHandler = (call) async {
+        if (call.arguments == false && failure == 'fullscreen exit') {
+          throw PlatformException(code: 'fullscreen_exit_failed');
+        }
+        return null;
+      };
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [playerStateProvider.overrideWith(() => playerState)],
+        child: const GlobalFullscreenOverlay(),
+      );
+      PipMode.configureWindowedHandlers(
+        enter: (_) async {
+          pipEntries++;
+          return false;
+        },
+        exit: () async => true,
+      );
+      playerState.requestEnterFullscreen();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      bool? entered;
+      final entry = playerState.requestEnterPip().then(
+        (value) => entered = value,
+      );
+      await _pumpUntil(tester, () => entered != null);
+      await entry;
+      expect(entered, isFalse);
+      expect(pipEntries, failure == 'fullscreen exit' ? 0 : 1);
+      final state = ProviderScope.containerOf(
+        tester.element(find.byType(GlobalFullscreenOverlay)),
+      ).read(playerStateProvider);
+      expect(state.isFullScreen, isTrue);
+      expect(state.fullscreenPhase, FullscreenPhase.fullscreen);
+      expect(state.isInPipMode, isFalse);
+      expect(playerState.isPreparingPip, isFalse);
+      await tester.pump(const Duration(milliseconds: 400));
+    });
+  }
 
   testWidgets(
     'Android PiP prepares video without rotating before native confirmation',
@@ -296,8 +413,7 @@ void main() {
               .position
               .value,
           Offset.zero,
-          reason:
-              'Android should capture a fully visible video, not a half-finished slide',
+          reason: 'Android should capture a fully visible video, not a half-finished slide',
         );
 
         // No native mode-change notification: the method reply closes that gap.
@@ -539,9 +655,8 @@ void main() {
         expect(await entry, isFalse);
         await tester.pump();
         final context = tester.element(find.byType(GlobalFullscreenOverlay));
-        final state = ProviderScope.containerOf(
-          context,
-        ).read(playerStateProvider);
+        final state = ProviderScope.containerOf(context)
+            .read(playerStateProvider);
         expect(state.isInPipMode, isFalse);
         expect(state.isFullScreen, isFalse);
         expect(state.fullscreenPhase, FullscreenPhase.inline);

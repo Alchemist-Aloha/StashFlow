@@ -393,6 +393,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   bool? _fullscreenBeforePip;
   PlayerViewMode? _viewModeBeforePip;
   bool _pipRequestInFlight = false;
+  Completer<bool>? _pipFullscreenExit;
   double? _lastAndroidPipRatio;
   DateTime? _lastPipRequestAt;
   static const Duration _pipRequestCooldown = Duration(milliseconds: 700);
@@ -453,6 +454,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       unawaited(_audioFocus.dispose().catchError(_logAudioFocusError));
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
       PipMode.clearWindowedHandlers();
+      final pipFullscreenExit = _pipFullscreenExit;
+      if (pipFullscreenExit != null && !pipFullscreenExit.isCompleted) {
+        pipFullscreenExit.complete(false);
+      }
       unawaited(DesktopPipWindowSession.close());
       _cleanupNotificationArt();
       _activityTracker.dispose();
@@ -880,8 +885,21 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       _fullscreenBeforePip = state.isFullScreen;
       _viewModeBeforePip = state.viewMode;
       if (PipMode.isWindowed) {
-        // The windowed PiP window renders the player UI itself, so the app must
-        // not switch the window to OS fullscreen first.
+        if (state.fullscreenPhase == FullscreenPhase.entering ||
+            state.fullscreenPhase == FullscreenPhase.fullscreen ||
+            state.fullscreenPhase == FullscreenPhase.exiting) {
+          final exit = _pipFullscreenExit = Completer<bool>();
+          if (state.fullscreenPhase != FullscreenPhase.exiting) {
+            requestExitFullscreen();
+          }
+          // The overlay owns both native restoration and its exit animation.
+          // Do not create/focus a second window until that handoff completes.
+          final exited = await exit.future.timeout(
+            const Duration(seconds: 12),
+            onTimeout: () => false,
+          );
+          if (!exited || !ref.mounted) return false;
+        }
         entered = await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
         return entered;
       }
@@ -914,6 +932,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       return entered;
     } finally {
       _pipRequestInFlight = false;
+      _pipFullscreenExit = null;
       if (!entered && ref.mounted) {
         _lastAndroidPipRatio = null;
         _fullscreenBeforePip = null;
@@ -1124,6 +1143,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       viewMode: PlayerViewMode.inline,
       fullscreenPhase: FullscreenPhase.inline,
     );
+    final pipFullscreenExit = _pipFullscreenExit;
+    if (pipFullscreenExit != null && !pipFullscreenExit.isCompleted) {
+      pipFullscreenExit.complete(true);
+    }
   }
 
   void markFullscreenExitFailed() {
@@ -1132,6 +1155,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       viewMode: PlayerViewMode.fullscreen,
       fullscreenPhase: FullscreenPhase.fullscreen,
     );
+    final pipFullscreenExit = _pipFullscreenExit;
+    if (pipFullscreenExit != null && !pipFullscreenExit.isCompleted) {
+      pipFullscreenExit.complete(false);
+    }
   }
 
   /// Synchronizes the background navigation to match the currently active scene.
