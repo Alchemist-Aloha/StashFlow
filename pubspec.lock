@@ -29,10 +29,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: de5ac590b8155e4e676088d714bd41ea620449a6adc0f7950c5073874b287ddb
+      sha256: "4bb7d60637561012df2a7b04e48bcc2485e849e81048dc075a6d45b95c342910"
       url: "https://pub.dev"
     source: hosted
-    version: "4.6.0"
+    version: "4.7.0"
   args:
     dependency: transitive
     description:
@@ -575,10 +575,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_staggered_grid_view
-      sha256: "19e7abb550c96fbfeb546b23f3ff356ee7c59a019a651f8f102a4ba9b7349395"
+      sha256: "97ac7d4165d4840edfa591da9c632a7c4f7e5fbea1d31db5c250cb21ffa5754b"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.0"
+    version: "0.8.0-dev.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
