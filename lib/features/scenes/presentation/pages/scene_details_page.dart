@@ -8,9 +8,12 @@ import 'package:material_ui/material_ui.dart';
 import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../galleries/presentation/gallery_location.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
@@ -298,9 +301,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     if (!context.mounted) return;
 
     if (randomScene == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_random)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_random)));
       return;
     }
 
@@ -460,9 +462,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     ref.read(playbackQueueProvider.notifier).removeScene(scene.id);
     ref.invalidate(sceneDetailsProvider(scene.id));
     _invalidateSceneListUnlessRandom();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(context.l10n.scene_deleted)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(context.l10n.scene_deleted)));
 
     final router = GoRouter.of(context);
     if (router.canPop()) {
@@ -693,9 +694,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.saved_to_album)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(context.l10n.saved_to_album)));
       }
     } on GalException catch (e, stackTrace) {
       AppLogStore.instance.addError(
@@ -1747,12 +1747,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             title: context.l10n.details_galleries,
             padding: EdgeInsets.zero,
           ),
-          SizedBox(height: context.dimensions.spacingSmall),
+          SizedBox(height: context.dimensions.spacingMedium),
           GalleryStrip(
             galleries: galleries,
-            onTap: (gallery) => context.push(
-              '/galleries/gallery/${Uri.encodeComponent(gallery.id)}',
-            ),
+            onTap: (gallery) =>
+                context.push(galleryLocation(context, gallery.id)),
           ),
         ],
       ),
@@ -1793,7 +1792,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     : null,
                 padding: EdgeInsets.zero,
               ),
-              const SizedBox(height: AppTheme.spacingSmall),
+              SizedBox(height: context.dimensions.spacingMedium),
               SceneStrip(
                 scenes: filtered,
                 queueId: PlaybackQueueIds.sceneMoreFromStudio(
@@ -1849,7 +1848,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       context.push('/performers/performer/$performerId/media'),
                   padding: EdgeInsets.zero,
                 ),
-                SizedBox(height: context.dimensions.spacingSmall),
+                SizedBox(height: context.dimensions.spacingMedium),
                 SceneStrip(
                   scenes: relatedScenes,
                   queueId: PlaybackQueueIds.sceneMoreFromPerformer(

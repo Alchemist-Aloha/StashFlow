@@ -1,5 +1,4 @@
 import 'package:material_ui/material_ui.dart';
-import 'dart:math';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +6,6 @@ import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../../../scenes/presentation/providers/playback_queue_provider.dart';
 import '../../../scenes/presentation/widgets/scene_strip.dart';
@@ -161,17 +159,19 @@ class GroupDetailsPage extends ConsumerWidget {
                                     ),
                                   );
                                 }
-                                final List<Scene> sceneList = scenes;
-                                final shuffledItems = sceneList.toList()
-                                  ..shuffle(Random(group.id.hashCode));
-                                return SceneStrip(
-                                  scenes: shuffledItems,
-                                  queueId: PlaybackQueueIds.groupStrip(
-                                    group.id,
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                    top: context.dimensions.spacingMedium,
                                   ),
-                                  onTap: (scene) => context.push(
-                                    '/scenes/scene/${scene.id}',
-                                    extra: true,
+                                  child: SceneStrip(
+                                    scenes: scenes,
+                                    queueId: PlaybackQueueIds.groupStrip(
+                                      group.id,
+                                    ),
+                                    onTap: (scene) => context.push(
+                                      '/scenes/scene/${scene.id}',
+                                      extra: true,
+                                    ),
                                   ),
                                 );
                               },

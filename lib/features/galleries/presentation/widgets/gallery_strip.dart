@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/media_card_text.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
@@ -80,9 +81,15 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
     final contentPadding = context.dimensions.spacingMedium;
     final separatorWidth = context.dimensions.spacingSmall;
     final stride = effectiveItemWidth + separatorWidth;
+    // Equal breathing room above and below the cards.
+    final verticalPadding = context.dimensions.spacingSmall;
 
     return SizedBox(
-      height: MediaCardText.stripItemHeight(context, effectiveItemWidth),
+      height: MediaCardText.stripItemHeight(
+        context,
+        effectiveItemWidth,
+        extra: 2 * verticalPadding,
+      ),
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification.metrics.axis != Axis.horizontal ||
@@ -140,6 +147,8 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
             padding: EdgeInsets.only(
               left: contentPadding,
               right: contentPadding - separatorWidth,
+              top: verticalPadding,
+              bottom: verticalPadding,
             ),
             scrollDirection: Axis.horizontal,
             itemExtent: stride,

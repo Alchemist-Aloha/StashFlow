@@ -1,6 +1,9 @@
 import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+
+import 'branch_aware_page_transitions.dart';
 import 'font_sizes.dart';
 
 /// Custom theme extension for StashFlow-specific semantic colors.
@@ -296,6 +299,13 @@ class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          ...const PageTransitionsTheme().builders,
+          TargetPlatform.android:
+              const BranchAwarePredictiveBackPageTransitionsBuilder(),
+        },
+      ),
       brightness: brightness,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,

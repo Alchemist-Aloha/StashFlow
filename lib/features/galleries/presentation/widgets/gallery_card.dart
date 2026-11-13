@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../gallery_location.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/thumbnail_badge.dart';
@@ -255,7 +256,7 @@ class GalleryCard extends ConsumerWidget {
   }
 
   void _openDetails(BuildContext context, WidgetRef ref) {
-    unawaited(context.push('/galleries/gallery/${gallery.id}'));
+    unawaited(context.push(galleryLocation(context, gallery.id)));
   }
 
   Widget _buildThumbnail(BuildContext context, double? aspectRatio) {

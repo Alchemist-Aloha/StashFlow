@@ -1142,7 +1142,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     if (activeSceneId == null) return;
 
     final router = GoRouter.of(context);
-    final currentPath = router.routeInformationProvider.value.uri.path;
+    // Pushed pages keep the reported URL at the tab root; state sees them.
+    final currentPath = router.state.uri.path;
     final segments = Uri.parse(currentPath).pathSegments;
     final isActiveSceneDetails =
         (segments.length >= 3 &&

@@ -1,15 +1,16 @@
 import 'dart:async';
 
-import 'dart:math';
-
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../galleries/presentation/gallery_location.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
-import '../../../scenes/domain/entities/scene.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/performer_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
@@ -21,9 +22,11 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/performer_list_provider.dart';
+
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
+
 import '../../../../core/utils/app_log_store.dart';
 
 class PerformerDetailsPage extends ConsumerWidget {
@@ -360,14 +363,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SectionHeader(
-                                  title: context.l10n.details_links,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                const SizedBox(height: AppTheme.spacingSmall),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: performer.urls.map((url) {
+                                _PerformerLinks(
+                                  urls: performer.urls,
+                                  linkBuilder: (url) {
                                     return Padding(
                                       padding: const EdgeInsets.only(
                                         bottom: AppTheme.spacingSmall,
@@ -452,7 +450,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                         ),
                                       ),
                                     );
-                                  }).toList(),
+                                  },
                                 ),
                               ],
                             ),
@@ -510,17 +508,19 @@ class PerformerDetailsPage extends ConsumerWidget {
                                       ),
                                     );
                                   }
-                                  final List<Scene> sceneList = scenes;
-                                  final shuffledItems = sceneList.toList()
-                                    ..shuffle(Random(performer.id.hashCode));
-                                  return SceneStrip(
-                                    scenes: shuffledItems,
-                                    queueId: PlaybackQueueIds.performerStrip(
-                                      performer.id,
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                      top: context.dimensions.spacingMedium,
                                     ),
-                                    onTap: (scene) => context.push(
-                                      '/scenes/scene/${scene.id}',
-                                      extra: true,
+                                    child: SceneStrip(
+                                      scenes: scenes,
+                                      queueId: PlaybackQueueIds.performerStrip(
+                                        performer.id,
+                                      ),
+                                      onTap: (scene) => context.push(
+                                        '/scenes/scene/${scene.id}',
+                                        extra: true,
+                                      ),
                                     ),
                                   );
                                 },
@@ -557,12 +557,15 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     ),
                                     padding: EdgeInsets.zero,
                                   ),
+                                  SizedBox(
+                                    height: context.dimensions.spacingMedium,
+                                  ),
                                   GalleryStrip(
                                     galleries: galleries,
                                     onTap: (gallery) {
                                       unawaited(
                                         context.push(
-                                          '/galleries/gallery/${Uri.encodeComponent(gallery.id)}',
+                                          galleryLocation(context, gallery.id),
                                         ),
                                       );
                                     },
@@ -606,6 +609,51 @@ class PerformerDetailsPage extends ConsumerWidget {
     return Chip(
       label: Text(label, style: context.textTheme.bodySmall),
       visualDensity: VisualDensity.compact,
+    );
+  }
+}
+
+/// Links section showing the first [collapsedCount] links, with a header
+/// Show more/Show less toggle for the rest.
+class _PerformerLinks extends StatefulWidget {
+  const _PerformerLinks({required this.urls, required this.linkBuilder});
+
+  static const collapsedCount = 5;
+
+  final List<String> urls;
+  final Widget Function(String url) linkBuilder;
+
+  @override
+  State<_PerformerLinks> createState() => _PerformerLinksState();
+}
+
+class _PerformerLinksState extends State<_PerformerLinks> {
+  bool _showAll = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final urls = widget.urls;
+    final collapsible = urls.length > _PerformerLinks.collapsedCount;
+    final visible = _showAll || !collapsible
+        ? urls
+        : urls.take(_PerformerLinks.collapsedCount);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionHeader(
+          key: const Key('performer_links_header'),
+          title: context.l10n.details_links,
+          padding: EdgeInsets.zero,
+          onViewAll: collapsible
+              ? () => setState(() => _showAll = !_showAll)
+              : null,
+          actionLabel: _showAll
+              ? context.l10n.details_show_less
+              : context.l10n.details_show_more,
+        ),
+        const SizedBox(height: AppTheme.spacingSmall),
+        ...visible.map(widget.linkBuilder),
+      ],
     );
   }
 }

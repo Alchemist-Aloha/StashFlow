@@ -43,6 +43,7 @@ class ShellPage extends ConsumerStatefulWidget {
 
 class _ShellPageState extends ConsumerState<ShellPage> {
   bool _dialogShown = false;
+  bool _selectingDestination = false;
   DateTime? _lastHorizontalSwipeTime;
   static const _horizontalSwipeThreshold = Duration(milliseconds: 500);
   bool? _lastAppliedMainPageGravityOrientation;
@@ -347,77 +348,111 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         isFullScreen ||
         (isTiktokLayout && onScenesPage);
 
-    void onDestinationSelected(int uiIndex) {
-      final tab = visibleTabs[uiIndex];
-      final branchIndex = tab.type.index;
+    Future<void> onDestinationSelected(int uiIndex) async {
+      if (_selectingDestination) return;
+      _selectingDestination = true;
+      try {
+        final tab = visibleTabs[uiIndex];
+        final branchIndex = tab.type.index;
+        final router = GoRouter.of(context);
+        final ownRoutes = RouteBase.routesRecursively(
+          navigationShell.route.branches[navigationShell.currentIndex].routes,
+        ).toSet();
+        var poppedForeignPages = false;
+        while (true) {
+          final config = router.routerDelegate.currentConfiguration;
+          final last = config.lastOrNull;
+          if (last is! ImperativeRouteMatch || ownRoutes.contains(last.route)) {
+            break;
+          }
+          if (!router.canPop()) return;
+          final expected = config.remove(last);
+          if (!await router.routerDelegate.popRoute()) return;
+          // Reconcile the nested Navigator, then its NavigationNotification
+          // pop guard, before attempting to pop the parent shell.
+          await WidgetsBinding.instance.endOfFrame;
+          await WidgetsBinding.instance.endOfFrame;
+          if (!mounted ||
+              router.routerDelegate.currentConfiguration != expected) {
+            return; // A pop was vetoed, or another navigation took over.
+          }
+          poppedForeignPages = true;
+        }
+        if (branchIndex == navigationShell.currentIndex && poppedForeignPages) {
+          return;
+        }
 
-      if (branchIndex == navigationShell.currentIndex) {
-        switch (tab.type) {
-          case NavigationTabType.scenes:
-            final isTiktokLayout = ref.read(sceneTiktokLayoutProvider);
-            if (!isTiktokLayout) {
+        if (branchIndex == navigationShell.currentIndex) {
+          switch (tab.type) {
+            case NavigationTabType.scenes:
+              final isTiktokLayout = ref.read(sceneTiktokLayoutProvider);
+              if (!isTiktokLayout) {
+                ref
+                    .read(
+                      listScrollControllerProvider(ListScrollTarget.scene)
+                          .notifier,
+                    )
+                    .scrollToTop();
+              }
+              break;
+            case NavigationTabType.performers:
               ref
                   .read(
-                    listScrollControllerProvider(ListScrollTarget.scene)
+                    listScrollControllerProvider(ListScrollTarget.performer)
                         .notifier,
                   )
                   .scrollToTop();
-            }
-            break;
-          case NavigationTabType.performers:
-            ref
-                .read(
-                  listScrollControllerProvider(ListScrollTarget.performer)
-                      .notifier,
-                )
-                .scrollToTop();
-            break;
-          case NavigationTabType.studios:
-            ref
-                .read(
-                  listScrollControllerProvider(ListScrollTarget.studio)
-                      .notifier,
-                )
-                .scrollToTop();
-            break;
-          case NavigationTabType.tags:
-            ref
-                .read(
-                  listScrollControllerProvider(ListScrollTarget.tag).notifier,
-                )
-                .scrollToTop();
-            break;
-          case NavigationTabType.galleries:
-            ref
-                .read(
-                  listScrollControllerProvider(ListScrollTarget.gallery)
-                      .notifier,
-                )
-                .scrollToTop();
-            break;
-          case NavigationTabType.images:
-            ref
-                .read(
-                  listScrollControllerProvider(ListScrollTarget.image).notifier,
-                )
-                .scrollToTop();
-            break;
-          case NavigationTabType.markers:
-            ref
-                .read(
-                  listScrollControllerProvider(ListScrollTarget.marker)
-                      .notifier,
-                )
-                .scrollToTop();
-            break;
-          case NavigationTabType.groups:
-            break;
+              break;
+            case NavigationTabType.studios:
+              ref
+                  .read(
+                    listScrollControllerProvider(ListScrollTarget.studio)
+                        .notifier,
+                  )
+                  .scrollToTop();
+              break;
+            case NavigationTabType.tags:
+              ref
+                  .read(
+                    listScrollControllerProvider(ListScrollTarget.tag).notifier,
+                  )
+                  .scrollToTop();
+              break;
+            case NavigationTabType.galleries:
+              ref
+                  .read(
+                    listScrollControllerProvider(ListScrollTarget.gallery)
+                        .notifier,
+                  )
+                  .scrollToTop();
+              break;
+            case NavigationTabType.images:
+              ref
+                  .read(
+                    listScrollControllerProvider(ListScrollTarget.image)
+                        .notifier,
+                  )
+                  .scrollToTop();
+              break;
+            case NavigationTabType.markers:
+              ref
+                  .read(
+                    listScrollControllerProvider(ListScrollTarget.marker)
+                        .notifier,
+                  )
+                  .scrollToTop();
+              break;
+            case NavigationTabType.groups:
+              break;
+          }
         }
+        navigationShell.goBranch(
+          branchIndex,
+          initialLocation: branchIndex == navigationShell.currentIndex,
+        );
+      } finally {
+        _selectingDestination = false;
       }
-      navigationShell.goBranch(
-        branchIndex,
-        initialLocation: branchIndex == navigationShell.currentIndex,
-      );
     }
 
     final navigationDestinations = visibleTabs

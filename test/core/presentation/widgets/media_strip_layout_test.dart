@@ -5,6 +5,8 @@ import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dar
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_card.dart';
 
 import '../../../helpers/test_helpers.dart';
 
@@ -81,14 +83,20 @@ void main() {
           expect(tester.takeException(), isNull);
           final row = tester.getRect(find.byType(ListView));
           final subtitle = tester.getRect(find.text(_studio));
-          // Only the card's 4px bottom padding (plus rounding) remains, and
-          // for scenes the reserved resume-bar room.
-          final reserve = name == 'scene'
-              ? tester.element(find.byType(ListView)).dimensions.spacingSmall /
-                    2
-              : 0;
+          final spacing = tester
+              .element(find.byType(ListView))
+              .dimensions
+              .spacingSmall;
+          // Strips pad their cards equally above and below.
+          final card = tester.getRect(
+            find.byType(name == 'scene' ? SceneCard : GalleryCard).first,
+          );
+          expect(card.top - row.top, closeTo(spacing, 0.5));
+          // Beyond that padding, only the card's 4px bottom padding (plus
+          // rounding) remains, and for scenes the reserved resume-bar room.
+          final reserve = name == 'scene' ? spacing / 2 : 0;
           expect(
-            row.bottom - subtitle.bottom,
+            row.bottom - subtitle.bottom - spacing,
             inInclusiveRange(0, 5 + reserve),
           );
         });

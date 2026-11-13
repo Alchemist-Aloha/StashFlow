@@ -34,8 +34,9 @@ class EntityMediaGridPage extends ConsumerWidget {
       gridColumns: ref.watch(gridColumnSettingProvider(_columnSetting)),
       gridColumnSetting: _columnSetting,
       queueId: _queueId,
-      onRefresh: () =>
-          ref.refresh(entityMediaGridProvider(filterKind, entityId).future),
+      onRefresh: () => ref
+          .read(entityMediaGridProvider(filterKind, entityId).notifier)
+          .refresh(),
       onFetchNextPage: () => ref
           .read(entityMediaGridProvider(filterKind, entityId).notifier)
           .fetchNextPage(),

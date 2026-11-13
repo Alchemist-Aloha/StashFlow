@@ -13,11 +13,20 @@
 - Seeking holds the selected position while the seek completes without triggering image navigation. Only the selected clip plays; paging away or closing the viewer releases it, and returning from the background resumes only previously playing clips.
 - GIFs remain animated images without video badges or controls, even when the server identifies them as video files. Clips save as videos; GIFs use image saving.
 
-## 🔗 Linked Scenes and Galleries
+## 🔗 Linked Media and Details
 
 - Scene details now show a **Galleries** row listing the galleries linked to that scene, and gallery details show a **Scenes** row in the header. Tap a card to open it; pull to refresh reloads the row.
 - Scene cards now match gallery cards: the rating appears as a yellow star at the top right, the O-count at the bottom left, and the length at the bottom right, each on a rounded badge. Empty ratings and O-counts are hidden.
-- Horizontal scene and gallery rows size themselves to their cards at every interface and text scale, fixing clipped gallery cards and the blank space under scene cards.
+- Horizontal scene and gallery rows size themselves to their cards at every interface and text scale, fixing clipped gallery cards and the blank space under scene cards. Spacing above and below cards and beneath section headings is now consistent.
+- Scene and gallery previews on details pages now follow the same sort order as their **View all** grids, including random order, instead of reshuffling scenes locally or using a different gallery sort.
+- Pull to refresh an entity’s **View all** scene or gallery grid to reload it and reshuffle a random sort; the matching preview row updates with it.
+- Performer details initially show up to five external links, with **Show more / Show less** for longer lists.
+
+## 🧭 Navigation
+
+- Switching tabs after opening another feature’s pages now returns you to the originating details page and scroll position, rather than leaving a gallery or image viewer in the way. Reselecting the current tab first closes those pages; selecting it again returns to the main list and scrolls to the top.
+- Fixed opening a gallery from another tab while a gallery is already open in the Galleries tab.
+- Android predictive Back no longer removes details pages from inactive tabs. In gallery and scoped image browsers, Back dismisses an open details or filter sheet before leaving the browser.
 
 ## 🔎 Scene Filters
 
@@ -53,7 +62,7 @@
 
 ## ⚙️ Settings
 
-- First launch now asks for your app language before server setup.
+- First launch now asks for your app language before server setup. Lists without a configured server offer a setup action instead of showing a connection error.
 - The Settings hub uses a single column of full-width cards, matching the Tools page.
 
 ## 🪟 Desktop Picture-in-Picture

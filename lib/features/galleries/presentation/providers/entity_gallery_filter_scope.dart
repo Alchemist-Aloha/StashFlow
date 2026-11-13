@@ -212,22 +212,24 @@ FutureOr<List<Gallery>> entityGalleryPreview(
   String entityId,
 ) async {
   ref.keepAlive();
+  // Match the View all grid's sort so the strip previews its first items.
+  final sortConfig = ref.watch(entityGallerySortProvider(kind));
+  final sort = sortConfig.sort == 'random'
+      ? 'random_${ref.watch(entityGalleryRandomSeedProvider(kind))}'
+      : sortConfig.sort;
   final repository = ref.read(galleryRepositoryProvider);
 
-  return switch (kind) {
-    EntityGalleryFilterKind.performer => repository.findGalleries(
-      perPage: 24,
-      performerId: entityId,
+  return repository.findGalleries(
+    page: 1,
+    perPage: 24,
+    sort: sort,
+    descending: sortConfig.descending,
+    galleryFilter: galleryFilterForEntityGalleries(
+      filter: GalleryFilter.empty(),
+      kind: kind,
+      entityId: entityId,
     ),
-    EntityGalleryFilterKind.studio => repository.findGalleries(
-      perPage: 24,
-      studioId: entityId,
-    ),
-    EntityGalleryFilterKind.tag => repository.findGalleries(
-      perPage: 24,
-      tagId: entityId,
-    ),
-  };
+  );
 }
 
 @riverpod
@@ -290,6 +292,18 @@ class EntityGalleryGrid extends _$EntityGalleryGrid {
         organized: organizedFilter.toBool() ?? filter.organized,
       ),
     );
+  }
+
+  /// Pull-to-refresh: reloads from the first page with a new random seed, so
+  /// random order reshuffles like the main lists. The seed is shared with the
+  /// details-page preview strip, which reshuffles with it.
+  Future<void> refresh() async {
+    final kind = _kind;
+    if (kind != null) {
+      ref.read(entityGalleryRandomSeedProvider(kind).notifier).next();
+    }
+    ref.invalidateSelf();
+    await future;
   }
 
   Future<void> fetchNextPage() async {

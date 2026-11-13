@@ -458,7 +458,7 @@ class _CompactGalleryDetails extends ConsumerWidget {
                     title: context.l10n.scenes_title,
                     padding: EdgeInsets.zero,
                   ),
-                  SizedBox(height: dims.spacingSmall),
+                  SizedBox(height: dims.spacingMedium),
                   SceneStrip(
                     key: const Key('gallery_linked_scenes'),
                     scenes: scenes,
