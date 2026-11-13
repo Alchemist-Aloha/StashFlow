@@ -70,6 +70,7 @@ dependencies:
   stashflow_translation:
     path: packages/stashflow_translation
   local_auth: ^3.0.2
+  material_ui: ^1.11.0
 
 dev_dependencies:
   msix: ^3.18.0

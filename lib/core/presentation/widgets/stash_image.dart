@@ -8,7 +8,7 @@ import 'package:cached_network_image_ce/src/cache/default_cache_manager.dart'
     if (dart.library.js_interop) 'package:cached_network_image_ce/src/cache/default_cache_manager_web.dart'
     as image_cache;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../theme/app_theme.dart';

@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,7 +28,9 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_l
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_tabs_provider.dart';
+
 import 'helpers/test_helpers.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 
@@ -327,7 +330,7 @@ void main() {
           return MaterialApp.router(
             routerConfig: goRouter,
             theme: AppTheme.darkTheme,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           );
         },
@@ -440,7 +443,7 @@ void main() {
           return MaterialApp.router(
             routerConfig: goRouter,
             theme: AppTheme.darkTheme,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           );
         },
@@ -503,7 +506,7 @@ void main() {
           builder: (context, ref, _) => MaterialApp.router(
             routerConfig: ref.watch(routerProvider),
             theme: AppTheme.darkTheme,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           ),
         ),
@@ -585,7 +588,7 @@ void main() {
             return MaterialApp.router(
               routerConfig: goRouter,
               theme: AppTheme.darkTheme,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: appLocalizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
             );
           },
@@ -656,7 +659,7 @@ void main() {
               return MaterialApp.router(
                 routerConfig: router,
                 theme: AppTheme.darkTheme,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                localizationsDelegates: appLocalizationsDelegates,
                 supportedLocales: AppLocalizations.supportedLocales,
               );
             },
@@ -748,7 +751,7 @@ void main() {
             return MaterialApp.router(
               routerConfig: goRouter,
               theme: AppTheme.darkTheme,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: appLocalizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
             );
           },
@@ -813,7 +816,7 @@ void main() {
             return MaterialApp.router(
               routerConfig: goRouter,
               theme: AppTheme.darkTheme,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: appLocalizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
             );
           },
@@ -893,7 +896,7 @@ void main() {
               return MaterialApp.router(
                 routerConfig: goRouter,
                 theme: AppTheme.darkTheme,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                localizationsDelegates: appLocalizationsDelegates,
                 supportedLocales: AppLocalizations.supportedLocales,
               );
             },
@@ -957,7 +960,7 @@ void main() {
           return MaterialApp.router(
             routerConfig: goRouter,
             theme: AppTheme.darkTheme,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           );
         },
@@ -1012,7 +1015,7 @@ void main() {
           return MaterialApp.router(
             routerConfig: goRouter,
             theme: AppTheme.darkTheme,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           );
         },
@@ -1060,7 +1063,7 @@ void main() {
           return MaterialApp.router(
             routerConfig: goRouter,
             theme: AppTheme.darkTheme,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           );
         },

@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
@@ -68,75 +69,74 @@ void main() {
     expect(container.read(sceneListRandomReturnProvider), isTrue);
   });
 
-  testWidgets(
-    'ScenesPage random button preserves the main queue',
-    (tester) async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final listedScene = _scene('listed');
-      final randomScene = _scene('backend-random');
-      final queuedA = _scene('queue-a');
-      final queuedB = _scene('queue-b');
-      final repo = MockGraphQLSceneRepository()
-        ..withData([listedScene])
-        ..findScenesResponses.addAll([
-          [listedScene],
-          [randomScene],
-        ]);
-      Object? randomRouteExtra;
-
-      final router = GoRouter(
-        routes: [
-          GoRoute(path: '/', builder: (_, _) => const ScenesPage()),
-          GoRoute(
-            path: '/scenes/scene/:id',
-            builder: (context, state) {
-              randomRouteExtra = state.extra;
-              return Text('route:${state.pathParameters['id']}');
-            },
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            sharedPreferencesProvider.overrideWithValue(prefs),
-            sceneRepositoryProvider.overrideWithValue(repo),
-          ],
-          child: MaterialApp.router(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            routerConfig: router,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      final container = ProviderScope.containerOf(
-        tester.element(find.byType(ScenesPage)),
-      );
-      container.read(playbackQueueProvider.notifier).setSequence([
-        queuedA,
-        queuedB,
-      ], 1);
-      final before = container.read(playbackQueueProvider);
-
-      await tester.tap(find.byTooltip('Random scene'));
-      await tester.pumpAndSettle();
-
-      final after = container.read(playbackQueueProvider);
-      expect(find.text('route:backend-random'), findsOneWidget);
-      expect(randomRouteExtra, isTrue);
-      expect(after.sequence.map((scene) => scene.id).toList(), [
-        'queue-a',
-        'queue-b',
+  testWidgets('ScenesPage random button preserves the main queue', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final listedScene = _scene('listed');
+    final randomScene = _scene('backend-random');
+    final queuedA = _scene('queue-a');
+    final queuedB = _scene('queue-b');
+    final repo = MockGraphQLSceneRepository()
+      ..withData([listedScene])
+      ..findScenesResponses.addAll([
+        [listedScene],
+        [randomScene],
       ]);
-      expect(after.currentIndex, before.currentIndex);
-    },
-  );
+    Object? randomRouteExtra;
+
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const ScenesPage()),
+        GoRoute(
+          path: '/scenes/scene/:id',
+          builder: (context, state) {
+            randomRouteExtra = state.extra;
+            return Text('route:${state.pathParameters['id']}');
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          sceneRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(ScenesPage)),
+    );
+    container.read(playbackQueueProvider.notifier).setSequence([
+      queuedA,
+      queuedB,
+    ], 1);
+    final before = container.read(playbackQueueProvider);
+
+    await tester.tap(find.byTooltip('Random scene'));
+    await tester.pumpAndSettle();
+
+    final after = container.read(playbackQueueProvider);
+    expect(find.text('route:backend-random'), findsOneWidget);
+    expect(randomRouteExtra, isTrue);
+    expect(after.sequence.map((scene) => scene.id).toList(), [
+      'queue-a',
+      'queue-b',
+    ]);
+    expect(after.currentIndex, before.currentIndex);
+  });
 
   testWidgets('SceneDetailsPage random button uses the list provider', (
     tester,
@@ -176,7 +176,7 @@ void main() {
           sceneRepositoryProvider.overrideWithValue(repo),
         ],
         child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,

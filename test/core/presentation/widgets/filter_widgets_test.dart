@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_details_provider.dart';
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';

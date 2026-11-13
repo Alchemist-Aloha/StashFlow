@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../domain/entities/saved_filter_config.dart';
 import '../../utils/l10n_extensions.dart';

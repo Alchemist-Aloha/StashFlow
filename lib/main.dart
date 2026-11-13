@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
-import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -266,7 +265,7 @@ class StartupErrorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: supportedAppLocales,
       home: Scaffold(
         body: SafeArea(
@@ -364,12 +363,16 @@ class MyApp extends ConsumerWidget {
                 );
               }
             },
-            child: child,
+            // media_kit_video's controls still use package:flutter/material
+            // and need its Theme and MaterialLocalizations; drop this once
+            // dependencies migrate to material_ui.
+            // ignore: deprecated_member_use
+            child: MaterialUiCompatibilityBridge(child: child),
           ),
         );
       },
       onGenerateTitle: (context) => context.l10n.appTitle,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: supportedAppLocales,
       locale: appLocale,
       themeMode: themeMode,

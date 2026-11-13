@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
@@ -26,6 +27,7 @@ import '../../helpers/test_helpers.dart';
 import '../../integration_navigation_test.dart' show createTestScene;
 import '../scenes/presentation/widgets/native_video_controls_test.dart'
     show FakeVideoController, FakePlayer;
+
 import 'package:media_kit/media_kit.dart' as mk;
 
 class _NavigationDecoder extends FakePlayer {
@@ -177,8 +179,7 @@ void main() {
                     router = ref.watch(routerProvider);
                     return MaterialApp.router(
                       routerConfig: router,
-                      localizationsDelegates:
-                          AppLocalizations.localizationsDelegates,
+                      localizationsDelegates: appLocalizationsDelegates,
                       supportedLocales: AppLocalizations.supportedLocales,
                     );
                   },

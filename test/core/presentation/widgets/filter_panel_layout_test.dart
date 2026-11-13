@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/filter_widgets.dart';
@@ -64,7 +65,7 @@ void main() {
                   fontSizeFactor: scale,
                   fontFamily: 'Inter',
                 ),
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                localizationsDelegates: appLocalizationsDelegates,
                 supportedLocales: AppLocalizations.supportedLocales,
                 locale: const Locale('de'),
                 home: Scaffold(
@@ -98,9 +99,8 @@ void main() {
                 format: ui.ImageByteFormat.png,
               );
               await Directory(captureDir).create(recursive: true);
-              await File(
-                '$captureDir/${entry.key}-$width.png',
-              ).writeAsBytes(bytes!.buffer.asUint8List());
+              await File('$captureDir/${entry.key}-$width.png')
+                  .writeAsBytes(bytes!.buffer.asUint8List());
               image.dispose();
             });
           }

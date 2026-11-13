@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +8,7 @@ import 'package:media_kit/media_kit.dart' as mk;
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
@@ -161,9 +162,9 @@ void main() {
       tester
           .widget<IconButton>(find.byKey(const Key('scene_show_metadata')))
           .color,
-      Theme.of(
-        tester.element(find.byKey(const Key('scene_show_metadata'))),
-      ).colorScheme.onSurfaceVariant,
+      Theme.of(tester.element(find.byKey(const Key('scene_show_metadata'))))
+          .colorScheme
+          .onSurfaceVariant,
     );
     expect(
       find.descendant(
@@ -332,9 +333,8 @@ void main() {
     await tester.tap(find.byKey(const Key('scene_action_more')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('scene_action_refresh')), findsNothing);
-    Navigator.of(
-      tester.element(find.byKey(const Key('scene_action_edit'))),
-    ).pop();
+    Navigator.of(tester.element(find.byKey(const Key('scene_action_edit'))))
+        .pop();
     await tester.pumpAndSettle();
   });
 
@@ -968,7 +968,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           routerConfig: GoRouter(
@@ -1042,7 +1042,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           routerConfig: router,
@@ -1095,7 +1095,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           routerConfig: GoRouter(
@@ -1157,7 +1157,7 @@ void main() {
             sceneRepositoryProvider.overrideWithValue(mockRepo),
           ],
           child: MaterialApp.router(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             theme: AppTheme.lightTheme,
             routerConfig: router,
@@ -1212,7 +1212,7 @@ void main() {
           sceneRepositoryProvider.overrideWithValue(mockRepo),
         ],
         child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
           routerConfig: router,
