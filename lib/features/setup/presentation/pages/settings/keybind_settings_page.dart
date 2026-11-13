@@ -188,7 +188,7 @@ class KeybindSettingsPage extends ConsumerWidget {
       KeybindAction.volumeUp => l10n.settings_keyboard_volume_up,
       KeybindAction.volumeDown => l10n.settings_keyboard_volume_down,
       KeybindAction.toggleMute => l10n.settings_keyboard_toggle_mute,
-      KeybindAction.toggleFullscreen =>
+      KeybindAction.toggleFullscreen || KeybindAction.toggleImageFullscreen =>
         l10n.settings_keyboard_toggle_fullscreen,
       KeybindAction.togglePip => l10n.common_pip,
       KeybindAction.nextScene => l10n.settings_keyboard_next_scene,

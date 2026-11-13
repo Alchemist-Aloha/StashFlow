@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../utils/app_log_store.dart';
 
 enum KeybindContext { global, video, image }
@@ -45,6 +46,7 @@ enum KeybindAction {
   firstImage,
   lastImage,
   closeImage,
+  toggleImageFullscreen,
 }
 
 extension KeybindActionContext on KeybindAction {
@@ -65,7 +67,8 @@ extension KeybindActionContext on KeybindAction {
     KeybindAction.previousImage ||
     KeybindAction.firstImage ||
     KeybindAction.lastImage ||
-    KeybindAction.closeImage => KeybindContext.image,
+    KeybindAction.closeImage ||
+    KeybindAction.toggleImageFullscreen => KeybindContext.image,
     _ => KeybindContext.video,
   };
 }
@@ -208,6 +211,7 @@ class Keybinds {
     KeybindAction.firstImage: const Keybind(LogicalKeyboardKey.home),
     KeybindAction.lastImage: const Keybind(LogicalKeyboardKey.end),
     KeybindAction.closeImage: const Keybind(LogicalKeyboardKey.escape),
+    KeybindAction.toggleImageFullscreen: const Keybind(LogicalKeyboardKey.keyF),
   };
 
   Map<String, dynamic> toJson() {

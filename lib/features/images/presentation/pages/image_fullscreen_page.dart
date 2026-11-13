@@ -67,6 +67,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   int _manualNavigationRevision = 0;
   bool _initialPageSet = false;
   bool _showOverlays = true;
+  // Desktop opens windowed; the header button owns window fullscreen.
+  bool _desktopFullscreen = false;
   bool _isSlideshowPlaying = false;
   Duration _slideshowInterval = const Duration(seconds: 3);
   Duration _slideshowTransition = const Duration(milliseconds: 380);
@@ -106,7 +108,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     FocusManager.instance.addEarlyKeyEventHandler(_handleKeyEvent);
     _pageController = PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(_enterFullScreen());
+      // Mobile stays non-immersive; desktop waits for the header toggle.
+      if (mounted && kIsWeb) unawaited(_enterFullScreen());
     });
   }
 
@@ -123,15 +126,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   KeyEventResult _handleKeyEvent(KeyEvent event) =>
       dispatchKeybindEvent(event, _keyBindings);
 
+  static bool get _isDesktop =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.macOS);
+
   Future<void> _enterFullScreen() async {
     try {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      if (!kIsWeb &&
-          (defaultTargetPlatform == TargetPlatform.windows ||
-              defaultTargetPlatform == TargetPlatform.linux ||
-              defaultTargetPlatform == TargetPlatform.macOS)) {
-        await DesktopFullscreen.instance.enter();
-      }
     } on Exception catch (error, stackTrace) {
       AppLogStore.instance.addError(
         'enterFullScreen',
@@ -142,11 +145,30 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     }
   }
 
-  void _exitFullScreen() {
-    unawaited(_performExitFullScreen());
+  Future<void> _toggleDesktopFullscreen() async {
+    final enter = !_desktopFullscreen;
+    setState(() => _desktopFullscreen = enter);
+    try {
+      if (enter) {
+        await DesktopFullscreen.instance.enter();
+      } else {
+        await DesktopFullscreen.instance.exit();
+      }
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'toggleDesktopFullscreen',
+        error,
+        stackTrace,
+        source: 'image_fullscreen_page',
+      );
+    }
   }
 
-  Future<void> _performExitFullScreen() async {
+  void _exitFullScreen() {
+    unawaited(_performExitFullScreen(exitDesktop: _desktopFullscreen));
+  }
+
+  Future<void> _performExitFullScreen({required bool exitDesktop}) async {
     try {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     } on Exception catch (error, stackTrace) {
@@ -157,10 +179,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       );
     }
 
-    if (!kIsWeb &&
-        (defaultTargetPlatform == TargetPlatform.windows ||
-            defaultTargetPlatform == TargetPlatform.linux ||
-            defaultTargetPlatform == TargetPlatform.macOS)) {
+    if (exitDesktop) {
       try {
         await DesktopFullscreen.instance.exit();
       } on Exception catch (error, stackTrace) {
@@ -971,6 +990,21 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             ),
                           if (hasRating)
                             SizedBox(width: context.dimensions.spacingSmall),
+                          if (_isDesktop) ...[
+                            IconButton.filledTonal(
+                              key: const Key('image_fullscreen_toggle_button'),
+                              icon: Icon(
+                                _desktopFullscreen
+                                    ? Icons.fullscreen_exit_rounded
+                                    : Icons.fullscreen_rounded,
+                              ),
+                              onPressed: _toggleDesktopFullscreen,
+                              tooltip: _desktopFullscreen
+                                  ? context.l10n.common_exit_fullscreen
+                                  : context.l10n.common_toggle_fullscreen,
+                            ),
+                            SizedBox(width: context.dimensions.spacingSmall),
+                          ],
                           IconButton.filledTonal(
                             key: const Key('image_info_button'),
                             icon: const Icon(Icons.info_outline_rounded),
@@ -1201,6 +1235,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               break;
             case KeybindAction.closeImage:
               callback = () => context.pop();
+              break;
+            case KeybindAction.toggleImageFullscreen:
+              if (_isDesktop) callback = _toggleDesktopFullscreen;
               break;
             default:
               break;

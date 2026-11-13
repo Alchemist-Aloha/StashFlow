@@ -557,12 +557,85 @@ void main() {
         'lib/features/images/presentation/pages/image_fullscreen_page.dart',
       ).readAsStringSync();
 
-      expect(source, contains('if (mounted) unawaited(_enterFullScreen())'));
+      expect(
+        source,
+        contains('if (mounted && kIsWeb) unawaited(_enterFullScreen())'),
+      );
       expect(source, contains('await DesktopFullscreen.instance.enter()'));
       expect(source, contains('DesktopFullscreen.instance.exit()'));
       expect(source, isNot(contains('windowManager.unmaximize()')));
       expect(source, isNot(contains('windowManager.maximize()')));
     });
+
+    for (final platform in [TargetPlatform.android, TargetPlatform.windows]) {
+      testWidgets('opens non-fullscreen on ${platform.name}', (tester) async {
+        const nativeFullscreenChannel = MethodChannel(
+          'stash_app_flutter/fullscreen',
+        );
+        debugDefaultTargetPlatformOverride = platform;
+        final nativeCalls = <Object?>[];
+        final systemUiModes = <Object?>[];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(nativeFullscreenChannel, (call) async {
+              nativeCalls.add(call.arguments);
+              return null;
+            });
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+              if (call.method == 'SystemChrome.setEnabledSystemUIMode') {
+                systemUiModes.add(call.arguments);
+              }
+              return null;
+            });
+
+        try {
+          mockRepository.withData([
+            entity.Image(
+              id: 'windowed-test',
+              title: 'Windowed Test',
+              files: [],
+              paths: const entity.ImagePaths(image: 'http://test.com/a.jpg'),
+            ),
+          ]);
+          await pumpTestWidget(
+            tester,
+            child: const ImageFullscreenPage(imageId: 'windowed-test'),
+            overrides: [
+              imageRepositoryProvider.overrideWithValue(mockRepository),
+            ],
+          );
+          await tester.pump();
+
+          expect(
+            systemUiModes,
+            isNot(contains('SystemUiMode.immersiveSticky')),
+          );
+          expect(nativeCalls, isEmpty);
+          final toggle = find.byKey(
+            const Key('image_fullscreen_toggle_button'),
+          );
+          if (platform == TargetPlatform.android) {
+            expect(toggle, findsNothing);
+          } else {
+            await tester.tap(toggle);
+            await tester.pump();
+            await tester.tap(toggle);
+            await tester.pump();
+            expect(nativeCalls, [true, false]);
+            await tester.sendKeyEvent(LogicalKeyboardKey.keyF);
+            await tester.pump();
+            expect(nativeCalls, [true, false, true]);
+          }
+        } finally {
+          await tester.pumpWidget(const SizedBox.shrink());
+          debugDefaultTargetPlatformOverride = null;
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(nativeFullscreenChannel, null);
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(SystemChannels.platform, null);
+        }
+      });
+    }
 
     testWidgets('logs native exit failures during disposal', (tester) async {
       const nativeFullscreenChannel = MethodChannel(
@@ -602,6 +675,10 @@ void main() {
           overrides: [
             imageRepositoryProvider.overrideWithValue(mockRepository),
           ],
+        );
+        await tester.pump();
+        await tester.tap(
+          find.byKey(const Key('image_fullscreen_toggle_button')),
         );
         await tester.pump();
 
@@ -672,6 +749,10 @@ void main() {
           overrides: [
             imageRepositoryProvider.overrideWithValue(mockRepository),
           ],
+        );
+        await tester.pump();
+        await tester.tap(
+          find.byKey(const Key('image_fullscreen_toggle_button')),
         );
         await tester.pump();
 
