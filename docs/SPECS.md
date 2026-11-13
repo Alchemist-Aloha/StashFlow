@@ -1239,6 +1239,11 @@ versus maximized restore state, window bounds, monitor placement, title-bar
 controls, and taskbar behavior. Fullscreen frame messages bypass normal frame
 handling only for the main HWND; separate PiP windows retain their own handling.
 
+Startup initializes the native `WindowManager` observation using the bound main
+window's ID before showing it. Deferring that initialization until a fullscreen
+style change can recursively enter its initial occlusion scan and deadlock the
+Windows message loop.
+
 Entering and exiting fullscreen are asynchronous transactions. Flutter must not
 mark exit complete before native restoration succeeds. Failures return to a
 coherent, retryable state and are logged. Repeated toggles, Alt+Tab, secondary
@@ -1258,6 +1263,16 @@ attached monitor. Run it in a Windows desktop session:
 cmake -S test/windows/runner -B build/windows-fullscreen-test
 cmake --build build/windows-fullscreen-test --config Debug
 ctest --test-dir build/windows-fullscreen-test -C Debug --output-on-failure
+```
+
+The Flutter runtime smoke target exercises native observation startup,
+image navigation, Escape, repeated entry, and normal/maximized
+restoration. Its external watchdog detects native hangs that widget tests with a
+mocked fullscreen channel cannot catch. Build and run it in a desktop session:
+
+```powershell
+flutter build windows --debug --no-pub -t test/windows/image_fullscreen_smoke.dart
+python scripts/test_windows_image_fullscreen.py build/windows/x64/runner/Debug
 ```
 
 Also manually verify Windows 11 Alt+Tab/minimize/restore, mixed-DPI monitor
