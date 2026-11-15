@@ -2091,6 +2091,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Langue par défaut des sous-titres';
 
   @override
+  String get player_stream_resolution => 'Résolution';
+
+  @override
+  String get player_stream_original => 'Originale';
+
+  @override
   String get player_stream_source => 'Source du flux';
 
   @override

@@ -449,6 +449,8 @@
   "settings_playback_subtitles": "Impostazioni sottotitoli",
   "settings_playback_subtitles_subtitle": "Caricamento automatico e aspetto",
   "settings_playback_subtitle_lang": "Lingua Sottotitoli Predefinita",
+  "player_stream_resolution": "Risoluzione",
+  "player_stream_original": "Originale",
   "player_stream_source": "Sorgente stream",
   "player_stream_direct": "Diretta",
   "settings_playback_stream_source": "Sorgente stream predefinita",

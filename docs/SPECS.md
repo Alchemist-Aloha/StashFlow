@@ -661,9 +661,12 @@ no valid preference is saved; existing saved delays are preserved. The selected
 delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
 included in configuration backups.
 
-Inline, fullscreen, and feed controls share a stream source menu listing the
-scene's `sceneStreams` endpoints (direct, MP4, WebM, HLS, DASH, and their
-resolution variants). Choosing one reopens the current player at the same
+Inline, fullscreen, and feed controls share a stream source menu built from
+the scene's `sceneStreams` endpoints: a two-column panel with Source (direct,
+MP4, WebM, HLS, DASH) and Resolution (the selected source's variants, disabled
+for direct). Selections are staged; Apply or dismissing the panel commits them,
+and changing source keeps the staged resolution when offered. Committing a
+different stream reopens the current player at the same
 position and play state; it is disabled while casting. Playback settings choose
 the default source kind used when playback starts (direct by default, which
 skips the `sceneStreams` query); its original-resolution endpoint is used, and

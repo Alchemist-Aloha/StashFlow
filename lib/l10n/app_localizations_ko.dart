@@ -2014,6 +2014,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_subtitle_lang => '기본 자막 언어';
 
   @override
+  String get player_stream_resolution => '해상도';
+
+  @override
+  String get player_stream_original => '원본';
+
+  @override
   String get player_stream_source => '스트림 소스';
 
   @override

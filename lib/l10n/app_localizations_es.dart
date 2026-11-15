@@ -2099,6 +2099,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Idioma de subtítulos predeterminado';
 
   @override
+  String get player_stream_resolution => 'Resolución';
+
+  @override
+  String get player_stream_original => 'Original';
+
+  @override
   String get player_stream_source => 'Fuente de transmisión';
 
   @override

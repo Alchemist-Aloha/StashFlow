@@ -2014,6 +2014,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_playback_subtitle_lang => 'デフォルトの字幕言語';
 
   @override
+  String get player_stream_resolution => '解像度';
+
+  @override
+  String get player_stream_original => 'オリジナル';
+
+  @override
   String get player_stream_source => 'ストリームソース';
 
   @override

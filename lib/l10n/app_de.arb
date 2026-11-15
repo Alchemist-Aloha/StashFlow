@@ -487,6 +487,8 @@
   "settings_playback_subtitles": "Untertitel-Einstellungen",
   "settings_playback_subtitles_subtitle": "Automatisches Laden und Erscheinungsbild",
   "settings_playback_subtitle_lang": "Standard-Untertitelsprache",
+  "player_stream_resolution": "Auflösung",
+  "player_stream_original": "Original",
   "player_stream_source": "Streamquelle",
   "player_stream_direct": "Direkt",
   "settings_playback_stream_source": "Standard-Streamquelle",

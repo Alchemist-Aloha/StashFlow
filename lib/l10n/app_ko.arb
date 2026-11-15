@@ -488,6 +488,8 @@
   "settings_playback_subtitles": "자막 설정",
   "settings_playback_subtitles_subtitle": "자동 로드 및 모양",
   "settings_playback_subtitle_lang": "기본 자막 언어",
+  "player_stream_resolution": "해상도",
+  "player_stream_original": "원본",
   "player_stream_source": "스트림 소스",
   "player_stream_direct": "다이렉트",
   "settings_playback_stream_source": "기본 스트림 소스",

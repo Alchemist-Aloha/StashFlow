@@ -531,6 +531,8 @@
   "settings_playback_subtitles": "Настройки субтитров",
   "settings_playback_subtitles_subtitle": "Автоматическая загрузка и внешний вид",
   "settings_playback_subtitle_lang": "Язык субтитров по умолчанию",
+  "player_stream_resolution": "Разрешение",
+  "player_stream_original": "Оригинал",
   "player_stream_source": "Источник потока",
   "player_stream_direct": "Прямой",
   "settings_playback_stream_source": "Источник потока по умолчанию",

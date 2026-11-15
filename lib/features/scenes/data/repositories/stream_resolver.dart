@@ -50,6 +50,8 @@ Future<List<StreamChoice>> fetchSceneStreams(Ref ref, String sceneId) async {
         Options$Query$SceneStreams(
           variables: Variables$Query$SceneStreams(id: sceneId),
           fetchPolicy: FetchPolicy.networkOnly,
+          // The normalized Scene re-read misses sceneStreams; use raw data.
+          cacheRereadPolicy: CacheRereadPolicy.ignoreAll,
         ),
       );
   if (result.exception != null) throw result.exception!;

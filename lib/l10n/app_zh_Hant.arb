@@ -531,6 +531,8 @@
   "settings_playback_subtitles": "字幕設定",
   "settings_playback_subtitles_subtitle": "自動載入和外觀",
   "settings_playback_subtitle_lang": "預設字幕語言",
+  "player_stream_resolution": "解析度",
+  "player_stream_original": "原始畫質",
   "player_stream_source": "串流來源",
   "player_stream_direct": "直連",
   "settings_playback_stream_source": "預設串流來源",

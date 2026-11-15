@@ -1991,6 +1991,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_subtitle_lang => '默认字幕语言';
 
   @override
+  String get player_stream_resolution => '分辨率';
+
+  @override
+  String get player_stream_original => '原画';
+
+  @override
   String get player_stream_source => '串流来源';
 
   @override
@@ -5957,6 +5963,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_playback_subtitle_lang => '默认字幕语言';
+
+  @override
+  String get player_stream_resolution => '分辨率';
+
+  @override
+  String get player_stream_original => '原画';
 
   @override
   String get player_stream_source => '串流来源';
@@ -9929,6 +9941,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_playback_subtitle_lang => '預設字幕語言';
+
+  @override
+  String get player_stream_resolution => '解析度';
+
+  @override
+  String get player_stream_original => '原始畫質';
 
   @override
   String get player_stream_source => '串流來源';

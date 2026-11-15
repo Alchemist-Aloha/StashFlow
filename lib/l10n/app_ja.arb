@@ -475,6 +475,8 @@
   "settings_playback_subtitles": "字幕設定",
   "settings_playback_subtitles_subtitle": "自動読み込みと外観",
   "settings_playback_subtitle_lang": "デフォルトの字幕言語",
+  "player_stream_resolution": "解像度",
+  "player_stream_original": "オリジナル",
   "player_stream_source": "ストリームソース",
   "player_stream_direct": "ダイレクト",
   "settings_playback_stream_source": "デフォルトのストリームソース",

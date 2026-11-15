@@ -2085,6 +2085,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_playback_subtitle_lang => 'Standard-Untertitelsprache';
 
   @override
+  String get player_stream_resolution => 'Auflösung';
+
+  @override
+  String get player_stream_original => 'Original';
+
+  @override
   String get player_stream_source => 'Streamquelle';
 
   @override
