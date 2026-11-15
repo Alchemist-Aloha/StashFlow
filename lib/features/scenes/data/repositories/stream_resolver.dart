@@ -1,5 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+
+import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
+import '../graphql/scenes.graphql.dart';
 
 /// Represents a potential video stream candidate for a scene.
 class StreamChoice {
@@ -17,8 +24,75 @@ class StreamChoice {
 
 typedef StreamResolver = Future<StreamChoice?> Function(Scene scene);
 
+/// SharedPreferences key for the default stream source kind.
+const defaultStreamSourceKey = 'video_default_stream_source';
+
+/// Stream source kinds Stash exposes via `sceneStreams`, in menu order.
+const streamSourceKinds = ['direct', 'mp4', 'webm', 'hls', 'dash'];
+
+/// Classifies a Stash stream URL (`/stream`, `/stream.m3u8`, ...) by kind.
+String streamSourceKind(String url) {
+  final segment = Uri.tryParse(url)?.pathSegments.lastOrNull ?? '';
+  final dot = segment.lastIndexOf('.');
+  if (dot < 0) return 'direct';
+  return switch (segment.substring(dot + 1).toLowerCase()) {
+    'm3u8' => 'hls',
+    'mpd' => 'dash',
+    final ext => ext,
+  };
+}
+
+/// Fetches every stream endpoint Stash offers for [sceneId].
+Future<List<StreamChoice>> fetchSceneStreams(Ref ref, String sceneId) async {
+  final result = await ref
+      .read(graphqlClientProvider)
+      .query$SceneStreams(
+        Options$Query$SceneStreams(
+          variables: Variables$Query$SceneStreams(id: sceneId),
+          fetchPolicy: FetchPolicy.networkOnly,
+        ),
+      );
+  if (result.exception != null) throw result.exception!;
+  final endpoint = Uri.parse(ref.read(serverUrlProvider));
+  return [
+    for (final s
+        in result.parsedData?.findScene?.sceneStreams ??
+            const <Query$SceneStreams$findScene$sceneStreams>[])
+      StreamChoice(
+        url: resolveGraphqlMediaUrl(rawUrl: s.url, graphqlEndpoint: endpoint),
+        mimeType: s.mime_type ?? 'video/mp4',
+        label: s.label,
+      ),
+  ];
+}
+
+/// Stream endpoints for the source menu; kept only while a menu watches it.
+final sceneStreamsProvider = FutureProvider.autoDispose
+    .family<List<StreamChoice>, String>(fetchSceneStreams);
+
+/// Resolves the scene stream matching the default source preference, falling
+/// back to Stash's direct stream when that kind is unavailable.
 final streamResolverProvider = Provider<StreamResolver>(
-  (ref) => resolvePreferredStream,
+  (ref) => (scene) async {
+    final direct = await resolvePreferredStream(scene);
+    final kind =
+        ref.read(sharedPreferencesProvider).getString(defaultStreamSourceKey) ??
+        'direct';
+    if (kind == 'direct') return direct;
+    try {
+      final streams = await fetchSceneStreams(ref, scene.id);
+      return streams
+              .where((s) => streamSourceKind(s.url) == kind)
+              .firstOrNull ??
+          direct;
+    } on Object catch (e) {
+      AppLogStore.instance.add(
+        'sceneStreams failed scene=${scene.id}: $e',
+        source: 'stream_resolver',
+      );
+      return direct;
+    }
+  },
 );
 
 /// Resolves Stash's direct file stream, or `null` when no path is available.

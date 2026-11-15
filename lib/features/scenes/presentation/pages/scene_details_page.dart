@@ -13,6 +13,7 @@ import '../../../../core/utils/l10n_extensions.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../galleries/presentation/gallery_location.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -608,9 +609,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
 
     try {
-      final resolver = ref.read(streamResolverProvider);
-      final choice = await resolver(scene);
-      final videoUrl = choice?.url ?? scene.paths.stream;
+      // Always download the original file, never a transcoded source.
+      final videoUrl = scene.paths.stream?.trim();
 
       if (videoUrl == null || videoUrl.isEmpty) {
         throw Exception('No stream URL found');

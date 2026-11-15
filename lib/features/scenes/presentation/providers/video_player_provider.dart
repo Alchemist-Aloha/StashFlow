@@ -842,6 +842,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     unawaited(_settingsStore.saveResumePlayPosition(value));
   }
 
+  /// Records a source switched in place on the active player.
+  void setActiveStream(StreamChoice choice) {
+    state = state.copyWith(
+      streamMimeType: choice.mimeType,
+      streamLabel: choice.label,
+      streamSource: 'manual-switch',
+    );
+  }
+
   void setDefaultSubtitleLanguage(String value) {
     state = state.copyWith(defaultSubtitleLanguage: value);
     unawaited(_settingsStore.saveDefaultSubtitleLanguage(value));

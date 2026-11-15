@@ -2014,6 +2014,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_playback_subtitle_lang => 'デフォルトの字幕言語';
 
   @override
+  String get player_stream_source => 'ストリームソース';
+
+  @override
+  String get player_stream_direct => 'ダイレクト';
+
+  @override
+  String get settings_playback_stream_source => 'デフォルトのストリームソース';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      '再生開始時に使用。利用できない場合はダイレクト';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle => '利用可能な場合に自動読み込み';
 
   @override

@@ -76,6 +76,7 @@ void main() {
           ),
         ),
         mediaHeadersProvider.overrideWithValue(const {}),
+        sceneStreamsProvider.overrideWith((ref, arg) => const []),
       ],
     );
 

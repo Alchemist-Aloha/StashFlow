@@ -3666,6 +3666,30 @@ abstract class AppLocalizations {
   /// **'Default Subtitle Language'**
   String get settings_playback_subtitle_lang;
 
+  /// No description provided for @player_stream_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Stream source'**
+  String get player_stream_source;
+
+  /// No description provided for @player_stream_direct.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct'**
+  String get player_stream_direct;
+
+  /// No description provided for @settings_playback_stream_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Stream Source'**
+  String get settings_playback_stream_source;
+
+  /// No description provided for @settings_playback_stream_source_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Used when playback starts; falls back to Direct'**
+  String get settings_playback_stream_source_subtitle;
+
   /// No description provided for @settings_playback_subtitle_lang_subtitle.
   ///
   /// In en, this message translates to:

@@ -2093,6 +2093,19 @@ class AppLocalizationsIt extends AppLocalizations {
       'Lingua Sottotitoli Predefinita';
 
   @override
+  String get player_stream_source => 'Sorgente stream';
+
+  @override
+  String get player_stream_direct => 'Diretta';
+
+  @override
+  String get settings_playback_stream_source => 'Sorgente stream predefinita';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Usata all\'avvio della riproduzione; altrimenti Diretta';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Carica automaticamente se disponibile';
 

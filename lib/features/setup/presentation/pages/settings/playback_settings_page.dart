@@ -6,6 +6,7 @@ import '../../../../../core/utils/l10n_extensions.dart';
 
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 
@@ -43,6 +44,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _enableNativePip = false;
   bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
+  String _defaultStreamSource = 'direct';
   double _subtitleFontSize = 18.0;
   double _subtitlePositionBottomRatio = 0.15;
   String _subtitleTextAlignment = 'center';
@@ -94,6 +96,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
     _videoGravityOrientation =
         prefs.getBool(_videoGravityOrientationKey) ?? true;
+    _defaultStreamSource = prefs.getString(defaultStreamSourceKey) ?? 'direct';
     _defaultSubtitleLanguage =
         prefs.getString(_defaultSubtitleLanguageKey) ?? 'none';
     _subtitleFontSize = prefs.getDouble(_subtitleFontSizeKey) ?? 18.0;
@@ -199,6 +202,29 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         ),
                         Divider(height: context.dimensions.spacingLarge),
                         _buildEndBehaviorSelector(),
+                        Divider(height: context.dimensions.spacingLarge),
+                        _buildChoiceSelector(
+                          title: context.l10n.settings_playback_stream_source,
+                          description: context
+                              .l10n
+                              .settings_playback_stream_source_subtitle,
+                          value: _defaultStreamSource,
+                          choices: [
+                            for (final kind in streamSourceKinds)
+                              (
+                                kind,
+                                kind == 'direct'
+                                    ? context.l10n.player_stream_direct
+                                    : kind.toUpperCase(),
+                              ),
+                          ],
+                          onChanged: (value) async {
+                            setState(() => _defaultStreamSource = value);
+                            await ref
+                                .read(sharedPreferencesProvider)
+                                .setString(defaultStreamSourceKey, value);
+                          },
+                        ),
                         Divider(height: context.dimensions.spacingLarge),
                         _buildControlsAutoHideSlider(),
                         Divider(height: context.dimensions.spacingLarge),

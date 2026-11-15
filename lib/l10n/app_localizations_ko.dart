@@ -2014,6 +2014,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_subtitle_lang => '기본 자막 언어';
 
   @override
+  String get player_stream_source => '스트림 소스';
+
+  @override
+  String get player_stream_direct => '다이렉트';
+
+  @override
+  String get settings_playback_stream_source => '기본 스트림 소스';
+
+  @override
+  String get settings_playback_stream_source_subtitle => '재생 시작 시 사용, 없으면 다이렉트';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle => '가능한 경우 자동 로드';
 
   @override

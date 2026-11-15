@@ -1991,6 +1991,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_subtitle_lang => '默认字幕语言';
 
   @override
+  String get player_stream_source => '串流来源';
+
+  @override
+  String get player_stream_direct => '直连';
+
+  @override
+  String get settings_playback_stream_source => '默认串流来源';
+
+  @override
+  String get settings_playback_stream_source_subtitle => '开始播放时使用；不可用时回退到直连';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用则自动加载';
 
   @override
@@ -5945,6 +5957,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_playback_subtitle_lang => '默认字幕语言';
+
+  @override
+  String get player_stream_source => '串流来源';
+
+  @override
+  String get player_stream_direct => '直连';
+
+  @override
+  String get settings_playback_stream_source => '默认串流来源';
+
+  @override
+  String get settings_playback_stream_source_subtitle => '开始播放时使用；不可用时回退到直连';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用则自动加载';
@@ -9905,6 +9929,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_playback_subtitle_lang => '預設字幕語言';
+
+  @override
+  String get player_stream_source => '串流來源';
+
+  @override
+  String get player_stream_direct => '直連';
+
+  @override
+  String get settings_playback_stream_source => '預設串流來源';
+
+  @override
+  String get settings_playback_stream_source_subtitle => '開始播放時使用；無法使用時改用直連';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用則自動載入';

@@ -2078,6 +2078,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_playback_subtitle_lang => 'Язык субтитров по умолчанию';
 
   @override
+  String get player_stream_source => 'Источник потока';
+
+  @override
+  String get player_stream_direct => 'Прямой';
+
+  @override
+  String get settings_playback_stream_source => 'Источник потока по умолчанию';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Используется при запуске; иначе Прямой';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Автозагрузка при наличии';
 

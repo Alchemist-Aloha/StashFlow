@@ -2065,6 +2065,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_playback_subtitle_lang => 'Default Subtitle Language';
 
   @override
+  String get player_stream_source => 'Stream source';
+
+  @override
+  String get player_stream_direct => 'Direct';
+
+  @override
+  String get settings_playback_stream_source => 'Default Stream Source';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Used when playback starts; falls back to Direct';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Auto-load if available';
 

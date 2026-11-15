@@ -2091,6 +2091,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Langue par défaut des sous-titres';
 
   @override
+  String get player_stream_source => 'Source du flux';
+
+  @override
+  String get player_stream_direct => 'Direct';
+
+  @override
+  String get settings_playback_stream_source => 'Source de flux par défaut';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Utilisée au démarrage de la lecture ; sinon Direct';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Chargement automatique si disponible';
 

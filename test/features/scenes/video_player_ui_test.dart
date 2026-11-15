@@ -8,6 +8,7 @@ import 'package:media_kit/media_kit.dart' as mk;
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
@@ -956,6 +957,7 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneGalleriesProvider.overrideWith((ref, arg) => const []),
+        sceneStreamsProvider.overrideWith((ref, arg) => const []),
       ],
     );
     addTearDown(container.dispose);
@@ -1014,6 +1016,7 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneGalleriesProvider.overrideWith((ref, arg) => const []),
+        sceneStreamsProvider.overrideWith((ref, arg) => const []),
       ],
     );
     addTearDown(container.dispose);
@@ -1082,6 +1085,7 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneGalleriesProvider.overrideWith((ref, arg) => const []),
+        sceneStreamsProvider.overrideWith((ref, arg) => const []),
       ],
     );
     addTearDown(container.dispose);

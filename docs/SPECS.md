@@ -661,6 +661,16 @@ no valid preference is saved; existing saved delays are preserved. The selected
 delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
 included in configuration backups.
 
+Inline, fullscreen, and feed controls share a stream source menu listing the
+scene's `sceneStreams` endpoints (direct, MP4, WebM, HLS, DASH, and their
+resolution variants). Choosing one reopens the current player at the same
+position and play state; it is disabled while casting. Playback settings choose
+the default source kind used when playback starts (direct by default, which
+skips the `sceneStreams` query); its original-resolution endpoint is used, and
+an unavailable kind or failed query falls back to the direct stream. Downloads
+always use the direct file. The preference is included in configuration
+backups.
+
 The optional video debug overlay groups stream, active decoder/output, and
 performance diagnostics in a bounded, scrollable panel. It follows controls
 visibility and samples native mpv properties once per second only while visible.

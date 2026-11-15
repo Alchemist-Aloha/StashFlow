@@ -2099,6 +2099,20 @@ class AppLocalizationsEs extends AppLocalizations {
       'Idioma de subtítulos predeterminado';
 
   @override
+  String get player_stream_source => 'Fuente de transmisión';
+
+  @override
+  String get player_stream_direct => 'Directa';
+
+  @override
+  String get settings_playback_stream_source =>
+      'Fuente de transmisión predeterminada';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Se usa al iniciar la reproducción; si no, Directa';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Carga automática si está disponible';
 
