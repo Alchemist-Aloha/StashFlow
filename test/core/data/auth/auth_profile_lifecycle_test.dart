@@ -87,6 +87,9 @@ class DelayedLoginService extends AuthService {
   }
 
   @override
+  Future<void> logout({required Uri graphqlEndpoint}) async {}
+
+  @override
   Future<String> cookieHeaderFor({required Uri requestUri}) async =>
       requestUri.host == 'server-a' ? 'session=A' : 'session=B';
 }
@@ -167,6 +170,95 @@ void main() {
     expect(state.loginStatus, AuthLoginStatus.loggedIn);
     expect(state.errorMessage, isNull);
   });
+
+  test(
+    'early login waits for hydration and shares the automatic login',
+    () async {
+      storage.blockedKey = 'profile_a_username';
+      service.delayProfileA = true;
+      final first = container.read(authProvider.notifier).login();
+      final second = container.read(authProvider.notifier).login();
+      await settle();
+      expect(service.requests, isEmpty);
+      expect(container.read(authProvider).errorMessage, isNull);
+
+      storage.gate.complete();
+      await settle();
+      expect(service.requests.single, (
+        Uri.parse(profileA.baseUrl),
+        'alice',
+        'secret-a',
+      ));
+      service.response.complete(true);
+      expect(await first, isTrue);
+      expect(await second, isTrue);
+      expect(
+        container.read(authProvider).loginStatus,
+        AuthLoginStatus.loggedIn,
+      );
+    },
+  );
+
+  test(
+    'a login waiting for hydration is cancelled by a profile switch',
+    () async {
+      storage.blockedKey = 'profile_a_username';
+      final login = container.read(authProvider.notifier).login();
+      await settle();
+      container.read(selectionProvider.notifier).select(profileB);
+      container.read(authProvider);
+      await settle();
+
+      storage.gate.complete();
+      expect(await login, isFalse);
+      expect(
+        service.requests.every((request) => request.$1.host == 'server-b'),
+        isTrue,
+      );
+      expect(container.read(authProvider).username, 'bob');
+    },
+  );
+
+  test(
+    'credential edits wait for hydration and invalidate an older login',
+    () async {
+      storage.blockedKey = 'profile_a_username';
+      service.delayProfileA = true;
+      final edit = container
+          .read(authProvider.notifier)
+          .updateUsername('new-alice');
+      await settle();
+      storage.gate.complete();
+      await edit;
+      await settle();
+      expect(container.read(authProvider).username, 'new-alice');
+
+      final login = container.read(authProvider.notifier).login();
+      await settle();
+      expect(service.requests.last.$2, 'new-alice');
+      service.response.complete(true);
+      expect(await login, isTrue);
+      expect(container.read(authProvider).username, 'new-alice');
+    },
+  );
+
+  test(
+    'logout prevents an in-flight login from restoring runtime auth',
+    () async {
+      service.delayProfileA = true;
+      container.read(authProvider);
+      await settle();
+      await container.read(authProvider.notifier).logout();
+      service.response.complete(true);
+      await settle();
+      expect(
+        container.read(authProvider).loginStatus,
+        AuthLoginStatus.loggedOut,
+      );
+      expect(container.read(authProvider).cookieHeader, isEmpty);
+      expect(storage.values['profile_a_cookie_header'], isNull);
+    },
+  );
 
   test('failed session renewal does not retain a saved cookie', () async {
     service.delayProfileA = true;

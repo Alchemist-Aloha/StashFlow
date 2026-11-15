@@ -1121,6 +1121,9 @@ Password profiles reauthenticate with stored credentials on activation, includin
 app startup. A saved raw Cookie header is not proof of a valid session; renewal
 clears it before login and publishes the new cookie to GraphQL and media only
 after success. Failed renewal leaves no stale runtime or stored cookie header.
+Login and credential edits wait for credential hydration. Concurrent login calls
+share one attempt for the current credential revision; profile changes, credential
+edits, and logout prevent older login results from restoring runtime auth.
 
 Server URL input accepts a user-friendly base address and normalizes it at the
 network boundary. Validation errors must not echo credentials.

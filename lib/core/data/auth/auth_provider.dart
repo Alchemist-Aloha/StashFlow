@@ -74,6 +74,13 @@ final authProvider = NotifierProvider<AuthProvider, AuthState>(
 
 class AuthProvider extends Notifier<AuthState> {
   int _generation = 0;
+  Future<void> _hydration = Future.value();
+  Future<bool>? _loginFuture;
+
+  void _credentialsChanged() {
+    _generation++;
+    _loginFuture = null;
+  }
 
   bool _isCurrent(int generation, ServerProfile profile) =>
       ref.mounted &&
@@ -90,11 +97,13 @@ class AuthProvider extends Notifier<AuthState> {
   AuthState build() {
     final profile = ref.watch(activeProfileProvider);
     final generation = ++_generation;
+    _loginFuture = null;
     ref.onDispose(() => _generation++);
     if (profile == null) {
       return const AuthState.initial().copyWith(hydrated: true);
     }
-    unawaited(_hydrateForProfile(profile, generation));
+    _hydration = _hydrateForProfile(profile, generation);
+    unawaited(_hydration);
     return const AuthState.initial();
   }
 
@@ -139,10 +148,13 @@ class AuthProvider extends Notifier<AuthState> {
     if (profile == null) return;
 
     final generation = _generation;
+    await _hydration;
+    if (!_isCurrent(generation, profile)) return;
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString(_getAuthModeKey(profile.id), mode.name);
     if (!_isCurrent(generation, profile)) return;
 
+    if (state.mode != mode) _credentialsChanged();
     AuthLoginStatus loginStatus = state.loginStatus;
     if (mode == AuthMode.apiKey) {
       loginStatus = AuthLoginStatus.loggedOut;
@@ -162,6 +174,8 @@ class AuthProvider extends Notifier<AuthState> {
     if (profile == null) return;
 
     final generation = _generation;
+    await _hydration;
+    if (!_isCurrent(generation, profile)) return;
     final secureStorage = ref.read(secureStorageProvider);
     final trimmed = username.trim();
 
@@ -175,6 +189,7 @@ class AuthProvider extends Notifier<AuthState> {
     }
 
     if (!_isCurrent(generation, profile)) return;
+    if (state.username != trimmed) _credentialsChanged();
     state = state.copyWith(username: trimmed, clearError: true);
   }
 
@@ -183,6 +198,8 @@ class AuthProvider extends Notifier<AuthState> {
     if (profile == null) return;
 
     final generation = _generation;
+    await _hydration;
+    if (!_isCurrent(generation, profile)) return;
     final secureStorage = ref.read(secureStorageProvider);
 
     if (password.isEmpty) {
@@ -195,13 +212,28 @@ class AuthProvider extends Notifier<AuthState> {
     }
 
     if (!_isCurrent(generation, profile)) return;
+    if (state.password != password) _credentialsChanged();
     state = state.copyWith(password: password, clearError: true);
   }
 
-  Future<bool> login() async {
+  /// Waits for stored credentials and shares an in-flight attempt for this revision.
+  Future<bool> login() {
     final profile = ref.read(activeProfileProvider);
-    if (profile == null) return false;
+    if (profile == null) return Future.value(false);
+    return _loginFuture ??= _loginWhenReady(profile, _generation);
+  }
 
+  Future<bool> _loginWhenReady(ServerProfile profile, int generation) async {
+    try {
+      await _hydration;
+      if (!_isCurrent(generation, profile)) return false;
+      return await _login(profile, generation);
+    } finally {
+      if (ref.mounted && generation == _generation) _loginFuture = null;
+    }
+  }
+
+  Future<bool> _login(ServerProfile profile, int generation) async {
     if (state.mode != AuthMode.password) {
       return false;
     }
@@ -223,7 +255,6 @@ class AuthProvider extends Notifier<AuthState> {
       return false;
     }
 
-    final generation = _generation;
     final username = state.username;
     final password = state.password;
     state = state.copyWith(
@@ -307,7 +338,11 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return;
 
-    final generation = _generation;
+    var generation = _generation;
+    await _hydration;
+    if (!_isCurrent(generation, profile)) return;
+    _credentialsChanged();
+    generation = _generation;
     final endpoint = profile.baseUrl.trim();
     final secureStorage = ref.read(secureStorageProvider);
 
