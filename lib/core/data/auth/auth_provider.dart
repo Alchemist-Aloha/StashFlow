@@ -112,35 +112,26 @@ class AuthProvider extends Notifier<AuthState> {
         await secureStorage.read(key: _getUsernameKey(profile.id)) ?? '';
     final password =
         await secureStorage.read(key: _getPasswordKey(profile.id)) ?? '';
-    final storedCookieHeader =
-        await secureStorage.read(key: _getCookieHeaderKey(profile.id)) ?? '';
-
     if (!_isCurrent(generation, profile)) return;
 
-    String cookieHeader = storedCookieHeader;
-    AuthLoginStatus loginStatus = AuthLoginStatus.loggedOut;
-
-    if (mode == AuthMode.password) {
-      if (cookieHeader.isEmpty) {
-        cookieHeader = await _refreshCookieHeaderForProfile(profile);
-      }
-      loginStatus = cookieHeader.isNotEmpty
-          ? AuthLoginStatus.loggedIn
-          : AuthLoginStatus.loggedOut;
-    } else if (mode == AuthMode.basic || mode == AuthMode.bearer) {
-      loginStatus = AuthLoginStatus.loggedIn;
-    }
-
-    if (!_isCurrent(generation, profile)) return;
+    final loginStatus = mode == AuthMode.basic || mode == AuthMode.bearer
+        ? AuthLoginStatus.loggedIn
+        : AuthLoginStatus.loggedOut;
     state = state.copyWith(
       mode: mode,
       username: username,
       password: password,
       loginStatus: loginStatus,
-      cookieHeader: cookieHeader,
+      cookieHeader: '',
       hydrated: true,
       clearError: true,
     );
+    // A serialized Cookie header has no expiry or server-side validity metadata.
+    if (mode == AuthMode.password &&
+        username.isNotEmpty &&
+        password.isNotEmpty) {
+      unawaited(login());
+    }
   }
 
   Future<void> setMode(AuthMode mode) async {
@@ -237,11 +228,16 @@ class AuthProvider extends Notifier<AuthState> {
     final password = state.password;
     state = state.copyWith(
       loginStatus: AuthLoginStatus.loggingIn,
+      cookieHeader: '',
       clearError: true,
     );
     debugPrint('AuthProvider: Initiating login process...');
 
     try {
+      final secureStorage = ref.read(secureStorageProvider);
+      await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
+      if (!_isCurrent(generation, profile)) return false;
+      ref.invalidate(profileCookieHeaderProvider(profile.id));
       final service = await ref.read(authServiceProvider.future);
       if (!_isCurrent(generation, profile)) return false;
       final endpointUri = Uri.parse(endpoint);
@@ -270,7 +266,6 @@ class AuthProvider extends Notifier<AuthState> {
       debugPrint(
         'AuthProvider: Cookie header acquired: ${cookieHeader.isNotEmpty}',
       );
-      final secureStorage = ref.read(secureStorageProvider);
       if (cookieHeader.isEmpty) {
         await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
       } else {

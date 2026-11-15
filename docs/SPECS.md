@@ -1117,6 +1117,10 @@ profile-bound clients, media headers, lists, details, caches, and playback URLs
 so data cannot leak across servers. Asynchronous credential loading and auth
 operations may update runtime state only for the profile revision that started
 them; switching profiles or disposing the provider discards stale completions.
+Password profiles reauthenticate with stored credentials on activation, including
+app startup. A saved raw Cookie header is not proof of a valid session; renewal
+clears it before login and publishes the new cookie to GraphQL and media only
+after success. Failed renewal leaves no stale runtime or stored cookie header.
 
 Server URL input accepts a user-friendly base address and normalizes it at the
 network boundary. Validation errors must not echo credentials.

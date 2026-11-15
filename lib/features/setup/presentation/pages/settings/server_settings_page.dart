@@ -26,8 +26,6 @@ import 'package:stash_app_flutter/features/studios/presentation/providers/studio
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_details_provider.dart';
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
-import 'package:stash_app_flutter/core/data/auth/auth_mode.dart';
-import 'package:stash_app_flutter/core/data/auth/auth_provider.dart';
 
 import '../../widgets/settings_page_shell.dart';
 import '../../../domain/models/server_profile.dart';
@@ -52,8 +50,6 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     ref.invalidate(connectionStatusProvider);
     ref.invalidate(mediaHeadersProvider);
     ref.invalidate(mediaPlaybackHeadersProvider);
-
-    await ref.read(authProvider.notifier).refreshCookieHeader();
 
     ref.invalidate(sceneListProvider);
     ref.invalidate(sceneDetailsProvider);
@@ -97,11 +93,6 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     ref.listen(activeServerProfileIdProvider, (previous, next) async {
       if (previous != next && next != null) {
         await _flushRuntimeCachesAfterServerChange();
-
-        final profile = ref.read(activeProfileProvider);
-        if (profile != null && profile.authMode == AuthMode.password) {
-          await ref.read(authProvider.notifier).login();
-        }
       }
     });
 

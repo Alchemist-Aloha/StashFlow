@@ -71,6 +71,7 @@ class DelayedLoginService extends AuthService {
   DelayedLoginService() : super(dio: Dio(), cookieJar: CookieJar());
 
   final response = Completer<bool>();
+  bool delayProfileA = false;
   final requests = <(Uri, String, String)>[];
 
   @override
@@ -80,8 +81,14 @@ class DelayedLoginService extends AuthService {
     required String password,
   }) {
     requests.add((graphqlEndpoint, username, password));
-    return response.future;
+    return delayProfileA && graphqlEndpoint.host == 'server-a'
+        ? response.future
+        : Future.value(true);
   }
+
+  @override
+  Future<String> cookieHeaderFor({required Uri requestUri}) async =>
+      requestUri.host == 'server-a' ? 'session=A' : 'session=B';
 }
 
 Future<void> settle() async {
@@ -139,9 +146,8 @@ void main() {
   );
 
   test('late login response cannot update a different profile', () async {
+    service.delayProfileA = true;
     container.read(authProvider);
-    await settle();
-    final login = container.read(authProvider.notifier).login();
     await settle();
     expect(service.requests.single, (
       Uri.parse(profileA.baseUrl),
@@ -153,13 +159,27 @@ void main() {
     container.read(authProvider);
     await settle();
     service.response.complete(false);
-    expect(await login, false);
+    await settle();
 
     final state = container.read(authProvider);
     expect(state.username, 'bob');
     expect(state.cookieHeader, 'session=B');
     expect(state.loginStatus, AuthLoginStatus.loggedIn);
     expect(state.errorMessage, isNull);
+  });
+
+  test('failed session renewal does not retain a saved cookie', () async {
+    service.delayProfileA = true;
+    container.read(authProvider);
+    await settle();
+    expect(container.read(authProvider).cookieHeader, isEmpty);
+    expect(storage.values['profile_a_cookie_header'], isNull);
+
+    service.response.complete(false);
+    await settle();
+    expect(container.read(authProvider).loginStatus, AuthLoginStatus.error);
+    expect(container.read(authProvider).cookieHeader, isEmpty);
+    expect(storage.values['profile_a_cookie_header'], isNull);
   });
 
   test('disposed hydration does not access notifier state', () async {
