@@ -521,6 +521,10 @@ threshold on the way back does not expand it. Wheel, keyboard, and programmatic
 scrolls retain immediate threshold-based reveal. The explicit expand button
 always responds immediately without changing the image scroll offset. Nested
 and horizontal scrolling must not trigger header reveal.
+When the gallery has chapters, the expanded header shows them as a horizontal
+chip row; tapping one opens the scoped fullscreen viewer at the chapter's
+1-based `image_index` in Stash path order, loading grid pages until that image
+is present, independent of the grid's current sort.
 Confirmed rating changes
 refresh gallery details and update the gallery list without reshuffling it;
 failures retain the confirmed value and show localized feedback. Gallery card

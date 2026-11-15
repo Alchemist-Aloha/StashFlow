@@ -9,6 +9,7 @@ import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../images/presentation/pages/images_page.dart';
+import '../../../images/presentation/providers/image_browser_context.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../../scenes/presentation/providers/playback_queue_provider.dart';
 import '../../../scenes/presentation/widgets/scene_strip.dart';
@@ -134,6 +135,56 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
     }
   }
 
+  /// Opens a chapter's image; Stash numbers chapters 1-based in path order.
+  Future<void> _openChapter(GalleryChapter chapter) async {
+    try {
+      final image =
+          (await ref
+                  .read(imageRepositoryProvider)
+                  .findImages(
+                    page: chapter.imageIndex,
+                    perPage: 1,
+                    sort: 'path',
+                    galleryId: widget.galleryId,
+                  ))
+              .firstOrNull;
+      if (image == null || !mounted) return;
+
+      // Fullscreen pages through the loaded grid, so the target must be in it.
+      await ref.read(imageListProvider.future);
+      final images = ref.read(imageListProvider.notifier);
+      bool loaded() =>
+          ref.read(imageListProvider).value?.any((i) => i.id == image.id) ??
+          false;
+      while (mounted && !loaded() && images.hasMore) {
+        final before = ref.read(imageListProvider).value?.length;
+        await images.fetchNextPage();
+        if (ref.read(imageListProvider).value?.length == before) break;
+      }
+      if (!mounted) return;
+
+      ref.read(imageFullscreenCurrentIdProvider.notifier).setCurrent(image.id);
+      final browser = ref.read(imageBrowserContextProvider);
+      final imageId = Uri.encodeComponent(image.id);
+      await context.push<void>(
+        browser == null
+            ? '/galleries/images/$imageId'
+            : '${browser.path}/image/$imageId',
+      );
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'openChapter',
+        error,
+        stackTrace,
+        source: 'gallery_details_page',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.common_error('$error'))),
+      );
+    }
+  }
+
   void _expandDetails() {
     if (!_detailsCollapsed) return;
     setState(() => _detailsCollapsed = false);
@@ -166,6 +217,7 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
                     gallery: gallery,
                     onRatingSelected: (rating) =>
                         _updateRating(gallery, rating),
+                    onChapterSelected: _openChapter,
                   ),
             loading: () => const LinearProgressIndicator(),
             error: (error, stack) => ErrorStateView(
@@ -282,11 +334,13 @@ class _CompactGalleryDetails extends ConsumerWidget {
   const _CompactGalleryDetails({
     required this.gallery,
     required this.onRatingSelected,
+    required this.onChapterSelected,
     super.key,
   });
 
   final Gallery gallery;
   final ValueChanged<int> onRatingSelected;
+  final ValueChanged<GalleryChapter> onChapterSelected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -414,6 +468,34 @@ class _CompactGalleryDetails extends ConsumerWidget {
                     style: context.textTheme.bodyMedium?.copyWith(
                       color: colors.onSurfaceVariant,
                       height: 1.35,
+                    ),
+                  ),
+                ],
+                if (gallery.chapters.isNotEmpty) ...[
+                  SizedBox(height: dims.spacingMedium),
+                  SectionHeader(
+                    title: context.l10n.gallery_chapters_title,
+                    padding: EdgeInsets.zero,
+                  ),
+                  SizedBox(height: dims.spacingSmall),
+                  SingleChildScrollView(
+                    key: const Key('gallery_chapters'),
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (final chapter in gallery.chapters) ...[
+                          if (chapter != gallery.chapters.first)
+                            SizedBox(width: dims.spacingSmall),
+                          ActionChip(
+                            avatar: const Icon(Icons.bookmark_outline_rounded),
+                            label: Text(chapter.title),
+                            tooltip: context.l10n.gallery_chapter_image(
+                              chapter.imageIndex,
+                            ),
+                            onPressed: () => onChapterSelected(chapter),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],

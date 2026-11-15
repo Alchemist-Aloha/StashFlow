@@ -17,6 +17,8 @@ import 'package:stash_app_flutter/features/images/presentation/widgets/image_car
 import 'package:stash_app_flutter/features/images/presentation/providers/image_browser_context.dart';
 import 'package:stash_app_flutter/features/images/presentation/widgets/image_browser_scope.dart';
 
+import 'package:go_router/go_router.dart';
+
 import '../../../../helpers/test_helpers.dart';
 
 class _RatingGalleryRepository implements GraphQLGalleryRepository {
@@ -327,6 +329,11 @@ void main() {
   testWidgets('gallery details browses images and collapses while scrolling', (
     tester,
   ) async {
+    // Leaves grid room below the header's chapter and performer rows.
+    tester.view.physicalSize = const Size(800, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     const gallery = Gallery(
       id: 'gallery-1',
       title: 'Gallery One',
@@ -443,6 +450,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.close_rounded));
     await tester.pumpAndSettle();
 
+    expect(find.byKey(const Key('gallery_chapters')), findsOneWidget);
     await tester.drag(find.byType(ImageCard).first, const Offset(0, -500));
     await tester.pumpAndSettle();
 
@@ -461,6 +469,61 @@ void main() {
     expect(find.byKey(const Key('gallery_details_expanded')), findsOneWidget);
     expect(find.byKey(const Key('gallery_action_rating')), findsOneWidget);
     expect(scrollPosition.pixels, offsetBeforeExpand);
+  });
+
+  testWidgets('chapter chip opens its image in the gallery viewer', (
+    tester,
+  ) async {
+    final repository = MockGraphQLImageRepository()
+      ..withData([
+        const entity.Image(
+          id: 'image-3',
+          title: 'Image 3',
+          files: [entity.ImageFile(width: 100, height: 100, path: '')],
+          paths: entity.ImagePaths(image: '', thumbnail: ''),
+        ),
+      ]);
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        galleryDetailsProvider('gallery-1').overrideWith(
+          (ref) => const Gallery(
+            id: 'gallery-1',
+            title: 'Gallery One',
+            chapters: [
+              GalleryChapter(id: 'chapter-1', title: 'Opening', imageIndex: 3),
+            ],
+          ),
+        ),
+        imageRepositoryProvider.overrideWithValue(repository),
+      ],
+      routes: [
+        GoRoute(
+          path: '/gallery/gallery-1/image/:imageId',
+          builder: (context, state) =>
+              Text('viewer ${state.pathParameters['imageId']}'),
+        ),
+      ],
+      child: const ImageBrowserScope(
+        browser: ImageBrowserContext.gallery(
+          'gallery-1',
+          path: '/gallery/gallery-1',
+        ),
+        child: GalleryDetailsPage(galleryId: 'gallery-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Opening'));
+    await tester.pumpAndSettle();
+
+    final lookup = repository.findImageCalls.firstWhere(
+      (call) => call.perPage == 1,
+    );
+    expect(lookup.page, 3);
+    expect(lookup.sort, 'path');
+    expect(lookup.galleryId, 'gallery-1');
+    expect(find.text('viewer image-3'), findsOneWidget);
   });
 
   testWidgets('expanded header shows scenes linked to the gallery', (
