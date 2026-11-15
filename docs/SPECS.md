@@ -1124,6 +1124,10 @@ after success. Failed renewal leaves no stale runtime or stored cookie header.
 Login and credential edits wait for credential hydration. Concurrent login calls
 share one attempt for the current credential revision; profile changes, credential
 edits, and logout prevent older login results from restoring runtime auth.
+Saving the active password profile closes the editor only after successful login.
+On failure, the editor retains the entered values and shows a localized error;
+the saved configuration remains available, and retries update the same profile.
+Only one save or connection test can be submitted at a time.
 
 Server URL input accepts a user-friendly base address and normalizes it at the
 network boundary. Validation errors must not echo credentials.
