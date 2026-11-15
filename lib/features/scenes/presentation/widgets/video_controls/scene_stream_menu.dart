@@ -89,14 +89,18 @@ class _SceneStreamMenuState extends ConsumerState<SceneStreamMenu> {
     // Read before awaiting: the menu may unmount while the stream reopens.
     final owned = identical(ref.read(playerStateProvider).player, player);
     final notifier = ref.read(playerStateProvider.notifier);
+    final subtitle = player.state.track.subtitle;
     await player.open(
       createPlaybackMedia(
         url,
         httpHeaders: ref.read(mediaPlaybackHeadersProvider),
         start: position,
+        duration: sceneFileDuration(widget.scene),
       ),
       play: playing,
     );
+    // Reopening drops external subtitle tracks; restore the active one.
+    if (subtitle.uri || subtitle.data) await player.setSubtitleTrack(subtitle);
     if (owned) notifier.setActiveStream(choice);
   }
 

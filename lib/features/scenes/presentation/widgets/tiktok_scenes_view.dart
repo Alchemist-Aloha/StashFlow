@@ -28,6 +28,7 @@ import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/playback_media.dart';
+import '../../data/repositories/stash_player.dart';
 import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -400,7 +401,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         );
       }
 
-      final player = Player();
+      final player = StashPlayer();
       final controller = VideoController(
         player,
         configuration: PlayerSettingsStore(ref.read(sharedPreferencesProvider))
@@ -443,6 +444,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           effectiveUrl,
           httpHeaders: headers,
           start: startPosition,
+          duration: sceneFileDuration(scene),
         ),
         play: false,
       );

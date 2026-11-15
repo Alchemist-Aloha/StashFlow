@@ -667,7 +667,15 @@ MP4, WebM, HLS, DASH) and Resolution (the selected source's variants, disabled
 for direct). Selections are staged; Apply or dismissing the panel commits them,
 and changing source keeps the staged resolution when offered. Committing a
 different stream reopens the current player at the same
-position and play state; it is disabled while casting. Playback settings choose
+position and play state, keeping the active external subtitle; it is disabled
+while casting.
+
+Stash's MP4 and WebM transcodes are live ffmpeg pipes: they cannot byte-seek,
+report no full duration, and restart timestamps at zero even when opened with
+`start=`. `StashPlayer` (used by the global session and feed players) opens
+them with `start=<seconds>`, reopens on every seek, and reports position,
+buffer, and the scene file's duration on the absolute scene timeline, offsetting
+subtitles to match. HLS, DASH, and direct streams pass through unchanged. Playback settings choose
 the default source kind used when playback starts (direct by default, which
 skips the `sceneStreams` query); its original-resolution endpoint is used, and
 an unavailable kind or failed query falls back to the direct stream. Downloads

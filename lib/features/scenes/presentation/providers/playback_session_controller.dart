@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+
 import '../../../../core/utils/app_log_store.dart';
+import '../../data/repositories/stash_player.dart';
 
 /// Reports each completion edge once, shared by global and feed sessions.
 StreamSubscription<bool> listenToPlaybackCompletion(
@@ -31,7 +33,7 @@ class PlaybackSessionController {
   PlaybackSessionController({
     Player Function()? createPlayer,
     VideoController Function(Player)? createVideoController,
-  }) : _createPlayer = createPlayer ?? Player.new,
+  }) : _createPlayer = createPlayer ?? StashPlayer.new,
        _createVideoController = createVideoController ?? VideoController.new;
 
   final Player Function() _createPlayer;

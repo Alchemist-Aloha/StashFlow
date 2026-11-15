@@ -1483,6 +1483,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           effectiveStreamUrl,
           httpHeaders: httpHeaders ?? const <String, String>{},
           start: initialPosition,
+          duration: sceneFileDuration(scene),
         ),
         play: false,
       );
