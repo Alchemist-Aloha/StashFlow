@@ -73,6 +73,13 @@ final authProvider = NotifierProvider<AuthProvider, AuthState>(
 );
 
 class AuthProvider extends Notifier<AuthState> {
+  int _generation = 0;
+
+  bool _isCurrent(int generation, ServerProfile profile) =>
+      ref.mounted &&
+      generation == _generation &&
+      ref.read(activeProfileProvider) == profile;
+
   String _getAuthModeKey(String profileId) => 'profile_${profileId}_auth_mode';
   String _getUsernameKey(String profileId) => 'profile_${profileId}_username';
   String _getPasswordKey(String profileId) => 'profile_${profileId}_password';
@@ -82,16 +89,16 @@ class AuthProvider extends Notifier<AuthState> {
   @override
   AuthState build() {
     final profile = ref.watch(activeProfileProvider);
-    unawaited(_hydrateForProfile(profile));
+    final generation = ++_generation;
+    ref.onDispose(() => _generation++);
+    if (profile == null) {
+      return const AuthState.initial().copyWith(hydrated: true);
+    }
+    unawaited(_hydrateForProfile(profile, generation));
     return const AuthState.initial();
   }
 
-  Future<void> _hydrateForProfile(ServerProfile? profile) async {
-    if (profile == null) {
-      state = const AuthState.initial().copyWith(hydrated: true);
-      return;
-    }
-
+  Future<void> _hydrateForProfile(ServerProfile profile, int generation) async {
     final prefs = ref.read(sharedPreferencesProvider);
     final secureStorage = ref.read(secureStorageProvider);
 
@@ -108,6 +115,8 @@ class AuthProvider extends Notifier<AuthState> {
     final storedCookieHeader =
         await secureStorage.read(key: _getCookieHeaderKey(profile.id)) ?? '';
 
+    if (!_isCurrent(generation, profile)) return;
+
     String cookieHeader = storedCookieHeader;
     AuthLoginStatus loginStatus = AuthLoginStatus.loggedOut;
 
@@ -122,6 +131,7 @@ class AuthProvider extends Notifier<AuthState> {
       loginStatus = AuthLoginStatus.loggedIn;
     }
 
+    if (!_isCurrent(generation, profile)) return;
     state = state.copyWith(
       mode: mode,
       username: username,
@@ -137,8 +147,10 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return;
 
+    final generation = _generation;
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString(_getAuthModeKey(profile.id), mode.name);
+    if (!_isCurrent(generation, profile)) return;
 
     AuthLoginStatus loginStatus = state.loginStatus;
     if (mode == AuthMode.apiKey) {
@@ -158,6 +170,7 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return;
 
+    final generation = _generation;
     final secureStorage = ref.read(secureStorageProvider);
     final trimmed = username.trim();
 
@@ -170,6 +183,7 @@ class AuthProvider extends Notifier<AuthState> {
       );
     }
 
+    if (!_isCurrent(generation, profile)) return;
     state = state.copyWith(username: trimmed, clearError: true);
   }
 
@@ -177,6 +191,7 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return;
 
+    final generation = _generation;
     final secureStorage = ref.read(secureStorageProvider);
 
     if (password.isEmpty) {
@@ -188,6 +203,7 @@ class AuthProvider extends Notifier<AuthState> {
       );
     }
 
+    if (!_isCurrent(generation, profile)) return;
     state = state.copyWith(password: password, clearError: true);
   }
 
@@ -216,6 +232,9 @@ class AuthProvider extends Notifier<AuthState> {
       return false;
     }
 
+    final generation = _generation;
+    final username = state.username;
+    final password = state.password;
     state = state.copyWith(
       loginStatus: AuthLoginStatus.loggingIn,
       clearError: true,
@@ -224,12 +243,14 @@ class AuthProvider extends Notifier<AuthState> {
 
     try {
       final service = await ref.read(authServiceProvider.future);
+      if (!_isCurrent(generation, profile)) return false;
       final endpointUri = Uri.parse(endpoint);
       final ok = await service.login(
         graphqlEndpoint: endpointUri,
-        username: state.username,
-        password: state.password,
+        username: username,
+        password: password,
       );
+      if (!_isCurrent(generation, profile)) return false;
 
       if (!ok) {
         debugPrint(
@@ -245,6 +266,7 @@ class AuthProvider extends Notifier<AuthState> {
       final cookieHeader = await service.cookieHeaderFor(
         requestUri: endpointUri,
       );
+      if (!_isCurrent(generation, profile)) return false;
       debugPrint(
         'AuthProvider: Cookie header acquired: ${cookieHeader.isNotEmpty}',
       );
@@ -257,6 +279,7 @@ class AuthProvider extends Notifier<AuthState> {
           value: cookieHeader,
         );
       }
+      if (!_isCurrent(generation, profile)) return false;
       ref.invalidate(profileCookieHeaderProvider(profile.id));
 
       state = state.copyWith(
@@ -276,6 +299,7 @@ class AuthProvider extends Notifier<AuthState> {
         source: 'auth_provider',
       );
       // Auth recovery must also handle storage and provider failures.
+      if (!_isCurrent(generation, profile)) return false;
       state = state.copyWith(
         loginStatus: AuthLoginStatus.error,
         errorMessage: 'Login failed: $error',
@@ -288,12 +312,14 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return;
 
+    final generation = _generation;
     final endpoint = profile.baseUrl.trim();
     final secureStorage = ref.read(secureStorageProvider);
 
     if (endpoint.isNotEmpty) {
       try {
         final service = await ref.read(authServiceProvider.future);
+        if (!_isCurrent(generation, profile)) return;
         await service.logout(graphqlEndpoint: Uri.parse(endpoint));
       } on Object catch (error, stackTrace) {
         AppLogStore.instance.addError(
@@ -308,6 +334,7 @@ class AuthProvider extends Notifier<AuthState> {
     }
 
     await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
+    if (!_isCurrent(generation, profile)) return;
     state = state.copyWith(
       cookieHeader: '',
       loginStatus: AuthLoginStatus.loggedOut,
@@ -319,7 +346,9 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return '';
 
+    final generation = _generation;
     final cookieHeader = await _refreshCookieHeaderForProfile(profile);
+    if (!_isCurrent(generation, profile)) return '';
     final secureStorage = ref.read(secureStorageProvider);
 
     if (cookieHeader.isEmpty) {
@@ -330,6 +359,7 @@ class AuthProvider extends Notifier<AuthState> {
         value: cookieHeader,
       );
     }
+    if (!_isCurrent(generation, profile)) return '';
     ref.invalidate(profileCookieHeaderProvider(profile.id));
 
     state = state.copyWith(

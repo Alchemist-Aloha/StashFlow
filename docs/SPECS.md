@@ -1114,7 +1114,9 @@ Supported authentication modes are:
 GraphQL, images, downloads, and video resolution must derive authentication
 from the same active profile. Switching profiles flushes or invalidates
 profile-bound clients, media headers, lists, details, caches, and playback URLs
-so data cannot leak across servers.
+so data cannot leak across servers. Asynchronous credential loading and auth
+operations may update runtime state only for the profile revision that started
+them; switching profiles or disposing the provider discards stale completions.
 
 Server URL input accepts a user-friendly base address and normalizes it at the
 network boundary. Validation errors must not echo credentials.
