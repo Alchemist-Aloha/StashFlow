@@ -108,10 +108,13 @@ void main() {
     return Scrollable.of(tester.element(find.byType(ImageCard).first)).position;
   }
 
+  final collapsed = find.byKey(const Key('gallery_details_collapsed'));
+  final expanded = find.byKey(const Key('gallery_details_expanded'));
+
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
     for (final scale in [0.8, 1.5]) {
       testWidgets(
-        'gallery header waits for release and settling ($platform, $scale)',
+        'gallery details scroll with the grid and pin a summary ($platform, $scale)',
         (tester) async {
           tester.view.physicalSize = const Size(360, 850);
           tester.view.devicePixelRatio = 1;
@@ -122,84 +125,60 @@ void main() {
             scale: scale,
             platform: platform,
           );
-          position.jumpTo(160);
-          await tester.pumpAndSettle();
-          final collapsed = find.byKey(const Key('gallery_details_collapsed'));
-          final expanded = find.byKey(const Key('gallery_details_expanded'));
-          expect(collapsed, findsOneWidget);
-
-          final scrollable = find
-              .ancestor(
-                of: find.byType(ImageCard).first,
-                matching: find.byType(Scrollable),
-              )
-              .first;
-          final gesture = await tester.startGesture(
-            tester.getCenter(scrollable),
+          expect(collapsed, findsNothing);
+          // Images start below the details, inside the same scroll view.
+          expect(
+            tester.getTopLeft(find.byType(ImageCard).first).dy,
+            greaterThan(tester.getBottomLeft(expanded).dy),
           );
-          await gesture.moveBy(const Offset(0, 210));
-          await tester.pumpAndSettle();
-          expect(position.pixels, lessThanOrEqualTo(position.minScrollExtent));
-          expect(collapsed, findsOneWidget);
-          expect(expanded, findsNothing);
 
-          await gesture.up();
+          // Dragging the details themselves scrolls the page.
+          await tester.drag(find.text('Gallery One'), const Offset(0, -400));
+          await tester.pumpAndSettle();
+          expect(position.pixels, greaterThan(0));
+          expect(collapsed, findsOneWidget);
+
+          await tester.flingFrom(
+            const Offset(180, 500),
+            const Offset(0, 2000),
+            3000,
+          );
           await tester.pumpAndSettle();
           expect(position.pixels, closeTo(position.minScrollExtent, 0.01));
-          expect(expanded, findsOneWidget);
+          expect(collapsed, findsNothing);
           expect(tester.takeException(), isNull);
         },
       );
     }
   }
 
-  testWidgets(
-    'gallery header stays collapsed when touch scroll stops near the top',
-    (tester) async {
-      final position = await pumpScrollableGallery(tester);
-      position.jumpTo(160);
-      await tester.pumpAndSettle();
-      final scrollable = find
-          .ancestor(
-            of: find.byType(ImageCard).first,
-            matching: find.byType(Scrollable),
-          )
-          .first;
-      final gesture = await tester.startGesture(tester.getCenter(scrollable));
-      await gesture.moveBy(const Offset(0, 20));
-      await tester.pump();
-      await gesture.moveBy(Offset(0, position.pixels - 24));
-      await tester.pump(const Duration(seconds: 1));
-      await gesture.moveBy(Offset.zero);
-      await gesture.up();
-      await tester.pumpAndSettle();
-      expect(position.pixels, greaterThan(position.minScrollExtent));
-      expect(position.pixels, lessThan(48));
-      expect(
-        find.byKey(const Key('gallery_details_collapsed')),
-        findsOneWidget,
-      );
-
-      // Explicit expansion stays immediate and preserves the image position.
-      final offset = position.pixels;
-      await tester.tap(find.byIcon(Icons.expand_more_rounded));
-      await tester.pumpAndSettle();
-      expect(find.byKey(const Key('gallery_details_expanded')), findsOneWidget);
-      expect(position.pixels, offset);
-    },
-  );
-
-  testWidgets('gallery programmatic reveal keeps its existing threshold', (
+  testWidgets('summary pins only after the details scroll out of view', (
     tester,
   ) async {
     final position = await pumpScrollableGallery(tester);
-    position.jumpTo(160);
+    final detailsHeight = tester.getSize(expanded).height;
+    position.jumpTo(detailsHeight / 2);
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('gallery_details_collapsed')), findsOneWidget);
-    position.jumpTo(24);
+    expect(collapsed, findsNothing);
+    position.jumpTo(detailsHeight + 1);
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('gallery_details_expanded')), findsOneWidget);
-    expect(position.pixels, 24);
+    expect(collapsed, findsOneWidget);
+    position.jumpTo(detailsHeight / 2);
+    await tester.pumpAndSettle();
+    expect(collapsed, findsNothing);
+  });
+
+  testWidgets('summary expand button scrolls back to the details', (
+    tester,
+  ) async {
+    final position = await pumpScrollableGallery(tester);
+    position.jumpTo(tester.getSize(expanded).height + 200);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.keyboard_arrow_up_rounded));
+    await tester.pumpAndSettle();
+    expect(position.pixels, 0);
+    expect(collapsed, findsNothing);
+    expect(find.text('Gallery One'), findsOneWidget);
   });
 
   testWidgets(
@@ -455,20 +434,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('gallery_details_collapsed')), findsOneWidget);
-    expect(find.byKey(const Key('gallery_action_rating')), findsOneWidget);
+    expect(find.byKey(const Key('gallery_action_rating')), findsWidgets);
     expect(find.byIcon(Icons.photo_library_rounded), findsNothing);
 
-    final scrollPosition = Scrollable.of(
-      tester.element(find.byType(ImageCard).first),
-    ).position;
-    final offsetBeforeExpand = scrollPosition.pixels;
-
-    await tester.tap(find.byIcon(Icons.expand_more_rounded));
+    await tester.tap(find.byIcon(Icons.keyboard_arrow_up_rounded));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('gallery_details_expanded')), findsOneWidget);
+    expect(find.byKey(const Key('gallery_details_collapsed')), findsNothing);
     expect(find.byKey(const Key('gallery_action_rating')), findsOneWidget);
-    expect(scrollPosition.pixels, offsetBeforeExpand);
   });
 
   testWidgets('chapter chip opens its image in the gallery viewer', (

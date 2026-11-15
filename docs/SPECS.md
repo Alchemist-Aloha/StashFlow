@@ -514,13 +514,14 @@ fills the available content width, retaining scaled theme padding. Both headers
 show the title and metadata without a cover thumbnail beside the title. The unfilled
 details button sits beside the rating button, with the image count immediately
 after it in the expanded header's action row, wrapping when space is limited.
-The section collapses after scrolling beyond its scaled threshold. During touch
-or drag scrolling it stays collapsed until the grid settles at the top after
-release, including any fling or overscroll rebound; merely crossing the collapse
-threshold on the way back does not expand it. Wheel, keyboard, and programmatic
-scrolls retain immediate threshold-based reveal. The explicit expand button
-always responds immediately without changing the image scroll offset. Nested
-and horizontal scrolling must not trigger header reveal.
+The expanded section scrolls with the image grid as the first item of one
+scroll view, so a tall header (chapters, performers, linked scenes) never
+shrinks the grid viewport and dragging anywhere on the page scrolls it. Once
+the expanded section has fully scrolled out of view, the collapsed header
+floats as an elevated overlay pinned below the app bar, without taking layout
+space or shifting the grid; it disappears as soon as any of the expanded
+section scrolls back into view. Its expand button animates the page back to
+the top. Nested and horizontal scrolling must not toggle the collapsed header.
 When the gallery has chapters, the expanded header shows them as a horizontal
 chip row; tapping one opens the scoped fullscreen viewer at the chapter's
 1-based `image_index` in Stash path order, loading grid pages until that image

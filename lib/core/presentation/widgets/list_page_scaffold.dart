@@ -52,6 +52,8 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.gridColumnSetting,
     this.actions = const [],
     this.sortBar,
+    this.scrollHeader,
+    this.stickyHeader,
     this.emptyMessage = 'No items found',
     this.onRefresh,
     this.onFetchNextPage,
@@ -130,6 +132,14 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
 
   /// Optional widget displayed between the AppBar and the list (e.g., a filter chip row).
   final Widget? sortBar;
+
+  /// Optional content scrolled above the items within the same scroll view, so
+  /// a tall header never shrinks the item viewport. Supported for masonry grids.
+  final Widget? scrollHeader;
+
+  /// Optional overlay pinned over the top of the items without taking layout
+  /// space, such as a compact summary shown once [scrollHeader] scrolls away.
+  final Widget? stickyHeader;
 
   /// Message displayed when the data list is empty.
   final String emptyMessage;
@@ -482,6 +492,31 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
           .add(hasLeadingBar ? EdgeInsets.zero : topInsetPadding)
           .add(EdgeInsets.only(bottom: bottomInset + actionPillInset));
 
+      // The header carries the top inset so items start right below it.
+      Widget headerScrollView(
+        Widget itemsSliver, {
+        ScrollController? controller,
+      }) {
+        final direction = Directionality.of(context);
+        final resolved = listPadding.resolve(direction);
+        final itemsTop = widget.padding?.resolve(direction).top ?? 0.0;
+        return CustomScrollView(
+          controller: controller,
+          physics: const AlwaysScrollableScrollPhysics(),
+          scrollCacheExtent: ScrollCacheExtent.pixels(masonryCacheExtent),
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.only(top: resolved.top - itemsTop),
+              sliver: SliverToBoxAdapter(child: widget.scrollHeader),
+            ),
+            SliverPadding(
+              padding: resolved.copyWith(top: itemsTop),
+              sliver: itemsSliver,
+            ),
+          ],
+        );
+      }
+
       return NotificationListener<UserScrollNotification>(
         onNotification: (notification) {
           if (!autoHideTopAppBar ||
@@ -587,95 +622,189 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       ),
                     ),
                   Expanded(
-                    child: widget.provider.when(
-                      data: (items) {
-                        if (items.isEmpty && widget.customBody == null) {
-                          return RefreshIndicator(
-                            onRefresh: widget.onRefresh ?? () async {},
-                            child: SingleChildScrollView(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              padding: listPadding,
-                              child: SizedBox(
-                                height: MediaQuery.sizeOf(context).height * 0.7,
-                                child: Center(
-                                  child: Text(
-                                    widget.emptyMessage == 'No items found'
-                                        ? context.l10n.common_no_items
-                                        : widget.emptyMessage,
-                                    textAlign: TextAlign.center,
-                                    style: context.textTheme.bodyMedium
-                                        ?.copyWith(
-                                          color:
-                                              context.colors.onSurfaceVariant,
-                                        ),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: widget.provider.when(
+                            data: (items) {
+                              if (items.isEmpty && widget.customBody == null) {
+                                final emptyText = Text(
+                                  widget.emptyMessage == 'No items found'
+                                      ? context.l10n.common_no_items
+                                      : widget.emptyMessage,
+                                  textAlign: TextAlign.center,
+                                  style: context.textTheme.bodyMedium?.copyWith(
+                                    color: context.colors.onSurfaceVariant,
                                   ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }
+                                );
+                                if (widget.scrollHeader != null) {
+                                  return RefreshIndicator(
+                                    onRefresh: widget.onRefresh ?? () async {},
+                                    edgeOffset: hasLeadingBar ? 0.0 : topInset,
+                                    child: headerScrollView(
+                                      SliverFillRemaining(
+                                        hasScrollBody: false,
+                                        child: Center(child: emptyText),
+                                      ),
+                                      controller: widget.scrollController,
+                                    ),
+                                  );
+                                }
+                                return RefreshIndicator(
+                                  onRefresh: widget.onRefresh ?? () async {},
+                                  child: SingleChildScrollView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    padding: listPadding,
+                                    child: SizedBox(
+                                      height:
+                                          MediaQuery.sizeOf(context).height *
+                                          0.7,
+                                      child: Center(child: emptyText),
+                                    ),
+                                  ),
+                                );
+                              }
 
-                        int? memCacheWidth;
-                        if (widget.itemBuilder != null) {
-                          if (widget.memCacheWidthBuilder != null) {
-                            memCacheWidth = widget.memCacheWidthBuilder!(
-                              context,
-                              isGrid,
-                            );
-                          } else {
-                            if (fixedDelegate != null) {
-                              memCacheWidth =
-                                  (screenWidth /
-                                          fixedDelegate.crossAxisCount *
-                                          1.5)
-                                      .toInt();
-                            } else {
-                              memCacheWidth = screenWidth > 600
-                                  ? 600
-                                  : screenWidth.toInt();
-                            }
-                          }
-                        }
+                              int? memCacheWidth;
+                              if (widget.itemBuilder != null) {
+                                if (widget.memCacheWidthBuilder != null) {
+                                  memCacheWidth = widget.memCacheWidthBuilder!(
+                                    context,
+                                    isGrid,
+                                  );
+                                } else {
+                                  if (fixedDelegate != null) {
+                                    memCacheWidth =
+                                        (screenWidth /
+                                                fixedDelegate.crossAxisCount *
+                                                1.5)
+                                            .toInt();
+                                  } else {
+                                    memCacheWidth = screenWidth > 600
+                                        ? 600
+                                        : screenWidth.toInt();
+                                  }
+                                }
+                              }
 
-                        Widget body =
-                            widget.customBody ??
-                            (isGrid
-                                ? LayoutBuilder(
-                                    builder: (context, constraints) {
-                                      final horizontalPadding =
-                                          widget.padding
-                                              ?.resolve(
-                                                Directionality.of(context),
-                                              )
-                                              .horizontal ??
-                                          0.0;
-                                      if (!constraints.hasBoundedWidth ||
-                                          constraints.maxWidth -
-                                                  horizontalPadding <=
-                                              0) {
-                                        return const SizedBox.shrink();
-                                      }
+                              Widget body =
+                                  widget.customBody ??
+                                  (isGrid
+                                      ? LayoutBuilder(
+                                          builder: (context, constraints) {
+                                            final horizontalPadding =
+                                                widget.padding
+                                                    ?.resolve(
+                                                      Directionality.of(
+                                                        context,
+                                                      ),
+                                                    )
+                                                    .horizontal ??
+                                                0.0;
+                                            if (!constraints.hasBoundedWidth ||
+                                                constraints.maxWidth -
+                                                        horizontalPadding <=
+                                                    0) {
+                                              return const SizedBox.shrink();
+                                            }
 
-                                      if (widget.useMasonry) {
-                                        return MasonryGridView.builder(
+                                            if (widget.useMasonry &&
+                                                widget.scrollHeader != null) {
+                                              return headerScrollView(
+                                                SliverMasonryGrid.count(
+                                                  crossAxisCount:
+                                                      fixedDelegate
+                                                          ?.crossAxisCount ??
+                                                      1,
+                                                  mainAxisSpacing:
+                                                      fixedDelegate
+                                                          ?.mainAxisSpacing ??
+                                                      0.0,
+                                                  crossAxisSpacing:
+                                                      fixedDelegate
+                                                          ?.crossAxisSpacing ??
+                                                      0.0,
+                                                  childCount: items.length,
+                                                  itemBuilder:
+                                                      (context, index) =>
+                                                          widget.itemBuilder!(
+                                                            context,
+                                                            items[index],
+                                                            memCacheWidth,
+                                                            null,
+                                                          ),
+                                                ),
+                                                controller:
+                                                    widget.scrollController,
+                                              );
+                                            }
+
+                                            if (widget.useMasonry) {
+                                              return MasonryGridView.builder(
+                                                controller:
+                                                    widget.scrollController,
+                                                physics:
+                                                    const AlwaysScrollableScrollPhysics(),
+                                                padding: listPadding,
+                                                cacheExtent: masonryCacheExtent,
+                                                gridDelegate:
+                                                    SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount:
+                                                          fixedDelegate
+                                                              ?.crossAxisCount ??
+                                                          1,
+                                                    ),
+                                                mainAxisSpacing:
+                                                    fixedDelegate
+                                                        ?.mainAxisSpacing ??
+                                                    0.0,
+                                                crossAxisSpacing:
+                                                    fixedDelegate
+                                                        ?.crossAxisSpacing ??
+                                                    0.0,
+                                                itemCount: items.length,
+                                                itemBuilder: (context, index) =>
+                                                    widget.itemBuilder!(
+                                                      context,
+                                                      items[index],
+                                                      memCacheWidth,
+                                                      null,
+                                                    ),
+                                              );
+                                            }
+
+                                            return GridView.builder(
+                                              controller:
+                                                  widget.scrollController,
+                                              physics:
+                                                  const AlwaysScrollableScrollPhysics(),
+                                              padding: listPadding,
+                                              scrollCacheExtent:
+                                                  const ScrollCacheExtent.viewport(
+                                                    2.0,
+                                                  ),
+                                              gridDelegate: responsiveDelegate!,
+                                              itemCount: items.length,
+                                              itemBuilder: (context, index) =>
+                                                  widget.itemBuilder!(
+                                                    context,
+                                                    items[index],
+                                                    memCacheWidth,
+                                                    null,
+                                                  ),
+                                            );
+                                          },
+                                        )
+                                      : ListView.builder(
                                           controller: widget.scrollController,
                                           physics:
                                               const AlwaysScrollableScrollPhysics(),
                                           padding: listPadding,
-                                          cacheExtent: masonryCacheExtent,
-                                          gridDelegate:
-                                              SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount:
-                                                    fixedDelegate
-                                                        ?.crossAxisCount ??
-                                                    1,
+                                          scrollCacheExtent:
+                                              const ScrollCacheExtent.viewport(
+                                                2.0,
                                               ),
-                                          mainAxisSpacing:
-                                              fixedDelegate?.mainAxisSpacing ??
-                                              0.0,
-                                          crossAxisSpacing:
-                                              fixedDelegate?.crossAxisSpacing ??
-                                              0.0,
                                           itemCount: items.length,
                                           itemBuilder: (context, index) =>
                                               widget.itemBuilder!(
@@ -684,166 +813,164 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                                 memCacheWidth,
                                                 null,
                                               ),
-                                        );
-                                      }
+                                        ));
 
-                                      return GridView.builder(
-                                        controller: widget.scrollController,
-                                        physics:
-                                            const AlwaysScrollableScrollPhysics(),
-                                        padding: listPadding,
-                                        scrollCacheExtent:
-                                            const ScrollCacheExtent.viewport(
-                                              2.0,
-                                            ),
-                                        gridDelegate: responsiveDelegate!,
-                                        itemCount: items.length,
-                                        itemBuilder: (context, index) =>
-                                            widget.itemBuilder!(
-                                              context,
-                                              items[index],
-                                              memCacheWidth,
-                                              null,
-                                            ),
-                                      );
-                                    },
-                                  )
-                                : ListView.builder(
-                                    controller: widget.scrollController,
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    padding: listPadding,
-                                    scrollCacheExtent:
-                                        const ScrollCacheExtent.viewport(2.0),
-                                    itemCount: items.length,
-                                    itemBuilder: (context, index) =>
-                                        widget.itemBuilder!(
-                                          context,
-                                          items[index],
-                                          memCacheWidth,
-                                          null,
-                                        ),
-                                  ));
-
-                        // A custom body owns its own scroll view, so it keeps the
-                        // bar height as a box offset rather than scroll padding.
-                        if (widget.customBody != null) {
-                          body = Padding(padding: topInsetPadding, child: body);
-                        }
-
-                        final columnSetting = widget.gridColumnSetting;
-                        if (isGrid &&
-                            fixedDelegate != null &&
-                            columnSetting != null &&
-                            widget.customBody == null) {
-                          body = Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              body,
-                              // Hit-test before the scrollable so the resolver
-                              // consumes Ctrl+wheel without scrolling or zooming.
-                              Positioned.fill(
-                                child: Listener(
-                                  behavior: HitTestBehavior.translucent,
-                                  onPointerSignal: (event) =>
-                                      _handleColumnScroll(
-                                        event,
-                                        columnSetting,
-                                        fixedDelegate.crossAxisCount,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-
-                        if (widget.onRefresh != null) {
-                          body = RefreshIndicator(
-                            onRefresh: widget.onRefresh!,
-                            // Keep the spinner clear of the frosted header.
-                            edgeOffset: hasLeadingBar ? 0.0 : topInset,
-                            child: body,
-                          );
-                        }
-
-                        body = NotificationListener<ScrollMetricsNotification>(
-                          // A page that fits without scrolling never emits a
-                          // scroll event, so layout changes also ask for the
-                          // next page. Unthrottled: providers drop duplicates.
-                          onNotification: (notification) {
-                            final metrics = notification.metrics;
-                            if (notification.depth == 0 &&
-                                (metrics.maxScrollExtent <= 0 ||
-                                    shouldLoadNextPage(metrics))) {
-                              widget.onFetchNextPage?.call();
-                            }
-                            return false;
-                          },
-                          child: body,
-                        );
-
-                        return NotificationListener<ScrollNotification>(
-                          onNotification: (ScrollNotification scrollInfo) {
-                            if (shouldLoadNextPage(scrollInfo.metrics)) {
-                              final now = DateTime.now();
-                              if (_lastFetchTime == null ||
-                                  now.difference(_lastFetchTime!) >
-                                      _fetchThreshold) {
-                                _lastFetchTime = now;
-                                widget.onFetchNextPage?.call();
+                              // A custom body owns its own scroll view, so it keeps the
+                              // bar height as a box offset rather than scroll padding.
+                              if (widget.customBody != null) {
+                                body = Padding(
+                                  padding: topInsetPadding,
+                                  child: body,
+                                );
                               }
-                            }
-                            return false;
-                          },
-                          child: body,
-                        );
-                      },
-                      loading: () {
-                        final loadingItemBuilder = widget.loadingItemBuilder;
 
-                        if (isGrid) {
-                          return GridView.builder(
-                            padding: listPadding,
-                            scrollCacheExtent: const ScrollCacheExtent.viewport(
-                              1.0,
-                            ),
-                            gridDelegate: responsiveDelegate!,
-                            itemCount: 8,
-                            itemBuilder: (context, index) =>
-                                loadingItemBuilder != null
-                                ? loadingItemBuilder(context, true, index)
-                                : SceneCard.skeleton(isGrid: true),
-                          );
-                        }
-                        return ListView.builder(
-                          padding: listPadding,
-                          scrollCacheExtent: const ScrollCacheExtent.viewport(
-                            1.0,
+                              final columnSetting = widget.gridColumnSetting;
+                              if (isGrid &&
+                                  fixedDelegate != null &&
+                                  columnSetting != null &&
+                                  widget.customBody == null) {
+                                body = Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    body,
+                                    // Hit-test before the scrollable so the resolver
+                                    // consumes Ctrl+wheel without scrolling or zooming.
+                                    Positioned.fill(
+                                      child: Listener(
+                                        behavior: HitTestBehavior.translucent,
+                                        onPointerSignal: (event) =>
+                                            _handleColumnScroll(
+                                              event,
+                                              columnSetting,
+                                              fixedDelegate.crossAxisCount,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+
+                              if (widget.onRefresh != null) {
+                                body = RefreshIndicator(
+                                  onRefresh: widget.onRefresh!,
+                                  // Keep the spinner clear of the frosted header.
+                                  edgeOffset: hasLeadingBar ? 0.0 : topInset,
+                                  child: body,
+                                );
+                              }
+
+                              body =
+                                  NotificationListener<
+                                    ScrollMetricsNotification
+                                  >(
+                                    // A page that fits without scrolling never emits a
+                                    // scroll event, so layout changes also ask for the
+                                    // next page. Unthrottled: providers drop duplicates.
+                                    onNotification: (notification) {
+                                      final metrics = notification.metrics;
+                                      if (notification.depth == 0 &&
+                                          (metrics.maxScrollExtent <= 0 ||
+                                              shouldLoadNextPage(metrics))) {
+                                        widget.onFetchNextPage?.call();
+                                      }
+                                      return false;
+                                    },
+                                    child: body,
+                                  );
+
+                              return NotificationListener<ScrollNotification>(
+                                onNotification:
+                                    (ScrollNotification scrollInfo) {
+                                      if (shouldLoadNextPage(
+                                        scrollInfo.metrics,
+                                      )) {
+                                        final now = DateTime.now();
+                                        if (_lastFetchTime == null ||
+                                            now.difference(_lastFetchTime!) >
+                                                _fetchThreshold) {
+                                          _lastFetchTime = now;
+                                          widget.onFetchNextPage?.call();
+                                        }
+                                      }
+                                      return false;
+                                    },
+                                child: body,
+                              );
+                            },
+                            loading: () {
+                              final loadingItemBuilder =
+                                  widget.loadingItemBuilder;
+
+                              if (isGrid && widget.scrollHeader != null) {
+                                return headerScrollView(
+                                  SliverGrid.builder(
+                                    gridDelegate: responsiveDelegate!,
+                                    itemCount: 8,
+                                    itemBuilder: (context, index) =>
+                                        loadingItemBuilder != null
+                                        ? loadingItemBuilder(
+                                            context,
+                                            true,
+                                            index,
+                                          )
+                                        : SceneCard.skeleton(isGrid: true),
+                                  ),
+                                );
+                              }
+                              if (isGrid) {
+                                return GridView.builder(
+                                  padding: listPadding,
+                                  scrollCacheExtent:
+                                      const ScrollCacheExtent.viewport(1.0),
+                                  gridDelegate: responsiveDelegate!,
+                                  itemCount: 8,
+                                  itemBuilder: (context, index) =>
+                                      loadingItemBuilder != null
+                                      ? loadingItemBuilder(context, true, index)
+                                      : SceneCard.skeleton(isGrid: true),
+                                );
+                              }
+                              return ListView.builder(
+                                padding: listPadding,
+                                scrollCacheExtent:
+                                    const ScrollCacheExtent.viewport(1.0),
+                                itemCount: 5,
+                                itemBuilder: (context, index) =>
+                                    loadingItemBuilder != null
+                                    ? loadingItemBuilder(context, false, index)
+                                    : SceneCard.skeleton(isGrid: false),
+                              );
+                            },
+                            // A fresh install has no server yet; guide to setup
+                            // instead of surfacing the client's exception.
+                            error: (err, stack) =>
+                                ref.read(serverUrlProvider).isEmpty
+                                ? ErrorStateView(
+                                    message: context
+                                        .l10n
+                                        .to_get_started_configure_stash_server,
+                                    retryLabel:
+                                        context.l10n.common_configure_now,
+                                    onRetry: () => unawaited(
+                                      context.push('/settings/server'),
+                                    ),
+                                  )
+                                : ErrorStateView(
+                                    message: context.l10n.common_error(
+                                      err.toString(),
+                                    ),
+                                    onRetry: widget.onRefresh,
+                                  ),
                           ),
-                          itemCount: 5,
-                          itemBuilder: (context, index) =>
-                              loadingItemBuilder != null
-                              ? loadingItemBuilder(context, false, index)
-                              : SceneCard.skeleton(isGrid: false),
-                        );
-                      },
-                      // A fresh install has no server yet; guide to setup
-                      // instead of surfacing the client's exception.
-                      error: (err, stack) => ref.read(serverUrlProvider).isEmpty
-                          ? ErrorStateView(
-                              message: context
-                                  .l10n
-                                  .to_get_started_configure_stash_server,
-                              retryLabel: context.l10n.common_configure_now,
-                              onRetry: () =>
-                                  unawaited(context.push('/settings/server')),
-                            )
-                          : ErrorStateView(
-                              message: context.l10n.common_error(
-                                err.toString(),
-                              ),
-                              onRetry: widget.onRefresh,
-                            ),
+                        ),
+                        if (widget.stickyHeader != null)
+                          Positioned(
+                            top: hasLeadingBar ? 0.0 : topInset,
+                            left: 0,
+                            right: 0,
+                            child: widget.stickyHeader!,
+                          ),
+                      ],
                     ),
                   ),
                 ],

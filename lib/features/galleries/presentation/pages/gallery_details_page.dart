@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +21,8 @@ import '../providers/gallery_list_provider.dart';
 import '../widgets/gallery_details_bottom_sheet.dart';
 import '../../../../core/utils/app_log_store.dart';
 
-/// Browses a gallery's images with compact, scroll-collapsing gallery details.
+/// Browses a gallery's images below its details, which scroll with the grid;
+/// a compact pinned summary takes over once the details scroll away.
 class GalleryDetailsPage extends ConsumerStatefulWidget {
   const GalleryDetailsPage({required this.galleryId, super.key});
 
@@ -31,20 +34,13 @@ class GalleryDetailsPage extends ConsumerStatefulWidget {
 
 class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
   late final ScrollController _scrollController;
+  final _detailsKey = GlobalKey();
   var _detailsCollapsed = false;
-  var _collapseOffset = 0.0;
-  var _deferDetailsReveal = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_handleScroll);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _collapseOffset = context.dimensions.spacingLarge * 2;
   }
 
   @override
@@ -66,30 +62,14 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
     super.dispose();
   }
 
-  void _handleScroll({bool scrollEnded = false}) {
+  /// Pins the compact summary once the scrolling details are out of view.
+  void _handleScroll() {
     if (!mounted || !_scrollController.hasClients) return;
-    final position = _scrollController.position;
-    final shouldCollapse = position.pixels > _collapseOffset;
-    // Expanding mid-drag resizes the image viewport under the user's finger.
-    if (_detailsCollapsed &&
-        _deferDetailsReveal &&
-        (!scrollEnded || position.pixels > position.minScrollExtent)) {
-      return;
-    }
+    final detailsHeight = _detailsKey.currentContext?.size?.height;
+    if (detailsHeight == null) return;
+    final shouldCollapse = _scrollController.position.pixels >= detailsHeight;
     if (shouldCollapse == _detailsCollapsed) return;
     setState(() => _detailsCollapsed = shouldCollapse);
-  }
-
-  bool _handleScrollNotification(ScrollNotification notification) {
-    if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
-      return false;
-    }
-    if (notification is ScrollStartNotification) {
-      _deferDetailsReveal = notification.dragDetails != null;
-    } else if (notification is ScrollEndNotification) {
-      _handleScroll(scrollEnded: true);
-    }
-    return false;
   }
 
   Future<void> _refresh() async {
@@ -186,50 +166,64 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
   }
 
   void _expandDetails() {
-    if (!_detailsCollapsed) return;
-    setState(() => _detailsCollapsed = false);
+    if (!_scrollController.hasClients) return;
+    unawaited(
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final galleryAsync = ref.watch(galleryDetailsProvider(widget.galleryId));
 
-    return NotificationListener<ScrollNotification>(
-      onNotification: _handleScrollNotification,
-      child: ImagesPage(
-        title: context.l10n.details_gallery,
-        showAppBarTitle: false,
-        searchOnlyAppBar: true,
-        topContent: AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          alignment: Alignment.topCenter,
-          child: galleryAsync.when(
-            data: (gallery) => _detailsCollapsed
-                ? _CollapsedGalleryDetails(
-                    key: const Key('gallery_details_collapsed'),
-                    gallery: gallery,
-                    onExpand: _expandDetails,
-                    onRatingSelected: (rating) =>
-                        _updateRating(gallery, rating),
-                  )
-                : _CompactGalleryDetails(
-                    key: const Key('gallery_details_expanded'),
-                    gallery: gallery,
-                    onRatingSelected: (rating) =>
-                        _updateRating(gallery, rating),
-                    onChapterSelected: _openChapter,
-                  ),
-            loading: () => const LinearProgressIndicator(),
-            error: (error, stack) => ErrorStateView(
-              message: context.l10n.common_error(error.toString()),
-              onRetry: () =>
-                  ref.invalidate(galleryDetailsProvider(widget.galleryId)),
-            ),
+    final gallery = galleryAsync.value;
+
+    return ImagesPage(
+      title: context.l10n.details_gallery,
+      showAppBarTitle: false,
+      searchOnlyAppBar: true,
+      scrollHeader: KeyedSubtree(
+        key: _detailsKey,
+        child: galleryAsync.when(
+          data: (gallery) => _CompactGalleryDetails(
+            key: const Key('gallery_details_expanded'),
+            gallery: gallery,
+            onRatingSelected: (rating) => _updateRating(gallery, rating),
+            onChapterSelected: _openChapter,
+          ),
+          loading: () => const LinearProgressIndicator(),
+          error: (error, stack) => ErrorStateView(
+            message: context.l10n.common_error(error.toString()),
+            onRetry: () =>
+                ref.invalidate(galleryDetailsProvider(widget.galleryId)),
           ),
         ),
-        scrollController: _scrollController,
-        onRefresh: _refresh,
       ),
+      stickyHeader: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: SizeTransition(
+            sizeFactor: animation,
+            alignment: Alignment.topCenter,
+            child: child,
+          ),
+        ),
+        child: gallery != null && _detailsCollapsed
+            ? _CollapsedGalleryDetails(
+                key: const Key('gallery_details_collapsed'),
+                gallery: gallery,
+                onExpand: _expandDetails,
+                onRatingSelected: (rating) => _updateRating(gallery, rating),
+              )
+            : const SizedBox(width: double.infinity),
+      ),
+      scrollController: _scrollController,
+      onRefresh: _refresh,
     );
   }
 }
@@ -256,14 +250,13 @@ class _CollapsedGalleryDetails extends StatelessWidget {
     ].join(' • ');
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        dims.spacingSmall,
-        dims.spacingSmall,
-        dims.spacingSmall,
-        dims.spacingMedium,
-      ),
+      padding: EdgeInsets.all(dims.spacingSmall),
       child: Material(
         color: colors.surfaceContainerHigh,
+        // It floats over the image grid, so it takes M3 level-2 elevation.
+        elevation: 3,
+        shadowColor: colors.shadow,
+        surfaceTintColor: Colors.transparent,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
@@ -320,7 +313,7 @@ class _CollapsedGalleryDetails extends StatelessWidget {
               IconButton.filledTonal(
                 tooltip: context.l10n.details_show_more,
                 onPressed: onExpand,
-                icon: const Icon(Icons.expand_more_rounded),
+                icon: const Icon(Icons.keyboard_arrow_up_rounded),
               ),
             ],
           ),
@@ -350,11 +343,12 @@ class _CompactGalleryDetails extends ConsumerWidget {
     return SizedBox(
       width: double.infinity,
       child: Padding(
+        // The image grid's own padding supplies the gap below the card.
         padding: EdgeInsets.fromLTRB(
           dims.spacingSmall,
           dims.spacingSmall,
           dims.spacingSmall,
-          dims.spacingMedium,
+          0,
         ),
         child: Material(
           color: colors.surfaceContainerLow,
