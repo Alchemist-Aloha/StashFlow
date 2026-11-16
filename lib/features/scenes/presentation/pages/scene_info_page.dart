@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+
+import '../../../../core/presentation/widgets/meta_row.dart';
+
 import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 
@@ -282,26 +285,23 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _MetaRow(
-                      label: context.l10n.scene_info_id,
-                      value: scene.id,
-                    ),
-                    _MetaRow(
+                    MetaRow(label: context.l10n.scene_info_id, value: scene.id),
+                    MetaRow(
                       label: context.l10n.scene_info_original_file_path,
                       value: scene.path?.trim().isNotEmpty == true
                           ? scene.path!
                           : '--',
                       selectable: true,
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_resume_time,
                       value: _formatDuration(scene.resumeTime),
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_play_duration,
                       value: _formatDuration(scene.playDuration),
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_urls,
                       value: scene.urls.isNotEmpty
                           ? scene.urls.join('\n')
@@ -324,63 +324,63 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_resolution,
                       value: file?.width != null && file?.height != null
                           ? '${file!.width} x ${file.height}'
                           : '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.sort_filesize,
                       value: file?.size != null
                           ? formatBytes(file!.size!)
                           : '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_bitrate,
                       value: file?.bitRate != null
                           ? formatBytes(file!.bitRate!)
                           : '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_frame_rate,
                       value: file?.frameRate != null
                           ? '${file!.frameRate!.toStringAsFixed(2)} fps'
                           : '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_format,
                       value: file?.format ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_video_codec,
                       value: file?.videoCodec ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_audio_codec,
                       value: file?.audioCodec ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_stream,
                       value: scene.paths.stream ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_preview,
                       value: scene.paths.preview ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_screenshot,
                       value: scene.paths.screenshot ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_caption,
                       value: scene.paths.caption ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_vtt,
                       value: scene.paths.vtt ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_sprite,
                       value: scene.paths.sprite ?? '--',
                     ),
@@ -419,46 +419,6 @@ class _InfoChip extends StatelessWidget {
       avatar: Icon(icon, size: 16),
       label: Text(text, style: context.textTheme.bodySmall),
       visualDensity: VisualDensity.compact,
-    );
-  }
-}
-
-class _MetaRow extends StatelessWidget {
-  const _MetaRow({
-    required this.label,
-    required this.value,
-    this.selectable = false,
-  });
-
-  final String label;
-  final String value;
-  final bool selectable;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 128,
-            child: Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Expanded(
-            child: selectable
-                ? SelectableText(value, style: theme.textTheme.bodySmall)
-                : Text(value, style: theme.textTheme.bodySmall),
-          ),
-        ],
-      ),
     );
   }
 }

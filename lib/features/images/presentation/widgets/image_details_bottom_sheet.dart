@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/meta_row.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/studio_performer_info_sections.dart';
@@ -124,12 +125,12 @@ class ImageDetailsContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _MetaRow(label: context.l10n.images_field_id, value: image.id),
-              _MetaRow(
+              MetaRow(label: context.l10n.images_field_id, value: image.id),
+              MetaRow(
                 label: context.l10n.common_date,
                 value: image.date ?? '--',
               ),
-              _MetaRow(
+              MetaRow(
                 label: context.l10n.images_field_url,
                 value: image.urls.isEmpty ? '--' : image.urls.join('\n'),
                 selectable: true,
@@ -143,15 +144,15 @@ class ImageDetailsContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _MetaRow(
+              MetaRow(
                 label: context.l10n.common_resolution,
                 value: file == null ? '--' : '${file.width} x ${file.height}',
               ),
-              _MetaRow(
+              MetaRow(
                 label: context.l10n.sort_filesize,
                 value: file?.size != null ? formatBytes(file!.size!) : '--',
               ),
-              _MetaRow(
+              MetaRow(
                 label: context.l10n.scene_info_original_file_path,
                 value: file?.path.isNotEmpty == true ? file!.path : '--',
                 selectable: true,
@@ -173,44 +174,4 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       SectionPanel(title: title, child: child);
-}
-
-class _MetaRow extends StatelessWidget {
-  const _MetaRow({
-    required this.label,
-    required this.value,
-    this.selectable = false,
-  });
-
-  final String label;
-  final String value;
-  final bool selectable;
-
-  @override
-  Widget build(BuildContext context) {
-    final dims = context.dimensions;
-    return Padding(
-      padding: EdgeInsets.only(bottom: dims.spacingSmall),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 128 * dims.fontSizeFactor,
-            child: Text(
-              label,
-              style: context.textTheme.bodySmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Expanded(
-            child: selectable
-                ? SelectableText(value, style: context.textTheme.bodySmall)
-                : Text(value, style: context.textTheme.bodySmall),
-          ),
-        ],
-      ),
-    );
-  }
 }

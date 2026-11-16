@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../galleries/presentation/gallery_location.dart';
+import '../../../../core/presentation/widgets/related_entities.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
@@ -429,7 +430,7 @@ class StudioDetailsPage extends ConsumerWidget {
               context.l10n.studio_parent_title,
               style: context.textTheme.labelLarge,
             ),
-            _StudioRelationshipTile(studio: parent),
+            _relationshipTile(parent),
           ],
           if (studio.childStudios.isNotEmpty) ...[
             SizedBox(height: context.dimensions.spacingSmall),
@@ -437,9 +438,7 @@ class StudioDetailsPage extends ConsumerWidget {
               context.l10n.studio_children_title,
               style: context.textTheme.labelLarge,
             ),
-            ...studio.childStudios.map(
-              (child) => _StudioRelationshipTile(studio: child),
-            ),
+            ...studio.childStudios.map(_relationshipTile),
           ],
         ],
       ),
@@ -447,34 +446,9 @@ class StudioDetailsPage extends ConsumerWidget {
   }
 }
 
-class _StudioRelationshipTile extends StatelessWidget {
-  const _StudioRelationshipTile({required this.studio});
-
-  final StudioRelationship studio;
-
-  @override
-  Widget build(BuildContext context) {
-    final hasImage =
-        studio.imagePath?.isNotEmpty == true &&
-        !studio.imagePath!.contains('default=true');
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(
-        child: hasImage
-            ? ClipOval(
-                child: StashImage(
-                  imageUrl: studio.imagePath!,
-                  width: 40 * context.dimensions.fontSizeFactor,
-                  height: 40 * context.dimensions.fontSizeFactor,
-                  fit: BoxFit.cover,
-                  memCacheWidth: 120,
-                ),
-              )
-            : const Icon(Icons.business_outlined),
-      ),
-      title: Text(studio.name),
-      trailing: const Icon(Icons.chevron_right_rounded),
-      onTap: () => context.push('/studios/studio/${studio.id}'),
-    );
-  }
-}
+Widget _relationshipTile(StudioRelationship studio) => RelatedEntityTile(
+  title: studio.name,
+  route: '/studios/studio/${studio.id}',
+  imagePath: studio.imagePath,
+  fallbackIcon: Icons.business_outlined,
+);
