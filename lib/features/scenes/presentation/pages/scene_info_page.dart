@@ -116,10 +116,11 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _InfoChip(
-                    icon: Icons.calendar_today_rounded,
-                    text: scene.date.toIso8601String().split('T').first,
-                  ),
+                  if (scene.date != null)
+                    _InfoChip(
+                      icon: Icons.calendar_today_rounded,
+                      text: scene.date!.toIso8601String().split('T').first,
+                    ),
                   _InfoChip(
                     icon: Icons.timelapse_rounded,
                     text: _formatDuration(file?.duration),

@@ -91,7 +91,7 @@ void main() {
           gridColumns: 2,
           queueId: 'entity-queue',
           onRefresh: () async {},
-          onFetchNextPage: () {},
+          onFetchNextPage: () async {},
         ),
       );
       await openSort(tester);
@@ -151,7 +151,7 @@ void main() {
                 galleriesAsync: const AsyncData([]),
                 gridColumns: 2,
                 onRefresh: () async {},
-                onFetchNextPage: () {},
+                onFetchNextPage: () async {},
               ),
       );
       await openSort(tester);
@@ -205,7 +205,7 @@ void main() {
               gridColumns: 2,
               queueId: 'entity-queue',
               onRefresh: () async {},
-              onFetchNextPage: () {},
+              onFetchNextPage: () async {},
             ),
             'gallery' => EntityGalleryGrid(
               title: 'Entity galleries',
@@ -214,7 +214,7 @@ void main() {
               galleriesAsync: const AsyncData([]),
               gridColumns: 2,
               onRefresh: () async {},
-              onFetchNextPage: () {},
+              onFetchNextPage: () async {},
             ),
             _ => const ImagesPage(),
           };

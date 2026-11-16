@@ -46,7 +46,7 @@ class EntitySceneMediaGrid extends ConsumerStatefulWidget {
   final GridColumnSetting? gridColumnSetting;
   final String queueId;
   final Future<void> Function() onRefresh;
-  final VoidCallback onFetchNextPage;
+  final Future<void> Function() onFetchNextPage;
 
   @override
   ConsumerState<EntitySceneMediaGrid> createState() =>

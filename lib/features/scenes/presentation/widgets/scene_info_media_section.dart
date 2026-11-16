@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
-import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -415,17 +413,7 @@ class _SceneInfoPreviewPlayerState
             );
       final effectiveHeaders = ref.read(mediaPlaybackHeadersProvider);
 
-      if (kIsWeb) {
-        final authState = ref.read(authProvider);
-        effectiveUrl = applyWebMediaAuthFallback(
-          url: effectiveUrl,
-          authMode: authState.mode,
-          apiKey: ref.read(serverApiKeyProvider),
-          username: authState.username,
-          password: authState.password,
-          graphqlEndpoint: graphqlEndpoint,
-        );
-      }
+      effectiveUrl = ref.read(webMediaUrlProvider)(effectiveUrl);
 
       await PlayerSettingsStore(ref.read(sharedPreferencesProvider))
           .applyMpvProperties(player);

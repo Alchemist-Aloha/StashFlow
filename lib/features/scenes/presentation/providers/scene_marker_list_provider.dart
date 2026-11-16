@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../data/repositories/graphql_scene_marker_repository.dart';
 import '../../domain/entities/scene_marker.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -89,19 +90,13 @@ class SceneMarkerFilterState extends _$SceneMarkerFilterState {
 }
 
 @Riverpod(keepAlive: true)
-class SceneMarkerList extends _$SceneMarkerList {
-  int _currentPage = 1;
+class SceneMarkerList extends _$SceneMarkerList
+    with ListPagination<SceneMarkerSummary> {
   int _perPage = kDefaultPageSize;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
 
   @override
   FutureOr<List<SceneMarkerSummary>> build() async {
-    _requestGeneration++;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    final generation = resetPagination();
 
     final query = ref.watch(sceneMarkerSearchQueryProvider);
     final sortConfig = ref.watch(sceneMarkerSortProvider);
@@ -109,7 +104,7 @@ class SceneMarkerList extends _$SceneMarkerList {
     final repository = ref.watch(sceneMarkerRepositoryProvider);
 
     final firstPage = await repository.findSceneMarkers(
-      page: _currentPage,
+      page: 1,
       perPage: _perPage,
       searchQuery: query.isEmpty ? null : query,
       sort: sortConfig.sort,
@@ -117,59 +112,33 @@ class SceneMarkerList extends _$SceneMarkerList {
       filter: filter,
     );
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
   Future<void> refresh() async {
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
     await future;
   }
 
-  Future<void> fetchNextPage() async {
-    if (_isLoadingMore || !_hasMore) return;
-
-    final generation = _requestGeneration;
-    final currentMarkers = state.value ?? [];
-    _isLoadingMore = true;
-    _currentPage++;
-
-    try {
+  Future<void> fetchNextPage() => loadNextPage(
+    perPage: _perPage,
+    fetch: (page) {
       final query = ref.read(sceneMarkerSearchQueryProvider);
       final sortConfig = ref.read(sceneMarkerSortProvider);
       final filter = ref.read(sceneMarkerFilterStateProvider);
       final repository = ref.read(sceneMarkerRepositoryProvider);
-      final nextMarkers = await repository.findSceneMarkers(
-        page: _currentPage,
+      return repository.findSceneMarkers(
+        page: page,
         perPage: _perPage,
         searchQuery: query.isEmpty ? null : query,
         sort: sortConfig.sort,
         descending: sortConfig.descending,
         filter: filter,
       );
-      if (generation != _requestGeneration) return;
-
-      if (nextMarkers.length < _perPage) {
-        _hasMore = false;
-      }
-      state = AsyncData([...currentMarkers, ...nextMarkers]);
-    } on Exception catch (error, stackTrace) {
-      AppLogStore.instance.addError(
-        'fetchNextPage',
-        error,
-        stackTrace,
-        source: 'scene_marker_list_provider',
-      );
-      if (generation != _requestGeneration) return;
-      _currentPage--;
-      state = AsyncError(error, stackTrace);
-    } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
-    }
-  }
+    },
+  );
 
   void setPerPage(int perPage) {
     if (perPage <= 0 || perPage == _perPage) return;

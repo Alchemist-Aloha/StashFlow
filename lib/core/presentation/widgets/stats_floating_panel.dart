@@ -8,6 +8,7 @@ import '../../data/graphql/stats_repository.dart';
 import '../theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import 'bottom_sheet_panel_chrome.dart';
+import '../../utils/format_bytes.dart';
 
 class StatsFloatingPanel extends ConsumerWidget {
   const StatsFloatingPanel({super.key});
@@ -159,13 +160,13 @@ class StatsFloatingPanel extends ConsumerWidget {
           icon: Icons.movie_filter_rounded,
           label: l10n.stats_scenes,
           value: '${stats.sceneCount}',
-          subtitle: _formatBytes(stats.scenesSize),
+          subtitle: formatBytes(stats.scenesSize.toInt()),
         ),
         _StatItem(
           icon: Icons.photo_library_rounded,
           label: l10n.images_title,
           value: '${stats.imageCount}',
-          subtitle: _formatBytes(stats.imagesSize),
+          subtitle: formatBytes(stats.imagesSize.toInt()),
         ),
         _StatItem(
           icon: Icons.auto_stories_rounded,
@@ -300,18 +301,6 @@ class StatsFloatingPanel extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  String _formatBytes(double bytes) {
-    if (bytes <= 0) return '0 B';
-    const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    int unit = 0;
-    double size = bytes;
-    while (size >= 1024 && unit < suffixes.length - 1) {
-      size /= 1024;
-      unit++;
-    }
-    return '${size.toStringAsFixed(2)} ${suffixes[unit]}';
   }
 }
 

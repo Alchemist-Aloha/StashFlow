@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/filter_widgets.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
 import 'package:stash_app_flutter/features/groups/data/repositories/graphql_group_repository.dart';
@@ -397,7 +398,13 @@ void main() {
     await tester.tap(find.byIcon(Icons.filter_list));
     await tester.pumpAndSettle();
 
-    final organizedOnly = find.text('ORGANIZED');
+    final organizedOnly = find.descendant(
+      of: find.ancestor(
+        of: find.text('Organized'),
+        matching: find.byType(FilterField),
+      ),
+      matching: find.text('Yes'),
+    );
     await tester.tap(organizedOnly);
     await tester.pumpAndSettle();
 

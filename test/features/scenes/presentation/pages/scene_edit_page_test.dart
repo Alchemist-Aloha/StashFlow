@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:graphql/client.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_edit_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
@@ -7,7 +9,9 @@ import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
 import 'package:stash_app_flutter/features/studios/presentation/providers/studio_list_provider.dart';
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
+
 import '../../../../helpers/test_helpers.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
 class CallTrackingMockGraphQLSceneRepository
@@ -32,6 +36,28 @@ class CallTrackingMockGraphQLSceneRepository
     lastPerformerIds = performerIds;
     lastTagIds = tagIds;
     lastStudioId = studioId;
+  }
+}
+
+class _SceneUpdateClient extends GraphQLClient {
+  _SceneUpdateClient()
+    : super(cache: GraphQLCache(), link: HttpLink('http://localhost/graphql'));
+
+  Map<String, dynamic>? input;
+
+  @override
+  Future<QueryResult<TParsed>> mutate<TParsed>(
+    MutationOptions<TParsed> options,
+  ) async {
+    input = options.variables['input'] as Map<String, dynamic>;
+    return QueryResult<TParsed>(
+      options: options,
+      source: QueryResultSource.network,
+      data: {
+        '__typename': 'Mutation',
+        'sceneUpdate': {'__typename': 'Scene', 'id': input!['id']},
+      },
+    );
   }
 }
 
@@ -60,6 +86,38 @@ void main() {
     tagIds: [],
     tagNames: [],
   );
+
+  testWidgets('saving an undated scene omits the date from the mutation', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final client = _SceneUpdateClient();
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(
+          GraphQLSceneRepository(client),
+        ),
+      ],
+      child: SceneEditPage(scene: testScene.copyWith(date: null)),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Title'),
+      'New Title',
+    );
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(client.input, isNotNull);
+    expect(client.input!['title'], 'New Title');
+    expect(client.input!.containsKey('date'), isFalse);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('SceneEditPage updates fields and saves', (tester) async {
     tester.view.physicalSize = const Size(1200, 1200);

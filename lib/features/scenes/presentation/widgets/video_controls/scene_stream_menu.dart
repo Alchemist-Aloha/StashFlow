@@ -1,14 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
-import '../../../../../core/data/auth/auth_provider.dart';
-import '../../../../../core/data/graphql/graphql_client.dart';
 import '../../../../../core/data/graphql/media_headers_provider.dart';
-import '../../../../../core/data/graphql/url_resolver.dart';
 import '../../../../../core/data/services/cast_service.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
 import '../../../../../core/utils/app_log_store.dart';
@@ -68,18 +64,7 @@ class _SceneStreamMenuState extends ConsumerState<SceneStreamMenu> {
 
   Future<void> _switchTo(StreamChoice choice) async {
     final player = widget.controller.player;
-    var url = choice.url;
-    if (kIsWeb) {
-      final auth = ref.read(authProvider);
-      url = applyWebMediaAuthFallback(
-        url: url,
-        authMode: auth.mode,
-        apiKey: ref.read(serverApiKeyProvider),
-        username: auth.username,
-        password: auth.password,
-        graphqlEndpoint: Uri.tryParse(ref.read(serverUrlProvider)),
-      );
-    }
+    final url = ref.read(webMediaUrlProvider)(choice.url);
     final position = player.state.position;
     final playing = player.state.playing;
     AppLogStore.instance.add(

@@ -10,7 +10,7 @@ abstract class Scene with _$Scene {
     required String title,
     String? details,
     String? path,
-    required DateTime date,
+    required DateTime? date,
     required int? rating100,
     @JsonKey(name: 'o_counter') required int oCounter,
     required bool organized,

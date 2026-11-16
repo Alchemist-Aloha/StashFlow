@@ -10,7 +10,6 @@ import '../../../tags/domain/entities/tag.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_marker.dart';
 import '../providers/scene_marker_list_provider.dart';
-import 'entity_picker.dart';
 
 class SceneMarkerFilterPanel extends ConsumerStatefulWidget {
   const SceneMarkerFilterPanel({super.key});
@@ -61,17 +60,17 @@ class _SceneMarkerFilterPanelState
       title: context.l10n.marker_title,
       initiallyExpanded: true,
       children: [
-        _buildEntityFilter<Tag>(
-          context.l10n.tags_title,
-          'tag',
-          _tempFilter.tags,
-          (value) => setState(
+        EntityCriterionInput<Tag>(
+          label: context.l10n.tags_title,
+          providerType: 'tag',
+          criterion: _tempFilter.tags,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               tags: value as HierarchicalMultiCriterion?,
               clearTags: value == null,
             ),
           ),
-          true,
+          isHierarchical: true,
         ),
         IntCriterionInput(
           label: context.l10n.duration_title,
@@ -91,41 +90,39 @@ class _SceneMarkerFilterPanelState
     return FilterSection(
       title: context.l10n.scene_title,
       children: [
-        _buildEntityFilter<Scene>(
-          context.l10n.scenes_title,
-          'scene',
-          _tempFilter.scenes,
-          (value) => setState(
+        EntityCriterionInput<Scene>(
+          label: context.l10n.scenes_title,
+          providerType: 'scene',
+          criterion: _tempFilter.scenes,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               scenes: value as MultiCriterion?,
               clearScenes: value == null,
             ),
           ),
-          false,
         ),
-        _buildEntityFilter<Tag>(
-          'Scene Tags',
-          'tag',
-          _tempFilter.sceneTags,
-          (value) => setState(
+        EntityCriterionInput<Tag>(
+          label: 'Scene Tags',
+          providerType: 'tag',
+          criterion: _tempFilter.sceneTags,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               sceneTags: value as HierarchicalMultiCriterion?,
               clearSceneTags: value == null,
             ),
           ),
-          true,
+          isHierarchical: true,
         ),
-        _buildEntityFilter<Performer>(
-          'Performers',
-          'performer',
-          _tempFilter.performers,
-          (value) => setState(
+        EntityCriterionInput<Performer>(
+          label: 'Performers',
+          providerType: 'performer',
+          criterion: _tempFilter.performers,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               performers: value as MultiCriterion?,
               clearPerformers: value == null,
             ),
           ),
-          false,
         ),
       ],
     );
@@ -186,101 +183,6 @@ class _SceneMarkerFilterPanelState
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildEntityFilter<T>(
-    String label,
-    String providerType,
-    Object? criterion,
-    ValueChanged<Object?> onChanged,
-    bool isHierarchical,
-  ) {
-    final (selectedIds, modifier) = switch (criterion) {
-      MultiCriterion(:final value, :final modifier) => (value, modifier),
-      HierarchicalMultiCriterion(:final value, :final modifier) => (
-        value,
-        modifier,
-      ),
-      null => (<String>[], CriterionModifier.includes),
-      _ => throw ArgumentError.value(criterion, 'criterion'),
-    };
-
-    return SelectionCriterionInput(
-      label: label,
-      selectedIds: selectedIds,
-      providerType: providerType,
-      modifier: modifier,
-      onModifierChanged: (next) {
-        onChanged(
-          _buildEntityCriterion(
-            ids: selectedIds,
-            modifier: next,
-            isHierarchical: isHierarchical,
-          ),
-        );
-      },
-      onAddPressed: () async {
-        final result = await showDialog<List<T>>(
-          context: context,
-          builder: (context) => EntityPicker<T>(
-            title: context.l10n.common_select(label),
-            providerType: providerType,
-            multiSelect: true,
-            initialSelection: selectedIds,
-          ),
-        );
-        if (result == null) return;
-
-        final ids = result.map(_extractEntityId).toList();
-        if (ids.isEmpty) {
-          onChanged(null);
-          return;
-        }
-
-        onChanged(
-          _buildEntityCriterion(
-            ids: ids,
-            modifier: modifier,
-            isHierarchical: isHierarchical,
-          ),
-        );
-      },
-      onRemoveId: (id) {
-        final newList = List<String>.from(selectedIds)..remove(id);
-        if (newList.isEmpty) {
-          onChanged(null);
-          return;
-        }
-
-        onChanged(
-          _buildEntityCriterion(
-            ids: newList,
-            modifier: modifier,
-            isHierarchical: isHierarchical,
-          ),
-        );
-      },
-    );
-  }
-
-  dynamic _buildEntityCriterion({
-    required List<String> ids,
-    required CriterionModifier modifier,
-    required bool isHierarchical,
-  }) {
-    if (isHierarchical) {
-      return HierarchicalMultiCriterion(value: ids, modifier: modifier);
-    }
-    return MultiCriterion(value: ids, modifier: modifier);
-  }
-
-  String _extractEntityId(Object? entity) {
-    if (entity is Tag) return entity.id;
-    if (entity is Performer) return entity.id;
-    if (entity is Scene) return entity.id;
-    throw StateError(
-      'Unsupported scene marker filter entity: ${entity.runtimeType}',
     );
   }
 }

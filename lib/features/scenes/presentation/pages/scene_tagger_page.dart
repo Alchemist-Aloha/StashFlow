@@ -9,7 +9,6 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
-import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
@@ -29,6 +28,7 @@ import '../providers/scene_list_provider.dart';
 import '../providers/player_settings.dart';
 import '../widgets/scene_filter_panel.dart';
 import '../../../../core/utils/app_log_store.dart';
+import '../widgets/scene_tool_layout.dart';
 
 class SceneTaggerPage extends ConsumerStatefulWidget {
   const SceneTaggerPage({super.key});
@@ -455,59 +455,14 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           const SizedBox(width: 8),
         ],
       ),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isWide = constraints.maxWidth >= 1000;
-            final horizontalPadding = isWide ? 24.0 : 12.0;
-            final controls = _buildControls(
-              stashBoxesAsync,
-              showHeading: isWide,
-            );
-            final results = _buildResultsScaffold(context);
-
-            return Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1440),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    horizontalPadding,
-                    12,
-                    horizontalPadding,
-                    0,
-                  ),
-                  child: isWide
-                      ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(
-                              width: 340,
-                              child: SingleChildScrollView(child: controls),
-                            ),
-                            const SizedBox(width: 20),
-                            Expanded(child: results),
-                          ],
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _TaggerCompactConfiguration(
-                              expanded: _configExpanded,
-                              maxBodyHeight: constraints.maxHeight * 0.48,
-                              onToggle: () => setState(
-                                () => _configExpanded = !_configExpanded,
-                              ),
-                              child: controls,
-                            ),
-                            const SizedBox(height: 12),
-                            Expanded(child: results),
-                          ],
-                        ),
-                ),
-              ),
-            );
-          },
-        ),
+      body: SceneToolLayout(
+        controlsBuilder: (isWide) =>
+            _buildControls(stashBoxesAsync, showHeading: isWide),
+        results: _buildResultsScaffold(context),
+        configExpanded: _configExpanded,
+        onToggleConfig: () =>
+            setState(() => _configExpanded = !_configExpanded),
+        compactConfigHeightFactor: 0.48,
       ),
     );
   }
@@ -546,7 +501,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   }
 
   Widget _buildPaginationBar() {
-    return _TaggerPaginationBar(
+    return SceneToolPaginationBar(
       page: _page,
       totalPages: _totalPages,
       onPrevious: _page > 1 ? () => _goToPage(_page - 1) : null,
@@ -571,7 +526,8 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     if (_scenes.isEmpty) {
       return SliverFillRemaining(
         hasScrollBody: false,
-        child: _TaggerEmptyResults(
+        child: SceneToolEmptyResults(
+          icon: Icons.manage_search_rounded,
           message: _mode == _TaggerMode.randomUnorganized
               ? context.l10n.no_matched_scenes_yet
               : context.l10n.no_scenes_match_configuration,
@@ -637,7 +593,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (showHeading) ...[
-              _TaggerPanelHeading(
+              SceneToolPanelHeading(
                 icon: Icons.tune_rounded,
                 title: context.l10n.configuration,
               ),
@@ -783,7 +739,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Divider(height: 1),
             ),
-            _TaggerPanelHeading(
+            SceneToolPanelHeading(
               icon: Icons.cloud_sync_rounded,
               title: context.l10n.stash_box_scraper,
             ),
@@ -888,195 +844,6 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TaggerCompactConfiguration extends StatelessWidget {
-  const _TaggerCompactConfiguration({
-    required this.expanded,
-    required this.maxBodyHeight,
-    required this.onToggle,
-    required this.child,
-  });
-
-  final bool expanded;
-  final double maxBodyHeight;
-  final VoidCallback onToggle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Material(
-      color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(24),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          InkWell(
-            onTap: onToggle,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  Icon(Icons.tune_rounded, color: colors.primary),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      context.l10n.configuration,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  AnimatedRotation(
-                    turns: expanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOutCubic,
-                    child: const Icon(Icons.keyboard_arrow_down_rounded),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          AnimatedCrossFade(
-            firstChild: const SizedBox(width: double.infinity),
-            secondChild: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: maxBodyHeight),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                child: child,
-              ),
-            ),
-            crossFadeState: expanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 250),
-            sizeCurve: Curves.easeOutCubic,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TaggerPanelHeading extends StatelessWidget {
-  const _TaggerPanelHeading({required this.icon, required this.title});
-
-  final IconData icon;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Row(
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.secondaryContainer,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Icon(icon, size: 20, color: colors.onSecondaryContainer),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            title,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _TaggerPaginationBar extends StatelessWidget {
-  const _TaggerPaginationBar({
-    required this.page,
-    required this.totalPages,
-    required this.onPrevious,
-    required this.onNext,
-  });
-
-  final int page;
-  final int totalPages;
-  final VoidCallback? onPrevious;
-  final VoidCallback? onNext;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Center(
-      child: Material(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(999),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                tooltip: context.l10n.previous_page,
-                onPressed: onPrevious,
-                icon: const Icon(Icons.chevron_left_rounded),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  context.l10n.scene_deduplication_page_count(page, totalPages),
-                ),
-              ),
-              IconButton(
-                tooltip: context.l10n.next_page,
-                onPressed: onNext,
-                icon: const Icon(Icons.chevron_right_rounded),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TaggerEmptyResults extends StatelessWidget {
-  const _TaggerEmptyResults({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Center(
-      child: Material(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(28),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.manage_search_rounded,
-                size: 48,
-                color: colors.primary,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium,
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -1645,20 +1412,7 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
 
     try {
       final headers = ref.read(mediaPlaybackHeadersProvider);
-      var effectiveStreamUrl = streamUrl;
-      if (kIsWeb) {
-        final authState = ref.read(authProvider);
-        final apiKey = ref.read(serverApiKeyProvider);
-        final serverUrl = ref.read(serverUrlProvider);
-        effectiveStreamUrl = applyWebMediaAuthFallback(
-          url: streamUrl,
-          authMode: authState.mode,
-          apiKey: apiKey,
-          username: authState.username,
-          password: authState.password,
-          graphqlEndpoint: Uri.tryParse(serverUrl),
-        );
-      }
+      final effectiveStreamUrl = ref.read(webMediaUrlProvider)(streamUrl);
 
       await PlayerSettingsStore(ref.read(sharedPreferencesProvider))
           .applyMpvProperties(player);

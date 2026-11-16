@@ -44,7 +44,7 @@ class EntityGalleryGrid extends ConsumerStatefulWidget {
   /// Category preference shared with the Interface settings page.
   final GridColumnSetting? gridColumnSetting;
   final Future<void> Function() onRefresh;
-  final VoidCallback onFetchNextPage;
+  final Future<void> Function() onFetchNextPage;
 
   @override
   ConsumerState<EntityGalleryGrid> createState() => _EntityGalleryGridState();

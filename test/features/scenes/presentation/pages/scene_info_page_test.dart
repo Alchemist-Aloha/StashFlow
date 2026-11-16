@@ -25,7 +25,7 @@ void main() {
         final scene = Scene(
           id: 'scene-1',
           title: 'Scene',
-          date: DateTime(2026),
+          date: size == null ? null : DateTime(2026),
           rating100: null,
           oCounter: 0,
           organized: false,
@@ -81,6 +81,10 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        expect(
+          find.byIcon(Icons.calendar_today_rounded),
+          size == null ? findsNothing : findsOneWidget,
+        );
         final label = find.text('File Size');
         await tester.scrollUntilVisible(
           label,

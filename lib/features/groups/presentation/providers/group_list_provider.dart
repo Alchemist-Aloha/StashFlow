@@ -10,6 +10,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../../../core/utils/app_log_store.dart';
 
 part 'group_list_provider.g.dart';
@@ -96,19 +97,12 @@ class GroupListFilterNotifier extends Notifier<GroupFilter> {
 }
 
 @riverpod
-class GroupList extends _$GroupList {
-  int _currentPage = 1;
+class GroupList extends _$GroupList with ListPagination<Group> {
   int _perPage = kDefaultPageSize;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Group>> build() async {
-    _requestGeneration++;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    final generation = resetPagination();
     final query = ref.watch(groupSearchQueryProvider);
     final sortConfig = ref.watch(groupSortProvider);
     final groupFilter = ref.watch(groupListFilterProvider);
@@ -120,7 +114,7 @@ class GroupList extends _$GroupList {
     }
 
     final firstPage = await repository.findGroups(
-      page: _currentPage,
+      page: 1,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
@@ -128,16 +122,14 @@ class GroupList extends _$GroupList {
       groupFilter: groupFilter.isEmpty ? null : groupFilter,
     );
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
   /// Manually refreshes the group list and generates a new random seed.
   Future<void> refresh() async {
     ref.read(groupRandomSeedProvider.notifier).next();
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
     await future;
   }
@@ -146,67 +138,43 @@ class GroupList extends _$GroupList {
     ref
         .read(groupSortProvider.notifier)
         .setSort(sort: sort, descending: descending);
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
   void setFilter(GroupFilter filter) {
     ref.read(groupListFilterProvider.notifier).set(filter);
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
   void setPerPage(int perPage) {
     if (_perPage == perPage) return;
     _perPage = perPage;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
-  Future<void> fetchNextPage() async {
-    if (_isLoadingMore || !_hasMore || state.isLoading) return;
+  Future<void> fetchNextPage() => loadNextPage(
+    perPage: _perPage,
+    fetch: (page) {
+      final repository = ref.read(groupRepositoryProvider);
+      final query = ref.read(groupSearchQueryProvider);
+      final sortConfig = ref.read(groupSortProvider);
+      final groupFilter = ref.read(groupListFilterProvider);
 
-    final generation = _requestGeneration;
-    _isLoadingMore = true;
-    final repository = ref.read(groupRepositoryProvider);
-    final query = ref.read(groupSearchQueryProvider);
-    final sortConfig = ref.read(groupSortProvider);
-    final groupFilter = ref.read(groupListFilterProvider);
-
-    String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random') {
-      effectiveSort = 'random_${ref.read(groupRandomSeedProvider)}';
-    }
-
-    try {
-      final nextPage = _currentPage + 1;
-      final nextGroups = await repository.findGroups(
-        page: nextPage,
+      String? effectiveSort = sortConfig.sort;
+      if (effectiveSort == 'random') {
+        effectiveSort = 'random_${ref.read(groupRandomSeedProvider)}';
+      }
+      return repository.findGroups(
+        page: page,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
         descending: sortConfig.descending,
         groupFilter: groupFilter.isEmpty ? null : groupFilter,
       );
-
-      if (generation != _requestGeneration) return;
-
-      _hasMore = nextGroups.length >= _perPage;
-      if (nextGroups.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...state.value ?? [], ...nextGroups]);
-      }
-    } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
-    }
-  }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
+    },
+  );
 }

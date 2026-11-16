@@ -10,6 +10,7 @@ import '../../data/repositories/graphql_image_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
@@ -272,19 +273,12 @@ ImageFilter imageEffectiveFilter(Ref ref) {
     ImageRandomSeed,
   ],
 )
-class ImageList extends _$ImageList {
-  int _currentPage = 1;
+class ImageList extends _$ImageList with ListPagination<entity.Image> {
   int _perPage = kDefaultPageSize;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
 
   @override
   FutureOr<List<entity.Image>> build() async {
-    _requestGeneration++;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    final generation = resetPagination();
 
     final query = ref.watch(imageSearchQueryProvider);
     final sortConfig = ref.watch(imageSortProvider);
@@ -301,7 +295,7 @@ class ImageList extends _$ImageList {
     }
 
     final firstPage = await repository.findImages(
-      page: _currentPage,
+      page: 1,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
@@ -310,16 +304,14 @@ class ImageList extends _$ImageList {
       imageFilter: imageFilter,
     );
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
   /// Manually refreshes the image list and generates a new random seed.
   Future<void> refresh() async {
     ref.read(imageRandomSeedProvider.notifier).next();
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
     await future;
   }
@@ -328,41 +320,32 @@ class ImageList extends _$ImageList {
     ref
         .read(imageSortProvider.notifier)
         .setSort(sort: sort, descending: descending);
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
   void setPerPage(int perPage) {
     if (_perPage == perPage) return;
     _perPage = perPage;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
-  Future<void> fetchNextPage() async {
-    if (_isLoadingMore || !_hasMore || state.isLoading) return;
+  Future<void> fetchNextPage() => loadNextPage(
+    perPage: _perPage,
+    fetch: (page) {
+      final repository = ref.read(imageRepositoryProvider);
+      final query = ref.read(imageSearchQueryProvider);
+      final sortConfig = ref.read(imageSortProvider);
+      final filterState = ref.read(imageFilterStateProvider);
+      final imageFilter = ref.read(imageEffectiveFilterProvider);
 
-    final generation = _requestGeneration;
-    _isLoadingMore = true;
-    final repository = ref.read(imageRepositoryProvider);
-    final query = ref.read(imageSearchQueryProvider);
-    final sortConfig = ref.read(imageSortProvider);
-    final filterState = ref.read(imageFilterStateProvider);
-    final imageFilter = ref.read(imageEffectiveFilterProvider);
-
-    String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random') {
-      effectiveSort = 'random_${ref.read(imageRandomSeedProvider)}';
-    }
-
-    try {
-      final nextPage = _currentPage + 1;
-      final nextImages = await repository.findImages(
-        page: nextPage,
+      String? effectiveSort = sortConfig.sort;
+      if (effectiveSort == 'random') {
+        effectiveSort = 'random_${ref.read(imageRandomSeedProvider)}';
+      }
+      return repository.findImages(
+        page: page,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
@@ -370,20 +353,8 @@ class ImageList extends _$ImageList {
         galleryId: filterState.galleryId,
         imageFilter: imageFilter,
       );
-
-      if (!ref.mounted || generation != _requestGeneration) return;
-
-      _hasMore = nextImages.length >= _perPage;
-      if (nextImages.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...state.value ?? [], ...nextImages]);
-      }
-    } finally {
-      if (ref.mounted && generation == _requestGeneration) {
-        _isLoadingMore = false;
-      }
-    }
-  }
+    },
+  );
 
   /// Replaces a single image entry in the current in-memory list state.
   ///
@@ -400,7 +371,4 @@ class ImageList extends _$ImageList {
       }
     }
   }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
 }

@@ -3,8 +3,10 @@ import 'package:material_ui/material_ui.dart';
 /// Returns the performer's age on the scene date.
 ///
 /// Year-only birthdates use calendar-year subtraction. Full birthdates account
-/// for whether the birthday had occurred. Invalid or future dates are omitted.
-int? ageAtSceneYear({required DateTime sceneDate, String? birthdate}) {
+/// for whether the birthday had occurred. Missing, invalid, or future dates
+/// are omitted.
+int? ageAtSceneYear({required DateTime? sceneDate, String? birthdate}) {
+  if (sceneDate == null) return null;
   final match = RegExp(r'^(\d{4})(?:-(\d{2})-(\d{2}))?$')
       .firstMatch(birthdate?.trim() ?? '');
   if (match == null) return null;
@@ -43,7 +45,7 @@ class ScenePerformerTitle extends StatelessWidget {
   });
 
   final String performerName;
-  final DateTime sceneDate;
+  final DateTime? sceneDate;
   final String? birthdate;
 
   @override

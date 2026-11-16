@@ -10,6 +10,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -123,19 +124,12 @@ class GalleryOrganizedOnly extends _$GalleryOrganizedOnly {
 }
 
 @Riverpod(keepAlive: true)
-class GalleryList extends _$GalleryList {
-  int _currentPage = 1;
+class GalleryList extends _$GalleryList with ListPagination<Gallery> {
   int _perPage = kDefaultPageSize;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Gallery>> build() async {
-    _requestGeneration++;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    final generation = resetPagination();
     final query = ref.watch(gallerySearchQueryProvider);
     final sortConfig = ref.watch(gallerySortProvider);
     final filter = ref.watch(galleryFilterStateProvider);
@@ -148,7 +142,7 @@ class GalleryList extends _$GalleryList {
     }
 
     final firstPage = await repository.findGalleries(
-      page: _currentPage,
+      page: 1,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
@@ -158,16 +152,14 @@ class GalleryList extends _$GalleryList {
       ),
     );
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
   /// Manually refreshes the gallery list and generates a new random seed.
   Future<void> refresh() async {
     ref.read(galleryRandomSeedProvider.notifier).next();
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
     await future;
   }
@@ -176,41 +168,32 @@ class GalleryList extends _$GalleryList {
     ref
         .read(gallerySortProvider.notifier)
         .setSort(sort: sort, descending: descending);
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
   void setPerPage(int perPage) {
     if (_perPage == perPage) return;
     _perPage = perPage;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
-  Future<void> fetchNextPage() async {
-    if (_isLoadingMore || !_hasMore || state.isLoading) return;
+  Future<void> fetchNextPage() => loadNextPage(
+    perPage: _perPage,
+    fetch: (page) {
+      final repository = ref.read(galleryRepositoryProvider);
+      final query = ref.read(gallerySearchQueryProvider);
+      final sortConfig = ref.read(gallerySortProvider);
+      final filter = ref.read(galleryFilterStateProvider);
+      final organizedFilter = ref.read(galleryOrganizedOnlyProvider);
 
-    final generation = _requestGeneration;
-    _isLoadingMore = true;
-    final repository = ref.read(galleryRepositoryProvider);
-    final query = ref.read(gallerySearchQueryProvider);
-    final sortConfig = ref.read(gallerySortProvider);
-    final filter = ref.read(galleryFilterStateProvider);
-    final organizedFilter = ref.read(galleryOrganizedOnlyProvider);
-
-    String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random') {
-      effectiveSort = 'random_${ref.read(galleryRandomSeedProvider)}';
-    }
-
-    try {
-      final nextPage = _currentPage + 1;
-      final nextGalleries = await repository.findGalleries(
-        page: nextPage,
+      String? effectiveSort = sortConfig.sort;
+      if (effectiveSort == 'random') {
+        effectiveSort = 'random_${ref.read(galleryRandomSeedProvider)}';
+      }
+      return repository.findGalleries(
+        page: page,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
@@ -219,18 +202,8 @@ class GalleryList extends _$GalleryList {
           organized: organizedFilter.toBool() ?? filter.organized,
         ),
       );
-
-      if (generation != _requestGeneration) return;
-
-      _hasMore = nextGalleries.length >= _perPage;
-      if (nextGalleries.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...state.value ?? [], ...nextGalleries]);
-      }
-    } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
-    }
-  }
+    },
+  );
 
   /// Updates a single gallery in the current list state.
   void updateGalleryInList(Gallery updatedGallery) {
@@ -244,9 +217,6 @@ class GalleryList extends _$GalleryList {
       }
     }
   }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
 
   Future<Gallery?> getRandomGallery({
     String? performerId,

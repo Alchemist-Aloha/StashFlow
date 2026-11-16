@@ -16,6 +16,7 @@ import '../../utils/responsive.dart';
 import '../providers/desktop_capabilities_provider.dart';
 import '../providers/layout_settings_provider.dart';
 import 'error_state_view.dart';
+import 'pagination_feedback.dart';
 import 'frosted_app_bar.dart';
 import 'frosted_surface.dart';
 import 'section_header.dart';
@@ -149,7 +150,8 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   final Future<void> Function()? onRefresh;
 
   /// Callback triggered when scrolling near the bottom (infinite scroll).
-  final VoidCallback? onFetchNextPage;
+  /// Failures retain loaded items and show a retry snackbar.
+  final Future<void> Function()? onFetchNextPage;
 
   /// Optional FAB for the page.
   final Widget? floatingActionButton;
@@ -226,6 +228,11 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     _searchController.dispose();
     _topAppBarVisible.dispose();
     super.dispose();
+  }
+
+  void _fetchNextPage() {
+    final fetch = widget.onFetchNextPage;
+    if (fetch != null) unawaited(loadNextPageWithFeedback(context, fetch));
   }
 
   void _handleColumnScroll(
@@ -868,7 +875,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                       if (notification.depth == 0 &&
                                           (metrics.maxScrollExtent <= 0 ||
                                               shouldLoadNextPage(metrics))) {
-                                        widget.onFetchNextPage?.call();
+                                        _fetchNextPage();
                                       }
                                       return false;
                                     },
@@ -886,7 +893,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                             now.difference(_lastFetchTime!) >
                                                 _fetchThreshold) {
                                           _lastFetchTime = now;
-                                          widget.onFetchNextPage?.call();
+                                          _fetchNextPage();
                                         }
                                       }
                                       return false;

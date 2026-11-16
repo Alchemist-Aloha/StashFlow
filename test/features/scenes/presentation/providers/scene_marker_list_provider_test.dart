@@ -56,29 +56,39 @@ void main() {
     },
   );
 
-  test('scene marker list appends next page', () async {
-    // One full page plus one, so a second page exists.
-    final ids = [for (var i = 0; i <= kDefaultPageSize; i++) 'm$i'];
-    final repository = _FakeGraphQLSceneMarkerRepository([
-      for (final id in ids) _marker(id),
-    ]);
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    final container = ProviderContainer(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        sceneMarkerRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-    addTearDown(container.dispose);
+  test(
+    'scene marker list preserves items on failure and retries the same page',
+    () async {
+      // One full page plus one, so a second page exists.
+      final ids = [for (var i = 0; i <= kDefaultPageSize; i++) 'm$i'];
+      final repository = _FakeGraphQLSceneMarkerRepository([
+        for (final id in ids) _marker(id),
+      ]);
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final container = ProviderContainer(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          sceneMarkerRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    await container.read(sceneMarkerListProvider.future);
-    await container.read(sceneMarkerListProvider.notifier).fetchNextPage();
+      final firstPage = await container.read(sceneMarkerListProvider.future);
+      final notifier = container.read(sceneMarkerListProvider.notifier);
+      repository.failNextPage = true;
+      await expectLater(notifier.fetchNextPage(), throwsException);
+      expect(container.read(sceneMarkerListProvider).value, firstPage);
+      expect(container.read(sceneMarkerListProvider).hasError, isFalse);
+      expect(notifier.isLoadingMore, isFalse);
+      repository.failNextPage = false;
+      await notifier.fetchNextPage();
 
-    final markers = container.read(sceneMarkerListProvider).value!;
-    expect(markers.map((marker) => marker.id), ids);
-    expect(repository.calls.map((call) => call.page), [1, 2]);
-  });
+      final markers = container.read(sceneMarkerListProvider).value!;
+      expect(markers.map((marker) => marker.id), ids);
+      expect(repository.calls.map((call) => call.page), [1, 2, 2]);
+    },
+  );
 
   test('scene marker defaults use marker-specific preference keys', () async {
     SharedPreferences.setMockInitialValues({
@@ -155,6 +165,7 @@ class _FakeGraphQLSceneMarkerRepository
   _FakeGraphQLSceneMarkerRepository(this.responses);
 
   final List<SceneMarkerSummary> responses;
+  bool failNextPage = false;
   final List<
     ({
       int? page,
@@ -184,6 +195,7 @@ class _FakeGraphQLSceneMarkerRepository
       descending: descending,
       filter: filter,
     ));
+    if (failNextPage && page == 2) throw Exception('offline');
     final size = perPage ?? responses.length;
     return responses.skip(((page ?? 1) - 1) * size).take(size).toList();
   }

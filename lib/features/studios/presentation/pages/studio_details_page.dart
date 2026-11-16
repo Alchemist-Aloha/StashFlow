@@ -124,6 +124,10 @@ class StudioDetailsPage extends ConsumerWidget {
           return RefreshIndicator(
             edgeOffset: topInset,
             onRefresh: () async {
+              // Bypass the GraphQL cache so the details provider reloads fresh data.
+              await ref
+                  .read(studioRepositoryProvider)
+                  .getStudioById(studioId, refresh: true);
               ref.invalidate(studioDetailsProvider(studioId));
               ref.invalidate(
                 entityMediaPreviewProvider(

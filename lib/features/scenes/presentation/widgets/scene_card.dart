@@ -23,6 +23,7 @@ import 'scrubbing_preview.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/utils/vtt_service.dart';
+import '../../../../core/utils/format_duration.dart';
 
 enum _VttAvailability { unknown, checking, available, unavailable }
 
@@ -218,17 +219,10 @@ class _SceneCardState extends ConsumerState<SceneCard> {
   }
 
   /// Formats seconds into a human-readable duration string.
-  String _formatDuration(double? duration) {
-    if (duration == null || !duration.isFinite || duration < 0) return '--:--';
-    final seconds = duration.round();
-    final h = seconds ~/ 3600;
-    final m = (seconds % 3600) ~/ 60;
-    final s = seconds % 60;
-    if (h > 0) {
-      return '$h:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
-    }
-    return '$m:${s.toString().padLeft(2, '0')}';
-  }
+  String _formatDuration(double? duration) =>
+      duration == null || !duration.isFinite || duration < 0
+      ? '--:--'
+      : formatClockDuration(duration);
 
   Widget _buildThumbnail(
     BuildContext context,

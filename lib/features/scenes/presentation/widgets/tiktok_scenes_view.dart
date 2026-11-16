@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -29,10 +28,8 @@ import '../../../setup/presentation/providers/main_page_orientation_provider.dar
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/playback_media.dart';
 import '../../data/repositories/stash_player.dart';
-import '../../../../core/data/auth/auth_provider.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
-import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/pagination_feedback.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -245,7 +242,12 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
     // Load next page if nearing the end
     if (_currentIndex >= scenes.length - 2) {
-      unawaited(ref.read(sceneListProvider.notifier).fetchNextPage());
+      unawaited(
+        loadNextPageWithFeedback(
+          context,
+          () => ref.read(sceneListProvider.notifier).fetchNextPage(),
+        ),
+      );
     }
 
     // Window size: current-1 to current+1 (reduced from +2 to save CPU/RAM)
@@ -388,18 +390,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       if (choice == null || !mounted) return;
 
       final headers = ref.read(mediaPlaybackHeadersProvider);
-      var effectiveUrl = choice.url;
-      if (kIsWeb) {
-        final authState = ref.read(authProvider);
-        effectiveUrl = applyWebMediaAuthFallback(
-          url: effectiveUrl,
-          authMode: authState.mode,
-          apiKey: ref.read(serverApiKeyProvider),
-          username: authState.username,
-          password: authState.password,
-          graphqlEndpoint: Uri.tryParse(ref.read(serverUrlProvider)),
-        );
-      }
+      final effectiveUrl = ref.read(webMediaUrlProvider)(choice.url);
 
       final player = StashPlayer();
       final controller = VideoController(
@@ -1058,15 +1049,20 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                       ),
                                     ),
                                   ],
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    widget.scene.date.toString().split(' ')[0],
-                                    style: context.textTheme.bodyMedium
-                                        ?.copyWith(
-                                          color: Colors.white70,
-                                          fontSize: context.fontSizes.body,
-                                        ),
-                                  ),
+                                  if (widget.scene.date != null) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      widget.scene.date!
+                                          .toIso8601String()
+                                          .split('T')
+                                          .first,
+                                      style: context.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: Colors.white70,
+                                            fontSize: context.fontSizes.body,
+                                          ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),

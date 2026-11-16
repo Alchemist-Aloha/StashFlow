@@ -10,6 +10,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 
@@ -95,19 +96,12 @@ class StudioFilterState extends _$StudioFilterState {
 }
 
 @Riverpod(keepAlive: true)
-class StudioList extends _$StudioList {
-  int _currentPage = 1;
+class StudioList extends _$StudioList with ListPagination<Studio> {
   int _perPage = kDefaultPageSize;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Studio>> build() async {
-    _requestGeneration++;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    final generation = resetPagination();
     final query = ref.watch(studioSearchQueryProvider);
     final sortConfig = ref.watch(studioSortProvider);
     final filterState = ref.watch(studioFilterStateProvider);
@@ -119,7 +113,7 @@ class StudioList extends _$StudioList {
     }
 
     final firstPage = await repository.findStudios(
-      page: _currentPage,
+      page: 1,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
@@ -127,16 +121,14 @@ class StudioList extends _$StudioList {
       studioFilter: filterState,
     );
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
   /// Manually refreshes the studio list and generates a new random seed.
   Future<void> refresh() async {
     ref.read(studioRandomSeedProvider.notifier).next();
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
     await future;
   }
@@ -145,9 +137,7 @@ class StudioList extends _$StudioList {
     ref
         .read(studioSortProvider.notifier)
         .setSort(sort: sort, descending: descending);
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
@@ -156,61 +146,39 @@ class StudioList extends _$StudioList {
     ref
         .read(studioFilterStateProvider.notifier)
         .update(currentFilter.copyWith(favorite: enabled));
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
   void setPerPage(int perPage) {
     if (_perPage == perPage) return;
     _perPage = perPage;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
-  Future<void> fetchNextPage() async {
-    if (_isLoadingMore || !_hasMore || state.isLoading) return;
+  Future<void> fetchNextPage() => loadNextPage(
+    perPage: _perPage,
+    fetch: (page) {
+      final repository = ref.read(studioRepositoryProvider);
+      final query = ref.read(studioSearchQueryProvider);
+      final sortConfig = ref.read(studioSortProvider);
+      final filterState = ref.read(studioFilterStateProvider);
 
-    final generation = _requestGeneration;
-    _isLoadingMore = true;
-    final repository = ref.read(studioRepositoryProvider);
-    final query = ref.read(studioSearchQueryProvider);
-    final sortConfig = ref.read(studioSortProvider);
-    final filterState = ref.read(studioFilterStateProvider);
-
-    String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random') {
-      effectiveSort = 'random_${ref.read(studioRandomSeedProvider)}';
-    }
-
-    try {
-      final nextPage = _currentPage + 1;
-      final nextStudios = await repository.findStudios(
-        page: nextPage,
+      String? effectiveSort = sortConfig.sort;
+      if (effectiveSort == 'random') {
+        effectiveSort = 'random_${ref.read(studioRandomSeedProvider)}';
+      }
+      return repository.findStudios(
+        page: page,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
         descending: sortConfig.descending,
         studioFilter: filterState,
       );
-
-      if (generation != _requestGeneration) return;
-
-      _hasMore = nextStudios.length >= _perPage;
-      if (nextStudios.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...state.value ?? [], ...nextStudios]);
-      }
-    } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
-    }
-  }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
+    },
+  );
 
   Future<Studio?> getRandomStudio({String? excludeStudioId}) async {
     final useCurrentFilter = ref.read(sceneRandomRespectActiveFilterProvider);

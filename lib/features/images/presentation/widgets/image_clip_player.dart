@@ -1,15 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
-import '../../../../core/data/auth/auth_provider.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
-import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -156,18 +152,7 @@ class _ImageClipPlayerState extends ConsumerState<ImageClipPlayer>
         // mpv also reports recoverable decoder/seek errors here.
         _log('playback', StateError(error), StackTrace.current);
       });
-      var url = widget.url;
-      if (kIsWeb) {
-        final auth = ref.read(authProvider);
-        url = applyWebMediaAuthFallback(
-          url: url,
-          authMode: auth.mode,
-          apiKey: ref.read(serverApiKeyProvider),
-          username: auth.username,
-          password: auth.password,
-          graphqlEndpoint: Uri.tryParse(ref.read(serverUrlProvider)),
-        );
-      }
+      final url = ref.read(webMediaUrlProvider)(widget.url);
       final headers = ref.read(mediaPlaybackHeadersProvider);
       final settings = PlayerSettingsStore(ref.read(sharedPreferencesProvider));
       await (() async {

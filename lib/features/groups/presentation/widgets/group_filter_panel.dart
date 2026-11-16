@@ -8,7 +8,6 @@ import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
 import 'package:stash_app_flutter/features/groups/domain/entities/group_filter.dart';
 import 'package:stash_app_flutter/features/groups/presentation/providers/group_list_provider.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/widgets/entity_picker.dart';
 import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
 
@@ -157,38 +156,37 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
     return FilterSection(
       title: context.l10n.filter_group_library,
       children: [
-        _buildEntityFilter<Studio>(
-          context.l10n.studios_title,
-          'studio',
-          _tempFilter.studios,
-          (value) => setState(
+        EntityCriterionInput<Studio>(
+          label: context.l10n.studios_title,
+          providerType: 'studio',
+          criterion: _tempFilter.studios,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               studios: value as HierarchicalMultiCriterion?,
             ),
           ),
-          true,
+          isHierarchical: true,
         ),
-        _buildEntityFilter<Performer>(
-          context.l10n.performers_title,
-          'performer',
-          _tempFilter.performers,
-          (value) => setState(
+        EntityCriterionInput<Performer>(
+          label: context.l10n.performers_title,
+          providerType: 'performer',
+          criterion: _tempFilter.performers,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               performers: value as MultiCriterion?,
             ),
           ),
-          false,
         ),
-        _buildEntityFilter<Tag>(
-          context.l10n.tags_title,
-          'tag',
-          _tempFilter.tags,
-          (value) => setState(
+        EntityCriterionInput<Tag>(
+          label: context.l10n.tags_title,
+          providerType: 'tag',
+          criterion: _tempFilter.tags,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               tags: value as HierarchicalMultiCriterion?,
             ),
           ),
-          true,
+          isHierarchical: true,
         ),
       ],
     );
@@ -198,27 +196,27 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
     return FilterSection(
       title: context.l10n.groups_title,
       children: [
-        _buildEntityFilter<Group>(
-          context.l10n.groups_field_containing_groups,
-          'group',
-          _tempFilter.containingGroups,
-          (value) => setState(
+        EntityCriterionInput<Group>(
+          label: context.l10n.groups_field_containing_groups,
+          providerType: 'group',
+          criterion: _tempFilter.containingGroups,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               containingGroups: value as HierarchicalMultiCriterion?,
             ),
           ),
-          true,
+          isHierarchical: true,
         ),
-        _buildEntityFilter<Group>(
-          context.l10n.groups_field_sub_groups,
-          'group',
-          _tempFilter.subGroups,
-          (value) => setState(
+        EntityCriterionInput<Group>(
+          label: context.l10n.groups_field_sub_groups,
+          providerType: 'group',
+          criterion: _tempFilter.subGroups,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               subGroups: value as HierarchicalMultiCriterion?,
             ),
           ),
-          true,
+          isHierarchical: true,
         ),
       ],
     );
@@ -295,89 +293,5 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
       value: value,
       onChanged: (next) => setState(() => update(next)),
     );
-  }
-
-  Widget _buildEntityFilter<T>(
-    String label,
-    String providerType,
-    Object? criterion,
-    ValueChanged<Object?> onChanged,
-    bool isHierarchical,
-  ) {
-    final (selectedIds, modifier) = switch (criterion) {
-      MultiCriterion(:final value, :final modifier) => (value, modifier),
-      HierarchicalMultiCriterion(:final value, :final modifier) => (
-        value,
-        modifier,
-      ),
-      null => (<String>[], CriterionModifier.includes),
-      _ => throw ArgumentError.value(criterion, 'criterion'),
-    };
-
-    return SelectionCriterionInput(
-      label: label,
-      selectedIds: selectedIds,
-      providerType: providerType,
-      modifier: modifier,
-      onModifierChanged: (next) => onChanged(
-        _buildEntityCriterion(
-          ids: selectedIds,
-          modifier: next,
-          isHierarchical: isHierarchical,
-        ),
-      ),
-      onAddPressed: () async {
-        final result = await showDialog<List<T>>(
-          context: context,
-          builder: (context) => EntityPicker<T>(
-            title: context.l10n.common_select(label),
-            providerType: providerType,
-            multiSelect: true,
-            initialSelection: selectedIds,
-          ),
-        );
-        if (result == null) return;
-        final ids = result.map(_extractEntityId).toList();
-        onChanged(
-          ids.isEmpty
-              ? null
-              : _buildEntityCriterion(
-                  ids: ids,
-                  modifier: modifier,
-                  isHierarchical: isHierarchical,
-                ),
-        );
-      },
-      onRemoveId: (id) {
-        final ids = List<String>.from(selectedIds)..remove(id);
-        onChanged(
-          ids.isEmpty
-              ? null
-              : _buildEntityCriterion(
-                  ids: ids,
-                  modifier: modifier,
-                  isHierarchical: isHierarchical,
-                ),
-        );
-      },
-    );
-  }
-
-  dynamic _buildEntityCriterion({
-    required List<String> ids,
-    required CriterionModifier modifier,
-    required bool isHierarchical,
-  }) {
-    return isHierarchical
-        ? HierarchicalMultiCriterion(value: ids, modifier: modifier)
-        : MultiCriterion(value: ids, modifier: modifier);
-  }
-
-  String _extractEntityId(Object? entity) {
-    if (entity is Studio) return entity.id;
-    if (entity is Performer) return entity.id;
-    if (entity is Tag) return entity.id;
-    if (entity is Group) return entity.id;
-    throw StateError('Unsupported group filter entity: ${entity.runtimeType}');
   }
 }

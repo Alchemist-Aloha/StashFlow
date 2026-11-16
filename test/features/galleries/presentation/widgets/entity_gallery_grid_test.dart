@@ -59,7 +59,7 @@ void main() {
               galleriesAsync: const AsyncData<List<Gallery>>([]),
               gridColumns: 2,
               onRefresh: () async {},
-              onFetchNextPage: () {},
+              onFetchNextPage: () async {},
             ),
           ),
           GoRoute(

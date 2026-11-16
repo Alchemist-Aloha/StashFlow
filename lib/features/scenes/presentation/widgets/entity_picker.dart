@@ -110,7 +110,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
-                      final String id = _getId(item);
+                      final String id = entityPickerId(item);
                       final String name = _getName(item);
                       final isSelected = _selectedIds.contains(id);
 
@@ -220,14 +220,14 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
     await Future.wait(_selectedIds.map(_ensureSelectedEntity));
     final loaded = await load();
     for (final item in loaded) {
-      final id = _getId(item);
+      final id = entityPickerId(item);
       if (_selectedIds.contains(id)) {
         _selectedEntities[id] = item as T;
       }
     }
     return [
       ..._selectedIds.map((id) => _selectedEntities[id]).whereType<T>(),
-      ...loaded.where((item) => !_selectedIds.contains(_getId(item))),
+      ...loaded.where((item) => !_selectedIds.contains(entityPickerId(item))),
     ];
   }
 
@@ -260,16 +260,6 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
     }
   }
 
-  String _getId(dynamic item) {
-    if (item is Studio) return item.id;
-    if (item is Performer) return item.id;
-    if (item is Tag) return item.id;
-    if (item is Scene) return item.id;
-    if (item is Gallery) return item.id;
-    if (item is Group) return item.id;
-    return '';
-  }
-
   String _getName(dynamic item) {
     if (item is Studio) return item.name;
     if (item is Performer) return item.name;
@@ -280,3 +270,15 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
     return '';
   }
 }
+
+/// ID of an entity returned by [EntityPicker], or an empty string when the
+/// type is not pickable.
+String entityPickerId(Object? item) => switch (item) {
+  Studio(:final id) ||
+  Performer(:final id) ||
+  Tag(:final id) ||
+  Scene(:final id) ||
+  Gallery(:final id) ||
+  Group(:final id) => id,
+  _ => '',
+};

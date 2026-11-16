@@ -9,6 +9,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene_marker.dart';
 import 'scene_card.dart';
+import '../../../../core/utils/format_duration.dart';
 
 class SceneMarkerCard extends StatelessWidget {
   const SceneMarkerCard({
@@ -22,22 +23,11 @@ class SceneMarkerCard extends StatelessWidget {
   final int? memCacheWidth;
   final int? memCacheHeight;
 
-  String _formatDuration(double seconds) {
-    final duration = Duration(seconds: seconds.toInt());
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    final secs = duration.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-  }
-
   String _formatRange() {
-    final start = _formatDuration(marker.seconds);
+    final start = formatClockDuration(marker.seconds);
     final end = marker.endSeconds;
     if (end == null) return start;
-    return '$start - ${_formatDuration(end)}';
+    return '$start - ${formatClockDuration(end)}';
   }
 
   void _openMarker(BuildContext context) {

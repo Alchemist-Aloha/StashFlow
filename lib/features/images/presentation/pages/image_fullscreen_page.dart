@@ -18,6 +18,7 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/pagination_feedback.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../../core/presentation/widgets/frosted_surface.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -33,6 +34,7 @@ import '../widgets/image_details_bottom_sheet.dart';
 import '../widgets/image_clip_player.dart';
 import '../widgets/zoomable_image.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/utils/gal_error_message.dart';
 
 enum _SlideshowDirection { forward, backward }
 
@@ -264,7 +266,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     _warmAdjacentFiles(items, index, headers);
 
     if (!_standalone && index >= items.length - 5) {
-      unawaited(ref.read(imageListProvider.notifier).fetchNextPage());
+      unawaited(
+        loadNextPageWithFeedback(
+          context,
+          () => ref.read(imageListProvider.notifier).fetchNextPage(),
+        ),
+      );
     }
   }
 
@@ -487,13 +494,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         stackTrace,
         source: 'image_fullscreen_page',
       );
-      final message = switch (e.type) {
-        GalExceptionType.accessDenied =>
-          'Permission to access the gallery is denied.',
-        GalExceptionType.notEnoughSpace => 'Not enough space for storage.',
-        GalExceptionType.notSupportedFormat => 'Unsupported file format.',
-        GalExceptionType.unexpected => 'An unexpected error has occurred.',
-      };
+      final message = galErrorMessage(e.type);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

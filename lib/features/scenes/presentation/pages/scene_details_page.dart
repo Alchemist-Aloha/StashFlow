@@ -49,6 +49,7 @@ import '../widgets/scene_video_player.dart';
 import '../widgets/scene_strip.dart';
 import '../../../galleries/presentation/providers/gallery_details_provider.dart';
 import '../../../galleries/presentation/widgets/gallery_strip.dart';
+import '../../../../core/utils/gal_error_message.dart';
 
 /// A detailed view for a single scene,
 ///
@@ -710,13 +711,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         stackTrace,
         source: 'scene_details_page',
       );
-      final message = switch (e.type) {
-        GalExceptionType.accessDenied =>
-          'Permission to access the gallery is denied.',
-        GalExceptionType.notEnoughSpace => 'Not enough space for storage.',
-        GalExceptionType.notSupportedFormat => 'Unsupported file format.',
-        GalExceptionType.unexpected => 'An unexpected error has occurred.',
-      };
+      final message = galErrorMessage(e.type);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.gallery_error(message))),
@@ -1072,19 +1067,20 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     ),
                   ),
                 ),
-              if (scene.studioName != null)
+              if (scene.studioName != null && scene.date != null)
                 Text(
                   ' • ',
                   style: context.textTheme.titleMedium?.copyWith(
                     color: context.colors.onSurfaceVariant,
                   ),
                 ),
-              Text(
-                scene.date.year.toString(),
-                style: context.textTheme.titleMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+              if (scene.date != null)
+                Text(
+                  scene.date!.year.toString(),
+                  style: context.textTheme.titleMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

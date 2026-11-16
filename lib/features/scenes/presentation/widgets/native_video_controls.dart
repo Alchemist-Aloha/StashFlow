@@ -38,6 +38,8 @@ import '../../../../core/data/services/cast_service.dart';
 
 import 'package:media_kit_video/media_kit_video.dart';
 
+import '../../../../core/utils/format_duration.dart';
+
 class NativeVideoControls extends ConsumerStatefulWidget {
   const NativeVideoControls({
     required this.controller,
@@ -733,17 +735,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
         setState(() => _feedbackVisible = false);
       }
     });
-  }
-
-  String _formatDuration(Duration d) {
-    final totalSeconds = d.inSeconds;
-    final hours = totalSeconds ~/ 3600;
-    final minutes = (totalSeconds % 3600) ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   Widget _buildTimePill(
@@ -1561,13 +1552,17 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                           children: [
                                             _buildTimePill(
                                               context,
-                                              _formatDuration(position),
+                                              formatClockDuration(
+                                                position.inSeconds,
+                                              ),
                                               compact: compact,
                                             ),
                                             const Spacer(),
                                             _buildTimePill(
                                               context,
-                                              _formatDuration(duration),
+                                              formatClockDuration(
+                                                duration.inSeconds,
+                                              ),
                                               compact: compact,
                                             ),
                                           ],

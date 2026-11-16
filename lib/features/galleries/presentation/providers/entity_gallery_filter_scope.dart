@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/domain/entities/criterion.dart';
 import '../../../../core/domain/entities/filter_options.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../../images/domain/entities/image_filter.dart';
 import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
@@ -233,31 +234,36 @@ FutureOr<List<Gallery>> entityGalleryPreview(
 }
 
 @riverpod
-class EntityGalleryGrid extends _$EntityGalleryGrid {
+class EntityGalleryGrid extends _$EntityGalleryGrid
+    with ListPagination<Gallery> {
   static const int _perPage = 30;
-  int _currentPage = 1;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
   EntityGalleryFilterKind? _kind;
   String? _entityId;
 
   @override
   FutureOr<List<Gallery>> build(EntityGalleryFilterKind kind, String entityId) {
     ref.keepAlive();
+    ref.watch(entityGallerySearchQueryProvider(kind));
+    final sortConfig = ref.watch(entityGallerySortProvider(kind));
+    ref.watch(entityGalleryFilterStateProvider(kind));
+    ref.watch(entityGalleryOrganizedOnlyProvider(kind));
+    if (sortConfig.sort == 'random') {
+      ref.watch(entityGalleryRandomSeedProvider(kind));
+    }
+    final generation = resetPagination();
     _kind = kind;
     _entityId = entityId;
-    _currentPage = 1;
-    _hasMore = true;
-    return _fetchFirstPage(kind, entityId);
+    return _fetchFirstPage(kind, entityId, generation);
   }
 
   Future<List<Gallery>> _fetchFirstPage(
     EntityGalleryFilterKind kind,
     String entityId,
+    int generation,
   ) async {
     final firstPage = await _fetchPage(kind: kind, entityId: entityId, page: 1);
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
@@ -309,29 +315,11 @@ class EntityGalleryGrid extends _$EntityGalleryGrid {
   Future<void> fetchNextPage() async {
     final kind = _kind;
     final entityId = _entityId;
-    if (_isLoadingMore || !_hasMore || kind == null || entityId == null) {
-      return;
-    }
+    if (kind == null || entityId == null) return;
 
-    _isLoadingMore = true;
-    try {
-      final nextPage = _currentPage + 1;
-      final nextItems = await _fetchPage(
-        kind: kind,
-        entityId: entityId,
-        page: nextPage,
-      );
-
-      _hasMore = nextItems.length >= _perPage;
-      if (nextItems.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...(state.value ?? <Gallery>[]), ...nextItems]);
-      }
-    } finally {
-      _isLoadingMore = false;
-    }
+    await loadNextPage(
+      perPage: _perPage,
+      fetch: (page) => _fetchPage(kind: kind, entityId: entityId, page: page),
+    );
   }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
 }

@@ -183,6 +183,19 @@ void main() {
       expect(details.stashIds.single.stashId, 'id-1');
       expect(details.groups.single.sceneIndex, 4);
       expect(details.groups.single.imagePath, endsWith('/group/g1/frontimage'));
+      expect(scenes.single.date, DateTime(2020));
+      expect(details.date, DateTime(2020));
+
+      for (final rawDate in [null, 'not-a-date']) {
+        final listScene =
+            ((client.queryData['findScenes'] as Map)['scenes'] as List).single
+                as Map;
+        listScene['date'] = rawDate;
+        (client.queryData['findScene'] as Map)['date'] = rawDate;
+        final repository = GraphQLSceneRepository(client);
+        expect((await repository.findScenes()).single.date, isNull);
+        expect((await repository.getSceneById('scene-1')).date, isNull);
+      }
     });
 
     test(
@@ -294,6 +307,7 @@ void main() {
         expect(input['details'], 'Scraped details');
         expect(input['urls'], ['http://example.com/scene']);
         expect(input.containsKey('cover_image'), isFalse);
+        expect(input.containsKey('date'), isFalse);
         expect(input['studio_id'], 'studio-1');
         expect(input['performer_ids'], ['performer-1']);
         expect(input['tag_ids'], ['tag-1']);

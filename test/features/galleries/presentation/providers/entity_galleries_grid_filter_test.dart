@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +18,8 @@ class _FakeGraphQLGalleryRepository implements GraphQLGalleryRepository {
   bool? lastDescending;
   int? lastPage;
   int? lastPerPage;
+  List<Gallery> results = const [];
+  Completer<List<Gallery>>? nextPage;
 
   @override
   Future<List<Gallery>> findGalleries({
@@ -35,7 +39,8 @@ class _FakeGraphQLGalleryRepository implements GraphQLGalleryRepository {
     lastSort = sort;
     lastDescending = descending;
     lastFilter = galleryFilter;
-    return const [];
+    if (page == 2 && nextPage != null) return nextPage!.future;
+    return results;
   }
 
   @override
@@ -71,9 +76,8 @@ void main() {
 
       container
           .read(
-            entityGalleryFilterStateProvider(
-              EntityGalleryFilterKind.performer,
-            ).notifier,
+            entityGalleryFilterStateProvider(EntityGalleryFilterKind.performer)
+                .notifier,
           )
           .update(
             const GalleryFilter(
@@ -127,9 +131,8 @@ void main() {
 
     container
         .read(
-          entityGalleryFilterStateProvider(
-            EntityGalleryFilterKind.studio,
-          ).notifier,
+          entityGalleryFilterStateProvider(EntityGalleryFilterKind.studio)
+              .notifier,
         )
         .update(
           const GalleryFilter(
@@ -149,9 +152,8 @@ void main() {
 
     container
         .read(
-          entityGalleryFilterStateProvider(
-            EntityGalleryFilterKind.tag,
-          ).notifier,
+          entityGalleryFilterStateProvider(EntityGalleryFilterKind.tag)
+              .notifier,
         )
         .update(
           const GalleryFilter(
@@ -195,6 +197,32 @@ void main() {
     expect(gridSort, ('title', true));
     expect(repository.lastFilter?.studios?.value, gridStudios);
     expect(repository.lastPage, 1);
+  });
+
+  test('changing gallery sort resets paging and ignores an old page', () async {
+    final repository = _FakeGraphQLGalleryRepository()
+      ..results = [for (var i = 0; i < 30; i++) Gallery(id: '$i', title: '$i')]
+      ..nextPage = Completer<List<Gallery>>();
+    final container = await _containerWith(repository);
+    const kind = EntityGalleryFilterKind.tag;
+    final provider = entityGalleryGridProvider(kind, 'tag-1');
+    container.listen(provider, (_, _) {});
+    await container.read(provider.future);
+    final notifier = container.read(provider.notifier);
+    final oldRequest = notifier.fetchNextPage();
+    expect(notifier.isLoadingMore, isTrue);
+
+    container
+        .read(entityGallerySortProvider(kind).notifier)
+        .setSort(sort: 'title');
+    await container.read(provider.future);
+    expect(repository.lastSort, 'title');
+    expect(repository.lastPage, 1);
+    expect(notifier.isLoadingMore, isFalse);
+    repository.nextPage!.complete([const Gallery(id: 'stale', title: 'Stale')]);
+    await oldRequest;
+    expect(container.read(provider).value, repository.results);
+    expect(notifier.hasMore, isTrue);
   });
 
   test('refresh reshuffles a random gallery grid', () async {

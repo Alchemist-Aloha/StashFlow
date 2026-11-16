@@ -269,11 +269,18 @@ List invariants:
 - Entity list and scene-detail queries read from the network; the GraphQL cache
   is updated but never served as the one-shot answer, so refresh shows current
   server data.
+- Performer, studio, tag, and group details pull-to-refresh fetch the entity
+  from the network before reloading their providers and media strips.
 - Pagination appends without resetting the current scroll position or active
   playback context.
 - Pagination also reacts to layout changes, so a page that fits without
   scrolling still loads the next one.
 - Duplicate fetches are coalesced or ignored while the same page is in flight.
+  Entity lists and scoped media grids share pagination state and ignore results
+  and failures from superseded queries or disposed providers.
+- Failed next-page requests preserve loaded items and the page number. List,
+  feed, fullscreen-image, and playlist paging show a localized error snackbar
+  with Retry, which requests the failed page again.
 - Empty and error states provide an appropriate recovery action.
 - Scene, gallery, and marker pages always use grids; there is no list layout
   mode. Column preferences persist. Entity media pages (performer, studio,
@@ -325,6 +332,8 @@ Sort/filter sheets must:
 - support reset and persisted defaults where offered;
 - preserve search, sort direction, and feature-specific criteria together;
 - use shared filter widgets when their semantics match;
+- present boolean criteria, including Organized, as localized Any/Yes/No
+  chips, and minimum rating as Any plus one to five stars;
 - display names (or media titles) for selected entity criteria, including restored
   filters; retain IDs for queries/removal and as a fallback if a name is unavailable;
 - use `FilterField` for consistently start-aligned labels, scaled outer spacing,
@@ -492,6 +501,9 @@ the scene's number in that group (`#N`). Scene info's Details card adds studio
 code, director, last played, created and updated times (local time zone and
 locale), stash IDs, and custom fields when present; the Technical card lists
 every file fingerprint by type.
+
+Missing or unparseable scene dates remain absent in the domain model and UI;
+saving an unrelated edit must not invent or send a scene date.
 
 Performer rows may display age derived from the performer's birthdate and the
 scene date. Full birthdates account for whether the birthday had occurred;

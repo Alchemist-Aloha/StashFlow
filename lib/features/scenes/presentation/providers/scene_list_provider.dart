@@ -12,6 +12,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'playback_queue_provider.dart';
 import '../../../../core/domain/entities/filter_options.dart';
@@ -166,19 +167,12 @@ class SceneTiktokLayout extends _$SceneTiktokLayout {
 /// - Providing search and filtering capabilities.
 /// - Synchronizing the initial playback sequence with the [playbackQueueProvider].
 @Riverpod(keepAlive: true)
-class SceneList extends _$SceneList {
-  int _currentPage = 1;
+class SceneList extends _$SceneList with ListPagination<Scene> {
   int _perPage = kDefaultPageSize;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Scene>> build() async {
-    _requestGeneration++;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    final generation = resetPagination();
 
     final query = ref.watch(sceneSearchQueryProvider);
     final sortConfig = ref.watch(sceneSortProvider);
@@ -192,7 +186,7 @@ class SceneList extends _$SceneList {
     }
 
     final scenes = await repository.findScenes(
-      page: _currentPage,
+      page: 1,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
@@ -202,7 +196,7 @@ class SceneList extends _$SceneList {
     );
 
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = scenes.length >= _perPage;
+    updatePagination(scenes, _perPage, generation);
 
     // Initialize playback queue sequence with the initial load.
     // We use index -1 to allow the queue to recover its index if the
@@ -229,9 +223,7 @@ class SceneList extends _$SceneList {
   /// Manually refreshes the scene list and generates a new random seed.
   Future<void> refresh() async {
     ref.read(sceneRandomSeedProvider.notifier).next();
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
     await future;
   }
@@ -240,41 +232,32 @@ class SceneList extends _$SceneList {
     ref
         .read(sceneSortProvider.notifier)
         .setSort(sort: sort, descending: descending);
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
   void setPerPage(int perPage) {
     if (_perPage == perPage) return;
     _perPage = perPage;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
-  Future<void> fetchNextPage() async {
-    if (_isLoadingMore || !_hasMore || state.isLoading) return;
+  Future<void> fetchNextPage() => loadNextPage(
+    perPage: _perPage,
+    fetch: (page) {
+      final repository = ref.read(sceneRepositoryProvider);
+      final query = ref.read(sceneSearchQueryProvider);
+      final sortConfig = ref.read(sceneSortProvider);
+      final filter = ref.read(sceneFilterStateProvider);
+      final organizedFilter = ref.read(sceneOrganizedOnlyProvider);
 
-    final generation = _requestGeneration;
-    _isLoadingMore = true;
-    final repository = ref.read(sceneRepositoryProvider);
-    final query = ref.read(sceneSearchQueryProvider);
-    final sortConfig = ref.read(sceneSortProvider);
-    final filter = ref.read(sceneFilterStateProvider);
-    final organizedFilter = ref.read(sceneOrganizedOnlyProvider);
-
-    var effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random') {
-      effectiveSort = 'random_${ref.read(sceneRandomSeedProvider)}';
-    }
-
-    try {
-      final nextPage = _currentPage + 1;
-      final nextScenes = await repository.findScenes(
-        page: nextPage,
+      var effectiveSort = sortConfig.sort;
+      if (effectiveSort == 'random') {
+        effectiveSort = 'random_${ref.read(sceneRandomSeedProvider)}';
+      }
+      return repository.findScenes(
+        page: page,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
@@ -282,36 +265,13 @@ class SceneList extends _$SceneList {
         organized: organizedFilter.toBool() ?? filter.organized,
         sceneFilter: filter,
       );
-      if (generation != _requestGeneration) return;
-
-      _hasMore = nextScenes.length >= _perPage;
-      if (nextScenes.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...state.value ?? [], ...nextScenes]);
-        AppLogStore.instance.add(
-          'SceneList fetchNextPage: updating playback queue with ${nextScenes.length} more scenes',
-          source: 'scene_list',
-        );
-        // Update playback queue sequence
-        ref
-            .read(playbackQueueProvider.notifier)
-            .updateSequence(nextScenes, queueId: PlaybackQueueIds.main);
-      }
-    } on Exception catch (error, stackTrace) {
-      AppLogStore.instance.addError(
-        'fetchNextPage',
-        error,
-        stackTrace,
-        source: 'scene_list_provider',
-      );
-      // In a real app, you might want to show a snackbar for error during pagination
-    } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
-    }
-  }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
+    },
+    onLoaded: (nextScenes) {
+      ref
+          .read(playbackQueueProvider.notifier)
+          .updateSequence(nextScenes, queueId: PlaybackQueueIds.main);
+    },
+  );
 
   Future<Scene?> getRandomScene({
     String? performerId,

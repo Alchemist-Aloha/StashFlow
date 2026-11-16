@@ -7,6 +7,8 @@ import '../../domain/entities/scene_deduplication.dart';
 import '../providers/scene_list_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/utils/format_bytes.dart';
+import '../widgets/scene_tool_layout.dart';
 
 class SceneDeduplicationPage extends ConsumerStatefulWidget {
   const SceneDeduplicationPage({super.key});
@@ -310,54 +312,13 @@ class _SceneDeduplicationPageState
             ],
           );
 
-          return SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth >= 1000;
-                final horizontalPadding = isWide ? 24.0 : 12.0;
-
-                return Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1440),
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        horizontalPadding,
-                        12,
-                        horizontalPadding,
-                        0,
-                      ),
-                      child: isWide
-                          ? Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(
-                                  width: 340,
-                                  child: SingleChildScrollView(child: controls),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(child: results),
-                              ],
-                            )
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                _CompactConfiguration(
-                                  expanded: _configExpanded,
-                                  maxBodyHeight: constraints.maxHeight * 0.42,
-                                  onToggle: () => setState(
-                                    () => _configExpanded = !_configExpanded,
-                                  ),
-                                  child: controls,
-                                ),
-                                const SizedBox(height: 12),
-                                Expanded(child: results),
-                              ],
-                            ),
-                    ),
-                  ),
-                );
-              },
-            ),
+          return SceneToolLayout(
+            controlsBuilder: (_) => controls,
+            results: results,
+            configExpanded: _configExpanded,
+            onToggleConfig: () =>
+                setState(() => _configExpanded = !_configExpanded),
+            compactConfigHeightFactor: 0.42,
           );
         },
       ),
@@ -371,7 +332,10 @@ class _SceneDeduplicationPageState
     required int totalPages,
   }) {
     if (groups.isEmpty) {
-      return _EmptyResults(message: context.l10n.no_duplicates_found);
+      return SceneToolEmptyResults(
+        icon: Icons.check_circle_outline_rounded,
+        message: context.l10n.no_duplicates_found,
+      );
     }
 
     return ListView.builder(
@@ -386,21 +350,24 @@ class _SceneDeduplicationPageState
                   ? 'scene_dedup_pagination_top'
                   : 'scene_dedup_pagination_bottom',
             ),
-            child: _PaginationBar(
-              page: _page,
-              totalPages: totalPages,
-              onPrevious: _page > 1
-                  ? () => setState(() {
-                      _page -= 1;
-                      _selectedSceneIds.clear();
-                    })
-                  : null,
-              onNext: _page < totalPages
-                  ? () => setState(() {
-                      _page += 1;
-                      _selectedSceneIds.clear();
-                    })
-                  : null,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 4, bottom: 12),
+              child: SceneToolPaginationBar(
+                page: _page,
+                totalPages: totalPages,
+                onPrevious: _page > 1
+                    ? () => setState(() {
+                        _page -= 1;
+                        _selectedSceneIds.clear();
+                      })
+                    : null,
+                onNext: _page < totalPages
+                    ? () => setState(() {
+                        _page += 1;
+                        _selectedSceneIds.clear();
+                      })
+                    : null,
+              ),
             ),
           );
         }
@@ -426,73 +393,6 @@ class _SceneDeduplicationPageState
           onDeleteScene: (sceneId) => _confirmDelete({sceneId}),
         );
       },
-    );
-  }
-}
-
-class _CompactConfiguration extends StatelessWidget {
-  const _CompactConfiguration({
-    required this.expanded,
-    required this.maxBodyHeight,
-    required this.onToggle,
-    required this.child,
-  });
-
-  final bool expanded;
-  final double maxBodyHeight;
-  final VoidCallback onToggle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Material(
-      color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(24),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          InkWell(
-            onTap: onToggle,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  Icon(Icons.tune_rounded, color: colors.primary),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      context.l10n.configuration,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  AnimatedRotation(
-                    turns: expanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOutCubic,
-                    child: const Icon(Icons.keyboard_arrow_down_rounded),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          AnimatedCrossFade(
-            firstChild: const SizedBox(width: double.infinity),
-            secondChild: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: maxBodyHeight),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                child: child,
-              ),
-            ),
-            crossFadeState: expanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 250),
-            sizeCurve: Curves.easeOutCubic,
-          ),
-        ],
-      ),
     );
   }
 }
@@ -551,43 +451,6 @@ class _ResultsHeader extends StatelessWidget {
   }
 }
 
-class _EmptyResults extends StatelessWidget {
-  const _EmptyResults({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Center(
-      child: Material(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(28),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.check_circle_outline_rounded,
-                size: 48,
-                color: colors.primary,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _Controls extends StatelessWidget {
   const _Controls({
     required this.distance,
@@ -627,7 +490,7 @@ class _Controls extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _PanelHeading(
+            SceneToolPanelHeading(
               icon: Icons.tune_rounded,
               title: context.l10n.configuration,
             ),
@@ -678,7 +541,7 @@ class _Controls extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Divider(height: 1),
             ),
-            _PanelHeading(
+            SceneToolPanelHeading(
               icon: Icons.checklist_rounded,
               title: context.l10n.select_scenes,
               badge: selectedCount > 0 ? '$selectedCount' : null,
@@ -746,42 +609,6 @@ class _Controls extends StatelessWidget {
       onSelected: (value) {
         if (value != null) onPageSizeChanged(value);
       },
-    );
-  }
-}
-
-class _PanelHeading extends StatelessWidget {
-  const _PanelHeading({required this.icon, required this.title, this.badge});
-
-  final IconData icon;
-  final String title;
-  final String? badge;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Row(
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.secondaryContainer,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Icon(icon, size: 20, color: colors.onSecondaryContainer),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
-        if (badge != null)
-          Badge(
-            label: Text(badge!),
-            backgroundColor: colors.secondary,
-            textColor: colors.onSecondary,
-          ),
-      ],
     );
   }
 }
@@ -879,7 +706,7 @@ class _DuplicateGroupCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    _MetadataPill(label: _formatBytes(group.totalFileSize)),
+                    _MetadataPill(label: formatBytes(group.totalFileSize)),
                   ],
                 ),
               ),
@@ -922,7 +749,7 @@ class _DuplicateSceneTile extends StatelessWidget {
     final file = scene.primaryFile;
     final title = scene.title.isNotEmpty ? scene.title : scene.path ?? scene.id;
     final metadata = <String>[
-      if (file != null) _formatBytes(file.size),
+      if (file != null) formatBytes(file.size),
       if (file != null)
         context.l10n.resolution_dimensions(file.width, file.height),
       if (file != null)
@@ -1056,18 +883,6 @@ class _MetadataPill extends StatelessWidget {
   }
 }
 
-String _formatBytes(int bytes) {
-  if (bytes <= 0) return '0 B';
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-  var value = bytes.toDouble();
-  var unitIndex = 0;
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024;
-    unitIndex += 1;
-  }
-  return '${value.toStringAsFixed(value >= 10 ? 0 : 1)} ${units[unitIndex]}';
-}
-
 class _WarningBanner extends StatelessWidget {
   const _WarningBanner({required this.message});
 
@@ -1094,61 +909,6 @@ class _WarningBanner extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PaginationBar extends StatelessWidget {
-  const _PaginationBar({
-    required this.page,
-    required this.totalPages,
-    required this.onPrevious,
-    required this.onNext,
-  });
-
-  final int page;
-  final int totalPages;
-  final VoidCallback? onPrevious;
-  final VoidCallback? onNext;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.only(top: 4, bottom: 12),
-      child: Center(
-        child: Material(
-          color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(999),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  tooltip: context.l10n.previous_page,
-                  onPressed: onPrevious,
-                  icon: const Icon(Icons.chevron_left_rounded),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    context.l10n.scene_deduplication_page_count(
-                      page,
-                      totalPages,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  tooltip: context.l10n.next_page,
-                  onPressed: onNext,
-                  icon: const Icon(Icons.chevron_right_rounded),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );

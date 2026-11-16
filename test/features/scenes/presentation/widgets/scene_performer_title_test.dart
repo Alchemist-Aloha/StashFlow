@@ -20,6 +20,7 @@ void main() {
     });
 
     test('omits missing invalid and future birthdates', () {
+      expect(ageAtSceneYear(sceneDate: null, birthdate: '2000-01-01'), isNull);
       final sceneDate = DateTime(2020, 6, 1);
       expect(ageAtSceneYear(sceneDate: sceneDate, birthdate: null), isNull);
       expect(ageAtSceneYear(sceneDate: sceneDate, birthdate: ''), isNull);
@@ -61,6 +62,28 @@ void main() {
     expect(
       ageSpan.style?.color,
       Theme.of(context).colorScheme.onSurfaceVariant,
+    );
+  });
+
+  testWidgets('keeps the performer name when the scene has no date', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: const Scaffold(
+          body: ScenePerformerTitle(
+            performerName: 'Alice',
+            sceneDate: null,
+            birthdate: '2000-01-01',
+          ),
+        ),
+      ),
+    );
+    expect(find.text('Alice', findRichText: true), findsOneWidget);
+    expect(
+      find.textContaining(RegExp(r'\(\d+\)'), findRichText: true),
+      findsNothing,
     );
   });
 

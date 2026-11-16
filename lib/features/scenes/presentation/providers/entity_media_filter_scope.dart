@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/domain/entities/criterion.dart';
 import '../../../../core/domain/entities/filter_options.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import 'scene_list_provider.dart';
@@ -193,12 +194,8 @@ FutureOr<List<Scene>> entityMediaPreview(
 }
 
 @riverpod
-class EntityMediaGrid extends _$EntityMediaGrid {
+class EntityMediaGrid extends _$EntityMediaGrid with ListPagination<Scene> {
   static const int _perPage = 30;
-  int _currentPage = 1;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
   EntityMediaFilterKind? _kind;
   String? _entityId;
 
@@ -212,22 +209,20 @@ class EntityMediaGrid extends _$EntityMediaGrid {
     if (sortConfig.sort == 'random') {
       ref.watch(entityMediaRandomSeedProvider(kind));
     }
-    _requestGeneration++;
-    _isLoadingMore = false;
+    final generation = resetPagination();
     _kind = kind;
     _entityId = entityId;
-    _currentPage = 1;
-    _hasMore = true;
-    return _fetchFirstPage(kind, entityId);
+    return _fetchFirstPage(kind, entityId, generation);
   }
 
   Future<List<Scene>> _fetchFirstPage(
     EntityMediaFilterKind kind,
     String entityId,
+    int generation,
   ) async {
     final firstPage = await _fetchPage(kind: kind, entityId: entityId, page: 1);
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
@@ -277,36 +272,11 @@ class EntityMediaGrid extends _$EntityMediaGrid {
   Future<void> fetchNextPage() async {
     final kind = _kind;
     final entityId = _entityId;
-    if (_isLoadingMore ||
-        !_hasMore ||
-        state.isLoading ||
-        kind == null ||
-        entityId == null) {
-      return;
-    }
+    if (kind == null || entityId == null) return;
 
-    final generation = _requestGeneration;
-    _isLoadingMore = true;
-    try {
-      final nextPage = _currentPage + 1;
-      final nextItems = await _fetchPage(
-        kind: kind,
-        entityId: entityId,
-        page: nextPage,
-      );
-
-      if (!ref.mounted || generation != _requestGeneration) return;
-
-      _hasMore = nextItems.length >= _perPage;
-      if (nextItems.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...(state.value ?? <Scene>[]), ...nextItems]);
-      }
-    } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
-    }
+    await loadNextPage(
+      perPage: _perPage,
+      fetch: (page) => _fetchPage(kind: kind, entityId: entityId, page: page),
+    );
   }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
 }

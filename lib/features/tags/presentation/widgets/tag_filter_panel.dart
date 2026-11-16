@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/filter_widgets.dart';
-import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/entity_picker.dart';
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
@@ -61,17 +60,17 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
       title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
-        _buildBooleanFilter(
-          context.l10n.common_favorite,
-          _tempFilter.favorite,
-          (value) => setState(
+        BooleanCriterionInput(
+          label: context.l10n.common_favorite,
+          value: _tempFilter.favorite,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(favorite: value),
           ),
         ),
-        _buildBooleanFilter(
-          context.l10n.filter_ignore_auto_tag,
-          _tempFilter.ignoreAutoTag,
-          (value) => setState(
+        BooleanCriterionInput(
+          label: context.l10n.filter_ignore_auto_tag,
+          value: _tempFilter.ignoreAutoTag,
+          onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: value),
           ),
         ),
@@ -263,44 +262,6 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
       label: label,
       value: value,
       onChanged: (next) => setState(() => update(next)),
-    );
-  }
-
-  Widget _buildBooleanFilter(
-    String label,
-    bool? value,
-    ValueChanged<bool?> onChanged,
-  ) {
-    return FilterField(
-      label: label,
-      children: [
-        Wrap(
-          spacing: context.dimensions.spacingSmall,
-          children: [
-            ChoiceChip(
-              label: Text(context.l10n.common_any),
-              selected: value == null,
-              onSelected: (selected) {
-                if (selected) onChanged(null);
-              },
-            ),
-            ChoiceChip(
-              label: Text(context.l10n.common_yes),
-              selected: value == true,
-              onSelected: (selected) {
-                if (selected) onChanged(true);
-              },
-            ),
-            ChoiceChip(
-              label: Text(context.l10n.common_no),
-              selected: value == false,
-              onSelected: (selected) {
-                if (selected) onChanged(false);
-              },
-            ),
-          ],
-        ),
-      ],
     );
   }
 

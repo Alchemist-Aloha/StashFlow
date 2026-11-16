@@ -306,5 +306,57 @@ void main() {
         expect(criterion?.value2, '2024-12-31');
       },
     );
+    testWidgets('Rating and boolean inputs emit shared criterion values', (
+      tester,
+    ) async {
+      IntCriterion? rating;
+      bool? organized = true;
+
+      await pumpTestWidget(
+        tester,
+        child: StatefulBuilder(
+          builder: (context, setState) => Scaffold(
+            body: Column(
+              children: [
+                RatingCriterionInput(
+                  criterion: rating,
+                  onChanged: (next) => setState(() => rating = next),
+                ),
+                BooleanCriterionInput(
+                  label: 'Organized',
+                  value: organized,
+                  onChanged: (next) => setState(() => organized = next),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(ChoiceChip, '3'));
+      await tester.pump();
+      expect(
+        rating,
+        const IntCriterion(value: 40, modifier: CriterionModifier.greaterThan),
+      );
+      expect(
+        tester
+            .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, '3'))
+            .selected,
+        isTrue,
+      );
+
+      await tester.tap(find.text('Any').first);
+      await tester.pump();
+      expect(rating, isNull);
+
+      await tester.tap(find.text('No'));
+      await tester.pump();
+      expect(organized, isFalse);
+      await tester.tap(find.text('Any').last);
+      await tester.pump();
+      expect(organized, isNull);
+    });
   });
 }

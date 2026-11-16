@@ -793,13 +793,49 @@ void main() {
           searchHint: 'Search...',
           onSearchChanged: (_) {},
           provider: const AsyncValue.data(['Only item']),
-          onFetchNextPage: () => fetches++,
+          onFetchNextPage: () async {
+            fetches++;
+          },
           itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
         ),
       );
       await tester.pumpAndSettle();
 
       expect(fetches, greaterThan(0));
+    });
+
+    testWidgets('pagination errors keep items visible and offer retry', (
+      tester,
+    ) async {
+      var fail = true;
+      var calls = 0;
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.data(['Loaded item']),
+          onFetchNextPage: () async {
+            calls++;
+            if (fail) throw StateError('offline');
+          },
+          itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Loaded item'), findsOneWidget);
+      expect(find.textContaining('offline'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      final failedCalls = calls;
+      fail = false;
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+      expect(calls, greaterThan(failedCalls));
+      expect(find.text('Loaded item'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('shows list view when gridDelegate is null', (

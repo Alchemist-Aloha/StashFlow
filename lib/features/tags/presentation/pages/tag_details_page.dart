@@ -89,6 +89,10 @@ class TagDetailsPage extends ConsumerWidget {
           return RefreshIndicator(
             edgeOffset: topInset,
             onRefresh: () async {
+              // Bypass the GraphQL cache so the details provider reloads fresh data.
+              await ref
+                  .read(tagRepositoryProvider)
+                  .getTagById(tagId, refresh: true);
               ref.invalidate(tagDetailsProvider(tagId));
               ref.invalidate(
                 entityMediaPreviewProvider(EntityMediaFilterKind.tag, tagId),

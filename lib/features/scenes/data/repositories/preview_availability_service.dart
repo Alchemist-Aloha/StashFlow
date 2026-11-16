@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -27,15 +26,7 @@ final previewAvailabilityCheckProvider = Provider<PreviewAvailabilityCheck>((
     var headers = ref.read(mediaPlaybackHeadersProvider);
 
     if (kIsWeb) {
-      final authState = ref.read(authProvider);
-      url = applyWebMediaAuthFallback(
-        url: url,
-        authMode: authState.mode,
-        apiKey: ref.read(serverApiKeyProvider),
-        username: authState.username,
-        password: authState.password,
-        graphqlEndpoint: endpoint,
-      );
+      url = ref.read(webMediaUrlProvider)(url);
       headers = const {};
     }
 

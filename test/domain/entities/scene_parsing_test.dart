@@ -56,7 +56,7 @@ void main() {
       final json = <String, dynamic>{
         'id': '2',
         'title': 'Minimal Scene',
-        'date': '2024-03-18',
+        'date': null,
         'rating100': null,
         'o_counter': 0,
         'organized': false,
@@ -78,6 +78,8 @@ void main() {
 
       final scene = Scene.fromJson(json);
       expect(scene.id, '2');
+      expect(scene.date, isNull);
+      expect(Scene.fromJson(scene.toJson()).date, isNull);
       expect(scene.rating100, isNull);
       expect(scene.studioName, isNull);
       expect(scene.paths.screenshot, isNull);
