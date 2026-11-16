@@ -17,6 +17,7 @@ import '../../data/repositories/preview_availability_service.dart';
 import '../../data/repositories/playback_media.dart';
 import '../providers/player_settings.dart';
 import 'scene_cover_fullscreen_viewer.dart';
+import 'preview_video_controls_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 
 typedef SceneInfoMediaBuilder = Widget Function(
@@ -455,37 +456,9 @@ class _SceneInfoPreviewPlayerState
       fit: StackFit.expand,
       children: [
         if (controller != null)
-          _PreviewNativeControls(child: Video(controller: controller)),
+          PreviewVideoControlsTheme(child: Video(controller: controller)),
         if (_initializing) const Center(child: CircularProgressIndicator()),
       ],
-    );
-  }
-}
-
-class _PreviewNativeControls extends StatelessWidget {
-  const _PreviewNativeControls({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    const mobileControls = MaterialVideoControlsThemeData(
-      bottomButtonBarMargin: EdgeInsets.fromLTRB(12, 0, 4, 8),
-      seekBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
-    );
-    const desktopControls = MaterialDesktopVideoControlsThemeData(
-      bottomButtonBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
-      seekBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
-    );
-
-    return MaterialVideoControlsTheme(
-      normal: mobileControls,
-      fullscreen: mobileControls,
-      child: MaterialDesktopVideoControlsTheme(
-        normal: desktopControls,
-        fullscreen: desktopControls,
-        child: child,
-      ),
     );
   }
 }

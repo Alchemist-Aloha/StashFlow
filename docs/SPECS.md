@@ -508,7 +508,10 @@ confirmation and must not seek playback.
 
 The scene media section exposes cover and preview content only when available.
 Cover images open the dedicated fullscreen cover viewer with zoom/pan and a
-predictable exit gesture/action.
+predictable exit gesture/action. Scene-info and tagger previews share
+`PreviewVideoControlsTheme` for mobile and desktop control insets in normal
+and fullscreen modes. These insets follow the global UI scale; sharing the
+layout does not share or transfer player ownership.
 
 Scene Details lists the groups a scene belongs to, after Performers, each with
 the scene's number in that group (`#N`). Scene info's Details card adds studio
@@ -538,6 +541,10 @@ Group lists and Group Details show the group's front cover (and the back cover
 beside it when set), falling back to the group icon for Stash's `default=true`
 placeholder. Group Details also shows duration, aliases, its studio, tags,
 links, and the containing groups and sub-groups with each link's description.
+Group list margins, detail padding, chip gaps and icons follow scaled theme
+dimensions. Group detail sections use `SectionPanel` headings rather than a
+second local heading recipe. Studio detail section gaps likewise follow the
+scaled theme dimensions.
 Related entities open through the shared `RelatedEntityTile` and
 `EntityLinkChips`, and repositories resolve every related image URL against
 the active server.

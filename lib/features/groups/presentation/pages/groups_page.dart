@@ -249,6 +249,11 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final dims = context.dimensions;
+    final cardMargin = EdgeInsets.symmetric(
+      horizontal: dims.spacingMedium,
+      vertical: dims.spacingSmall / 2,
+    );
     final groupsAsync = ref.watch(groupListProvider);
     final activeFilterCount = _activeFilterCount();
     final scrollController = ref.watch(
@@ -317,12 +322,9 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
           onPressed: _showSavedFilterDialog,
         ),
       ],
-      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      padding: EdgeInsets.symmetric(vertical: dims.spacingSmall),
       itemBuilder: (context, group, memCacheWidth, memCacheHeight) => Card(
-        margin: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacingMedium,
-          vertical: 4,
-        ),
+        margin: cardMargin,
         color: Theme.of(context).colorScheme.primaryContainer
             .withValues(alpha: 0.3),
         child: ListTile(
@@ -359,10 +361,7 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
         enabled: true,
         effect: const ShimmerEffect(duration: Duration(seconds: 2)),
         child: Card(
-          margin: const EdgeInsets.symmetric(
-            horizontal: AppTheme.spacingMedium,
-            vertical: 4,
-          ),
+          margin: cardMargin,
           color: Theme.of(context).colorScheme.primaryContainer
               .withValues(alpha: 0.3),
           child: ListTile(

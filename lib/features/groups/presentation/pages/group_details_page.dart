@@ -27,15 +27,10 @@ class GroupDetailsPage extends ConsumerWidget {
 
   const GroupDetailsPage({required this.groupId, super.key});
 
-  Widget _buildSectionContainer(BuildContext context, Widget child) {
-    return SectionPanel(
-      margin: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
-      child: child,
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dims = context.dimensions;
+    final sectionMargin = EdgeInsets.only(bottom: dims.spacingMedium);
     final groupAsync = ref.watch(groupDetailsProvider(groupId));
     final mediaAsync = ref.watch(
       entityMediaPreviewProvider(EntityMediaFilterKind.group, groupId),
@@ -88,7 +83,7 @@ class GroupDetailsPage extends ConsumerWidget {
               children: [
                 _GroupCovers(group: group),
                 Padding(
-                  padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                  padding: EdgeInsets.all(dims.spacingMedium),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -101,10 +96,10 @@ class GroupDetailsPage extends ConsumerWidget {
                           color: context.colors.onSurface,
                         ),
                       ),
-                      const SizedBox(height: AppTheme.spacingMedium),
+                      SizedBox(height: dims.spacingMedium),
                       Wrap(
-                        spacing: AppTheme.spacingSmall,
-                        runSpacing: AppTheme.spacingSmall,
+                        spacing: dims.spacingSmall,
+                        runSpacing: dims.spacingSmall,
                         children: [
                           if (group.date != null)
                             _buildChip(context, group.date!),
@@ -129,7 +124,7 @@ class GroupDetailsPage extends ConsumerWidget {
                       ),
                       if (group.aliases case final aliases?
                           when aliases.trim().isNotEmpty) ...[
-                        const SizedBox(height: AppTheme.spacingSmall),
+                        SizedBox(height: dims.spacingSmall),
                         MetaRow(
                           label: context.l10n.common_aliases,
                           value: aliases,
@@ -142,56 +137,35 @@ class GroupDetailsPage extends ConsumerWidget {
                           imagePath: group.studioImagePath,
                           fallbackIcon: Icons.business_outlined,
                         ),
-                      const SizedBox(height: AppTheme.spacingMedium),
+                      SizedBox(height: dims.spacingMedium),
                       if (group.tags.isNotEmpty)
-                        _buildSectionContainer(
-                          context,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SectionHeader(
-                                title: context.l10n.details_tags,
-                                padding: EdgeInsets.zero,
-                              ),
-                              const SizedBox(height: AppTheme.spacingSmall),
-                              EntityLinkChips(
-                                links: [
-                                  for (final tag in group.tags)
-                                    (
-                                      label: tag.name,
-                                      route: '/tags/tag/${tag.id}',
-                                    ),
-                                ],
-                              ),
+                        SectionPanel(
+                          margin: sectionMargin,
+                          title: context.l10n.details_tags,
+                          child: EntityLinkChips(
+                            links: [
+                              for (final tag in group.tags)
+                                (label: tag.name, route: '/tags/tag/${tag.id}'),
                             ],
                           ),
                         ),
                       if (group.synopsis != null &&
                           group.synopsis!.isNotEmpty) ...[
-                        _buildSectionContainer(
-                          context,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SectionHeader(
-                                title: context.l10n.details_synopsis,
-                                padding: EdgeInsets.zero,
-                              ),
-                              const SizedBox(height: AppTheme.spacingSmall),
-                              Text(
-                                group.synopsis!,
-                                style: context.textTheme.bodyMedium?.copyWith(
-                                  color: context.colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
+                        SectionPanel(
+                          margin: sectionMargin,
+                          title: context.l10n.details_synopsis,
+                          child: Text(
+                            group.synopsis!,
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
+                            ),
                           ),
                         ),
                       ],
                       if (group.urls.isNotEmpty)
-                        _buildSectionContainer(
-                          context,
-                          EntityLinksSection(urls: group.urls),
+                        SectionPanel(
+                          margin: sectionMargin,
+                          child: EntityLinksSection(urls: group.urls),
                         ),
                       for (final (title, relations) in [
                         (
@@ -201,15 +175,12 @@ class GroupDetailsPage extends ConsumerWidget {
                         (context.l10n.groups_field_sub_groups, group.subGroups),
                       ])
                         if (relations.isNotEmpty)
-                          _buildSectionContainer(
-                            context,
-                            Column(
+                          SectionPanel(
+                            margin: sectionMargin,
+                            title: title,
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SectionHeader(
-                                  title: title,
-                                  padding: EdgeInsets.zero,
-                                ),
                                 for (final relation in relations)
                                   RelatedEntityTile(
                                     title: relation.name.isEmpty
@@ -223,10 +194,10 @@ class GroupDetailsPage extends ConsumerWidget {
                               ],
                             ),
                           ),
-                      const SizedBox(height: AppTheme.spacingMedium),
-                      _buildSectionContainer(
-                        context,
-                        Column(
+                      SizedBox(height: dims.spacingMedium),
+                      SectionPanel(
+                        margin: sectionMargin,
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SectionHeader(
@@ -240,9 +211,7 @@ class GroupDetailsPage extends ConsumerWidget {
                               data: (scenes) {
                                 if (scenes.isEmpty) {
                                   return Padding(
-                                    padding: const EdgeInsets.all(
-                                      AppTheme.spacingSmall,
-                                    ),
+                                    padding: EdgeInsets.all(dims.spacingSmall),
                                     child: Text(
                                       context.l10n.common_no_media_found,
                                       style: context.textTheme.bodySmall
@@ -255,7 +224,7 @@ class GroupDetailsPage extends ConsumerWidget {
                                 }
                                 return Padding(
                                   padding: EdgeInsets.only(
-                                    top: context.dimensions.spacingMedium,
+                                    top: dims.spacingMedium,
                                   ),
                                   child: SceneStrip(
                                     scenes: scenes,
@@ -269,9 +238,9 @@ class GroupDetailsPage extends ConsumerWidget {
                                   ),
                                 );
                               },
-                              loading: () => const SizedBox(
-                                height: 100,
-                                child: Center(
+                              loading: () => SizedBox(
+                                height: 100 * dims.fontSizeFactor,
+                                child: const Center(
                                   child: CircularProgressIndicator(),
                                 ),
                               ),
@@ -311,7 +280,7 @@ class GroupDetailsPage extends ConsumerWidget {
       avatar: icon != null
           ? Icon(
               icon,
-              size: 16,
+              size: 16 * context.dimensions.fontSizeFactor,
               color: iconColor ?? context.colors.onSurfaceVariant,
             )
           : null,

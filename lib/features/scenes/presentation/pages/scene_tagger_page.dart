@@ -29,6 +29,7 @@ import '../providers/player_settings.dart';
 import '../widgets/scene_filter_panel.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../widgets/scene_tool_layout.dart';
+import '../widgets/preview_video_controls_theme.dart';
 
 class SceneTaggerPage extends ConsumerStatefulWidget {
   const SceneTaggerPage({super.key});
@@ -1472,7 +1473,7 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
               ? Stack(
                   fit: StackFit.expand,
                   children: [
-                    _PreviewNativeControls(
+                    PreviewVideoControlsTheme(
                       child: Video(controller: controller),
                     ),
                     if (_initializing)
@@ -1555,34 +1556,6 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
                   ),
                 ),
         ),
-      ),
-    );
-  }
-}
-
-class _PreviewNativeControls extends StatelessWidget {
-  const _PreviewNativeControls({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    const mobileControls = MaterialVideoControlsThemeData(
-      bottomButtonBarMargin: EdgeInsets.fromLTRB(12, 0, 4, 8),
-      seekBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
-    );
-    const desktopControls = MaterialDesktopVideoControlsThemeData(
-      bottomButtonBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
-      seekBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
-    );
-
-    return MaterialVideoControlsTheme(
-      normal: mobileControls,
-      fullscreen: mobileControls,
-      child: MaterialDesktopVideoControlsTheme(
-        normal: desktopControls,
-        fullscreen: desktopControls,
-        child: child,
       ),
     );
   }

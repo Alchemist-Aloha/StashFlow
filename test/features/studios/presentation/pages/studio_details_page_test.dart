@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/providers/related_entities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/related_entities.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/entity_media_filter_scope.dart';
 import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
@@ -87,7 +89,7 @@ void main() {
     expect(find.textContaining('Failed to update rating'), findsOneWidget);
   });
 
-  testWidgets('studio action row fits phones and tablets at scaled text', (
+  testWidgets('studio details fit phones and tablets at scaled UI and text', (
     tester,
   ) async {
     const studio = Studio(
@@ -99,6 +101,8 @@ void main() {
       performerCount: 0,
       favorite: false,
       rating100: 60,
+      details: 'Description of this studio',
+      parentStudio: StudioRelationship(id: 'parent', name: 'Parent Studio'),
     );
 
     for (final (width, scale) in [
@@ -123,8 +127,15 @@ void main() {
           ).overrideWith((ref) => []),
         ],
         child: MediaQuery(
-          data: MediaQueryData(textScaler: TextScaler.linear(scale)),
-          child: const StudioDetailsPage(studioId: 'studio-1'),
+          data: MediaQueryData(textScaler: TextScaler.linear(1.3)),
+          child: Theme(
+            data: AppTheme.buildTheme(
+              Brightness.light,
+              Colors.teal,
+              fontSizeFactor: scale,
+            ),
+            child: const StudioDetailsPage(studioId: 'studio-1'),
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -136,6 +147,32 @@ void main() {
       expect(actionsRect.top, greaterThanOrEqualTo(nameRect.bottom));
       expect(actionsRect.left, greaterThanOrEqualTo(0));
       expect(actionsRect.right, lessThanOrEqualTo(width));
+      final detailsPanel = find
+          .ancestor(
+            of: find.text('Description of this studio'),
+            matching: find.byType(SectionPanel),
+          )
+          .first;
+      expect(
+        tester
+            .widgetList<SizedBox>(
+              find.descendant(
+                of: detailsPanel,
+                matching: find.byType(SizedBox),
+              ),
+            )
+            .any((gap) => gap.height == 8 * scale),
+        isTrue,
+      );
+      final emptyPadding = tester.widget<Padding>(
+        find
+            .ancestor(
+              of: find.text('No media found'),
+              matching: find.byType(Padding),
+            )
+            .first,
+      );
+      expect(emptyPadding.padding, EdgeInsets.only(top: 8 * scale));
       expect(tester.takeException(), isNull);
     }
 

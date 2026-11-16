@@ -322,7 +322,9 @@ class StudioDetailsPage extends ConsumerWidget {
                                   title: context.l10n.common_details,
                                   padding: EdgeInsets.zero,
                                 ),
-                                const SizedBox(height: AppTheme.spacingSmall),
+                                SizedBox(
+                                  height: context.dimensions.spacingSmall,
+                                ),
                                 Text(
                                   studio.details!,
                                   style: context.textTheme.bodyMedium?.copyWith(
@@ -335,10 +337,10 @@ class StudioDetailsPage extends ConsumerWidget {
                         ],
                         if (studio.parentStudio != null ||
                             studio.childStudios.isNotEmpty) ...[
-                          const SizedBox(height: AppTheme.spacingMedium),
+                          SizedBox(height: context.dimensions.spacingMedium),
                           _buildHierarchySection(context, studio),
                         ],
-                        const SizedBox(height: AppTheme.spacingMedium),
+                        SizedBox(height: context.dimensions.spacingMedium),
                         _buildSectionContainer(
                           context,
                           Column(
@@ -355,8 +357,8 @@ class StudioDetailsPage extends ConsumerWidget {
                                 data: (scenes) {
                                   if (scenes.isEmpty) {
                                     return Padding(
-                                      padding: const EdgeInsets.only(
-                                        top: AppTheme.spacingSmall,
+                                      padding: EdgeInsets.only(
+                                        top: context.dimensions.spacingSmall,
                                       ),
                                       child: Text(
                                         context.l10n.common_no_media_found,
