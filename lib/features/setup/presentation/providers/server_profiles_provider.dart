@@ -1,8 +1,12 @@
 import 'dart:async';
 
 import 'dart:convert';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart'
+    show sceneViewModePromptPendingKey;
 import '../../../../core/data/preferences/secure_storage_provider.dart';
 import '../../../../core/data/auth/auth_mode.dart';
 import '../../domain/models/server_profile.dart';
@@ -92,6 +96,10 @@ class ServerProfiles extends _$ServerProfiles {
     final shouldActivate =
         state.isEmpty ||
         (ref.read(activeServerProfileIdProvider) ?? '').isEmpty;
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (state.isEmpty && !prefs.containsKey(sceneViewModePromptPendingKey)) {
+      await prefs.setBool(sceneViewModePromptPendingKey, true);
+    }
     final newList = [...state, profile];
     await saveProfiles(newList);
     if (shouldActivate) {

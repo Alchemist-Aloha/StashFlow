@@ -1734,6 +1734,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_layout_tiktok => '无限滚动';
 
   @override
+  String get scene_view_mode_prompt_title => '选择场景浏览方式';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '以两列网格显示场景。';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => '在无限滑动的信息流中逐个浏览场景。';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint => '之后可在 设置 › 界面设置 中更改。';
+
+  @override
   String get settings_interface_grid_columns => '网格列数';
 
   @override
@@ -5673,6 +5685,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_interface_layout_tiktok => '无限滚动';
+
+  @override
+  String get scene_view_mode_prompt_title => '选择场景浏览方式';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '以两列网格显示场景。';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => '在无限滑动的信息流中逐个浏览场景。';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint => '之后可在 设置 › 界面设置 中更改。';
 
   @override
   String get settings_interface_grid_columns => '网格列数';
@@ -9616,6 +9640,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_interface_layout_tiktok => '無限捲動';
+
+  @override
+  String get scene_view_mode_prompt_title => '選擇場景瀏覽方式';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '以兩欄網格顯示場景。';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => '在無限滑動的資訊流中逐一瀏覽場景。';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint => '之後可在 設定 › 介面設定 中變更。';
 
   @override
   String get settings_interface_grid_columns => '網格欄數';

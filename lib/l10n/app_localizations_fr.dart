@@ -1798,6 +1798,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settings_interface_layout_tiktok => 'Défilement infini';
 
   @override
+  String get scene_view_mode_prompt_title =>
+      'Choisissez l\'affichage des scènes';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc =>
+      'Les scènes dans une grille à deux colonnes.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'Une scène à la fois dans un fil infini à faire défiler.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'Vous pourrez le modifier plus tard dans Paramètres › Paramètres d\'interface.';
+
+  @override
   String get settings_interface_grid_columns => 'Colonnes de la grille';
 
   @override

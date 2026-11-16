@@ -1779,6 +1779,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_interface_layout_tiktok => 'Feed';
 
   @override
+  String get scene_view_mode_prompt_title => 'Choose a scene view';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => 'Scenes in a two-column grid.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'One scene at a time in an endless, swipeable feed.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'You can change this later in Settings › Interface Settings.';
+
+  @override
   String get settings_interface_grid_columns => 'Grid Columns';
 
   @override

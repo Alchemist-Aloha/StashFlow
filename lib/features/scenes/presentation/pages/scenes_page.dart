@@ -18,6 +18,8 @@ import '../providers/player_view_mode.dart';
 import '../providers/video_player_provider.dart';
 import '../widgets/scene_card.dart';
 import '../widgets/tiktok_scenes_view.dart';
+import '../widgets/scene_view_mode_dialog.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
@@ -65,6 +67,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   String? _focusedSceneId;
   String? _lastRoutePath;
   bool _restoreFocusPending = false;
+  bool _viewModePromptScheduled = false;
 
   @override
   void dispose() {
@@ -110,6 +113,24 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         _sortDescending = sortConfig.descending;
       });
       _applyServerSort();
+    });
+  }
+
+  /// Offers the grid/feed choice once, after the first server's scenes load.
+  void _maybePromptViewMode() {
+    if (_viewModePromptScheduled) return;
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (prefs.getBool(sceneViewModePromptPendingKey) != true) return;
+    _viewModePromptScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      // Clear first so a crash or dismissal never shows the prompt again.
+      await prefs.setBool(sceneViewModePromptPendingKey, false);
+      if (!mounted) return;
+      final useFeed = await showSceneViewModeDialog(context);
+      if (useFeed != null && mounted) {
+        await ref.read(sceneTiktokLayoutProvider.notifier).set(useFeed);
+      }
     });
   }
 
@@ -356,6 +377,13 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     }
     _lastRoutePath = currentPath;
     if (!isAtRoot || isTiktokLayout) _restoreFocusPending = false;
+    if (isAtRoot &&
+        !isTiktokLayout &&
+        !scenesAsync.isLoading &&
+        !scenesAsync.hasError &&
+        scenes.isNotEmpty) {
+      _maybePromptViewMode();
+    }
     if (_restoreFocusPending &&
         !scenesAsync.isLoading &&
         scenesAsync.hasValue) {

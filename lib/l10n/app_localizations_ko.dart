@@ -1745,6 +1745,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_layout_tiktok => '무한 스크롤';
 
   @override
+  String get scene_view_mode_prompt_title => '장면 보기 방식 선택';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '장면을 2열 그리드로 표시합니다.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => '장면을 하나씩 끝없이 스와이프하며 봅니다.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      '나중에 설정 › 인터페이스 설정에서 변경할 수 있습니다.';
+
+  @override
   String get settings_interface_grid_columns => '그리드 열';
 
   @override

@@ -1805,6 +1805,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settings_interface_layout_tiktok => 'Desplazamiento infinito';
 
   @override
+  String get scene_view_mode_prompt_title => 'Elige la vista de escenas';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc =>
+      'Escenas en una cuadrícula de dos columnas.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'Una escena cada vez en un feed infinito que se desliza.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'Puedes cambiarlo más tarde en Ajustes › Ajustes de interfaz.';
+
+  @override
   String get settings_interface_grid_columns => 'Columnas de la cuadrícula';
 
   @override

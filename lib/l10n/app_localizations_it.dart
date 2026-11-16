@@ -1798,6 +1798,21 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings_interface_layout_tiktok => 'Scorrimento Infinito';
 
   @override
+  String get scene_view_mode_prompt_title => 'Scegli la vista delle scene';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc =>
+      'Scene in una griglia a due colonne.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'Una scena alla volta in un feed infinito da scorrere.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'Puoi cambiarlo in seguito in Impostazioni › Impostazioni Interfaccia.';
+
+  @override
   String get settings_interface_grid_columns => 'Colonne Griglia';
 
   @override

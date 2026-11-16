@@ -1745,6 +1745,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_layout_tiktok => '無限スクロール';
 
   @override
+  String get scene_view_mode_prompt_title => 'シーンの表示方法を選択';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '2列のグリッドでシーンを表示します。';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => 'シーンを1つずつ、スワイプで無限に表示します。';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'この設定は後で「設定 › インターフェース設定」から変更できます。';
+
+  @override
   String get settings_interface_grid_columns => 'グリッドの列数';
 
   @override

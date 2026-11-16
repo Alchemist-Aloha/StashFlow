@@ -1787,6 +1787,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_interface_layout_tiktok => 'Бесконечная прокрутка';
 
   @override
+  String get scene_view_mode_prompt_title => 'Выберите вид сцен';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc =>
+      'Сцены в сетке из двух колонок.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'По одной сцене в бесконечной ленте с пролистыванием.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'Это можно изменить позже в разделе Настройки › Настройки интерфейса.';
+
+  @override
   String get settings_interface_grid_columns => 'Колонки сетки';
 
   @override

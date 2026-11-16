@@ -8,7 +8,13 @@ import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scenes_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+
 import 'helpers/test_helpers.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart'
+    show sceneViewModePromptPendingKey;
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_view_mode_dialog.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
 class FakeGraphQLSceneRepository implements GraphQLSceneRepository {
@@ -158,37 +164,39 @@ class FakeGraphQLSceneRepository implements GraphQLSceneRepository {
   Future<int> countScenesMissingPhash() async => 0;
 }
 
+FakeGraphQLSceneRepository _alphaRepo() => FakeGraphQLSceneRepository([
+  Scene(
+    id: 'scene-1',
+    title: 'Alpha Scene',
+    details: 'details',
+    path: null,
+    date: DateTime(2024, 1, 1),
+    rating100: 80,
+    oCounter: 0,
+    organized: true,
+    interactive: false,
+    resumeTime: null,
+    playCount: 1,
+    playDuration: 0,
+    files: const [],
+    paths: const ScenePaths(screenshot: null, preview: null, stream: null),
+    urls: const [],
+    studioId: 'studio-1',
+    studioName: 'Studio',
+    studioImagePath: null,
+    performerIds: const ['p1'],
+    performerNames: const ['Performer'],
+    performerImagePaths: const [null],
+    tagIds: const ['t1'],
+    tagNames: const ['Tag'],
+  ),
+]);
+
 void main() {
   testWidgets('ScenesPage renders and filters with mock repository', (
     tester,
   ) async {
-    final repo = FakeGraphQLSceneRepository([
-      Scene(
-        id: 'scene-1',
-        title: 'Alpha Scene',
-        details: 'details',
-        path: null,
-        date: DateTime(2024, 1, 1),
-        rating100: 80,
-        oCounter: 0,
-        organized: true,
-        interactive: false,
-        resumeTime: null,
-        playCount: 1,
-        playDuration: 0,
-        files: const [],
-        paths: const ScenePaths(screenshot: null, preview: null, stream: null),
-        urls: const [],
-        studioId: 'studio-1',
-        studioName: 'Studio',
-        studioImagePath: null,
-        performerIds: const ['p1'],
-        performerNames: const ['Performer'],
-        performerImagePaths: const [null],
-        tagIds: const ['t1'],
-        tagNames: const ['Tag'],
-      ),
-    ]);
+    final repo = _alphaRepo();
 
     await pumpTestWidget(
       tester,
@@ -208,5 +216,47 @@ void main() {
 
     final l10n = AppLocalizations.of(tester.element(find.byType(ScenesPage)))!;
     expect(find.text(l10n.common_no_items), findsOneWidget);
+  });
+
+  testWidgets('ScenesPage asks once for the view mode after first setup', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      sceneViewModePromptPendingKey: true,
+    });
+    final prefs = await SharedPreferences.getInstance();
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(_alphaRepo())],
+      child: const ScenesPage(),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SceneViewModeDialog), findsOneWidget);
+    expect(prefs.getBool(sceneViewModePromptPendingKey), isFalse);
+
+    await tester.tap(find.byKey(const Key('scene-view-mode-feed')));
+    // The feed keeps animating, so pump past the dialog exit instead of settling.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byType(SceneViewModeDialog), findsNothing);
+    expect(prefs.getBool('scene_tiktok_layout'), isTrue);
+  });
+
+  testWidgets('ScenesPage does not prompt without the pending flag', (
+    tester,
+  ) async {
+    await pumpTestWidget(
+      tester,
+      overrides: [sceneRepositoryProvider.overrideWithValue(_alphaRepo())],
+      child: const ScenesPage(),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Alpha Scene'), findsOneWidget);
+    expect(find.byType(SceneViewModeDialog), findsNothing);
   });
 }

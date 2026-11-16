@@ -1795,6 +1795,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_interface_layout_tiktok => 'Endloses Scrollen';
 
   @override
+  String get scene_view_mode_prompt_title => 'Szenenansicht wählen';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc =>
+      'Szenen in einem zweispaltigen Raster.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'Eine Szene nach der anderen in einem endlosen Wisch-Feed.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'Du kannst dies später unter Einstellungen › Interface-Einstellungen ändern.';
+
+  @override
   String get settings_interface_grid_columns => 'Rasterspalten';
 
   @override

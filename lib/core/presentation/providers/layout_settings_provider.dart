@@ -55,6 +55,13 @@ class MiniPlayerBottomOffset extends _$MiniPlayerBottomOffset {
   }
 }
 
+/// Preference key for the one-time scene view mode prompt.
+///
+/// `true` means the first server profile was saved and the prompt should show
+/// after scenes first load; `false` means it was shown and must never return.
+/// Absent means the install predates the prompt or has no server yet.
+const sceneViewModePromptPendingKey = 'scene_view_mode_prompt_pending';
+
 enum GridColumnSetting {
   scene('scene_grid_columns_v2'),
   performer('performer_grid_columns_v2'),

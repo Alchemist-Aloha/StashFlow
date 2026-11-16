@@ -3168,6 +3168,30 @@ abstract class AppLocalizations {
   /// **'Feed'**
   String get settings_interface_layout_tiktok;
 
+  /// No description provided for @scene_view_mode_prompt_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a scene view'**
+  String get scene_view_mode_prompt_title;
+
+  /// No description provided for @scene_view_mode_prompt_grid_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes in a two-column grid.'**
+  String get scene_view_mode_prompt_grid_desc;
+
+  /// No description provided for @scene_view_mode_prompt_feed_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'One scene at a time in an endless, swipeable feed.'**
+  String get scene_view_mode_prompt_feed_desc;
+
+  /// No description provided for @scene_view_mode_prompt_settings_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later in Settings › Interface Settings.'**
+  String get scene_view_mode_prompt_settings_hint;
+
   /// No description provided for @settings_interface_grid_columns.
   ///
   /// In en, this message translates to:

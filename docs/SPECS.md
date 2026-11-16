@@ -267,6 +267,12 @@ List invariants:
   mode. Column preferences persist. Entity media pages (performer, studio,
   tag, group) share the Scenes column preference, and entity gallery pages
   share the Galleries column preference.
+- Saving the first server profile on an install arms a one-time Scenes prompt
+  (`sceneViewModePromptPendingKey`). The first time the Scenes route is current
+  with loaded, non-empty scenes in grid mode, a dialog offers Grid or Feed with
+  small layout sketches and notes that Interface Settings can change it later.
+  The flag is cleared before the dialog opens, so dismissal keeps Grid and the
+  prompt never returns; installs that predate the flag never see it.
 - In grids with a column setting, Ctrl+mouse wheel adjusts that category's
   persisted Interface setting by one column per event within the existing 1–10
   range. Wheel up reduces columns (larger cards); wheel down adds columns.
