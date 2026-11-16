@@ -14,11 +14,27 @@
 - Autoplay next is now on by default. If you never changed this setting, the next scene now plays automatically; a setting you chose yourself is kept.
 - When the next scene starts while an image viewer, scene editor, or another page covers the scene details, that page now stays open instead of being replaced.
 
+## 🧱 Grid Layouts
+
+- Removed the list layout. Scenes, galleries, markers, and the media and gallery pages of performers, studios, tags, and groups now always use the grid. If you used list mode, set the column count to 1 for full-width cards.
+- Performer, studio, tag, and group media pages now share the Scenes column count, and their gallery pages share the Galleries column count. The separate studio, tag, and group column settings are gone; the Performers setting now applies only to the Performers page.
+
+## 👋 First-Run Guide
+
+- After setting up your first server, the Scenes page asks whether you prefer the grid or the feed, with a small preview of each.
+- Short one-time tips explain the main gestures: long press a scene card for details; in the feed, long press to fast-forward, tap the title to hide the controls, and open the up arrow for more actions; on scene details, swipe the title to change scenes.
+- Scene details also asks once whether to seek by double-tap or by dragging, and the image viewer asks once for vertical or horizontal swiping. Both can be changed later in Settings.
+- Added **Settings → Develop → Reset First-Run Tips** to show these again.
+
 ## 🖼️ Gallery Details
 
 - Gallery details now scroll together with the image grid, so galleries with many chapters, performers, or linked scenes no longer leave only a small area for browsing images. Drag anywhere on the page to scroll.
 - Once the details scroll out of view, a compact summary with the title, rating, and image count stays pinned at the top. Its arrow button scrolls back to the full details.
 - Galleries with chapters now show them as a chip row in the header. Tap a chapter to open the viewer at its first image, regardless of the grid's current sort.
+
+## 👤 Performers
+
+- Performers without a photo now show Stash's default silhouettes, tinted to the app theme, instead of a broken-image icon. Each performer keeps the same silhouette, and male performers use the male set. The performer details page now shows it too, where the image area was previously hidden.
 
 ## 🔐 Server Sign-in
 
