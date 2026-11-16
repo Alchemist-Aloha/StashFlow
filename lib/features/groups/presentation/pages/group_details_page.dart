@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -33,10 +34,21 @@ class GroupDetailsPage extends ConsumerWidget {
       entityMediaPreviewProvider(EntityMediaFilterKind.group, groupId),
     );
 
+    // Content scrolls under the frosted bar from a fixed top inset.
+    final appBar = FrostedAppBar(
+      bar: AppBar(
+        title: Text(context.l10n.details_group),
+        backgroundColor: Colors.transparent,
+      ),
+    );
+    final topInset = appBar.topInset(context);
+
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.details_group)),
+      extendBodyBehindAppBar: true,
+      appBar: appBar,
       body: groupAsync.when(
         data: (group) => RefreshIndicator(
+          edgeOffset: topInset,
           onRefresh: () async {
             ref.invalidate(groupDetailsProvider(groupId));
             ref.invalidate(
@@ -57,6 +69,7 @@ class GroupDetailsPage extends ConsumerWidget {
             // Content passes behind the frosted mini player; this inset keeps
             // the last rows reachable while the player is visible.
             padding: EdgeInsets.only(
+              top: topInset,
               bottom: MediaQuery.paddingOf(context).bottom,
             ),
             child: Column(

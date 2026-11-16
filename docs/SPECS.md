@@ -86,8 +86,10 @@ sheets, saved-filter UI, `StashImage`, and common state views.
 - A surface that floats over scrolling content must publish its height as an
   inset (scroll padding, or `MediaQuery` bottom padding) so no content is
   permanently hidden behind it.
-- List page top app bars float over the content as frosted glass, and rows
-  scroll underneath them behind a fixed top scroll inset of the bar's height.
+- List page and performer, studio, tag, and group details top app bars use the
+  shared `FrostedAppBar`: they float over the content as frosted glass, and
+  content scrolls underneath them behind a fixed top scroll inset of the bar's
+  height (`FrostedAppBar.topInset`).
 - With "auto-hide top app bar" on, list pages slide the bar away on downward
   user scrolls and back on upward ones. The floating bar stays frosted with the
   stronger `frostedFloatingChromeAlpha` tint, drops its backdrop blur once fully

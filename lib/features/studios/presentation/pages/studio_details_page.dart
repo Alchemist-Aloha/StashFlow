@@ -12,6 +12,7 @@ import '../providers/studio_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -98,8 +99,15 @@ class StudioDetailsPage extends ConsumerWidget {
     );
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
+    // Content scrolls under the frosted bar from a fixed top inset.
+    final appBar = FrostedAppBar(
+      bar: AppBar(backgroundColor: Colors.transparent),
+    );
+    final topInset = appBar.topInset(context);
+
     return Scaffold(
-      appBar: AppBar(),
+      extendBodyBehindAppBar: true,
+      appBar: appBar,
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomStudio(context, ref),
@@ -110,6 +118,7 @@ class StudioDetailsPage extends ConsumerWidget {
       body: studioAsync.when(
         data: (studio) {
           return RefreshIndicator(
+            edgeOffset: topInset,
             onRefresh: () async {
               ref.invalidate(studioDetailsProvider(studioId));
               ref.invalidate(
@@ -145,6 +154,7 @@ class StudioDetailsPage extends ConsumerWidget {
               // Content passes behind the frosted mini player; this inset keeps
               // the last rows reachable while the player is visible.
               padding: EdgeInsets.only(
+                top: topInset,
                 bottom: MediaQuery.paddingOf(context).bottom,
               ),
               child: Column(

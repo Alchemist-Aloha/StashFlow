@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/frosted_app_bar.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
@@ -210,6 +211,40 @@ void main() {
     expect(tester.widget<AppBar>(find.byType(AppBar)).title, isNull);
   });
 
+  testWidgets('performer details scroll under a frosted app bar', (
+    tester,
+  ) async {
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        performerDetailsProvider('performer-1')
+            .overrideWith((ref) => _performer),
+        entityMediaPreviewProvider(
+          EntityMediaFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+        entityGalleryPreviewProvider(
+          EntityGalleryFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+      ],
+      child: const PerformerDetailsPage(performerId: 'performer-1'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(FrostedAppBar), findsOneWidget);
+    final scrollView = find.byType(SingleChildScrollView).first;
+    // The scroll view runs behind the bar; its content starts below it.
+    expect(tester.getTopLeft(scrollView).dy, 0);
+    final content = find
+        .descendant(of: scrollView, matching: find.byType(Column))
+        .first;
+    expect(
+      tester.getTopLeft(content).dy,
+      tester.getBottomLeft(find.byType(FrostedAppBar)).dy,
+    );
+  });
+
   testWidgets('performer links collapse to five with a show more toggle', (
     tester,
   ) async {
@@ -282,9 +317,8 @@ void main() {
     await pumpTestWidget(
       tester,
       overrides: [
-        performerDetailsProvider(
-          'performer-1',
-        ).overrideWith((ref) => _performer),
+        performerDetailsProvider('performer-1')
+            .overrideWith((ref) => _performer),
         entityMediaPreviewProvider(
           EntityMediaFilterKind.performer,
           'performer-1',

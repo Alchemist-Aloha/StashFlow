@@ -14,6 +14,7 @@ import '../providers/tag_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -64,8 +65,15 @@ class TagDetailsPage extends ConsumerWidget {
     );
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
+    // Content scrolls under the frosted bar from a fixed top inset.
+    final appBar = FrostedAppBar(
+      bar: AppBar(backgroundColor: Colors.transparent),
+    );
+    final topInset = appBar.topInset(context);
+
     return Scaffold(
-      appBar: AppBar(),
+      extendBodyBehindAppBar: true,
+      appBar: appBar,
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomTag(context, ref),
@@ -76,6 +84,7 @@ class TagDetailsPage extends ConsumerWidget {
       body: tagAsync.when(
         data: (tag) {
           return RefreshIndicator(
+            edgeOffset: topInset,
             onRefresh: () async {
               ref.invalidate(tagDetailsProvider(tagId));
               ref.invalidate(
@@ -108,6 +117,7 @@ class TagDetailsPage extends ConsumerWidget {
               // Content passes behind the frosted mini player; this inset keeps
               // the last rows reachable while the player is visible.
               padding: EdgeInsets.only(
+                top: topInset,
                 bottom: MediaQuery.paddingOf(context).bottom,
               ),
               child: Column(

@@ -16,6 +16,7 @@ import '../../utils/responsive.dart';
 import '../providers/desktop_capabilities_provider.dart';
 import '../providers/layout_settings_provider.dart';
 import 'error_state_view.dart';
+import 'frosted_app_bar.dart';
 import 'frosted_surface.dart';
 import 'section_header.dart';
 import '../../utils/pagination.dart';
@@ -308,7 +309,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
         ? responsiveDelegate
         : null;
 
-    final appBar = _FrostedAppBar(
+    final appBar = FrostedAppBar(
       bar: AppBar(
         leading: widget.leading,
         // The frosted layer behind the bar is the elevation: no surface tint
@@ -1027,13 +1028,12 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     // glass; the content reserves the bar's full height as fixed scroll
     // padding. With auto-hide the bar slides away, and the inset stays fixed
     // because animating it re-laid out the whole list on every frame.
-    final statusBarHeight = MediaQuery.paddingOf(context).top;
     return Scaffold(
       // The bar and the action pill never overlap, so they share one backdrop.
       body: BackdropGroup(
         child: Stack(
           children: [
-            buildContent(statusBarHeight + appBar.preferredSize.height),
+            buildContent(appBar.topInset(context)),
             Positioned(
               top: 0,
               left: 0,
@@ -1088,61 +1088,11 @@ class _AutoHideAppBarState extends State<_AutoHideAppBar> {
       onEnd: () {
         if (!widget.visible && _blur) setState(() => _blur = false);
       },
-      child: _FrostedAppBar(
+      child: FrostedAppBar(
         bar: widget.bar,
         tintAlpha: AppTheme.frostedFloatingChromeAlpha,
         blur: _blur,
       ),
-    );
-  }
-}
-
-/// An [AppBar] sitting on a frosted backdrop.
-///
-/// The frost is painted behind the bar instead of inside its `flexibleSpace`,
-/// so it takes the bar's real height and the automatic status-bar inset without
-/// fighting unbounded layout constraints; the bar itself goes transparent so
-/// the glass and the rows scrolling under it are what the header is made of.
-class _FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _FrostedAppBar({
-    required this.bar,
-    this.tintAlpha = AppTheme.frostedChromeAlpha,
-    this.blur = true,
-  });
-
-  final AppBar bar;
-
-  /// Surface tint alpha; floating bars use a stronger tint.
-  final double tintAlpha;
-
-  /// Whether to blur the backdrop; off while an auto-hide bar is off screen.
-  final bool blur;
-
-  @override
-  Size get preferredSize => bar.preferredSize;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: FrostedSurface(
-            tint: context.colors.surface.withValues(alpha: tintAlpha),
-            blurSigma: blur ? AppTheme.frostedBlurSigma : 0,
-            border: Border(
-              bottom: BorderSide(
-                color: colorScheme.outlineVariant.withValues(
-                  alpha: AppTheme.frostedHairlineAlpha,
-                ),
-              ),
-            ),
-            child: const SizedBox.shrink(),
-          ),
-        ),
-        bar,
-      ],
     );
   }
 }
