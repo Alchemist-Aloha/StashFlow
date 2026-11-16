@@ -162,7 +162,6 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
                   width: effectiveItemWidth,
                   child: GalleryCard(
                     gallery: gallery,
-                    isGrid: true,
                     showPerformers: false,
                     onTap: onTap == null ? null : () => onTap(gallery),
                   ),

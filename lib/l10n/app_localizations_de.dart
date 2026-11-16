@@ -1789,9 +1789,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wählen Sie das Standard-Layout für die Seite';
 
   @override
-  String get settings_interface_layout_list => 'Liste';
-
-  @override
   String get settings_interface_layout_grid => 'Raster';
 
   @override
@@ -1824,39 +1821,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_interface_waterfall_columns => 'Wasserfall-Rasterspalten';
 
   @override
-  String get settings_interface_performer_layouts => 'Darsteller-Layouts';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Medien- und Galerie-Standards für Darsteller';
-
-  @override
-  String get settings_interface_studio_layouts => 'Studio-Layouts';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Medien- und Galerie-Standards für Studios';
 
   @override
-  String get settings_interface_tag_layouts => 'Tag-Layouts';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Medien- und Galerie-Standards für Tags';
-
-  @override
-  String get settings_interface_media_layout => 'Medien-Layout';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Layout für die Medienseite';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Galerien-Layout';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout für die Galerieseite';
 
   @override
   String get settings_server_title => 'Server-Einstellungen';
@@ -3740,19 +3714,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sub_group_count_title => 'Anzahl der Untergruppen';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Standardbrowsermodus für Gruppen';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Standard-Browsing-Modus für Markierungen';
-
-  @override
-  String get entity_layouts_title => 'Entitätslayouts';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Standardeinstellungen für das Medien- und Galerielayout für Künstler, Studios und Tags';
 
   @override
   String get stats_subtitle_0_gb => '0,00 GB';

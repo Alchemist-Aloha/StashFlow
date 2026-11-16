@@ -3156,12 +3156,6 @@ abstract class AppLocalizations {
   /// **'Choose the default layout for the page'**
   String get settings_interface_layout_default_desc;
 
-  /// No description provided for @settings_interface_layout_list.
-  ///
-  /// In en, this message translates to:
-  /// **'List'**
-  String get settings_interface_layout_list;
-
   /// No description provided for @settings_interface_layout_grid.
   ///
   /// In en, this message translates to:
@@ -3222,23 +3216,11 @@ abstract class AppLocalizations {
   /// **'Waterfall Grid Columns'**
   String get settings_interface_waterfall_columns;
 
-  /// No description provided for @settings_interface_performer_layouts.
-  ///
-  /// In en, this message translates to:
-  /// **'Performer Layouts'**
-  String get settings_interface_performer_layouts;
-
   /// No description provided for @settings_interface_performer_layouts_subtitle.
   ///
   /// In en, this message translates to:
   /// **'Media and gallery defaults for performers'**
   String get settings_interface_performer_layouts_subtitle;
-
-  /// No description provided for @settings_interface_studio_layouts.
-  ///
-  /// In en, this message translates to:
-  /// **'Studio Layouts'**
-  String get settings_interface_studio_layouts;
 
   /// No description provided for @settings_interface_studio_layouts_subtitle.
   ///
@@ -3246,41 +3228,11 @@ abstract class AppLocalizations {
   /// **'Media and gallery defaults for studios'**
   String get settings_interface_studio_layouts_subtitle;
 
-  /// No description provided for @settings_interface_tag_layouts.
-  ///
-  /// In en, this message translates to:
-  /// **'Tag Layouts'**
-  String get settings_interface_tag_layouts;
-
   /// No description provided for @settings_interface_tag_layouts_subtitle.
   ///
   /// In en, this message translates to:
   /// **'Media and gallery defaults for tags'**
   String get settings_interface_tag_layouts_subtitle;
-
-  /// No description provided for @settings_interface_media_layout.
-  ///
-  /// In en, this message translates to:
-  /// **'Media Layout'**
-  String get settings_interface_media_layout;
-
-  /// No description provided for @settings_interface_media_layout_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Layout for Media page'**
-  String get settings_interface_media_layout_subtitle;
-
-  /// No description provided for @settings_interface_galleries_layout_item.
-  ///
-  /// In en, this message translates to:
-  /// **'Galleries Layout'**
-  String get settings_interface_galleries_layout_item;
-
-  /// No description provided for @settings_interface_galleries_layout_subtitle_item.
-  ///
-  /// In en, this message translates to:
-  /// **'Layout for Galleries page'**
-  String get settings_interface_galleries_layout_subtitle_item;
 
   /// No description provided for @settings_server_title.
   ///
@@ -6468,29 +6420,11 @@ abstract class AppLocalizations {
   /// **'Sub-group Count'**
   String get sub_group_count_title;
 
-  /// No description provided for @groups_browsing_mode_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Default browsing mode for groups'**
-  String get groups_browsing_mode_subtitle;
-
   /// No description provided for @markers_browsing_mode_subtitle.
   ///
   /// In en, this message translates to:
   /// **'Default browsing mode for markers'**
   String get markers_browsing_mode_subtitle;
-
-  /// No description provided for @entity_layouts_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Entity Layouts'**
-  String get entity_layouts_title;
-
-  /// No description provided for @entity_layouts_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Media and gallery layout defaults for performers, studios and tags'**
-  String get entity_layouts_subtitle;
 
   /// No description provided for @stats_subtitle_0_gb.
   ///

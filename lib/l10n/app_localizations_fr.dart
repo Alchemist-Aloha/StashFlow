@@ -1792,9 +1792,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Choisissez la disposition par défaut pour la page';
 
   @override
-  String get settings_interface_layout_list => 'Liste';
-
-  @override
   String get settings_interface_layout_grid => 'Grille';
 
   @override
@@ -1829,40 +1826,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Colonnes de la grille en cascade';
 
   @override
-  String get settings_interface_performer_layouts => 'Dispositions des acteurs';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Valeurs par défaut des médias et galeries pour les acteurs';
-
-  @override
-  String get settings_interface_studio_layouts => 'Dispositions des studios';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Valeurs par défaut des médias et galeries pour les studios';
 
   @override
-  String get settings_interface_tag_layouts => 'Dispositions des tags';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Valeurs par défaut des médias et galeries pour les tags';
-
-  @override
-  String get settings_interface_media_layout => 'Disposition des médias';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Disposition pour la page Médias';
-
-  @override
-  String get settings_interface_galleries_layout_item =>
-      'Disposition des galeries';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Disposition pour la page Galeries';
 
   @override
   String get settings_server_title => 'Paramètres du serveur';
@@ -3759,19 +3732,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sub_group_count_title => 'Nombre de sous-groupes';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Mode de navigation par défaut pour les groupes';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Mode de navigation par défaut pour les marqueurs';
-
-  @override
-  String get entity_layouts_title => 'Dispositions d\'entité';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Paramètres par défaut de présentation des médias et de la galerie pour les artistes, les studios et les tags';
 
   @override
   String get stats_subtitle_0_gb => '0,00 Go';

@@ -1739,9 +1739,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_layout_default_desc => '페이지의 기본 레이아웃 선택';
 
   @override
-  String get settings_interface_layout_list => '목록';
-
-  @override
   String get settings_interface_layout_grid => '그리드';
 
   @override
@@ -1773,37 +1770,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_waterfall_columns => '폭포수 그리드 열';
 
   @override
-  String get settings_interface_performer_layouts => '출연자 레이아웃';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       '출연자의 미디어 및 갤러리 기본값';
-
-  @override
-  String get settings_interface_studio_layouts => '스튜디오 레이아웃';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       '스튜디오의 미디어 및 갤러리 기본값';
 
   @override
-  String get settings_interface_tag_layouts => '태그 레이아웃';
-
-  @override
   String get settings_interface_tag_layouts_subtitle => '태그의 미디어 및 갤러리 기본값';
-
-  @override
-  String get settings_interface_media_layout => '미디어 레이아웃';
-
-  @override
-  String get settings_interface_media_layout_subtitle => '미디어 페이지용 레이아웃';
-
-  @override
-  String get settings_interface_galleries_layout_item => '갤러리 레이아웃';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      '갤러리 페이지용 레이아웃';
 
   @override
   String get settings_server_title => '서버 설정';
@@ -3618,16 +3593,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sub_group_count_title => '하위 그룹 수';
 
   @override
-  String get groups_browsing_mode_subtitle => '그룹의 기본 탐색 모드';
-
-  @override
   String get markers_browsing_mode_subtitle => '마커의 기본 탐색 모드';
-
-  @override
-  String get entity_layouts_title => '엔터티 레이아웃';
-
-  @override
-  String get entity_layouts_subtitle => '공연자, 스튜디오 및 태그에 대한 미디어 및 갤러리 레이아웃 기본값';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';

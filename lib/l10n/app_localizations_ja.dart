@@ -1739,9 +1739,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_layout_default_desc => 'ページのデフォルトレイアウトを選択します';
 
   @override
-  String get settings_interface_layout_list => 'リスト';
-
-  @override
   String get settings_interface_layout_grid => 'グリッド';
 
   @override
@@ -1773,38 +1770,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_waterfall_columns => 'ウォーターフォールグリッドの列数';
 
   @override
-  String get settings_interface_performer_layouts => 'パフォーマーのレイアウト';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'パフォーマーのメディアおよびギャラリーのデフォルト設定';
-
-  @override
-  String get settings_interface_studio_layouts => 'スタジオのレイアウト';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'スタジオのメディアおよびギャラリーのデフォルト設定';
 
   @override
-  String get settings_interface_tag_layouts => 'タグのレイアウト';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'タグのメディアおよびギャラリーのデフォルト設定';
-
-  @override
-  String get settings_interface_media_layout => 'メディアのレイアウト';
-
-  @override
-  String get settings_interface_media_layout_subtitle => 'メディアページのレイアウト';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'ギャラリーのレイアウト';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'ギャラリーページのレイアウト';
 
   @override
   String get settings_server_title => 'サーバー設定';
@@ -3620,16 +3595,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sub_group_count_title => 'サブグループ数';
 
   @override
-  String get groups_browsing_mode_subtitle => 'グループのデフォルトの閲覧モード';
-
-  @override
   String get markers_browsing_mode_subtitle => 'マーカーのデフォルトの閲覧モード';
-
-  @override
-  String get entity_layouts_title => 'エンティティのレイアウト';
-
-  @override
-  String get entity_layouts_subtitle => 'パフォーマー、スタジオ、タグのメディアとギャラリーのデフォルトのレイアウト';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';

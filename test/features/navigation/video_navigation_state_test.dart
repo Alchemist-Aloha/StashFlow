@@ -191,7 +191,6 @@ void main() {
             // Set through the real preference notifier so this does not depend on
             // preference key spelling or default layout.
             await container.read(sceneTiktokLayoutProvider.notifier).set(feed);
-            await container.read(sceneGridLayoutProvider.notifier).set(true);
             await _settle(tester);
             expect(router.state.uri.path, '/scenes');
             expect(

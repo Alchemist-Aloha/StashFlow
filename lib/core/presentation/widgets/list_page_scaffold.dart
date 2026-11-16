@@ -906,7 +906,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                             true,
                                             index,
                                           )
-                                        : SceneCard.skeleton(isGrid: true),
+                                        : SceneCard.skeleton(),
                                   ),
                                 );
                               }
@@ -920,7 +920,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                   itemBuilder: (context, index) =>
                                       loadingItemBuilder != null
                                       ? loadingItemBuilder(context, true, index)
-                                      : SceneCard.skeleton(isGrid: true),
+                                      : SceneCard.skeleton(),
                                 );
                               }
                               return ListView.builder(
@@ -931,7 +931,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                 itemBuilder: (context, index) =>
                                     loadingItemBuilder != null
                                     ? loadingItemBuilder(context, false, index)
-                                    : SceneCard.skeleton(isGrid: false),
+                                    : SceneCard.skeleton(),
                               );
                             },
                             // A fresh install has no server yet; guide to setup

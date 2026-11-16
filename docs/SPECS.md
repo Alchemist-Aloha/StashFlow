@@ -263,7 +263,10 @@ List invariants:
   scrolling still loads the next one.
 - Duplicate fetches are coalesced or ignored while the same page is in flight.
 - Empty and error states provide an appropriate recovery action.
-- Grid/list layout and supported column preferences persist.
+- Scene, gallery, and marker pages always use grids; there is no list layout
+  mode. Column preferences persist. Entity media pages (performer, studio,
+  tag, group) share the Scenes column preference, and entity gallery pages
+  share the Galleries column preference.
 - In grids with a column setting, Ctrl+mouse wheel adjusts that category's
   persisted Interface setting by one column per event within the existing 1–10
   range. Wheel up reduces columns (larger cards); wheel down adds columns.
@@ -367,8 +370,8 @@ serialization differences.
 
 ### Scene cards
 
-Scene cards support grid/list layouts, localized metadata, thumbnail badges,
-context actions, and optional performer avatars. Scene and gallery cards share
+Scene cards support grid and masonry layouts, localized metadata, thumbnail
+badges, context actions, and optional performer avatars. Scene and gallery cards share
 `ThumbnailBadge`: rounded translucent corner badges with the rating (yellow
 star) top-right; scenes show the O-count bottom-left and the length (or scrub
 position) bottom-right, galleries the image count bottom-right. Rating and
@@ -376,7 +379,7 @@ count badges are omitted when empty. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
 scaling.
 
-Grid, list, masonry, and horizontal-strip scene cards show a thin, accessible
+Grid, masonry, and horizontal-strip scene cards show a thin, accessible
 playback-position bar directly below the thumbnail when the saved `resumeTime`
 and primary file duration are finite and positive. The ratio is clamped to
 0–100%; a saved position at or beyond the duration displays a full bar. Play
@@ -647,7 +650,7 @@ Responsibilities:
   auto-hide. Subtitles and playback continue independently of overlay visibility.
 - The feed's right-side buttons show the scene's O-count above its rating;
   tapping the O-count adds one O through `sceneAddO` and updates the count.
-- Scene grid/list returns restore scroll position and keyboard focus to the
+- Scene grid returns restore scroll position and keyboard focus to the
   active scene (or the saved playlist item for random returns). Restoration is
   driven by returning to the list route, waits for list data, and must not depend
   on the original details push completing: next-scene navigation can replace it.

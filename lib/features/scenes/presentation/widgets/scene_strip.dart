@@ -168,7 +168,6 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
                     width: effectiveItemWidth,
                     child: SceneCard(
                       scene: scene,
-                      isGrid: true,
                       thumbnailAspectRatio: 16 / 9,
                       showPerformers: false,
                       useHero: false,

@@ -1792,9 +1792,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Scegli il layout predefinito per la pagina';
 
   @override
-  String get settings_interface_layout_list => 'Elenco';
-
-  @override
   String get settings_interface_layout_grid => 'Griglia';
 
   @override
@@ -1829,39 +1826,16 @@ class AppLocalizationsIt extends AppLocalizations {
       'Colonne Griglia Waterfall';
 
   @override
-  String get settings_interface_performer_layouts => 'Layout Attori';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Predefiniti media e gallerie per gli attori';
-
-  @override
-  String get settings_interface_studio_layouts => 'Layout Studi';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Predefiniti media e gallerie per gli studi';
 
   @override
-  String get settings_interface_tag_layouts => 'Layout Tag';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Predefiniti media e gallerie per i tag';
-
-  @override
-  String get settings_interface_media_layout => 'Layout Media';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Layout per la pagina Media';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Layout Gallerie';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout per la pagina Gallerie';
 
   @override
   String get settings_server_title => 'Impostazioni Server';
@@ -3755,19 +3729,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sub_group_count_title => 'Conteggio sottogruppi';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Modalità di navigazione predefinita per i gruppi';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Modalità di navigazione predefinita per i marcatori';
-
-  @override
-  String get entity_layouts_title => 'Layout di entità';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Impostazioni predefinite del layout multimediale e della galleria per artisti, studi e tag';
 
   @override
   String get stats_subtitle_0_gb => '0,00GB';

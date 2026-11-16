@@ -1781,9 +1781,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выберите макет по умолчанию для страницы';
 
   @override
-  String get settings_interface_layout_list => 'Список';
-
-  @override
   String get settings_interface_layout_grid => 'Сетка';
 
   @override
@@ -1817,39 +1814,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_interface_waterfall_columns => 'Колонки сетки «Водопад»';
 
   @override
-  String get settings_interface_performer_layouts => 'Макеты исполнителей';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Настройки медиа и галерей для исполнителей по умолчанию';
-
-  @override
-  String get settings_interface_studio_layouts => 'Макеты студий';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Настройки медиа и галерей для студий по умолчанию';
 
   @override
-  String get settings_interface_tag_layouts => 'Макеты тегов';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Настройки медиа и галерей для тегов по умолчанию';
-
-  @override
-  String get settings_interface_media_layout => 'Макет медиа';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Макет для страницы Медиа';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Макет галерей';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Макет для страницы Галереи';
 
   @override
   String get settings_server_title => 'Настройки сервера';
@@ -3736,19 +3710,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sub_group_count_title => 'Количество подгрупп';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Режим просмотра по умолчанию для групп';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Режим просмотра по умолчанию для маркеров';
-
-  @override
-  String get entity_layouts_title => 'Макеты объектов';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Настройки макета мультимедиа и галереи по умолчанию для исполнителей, студий и тегов';
 
   @override
   String get stats_subtitle_0_gb => '0,00 ГБ';

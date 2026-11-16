@@ -1281,7 +1281,7 @@ void main() {
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      child: Scaffold(body: SceneCard(scene: sceneWithMedia, isGrid: false)),
+      child: Scaffold(body: SceneCard(scene: sceneWithMedia)),
     );
 
     await tester.pump(const Duration(milliseconds: 500));

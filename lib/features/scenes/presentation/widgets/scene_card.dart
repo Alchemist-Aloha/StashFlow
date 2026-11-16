@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/app_log_store.dart';
+
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/thumbnail_badge.dart';
 import '../../../../core/presentation/widgets/media_card_text.dart';
@@ -27,14 +30,13 @@ enum _VttAvailability { unknown, checking, available, unavailable }
 ///
 /// This component is used throughout the app in lists and grids to show
 /// a thumbnail, title, studio, and duration. It supports:
-/// * Three layout modes: Grid (compact), List (full-width), and TikTok (via TiktokScenesView).
+/// * Grid and masonry layouts (TikTok mode uses TiktokScenesView instead).
 /// * Authenticated image loading using headers from [mediaHeadersProvider].
-/// * Dynamic aspect ratio in List mode to prevent image distortion.
+/// * Dynamic aspect ratio in masonry mode to prevent image distortion.
 /// * Consistent "BoxFit.cover" and "double.infinity" dimensions to ensure images
 ///   perfectly fill their allocated AspectRatio containers.
 class SceneCard extends ConsumerStatefulWidget {
   SceneCard.skeleton({
-    this.isGrid = false,
     this.useMasonry = false,
     this.thumbnailAspectRatio,
     this.showPerformers = false,
@@ -92,7 +94,6 @@ class SceneCard extends ConsumerStatefulWidget {
 
   const SceneCard({
     required this.scene,
-    this.isGrid = false,
     this.useMasonry = false,
     this.thumbnailAspectRatio,
     this.showPerformers = true,
@@ -107,9 +108,6 @@ class SceneCard extends ConsumerStatefulWidget {
 
   /// The scene data to display.
   final Scene scene;
-
-  /// Whether to display in a compact grid format or a wide list format.
-  final bool isGrid;
 
   /// Whether to use dynamic aspect ratio in grid mode (for masonry layouts).
   final bool useMasonry;
@@ -275,7 +273,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       });
     }
 
-    final inset = ThumbnailBadge.inset(compact: widget.isGrid);
+    final inset = ThumbnailBadge.inset(compact: true);
     Widget content = Stack(
       children: [
         StashImage(
@@ -321,7 +319,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
             child: ThumbnailBadge.rating(
               context,
               rating100: widget.scene.rating100!,
-              compact: widget.isGrid,
+              compact: true,
             ),
           ),
         if (widget.scene.oCounter > 0)
@@ -330,7 +328,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
             left: inset,
             child: ThumbnailBadge(
               label: '${widget.scene.oCounter}',
-              compact: widget.isGrid,
+              compact: true,
               icon: Icons.water_drop_outlined,
             ),
           ),
@@ -340,7 +338,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
             right: inset,
             child: ThumbnailBadge(
               label: _formatDuration(_isScrubbing ? _scrubTime : duration),
-              compact: widget.isGrid,
+              compact: true,
             ),
           ),
       ],
@@ -453,114 +451,14 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     final isSquareVideo =
         fileAspectRatio != null && (fileAspectRatio - 1.0).abs() < 0.01;
 
-    if (widget.isGrid) {
-      return _buildGridCard(
-        context,
-        ref,
-        duration,
-        widget.thumbnailAspectRatio ??
-            (widget.useMasonry || isSquareVideo
-                ? fileAspectRatio ?? 16 / 9
-                : 16 / 9),
-      );
-    }
-    return _buildListCard(
+    return _buildGridCard(
       context,
       ref,
       duration,
-      widget.thumbnailAspectRatio ?? fileAspectRatio ?? 16 / 9,
-    );
-  }
-
-  /// Builds the full-width list variant of the card.
-  ///
-  /// Uses a dynamic [aspectRatio] to match the source media's proportions.
-  Widget _buildListCard(
-    BuildContext context,
-    WidgetRef ref,
-    double? duration,
-    double aspectRatio,
-  ) {
-    return Skeletonizer(
-      enabled: widget.skeletonize,
-      effect: const ShimmerEffect(duration: Duration(seconds: 2)),
-      child: Material(
-        color: Theme.of(
-          context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          focusNode: widget.focusNode,
-          onTap: widget.onTap,
-          onLongPress: () => _showMenu(context, ref),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AspectRatio(
-                // Clamp aspect ratio to prevent extremely tall or wide items from
-                // breaking the list layout flow.
-                aspectRatio: aspectRatio.clamp(0.5, 2.5),
-                child: _buildThumbnail(context, duration, aspectRatio),
-              ),
-              _ScenePlaybackProgress(
-                scene: widget.scene,
-                skeletonize: widget.skeletonize,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.scene.displayTitle,
-                            style: context.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: context.dimensions.cardTitleFontSize,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${widget.scene.studioName ?? context.l10n.common_unknown} • ${widget.scene.date.year}',
-                            style: context.textTheme.labelMedium?.copyWith(
-                              color: context.colors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          if (widget.showPerformers &&
-                              ref.watch(showPerformerAvatarsProvider) &&
-                              widget.scene.performerNames.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            ScenePerformerAvatarRow(
-                              performerImagePaths:
-                                  widget.scene.performerImagePaths,
-                              performerNames: widget.scene.performerNames,
-                              performerIds: widget.scene.performerIds,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: context.l10n.common_more,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () => _showMenu(context, ref),
-                      icon: const Icon(Icons.more_vert, size: 20, color: null),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      widget.thumbnailAspectRatio ??
+          (widget.useMasonry || isSquareVideo
+              ? fileAspectRatio ?? 16 / 9
+              : 16 / 9),
     );
   }
 
@@ -578,9 +476,8 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       enabled: widget.skeletonize,
       effect: const ShimmerEffect(duration: Duration(seconds: 2)),
       child: Material(
-        color: Theme.of(
-          context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+        color: Theme.of(context).colorScheme.primaryContainer
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -746,9 +643,9 @@ class ScenePerformerAvatarRow extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(size / 2),
                   child: CircleAvatar(
                     radius: size / 2,
-                    backgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest,
                     child:
                         performerImagePaths[i] != null &&
                             performerImagePaths[i]!.isNotEmpty &&

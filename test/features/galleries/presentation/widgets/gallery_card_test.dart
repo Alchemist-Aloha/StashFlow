@@ -58,7 +58,7 @@ void main() {
       child: const Scaffold(
         body: SizedBox(
           width: 320,
-          child: GalleryCard(gallery: gallery, isGrid: true, thumbnailUrl: ''),
+          child: GalleryCard(gallery: gallery, thumbnailUrl: ''),
         ),
       ),
     );
@@ -122,7 +122,7 @@ void main() {
     expect(find.byType(RatingPicker), findsNothing);
   });
 
-  testWidgets('list card More and long press open metadata without rating', (
+  testWidgets('card More and long press open metadata without rating', (
     tester,
   ) async {
     const gallery = Gallery(
@@ -135,7 +135,7 @@ void main() {
     await pumpTestWidget(
       tester,
       child: const Scaffold(
-        body: GalleryCard(gallery: gallery, isGrid: false, thumbnailUrl: ''),
+        body: GalleryCard(gallery: gallery, thumbnailUrl: ''),
       ),
     );
     await tester.pumpAndSettle();

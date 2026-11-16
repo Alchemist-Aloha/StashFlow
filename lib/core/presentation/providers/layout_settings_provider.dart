@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../data/preferences/shared_preferences_provider.dart';
 
 part 'layout_settings_provider.g.dart';
@@ -54,55 +55,11 @@ class MiniPlayerBottomOffset extends _$MiniPlayerBottomOffset {
   }
 }
 
-enum GridLayoutSetting {
-  performerMedia('performer_media_grid_layout', true),
-  performerGalleries('performer_galleries_grid_layout', true),
-  studioMedia('studio_media_grid_layout', true),
-  studioGalleries('studio_galleries_grid_layout', true),
-  tagMedia('tag_media_grid_layout', true),
-  tagGalleries('tag_galleries_grid_layout', true),
-  groupMedia('group_media_grid_layout', true),
-  gallery('gallery_grid_layout', true),
-  sceneMarker('scene_marker_grid_layout', true);
-
-  const GridLayoutSetting(this.storageKey, this.defaultValue);
-
-  final String storageKey;
-  final bool defaultValue;
-}
-
-final gridLayoutSettingProvider =
-    NotifierProvider.family<GridLayoutSettingNotifier, bool, GridLayoutSetting>(
-      GridLayoutSettingNotifier.new,
-    );
-
-class GridLayoutSettingNotifier extends Notifier<bool> {
-  GridLayoutSettingNotifier(this.setting);
-
-  final GridLayoutSetting setting;
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(setting.storageKey) ?? setting.defaultValue;
-  }
-
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(setting.storageKey, value);
-  }
-}
-
 enum GridColumnSetting {
   scene('scene_grid_columns_v2'),
   performer('performer_grid_columns_v2'),
   gallery('gallery_grid_columns_v2'),
   image('image_grid_columns_v2'),
-  studio('studio_grid_columns_v2'),
-  tag('tag_grid_columns_v2'),
-  group('group_grid_columns_v2'),
   sceneMarker('scene_marker_grid_columns_v2');
 
   const GridColumnSetting(this.storageKey);

@@ -31,9 +31,11 @@ class EntityGalleryGridPage extends ConsumerWidget {
       entityId: entityId,
       filterKind: filterKind,
       galleriesAsync: galleriesAsync,
-      isGridView: ref.watch(gridLayoutSettingProvider(_layoutSetting)),
-      gridColumns: ref.watch(gridColumnSettingProvider(_columnSetting)),
-      gridColumnSetting: _columnSetting,
+      // Every entity gallery page shares the Galleries column preference.
+      gridColumns: ref.watch(
+        gridColumnSettingProvider(GridColumnSetting.gallery),
+      ),
+      gridColumnSetting: GridColumnSetting.gallery,
       onRefresh: () => ref
           .read(entityGalleryGridProvider(filterKind, entityId).notifier)
           .refresh(),
@@ -42,18 +44,6 @@ class EntityGalleryGridPage extends ConsumerWidget {
           .fetchNextPage(),
     );
   }
-
-  GridLayoutSetting get _layoutSetting => switch (filterKind) {
-    EntityGalleryFilterKind.performer => GridLayoutSetting.performerGalleries,
-    EntityGalleryFilterKind.studio => GridLayoutSetting.studioGalleries,
-    EntityGalleryFilterKind.tag => GridLayoutSetting.tagGalleries,
-  };
-
-  GridColumnSetting get _columnSetting => switch (filterKind) {
-    EntityGalleryFilterKind.performer => GridColumnSetting.performer,
-    EntityGalleryFilterKind.studio => GridColumnSetting.studio,
-    EntityGalleryFilterKind.tag => GridColumnSetting.tag,
-  };
 
   String _title(BuildContext context, WidgetRef ref) {
     final name = switch (filterKind) {

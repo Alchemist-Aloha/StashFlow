@@ -5,7 +5,6 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene_marker.d
 import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_marker_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_markers_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_marker_list_provider.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_marker_card.dart';
 
 import '../../../../helpers/test_helpers.dart';
 
@@ -109,20 +108,6 @@ void main() {
     await _pumpPage(tester, repository);
 
     expect(find.byTooltip('Saved filters'), findsOneWidget);
-  });
-
-  testWidgets('respects persisted list layout preference', (tester) async {
-    SharedPreferences.setMockInitialValues({'scene_marker_grid_layout': false});
-    final prefs = await SharedPreferences.getInstance();
-    final repository = _FakeGraphQLSceneMarkerRepository([_marker()]);
-
-    await _pumpPage(tester, repository, prefs: prefs);
-
-    expect(
-      tester.widget<SceneMarkerCard>(find.byType(SceneMarkerCard)).isGrid,
-      isFalse,
-    );
-    expect(find.byTooltip('Performer'), findsOneWidget);
   });
 }
 

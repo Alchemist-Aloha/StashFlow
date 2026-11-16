@@ -57,7 +57,6 @@ void main() {
               entityId: testCase.id,
               filterKind: testCase.kind,
               galleriesAsync: const AsyncData<List<Gallery>>([]),
-              isGridView: true,
               gridColumns: 2,
               onRefresh: () async {},
               onFetchNextPage: () {},

@@ -146,7 +146,7 @@ void main() {
     return image;
   }
 
-  for (final layout in ['list', 'grid', 'masonry']) {
+  for (final layout in ['grid', 'masonry']) {
     testWidgets('SceneCard shows saved progress below $layout thumbnail', (
       tester,
     ) async {
@@ -156,7 +156,6 @@ void main() {
             width: 240,
             child: SceneCard(
               scene: defaultTestScene.copyWith(resumeTime: 916.25),
-              isGrid: layout != 'list',
               useMasonry: layout == 'masonry',
             ),
           ),
@@ -202,7 +201,6 @@ void main() {
                 ),
               ],
             ),
-            isGrid: true,
           ),
         ),
       );
@@ -227,7 +225,6 @@ void main() {
         buildTestWidget(
           SceneCard(
             scene: defaultTestScene.copyWith(resumeTime: 20, files: []),
-            isGrid: true,
           ),
         ),
       );
@@ -237,7 +234,6 @@ void main() {
         buildTestWidget(
           SceneCard(
             scene: defaultTestScene.copyWith(resumeTime: 20),
-            isGrid: true,
             skeletonize: true,
           ),
         ),
@@ -252,10 +248,7 @@ void main() {
     await prefs.setBool('show_scene_playback_progress', false);
     await tester.pumpWidget(
       buildTestWidget(
-        SceneCard(
-          scene: defaultTestScene.copyWith(resumeTime: 20),
-          isGrid: true,
-        ),
+        SceneCard(scene: defaultTestScene.copyWith(resumeTime: 20)),
       ),
     );
     expect(find.byType(LinearProgressIndicator), findsNothing);
@@ -269,10 +262,7 @@ void main() {
 
     await tester.pumpWidget(
       buildTestWidget(
-        SceneCard(
-          scene: defaultTestScene.copyWith(resumeTime: 1832.5),
-          isGrid: true,
-        ),
+        SceneCard(scene: defaultTestScene.copyWith(resumeTime: 1832.5)),
       ),
     );
     expect(
@@ -288,84 +278,57 @@ void main() {
     expect(prefs.getBool('show_scene_playback_progress'), isFalse);
   });
 
-  for (final isGrid in [false, true]) {
-    testWidgets(
-      'SceneCard follows live positions without rebuilding its image (grid: $isGrid)',
-      (tester) async {
-        final scene = defaultTestScene.copyWith(
-          resumeTime: 10,
-          files: [defaultTestScene.files.first.copyWith(duration: 100)],
-        );
-        final card = SizedBox(
-          width: 240,
-          child: SceneCard(scene: scene, isGrid: isGrid),
-        );
-        await tester.pumpWidget(buildTestWidget(card));
-        final container = ProviderScope.containerOf(
-          tester.element(find.byType(SceneCard)),
-        );
-        expect(container.read(playerStateProvider.exists), isFalse);
-        final image = tester.widget<StashImage>(find.byType(StashImage));
-        final position = container.read(
-          scenePlaybackPositionProvider(scene.id).notifier,
-        );
-        position.update(const Duration(seconds: 60));
-        await tester.pump();
-        expect(
-          tester
-              .widget<LinearProgressIndicator>(
-                find.byType(LinearProgressIndicator),
-              )
-              .value,
-          0.6,
-        );
-        expect(tester.widget<StashImage>(find.byType(StashImage)), same(image));
-
-        // A seek to the start must override the old saved resume point.
-        position.update(Duration.zero);
-        await tester.pump();
-        expect(find.byType(LinearProgressIndicator), findsNothing);
-        position.update(const Duration(seconds: 25));
-        await tester.pump();
-
-        // Simulate leaving and returning to the list with stale server data.
-        await tester.pumpWidget(buildTestWidget(const SizedBox.shrink()));
-        await tester.pump();
-        await tester.pumpWidget(buildTestWidget(card));
-        expect(
-          tester
-              .widget<LinearProgressIndicator>(
-                find.byType(LinearProgressIndicator),
-              )
-              .value,
-          0.25,
-        );
-        expect(container.read(playerStateProvider.exists), isFalse);
-        expect(tester.takeException(), isNull);
-      },
+  testWidgets('SceneCard follows live positions without rebuilding its image', (
+    tester,
+  ) async {
+    final scene = defaultTestScene.copyWith(
+      resumeTime: 10,
+      files: [defaultTestScene.files.first.copyWith(duration: 100)],
     );
-  }
-
-  testWidgets('SceneCard renders list mode properly', (tester) async {
-    await tester.pumpWidget(
-      buildTestWidget(SceneCard(scene: defaultTestScene, isGrid: false)),
+    final card = SizedBox(width: 240, child: SceneCard(scene: scene));
+    await tester.pumpWidget(buildTestWidget(card));
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(SceneCard)),
     );
+    expect(container.read(playerStateProvider.exists), isFalse);
+    final image = tester.widget<StashImage>(find.byType(StashImage));
+    final position = container.read(
+      scenePlaybackPositionProvider(scene.id).notifier,
+    );
+    position.update(const Duration(seconds: 60));
+    await tester.pump();
+    expect(
+      tester
+          .widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator))
+          .value,
+      0.6,
+    );
+    expect(tester.widget<StashImage>(find.byType(StashImage)), same(image));
 
-    await tester.pumpAndSettle();
+    // A seek to the start must override the old saved resume point.
+    position.update(Duration.zero);
+    await tester.pump();
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    position.update(const Duration(seconds: 25));
+    await tester.pump();
 
-    // Check title
-    expect(find.text('Test Scene'), findsOneWidget);
-
-    // Check studio and year
-    expect(find.text('Test Studio • 2024'), findsOneWidget);
-
-    // Check duration formatting
-    expect(find.text('1:01:05'), findsOneWidget);
+    // Simulate leaving and returning to the list with stale server data.
+    await tester.pumpWidget(buildTestWidget(const SizedBox.shrink()));
+    await tester.pump();
+    await tester.pumpWidget(buildTestWidget(card));
+    expect(
+      tester
+          .widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator))
+          .value,
+      0.25,
+    );
+    expect(container.read(playerStateProvider.exists), isFalse);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('SceneCard renders grid mode properly', (tester) async {
     await tester.pumpWidget(
-      buildTestWidget(SceneCard(scene: defaultTestScene, isGrid: true)),
+      buildTestWidget(SceneCard(scene: defaultTestScene)),
     );
 
     await tester.pumpAndSettle();
@@ -373,51 +336,46 @@ void main() {
     expect(find.text('Test Scene'), findsOneWidget);
   });
 
-  for (final isGrid in [true, false]) {
-    testWidgets('SceneCard metadata badges sit in thumbnail corners '
-        '(grid: $isGrid)', (tester) async {
-      await tester.pumpWidget(
-        buildTestWidget(
-          SizedBox(
-            width: 320,
-            child: SceneCard(
-              scene: defaultTestScene,
-              isGrid: isGrid,
-              useHero: false,
-            ),
-          ),
+  testWidgets('SceneCard metadata badges sit in thumbnail corners', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestWidget(
+        SizedBox(
+          width: 320,
+          child: SceneCard(scene: defaultTestScene, useHero: false),
         ),
-      );
-      await tester.pumpAndSettle();
+      ),
+    );
+    await tester.pumpAndSettle();
 
-      final thumb = tester.getRect(find.byType(StashImage).first);
-      Rect badge(String label) => tester.getRect(
-        find.ancestor(
-          of: find.text(label),
-          matching: find.byType(ThumbnailBadge),
-        ),
-      );
-      final rating = badge('2.0');
-      final oCount = badge('5');
-      final length = badge('1:01:05');
-      expect(rating.top - thumb.top, lessThan(10));
-      expect(thumb.right - rating.right, lessThan(10));
-      expect(oCount.left - thumb.left, lessThan(10));
-      expect(thumb.bottom - oCount.bottom, lessThan(10));
-      expect(thumb.right - length.right, lessThan(10));
-      expect(thumb.bottom - length.bottom, lessThan(10));
-      final star = tester.widget<Icon>(
-        find.descendant(
-          of: find.byType(ThumbnailBadge).first,
-          matching: find.byIcon(Icons.star),
-        ),
-      );
-      expect(
-        star.color,
-        tester.element(find.byType(SceneCard)).colors.ratingColor,
-      );
-    });
-  }
+    final thumb = tester.getRect(find.byType(StashImage).first);
+    Rect badge(String label) => tester.getRect(
+      find.ancestor(
+        of: find.text(label),
+        matching: find.byType(ThumbnailBadge),
+      ),
+    );
+    final rating = badge('2.0');
+    final oCount = badge('5');
+    final length = badge('1:01:05');
+    expect(rating.top - thumb.top, lessThan(10));
+    expect(thumb.right - rating.right, lessThan(10));
+    expect(oCount.left - thumb.left, lessThan(10));
+    expect(thumb.bottom - oCount.bottom, lessThan(10));
+    expect(thumb.right - length.right, lessThan(10));
+    expect(thumb.bottom - length.bottom, lessThan(10));
+    final star = tester.widget<Icon>(
+      find.descendant(
+        of: find.byType(ThumbnailBadge).first,
+        matching: find.byIcon(Icons.star),
+      ),
+    );
+    expect(
+      star.color,
+      tester.element(find.byType(SceneCard)).colors.ratingColor,
+    );
+  });
 
   testWidgets('SceneCard omits empty rating and O-count badges', (
     tester,
@@ -426,7 +384,6 @@ void main() {
       buildTestWidget(
         SceneCard(
           scene: defaultTestScene.copyWith(rating100: null, oCounter: 0),
-          isGrid: true,
           useHero: false,
         ),
       ),
@@ -445,7 +402,6 @@ void main() {
           width: 200,
           child: SceneCard(
             scene: videoScene(width: 1080, height: 1080),
-            isGrid: true,
             useHero: false,
           ),
         ),
@@ -477,7 +433,6 @@ void main() {
           width: 200,
           child: SceneCard(
             scene: videoScene(width: 1080, height: 1080),
-            isGrid: true,
             useHero: false,
           ),
         ),
@@ -535,7 +490,6 @@ void main() {
           width: 200,
           child: SceneCard(
             scene: videoScene(width: 1080, height: 1080),
-            isGrid: true,
             useHero: false,
           ),
         ),
@@ -563,7 +517,6 @@ void main() {
           width: 200,
           child: SceneCard(
             scene: videoScene(width: 1920, height: 1080),
-            isGrid: true,
             useHero: false,
           ),
         ),
@@ -580,7 +533,7 @@ void main() {
     final vttService = MockVttService();
     await tester.pumpWidget(
       buildTestWidget(
-        SceneCard(scene: defaultTestScene, isGrid: true),
+        SceneCard(scene: defaultTestScene),
         vttService: vttService,
       ),
     );
@@ -618,7 +571,7 @@ void main() {
 
     await tester.pumpWidget(
       buildTestWidget(
-        SceneCard(scene: sceneWithoutSpritePath, isGrid: true),
+        SceneCard(scene: sceneWithoutSpritePath),
         vttService: vttService,
       ),
     );
@@ -640,7 +593,7 @@ void main() {
     final vttService = MockVttService(hasSprites: false);
     await tester.pumpWidget(
       buildTestWidget(
-        SceneCard(scene: defaultTestScene, isGrid: true),
+        SceneCard(scene: defaultTestScene),
         vttService: vttService,
       ),
     );
@@ -672,7 +625,7 @@ void main() {
 
       await tester.pumpWidget(
         buildTestWidget(
-          SceneCard(scene: defaultTestScene, isGrid: true),
+          SceneCard(scene: defaultTestScene),
           vttService: vttService,
         ),
       );
@@ -720,9 +673,7 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(
-      buildTestWidget(SceneCard(scene: noVttScene, isGrid: true)),
-    );
+    await tester.pumpWidget(buildTestWidget(SceneCard(scene: noVttScene)));
 
     await tester.pumpAndSettle();
 

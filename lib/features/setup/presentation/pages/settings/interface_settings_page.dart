@@ -14,6 +14,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/player_
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
+
 import '../../widgets/settings_page_shell.dart';
 
 class InterfaceSettingsPage extends ConsumerStatefulWidget {
@@ -31,9 +32,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   bool _showRandomNavigation = true;
   bool _autoHideTopAppBar = false;
   bool _sceneRandomRespectActiveFilter = true;
-  bool _sceneGridLayout = false;
   bool _sceneTiktokLayout = false;
-  bool _galleryGridLayout = true;
   bool _mainPageGravityOrientation = true;
   bool _useActualSceneVideoInMiniPlayer = true;
   EntityImageFilterMethod _entityImageFilterMethod =
@@ -44,9 +43,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   int? _galleryGridColumns;
   int? _performerGridColumns;
   int? _imageGridColumns;
-  int? _studioGridColumns;
-  int? _tagGridColumns;
-  int? _groupGridColumns;
   int? _markerGridColumns;
 
   double? _cardTitleFontSize;
@@ -56,16 +52,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   bool _hideSceneTechnicalMetadata = true;
   bool _showScenePlaybackProgress = true;
   double _performerAvatarSize = 16.0;
-
-  // New settings
-  bool _performerMediaGridLayout = true;
-  bool _performerGalleriesGridLayout = true;
-  bool _studioMediaGridLayout = true;
-  bool _studioGalleriesGridLayout = true;
-  bool _tagMediaGridLayout = true;
-  bool _tagGalleriesGridLayout = true;
-  bool _groupMediaGridLayout = true;
-  bool _markerGridLayout = true;
 
   bool _loading = true;
 
@@ -83,15 +69,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _sceneRandomRespectActiveFilter = ref.read(
       sceneRandomRespectActiveFilterProvider,
     );
-    _sceneGridLayout = ref.read(sceneGridLayoutProvider);
     _sceneTiktokLayout = ref.read(sceneTiktokLayoutProvider);
-    _galleryGridLayout = ref.read(
-      gridLayoutSettingProvider(GridLayoutSetting.gallery),
-    );
     _mainPageGravityOrientation = ref.read(mainPageGravityOrientationProvider);
-    _useActualSceneVideoInMiniPlayer = PlayerSettingsStore(
-      prefs,
-    ).load().useActualSceneVideoInMiniPlayer;
+    _useActualSceneVideoInMiniPlayer = PlayerSettingsStore(prefs)
+        .load()
+        .useActualSceneVideoInMiniPlayer;
     _entityImageFilterMethod = ref.read(entityImageFilterMethodSettingProvider);
     _imageFullscreenVerticalSwipe =
         prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
@@ -108,15 +90,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _imageGridColumns = ref.read(
       gridColumnSettingProvider(GridColumnSetting.image),
     );
-    _studioGridColumns = ref.read(
-      gridColumnSettingProvider(GridColumnSetting.studio),
-    );
-    _tagGridColumns = ref.read(
-      gridColumnSettingProvider(GridColumnSetting.tag),
-    );
-    _groupGridColumns = ref.read(
-      gridColumnSettingProvider(GridColumnSetting.group),
-    );
     _markerGridColumns = ref.read(
       gridColumnSettingProvider(GridColumnSetting.sceneMarker),
     );
@@ -128,31 +101,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _hideSceneTechnicalMetadata = ref.read(hideSceneTechnicalMetadataProvider);
     _showScenePlaybackProgress = ref.read(showScenePlaybackProgressProvider);
     _performerAvatarSize = ref.read(performerAvatarSizeProvider);
-
-    _performerMediaGridLayout = ref.read(
-      gridLayoutSettingProvider(GridLayoutSetting.performerMedia),
-    );
-    _performerGalleriesGridLayout = ref.read(
-      gridLayoutSettingProvider(GridLayoutSetting.performerGalleries),
-    );
-    _studioMediaGridLayout = ref.read(
-      gridLayoutSettingProvider(GridLayoutSetting.studioMedia),
-    );
-    _studioGalleriesGridLayout = ref.read(
-      gridLayoutSettingProvider(GridLayoutSetting.studioGalleries),
-    );
-    _tagMediaGridLayout = ref.read(
-      gridLayoutSettingProvider(GridLayoutSetting.tagMedia),
-    );
-    _tagGalleriesGridLayout = ref.read(
-      gridLayoutSettingProvider(GridLayoutSetting.tagGalleries),
-    );
-    _groupMediaGridLayout = ref.read(
-      gridLayoutSettingProvider(GridLayoutSetting.groupMedia),
-    );
-    _markerGridLayout = ref.read(
-      gridLayoutSettingProvider(GridLayoutSetting.sceneMarker),
-    );
 
     setState(() => _loading = false);
   }
@@ -171,11 +119,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
       ref
           .read(sceneRandomRespectActiveFilterProvider.notifier)
           .set(_sceneRandomRespectActiveFilter),
-      ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout),
       ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout),
-      ref
-          .read(gridLayoutSettingProvider(GridLayoutSetting.gallery).notifier)
-          .set(_galleryGridLayout),
       ref
           .read(mainPageGravityOrientationProvider.notifier)
           .set(_mainPageGravityOrientation),
@@ -195,15 +139,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           .read(gridColumnSettingProvider(GridColumnSetting.image).notifier)
           .set(_imageGridColumns),
       ref
-          .read(gridColumnSettingProvider(GridColumnSetting.studio).notifier)
-          .set(_studioGridColumns),
-      ref
-          .read(gridColumnSettingProvider(GridColumnSetting.tag).notifier)
-          .set(_tagGridColumns),
-      ref
-          .read(gridColumnSettingProvider(GridColumnSetting.group).notifier)
-          .set(_groupGridColumns),
-      ref
           .read(
             gridColumnSettingProvider(GridColumnSetting.sceneMarker).notifier,
           )
@@ -220,50 +155,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           .read(showScenePlaybackProgressProvider.notifier)
           .set(_showScenePlaybackProgress),
       ref.read(performerAvatarSizeProvider.notifier).set(_performerAvatarSize),
-      ref
-          .read(
-            gridLayoutSettingProvider(
-              GridLayoutSetting.performerMedia,
-            ).notifier,
-          )
-          .set(_performerMediaGridLayout),
-      ref
-          .read(
-            gridLayoutSettingProvider(
-              GridLayoutSetting.performerGalleries,
-            ).notifier,
-          )
-          .set(_performerGalleriesGridLayout),
-      ref
-          .read(
-            gridLayoutSettingProvider(GridLayoutSetting.studioMedia).notifier,
-          )
-          .set(_studioMediaGridLayout),
-      ref
-          .read(
-            gridLayoutSettingProvider(
-              GridLayoutSetting.studioGalleries,
-            ).notifier,
-          )
-          .set(_studioGalleriesGridLayout),
-      ref
-          .read(gridLayoutSettingProvider(GridLayoutSetting.tagMedia).notifier)
-          .set(_tagMediaGridLayout),
-      ref
-          .read(
-            gridLayoutSettingProvider(GridLayoutSetting.tagGalleries).notifier,
-          )
-          .set(_tagGalleriesGridLayout),
-      ref
-          .read(
-            gridLayoutSettingProvider(GridLayoutSetting.groupMedia).notifier,
-          )
-          .set(_groupMediaGridLayout),
-      ref
-          .read(
-            gridLayoutSettingProvider(GridLayoutSetting.sceneMarker).notifier,
-          )
-          .set(_markerGridLayout),
       prefs.setBool(
         _imageFullscreenVerticalSwipeKey,
         _imageFullscreenVerticalSwipe,
@@ -561,13 +452,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               .settings_interface_layout_default_desc,
                           segments: [
                             ButtonSegment<String>(
-                              value: 'list',
-                              label: Text(
-                                context.l10n.settings_interface_layout_list,
-                              ),
-                              icon: Icon(Icons.view_list),
-                            ),
-                            ButtonSegment<String>(
                               value: 'grid',
                               label: Text(
                                 context.l10n.settings_interface_layout_grid,
@@ -582,21 +466,16 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               icon: Icon(Icons.swipe_up),
                             ),
                           ],
-                          selected: {
-                            _sceneTiktokLayout
-                                ? 'tiktok'
-                                : (_sceneGridLayout ? 'grid' : 'list'),
-                          },
+                          selected: {_sceneTiktokLayout ? 'tiktok' : 'grid'},
                           onSelectionChanged: (selection) async {
                             if (selection.isEmpty) return;
                             setState(() {
                               _sceneTiktokLayout = selection.first == 'tiktok';
-                              _sceneGridLayout = selection.first == 'grid';
                             });
                             await _saveSettings();
                           },
                         ),
-                        if (_sceneGridLayout) ...[
+                        if (!_sceneTiktokLayout) ...[
                           Divider(height: context.dimensions.spacingLarge),
                           _buildGridColumnSetting(
                             label: context.l10n.settings_interface_grid_columns,
@@ -679,48 +558,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         .settings_interface_galleries_layout_subtitle,
                     child: Column(
                       children: [
-                        _buildSegmentedSetting(
-                          context: context,
-                          label: context.l10n.settings_interface_layout_default,
-                          description: context
-                              .l10n
-                              .settings_interface_galleries_layout_subtitle_item,
-                          segments: [
-                            ButtonSegment<String>(
-                              value: 'list',
-                              label: Text(
-                                context.l10n.settings_interface_layout_list,
-                              ),
-                              icon: Icon(Icons.view_list),
-                            ),
-                            ButtonSegment<String>(
-                              value: 'grid',
-                              label: Text(
-                                context.l10n.settings_interface_layout_grid,
-                              ),
-                              icon: Icon(Icons.grid_view),
-                            ),
-                          ],
-                          selected: {_galleryGridLayout ? 'grid' : 'list'},
-                          onSelectionChanged: (selection) async {
-                            if (selection.isEmpty) return;
-                            setState(() {
-                              _galleryGridLayout = selection.first == 'grid';
-                            });
+                        _buildGridColumnSetting(
+                          label: context.l10n.settings_interface_grid_columns,
+                          value: _galleryGridColumns,
+                          onChanged: (value) async {
+                            setState(() => _galleryGridColumns = value);
                             await _saveSettings();
                           },
                         ),
-                        if (_galleryGridLayout) ...[
-                          Divider(height: context.dimensions.spacingLarge),
-                          _buildGridColumnSetting(
-                            label: context.l10n.settings_interface_grid_columns,
-                            value: _galleryGridColumns,
-                            onChanged: (value) async {
-                              setState(() => _galleryGridColumns = value);
-                              await _saveSettings();
-                            },
-                          ),
-                        ],
                       ],
                     ),
                   ),
@@ -786,37 +631,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SizedBox(height: context.dimensions.spacingLarge),
                   _buildSingleLayoutSection(
                     context: context,
-                    title: context.l10n.groups_title,
-                    subtitle: context.l10n.groups_browsing_mode_subtitle,
-                    segmentedKey: const Key('group-layout-segmented'),
-                    label: context.l10n.settings_interface_media_layout,
-                    description:
-                        context.l10n.settings_interface_media_layout_subtitle,
-                    gridValue: _groupMediaGridLayout,
-                    onChanged: (isGrid) {
-                      setState(() => _groupMediaGridLayout = isGrid);
-                      unawaited(_saveSettings());
-                    },
-                    gridColumnsValue: _groupGridColumns,
-                    onGridColumnsChanged: (value) async {
-                      setState(() => _groupGridColumns = value);
-                      await _saveSettings();
-                    },
-                  ),
-                  SizedBox(height: context.dimensions.spacingLarge),
-                  _buildSingleLayoutSection(
-                    context: context,
                     title: context.l10n.markers_title,
                     subtitle: context.l10n.markers_browsing_mode_subtitle,
-                    segmentedKey: const Key('marker-layout-segmented'),
-                    label: context.l10n.settings_interface_layout_default,
-                    description:
-                        context.l10n.settings_interface_layout_default_desc,
-                    gridValue: _markerGridLayout,
-                    onChanged: (isGrid) {
-                      setState(() => _markerGridLayout = isGrid);
-                      unawaited(_saveSettings());
-                    },
                     gridColumnsValue: _markerGridColumns,
                     onGridColumnsChanged: (value) async {
                       setState(() => _markerGridColumns = value);
@@ -824,82 +640,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     },
                   ),
                   SizedBox(height: context.dimensions.spacingLarge),
-                  // Consolidated Entity Layouts
-                  SettingsSectionCard(
-                    title: context.l10n.entity_layouts_title,
-                    subtitle: context.l10n.entity_layouts_subtitle,
-                    child: Column(
-                      children: [
-                        _buildEntityTypeLayoutRow(
-                          context: context,
-                          label:
-                              context.l10n.settings_interface_performer_layouts,
-                          mediaGridValue: _performerMediaGridLayout,
-                          onMediaChanged: (isGrid) {
-                            setState(() => _performerMediaGridLayout = isGrid);
-                            unawaited(_saveSettings());
-                          },
-                          galleriesGridValue: _performerGalleriesGridLayout,
-                          onGalleriesChanged: (isGrid) {
-                            setState(
-                              () => _performerGalleriesGridLayout = isGrid,
-                            );
-                            unawaited(_saveSettings());
-                          },
-                          alwaysShowGridColumns: true,
-                          gridColumnsLabel:
-                              '${context.l10n.performers_title} ${context.l10n.settings_interface_grid_columns}',
-                          gridColumnsSliderKey: const Key(
-                            'performer-list-grid-columns-slider',
-                          ),
-                          gridColumnsValue: _performerGridColumns,
-                          onGridColumnsChanged: (value) async {
-                            setState(() => _performerGridColumns = value);
-                            await _saveSettings();
-                          },
-                        ),
-                        Divider(height: context.dimensions.spacingLarge),
-                        _buildEntityTypeLayoutRow(
-                          context: context,
-                          label: context.l10n.settings_interface_studio_layouts,
-                          mediaGridValue: _studioMediaGridLayout,
-                          onMediaChanged: (isGrid) {
-                            setState(() => _studioMediaGridLayout = isGrid);
-                            unawaited(_saveSettings());
-                          },
-                          galleriesGridValue: _studioGalleriesGridLayout,
-                          onGalleriesChanged: (isGrid) {
-                            setState(() => _studioGalleriesGridLayout = isGrid);
-                            unawaited(_saveSettings());
-                          },
-                          gridColumnsValue: _studioGridColumns,
-                          onGridColumnsChanged: (value) async {
-                            setState(() => _studioGridColumns = value);
-                            await _saveSettings();
-                          },
-                        ),
-                        Divider(height: context.dimensions.spacingLarge),
-                        _buildEntityTypeLayoutRow(
-                          context: context,
-                          label: context.l10n.settings_interface_tag_layouts,
-                          mediaGridValue: _tagMediaGridLayout,
-                          onMediaChanged: (isGrid) {
-                            setState(() => _tagMediaGridLayout = isGrid);
-                            unawaited(_saveSettings());
-                          },
-                          galleriesGridValue: _tagGalleriesGridLayout,
-                          onGalleriesChanged: (isGrid) {
-                            setState(() => _tagGalleriesGridLayout = isGrid);
-                            unawaited(_saveSettings());
-                          },
-                          gridColumnsValue: _tagGridColumns,
-                          onGridColumnsChanged: (value) async {
-                            setState(() => _tagGridColumns = value);
-                            await _saveSettings();
-                          },
-                        ),
-                      ],
-                    ),
+                  _buildSingleLayoutSection(
+                    context: context,
+                    title: context.l10n.performers_title,
+                    sliderKey: const Key('performer-list-grid-columns-slider'),
+                    gridColumnsValue: _performerGridColumns,
+                    onGridColumnsChanged: (value) async {
+                      setState(() => _performerGridColumns = value);
+                      await _saveSettings();
+                    },
                   ),
                 ],
               ),
@@ -910,172 +659,20 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   Widget _buildSingleLayoutSection({
     required BuildContext context,
     required String title,
-    required String subtitle,
-    Key? segmentedKey,
-    required String label,
-    required String description,
-    required bool gridValue,
-    required ValueChanged<bool> onChanged,
+    String? subtitle,
+    Key? sliderKey,
     required int? gridColumnsValue,
     required ValueChanged<int?> onGridColumnsChanged,
   }) {
-    final l10n = AppLocalizations.of(context)!;
-
     return SettingsSectionCard(
       title: title,
       subtitle: subtitle,
-      child: Column(
-        children: [
-          _buildSegmentedSetting(
-            context: context,
-            segmentedKey: segmentedKey,
-            label: label,
-            description: description,
-            segments: [
-              ButtonSegment<String>(
-                value: 'list',
-                label: Text(l10n.settings_interface_layout_list),
-                icon: Icon(Icons.view_list),
-              ),
-              ButtonSegment<String>(
-                value: 'grid',
-                label: Text(l10n.settings_interface_layout_grid),
-                icon: Icon(Icons.grid_view),
-              ),
-            ],
-            selected: {gridValue ? 'grid' : 'list'},
-            onSelectionChanged: (selection) {
-              if (selection.isEmpty) return;
-              onChanged(selection.first == 'grid');
-            },
-          ),
-          if (gridValue) ...[
-            Divider(height: context.dimensions.spacingLarge),
-            _buildGridColumnSetting(
-              label: l10n.settings_interface_grid_columns,
-              value: gridColumnsValue,
-              onChanged: onGridColumnsChanged,
-            ),
-          ],
-        ],
+      child: _buildGridColumnSetting(
+        label: context.l10n.settings_interface_grid_columns,
+        sliderKey: sliderKey,
+        value: gridColumnsValue,
+        onChanged: onGridColumnsChanged,
       ),
-    );
-  }
-
-  Widget _buildEntityTypeLayoutRow({
-    required BuildContext context,
-    required String label,
-    required bool mediaGridValue,
-    required ValueChanged<bool> onMediaChanged,
-    bool? galleriesGridValue,
-    ValueChanged<bool>? onGalleriesChanged,
-    bool alwaysShowGridColumns = false,
-    String? gridColumnsLabel,
-    Key? gridColumnsSliderKey,
-    required int? gridColumnsValue,
-    required ValueChanged<int?> onGridColumnsChanged,
-  }) {
-    final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    final listGridSegments = [
-      ButtonSegment<String>(
-        value: 'list',
-        label: Text(l10n.settings_interface_layout_list),
-        icon: Icon(Icons.view_list),
-      ),
-      ButtonSegment<String>(
-        value: 'grid',
-        label: Text(l10n.settings_interface_layout_grid),
-        icon: Icon(Icons.grid_view),
-      ),
-    ];
-
-    final bool showGridColumns =
-        alwaysShowGridColumns ||
-        mediaGridValue ||
-        (galleriesGridValue != null && galleriesGridValue);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(Icons.folder_outlined, size: 20, color: colorScheme.primary),
-            SizedBox(width: 8 * context.dimensions.fontSizeFactor),
-            Text(
-              label,
-              style: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: context.dimensions.spacingSmall),
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                l10n.settings_interface_media_layout,
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-            SegmentedButton<String>(
-              segments: listGridSegments,
-              selected: {mediaGridValue ? 'grid' : 'list'},
-              showSelectedIcon: false,
-              style: ButtonStyle(
-                visualDensity: VisualDensity.compact,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              onSelectionChanged: (selection) {
-                if (selection.isEmpty) return;
-                onMediaChanged(selection.first == 'grid');
-              },
-            ),
-          ],
-        ),
-        if (galleriesGridValue != null && onGalleriesChanged != null) ...[
-          SizedBox(height: context.dimensions.spacingSmall),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.settings_interface_galleries_layout_item,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              SegmentedButton<String>(
-                segments: listGridSegments,
-                selected: {galleriesGridValue ? 'grid' : 'list'},
-                showSelectedIcon: false,
-                style: ButtonStyle(
-                  visualDensity: VisualDensity.compact,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                onSelectionChanged: (selection) {
-                  if (selection.isEmpty) return;
-                  onGalleriesChanged(selection.first == 'grid');
-                },
-              ),
-            ],
-          ),
-        ],
-        if (showGridColumns) ...[
-          SizedBox(height: context.dimensions.spacingSmall),
-          _buildGridColumnSetting(
-            label: gridColumnsLabel ?? l10n.settings_interface_grid_columns,
-            sliderKey: gridColumnsSliderKey,
-            value: gridColumnsValue,
-            onChanged: onGridColumnsChanged,
-          ),
-        ],
-      ],
     );
   }
 

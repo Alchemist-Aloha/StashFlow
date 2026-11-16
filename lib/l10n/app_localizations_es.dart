@@ -1799,9 +1799,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Elige el diseño predeterminado para la página';
 
   @override
-  String get settings_interface_layout_list => 'Lista';
-
-  @override
   String get settings_interface_layout_grid => 'Cuadrícula';
 
   @override
@@ -1836,39 +1833,16 @@ class AppLocalizationsEs extends AppLocalizations {
       'Columnas de cuadrícula en cascada';
 
   @override
-  String get settings_interface_performer_layouts => 'Diseños de actores';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Valores predeterminados de medios y galerías para actores';
-
-  @override
-  String get settings_interface_studio_layouts => 'Diseños de estudios';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Valores predeterminados de medios y galerías para estudios';
 
   @override
-  String get settings_interface_tag_layouts => 'Diseños de etiquetas';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Valores predeterminados de medios y galerías para etiquetas';
-
-  @override
-  String get settings_interface_media_layout => 'Diseño de medios';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Diseño para la página de medios';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Diseño de galerías';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Diseño para la página de galerías';
 
   @override
   String get settings_server_title => 'Ajustes del servidor';
@@ -3766,19 +3740,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sub_group_count_title => 'Recuento de subgrupos';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Modo de navegación predeterminado para grupos';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Modo de navegación predeterminado para marcadores';
-
-  @override
-  String get entity_layouts_title => 'Diseños de entidad';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Valores predeterminados de diseño de galería y medios para artistas, estudios y etiquetas';
 
   @override
   String get stats_subtitle_0_gb => '0,00GB';

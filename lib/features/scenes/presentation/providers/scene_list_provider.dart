@@ -1,7 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'dart:convert';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../data/repositories/graphql_scene_repository.dart';
@@ -143,25 +146,6 @@ class SceneTiktokLayout extends _$SceneTiktokLayout {
   bool build() {
     final prefs = ref.watch(sharedPreferencesProvider);
     return prefs.getBool(_storageKey) ?? false;
-  }
-
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-    ref.invalidate(sceneListProvider);
-  }
-}
-
-@Riverpod(keepAlive: true)
-class SceneGridLayout extends _$SceneGridLayout {
-  static const _storageKey = 'scene_grid_layout';
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
   }
 
   Future<void> set(bool value) async {

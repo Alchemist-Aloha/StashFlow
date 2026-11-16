@@ -1728,9 +1728,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_layout_default_desc => '选择页面的默认布局';
 
   @override
-  String get settings_interface_layout_list => '列表';
-
-  @override
   String get settings_interface_layout_grid => '网格';
 
   @override
@@ -1761,34 +1758,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_waterfall_columns => '瀑布流网格列数';
 
   @override
-  String get settings_interface_performer_layouts => '演员布局';
-
-  @override
   String get settings_interface_performer_layouts_subtitle => '演员的媒体和图库默认设置';
-
-  @override
-  String get settings_interface_studio_layouts => '制片商布局';
 
   @override
   String get settings_interface_studio_layouts_subtitle => '制片商的媒体和图库默认设置';
 
   @override
-  String get settings_interface_tag_layouts => '标签布局';
-
-  @override
   String get settings_interface_tag_layouts_subtitle => '标签的媒体和图库默认设置';
-
-  @override
-  String get settings_interface_media_layout => '媒体布局';
-
-  @override
-  String get settings_interface_media_layout_subtitle => '媒体页面的布局';
-
-  @override
-  String get settings_interface_galleries_layout_item => '图库布局';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item => '图库页面的布局';
 
   @override
   String get settings_server_title => '服务器设置';
@@ -3580,16 +3556,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sub_group_count_title => '子组计数';
 
   @override
-  String get groups_browsing_mode_subtitle => '群组的默认浏览模式';
-
-  @override
   String get markers_browsing_mode_subtitle => '标记的默认浏览模式';
-
-  @override
-  String get entity_layouts_title => '实体布局';
-
-  @override
-  String get entity_layouts_subtitle => '演员、制片商和标签的媒体和图库布局默认值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';
@@ -5702,9 +5669,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_layout_default_desc => '选择页面的默认布局';
 
   @override
-  String get settings_interface_layout_list => '列表';
-
-  @override
   String get settings_interface_layout_grid => '网格';
 
   @override
@@ -5735,34 +5699,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_waterfall_columns => '瀑布流网格列数';
 
   @override
-  String get settings_interface_performer_layouts => '演员布局';
-
-  @override
   String get settings_interface_performer_layouts_subtitle => '演员的媒体和图库默认设置';
-
-  @override
-  String get settings_interface_studio_layouts => '制片商布局';
 
   @override
   String get settings_interface_studio_layouts_subtitle => '制片商的媒体和图库默认设置';
 
   @override
-  String get settings_interface_tag_layouts => '标签布局';
-
-  @override
   String get settings_interface_tag_layouts_subtitle => '标签的媒体和图库默认设置';
-
-  @override
-  String get settings_interface_media_layout => '媒体布局';
-
-  @override
-  String get settings_interface_media_layout_subtitle => '媒体页面的布局';
-
-  @override
-  String get settings_interface_galleries_layout_item => '图库布局';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item => '图库页面的布局';
 
   @override
   String get settings_server_title => '服务器设置';
@@ -7554,16 +7497,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get sub_group_count_title => '子组计数';
 
   @override
-  String get groups_browsing_mode_subtitle => '群组的默认浏览模式';
-
-  @override
   String get markers_browsing_mode_subtitle => '标记的默认浏览模式';
-
-  @override
-  String get entity_layouts_title => '实体布局';
-
-  @override
-  String get entity_layouts_subtitle => '演员、制片商和标签的媒体和图库布局默认值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';
@@ -9678,9 +9612,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_layout_default_desc => '選擇頁面的預設佈局';
 
   @override
-  String get settings_interface_layout_list => '列表';
-
-  @override
   String get settings_interface_layout_grid => '網格';
 
   @override
@@ -9711,34 +9642,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_waterfall_columns => '瀑布流網格欄數';
 
   @override
-  String get settings_interface_performer_layouts => '演員佈局';
-
-  @override
   String get settings_interface_performer_layouts_subtitle => '演員的媒體和圖庫預設';
-
-  @override
-  String get settings_interface_studio_layouts => '製片商佈局';
 
   @override
   String get settings_interface_studio_layouts_subtitle => '製片商的媒體和圖庫預設';
 
   @override
-  String get settings_interface_tag_layouts => '標籤佈局';
-
-  @override
   String get settings_interface_tag_layouts_subtitle => '標籤的媒體和圖庫預設';
-
-  @override
-  String get settings_interface_media_layout => '媒體佈局';
-
-  @override
-  String get settings_interface_media_layout_subtitle => '媒體頁面的佈局';
-
-  @override
-  String get settings_interface_galleries_layout_item => '圖庫佈局';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item => '圖庫頁面的佈局';
 
   @override
   String get settings_server_title => '伺服器設定';
@@ -11537,16 +11447,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get sub_group_count_title => '子組計數';
 
   @override
-  String get groups_browsing_mode_subtitle => '群組的預設瀏覽模式';
-
-  @override
   String get markers_browsing_mode_subtitle => '標記的預設瀏覽模式';
-
-  @override
-  String get entity_layouts_title => '實體佈局';
-
-  @override
-  String get entity_layouts_subtitle => '演員、製片商和標籤的媒體與圖庫佈局預設值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';

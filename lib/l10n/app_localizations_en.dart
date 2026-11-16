@@ -1773,9 +1773,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose the default layout for the page';
 
   @override
-  String get settings_interface_layout_list => 'List';
-
-  @override
   String get settings_interface_layout_grid => 'Grid';
 
   @override
@@ -1808,39 +1805,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_interface_waterfall_columns => 'Waterfall Grid Columns';
 
   @override
-  String get settings_interface_performer_layouts => 'Performer Layouts';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Media and gallery defaults for performers';
-
-  @override
-  String get settings_interface_studio_layouts => 'Studio Layouts';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Media and gallery defaults for studios';
 
   @override
-  String get settings_interface_tag_layouts => 'Tag Layouts';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Media and gallery defaults for tags';
-
-  @override
-  String get settings_interface_media_layout => 'Media Layout';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Layout for Media page';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Galleries Layout';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout for Galleries page';
 
   @override
   String get settings_server_title => 'Server Settings';
@@ -3693,19 +3667,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sub_group_count_title => 'Sub-group Count';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Default browsing mode for groups';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Default browsing mode for markers';
-
-  @override
-  String get entity_layouts_title => 'Entity Layouts';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Media and gallery layout defaults for performers, studios and tags';
 
   @override
   String get stats_subtitle_0_gb => '0.00 GB';

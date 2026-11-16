@@ -312,7 +312,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     });
 
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
-    final isGridView = ref.watch(sceneGridLayoutProvider);
     final gridColumns = ref.watch(
       gridColumnSettingProvider(GridColumnSetting.scene),
     );
@@ -435,7 +434,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       onSearchChanged: _onSearchChanged,
       provider: scenesAsync,
       memCacheWidthBuilder: (context, isGrid) {
-        if (!isGrid) return 640;
         final padding = AppTheme.spacingSmall * 2;
         final crossAxisCount = gridColumns ?? _getGridColumnCount(context);
         // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
@@ -450,21 +448,19 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           ? TiktokScenesView(actions: sceneActions)
           : null,
       scrollController: scrollController,
-      useMasonry: isGridView,
+      useMasonry: true,
       hideAppBar: isTiktokLayout && isFullScreen,
       onRefresh: () => ref.read(sceneListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(sceneListProvider.notifier).fetchNextPage(),
       loadingItemBuilder: (context, isGrid, index) =>
-          SceneCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
+          SceneCard.skeleton(useMasonry: true),
       actions: isTiktokLayout ? const [] : sceneActions,
-      gridDelegate: isGridView
-          ? GridUtils.createDelegate(
-              context,
-              crossAxisCount: gridColumns ?? _getGridColumnCount(context),
-            )
-          : null,
-      padding: isGridView ? GridUtils.defaultPadding(context) : EdgeInsets.zero,
+      gridDelegate: GridUtils.createDelegate(
+        context,
+        crossAxisCount: gridColumns ?? _getGridColumnCount(context),
+      ),
+      padding: GridUtils.defaultPadding(context),
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
         final index = sceneIndexMap[scene.id] ?? -1;
         final focused = scene.id == _focusedSceneId;
@@ -475,8 +471,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           child: SceneCard(
             key: focused ? _focusedSceneKey : null,
             scene: scene,
-            isGrid: isGridView,
-            useMasonry: isGridView,
+            useMasonry: true,
             memCacheWidth: memCacheWidth,
             memCacheHeight: memCacheHeight,
             useHero: isAtRoot,
