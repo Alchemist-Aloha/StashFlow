@@ -239,6 +239,11 @@ class AppTheme {
   /// Raising this toward opaque hides the blur; lowering it puts text at risk.
   static const frostedChromeAlpha = 0.72;
 
+  /// Alpha of the tint on chrome that floats over scrolling media, such as the
+  /// auto-hiding top app bar. Higher than [frostedChromeAlpha] so busy
+  /// thumbnails passing underneath read as frost rather than see-through.
+  static const frostedFloatingChromeAlpha = 0.88;
+
   /// Alpha of the hairline on a frosted surface.
   static const frostedHairlineAlpha = 0.5;
 

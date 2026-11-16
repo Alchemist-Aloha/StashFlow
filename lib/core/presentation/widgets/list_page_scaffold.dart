@@ -188,7 +188,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   final _searchController = SearchController();
   String? _currentQuery;
   String? _lastSubmittedText;
-  bool _isTopAppBarVisible = true;
+  // A notifier, not state: toggling the bar must not rebuild the list.
+  final _topAppBarVisible = ValueNotifier(true);
   final _actionPillKey = GlobalKey();
   double _actionPillHeight = 0;
 
@@ -222,6 +223,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   @override
   void dispose() {
     _searchController.dispose();
+    _topAppBarVisible.dispose();
     super.dispose();
   }
 
@@ -284,7 +286,10 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
-    final autoHideTopAppBar = ref.watch(autoHideTopAppBarProvider);
+    // Custom bodies (the scene feed) page with their own vertical swipes,
+    // which must not toggle the bar.
+    final autoHideTopAppBar =
+        ref.watch(autoHideTopAppBarProvider) && widget.customBody == null;
     if (widget.actions.isNotEmpty) _measureActionPill();
     final actionPillGap = context.dimensions.spacingMedium;
 
@@ -517,10 +522,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
             return false;
           }
           if (notification.direction == ScrollDirection.idle) return false;
-          final visible = notification.direction == ScrollDirection.forward;
-          if (visible != _isTopAppBarVisible) {
-            setState(() => _isTopAppBarVisible = visible);
-          }
+          _topAppBarVisible.value =
+              notification.direction == ScrollDirection.forward;
           return false;
         },
         child: Listener(
@@ -1013,45 +1016,80 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       );
     }
 
-    final body = buildContent(0);
-
-    if (!autoHideTopAppBar || widget.hideAppBar) {
+    if (widget.hideAppBar) {
       return Scaffold(
-        appBar: widget.hideAppBar ? null : appBar,
-        body: body,
+        body: buildContent(0),
         floatingActionButton: widget.floatingActionButton,
       );
     }
 
+    // The frosted bar always overlays the content, so rows scroll under the
+    // glass; the content reserves the bar's full height as fixed scroll
+    // padding. With auto-hide the bar slides away, and the inset stays fixed
+    // because animating it re-laid out the whole list on every frame.
     final statusBarHeight = MediaQuery.paddingOf(context).top;
     return Scaffold(
       body: Stack(
         children: [
-          TweenAnimationBuilder<double>(
-            tween: Tween<double>(
-              end:
-                  statusBarHeight +
-                  (_isTopAppBarVisible ? appBar.preferredSize.height : 0),
-            ),
-            duration: kThemeAnimationDuration,
-            curve: Curves.easeOutCubic,
-            builder: (context, topInset, _) => buildContent(topInset),
-          ),
+          buildContent(statusBarHeight + appBar.preferredSize.height),
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            child: AnimatedSlide(
-              key: const Key('top-app-bar-slide'),
-              duration: kThemeAnimationDuration,
-              curve: Curves.easeOutCubic,
-              offset: _isTopAppBarVisible ? Offset.zero : const Offset(0, -1),
-              child: appBar,
+            child: ValueListenableBuilder<bool>(
+              valueListenable: _topAppBarVisible,
+              builder: (context, visible, _) => _AutoHideAppBar(
+                bar: appBar.bar,
+                visible: visible || !autoHideTopAppBar,
+              ),
             ),
           ),
         ],
       ),
       floatingActionButton: widget.floatingActionButton,
+    );
+  }
+}
+
+/// The auto-hiding top bar: frosted while on screen, sliding out of view on
+/// downward scrolls.
+///
+/// The blur is dropped once the bar has fully slid away, so a hidden bar
+/// costs nothing, and restored as soon as it starts sliding back in.
+class _AutoHideAppBar extends StatefulWidget {
+  const _AutoHideAppBar({required this.bar, required this.visible});
+
+  final AppBar bar;
+  final bool visible;
+
+  @override
+  State<_AutoHideAppBar> createState() => _AutoHideAppBarState();
+}
+
+class _AutoHideAppBarState extends State<_AutoHideAppBar> {
+  late bool _blur = widget.visible;
+
+  @override
+  void didUpdateWidget(_AutoHideAppBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.visible) _blur = true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSlide(
+      key: const Key('top-app-bar-slide'),
+      duration: kThemeAnimationDuration,
+      curve: Curves.easeOutCubic,
+      offset: widget.visible ? Offset.zero : const Offset(0, -1),
+      onEnd: () {
+        if (!widget.visible && _blur) setState(() => _blur = false);
+      },
+      child: _FrostedAppBar(
+        bar: widget.bar,
+        tintAlpha: AppTheme.frostedFloatingChromeAlpha,
+        blur: _blur,
+      ),
     );
   }
 }
@@ -1063,9 +1101,19 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 /// fighting unbounded layout constraints; the bar itself goes transparent so
 /// the glass and the rows scrolling under it are what the header is made of.
 class _FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _FrostedAppBar({required this.bar});
+  const _FrostedAppBar({
+    required this.bar,
+    this.tintAlpha = AppTheme.frostedChromeAlpha,
+    this.blur = true,
+  });
 
   final AppBar bar;
+
+  /// Surface tint alpha; floating bars use a stronger tint.
+  final double tintAlpha;
+
+  /// Whether to blur the backdrop; off while an auto-hide bar is off screen.
+  final bool blur;
 
   @override
   Size get preferredSize => bar.preferredSize;
@@ -1078,9 +1126,8 @@ class _FrostedAppBar extends StatelessWidget implements PreferredSizeWidget {
       children: [
         Positioned.fill(
           child: FrostedSurface(
-            tint: context.colors.surface.withValues(
-              alpha: AppTheme.frostedChromeAlpha,
-            ),
+            tint: context.colors.surface.withValues(alpha: tintAlpha),
+            blurSigma: blur ? AppTheme.frostedBlurSigma : 0,
             border: Border(
               bottom: BorderSide(
                 color: colorScheme.outlineVariant.withValues(
