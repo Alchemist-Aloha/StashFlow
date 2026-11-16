@@ -146,11 +146,43 @@ void main() {
                 .single
             as Map,
       );
-      client.queryData['findScene'] = sceneData;
-      final details = await GraphQLSceneRepository(
-        client,
-      ).getSceneById('scene-1');
+      client.queryData['findScene'] = {
+        ...sceneData,
+        'code': 'LS-1',
+        'director': 'Director',
+        'created_at': '2026-01-02T03:04:05Z',
+        'updated_at': '2026-01-03T03:04:05Z',
+        'last_played_at': null,
+        'custom_fields': {'source': 'archive'},
+        'stash_ids': [
+          {
+            'endpoint': 'https://stashdb.org/graphql',
+            'stash_id': 'id-1',
+            '__typename': 'StashID',
+          },
+        ],
+        'groups': [
+          {
+            'group': {
+              'id': 'g1',
+              'name': 'Group',
+              'front_image_path': '/group/g1/frontimage',
+              '__typename': 'Group',
+            },
+            'scene_index': 4,
+            '__typename': 'SceneGroup',
+          },
+        ],
+      };
+      final details = await GraphQLSceneRepository(client)
+          .getSceneById('scene-1');
       expect(details.files.single.size, 3221225472);
+      expect(details.code, 'LS-1');
+      expect(details.director, 'Director');
+      expect(details.customFields, {'source': 'archive'});
+      expect(details.stashIds.single.stashId, 'id-1');
+      expect(details.groups.single.sceneIndex, 4);
+      expect(details.groups.single.imagePath, endsWith('/group/g1/frontimage'));
     });
 
     test(
