@@ -7,6 +7,13 @@
 - Added **Settings → Playback → Default Stream Source** to choose the source used when playback starts. Direct remains the default, and an unavailable source falls back to Direct. Downloads always use the original file. The preference is included in configuration backups.
 - MP4 and WebM transcodes now seek correctly and show the scene's full duration and accurate position, with subtitles kept in sync.
 
+## ▶️ Playback & Feed
+
+- Added an O-count button above the rating in feed mode. It shows the scene's O-count, and tapping it adds one.
+- The feed's stream source and subtitle buttons now sit in the collapsible action menu, keeping the right side less crowded.
+- Autoplay next is now on by default. If you never changed this setting, the next scene now plays automatically; a setting you chose yourself is kept.
+- When the next scene starts while an image viewer, scene editor, or another page covers the scene details, that page now stays open instead of being replaced.
+
 ## 🖼️ Gallery Details
 
 - Gallery details now scroll together with the image grid, so galleries with many chapters, performers, or linked scenes no longer leave only a small area for browsing images. Drag anywhere on the page to scroll.

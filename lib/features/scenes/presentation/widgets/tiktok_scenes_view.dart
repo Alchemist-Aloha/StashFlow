@@ -645,6 +645,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   double _currentSpeed = 5.0;
   bool _isSpeedingUp = false;
   int? _localRating;
+  late int _localOCount;
 
   // Scrubbing state
   bool _isScrubbing = false;
@@ -654,15 +655,18 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   void initState() {
     super.initState();
     _localRating = widget.scene.rating100;
+    _localOCount = widget.scene.oCounter;
   }
 
   @override
   void didUpdateWidget(TiktokSceneItem oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.scene.id != widget.scene.id ||
-        oldWidget.scene.rating100 != widget.scene.rating100) {
+        oldWidget.scene.rating100 != widget.scene.rating100 ||
+        oldWidget.scene.oCounter != widget.scene.oCounter) {
       setState(() {
         _localRating = widget.scene.rating100;
+        _localOCount = widget.scene.oCounter;
       });
     }
   }
@@ -696,6 +700,32 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(context.l10n.details_failed_update_rating('$error')),
+        ),
+      );
+    }
+  }
+
+  Future<void> _incrementOCount() async {
+    try {
+      await ref
+          .read(sceneRepositoryProvider)
+          .incrementSceneOCounter(widget.scene.id);
+      if (!mounted) return;
+      setState(() => _localOCount++);
+      ref.invalidate(sceneListProvider);
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'incrementSceneOCounter',
+        error,
+        stackTrace,
+        source: 'tiktok_scenes_view',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.details_failed_increment_o_count('$error'),
+          ),
         ),
       );
     }
@@ -1059,6 +1089,29 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                         scene: widget.scene,
                                       ),
                                       ...widget.actions,
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: context.dimensions.spacingSmall,
+                                  ),
+                                  Column(
+                                    children: [
+                                      _OverlayButton(
+                                        key: const Key('feed_o_count'),
+                                        icon: Icons.water_drop_outlined,
+                                        tooltip: context.l10n.sort_o_count,
+                                        onTap: () =>
+                                            unawaited(_incrementOCount()),
+                                      ),
+                                      Text(
+                                        '$_localOCount',
+                                        style: context.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color: Colors.white,
+                                              fontSize:
+                                                  context.fontSizes.regular,
+                                            ),
+                                      ),
                                     ],
                                   ),
                                   SizedBox(

@@ -639,6 +639,8 @@ Responsibilities:
   pausing; subsequent video taps retain normal play/pause behavior. Visibility
   is shared across feed pages and remains manually controlled, with no timed
   auto-hide. Subtitles and playback continue independently of overlay visibility.
+- The feed's right-side buttons show the scene's O-count above its rating;
+  tapping the O-count adds one O through `sceneAddO` and updates the count.
 - Scene grid/list returns restore scroll position and keyboard focus to the
   active scene (or the saved playlist item for random returns). Restoration is
   driven by returning to the list route, waits for list data, and must not depend
