@@ -344,8 +344,9 @@ Other sort fields remain available in an expandable advanced section; a selected
 advanced field stays in the first group so its selection remains visible when
 collapsed. Sharing catalogues does not share query state: entity sorts and saved
 defaults remain scoped to their existing providers.
-Entity scene media categories (performer, studio, tag, and group) default to
-Random when no sort is saved. Their horizontal previews, including the scene
+Entity scene media categories (performer, studio, and tag) default to
+Random when no sort is saved; group media defaults to ascending Scene Number in
+Group, matching the group's own order, and resetting the sort restores it. Their horizontal previews, including the scene
 detail page's More From rows, follow the corresponding expanded list's sort
 field and direction, sharing its random seed so random ordering also agrees.
 Previews preserve server order while excluding the current scene where relevant.

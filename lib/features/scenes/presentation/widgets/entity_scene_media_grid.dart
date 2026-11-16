@@ -94,8 +94,12 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
           commonOptions: SceneSortField.commonOptions,
           initialOption: _sortField,
           initialDescending: _sortDescending,
-          resetOption: SceneSortField.random,
-          resetDescending: true,
+          resetOption: SceneSortField.fromKey(
+            EntityMediaSort.defaultSortFor(widget.filterKind),
+          ),
+          resetDescending: EntityMediaSort.defaultDescendingFor(
+            widget.filterKind,
+          ),
           optionLabel: (field) => field.label(context),
           onApply: (field, descending) {
             setState(() {

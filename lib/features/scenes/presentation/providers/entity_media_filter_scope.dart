@@ -42,8 +42,9 @@ class EntityMediaSort extends _$EntityMediaSort {
     EntityMediaFilterKind kind,
   ) {
     final prefs = ref.read(sharedPreferencesProvider);
-    final sort = prefs.getString(_sortKey(kind)) ?? 'random';
-    final descending = prefs.getBool(_descKey(kind)) ?? true;
+    final sort = prefs.getString(_sortKey(kind)) ?? defaultSortFor(kind);
+    final descending =
+        prefs.getBool(_descKey(kind)) ?? defaultDescendingFor(kind);
     final seed = sort == 'random'
         ? ref.read(entityMediaRandomSeedProvider(kind))
         : null;
@@ -51,8 +52,12 @@ class EntityMediaSort extends _$EntityMediaSort {
     return (sort: sort, descending: descending, randomSeed: seed);
   }
 
+  /// Applies [sort]; `null` restores the kind's default sort and direction.
   void setSort({String? sort, bool descending = true}) {
-    sort ??= 'random';
+    if (sort == null) {
+      sort = defaultSortFor(kind);
+      descending = defaultDescendingFor(kind);
+    }
     final seed = sort == 'random'
         ? ref.read(entityMediaRandomSeedProvider(kind))
         : null;
@@ -67,6 +72,15 @@ class EntityMediaSort extends _$EntityMediaSort {
     }
     await prefs.setBool(_descKey(kind), state.descending);
   }
+
+  /// Sort used when none is saved. Groups are ordered collections, so they
+  /// open in their own scene order.
+  static String defaultSortFor(EntityMediaFilterKind kind) =>
+      kind == EntityMediaFilterKind.group ? 'group_scene_number' : 'random';
+
+  /// Direction paired with [defaultSortFor].
+  static bool defaultDescendingFor(EntityMediaFilterKind kind) =>
+      kind != EntityMediaFilterKind.group;
 
   static String _sortKey(EntityMediaFilterKind kind) =>
       'entity_media_${kind.name}_sort_field';
