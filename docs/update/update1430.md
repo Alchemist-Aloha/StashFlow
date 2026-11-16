@@ -19,6 +19,13 @@
 - Removed the list layout. Scenes, galleries, markers, and the media and gallery pages of performers, studios, tags, and groups now always use the grid. If you used list mode, set the column count to 1 for full-width cards.
 - Performer, studio, tag, and group media pages now share the Scenes column count, and their gallery pages share the Galleries column count. The separate studio, tag, and group column settings are gone; the Performers setting now applies only to the Performers page.
 
+## ⚡ Smoother Browsing
+
+- List pages now scroll underneath a frosted top bar instead of stopping below it.
+- With **Hide top app bar while scrolling** on, the bar now slides away and back without shifting the list, so scrolling stays smooth and cards no longer jump while it moves.
+- Scrolling list pages under their frosted top bar and bottom action bar takes less graphics work, and the app does less work when playback starts, pauses, or buffers.
+- Thumbnails in scene and gallery strips and the scene grid now load at your screen's real pixel density: sharper on high-density phones, and less memory on standard-density desktop displays.
+
 ## 👋 First-Run Guide
 
 - After setting up your first server, the Scenes page asks whether you prefer the grid or the feed, with a small preview of each.
