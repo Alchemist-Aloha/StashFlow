@@ -1793,6 +1793,59 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can change this later in Settings › Interface Settings.';
 
   @override
+  String get onboarding_got_it => 'Got it';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'You can change this later in Settings › Playback Settings.';
+
+  @override
+  String get onboarding_grid_title => 'Browsing scenes';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Long press a scene card to see its details and actions.';
+
+  @override
+  String get onboarding_feed_title => 'Using the feed';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Long press the video to fast-forward. Slide up while holding to go even faster.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Tap the title to hide the controls. Tap the video to bring them back.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Tap the up arrow to show more actions.';
+
+  @override
+  String get onboarding_details_title => 'Watching a scene';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Swipe the title left or right to go to the previous or next scene.';
+
+  @override
+  String get onboarding_details_seek_label => 'How would you like to seek?';
+
+  @override
+  String get onboarding_image_title => 'Choose a swipe direction';
+
+  @override
+  String get settings_develop_reset_onboarding => 'Reset First-Run Tips';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Show the one-time tips and choices again.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'First-run tips will show again.';
+
+  @override
   String get settings_interface_grid_columns => 'Grid Columns';
 
   @override

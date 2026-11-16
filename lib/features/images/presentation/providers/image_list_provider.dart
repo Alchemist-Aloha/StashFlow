@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../domain/entities/image.dart' as entity;
 import '../../domain/entities/image_filter.dart';
 import '../../data/repositories/graphql_image_repository.dart';

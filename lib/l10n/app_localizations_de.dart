@@ -1810,6 +1810,60 @@ class AppLocalizationsDe extends AppLocalizations {
       'Du kannst dies später unter Einstellungen › Interface-Einstellungen ändern.';
 
   @override
+  String get onboarding_got_it => 'Verstanden';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'Du kannst dies später unter Einstellungen › Wiedergabe-Einstellungen ändern.';
+
+  @override
+  String get onboarding_grid_title => 'Szenen durchsuchen';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Halte eine Szenenkarte gedrückt, um Details und Aktionen zu sehen.';
+
+  @override
+  String get onboarding_feed_title => 'Den Feed nutzen';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Halte das Video gedrückt, um vorzuspulen. Wische dabei nach oben, um noch schneller zu spulen.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Tippe auf den Titel, um die Steuerelemente auszublenden. Tippe auf das Video, um sie wieder anzuzeigen.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Tippe auf den Pfeil nach oben, um weitere Aktionen anzuzeigen.';
+
+  @override
+  String get onboarding_details_title => 'Eine Szene ansehen';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Wische über den Titel nach links oder rechts, um zur vorherigen oder nächsten Szene zu wechseln.';
+
+  @override
+  String get onboarding_details_seek_label => 'Wie möchtest du spulen?';
+
+  @override
+  String get onboarding_image_title => 'Wischrichtung wählen';
+
+  @override
+  String get settings_develop_reset_onboarding =>
+      'Erststart-Hinweise zurücksetzen';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Die einmaligen Hinweise und Auswahlen erneut anzeigen.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'Die Erststart-Hinweise werden erneut angezeigt.';
+
+  @override
   String get settings_interface_grid_columns => 'Rasterspalten';
 
   @override

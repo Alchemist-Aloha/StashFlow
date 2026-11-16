@@ -8,6 +8,7 @@ import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart'
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
+
 import '../../domain/entities/scene.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/utils/l10n_extensions.dart';

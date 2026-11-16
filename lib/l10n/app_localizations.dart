@@ -3192,6 +3192,96 @@ abstract class AppLocalizations {
   /// **'You can change this later in Settings › Interface Settings.'**
   String get scene_view_mode_prompt_settings_hint;
 
+  /// No description provided for @onboarding_got_it.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get onboarding_got_it;
+
+  /// No description provided for @onboarding_playback_settings_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later in Settings › Playback Settings.'**
+  String get onboarding_playback_settings_hint;
+
+  /// No description provided for @onboarding_grid_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Browsing scenes'**
+  String get onboarding_grid_title;
+
+  /// No description provided for @onboarding_grid_long_press.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press a scene card to see its details and actions.'**
+  String get onboarding_grid_long_press;
+
+  /// No description provided for @onboarding_feed_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Using the feed'**
+  String get onboarding_feed_title;
+
+  /// No description provided for @onboarding_feed_long_press.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press the video to fast-forward. Slide up while holding to go even faster.'**
+  String get onboarding_feed_long_press;
+
+  /// No description provided for @onboarding_feed_title_tap.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the title to hide the controls. Tap the video to bring them back.'**
+  String get onboarding_feed_title_tap;
+
+  /// No description provided for @onboarding_feed_chevron.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the up arrow to show more actions.'**
+  String get onboarding_feed_chevron;
+
+  /// No description provided for @onboarding_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Watching a scene'**
+  String get onboarding_details_title;
+
+  /// No description provided for @onboarding_details_swipe_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe the title left or right to go to the previous or next scene.'**
+  String get onboarding_details_swipe_title;
+
+  /// No description provided for @onboarding_details_seek_label.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you like to seek?'**
+  String get onboarding_details_seek_label;
+
+  /// No description provided for @onboarding_image_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a swipe direction'**
+  String get onboarding_image_title;
+
+  /// No description provided for @settings_develop_reset_onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset First-Run Tips'**
+  String get settings_develop_reset_onboarding;
+
+  /// No description provided for @settings_develop_reset_onboarding_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the one-time tips and choices again.'**
+  String get settings_develop_reset_onboarding_subtitle;
+
+  /// No description provided for @settings_develop_reset_onboarding_done.
+  ///
+  /// In en, this message translates to:
+  /// **'First-run tips will show again.'**
+  String get settings_develop_reset_onboarding_done;
+
   /// No description provided for @settings_interface_grid_columns.
   ///
   /// In en, this message translates to:

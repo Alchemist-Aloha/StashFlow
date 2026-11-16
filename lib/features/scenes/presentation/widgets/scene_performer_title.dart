@@ -5,9 +5,8 @@ import 'package:material_ui/material_ui.dart';
 /// Year-only birthdates use calendar-year subtraction. Full birthdates account
 /// for whether the birthday had occurred. Invalid or future dates are omitted.
 int? ageAtSceneYear({required DateTime sceneDate, String? birthdate}) {
-  final match = RegExp(
-    r'^(\d{4})(?:-(\d{2})-(\d{2}))?$',
-  ).firstMatch(birthdate?.trim() ?? '');
+  final match = RegExp(r'^(\d{4})(?:-(\d{2})-(\d{2}))?$')
+      .firstMatch(birthdate?.trim() ?? '');
   if (match == null) return null;
 
   final birthYear = int.parse(match[1]!);

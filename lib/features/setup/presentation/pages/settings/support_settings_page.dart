@@ -1,9 +1,12 @@
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+
 import '../../widgets/settings_page_shell.dart';
 import '../../providers/update_provider.dart';
 import '../../../../../core/utils/app_log_store.dart';

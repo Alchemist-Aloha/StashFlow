@@ -1758,6 +1758,54 @@ class AppLocalizationsJa extends AppLocalizations {
       'この設定は後で「設定 › インターフェース設定」から変更できます。';
 
   @override
+  String get onboarding_got_it => '了解';
+
+  @override
+  String get onboarding_playback_settings_hint => 'この設定は後で「設定 › 再生設定」から変更できます。';
+
+  @override
+  String get onboarding_grid_title => 'シーンの閲覧';
+
+  @override
+  String get onboarding_grid_long_press => 'シーンカードを長押しすると、詳細と操作を表示できます。';
+
+  @override
+  String get onboarding_feed_title => 'フィードの使い方';
+
+  @override
+  String get onboarding_feed_long_press =>
+      '動画を長押しすると早送りします。押したまま上にスライドするとさらに速くなります。';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'タイトルをタップすると操作ボタンを非表示にします。動画をタップすると再表示します。';
+
+  @override
+  String get onboarding_feed_chevron => '上向き矢印をタップすると、その他の操作を表示します。';
+
+  @override
+  String get onboarding_details_title => 'シーンの視聴';
+
+  @override
+  String get onboarding_details_swipe_title => 'タイトルを左右にスワイプすると、前後のシーンに移動します。';
+
+  @override
+  String get onboarding_details_seek_label => 'シーク方法を選んでください';
+
+  @override
+  String get onboarding_image_title => 'スワイプ方向を選択';
+
+  @override
+  String get settings_develop_reset_onboarding => '初回ヒントをリセット';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      '1回限りのヒントと選択を再表示します。';
+
+  @override
+  String get settings_develop_reset_onboarding_done => '初回ヒントが再表示されます。';
+
+  @override
   String get settings_interface_grid_columns => 'グリッドの列数';
 
   @override

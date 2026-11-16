@@ -12,9 +12,8 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'helpers/test_helpers.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart'
-    show sceneViewModePromptPendingKey;
-import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_view_mode_dialog.dart';
+import 'package:stash_app_flutter/core/data/preferences/one_time_tips.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_onboarding_dialogs.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
 class FakeGraphQLSceneRepository implements GraphQLSceneRepository {
@@ -222,7 +221,7 @@ void main() {
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({
-      sceneViewModePromptPendingKey: true,
+      OneTimeTip.sceneViewMode.key: true,
     });
     final prefs = await SharedPreferences.getInstance();
 
@@ -235,7 +234,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SceneViewModeDialog), findsOneWidget);
-    expect(prefs.getBool(sceneViewModePromptPendingKey), isFalse);
+    expect(prefs.getBool(OneTimeTip.sceneViewMode.key), isFalse);
 
     await tester.tap(find.byKey(const Key('scene-view-mode-feed')));
     // The feed keeps animating, so pump past the dialog exit instead of settling.
@@ -244,6 +243,54 @@ void main() {
 
     expect(find.byType(SceneViewModeDialog), findsNothing);
     expect(prefs.getBool('scene_tiktok_layout'), isTrue);
+  });
+
+  testWidgets('ScenesPage shows the grid tip after the user keeps Grid', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      OneTimeTip.sceneViewMode.key: true,
+      OneTimeTip.sceneGrid.key: true,
+    });
+    final prefs = await SharedPreferences.getInstance();
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(_alphaRepo())],
+      child: const ScenesPage(),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('scene-view-mode-grid')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Browsing scenes'), findsOneWidget);
+    expect(OneTimeTip.sceneGrid.isPending(prefs), isFalse);
+    await tester.tap(find.text('Got it'));
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsNothing);
+    expect(prefs.getBool('scene_tiktok_layout'), isNot(isTrue));
+  });
+
+  testWidgets('feed shows its gesture tip once', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'scene_tiktok_layout': true,
+      OneTimeTip.sceneFeed.key: true,
+    });
+    final prefs = await SharedPreferences.getInstance();
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(_alphaRepo())],
+      child: const ScenesPage(),
+    );
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    expect(find.text('Using the feed'), findsOneWidget);
+    expect(OneTimeTip.sceneFeed.isPending(prefs), isFalse);
   });
 
   testWidgets('ScenesPage does not prompt without the pending flag', (

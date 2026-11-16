@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/core/data/preferences/one_time_tips.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -363,6 +364,36 @@ void main() {
       expect(find.byKey(const Key('image_clip_controls')), findsNothing);
       expect(sessions, 0);
       expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('first open asks once for the swipe direction', (tester) async {
+      SharedPreferences.setMockInitialValues({
+        OneTimeTip.imageViewer.key: true,
+      });
+      final prefs = await SharedPreferences.getInstance();
+      mockRepository.withData([
+        const entity.Image(id: 'still', files: [], paths: entity.ImagePaths()),
+      ]);
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: const ImageFullscreenPage(imageId: 'still'),
+        overrides: [imageRepositoryProvider.overrideWithValue(mockRepository)],
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Choose a swipe direction'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('image-swipe-horizontal')));
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      expect(find.text('Choose a swipe direction'), findsNothing);
+      expect(prefs.getBool('image_fullscreen_vertical_swipe'), isFalse);
+      expect(OneTimeTip.imageViewer.isPending(prefs), isFalse);
       await tester.pumpWidget(const SizedBox());
       await tester.pumpAndSettle();
     });

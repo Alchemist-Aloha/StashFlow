@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../galleries/presentation/gallery_location.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
@@ -17,9 +20,11 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/tag_list_provider.dart';
+
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
+
 import '../../../../core/utils/app_log_store.dart';
 
 class TagDetailsPage extends ConsumerWidget {
@@ -40,9 +45,8 @@ class TagDetailsPage extends ConsumerWidget {
     if (!context.mounted) return;
 
     if (randomTag == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.tags_no_random)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.tags_no_random)));
       return;
     }
 

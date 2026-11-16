@@ -1802,6 +1802,60 @@ class AppLocalizationsRu extends AppLocalizations {
       'Это можно изменить позже в разделе Настройки › Настройки интерфейса.';
 
   @override
+  String get onboarding_got_it => 'Понятно';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'Это можно изменить позже в разделе Настройки › Настройки воспроизведения.';
+
+  @override
+  String get onboarding_grid_title => 'Просмотр сцен';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Нажмите и удерживайте карточку сцены, чтобы увидеть сведения и действия.';
+
+  @override
+  String get onboarding_feed_title => 'Как пользоваться лентой';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Нажмите и удерживайте видео для перемотки вперёд. Проведите вверх, не отпуская, чтобы ускорить ещё больше.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Нажмите на название, чтобы скрыть элементы управления. Нажмите на видео, чтобы вернуть их.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Нажмите на стрелку вверх, чтобы открыть другие действия.';
+
+  @override
+  String get onboarding_details_title => 'Просмотр сцены';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Проведите по названию влево или вправо, чтобы перейти к предыдущей или следующей сцене.';
+
+  @override
+  String get onboarding_details_seek_label => 'Как вы хотите перематывать?';
+
+  @override
+  String get onboarding_image_title => 'Выберите направление пролистывания';
+
+  @override
+  String get settings_develop_reset_onboarding =>
+      'Сбросить подсказки первого запуска';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Снова показать одноразовые подсказки и выборы.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'Подсказки первого запуска будут показаны снова.';
+
+  @override
   String get settings_interface_grid_columns => 'Колонки сетки';
 
   @override

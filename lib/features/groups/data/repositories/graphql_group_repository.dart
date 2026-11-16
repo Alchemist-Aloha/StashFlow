@@ -1,6 +1,7 @@
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import 'package:stash_app_flutter/core/data/graphql/criterion_mapping.dart';
+
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../domain/entities/group.dart';
 import '../../domain/entities/group_filter.dart';

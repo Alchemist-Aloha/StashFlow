@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
 import '../../data/repositories/graphql_gallery_repository.dart';

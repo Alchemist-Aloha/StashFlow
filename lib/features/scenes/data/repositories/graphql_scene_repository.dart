@@ -1,16 +1,21 @@
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
+
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
     as domain;
+
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_deduplication.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/models/scraper.dart';
 import '../graphql/scenes.graphql.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
+
 import '../utils/scrape_normalizer.dart';
 
 class GraphQLSceneRepository {

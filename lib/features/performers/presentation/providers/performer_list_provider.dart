@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'dart:convert';
+
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart' as domain;
 import '../../data/repositories/graphql_performer_repository.dart';

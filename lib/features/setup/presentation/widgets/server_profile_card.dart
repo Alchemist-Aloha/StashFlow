@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+
 import '../../domain/models/server_profile.dart';
 import '../providers/connection_provider.dart';
 import '../providers/server_profiles_provider.dart';
@@ -58,9 +59,8 @@ class ServerProfileCard extends ConsumerWidget {
                   children: [
                     Text(
                       profile.name ?? profile.baseUrl,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

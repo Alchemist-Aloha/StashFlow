@@ -1,3 +1,7 @@
+import '../../../../core/data/preferences/one_time_tips.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../widgets/scene_onboarding_dialogs.dart';
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' show min;
@@ -749,10 +753,27 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     _showTechnicalMetadata = !ref.read(hideSceneTechnicalMetadataProvider);
   }
 
+  /// Shows the first-run details tip and applies the chosen seek method.
+  void _maybeShowDetailsTip() {
+    if (!OneTimeTip.sceneDetails.consume(ref.read(sharedPreferencesProvider))) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final useDoubleTap = await showSceneDetailsTip(context);
+      if (useDoubleTap != null && mounted) {
+        ref
+            .read(playerStateProvider.notifier)
+            .setUseDoubleTapSeek(useDoubleTap);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+    if (sceneAsync.hasValue) _maybeShowDetailsTip();
     final isVideoFullScreen = ref.watch(
       playerStateProvider.select((state) => state.isFullScreen),
     );

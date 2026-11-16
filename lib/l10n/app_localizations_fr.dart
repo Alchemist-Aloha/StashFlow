@@ -1814,6 +1814,61 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vous pourrez le modifier plus tard dans Paramètres › Paramètres d\'interface.';
 
   @override
+  String get onboarding_got_it => 'Compris';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'Vous pourrez le modifier plus tard dans Paramètres › Paramètres de lecture.';
+
+  @override
+  String get onboarding_grid_title => 'Parcourir les scènes';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Appuyez longuement sur une carte de scène pour voir ses détails et actions.';
+
+  @override
+  String get onboarding_feed_title => 'Utiliser le fil';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Appuyez longuement sur la vidéo pour avancer rapidement. Glissez vers le haut sans relâcher pour aller encore plus vite.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Touchez le titre pour masquer les commandes. Touchez la vidéo pour les réafficher.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Touchez la flèche vers le haut pour afficher plus d\'actions.';
+
+  @override
+  String get onboarding_details_title => 'Regarder une scène';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Balayez le titre vers la gauche ou la droite pour passer à la scène précédente ou suivante.';
+
+  @override
+  String get onboarding_details_seek_label =>
+      'Comment voulez-vous vous déplacer dans la vidéo ?';
+
+  @override
+  String get onboarding_image_title => 'Choisissez le sens de balayage';
+
+  @override
+  String get settings_develop_reset_onboarding =>
+      'Réinitialiser les conseils de démarrage';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Afficher à nouveau les conseils et choix uniques.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'Les conseils de démarrage s\'afficheront à nouveau.';
+
+  @override
   String get settings_interface_grid_columns => 'Colonnes de la grille';
 
   @override

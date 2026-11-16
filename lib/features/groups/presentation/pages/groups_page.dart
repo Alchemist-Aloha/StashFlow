@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -321,9 +322,8 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
           horizontal: AppTheme.spacingMedium,
           vertical: 4,
         ),
-        color: Theme.of(
-          context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+        color: Theme.of(context).colorScheme.primaryContainer
+            .withValues(alpha: 0.3),
         child: ListTile(
           leading: const Icon(Icons.group_work),
           onTap: () => context.push('/groups/group/${group.id}'),
@@ -350,9 +350,8 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
             horizontal: AppTheme.spacingMedium,
             vertical: 4,
           ),
-          color: Theme.of(
-            context,
-          ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+          color: Theme.of(context).colorScheme.primaryContainer
+              .withValues(alpha: 0.3),
           child: ListTile(
             leading: const Icon(Icons.group_work),
             title: Text(

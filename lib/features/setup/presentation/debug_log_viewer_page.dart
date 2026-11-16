@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter/services.dart';
 
 import '../../../core/utils/app_log_store.dart';

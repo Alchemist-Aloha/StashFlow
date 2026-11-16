@@ -1,10 +1,13 @@
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
+
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
     as domain;
+
 import '../../domain/entities/image.dart';
 import '../../domain/entities/image_filter.dart';
 import '../graphql/images.graphql.dart';

@@ -1,6 +1,9 @@
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../studios/presentation/providers/studio_list_provider.dart';
 import '../../../performers/presentation/providers/performer_list_provider.dart';
 import '../../../tags/presentation/providers/tag_list_provider.dart';

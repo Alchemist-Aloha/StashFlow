@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart'
-    show sceneViewModePromptPendingKey;
+import 'package:stash_app_flutter/core/data/preferences/one_time_tips.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -202,7 +201,7 @@ void main() {
     expect(prefs.getString('active_server_profile_id'), profile.id);
   });
 
-  test('only the first profile arms the scene view mode prompt', () async {
+  test('only the first profile arms the one-time tips', () async {
     final container = createContainer();
     final notifier = container.read(serverProfilesProvider.notifier);
 
@@ -213,10 +212,12 @@ void main() {
         authMode: AuthMode.apiKey,
       ),
     );
-    expect(prefs.getBool(sceneViewModePromptPendingKey), isTrue);
+    for (final tip in OneTimeTip.values) {
+      expect(tip.isPending(prefs), isTrue, reason: tip.name);
+    }
 
     // Once shown, later or re-added first profiles must not re-arm it.
-    await prefs.setBool(sceneViewModePromptPendingKey, false);
+    await prefs.setBool(OneTimeTip.sceneViewMode.key, false);
     await notifier.removeProfile('a');
     await notifier.addProfile(
       const ServerProfile(
@@ -225,6 +226,6 @@ void main() {
         authMode: AuthMode.apiKey,
       ),
     );
-    expect(prefs.getBool(sceneViewModePromptPendingKey), isFalse);
+    expect(prefs.getBool(OneTimeTip.sceneViewMode.key), isFalse);
   });
 }

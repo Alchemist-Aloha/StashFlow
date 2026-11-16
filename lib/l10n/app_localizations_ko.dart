@@ -1758,6 +1758,56 @@ class AppLocalizationsKo extends AppLocalizations {
       '나중에 설정 › 인터페이스 설정에서 변경할 수 있습니다.';
 
   @override
+  String get onboarding_got_it => '확인';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      '나중에 설정 › 재생 설정에서 변경할 수 있습니다.';
+
+  @override
+  String get onboarding_grid_title => '장면 둘러보기';
+
+  @override
+  String get onboarding_grid_long_press => '장면 카드를 길게 누르면 세부 정보와 작업을 볼 수 있습니다.';
+
+  @override
+  String get onboarding_feed_title => '피드 사용하기';
+
+  @override
+  String get onboarding_feed_long_press =>
+      '동영상을 길게 누르면 빨리 감기 됩니다. 누른 채로 위로 밀면 더 빨라집니다.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      '제목을 탭하면 컨트롤이 숨겨집니다. 동영상을 탭하면 다시 표시됩니다.';
+
+  @override
+  String get onboarding_feed_chevron => '위쪽 화살표를 탭하면 더 많은 작업이 표시됩니다.';
+
+  @override
+  String get onboarding_details_title => '장면 시청하기';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      '제목을 좌우로 스와이프하면 이전 또는 다음 장면으로 이동합니다.';
+
+  @override
+  String get onboarding_details_seek_label => '탐색 방식을 선택하세요';
+
+  @override
+  String get onboarding_image_title => '스와이프 방향 선택';
+
+  @override
+  String get settings_develop_reset_onboarding => '첫 실행 안내 초기화';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      '일회성 안내와 선택 창을 다시 표시합니다.';
+
+  @override
+  String get settings_develop_reset_onboarding_done => '첫 실행 안내가 다시 표시됩니다.';
+
+  @override
   String get settings_interface_grid_columns => '그리드 열';
 
   @override

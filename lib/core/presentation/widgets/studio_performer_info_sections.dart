@@ -89,9 +89,9 @@ class StudioPerformerInfoSections extends ConsumerWidget {
                     leading: hasImage
                         ? CircleAvatar(
                             radius: 14 * dims.fontSizeFactor,
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
                             foregroundImage: StashImage.provider(
                               ref,
                               performerImagePath,

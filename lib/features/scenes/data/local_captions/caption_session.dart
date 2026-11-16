@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'caption_cue.dart';
 import 'caption_options.dart';
 

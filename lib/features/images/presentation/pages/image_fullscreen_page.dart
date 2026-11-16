@@ -1,3 +1,6 @@
+import '../../../../core/data/preferences/one_time_tips.dart';
+import '../widgets/image_swipe_direction_dialog.dart';
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
@@ -110,7 +113,18 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Mobile stays non-immersive; desktop waits for the header toggle.
       if (mounted && kIsWeb) unawaited(_enterFullScreen());
+      unawaited(_maybeAskSwipeDirection());
     });
+  }
+
+  /// Asks for the swipe direction the first time the viewer opens.
+  Future<void> _maybeAskSwipeDirection() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (!mounted || !OneTimeTip.imageViewer.consume(prefs)) return;
+    final vertical = await showImageSwipeDirectionDialog(context);
+    if (vertical == null || !mounted) return;
+    await prefs.setBool(_imageFullscreenVerticalSwipeKey, vertical);
+    if (mounted) setState(() {});
   }
 
   @override

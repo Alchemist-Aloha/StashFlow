@@ -1,6 +1,9 @@
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../domain/entities/image_filter.dart';
 import '../../../../core/domain/entities/criterion.dart';
 import '../providers/image_list_provider.dart';

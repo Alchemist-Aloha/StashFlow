@@ -18,7 +18,8 @@ import '../providers/player_view_mode.dart';
 import '../providers/video_player_provider.dart';
 import '../widgets/scene_card.dart';
 import '../widgets/tiktok_scenes_view.dart';
-import '../widgets/scene_view_mode_dialog.dart';
+import '../widgets/scene_onboarding_dialogs.dart';
+import '../../../../core/data/preferences/one_time_tips.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../setup/presentation/providers/navigation_tabs_provider.dart';
@@ -67,7 +68,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   String? _focusedSceneId;
   String? _lastRoutePath;
   bool _restoreFocusPending = false;
-  bool _viewModePromptScheduled = false;
+  bool _onboardingScheduled = false;
 
   @override
   void dispose() {
@@ -116,20 +117,38 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     });
   }
 
-  /// Offers the grid/feed choice once, after the first server's scenes load.
-  void _maybePromptViewMode() {
-    if (_viewModePromptScheduled) return;
+  /// Runs the first-run Scenes dialogs in order: the grid/feed choice (from
+  /// the grid), then the gesture tip for whichever layout is showing.
+  void _maybeShowOnboarding({required bool isTiktok}) {
+    if (_onboardingScheduled) return;
     final prefs = ref.read(sharedPreferencesProvider);
-    if (prefs.getBool(sceneViewModePromptPendingKey) != true) return;
-    _viewModePromptScheduled = true;
+    final pending = isTiktok
+        ? OneTimeTip.sceneFeed.isPending(prefs)
+        : OneTimeTip.sceneViewMode.isPending(prefs) ||
+              OneTimeTip.sceneGrid.isPending(prefs);
+    if (!pending) return;
+    _onboardingScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      // Clear first so a crash or dismissal never shows the prompt again.
-      await prefs.setBool(sceneViewModePromptPendingKey, false);
-      if (!mounted) return;
-      final useFeed = await showSceneViewModeDialog(context);
-      if (useFeed != null && mounted) {
-        await ref.read(sceneTiktokLayoutProvider.notifier).set(useFeed);
+      try {
+        if (!mounted) return;
+        var useFeed = ref.read(sceneTiktokLayoutProvider);
+        if (!useFeed && OneTimeTip.sceneViewMode.consume(prefs)) {
+          useFeed = await showSceneViewModeDialog(context) ?? false;
+          if (!mounted) return;
+          if (useFeed) {
+            await ref.read(sceneTiktokLayoutProvider.notifier).set(true);
+            if (!mounted) return;
+          }
+        }
+        if (useFeed) {
+          if (OneTimeTip.sceneFeed.consume(prefs)) {
+            await showSceneFeedTip(context);
+          }
+        } else if (OneTimeTip.sceneGrid.consume(prefs)) {
+          await showSceneGridTip(context);
+        }
+      } finally {
+        _onboardingScheduled = false;
       }
     });
   }
@@ -378,11 +397,11 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     _lastRoutePath = currentPath;
     if (!isAtRoot || isTiktokLayout) _restoreFocusPending = false;
     if (isAtRoot &&
-        !isTiktokLayout &&
         !scenesAsync.isLoading &&
         !scenesAsync.hasError &&
-        scenes.isNotEmpty) {
-      _maybePromptViewMode();
+        scenes.isNotEmpty &&
+        ref.read(playerStateProvider).viewMode != PlayerViewMode.fullscreen) {
+      _maybeShowOnboarding(isTiktok: isTiktokLayout);
     }
     if (_restoreFocusPending &&
         !scenesAsync.isLoading &&

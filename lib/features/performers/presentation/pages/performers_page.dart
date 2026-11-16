@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart';
 import '../providers/performer_list_provider.dart';

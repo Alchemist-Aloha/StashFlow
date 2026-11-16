@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:crypto/crypto.dart';
+
 import 'caption_options.dart';
 
 /// A resolved, revision-pinned model snapshot, independent of the live catalog.
@@ -150,9 +152,8 @@ class LocalCaptionModel {
           .toList(),
     );
     final legacy = find(model.id);
-    if (!RegExp(
-          r'^[A-Za-z0-9][A-Za-z0-9_.-]*/[A-Za-z0-9][A-Za-z0-9_.-]*$',
-        ).hasMatch(model.repository) ||
+    if (!RegExp(r'^[A-Za-z0-9][A-Za-z0-9_.-]*/[A-Za-z0-9][A-Za-z0-9_.-]*$')
+            .hasMatch(model.repository) ||
         !RegExp(r'^[0-9a-f]{40}$').hasMatch(model.revision) ||
         model.id !=
                 snapshotId(
@@ -232,8 +233,7 @@ class LocalCaptionModel {
     'silero_vad.onnx',
     643854,
     '9e2449e1087496d8d4caba907f23e0bd3f78d91fa552479bb9c23ac09cbb1fd6',
-    downloadUrl:
-        'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx',
+    downloadUrl: 'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx',
   );
   int get bytes => files.fold(0, (sum, file) => sum + file.bytes);
   String url(CaptionModelFile file) =>
@@ -346,8 +346,7 @@ class LocalCaptionModel {
           'silero_vad.onnx',
           643854,
           '9e2449e1087496d8d4caba907f23e0bd3f78d91fa552479bb9c23ac09cbb1fd6',
-          downloadUrl:
-              'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx',
+          downloadUrl: 'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx',
         ),
       ],
     ),

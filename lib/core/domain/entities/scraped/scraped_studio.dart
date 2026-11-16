@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'scraped_tag.dart';
 
 part 'scraped_studio.freezed.dart';

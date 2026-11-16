@@ -267,12 +267,21 @@ List invariants:
   mode. Column preferences persist. Entity media pages (performer, studio,
   tag, group) share the Scenes column preference, and entity gallery pages
   share the Galleries column preference.
-- Saving the first server profile on an install arms a one-time Scenes prompt
-  (`sceneViewModePromptPendingKey`). The first time the Scenes route is current
-  with loaded, non-empty scenes in grid mode, a dialog offers Grid or Feed with
-  small layout sketches and notes that Interface Settings can change it later.
-  The flag is cleared before the dialog opens, so dismissal keeps Grid and the
-  prompt never returns; installs that predate the flag never see it.
+- First-run dialogs (`OneTimeTip`) appear at most once per install. Saving the
+  first server profile arms them all; installs that predate them never see
+  them, and Develop settings can re-arm them. Each screen consumes its tip
+  before opening the dialog, so dismissal or a rebuild never repeats it.
+  - Scenes (route current, scenes loaded and non-empty, player not
+    fullscreen): from the grid, first a Grid/Feed choice with layout sketches;
+    then the tip for the active layout. Grid: long press a card for details.
+    Feed: long press to fast-forward, tap the title to hide controls, open the
+    up chevron for more actions.
+  - Scene details (scene loaded): swipe the title to change scenes, plus a
+    double-tap/drag seek choice saved to the playback setting.
+  - Fullscreen images (first open): vertical/horizontal swipe choice saved to
+    the Interface setting.
+  - Choice dialogs close on a choice and keep the current value when
+    dismissed; each notes where the setting can be changed later.
 - In grids with a column setting, Ctrl+mouse wheel adjusts that category's
   persisted Interface setting by one column per event within the existing 1–10
   range. Wheel up reduces columns (larger cards); wheel down adds columns.

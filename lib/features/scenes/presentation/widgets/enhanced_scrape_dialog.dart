@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';

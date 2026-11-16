@@ -1820,6 +1820,61 @@ class AppLocalizationsEs extends AppLocalizations {
       'Puedes cambiarlo más tarde en Ajustes › Ajustes de interfaz.';
 
   @override
+  String get onboarding_got_it => 'Entendido';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'Puedes cambiarlo más tarde en Ajustes › Ajustes de reproducción.';
+
+  @override
+  String get onboarding_grid_title => 'Explorar escenas';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Mantén pulsada una tarjeta de escena para ver sus detalles y acciones.';
+
+  @override
+  String get onboarding_feed_title => 'Usar el feed';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Mantén pulsado el vídeo para avanzar rápido. Desliza hacia arriba sin soltar para ir aún más rápido.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Toca el título para ocultar los controles. Toca el vídeo para volver a mostrarlos.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Toca la flecha hacia arriba para ver más acciones.';
+
+  @override
+  String get onboarding_details_title => 'Ver una escena';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Desliza el título a la izquierda o a la derecha para ir a la escena anterior o siguiente.';
+
+  @override
+  String get onboarding_details_seek_label =>
+      '¿Cómo quieres buscar en el vídeo?';
+
+  @override
+  String get onboarding_image_title => 'Elige la dirección de deslizamiento';
+
+  @override
+  String get settings_develop_reset_onboarding =>
+      'Restablecer consejos iniciales';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Volver a mostrar los consejos y opciones de un solo uso.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'Los consejos iniciales se mostrarán de nuevo.';
+
+  @override
   String get settings_interface_grid_columns => 'Columnas de la cuadrícula';
 
   @override

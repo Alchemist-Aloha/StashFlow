@@ -21,15 +21,16 @@ import '../providers/player_settings.dart';
 import 'scene_cover_fullscreen_viewer.dart';
 import '../../../../core/utils/app_log_store.dart';
 
-typedef SceneInfoMediaBuilder =
-    Widget Function(BuildContext context, Scene scene);
-typedef SceneInfoPreviewBuilder =
-    Widget Function(
-      BuildContext context,
-      Scene scene,
-      bool autoplay,
-      VoidCallback onUnavailable,
-    );
+typedef SceneInfoMediaBuilder = Widget Function(
+  BuildContext context,
+  Scene scene,
+);
+typedef SceneInfoPreviewBuilder = Widget Function(
+  BuildContext context,
+  Scene scene,
+  bool autoplay,
+  VoidCallback onUnavailable,
+);
 
 enum _SceneInfoMediaMode { cover, preview }
 
@@ -389,9 +390,8 @@ class _SceneInfoPreviewPlayerState
     final player = Player();
     final controller = VideoController(
       player,
-      configuration: PlayerSettingsStore(
-        ref.read(sharedPreferencesProvider),
-      ).loadVideoConfiguration(),
+      configuration: PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+          .loadVideoConfiguration(),
     );
     _player = player;
     _controller = controller;
@@ -427,9 +427,8 @@ class _SceneInfoPreviewPlayerState
         );
       }
 
-      await PlayerSettingsStore(
-        ref.read(sharedPreferencesProvider),
-      ).applyMpvProperties(player);
+      await PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+          .applyMpvProperties(player);
       await player.open(
         createPlaybackMedia(effectiveUrl, httpHeaders: effectiveHeaders),
         play: widget.autoplay,

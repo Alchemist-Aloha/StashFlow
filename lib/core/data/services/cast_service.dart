@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../utils/app_log_store.dart';
 
 void logCastProcess(String message, {String source = 'cast_service'}) {

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'caption_cue.dart';
 import 'local_caption_model.dart';
 import 'caption_options.dart';

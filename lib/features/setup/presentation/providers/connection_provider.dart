@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
+
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../data/graphql/version.graphql.dart';
 import '../../domain/models/server_profile.dart';

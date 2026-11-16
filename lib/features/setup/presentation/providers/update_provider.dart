@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../domain/entities/update_info.dart';
 import '../../../../core/utils/app_log_store.dart';

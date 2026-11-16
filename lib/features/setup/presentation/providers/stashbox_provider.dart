@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
+
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../data/graphql/config.graphql.dart';
 

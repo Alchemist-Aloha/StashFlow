@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../../domain/entities/studio_filter.dart';
 import '../providers/studio_list_provider.dart';
 import '../widgets/studio_filter_panel.dart';
@@ -374,9 +375,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           horizontal: context.dimensions.spacingMedium,
           vertical: 4,
         ),
-        color: Theme.of(
-          context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+        color: Theme.of(context).colorScheme.primaryContainer
+            .withValues(alpha: 0.3),
         child: ListTile(
           onTap: () => context.push('/studios/studio/${studio.id}'),
           title: Text(
@@ -399,9 +399,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
             horizontal: context.dimensions.spacingMedium,
             vertical: 4,
           ),
-          color: Theme.of(
-            context,
-          ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+          color: Theme.of(context).colorScheme.primaryContainer
+              .withValues(alpha: 0.3),
           child: ListTile(
             title: Text(
               context.l10n.loading,

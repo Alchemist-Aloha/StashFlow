@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
 import '../providers/local_captions_provider.dart';
 import '../providers/video_player_provider.dart';

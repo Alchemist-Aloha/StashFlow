@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
+
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' as p;
+
 import 'local_caption_model.dart';
 
 /// Atomic model installation. Only verified, revision-matching directories are usable.
@@ -105,12 +107,10 @@ class CaptionModelStore {
       if (cancel.isCancelled) {
         throw cancel.cancelError!;
       }
-      await File(
-        p.join(staging.path, '.manifest.json'),
-      ).writeAsString(jsonEncode(model.toJson()));
-      await File(
-        p.join(staging.path, '.verified'),
-      ).writeAsString(model.revision);
+      await File(p.join(staging.path, '.manifest.json'))
+          .writeAsString(jsonEncode(model.toJson()));
+      await File(p.join(staging.path, '.verified'))
+          .writeAsString(model.revision);
       final destination = directory(model);
       if (await destination.exists()) await destination.delete(recursive: true);
       await staging.rename(destination.path);

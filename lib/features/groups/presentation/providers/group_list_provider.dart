@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../domain/entities/group.dart';
 import '../../domain/entities/group_filter.dart';
 import '../../data/repositories/graphql_group_repository.dart';

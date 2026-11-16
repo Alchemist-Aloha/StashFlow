@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stash_app_flutter/core/data/preferences/one_time_tips.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
@@ -91,6 +92,27 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
                     title: l10n.settings_develop_log_viewer,
                     subtitle: l10n.settings_develop_log_viewer_subtitle,
                     onTap: () => context.push('/settings/logs'),
+                  ),
+                  const Divider(height: 1),
+                  SettingsActionCard(
+                    key: const Key('reset-one-time-tips'),
+                    icon: Icons.restart_alt_rounded,
+                    title: l10n.settings_develop_reset_onboarding,
+                    subtitle: l10n.settings_develop_reset_onboarding_subtitle,
+                    onTap: () async {
+                      await OneTimeTip.armAll(
+                        ref.read(sharedPreferencesProvider),
+                        force: true,
+                      );
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            l10n.settings_develop_reset_onboarding_done,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

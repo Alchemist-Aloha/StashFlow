@@ -3,8 +3,10 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 
-typedef SceneCoverImageBuilder =
-    Widget Function(BuildContext context, String imageUrl);
+typedef SceneCoverImageBuilder = Widget Function(
+  BuildContext context,
+  String imageUrl,
+);
 
 class SceneCoverFullscreenViewer extends StatefulWidget {
   const SceneCoverFullscreenViewer({

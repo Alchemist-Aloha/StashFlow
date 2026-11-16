@@ -1813,6 +1813,61 @@ class AppLocalizationsIt extends AppLocalizations {
       'Puoi cambiarlo in seguito in Impostazioni › Impostazioni Interfaccia.';
 
   @override
+  String get onboarding_got_it => 'Ho capito';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'Puoi cambiarlo in seguito in Impostazioni › Impostazioni Riproduzione.';
+
+  @override
+  String get onboarding_grid_title => 'Sfogliare le scene';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Tieni premuta una scheda scena per vederne dettagli e azioni.';
+
+  @override
+  String get onboarding_feed_title => 'Usare il feed';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Tieni premuto il video per avanzare velocemente. Scorri verso l\'alto tenendo premuto per andare ancora più veloce.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Tocca il titolo per nascondere i controlli. Tocca il video per mostrarli di nuovo.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Tocca la freccia in su per mostrare altre azioni.';
+
+  @override
+  String get onboarding_details_title => 'Guardare una scena';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Scorri il titolo a sinistra o a destra per passare alla scena precedente o successiva.';
+
+  @override
+  String get onboarding_details_seek_label =>
+      'Come preferisci spostarti nel video?';
+
+  @override
+  String get onboarding_image_title => 'Scegli la direzione di scorrimento';
+
+  @override
+  String get settings_develop_reset_onboarding =>
+      'Reimposta suggerimenti iniziali';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Mostra di nuovo i suggerimenti e le scelte una tantum.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'I suggerimenti iniziali verranno mostrati di nuovo.';
+
+  @override
   String get settings_interface_grid_columns => 'Colonne Griglia';
 
   @override
