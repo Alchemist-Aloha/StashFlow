@@ -15,6 +15,9 @@ abstract class PerformerFilter with _$PerformerFilter {
     HierarchicalMultiCriterion? tags,
     HierarchicalMultiCriterion? groups,
     HierarchicalMultiCriterion? studios,
+    /// Performers who appear with these performers in a scene, image, or
+    /// gallery.
+    MultiCriterion? performers,
     StringCriterion? url,
     IntCriterion? rating100,
     IntCriterion? tagCount,

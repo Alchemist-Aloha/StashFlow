@@ -1,7 +1,12 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../utils/l10n_extensions.dart';
+import '../providers/related_entities_provider.dart';
 import '../theme/app_theme.dart';
+import 'section_header.dart';
+import 'section_panel.dart';
 import 'stash_image.dart';
 
 /// A tappable row that opens a related entity's details page, such as a parent
@@ -75,6 +80,59 @@ class EntityLinkChips extends StatelessWidget {
             onPressed: () => context.push(link.route),
           ),
       ],
+    );
+  }
+}
+
+/// A details-page section listing entities related through [query], such as
+/// a tag's performers. Renders nothing while loading or when the list is
+/// empty, so pages only show sections that have content.
+class RelatedEntitiesSection extends ConsumerWidget {
+  const RelatedEntitiesSection({
+    required this.title,
+    required this.query,
+    required this.fallbackIcon,
+    super.key,
+  });
+
+  final String title;
+  final RelatedEntityQuery query;
+  final IconData fallbackIcon;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final related = ref.watch(relatedEntitiesProvider(query));
+    final content = related.when(
+      data: (entities) => entities.isEmpty
+          ? null
+          : [
+              for (final entity in entities)
+                RelatedEntityTile(
+                  title: entity.title,
+                  subtitle: entity.subtitle,
+                  route: entity.route,
+                  imagePath: entity.imagePath,
+                  fallbackIcon: fallbackIcon,
+                ),
+            ],
+      loading: () => null,
+      error: (error, _) => [
+        Text(
+          context.l10n.common_error(error.toString()),
+          style: context.textTheme.bodySmall,
+        ),
+      ],
+    );
+    if (content == null) return const SizedBox.shrink();
+    return SectionPanel(
+      margin: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(title: title, padding: EdgeInsets.zero),
+          ...content,
+        ],
+      ),
     );
   }
 }

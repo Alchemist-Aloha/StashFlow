@@ -140,6 +140,7 @@ class GraphQLPerformerRepository {
       tags: mapHierarchicalMultiCriterion(performerFilter?.tags),
       groups: mapHierarchicalMultiCriterion(performerFilter?.groups),
       studios: mapHierarchicalMultiCriterion(performerFilter?.studios),
+      performers: mapMultiCriterion(performerFilter?.performers),
       url: mapStringCriterion(performerFilter?.url),
       rating100: mapIntCriterion(performerFilter?.rating100),
       tag_count: mapIntCriterion(performerFilter?.tagCount),

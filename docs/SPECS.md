@@ -516,6 +516,11 @@ Related entities open through the shared `RelatedEntityTile` and
 `EntityLinkChips`, and repositories resolve every related image URL against
 the active server.
 
+Tag Details shows aliases and parent and child tags as link chips, then lists
+up to 24 related performers, studios, groups, and markers (markers open their
+scene). Related lists load through `relatedEntitiesProvider`, sort by scene
+count, and render no section while loading or when empty.
+
 ### Scene rating and metadata mutation
 
 Interactive rating entry points share `RatingButton` and `RatingPicker`. A single

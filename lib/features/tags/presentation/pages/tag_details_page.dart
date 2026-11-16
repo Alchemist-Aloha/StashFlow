@@ -14,6 +14,9 @@ import '../providers/tag_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/providers/related_entities_provider.dart';
+import '../../../../core/presentation/widgets/meta_row.dart';
+import '../../../../core/presentation/widgets/related_entities.dart';
 import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
@@ -194,6 +197,44 @@ class TagDetailsPage extends ConsumerWidget {
                             ),
                           ],
                         ),
+                        if (tag.aliases.isNotEmpty) ...[
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          MetaRow(
+                            label: context.l10n.common_aliases,
+                            value: tag.aliases.join(', '),
+                          ),
+                        ],
+                        for (final (title, relations) in [
+                          (context.l10n.tags_field_parent_tags, tag.parents),
+                          (context.l10n.tags_field_child_tags, tag.children),
+                        ])
+                          if (relations.isNotEmpty) ...[
+                            SizedBox(height: context.dimensions.spacingMedium),
+                            _buildSectionContainer(
+                              context,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SectionHeader(
+                                    title: title,
+                                    padding: EdgeInsets.zero,
+                                  ),
+                                  SizedBox(
+                                    height: context.dimensions.spacingSmall,
+                                  ),
+                                  EntityLinkChips(
+                                    links: [
+                                      for (final related in relations)
+                                        (
+                                          label: related.name,
+                                          route: '/tags/tag/${related.id}',
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         if (tag.description != null &&
                             tag.description!.trim().isNotEmpty) ...[
                           const SizedBox(height: AppTheme.spacingMedium),
@@ -324,6 +365,37 @@ class TagDetailsPage extends ConsumerWidget {
                             ),
                           ),
                         ),
+                        for (final (kind, title, icon) in [
+                          (
+                            RelatedEntityKind.performers,
+                            context.l10n.performers_title,
+                            Icons.person_outline,
+                          ),
+                          (
+                            RelatedEntityKind.studios,
+                            context.l10n.studios_title,
+                            Icons.business_outlined,
+                          ),
+                          (
+                            RelatedEntityKind.groups,
+                            context.l10n.groups_title,
+                            Icons.group_work,
+                          ),
+                          (
+                            RelatedEntityKind.markers,
+                            context.l10n.markers_title,
+                            Icons.bookmark_outline,
+                          ),
+                        ])
+                          RelatedEntitiesSection(
+                            title: title,
+                            fallbackIcon: icon,
+                            query: (
+                              kind: kind,
+                              owner: RelatedEntityOwner.tag,
+                              id: tag.id,
+                            ),
+                          ),
                       ],
                     ),
                   ),

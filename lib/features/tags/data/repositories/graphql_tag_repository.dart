@@ -191,6 +191,15 @@ class GraphQLTagRepository {
       galleryCount: t.gallery_count,
       performerCount: t.performer_count,
       favorite: t.favorite,
+      aliases: t.aliases,
+      parents: [
+        for (final parent in t.parents)
+          TagRelation(id: parent.id, name: parent.name),
+      ],
+      children: [
+        for (final child in t.children)
+          TagRelation(id: child.id, name: child.name),
+      ],
     );
   }
 
