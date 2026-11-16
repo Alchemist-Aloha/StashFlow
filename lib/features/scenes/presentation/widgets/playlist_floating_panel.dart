@@ -30,7 +30,7 @@ class PlaylistFloatingPanel extends ConsumerStatefulWidget {
         final curve = Curves.easeOutBack.transform(anim1.value);
         return Transform.scale(
           scale: curve,
-          child: Opacity(opacity: anim1.value, child: child),
+          child: FadeTransition(opacity: anim1, child: child),
         );
       },
     );
