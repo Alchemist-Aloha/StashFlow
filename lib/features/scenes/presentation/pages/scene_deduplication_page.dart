@@ -6,6 +6,7 @@ import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene_deduplication.dart';
 import '../providers/scene_list_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
+import '../../../../core/utils/responsive.dart';
 
 class SceneDeduplicationPage extends ConsumerStatefulWidget {
   const SceneDeduplicationPage({super.key});
@@ -941,7 +942,7 @@ class _DuplicateSceneTile extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 600;
+        final compact = constraints.maxWidth < Responsive.mobileBreakpoint;
         return Material(
           color: selected
               ? colors.secondaryContainer.withValues(alpha: 0.75)

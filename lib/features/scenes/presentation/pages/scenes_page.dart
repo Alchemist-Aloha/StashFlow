@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../navigation/presentation/current_route_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
@@ -434,7 +437,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       memCacheWidthBuilder: (context, isGrid) {
         if (!isGrid) return 640;
         final padding = AppTheme.spacingSmall * 2;
-        final crossAxisCount = _getGridColumnCount(context);
+        final crossAxisCount = gridColumns ?? _getGridColumnCount(context);
         // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
         // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
         final availableWidth = MediaQuery.sizeOf(context).width - padding;

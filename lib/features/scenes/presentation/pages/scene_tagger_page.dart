@@ -1121,46 +1121,48 @@ class _TaggerSceneCard extends StatelessWidget {
         ? selectedMatchIndex.clamp(0, matches.length - 1)
         : 0;
     final scraped = hasMatches ? matches[safeSelectedIndex] : null;
-    final isWide = MediaQuery.sizeOf(context).width >= 720;
-    final comparison = isWide
-        ? Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _LocalSceneSummary(
+    // Measure the card's own width; the window width ignores side panels.
+    final comparison = LayoutBuilder(
+      builder: (context, constraints) => constraints.maxWidth >= 720
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: _LocalSceneSummary(
+                    scene: scene,
+                    isPreviewActive: isPreviewActive,
+                    onPreviewActivate: onPreviewActivate,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _ScrapedSceneSummary(
+                    sceneId: scene.id,
+                    scraped: scraped,
+                    error: result?.error,
+                    title: context.l10n.scraped_metadata_title,
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _LocalSceneSummary(
                   scene: scene,
                   isPreviewActive: isPreviewActive,
                   onPreviewActivate: onPreviewActivate,
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _ScrapedSceneSummary(
+                const SizedBox(height: 12),
+                _ScrapedSceneSummary(
                   sceneId: scene.id,
                   scraped: scraped,
                   error: result?.error,
                   title: context.l10n.scraped_metadata_title,
                 ),
-              ),
-            ],
-          )
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _LocalSceneSummary(
-                scene: scene,
-                isPreviewActive: isPreviewActive,
-                onPreviewActivate: onPreviewActivate,
-              ),
-              const SizedBox(height: 12),
-              _ScrapedSceneSummary(
-                sceneId: scene.id,
-                scraped: scraped,
-                error: result?.error,
-                title: context.l10n.scraped_metadata_title,
-              ),
-            ],
-          );
+              ],
+            ),
+    );
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -1458,9 +1460,8 @@ class _MetadataPanel extends StatelessWidget {
                   children: [
                     Text(
                       row.$1,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall
+                          ?.copyWith(color: colors.onSurfaceVariant),
                     ),
                     SelectableText(row.$2),
                   ],
@@ -1629,9 +1630,8 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
     final player = Player();
     final controller = VideoController(
       player,
-      configuration: PlayerSettingsStore(
-        ref.read(sharedPreferencesProvider),
-      ).loadVideoConfiguration(),
+      configuration: PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+          .loadVideoConfiguration(),
     );
     _player = player;
     _controller = controller;
@@ -1660,9 +1660,8 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
         );
       }
 
-      await PlayerSettingsStore(
-        ref.read(sharedPreferencesProvider),
-      ).applyMpvProperties(player);
+      await PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+          .applyMpvProperties(player);
       await player.open(
         createPlaybackMedia(effectiveStreamUrl, httpHeaders: headers),
         play: true,

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
@@ -1159,7 +1161,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                         }
                                       }),
                                     );
-                                  } else if (!Platform.isAndroid) {
+                                  } else if (kIsWeb || !Platform.isAndroid) {
                                     _dragStartValue = ref
                                         .read(desktopSettingsProvider)
                                         .volume;
@@ -1192,7 +1194,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                     Icons.brightness_6,
                                     '${(_dragStartValue * 100).round()}%',
                                   );
-                                } else if (Platform.isAndroid) {
+                                } else if (!kIsWeb && Platform.isAndroid) {
                                   unawaited(
                                     SystemMediaVolume.adjustMediaVolume(delta)
                                         .then((volume) {

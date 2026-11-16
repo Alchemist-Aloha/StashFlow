@@ -255,21 +255,14 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       return delegate;
     }
 
-    final width = MediaQuery.sizeOf(context).width;
-    final isMobile = width < Responsive.mobileBreakpoint;
-    final isTablet =
-        width >= Responsive.mobileBreakpoint &&
-        width < Responsive.tabletBreakpoint;
+    final isMobile = Responsive.isMobile(context);
 
     int count = delegate.crossAxisCount;
 
     if (isMobile && widget.mobileCrossAxisCount != null) {
       count = widget.mobileCrossAxisCount!;
-    } else if (isTablet && widget.tabletCrossAxisCount != null) {
-      count = widget.tabletCrossAxisCount!;
-    } else if (width >= Responsive.tabletBreakpoint &&
-        widget.tabletCrossAxisCount != null) {
-      // Also apply tablet count for desktop if desktop count is not specified
+    } else if (!isMobile && widget.tabletCrossAxisCount != null) {
+      // Desktop widths reuse the tablet count.
       count = widget.tabletCrossAxisCount!;
     } else if (widget.useResponsiveGrid &&
         !isMobile &&
