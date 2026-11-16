@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../data/graphql/media_headers_provider.dart';
 import '../../utils/l10n_extensions.dart';
 import '../providers/related_entities_provider.dart';
 import '../theme/app_theme.dart';
@@ -25,7 +26,7 @@ void _openRelated(
 /// studio, a sub-group, or a group a scene belongs to.
 ///
 /// Placeholder server images (`default=true`) fall back to [fallbackIcon].
-class RelatedEntityTile extends StatelessWidget {
+class RelatedEntityTile extends ConsumerWidget {
   const RelatedEntityTile({
     required this.title,
     required this.route,
@@ -49,29 +50,29 @@ class RelatedEntityTile extends StatelessWidget {
   final String? subtitle;
 
   @override
-  Widget build(BuildContext context) {
-    final path = imagePath;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final path = imagePath?.trim();
     final hasImage =
         path != null && path.isNotEmpty && !path.contains('default=true');
-    final size = 40 * context.dimensions.fontSizeFactor;
+    final description = subtitle?.trim();
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(
-        child: hasImage
-            ? ClipOval(
-                child: StashImage(
-                  imageUrl: path,
-                  width: size,
-                  height: size,
-                  fit: BoxFit.cover,
-                  memCacheWidth: 120,
-                ),
-              )
-            : Icon(fallbackIcon),
-      ),
-      title: Text(title),
-      subtitle: subtitle == null ? null : Text(subtitle!),
-      trailing: const Icon(Icons.chevron_right_rounded),
+      leading: hasImage
+          ? CircleAvatar(
+              backgroundColor: context.colors.surfaceVariant,
+              foregroundImage: StashImage.provider(
+                ref,
+                path,
+                headers: ref.watch(mediaHeadersProvider),
+              ),
+              child: Icon(fallbackIcon),
+            )
+          : CircleAvatar(child: Icon(fallbackIcon)),
+      title: Text(title, style: context.textTheme.bodyLarge),
+      subtitle: description == null || description.isEmpty
+          ? null
+          : Text(description),
+      trailing: const Icon(Icons.chevron_right),
       onTap: () => _openRelated(context, route, closesSheet: closesSheet),
     );
   }
@@ -112,11 +113,12 @@ class EntityLinkChips extends StatelessWidget {
 /// A details-page section listing entities related through [query], such as
 /// a tag's performers. Renders nothing while loading or when the list is
 /// empty, so pages only show sections that have content.
-class RelatedEntitiesSection extends ConsumerWidget {
+class RelatedEntitiesSection extends ConsumerStatefulWidget {
   const RelatedEntitiesSection({
     required this.title,
     required this.query,
     required this.fallbackIcon,
+    this.collapsedCount,
     super.key,
   });
 
@@ -124,20 +126,49 @@ class RelatedEntitiesSection extends ConsumerWidget {
   final RelatedEntityQuery query;
   final IconData fallbackIcon;
 
+  /// Optional initial row limit, with a header Show more/Show less toggle.
+  /// Omitting it keeps the entire related list visible.
+  final int? collapsedCount;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final related = ref.watch(relatedEntitiesProvider(query));
+  ConsumerState<RelatedEntitiesSection> createState() =>
+      _RelatedEntitiesSectionState();
+}
+
+class _RelatedEntitiesSectionState
+    extends ConsumerState<RelatedEntitiesSection> {
+  bool _showAll = false;
+
+  @override
+  void didUpdateWidget(RelatedEntitiesSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.query != oldWidget.query) _showAll = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final related = ref.watch(relatedEntitiesProvider(widget.query));
+    final limit = widget.collapsedCount;
+    final collapsible = limit != null && (related.value?.length ?? 0) > limit;
     final content = related.when(
       data: (entities) => entities.isEmpty
           ? null
           : [
-              for (final entity in entities)
-                RelatedEntityTile(
-                  title: entity.title,
-                  subtitle: entity.subtitle,
-                  route: entity.route,
-                  imagePath: entity.imagePath,
-                  fallbackIcon: fallbackIcon,
+              for (final entity
+                  in _showAll || limit == null
+                      ? entities
+                      : entities.take(limit))
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: context.dimensions.spacingSmall,
+                  ),
+                  child: RelatedEntityTile(
+                    title: entity.title,
+                    subtitle: entity.subtitle,
+                    route: entity.route,
+                    imagePath: entity.imagePath,
+                    fallbackIcon: widget.fallbackIcon,
+                  ),
                 ),
             ],
       loading: () => null,
@@ -154,7 +185,16 @@ class RelatedEntitiesSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(title: title, padding: EdgeInsets.zero),
+          SectionHeader(
+            title: widget.title,
+            padding: EdgeInsets.zero,
+            onViewAll: collapsible
+                ? () => setState(() => _showAll = !_showAll)
+                : null,
+            actionLabel: _showAll
+                ? context.l10n.details_show_less
+                : context.l10n.details_show_more,
+          ),
           ...content,
         ],
       ),

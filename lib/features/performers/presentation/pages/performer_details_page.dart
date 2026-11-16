@@ -393,31 +393,10 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     false)) ...[
                           _buildSectionContainer(
                             context,
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SectionHeader(
-                                  title: context.l10n.common_details,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                const SizedBox(height: AppTheme.spacingSmall),
-                                for (final (label, value) in attributes)
-                                  MetaRow(
-                                    label: label,
-                                    value: value,
-                                    selectable: true,
-                                  ),
-                                if (performer.details?.trim().isNotEmpty ??
-                                    false)
-                                  Text(
-                                    performer.details!,
-                                    style: context.textTheme.bodyMedium
-                                        ?.copyWith(
-                                          color:
-                                              context.colors.onSurfaceVariant,
-                                        ),
-                                  ),
-                              ],
+                            _PerformerDetailsSection(
+                              key: ValueKey(performer.id),
+                              attributes: attributes,
+                              details: performer.details ?? '',
                             ),
                           ),
                         ],
@@ -545,6 +524,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                           RelatedEntitiesSection(
                             title: title,
                             fallbackIcon: icon,
+                            collapsedCount: kind == RelatedEntityKind.performers
+                                ? 5
+                                : null,
                             query: (
                               kind: kind,
                               owner: RelatedEntityOwner.performer,
@@ -623,6 +605,83 @@ class PerformerDetailsPage extends ConsumerWidget {
     return Chip(
       label: Text(label, style: context.textTheme.bodySmall),
       visualDensity: VisualDensity.compact,
+    );
+  }
+}
+
+class _PerformerDetailsSection extends StatefulWidget {
+  const _PerformerDetailsSection({
+    required this.attributes,
+    required this.details,
+    super.key,
+  });
+
+  final List<(String, String)> attributes;
+  final String details;
+
+  @override
+  State<_PerformerDetailsSection> createState() =>
+      _PerformerDetailsSectionState();
+}
+
+class _PerformerDetailsSectionState extends State<_PerformerDetailsSection> {
+  static const _collapsedRows = 5;
+  bool _showAll = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final attributes = widget.attributes;
+    final details = widget.details.trim();
+    final remainingLines = _collapsedRows - attributes.length;
+    final style = context.textTheme.bodyMedium?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var collapsible = attributes.length > _collapsedRows;
+        if (details.isNotEmpty) {
+          if (remainingLines <= 0) {
+            collapsible = true;
+          } else {
+            final painter = TextPainter(
+              text: TextSpan(text: details, style: style),
+              maxLines: remainingLines,
+              textDirection: Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+            )..layout(maxWidth: constraints.maxWidth);
+            collapsible = painter.didExceedMaxLines;
+            painter.dispose();
+          }
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SectionHeader(
+              key: const Key('performer_details_header'),
+              title: context.l10n.common_details,
+              padding: EdgeInsets.zero,
+              onViewAll: collapsible
+                  ? () => setState(() => _showAll = !_showAll)
+                  : null,
+              actionLabel: _showAll
+                  ? context.l10n.details_show_less
+                  : context.l10n.details_show_more,
+            ),
+            SizedBox(height: context.dimensions.spacingSmall),
+            for (final (label, value)
+                in _showAll ? attributes : attributes.take(_collapsedRows))
+              MetaRow(label: label, value: value, selectable: true),
+            if (details.isNotEmpty && (_showAll || remainingLines > 0))
+              Text(
+                details,
+                maxLines: _showAll ? null : remainingLines,
+                overflow: _showAll ? null : TextOverflow.ellipsis,
+                style: style,
+              ),
+          ],
+        );
+      },
     );
   }
 }

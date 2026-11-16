@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/providers/related_entities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/frosted_app_bar.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/meta_row.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/section_header.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/related_entities.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
@@ -294,6 +296,17 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byType(MetaRow), findsNWidgets(5));
+    expect(find.text('audit_field: teal', findRichText: true), findsNothing);
+    final header = find.byKey(const Key('performer_details_header'));
+    final toggle = find.descendant(
+      of: header,
+      matching: find.text('Show more'),
+    );
+    await tester.ensureVisible(toggle);
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+
     for (final text in [
       'Career Start',
       '2017',
@@ -319,6 +332,203 @@ void main() {
     );
     expect(find.text('Appears With'), findsOneWidget);
     expect(find.text('Groups'), findsNothing);
+    final collapse = find.descendant(
+      of: header,
+      matching: find.text('Show less'),
+    );
+    await tester.ensureVisible(collapse);
+    await tester.tap(collapse);
+    await tester.pumpAndSettle();
+    expect(find.byType(MetaRow), findsNWidgets(5));
+    expect(find.text('audit_field: teal', findRichText: true), findsNothing);
+  });
+
+  for (final scale in [0.5, 2.0]) {
+    testWidgets('details biography uses remaining lines at scale $scale', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(320, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      // A single paragraph exercises wrapping rather than only explicit newlines.
+      final biography = List.filled(
+        20,
+        'A long performer biography.',
+      ).join(' ');
+      await pumpTestWidget(
+        tester,
+        overrides: [
+          performerDetailsProvider('performer-1').overrideWith(
+            (ref) =>
+                _performer.copyWith(careerStart: '2017', details: biography),
+          ),
+          entityMediaPreviewProvider(
+            EntityMediaFilterKind.performer,
+            'performer-1',
+          ).overrideWith((ref) => []),
+          entityGalleryPreviewProvider(
+            EntityGalleryFilterKind.performer,
+            'performer-1',
+          ).overrideWith((ref) => []),
+        ],
+        child: Theme(
+          data: AppTheme.buildTheme(
+            Brightness.dark,
+            const Color(0xFF0F766E),
+            fontSizeFactor: scale,
+          ),
+          child: const PerformerDetailsPage(performerId: 'performer-1'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final text = find.text(biography);
+      expect(tester.widget<Text>(text).maxLines, 4);
+      final header = find.byKey(const Key('performer_details_header'));
+      final expand = find.descendant(
+        of: header,
+        matching: find.text('Show more'),
+      );
+      await tester.ensureVisible(expand);
+      expect(
+        tester.getCenter(expand).dx,
+        greaterThan(tester.getCenter(header).dx),
+      );
+      await tester.tap(expand);
+      await tester.pumpAndSettle();
+      expect(tester.widget<Text>(text).maxLines, isNull);
+      final collapse = find.descendant(
+        of: header,
+        matching: find.text('Show less'),
+      );
+      await tester.tap(collapse);
+      await tester.pumpAndSettle();
+      expect(tester.widget<Text>(text).maxLines, 4);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('short details need no disclosure action', (tester) async {
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        performerDetailsProvider('performer-1').overrideWith(
+          (ref) => _performer.copyWith(details: 'Short biography.'),
+        ),
+        entityMediaPreviewProvider(
+          EntityMediaFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+        entityGalleryPreviewProvider(
+          EntityGalleryFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+      ],
+      child: const PerformerDetailsPage(performerId: 'performer-1'),
+    );
+    await tester.pumpAndSettle();
+    final header = tester.widget<SectionHeader>(
+      find.byKey(const Key('performer_details_header')),
+    );
+    expect(header.onViewAll, isNull);
+    expect(find.text('Short biography.'), findsOneWidget);
+  });
+
+  testWidgets('Appears With shows five rows and expands independently', (
+    tester,
+  ) async {
+    RelatedEntityQuery query(RelatedEntityKind kind) =>
+        (kind: kind, owner: RelatedEntityOwner.performer, id: 'performer-1');
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        performerDetailsProvider('performer-1').overrideWith(
+          (ref) => _performer.copyWith(
+            careerStart: '2017',
+            careerEnd: '2025',
+            weight: 58,
+            measurements: '90-60-90',
+            tattoos: 'Crescent',
+            oCounter: 3,
+            details: 'Biography after the attributes.',
+          ),
+        ),
+        entityMediaPreviewProvider(
+          EntityMediaFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+        entityGalleryPreviewProvider(
+          EntityGalleryFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+        for (final kind in [
+          RelatedEntityKind.groups,
+          RelatedEntityKind.performers,
+        ])
+          relatedEntitiesProvider(query(kind)).overrideWith(
+            (ref) => [
+              for (var i = 1; i <= 7; i++)
+                (
+                  id: '$kind-$i',
+                  title: kind == RelatedEntityKind.performers
+                      ? 'Co Star $i'
+                      : 'Group $i',
+                  subtitle: null,
+                  imagePath: null,
+                  route: kind == RelatedEntityKind.performers
+                      ? '/performers/performer/$i'
+                      : '/groups/group/$i',
+                ),
+            ],
+          ),
+      ],
+      child: const PerformerDetailsPage(performerId: 'performer-1'),
+    );
+    await tester.pumpAndSettle();
+    final peers = find.widgetWithText(RelatedEntitiesSection, 'Appears With');
+    final groups = find.widgetWithText(RelatedEntitiesSection, 'Groups');
+    final rows = find.descendant(
+      of: peers,
+      matching: find.byType(RelatedEntityTile),
+    );
+    expect(rows, findsNWidgets(5));
+    expect(
+      find.descendant(of: groups, matching: find.byType(RelatedEntityTile)),
+      findsNWidgets(7),
+    );
+    expect(find.byType(MetaRow), findsNWidgets(5));
+    expect(find.text('Biography after the attributes.'), findsNothing);
+    final expand = find.descendant(of: peers, matching: find.text('Show more'));
+    await tester.ensureVisible(expand);
+    expect(
+      tester.getCenter(expand).dx,
+      greaterThan(tester.getCenter(peers).dx),
+    );
+    await tester.tap(expand);
+    await tester.pumpAndSettle();
+    expect(rows, findsNWidgets(7));
+    expect(find.byType(MetaRow), findsNWidgets(5));
+    final collapse = find.descendant(
+      of: peers,
+      matching: find.text('Show less'),
+    );
+    await tester.tap(collapse);
+    await tester.pumpAndSettle();
+    expect(rows, findsNWidgets(5));
+
+    final detailsExpand = find.descendant(
+      of: find.byKey(const Key('performer_details_header')),
+      matching: find.text('Show more'),
+    );
+    await Scrollable.ensureVisible(
+      tester.element(detailsExpand),
+      alignment: 0.5,
+    );
+    await tester.tap(detailsExpand);
+    await tester.pumpAndSettle();
+    expect(find.byType(MetaRow), findsNWidgets(6));
+    expect(find.text('Biography after the attributes.'), findsOneWidget);
+    expect(rows, findsNWidgets(5));
   });
 
   testWidgets('performer links collapse to five with a show more toggle', (

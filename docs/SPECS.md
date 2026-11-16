@@ -525,8 +525,14 @@ Performer Details' Details section lists set attributes (career start and
 end, death date, weight, measurements, fake tits, penis length, circumcision,
 tattoos, piercings, O-count, stash IDs, custom fields) above the biography,
 then related groups and Appears With performers (co-performers, excluding the
-performer). Performer details load career start and end so editing never
-clears them.
+performer). Details initially shows up to five attribute rows, with any
+remaining lines used for the biography; Appears With initially shows five
+performers, using Scene Details' performer-row avatar, typography, chevron, and
+spacing. Blank relationship subtitles do not reserve a second line, keeping
+single-line names centered with the avatar and chevron. Each overflowing
+section has an independent top-right Show more /
+Show less action using the shared section-header style. Performer details load
+career start and end so editing never clears them.
 Image details add studio code, photographer, O-count, organized, and the
 description, then tag chips and the containing galleries (untitled galleries
 use their zip or folder name). Links in sheets close the sheet before
