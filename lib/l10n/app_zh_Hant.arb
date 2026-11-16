@@ -250,6 +250,7 @@
   "details_galleries": "圖庫",
   "details_tags": "標籤",
   "details_links": "連結",
+  "details_appears_with": "合作演員",
   "details_scene_scrape": "擷取中繼資料",
   "details_scene_add_performer": "新增演員",
   "details_scene_add_tag": "新增標籤",

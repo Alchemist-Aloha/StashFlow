@@ -521,6 +521,12 @@ up to 24 related performers, studios, groups, and markers (markers open their
 scene). Related lists load through `relatedEntitiesProvider`, sort by scene
 count, and render no section while loading or when empty. Studio Details shows
 aliases, tag chips, de-duplicated links, and related performers and groups.
+Performer Details' Details section lists set attributes (career start and
+end, death date, weight, measurements, fake tits, penis length, circumcision,
+tattoos, piercings, O-count, stash IDs, custom fields) above the biography,
+then related groups and Appears With performers (co-performers, excluding the
+performer). Performer details load career start and end so editing never
+clears them.
 
 ### Scene rating and metadata mutation
 

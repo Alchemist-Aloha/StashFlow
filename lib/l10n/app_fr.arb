@@ -221,6 +221,7 @@
   "details_galleries": "Galeries",
   "details_tags": "Étiquettes",
   "details_links": "Liens",
+  "details_appears_with": "Apparaît avec",
   "details_scene_scrape": "scraper les métadonnées",
   "details_scene_add_performer": "ajouter un interprète",
   "details_scene_add_tag": "ajouter un tag",

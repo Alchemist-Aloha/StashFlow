@@ -223,6 +223,7 @@
   "details_galleries": "图库",
   "details_tags": "标签",
   "details_links": "链接",
+  "details_appears_with": "合作演员",
   "details_scene_scrape": "抓取元数据",
   "details_scene_add_performer": "添加演员",
   "details_scene_add_tag": "添加标签",

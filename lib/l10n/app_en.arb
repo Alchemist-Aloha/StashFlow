@@ -253,6 +253,7 @@
   "details_galleries": "Galleries",
   "details_tags": "Tags",
   "details_links": "Links",
+  "details_appears_with": "Appears With",
   "details_scene_scrape": "Scrape metadata",
   "details_show_more": "Show more",
   "common_more": "More",

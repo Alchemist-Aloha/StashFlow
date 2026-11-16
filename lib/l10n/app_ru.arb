@@ -260,6 +260,7 @@
   "details_galleries": "Галереи",
   "details_tags": "Теги",
   "details_links": "Ссылки",
+  "details_appears_with": "Снимается с",
   "details_scene_scrape": "собрать метаданные",
   "details_scene_add_performer": "добавить исполнителя",
   "details_scene_add_tag": "добавить тег",

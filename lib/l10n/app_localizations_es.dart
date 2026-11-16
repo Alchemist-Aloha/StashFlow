@@ -856,6 +856,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get details_links => 'Enlaces';
 
   @override
+  String get details_appears_with => 'Aparece con';
+
+  @override
   String get details_scene_scrape => 'extraer metadatos';
 
   @override

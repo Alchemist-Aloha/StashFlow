@@ -207,6 +207,7 @@
   "details_galleries": "갤러리",
   "details_tags": "태그",
   "details_links": "링크",
+  "details_appears_with": "함께 출연",
   "details_scene_scrape": "메타데이터 스크래핑",
   "details_scene_add_performer": "출연자 추가",
   "details_scene_add_tag": "태그 추가",

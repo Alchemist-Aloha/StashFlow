@@ -204,6 +204,7 @@
   "details_galleries": "ギャラリー",
   "details_tags": "タグ",
   "details_links": "リンク",
+  "details_appears_with": "共演者",
   "details_scene_scrape": "メタデータ取得",
   "details_scene_add_performer": "出演者を追加",
   "details_scene_add_tag": "タグを追加",

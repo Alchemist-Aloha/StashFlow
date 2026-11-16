@@ -34,6 +34,18 @@ fragment PerformerData on Performer {
   }
 }
 
+fragment PerformerDetailData on Performer {
+  ...PerformerData
+  career_start
+  career_end
+  o_counter
+  custom_fields
+  stash_ids {
+    endpoint
+    stash_id
+  }
+}
+
 query FindPerformers($filter: FindFilterType, $performer_filter: PerformerFilterType) {
   findPerformers(filter: $filter, performer_filter: $performer_filter) {
     count
@@ -45,7 +57,7 @@ query FindPerformers($filter: FindFilterType, $performer_filter: PerformerFilter
 
 query FindPerformer($id: ID!) {
   findPerformer(id: $id) {
-    ...PerformerData
+    ...PerformerDetailData
   }
 }
 

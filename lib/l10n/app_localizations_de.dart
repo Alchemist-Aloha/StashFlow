@@ -855,6 +855,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get details_links => 'Links';
 
   @override
+  String get details_appears_with => 'Tritt auf mit';
+
+  @override
   String get details_scene_scrape => 'Metadaten scrapen';
 
   @override

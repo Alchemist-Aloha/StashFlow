@@ -834,6 +834,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get details_links => '链接';
 
   @override
+  String get details_appears_with => '合作演员';
+
+  @override
   String get details_scene_scrape => '抓取元数据';
 
   @override
@@ -4830,6 +4833,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get details_links => '链接';
+
+  @override
+  String get details_appears_with => '合作演员';
 
   @override
   String get details_scene_scrape => '抓取元数据';
@@ -8830,6 +8836,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get details_links => '連結';
+
+  @override
+  String get details_appears_with => '合作演員';
 
   @override
   String get details_scene_scrape => '擷取中繼資料';

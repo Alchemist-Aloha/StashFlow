@@ -11,15 +11,18 @@ import 'package:go_router/go_router.dart';
 
 import '../../../galleries/presentation/gallery_location.dart';
 
-
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
+import '../../domain/entities/performer.dart';
 import '../providers/performer_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 
 import '../../../../core/presentation/widgets/entity_links_section.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/providers/related_entities_provider.dart';
+import '../../../../core/presentation/widgets/meta_row.dart';
+import '../../../../core/presentation/widgets/related_entities.dart';
 import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
@@ -383,8 +386,11 @@ class PerformerDetailsPage extends ConsumerWidget {
                             ),
                           ),
                         ],
-                        if (performer.details != null &&
-                            performer.details!.trim().isNotEmpty) ...[
+                        if (_attributes(context, performer)
+                            case final attributes
+                            when attributes.isNotEmpty ||
+                                (performer.details?.trim().isNotEmpty ??
+                                    false)) ...[
                           _buildSectionContainer(
                             context,
                             Column(
@@ -395,12 +401,22 @@ class PerformerDetailsPage extends ConsumerWidget {
                                   padding: EdgeInsets.zero,
                                 ),
                                 const SizedBox(height: AppTheme.spacingSmall),
-                                Text(
-                                  performer.details!,
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
+                                for (final (label, value) in attributes)
+                                  MetaRow(
+                                    label: label,
+                                    value: value,
+                                    selectable: true,
                                   ),
-                                ),
+                                if (performer.details?.trim().isNotEmpty ??
+                                    false)
+                                  Text(
+                                    performer.details!,
+                                    style: context.textTheme.bodyMedium
+                                        ?.copyWith(
+                                          color:
+                                              context.colors.onSurfaceVariant,
+                                        ),
+                                  ),
                               ],
                             ),
                           ),
@@ -514,6 +530,27 @@ class PerformerDetailsPage extends ConsumerWidget {
                             ),
                           ),
                         ),
+                        for (final (kind, title, icon) in [
+                          (
+                            RelatedEntityKind.groups,
+                            context.l10n.groups_title,
+                            Icons.group_work,
+                          ),
+                          (
+                            RelatedEntityKind.performers,
+                            context.l10n.details_appears_with,
+                            Icons.person_outline,
+                          ),
+                        ])
+                          RelatedEntitiesSection(
+                            title: title,
+                            fallbackIcon: icon,
+                            query: (
+                              kind: kind,
+                              owner: RelatedEntityOwner.performer,
+                              id: performer.id,
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -529,6 +566,56 @@ class PerformerDetailsPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Labelled performer attributes that are set, in the web UI's order.
+  List<(String, String)> _attributes(
+    BuildContext context,
+    Performer performer,
+  ) {
+    final l10n = context.l10n;
+    String? text(String? value) =>
+        value == null || value.trim().isEmpty ? null : value.trim();
+    final circumcised = switch (performer.circumcised) {
+      'CUT' => l10n.performers_circumcised_cut,
+      'UNCUT' => l10n.performers_circumcised_uncut,
+      final other => text(other),
+    };
+    return [
+      for (final (label, value) in [
+        (l10n.performers_field_career_start, text(performer.careerStart)),
+        (l10n.performers_field_career_end, text(performer.careerEnd)),
+        (l10n.performers_field_deathdate, text(performer.deathDate)),
+        (l10n.performers_field_weight_kg, performer.weight?.toString()),
+        (l10n.performers_field_measurements, text(performer.measurements)),
+        (l10n.performers_field_fake_tits, text(performer.fakeTits)),
+        (
+          l10n.performers_field_penis_length,
+          performer.penisLength == null ? null : '${performer.penisLength} cm',
+        ),
+        (l10n.performers_circumcised, circumcised),
+        (l10n.performers_field_tattoos, text(performer.tattoos)),
+        (l10n.performers_field_piercings, text(performer.piercings)),
+        (l10n.performers_field_o_counter, performer.oCounter?.toString()),
+        (
+          l10n.common_stash_id,
+          text(
+            performer.stashIds
+                .map((id) => '${id.stashId}\n${id.endpoint}')
+                .join('\n'),
+          ),
+        ),
+        (
+          l10n.filter_custom_fields,
+          text(
+            performer.customFields.entries
+                .map((field) => '${field.key}: ${field.value}')
+                .join('\n'),
+          ),
+        ),
+      ])
+        if (value != null) (label, value),
+    ];
   }
 
   Widget _buildChip(BuildContext context, String label) {

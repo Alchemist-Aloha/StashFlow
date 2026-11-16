@@ -851,6 +851,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get details_links => 'Ссылки';
 
   @override
+  String get details_appears_with => 'Снимается с';
+
+  @override
   String get details_scene_scrape => 'собрать метаданные';
 
   @override

@@ -1428,6 +1428,12 @@ abstract class AppLocalizations {
   /// **'Links'**
   String get details_links;
 
+  /// No description provided for @details_appears_with.
+  ///
+  /// In en, this message translates to:
+  /// **'Appears With'**
+  String get details_appears_with;
+
   /// No description provided for @details_scene_scrape.
   ///
   /// In en, this message translates to:

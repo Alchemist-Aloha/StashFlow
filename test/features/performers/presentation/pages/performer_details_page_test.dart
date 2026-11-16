@@ -2,7 +2,9 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/providers/related_entities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/frosted_app_bar.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/related_entities.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
@@ -243,6 +245,80 @@ void main() {
       tester.getTopLeft(content).dy,
       tester.getBottomLeft(find.byType(FrostedAppBar)).dy,
     );
+  });
+
+  testWidgets('performer details list attributes and related sections', (
+    tester,
+  ) async {
+    final performer = _performer.copyWith(
+      careerStart: '2017',
+      careerEnd: '2025',
+      weight: 58,
+      tattoos: 'Crescent',
+      circumcised: 'CUT',
+      oCounter: 3,
+      customFields: const {'audit_field': 'teal'},
+    );
+    RelatedEntityQuery query(RelatedEntityKind kind) =>
+        (kind: kind, owner: RelatedEntityOwner.performer, id: 'performer-1');
+
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        performerDetailsProvider('performer-1')
+            .overrideWith((ref) => performer),
+        entityMediaPreviewProvider(
+          EntityMediaFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+        entityGalleryPreviewProvider(
+          EntityGalleryFilterKind.performer,
+          'performer-1',
+        ).overrideWith((ref) => []),
+        relatedEntitiesProvider(query(RelatedEntityKind.groups))
+            .overrideWith((ref) => []),
+        relatedEntitiesProvider(query(RelatedEntityKind.performers))
+            .overrideWith(
+              (ref) => [
+                (
+                  id: 'p2',
+                  title: 'Co Star',
+                  subtitle: null,
+                  imagePath: null,
+                  route: '/performers/performer/p2',
+                ),
+              ],
+            ),
+      ],
+      child: const PerformerDetailsPage(performerId: 'performer-1'),
+    );
+    await tester.pumpAndSettle();
+
+    for (final text in [
+      'Career Start',
+      '2017',
+      '2025',
+      '58',
+      'Crescent',
+      'Cut',
+      'audit_field: teal',
+    ]) {
+      final finder = find.text(text, findRichText: true);
+      await tester.scrollUntilVisible(
+        finder,
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(finder, findsOneWidget, reason: text);
+    }
+    final coStar = find.widgetWithText(RelatedEntityTile, 'Co Star');
+    await tester.scrollUntilVisible(
+      coStar,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Appears With'), findsOneWidget);
+    expect(find.text('Groups'), findsNothing);
   });
 
   testWidgets('performer links collapse to five with a show more toggle', (

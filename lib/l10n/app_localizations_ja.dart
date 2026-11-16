@@ -838,6 +838,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get details_links => 'リンク';
 
   @override
+  String get details_appears_with => '共演者';
+
+  @override
   String get details_scene_scrape => 'メタデータ取得';
 
   @override

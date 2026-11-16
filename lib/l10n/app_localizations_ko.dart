@@ -838,6 +838,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get details_links => '링크';
 
   @override
+  String get details_appears_with => '함께 출연';
+
+  @override
   String get details_scene_scrape => '메타데이터 스크래핑';
 
   @override
