@@ -717,6 +717,11 @@ slot width, and omit performer avatars so cards neither clip nor leave a gap.
 The row adds equal small-spacing padding above and below the cards; the
 horizontal scrollbar sits in the bottom padding.
 On details pages, a strip sits medium spacing below its section header.
+When a media or gallery preview successfully loads an empty list, omit its
+entire section: heading, View all action, container, and section-only spacing.
+Do not show a "No media found" placeholder there or rely on entity counts to
+infer availability. Media and gallery sections hide independently; preserve
+existing loading and failure states until a successful result is available.
 Details-page scene and gallery strips keep the preview's server order, which
 uses the same sort (including the random seed) and entity restriction as the
 View all grid, and never reorder it client-side.

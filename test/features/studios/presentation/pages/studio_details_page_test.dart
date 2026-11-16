@@ -164,15 +164,8 @@ void main() {
             .any((gap) => gap.height == 8 * scale),
         isTrue,
       );
-      final emptyPadding = tester.widget<Padding>(
-        find
-            .ancestor(
-              of: find.text('No media found'),
-              matching: find.byType(Padding),
-            )
-            .first,
-      );
-      expect(emptyPadding.padding, EdgeInsets.only(top: 8 * scale));
+      expect(find.text('No media found'), findsNothing);
+      expect(find.text('Media'), findsNothing);
       expect(tester.takeException(), isNull);
     }
 

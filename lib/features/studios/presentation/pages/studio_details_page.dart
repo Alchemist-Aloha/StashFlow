@@ -317,61 +317,56 @@ class StudioDetailsPage extends ConsumerWidget {
                   SizedBox(height: context.dimensions.spacingMedium),
                   _buildHierarchySection(context, studio),
                 ],
-                SizedBox(height: context.dimensions.spacingMedium),
-                _buildSectionContainer(
-                  context,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SectionHeader(
-                        title: context.l10n.details_media,
-                        onViewAll: () =>
-                            context.push('/studios/studio/${studio.id}/media'),
-                        padding: EdgeInsets.zero,
-                      ),
-                      mediaAsync.when(
-                        data: (scenes) {
-                          if (scenes.isEmpty) {
+                if (mediaAsync.maybeWhen(
+                  data: (scenes) => scenes.isNotEmpty,
+                  orElse: () => true,
+                )) ...[
+                  SizedBox(height: context.dimensions.spacingMedium),
+                  _buildSectionContainer(
+                    context,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: context.l10n.details_media,
+                          onViewAll: () => context.push(
+                            '/studios/studio/${studio.id}/media',
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                        mediaAsync.when(
+                          data: (scenes) {
                             return Padding(
                               padding: EdgeInsets.only(
-                                top: context.dimensions.spacingSmall,
+                                top: context.dimensions.spacingMedium,
                               ),
-                              child: Text(
-                                context.l10n.common_no_media_found,
-                                style: context.textTheme.bodySmall?.copyWith(
-                                  color: context.colors.onSurfaceVariant,
+                              child: SceneStrip(
+                                scenes: scenes,
+                                queueId: PlaybackQueueIds.studioStrip(
+                                  studio.id,
+                                ),
+                                onTap: (scene) => context.push(
+                                  '/scenes/scene/${scene.id}',
+                                  extra: true,
                                 ),
                               ),
                             );
-                          }
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              top: context.dimensions.spacingMedium,
+                          },
+                          loading: () => const SizedBox(
+                            height: 100,
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                          error: (err, stack) => Text(
+                            context.l10n.common_error(err.toString()),
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
                             ),
-                            child: SceneStrip(
-                              scenes: scenes,
-                              queueId: PlaybackQueueIds.studioStrip(studio.id),
-                              onTap: (scene) => context.push(
-                                '/scenes/scene/${scene.id}',
-                                extra: true,
-                              ),
-                            ),
-                          );
-                        },
-                        loading: () => const SizedBox(
-                          height: 100,
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
-                        error: (err, stack) => Text(
-                          context.l10n.common_error(err.toString()),
-                          style: context.textTheme.bodyMedium?.copyWith(
-                            color: context.colors.onSurfaceVariant,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                ],
                 galleriesAsync.when(
                   data: (galleries) {
                     if (galleries.isEmpty) {

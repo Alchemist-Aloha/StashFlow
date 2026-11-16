@@ -176,57 +176,53 @@ class GroupDetailsPage extends ConsumerWidget {
                       ],
                     ),
                   ),
-              SizedBox(height: dims.spacingMedium),
-              SectionPanel(
-                margin: sectionMargin,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SectionHeader(
-                      title: context.l10n.details_media,
-                      onViewAll: () =>
-                          context.push('/groups/group/${group.id}/media'),
-                      padding: EdgeInsets.zero,
-                    ),
-                    mediaAsync.when(
-                      data: (scenes) {
-                        if (scenes.isEmpty) {
+              if (mediaAsync.maybeWhen(
+                data: (scenes) => scenes.isNotEmpty,
+                orElse: () => true,
+              )) ...[
+                SizedBox(height: dims.spacingMedium),
+                SectionPanel(
+                  margin: sectionMargin,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SectionHeader(
+                        title: context.l10n.details_media,
+                        onViewAll: () =>
+                            context.push('/groups/group/${group.id}/media'),
+                        padding: EdgeInsets.zero,
+                      ),
+                      mediaAsync.when(
+                        data: (scenes) {
                           return Padding(
-                            padding: EdgeInsets.all(dims.spacingSmall),
-                            child: Text(
-                              context.l10n.common_no_media_found,
-                              style: context.textTheme.bodySmall?.copyWith(
-                                color: context.colors.onSurfaceVariant,
+                            padding: EdgeInsets.only(top: dims.spacingMedium),
+                            child: SceneStrip(
+                              scenes: scenes,
+                              queueId: PlaybackQueueIds.groupStrip(group.id),
+                              onTap: (scene) => context.push(
+                                '/scenes/scene/${scene.id}',
+                                extra: true,
                               ),
                             ),
                           );
-                        }
-                        return Padding(
-                          padding: EdgeInsets.only(top: dims.spacingMedium),
-                          child: SceneStrip(
-                            scenes: scenes,
-                            queueId: PlaybackQueueIds.groupStrip(group.id),
-                            onTap: (scene) => context.push(
-                              '/scenes/scene/${scene.id}',
-                              extra: true,
-                            ),
+                        },
+                        loading: () => SizedBox(
+                          height: 100 * dims.fontSizeFactor,
+                          child: const Center(
+                            child: CircularProgressIndicator(),
                           ),
-                        );
-                      },
-                      loading: () => SizedBox(
-                        height: 100 * dims.fontSizeFactor,
-                        child: const Center(child: CircularProgressIndicator()),
-                      ),
-                      error: (err, stack) => Text(
-                        context.l10n.common_error(err.toString()),
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          color: context.colors.onSurfaceVariant,
+                        ),
+                        error: (err, stack) => Text(
+                          context.l10n.common_error(err.toString()),
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
