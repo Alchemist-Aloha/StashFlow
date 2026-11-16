@@ -99,7 +99,7 @@ Future<_FakePlayer> _pump(
     ),
   );
   await tester.pump();
-  await tester.tap(find.byIcon(Icons.high_quality_rounded));
+  await tester.tap(find.byIcon(Icons.tune_rounded));
   await tester.pumpAndSettle();
   return player;
 }

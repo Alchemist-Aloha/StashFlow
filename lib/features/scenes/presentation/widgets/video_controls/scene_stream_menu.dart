@@ -133,7 +133,7 @@ class _SceneStreamMenuState extends ConsumerState<SceneStreamMenu> {
           minHeight: context.dimensions.buttonHeight,
         ),
         child: Icon(
-          Icons.high_quality_rounded,
+          Icons.tune_rounded,
           size: 24 * context.dimensions.fontSizeFactor,
           color: streams.isEmpty || casting ? Colors.white54 : Colors.white,
         ),
