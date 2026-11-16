@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:media_kit/media_kit.dart';
 
+import 'player_mpv_properties_stub.dart'
+    if (dart.library.io) 'player_mpv_properties_native.dart';
 import 'stream_resolver.dart';
 
 /// [Media.extras] key carrying the scene's full duration in milliseconds.
@@ -125,12 +127,8 @@ class StashPlayer extends Player {
     await _setSubDelay(-clamped);
   }
 
-  Future<void> _setSubDelay(Duration delay) async {
-    if (platform case final NativePlayer native) {
-      await native.setProperty(
-        'sub-delay',
-        (delay.inMilliseconds / 1000).toStringAsFixed(3),
-      );
-    }
-  }
+  Future<void> _setSubDelay(Duration delay) => applyPlayerMpvProperties(
+    platform,
+    {'sub-delay': (delay.inMilliseconds / 1000).toStringAsFixed(3)},
+  );
 }
