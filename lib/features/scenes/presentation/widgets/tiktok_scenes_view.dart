@@ -1048,21 +1048,19 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  SceneStreamMenu(
-                                    controller: controller,
-                                    scene: widget.scene,
+                                  FeedActionMenu(
+                                    actions: [
+                                      SceneStreamMenu(
+                                        controller: controller,
+                                        scene: widget.scene,
+                                      ),
+                                      SceneSubtitleMenu(
+                                        controller: controller,
+                                        scene: widget.scene,
+                                      ),
+                                      ...widget.actions,
+                                    ],
                                   ),
-                                  SizedBox(
-                                    height: context.dimensions.spacingSmall,
-                                  ),
-                                  SceneSubtitleMenu(
-                                    controller: controller,
-                                    scene: widget.scene,
-                                  ),
-                                  SizedBox(
-                                    height: context.dimensions.spacingSmall,
-                                  ),
-                                  FeedActionMenu(actions: widget.actions),
                                   SizedBox(
                                     height: context.dimensions.spacingSmall,
                                   ),

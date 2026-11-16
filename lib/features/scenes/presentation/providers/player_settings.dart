@@ -323,7 +323,7 @@ class PlayerSettingsStore {
   const PlayerSettingsStore(this.prefs);
 
   PlayerSettings load() {
-    final autoplayNext = prefs.getBool(autoplayNextKey) ?? false;
+    final autoplayNext = prefs.getBool(autoplayNextKey) ?? true;
     final controlsAutoHideValue = prefs.get(controlsAutoHideSecondsKey);
     final endBehaviorStr = prefs.getString(playEndBehaviorKey);
     String playEndBehaviorName;

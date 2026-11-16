@@ -102,6 +102,7 @@ void main() {
       'title-swipe',
       'mixed-components',
       'contextual-next',
+      'covered-next',
       'offscreen-playlist',
       'chain-fullscreen-playlist-pip',
       'chain-random-playlist-reopen',
@@ -477,6 +478,22 @@ void main() {
                 await back();
                 expect(router.state.uri.path, '/scenes/scene/2');
               }
+            } else if (transition == 'covered-next') {
+              // A page covering the details (image viewer, editor) must stay
+              // on top while autoplay advances the scene behind it.
+              const covered = '/scenes/scene/0/edit';
+              unawaited(router.push(covered));
+              await _settle(tester);
+              resolvePlayback = true;
+              expect(await player.playNext(), isTrue);
+              await _settle(tester);
+              expect(router.state.uri.path, covered);
+              expect(await player.playNext(), isTrue);
+              await _settle(tester);
+              expect(router.state.uri.path, covered);
+              expect(container.read(playerStateProvider).activeScene?.id, '2');
+              await back(useSystem: true);
+              expect(router.state.uri.path, '/scenes/scene/0');
             } else if (transition == 'contextual-next') {
               const contextualId = 'scene:0:more-from-studio:test';
               queue.setSequence(

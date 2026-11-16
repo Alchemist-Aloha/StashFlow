@@ -80,7 +80,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       );
     } else {
       // Migrate from autoplayNext
-      final autoplayNext = prefs.getBool('autoplay_next') ?? false;
+      final autoplayNext = prefs.getBool('autoplay_next') ?? true;
       _playEndBehavior = autoplayNext
           ? VideoEndBehavior.next
           : VideoEndBehavior.stop;

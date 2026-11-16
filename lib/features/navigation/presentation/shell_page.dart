@@ -276,9 +276,14 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       previous,
       path,
     ) {
-      if (path != null && mounted) {
-        context.pushReplacement(path);
-      }
+      if (path == null || !mounted) return;
+      // Only swap the details page itself; a page covering it (image viewer,
+      // scene editor, ...) stays put while the next scene plays behind it.
+      final top = Uri.parse(GoRouter.of(context).state.uri.path).pathSegments;
+      final onSceneDetails =
+          (top.length == 3 && top[0] == 'scenes' && top[1] == 'scene') ||
+          (top.length == 2 && top[0] == 'scene');
+      if (onSceneDetails) context.pushReplacement(path);
     });
 
     final navigationShell = widget.navigationShell;

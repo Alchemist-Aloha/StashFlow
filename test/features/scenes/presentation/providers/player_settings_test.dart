@@ -386,6 +386,18 @@ void main() {
       },
     );
 
+    test('defaults to next and keeps legacy autoplay_next opt-out', () async {
+      SharedPreferences.setMockInitialValues({});
+      var prefs = await SharedPreferences.getInstance();
+      expect(PlayerSettingsStore(prefs).load().playEndBehaviorName, 'next');
+
+      SharedPreferences.setMockInitialValues({
+        PlayerSettingsStore.autoplayNextKey: false,
+      });
+      prefs = await SharedPreferences.getInstance();
+      expect(PlayerSettingsStore(prefs).load().playEndBehaviorName, 'stop');
+    });
+
     test(
       'prefers explicit play_end_behavior over legacy autoplay_next',
       () async {
