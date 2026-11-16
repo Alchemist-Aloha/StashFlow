@@ -288,15 +288,20 @@ class _ShellPageState extends ConsumerState<ShellPage> {
 
     final navigationShell = widget.navigationShell;
     final currentPath = GoRouterState.of(context).uri.path;
-    final playerState = ref.watch(playerStateProvider);
-    final activeSceneId = playerState.activeScene?.id;
+    // Select only what the shell reads so play/pause/buffering ticks skip it.
+    final activeSceneId = ref.watch(
+      playerStateProvider.select((s) => s.activeScene?.id),
+    );
+    final isPlayerFullScreen = ref.watch(
+      playerStateProvider.select((s) => s.isFullScreen),
+    );
     final pathSceneId = _extractSceneIdFromPath(currentPath);
     final isTiktokFullScreen = ref.watch(fullScreenModeProvider);
     final allowMainPageGravityOrientation = ref.watch(
       mainPageGravityOrientationProvider,
     );
 
-    final isVideoFullScreen = playerState.isFullScreen || isTiktokFullScreen;
+    final isVideoFullScreen = isPlayerFullScreen || isTiktokFullScreen;
     _syncMainPageOrientations(
       allowGravity: allowMainPageGravityOrientation,
       isVideoFullScreen: isVideoFullScreen,
@@ -311,7 +316,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         currentPath.startsWith('/images/');
 
     final isFullScreen =
-        playerState.isFullScreen || isTiktokFullScreen || isFullscreenPath;
+        isPlayerFullScreen || isTiktokFullScreen || isFullscreenPath;
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isMobile = Responsive.isMobile(context);
 
@@ -622,7 +627,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         if (!didPop && isFullScreen) {
           // Back gesture was blocked because canPop=false in fullscreen mode.
           // Exit fullscreen instead of navigating back.
-          if (playerState.isFullScreen) {
+          if (isPlayerFullScreen) {
             final notifier = ref.read(playerStateProvider.notifier);
             notifier.syncBackgroundToActiveScene(context);
             notifier.requestExitFullscreen();
