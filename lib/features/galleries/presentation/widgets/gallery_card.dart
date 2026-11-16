@@ -106,58 +106,20 @@ class GalleryCard extends ConsumerWidget {
                 context,
                 useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            gallery.displayName,
-                            style: MediaCardText.title(context),
-                            maxLines: MediaCardText.titleMaxLines,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            gallery.studioName ?? context.l10n.common_unknown,
-                            style: MediaCardText.subtitle(context),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (showPerformers &&
-                              ref.watch(showPerformerAvatarsProvider) &&
-                              gallery.performerNames.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            ScenePerformerAvatarRow(
-                              performerImagePaths: gallery.performerImagePaths,
-                              performerNames: gallery.performerNames,
-                              performerIds: gallery.performerIds,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    SizedBox.square(
-                      dimension: 32,
-                      child: IconButton(
-                        tooltip: context.l10n.common_more,
-                        padding: EdgeInsets.zero,
-                        visualDensity: VisualDensity.compact,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 32,
-                          height: 32,
-                        ),
-                        onPressed: () =>
-                            GalleryDetailsBottomSheet.show(context, gallery),
-                        icon: const Icon(Icons.more_vert, size: 16),
-                      ),
-                    ),
-                  ],
-                ),
+              MediaCardMetadata(
+                title: gallery.displayName,
+                subtitle: gallery.studioName ?? context.l10n.common_unknown,
+                onMore: () => GalleryDetailsBottomSheet.show(context, gallery),
+                performers:
+                    showPerformers &&
+                        ref.watch(showPerformerAvatarsProvider) &&
+                        gallery.performerNames.isNotEmpty
+                    ? ScenePerformerAvatarRow(
+                        performerImagePaths: gallery.performerImagePaths,
+                        performerNames: gallery.performerNames,
+                        performerIds: gallery.performerIds,
+                      )
+                    : null,
               ),
             ],
           ),
@@ -187,8 +149,8 @@ class GalleryCard extends ConsumerWidget {
         ),
         if (gallery.rating100 != null && gallery.rating100! > 0)
           Positioned(
-            top: ThumbnailBadge.inset(compact: true),
-            right: ThumbnailBadge.inset(compact: true),
+            top: ThumbnailBadge.inset(context, compact: true),
+            right: ThumbnailBadge.inset(context, compact: true),
             child: ThumbnailBadge.rating(
               context,
               rating100: gallery.rating100!,
@@ -197,8 +159,8 @@ class GalleryCard extends ConsumerWidget {
           ),
         if (gallery.imageCount != null && gallery.imageCount! > 0)
           Positioned(
-            bottom: ThumbnailBadge.inset(compact: true),
-            right: ThumbnailBadge.inset(compact: true),
+            bottom: ThumbnailBadge.inset(context, compact: true),
+            right: ThumbnailBadge.inset(context, compact: true),
             child: ThumbnailBadge(
               label: '${gallery.imageCount}',
               compact: true,

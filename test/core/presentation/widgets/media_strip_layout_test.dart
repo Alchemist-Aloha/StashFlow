@@ -92,13 +92,12 @@ void main() {
             find.byType(name == 'scene' ? SceneCard : GalleryCard).first,
           );
           expect(card.top - row.top, closeTo(spacing, 0.5));
-          // Beyond that padding, only the card's 4px bottom padding (plus
-          // rounding) remains, and for scenes the reserved resume-bar room.
-          final reserve = name == 'scene' ? spacing / 2 : 0;
-          expect(
-            row.bottom - subtitle.bottom - spacing,
-            inInclusiveRange(0, 5 + reserve),
-          );
+          expect(row.bottom - card.bottom, closeTo(spacing, 0.5));
+          // The action can be taller than the text, especially at small scales.
+          expect(subtitle.bottom, lessThanOrEqualTo(card.bottom - spacing / 2));
+          final action = tester.getSize(find.byTooltip('More').first);
+          expect(action.width, greaterThanOrEqualTo(48));
+          expect(action.height, greaterThanOrEqualTo(48));
         });
       }
     }

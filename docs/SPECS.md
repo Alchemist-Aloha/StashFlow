@@ -62,6 +62,15 @@ sheets, saved-filter UI, `StashImage`, and common state views.
 - Layout must react immediately to `appGlobalScaleProvider` changes without
   overflow at supported scale extremes.
 - Card titles use the already scaled `context.dimensions.cardTitleFontSize` once.
+  Scene and gallery cards share `MediaCardMetadata` for title, studio, optional
+  avatars, and the localized More action. Metadata spacing and icons scale with
+  the theme; the action keeps a minimum 48-logical-pixel touch target. Horizontal
+  strips measure this same recipe, including action height, rather than keeping
+  a separate set of fixed row dimensions.
+- Scene tagger and deduplicator share `SceneToolLayout`. Its spacing, panel
+  widths, and manual icon sizes follow the UI scale; the side-column breakpoint
+  reserves the corresponding scaled width. Pagination labels wrap within the
+  space between buttons rather than overflowing on narrow screens.
 - Primary list-page app-bar titles keep the larger list title size. Performer,
   studio, tag, and gallery details omit the app-bar heading while keeping
   navigation and toolbar actions; their entity identity remains in the content.
@@ -266,6 +275,9 @@ and scroll ownership.
 List invariants:
 
 - Initial load, explicit refresh, and pagination are distinct states.
+  Masonry pages keep the same content-sized grid layout while loading, including
+  when a scroll header is present, so skeleton cards fit at narrow widths and
+  supported UI scales.
 - Entity list and scene-detail queries read from the network; the GraphQL cache
   is updated but never served as the one-shot answer, so refresh shows current
   server data.
@@ -408,11 +420,13 @@ serialization differences.
 ### Scene cards
 
 Scene cards support grid and masonry layouts, localized metadata, thumbnail
-badges, context actions, and optional performer avatars. Scene and gallery cards share
-`ThumbnailBadge`: rounded translucent corner badges with the rating (yellow
-star) top-right; scenes show the O-count bottom-left and the length (or scrub
-position) bottom-right, galleries the image count bottom-right. Rating and
-count badges are omitted when empty. The avatar count is
+badges, context actions, and optional performer avatars. Scene, gallery, and image
+cards share `ThumbnailBadge`: rounded translucent corner badges with the rating
+(yellow star) top-right for scenes and galleries, bottom-right for images;
+scenes show the O-count bottom-left and the length (or scrub position)
+bottom-right, galleries the image count bottom-right. Badge padding, corner
+insets, and icons follow the UI scale alongside text. Rating and count badges
+are omitted when empty. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
 scaling.
 

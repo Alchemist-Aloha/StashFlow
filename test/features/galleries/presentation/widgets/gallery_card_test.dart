@@ -80,8 +80,8 @@ void main() {
           )
           .first,
     );
-    expect(buttonBox.width, 32);
-    expect(buttonBox.height, 32);
+    expect(buttonBox.width, 48);
+    expect(buttonBox.height, 48);
 
     await tester.longPress(find.byType(GalleryCard));
     await tester.pump();

@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 
 /// Shared shell for scene tool pages such as the tagger and deduplicator.
 ///
@@ -30,8 +31,11 @@ class SceneToolLayout extends StatelessWidget {
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isWide = constraints.maxWidth >= 1000;
-          final horizontalPadding = isWide ? 24.0 : 12.0;
+          final dims = context.dimensions;
+          final isWide = constraints.maxWidth >= 1000 * dims.fontSizeFactor;
+          final horizontalPadding = isWide
+              ? dims.spacingLarge
+              : dims.spacingSmall * 1.5;
           final controls = controlsBuilder(isWide);
 
           return Center(
@@ -40,7 +44,7 @@ class SceneToolLayout extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   horizontalPadding,
-                  12,
+                  dims.spacingSmall * 1.5,
                   horizontalPadding,
                   0,
                 ),
@@ -49,10 +53,12 @@ class SceneToolLayout extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           SizedBox(
-                            width: 340,
+                            width: 340 * dims.fontSizeFactor,
                             child: SingleChildScrollView(child: controls),
                           ),
-                          const SizedBox(width: 20),
+                          SizedBox(
+                            width: dims.spacingMedium + dims.spacingSmall / 2,
+                          ),
                           Expanded(child: results),
                         ],
                       )
@@ -67,7 +73,7 @@ class SceneToolLayout extends StatelessWidget {
                             onToggle: onToggleConfig,
                             child: controls,
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: dims.spacingSmall * 1.5),
                           Expanded(child: results),
                         ],
                       ),
@@ -96,20 +102,24 @@ class _CompactConfiguration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final dims = context.dimensions;
     return Material(
       color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
           InkWell(
             onTap: onToggle,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(
+                horizontal: dims.spacingMedium,
+                vertical: dims.spacingSmall * 1.5,
+              ),
               child: Row(
                 children: [
                   Icon(Icons.tune_rounded, color: colors.primary),
-                  const SizedBox(width: 12),
+                  SizedBox(width: dims.spacingSmall * 1.5),
                   Expanded(
                     child: Text(
                       context.l10n.configuration,
@@ -131,7 +141,12 @@ class _CompactConfiguration extends StatelessWidget {
             secondChild: ConstrainedBox(
               constraints: BoxConstraints(maxHeight: maxBodyHeight),
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                padding: EdgeInsets.fromLTRB(
+                  dims.spacingSmall,
+                  0,
+                  dims.spacingSmall,
+                  dims.spacingSmall,
+                ),
                 child: child,
               ),
             ),
@@ -164,19 +179,24 @@ class SceneToolPanelHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final dims = context.dimensions;
     return Row(
       children: [
         DecoratedBox(
           decoration: BoxDecoration(
             color: colors.secondaryContainer,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Icon(icon, size: 20, color: colors.onSecondaryContainer),
+            padding: EdgeInsets.all(dims.spacingSmall),
+            child: Icon(
+              icon,
+              size: 20 * dims.fontSizeFactor,
+              color: colors.onSecondaryContainer,
+            ),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: dims.spacingSmall * 1.5),
         Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
         if (badge != null)
           Badge(
@@ -207,12 +227,16 @@ class SceneToolPaginationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final dims = context.dimensions;
     return Center(
       child: Material(
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(999),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          padding: EdgeInsets.symmetric(
+            horizontal: dims.spacingSmall * 0.75,
+            vertical: dims.spacingSmall / 4,
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -221,10 +245,16 @@ class SceneToolPaginationBar extends StatelessWidget {
                 onPressed: onPrevious,
                 icon: const Icon(Icons.chevron_left_rounded),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  context.l10n.scene_deduplication_page_count(page, totalPages),
+              Flexible(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: dims.spacingSmall),
+                  child: Text(
+                    context.l10n.scene_deduplication_page_count(
+                      page,
+                      totalPages,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
               IconButton(
@@ -255,17 +285,21 @@ class SceneToolEmptyResults extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final dims = context.dimensions;
     return Center(
       child: Material(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+          padding: EdgeInsets.symmetric(
+            horizontal: dims.spacingMedium * 2,
+            vertical: dims.spacingLarge + dims.spacingSmall / 2,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 48, color: colors.primary),
-              const SizedBox(height: 12),
+              Icon(icon, size: 48 * dims.fontSizeFactor, color: colors.primary),
+              SizedBox(height: dims.spacingSmall * 1.5),
               Text(
                 message,
                 textAlign: TextAlign.center,

@@ -902,22 +902,37 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                               );
                             },
                             loading: () {
-                              final loadingItemBuilder =
-                                  widget.loadingItemBuilder;
+                              Widget loadingItem(
+                                BuildContext context,
+                                int index,
+                              ) =>
+                                  widget.loadingItemBuilder?.call(
+                                    context,
+                                    isGrid,
+                                    index,
+                                  ) ??
+                                  SceneCard.skeleton();
 
+                              if (isGrid && widget.useMasonry) {
+                                return headerScrollView(
+                                  SliverMasonryGrid.count(
+                                    crossAxisCount:
+                                        fixedDelegate?.crossAxisCount ?? 1,
+                                    mainAxisSpacing:
+                                        fixedDelegate?.mainAxisSpacing ?? 0.0,
+                                    crossAxisSpacing:
+                                        fixedDelegate?.crossAxisSpacing ?? 0.0,
+                                    childCount: 8,
+                                    itemBuilder: loadingItem,
+                                  ),
+                                );
+                              }
                               if (isGrid && widget.scrollHeader != null) {
                                 return headerScrollView(
                                   SliverGrid.builder(
                                     gridDelegate: responsiveDelegate!,
                                     itemCount: 8,
-                                    itemBuilder: (context, index) =>
-                                        loadingItemBuilder != null
-                                        ? loadingItemBuilder(
-                                            context,
-                                            true,
-                                            index,
-                                          )
-                                        : SceneCard.skeleton(),
+                                    itemBuilder: loadingItem,
                                   ),
                                 );
                               }
@@ -928,10 +943,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                       const ScrollCacheExtent.viewport(1.0),
                                   gridDelegate: responsiveDelegate!,
                                   itemCount: 8,
-                                  itemBuilder: (context, index) =>
-                                      loadingItemBuilder != null
-                                      ? loadingItemBuilder(context, true, index)
-                                      : SceneCard.skeleton(),
+                                  itemBuilder: loadingItem,
                                 );
                               }
                               return ListView.builder(
@@ -939,10 +951,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                 scrollCacheExtent:
                                     const ScrollCacheExtent.viewport(1.0),
                                 itemCount: 5,
-                                itemBuilder: (context, index) =>
-                                    loadingItemBuilder != null
-                                    ? loadingItemBuilder(context, false, index)
-                                    : SceneCard.skeleton(),
+                                itemBuilder: loadingItem,
                               );
                             },
                             // A fresh install has no server yet; guide to setup

@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/shell_page.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/grid_utils.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_card.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/frosted_surface.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
@@ -531,6 +533,57 @@ void main() {
           configured ? findsOneWidget : findsNothing,
         );
       });
+    }
+
+    for (final scale in [0.8, 1.5]) {
+      for (final gallery in [false, true]) {
+        for (final withHeader in [false, true]) {
+          testWidgets(
+            'masonry loading fits narrow screens ($scale, gallery: $gallery, header: $withHeader)',
+            (tester) async {
+              tester.view.physicalSize = const Size(320, 640);
+              tester.view.devicePixelRatio = 1;
+              addTearDown(tester.view.reset);
+              await pumpTestWidget(
+                tester,
+                child: Theme(
+                  data: AppTheme.buildTheme(
+                    Brightness.light,
+                    Colors.teal,
+                    fontSizeFactor: scale,
+                  ),
+                  child: Builder(
+                    builder: (context) => ListPageScaffold<String>(
+                      title: 'Loading',
+                      searchHint: 'Search',
+                      onSearchChanged: (_) {},
+                      provider: const AsyncValue.loading(),
+                      useMasonry: true,
+                      gridDelegate: GridUtils.createDelegate(context),
+                      padding: GridUtils.defaultPadding(context),
+                      scrollHeader: withHeader ? const Text('Header') : null,
+                      loadingItemBuilder: (context, isGrid, index) {
+                        expect(isGrid, isTrue);
+                        return gallery
+                            ? const GalleryCard.skeleton()
+                            : SceneCard.skeleton();
+                      },
+                    ),
+                  ),
+                ),
+              );
+              await tester.pump();
+
+              expect(find.byType(SliverMasonryGrid), findsOneWidget);
+              expect(
+                find.byType(gallery ? GalleryCard : SceneCard),
+                findsWidgets,
+              );
+              expect(tester.takeException(), isNull);
+            },
+          );
+        }
+      }
     }
 
     testWidgets('shows loading state correctly', (WidgetTester tester) async {

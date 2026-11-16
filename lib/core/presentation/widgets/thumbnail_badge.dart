@@ -4,8 +4,8 @@ import '../theme/app_theme.dart';
 
 /// Rounded translucent label drawn over a card thumbnail corner.
 ///
-/// Scene and gallery cards share it so their metadata reads the same:
-/// rating top-right, counts and lengths along the bottom.
+/// Shared by scene, gallery, and image cards; each caller owns its corner
+/// placement while the badge owns the scaled metadata treatment.
 class ThumbnailBadge extends StatelessWidget {
   const ThumbnailBadge({
     required this.label,
@@ -41,16 +41,20 @@ class ThumbnailBadge extends StatelessWidget {
   final IconData? icon;
   final Color iconColor;
 
-  /// Defaults to 10 (compact) or 12.
+  /// Unscaled icon size; defaults to 10 (compact) or 12.
   final double? iconSize;
   final bool bold;
+
+  /// Padding at UI scale 1, scaled once when rendered.
   final EdgeInsetsGeometry padding;
 
-  /// Inset of a badge from its thumbnail corner.
-  static double inset({required bool compact}) => compact ? 4 : 8;
+  /// Scaled inset of a badge from its thumbnail corner.
+  static double inset(BuildContext context, {required bool compact}) =>
+      context.dimensions.spacingSmall * (compact ? 0.5 : 1);
 
   @override
   Widget build(BuildContext context) {
+    final dims = context.dimensions;
     final style =
         (compact ? context.textTheme.labelSmall : context.textTheme.labelMedium)
             ?.copyWith(
@@ -59,7 +63,7 @@ class ThumbnailBadge extends StatelessWidget {
             );
     final icon = this.icon;
     return Container(
-      padding: padding,
+      padding: padding * dims.fontSizeFactor,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
@@ -68,8 +72,12 @@ class ThumbnailBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, color: iconColor, size: iconSize ?? (compact ? 10 : 12)),
-            SizedBox(width: compact ? 2 : 4),
+            Icon(
+              icon,
+              color: iconColor,
+              size: (iconSize ?? (compact ? 10 : 12)) * dims.fontSizeFactor,
+            ),
+            SizedBox(width: dims.spacingSmall / (compact ? 4 : 2)),
           ],
           Text(label, style: style),
         ],

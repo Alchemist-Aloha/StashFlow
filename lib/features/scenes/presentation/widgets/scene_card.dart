@@ -267,7 +267,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       });
     }
 
-    final inset = ThumbnailBadge.inset(compact: true);
+    final inset = ThumbnailBadge.inset(context, compact: true);
     Widget content = Stack(
       children: [
         StashImage(
@@ -493,62 +493,21 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 scene: widget.scene,
                 skeletonize: widget.skeletonize,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.scene.displayTitle,
-                            style: MediaCardText.title(context),
-                            maxLines: MediaCardText.titleMaxLines,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            widget.scene.studioName ??
-                                context.l10n.common_unknown,
-                            style: MediaCardText.subtitle(context),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (widget.showPerformers &&
-                              ref.watch(showPerformerAvatarsProvider) &&
-                              widget.scene.performerNames.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            ScenePerformerAvatarRow(
-                              performerImagePaths:
-                                  widget.scene.performerImagePaths,
-                              performerNames: widget.scene.performerNames,
-                              performerIds: widget.scene.performerIds,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    SizedBox.square(
-                      dimension: 32,
-                      child: IconButton(
-                        tooltip: context.l10n.common_more,
-                        padding: EdgeInsets.zero,
-                        visualDensity: VisualDensity.compact,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 32,
-                          height: 32,
-                        ),
-                        onPressed: () => _showMenu(context, ref),
-                        icon: const Icon(
-                          Icons.more_vert,
-                          size: 16,
-                          color: null,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              MediaCardMetadata(
+                title: widget.scene.displayTitle,
+                subtitle:
+                    widget.scene.studioName ?? context.l10n.common_unknown,
+                onMore: () => _showMenu(context, ref),
+                performers:
+                    widget.showPerformers &&
+                        ref.watch(showPerformerAvatarsProvider) &&
+                        widget.scene.performerNames.isNotEmpty
+                    ? ScenePerformerAvatarRow(
+                        performerImagePaths: widget.scene.performerImagePaths,
+                        performerNames: widget.scene.performerNames,
+                        performerIds: widget.scene.performerIds,
+                      )
+                    : null,
               ),
             ],
           ),
