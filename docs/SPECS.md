@@ -81,6 +81,8 @@ sheets, saved-filter UI, `StashImage`, and common state views.
   hand-rolled `BackdropFilter` + `Container` pairs, and apply it only where
   content passes behind the surface. Opaque fills omit the backdrop blur layer
   while retaining their tint, clipping, border, shadow, and layout.
+  `FrostedSurface` joins the nearest `BackdropGroup`; a group may only hold
+  surfaces that never overlap, such as the list-page app bar and action pill.
 - A surface that floats over scrolling content must publish its height as an
   inset (scroll padding, or `MediaQuery` bottom padding) so no content is
   permanently hidden behind it.

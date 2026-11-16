@@ -1029,22 +1029,25 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     // because animating it re-laid out the whole list on every frame.
     final statusBarHeight = MediaQuery.paddingOf(context).top;
     return Scaffold(
-      body: Stack(
-        children: [
-          buildContent(statusBarHeight + appBar.preferredSize.height),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: ValueListenableBuilder<bool>(
-              valueListenable: _topAppBarVisible,
-              builder: (context, visible, _) => _AutoHideAppBar(
-                bar: appBar.bar,
-                visible: visible || !autoHideTopAppBar,
+      // The bar and the action pill never overlap, so they share one backdrop.
+      body: BackdropGroup(
+        child: Stack(
+          children: [
+            buildContent(statusBarHeight + appBar.preferredSize.height),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: ValueListenableBuilder<bool>(
+                valueListenable: _topAppBarVisible,
+                builder: (context, visible, _) => _AutoHideAppBar(
+                  bar: appBar.bar,
+                  visible: visible || !autoHideTopAppBar,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: widget.floatingActionButton,
     );
