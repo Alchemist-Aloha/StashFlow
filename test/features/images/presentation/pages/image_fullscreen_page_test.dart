@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -24,6 +25,16 @@ import 'package:stash_app_flutter/features/images/presentation/widgets/zoomable_
 import '../../../../helpers/test_helpers.dart';
 import '../../../../helpers/image_clip_test_helpers.dart';
 import 'image_fullscreen_page_test.mocks.dart';
+
+class _PendingOCounterRepository extends MockGraphQLImageRepository {
+  final result = Completer<int>();
+
+  @override
+  Future<int> incrementImageOCounter(String id) {
+    incrementImageOCalls.add(id);
+    return result.future;
+  }
+}
 
 class MockHttpOverrides extends HttpOverrides {
   final HttpClient client;
@@ -193,11 +204,44 @@ void main() {
               expect(footer, findsOneWidget);
               expect(tester.getRect(media), videoRect);
               expect(tester.getRect(controls), dockedControls);
+              await tester.tap(
+                find.byKey(const Key('image_header_expand_button')),
+              );
+              await tester.pumpAndSettle();
+              expect(
+                find.byKey(const Key('image_o_count_button')),
+                findsOneWidget,
+              );
+              expect(
+                tester.getRect(controls).top,
+                greaterThanOrEqualTo(tester.getRect(header).bottom),
+              );
+              expect(
+                tester.getRect(controls).bottom,
+                lessThan(tester.getRect(footer).top),
+              );
+              final expandButton = find.byKey(
+                const Key('image_header_expand_button'),
+              );
+              expect(
+                tester.getSize(expandButton).shortestSide,
+                greaterThanOrEqualTo(48),
+              );
+              final info = find.byKey(const Key('image_info_button'));
+              await tester.ensureVisible(info);
+              await tester.pumpAndSettle();
+              expect(info.hitTestable(), findsOneWidget);
               expect(tester.state(media), same(videoState));
               expect(sessions, 1);
               mockRepository.withEmpty();
+              // The expanded header can cover the old midpoint on short screens.
+              final swipeStart = Offset(
+                24,
+                (tester.getRect(header).bottom + tester.getRect(footer).top) /
+                    2,
+              );
               await tester.flingFrom(
-                videoTap,
+                swipeStart,
                 vertical
                     ? Offset(
                         0,
@@ -214,6 +258,10 @@ void main() {
               await tester.pumpAndSettle();
               expect(find.byType(ImageClipPlayer), findsNothing);
               expect(find.text('2 / 2'), findsOneWidget);
+              expect(
+                find.byKey(const Key('image_o_count_button')),
+                findsOneWidget,
+              );
               expect(player.disposeCalls, 1);
               expect(tester.takeException(), isNull);
               await tester.pumpWidget(const SizedBox());
@@ -604,6 +652,10 @@ void main() {
           'stash_app_flutter/fullscreen',
         );
         debugDefaultTargetPlatformOverride = platform;
+        tester.view.physicalSize = const Size(320, 700);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
         final nativeCalls = <Object?>[];
         final systemUiModes = <Object?>[];
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -642,12 +694,53 @@ void main() {
             isNot(contains('SystemUiMode.immersiveSticky')),
           );
           expect(nativeCalls, isEmpty);
+          final buttonRects = [
+            'image_previous_button',
+            'image_slideshow_button',
+            if (platform == TargetPlatform.windows)
+              'image_fullscreen_toggle_button',
+            'image_next_button',
+          ].map((key) => tester.getRect(find.byKey(Key(key)))).toList();
+          final gap = buttonRects[1].left - buttonRects[0].right;
+          for (var i = 1; i < buttonRects.length; i++) {
+            expect(buttonRects[i].center.dy, buttonRects.first.center.dy);
+            expect(
+              buttonRects[i].left - buttonRects[i - 1].right,
+              closeTo(gap, 0.01),
+            );
+          }
           final toggle = find.byKey(
             const Key('image_fullscreen_toggle_button'),
           );
           if (platform == TargetPlatform.android) {
             expect(toggle, findsNothing);
           } else {
+            expect(
+              find.descendant(
+                of: find.byKey(const Key('image_viewer_header')),
+                matching: toggle,
+              ),
+              findsNothing,
+            );
+            expect(
+              find.descendant(
+                of: find.byKey(const Key('image_viewer_footer')),
+                matching: toggle,
+              ),
+              findsOneWidget,
+            );
+            final slideshow = tester.getRect(
+              find.byKey(const Key('image_slideshow_button')),
+            );
+            final fullscreen = tester.getRect(toggle);
+            expect(fullscreen.center.dy, slideshow.center.dy);
+            expect(fullscreen.left, greaterThan(slideshow.right));
+            expect(
+              fullscreen.right,
+              lessThan(
+                tester.getRect(find.byKey(const Key('image_next_button'))).left,
+              ),
+            );
             await tester.tap(toggle);
             await tester.pump();
             await tester.tap(toggle);
@@ -927,6 +1020,103 @@ void main() {
       },
     );
 
+    testWidgets(
+      'expanded O-count survives navigation and publishes only to its image',
+      (tester) async {
+        final repository = _PendingOCounterRepository();
+        await _pumpKeyboardGallery(tester, repository, count: 3);
+        final expand = find.byKey(const Key('image_header_expand_button'));
+        final count = find.byKey(const Key('image_o_count_button'));
+        final next = find.byKey(const Key('image_next_button'));
+        final previous = find.byKey(const Key('image_previous_button'));
+        expect(count, findsNothing);
+        expect(tester.widget<IconButton>(previous).onPressed, isNull);
+        await tester.tap(expand);
+        await tester.pump();
+        expect(
+          find.descendant(of: count, matching: find.text('0')),
+          findsOneWidget,
+        );
+        await tester.tap(count);
+        await tester.pump();
+        expect(repository.incrementImageOCalls, ['1']);
+        final ratingButton = tester.widget<IconButton>(
+          find.descendant(
+            of: find.byKey(const Key('image_rate_button')),
+            matching: find.byType(IconButton),
+          ),
+        );
+        expect(tester.widget<IconButton>(count).style, ratingButton.style);
+        expect(tester.widget<IconButton>(count).onPressed, isNull);
+        await tester.tap(count);
+        expect(repository.incrementImageOCalls, ['1']);
+
+        await tester.tap(next);
+        await _pumpFrames(tester);
+        expect(_currentImageId(tester), '2');
+        expect(count, findsOneWidget);
+        expect(tester.widget<IconButton>(count).onPressed, isNotNull);
+        repository.result.complete(7);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(
+          find.descendant(of: count, matching: find.text('0')),
+          findsOneWidget,
+        );
+        await tester.tap(previous);
+        await _pumpFrames(tester);
+        expect(_currentImageId(tester), '1');
+        expect(
+          find.descendant(of: count, matching: find.text('7')),
+          findsOneWidget,
+        );
+
+        // Toggling the whole overlay does not reset the title expansion.
+        await tester.tapAt(const Offset(10, 300));
+        await _pumpFrames(tester);
+        expect(count, findsNothing);
+        await tester.tapAt(const Offset(10, 300));
+        await _pumpFrames(tester);
+        expect(
+          find.descendant(of: count, matching: find.text('7')),
+          findsOneWidget,
+        );
+        await tester.tap(expand);
+        await tester.pump();
+        expect(count, findsNothing);
+        expect(
+          ProviderScope.containerOf(
+            tester.element(find.byType(ImageFullscreenPage)),
+          ).read(imageListProvider).requireValue.map((image) => image.id),
+          ['1', '2', '3'],
+        );
+        expect(tester.widget<IconButton>(next).onPressed, isNotNull);
+        await tester.tap(next);
+        await _pumpFrames(tester);
+        expect(_currentImageId(tester), '2');
+        expect(count, findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('failed O-count stays unchanged and can retry', (tester) async {
+      await _pumpKeyboardGallery(tester, mockRepository, count: 3);
+      mockRepository.withError('increment failed');
+      await tester.tap(find.byKey(const Key('image_header_expand_button')));
+      await tester.pump();
+      final count = find.byKey(const Key('image_o_count_button'));
+      await tester.tap(count);
+      await tester.pump();
+      expect(
+        find.descendant(of: count, matching: find.text('0')),
+        findsOneWidget,
+      );
+      expect(tester.widget<IconButton>(count).onPressed, isNotNull);
+      expect(find.textContaining('increment failed'), findsOneWidget);
+      expect(mockRepository.incrementImageOCalls, ['1']);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('keyboard navigation moves promptly and settles quickly', (
       tester,
     ) async {
@@ -965,6 +1155,8 @@ void main() {
       tester,
     ) async {
       await _pumpKeyboardGallery(tester, mockRepository, count: 5);
+      await tester.tap(find.byKey(const Key('image_header_expand_button')));
+      await tester.pump();
 
       await tester.tap(find.byKey(const Key('image_slideshow_button')));
       await tester.pumpAndSettle();
@@ -986,6 +1178,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 200));
 
       expect(_currentImageId(tester), '4');
+      expect(find.byKey(const Key('image_o_count_button')), findsOneWidget);
       await tester.tap(find.byKey(const Key('image_slideshow_button')));
       await tester.pump();
     });
@@ -1141,11 +1334,49 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 100));
 
+        expect(find.byKey(const Key('image_rate_button')), findsNothing);
+        expect(find.byKey(const Key('image_info_button')), findsNothing);
+        await tester.tap(find.byKey(const Key('image_header_expand_button')));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
         final rateButton = find.byKey(const Key('image_rate_button'));
         final progressBar = find.byKey(const Key('image_progress_bar'));
         expect(find.byKey(const Key('image_info_button')), findsOneWidget);
         expect(rateButton, findsOneWidget);
-        expect(find.byKey(const Key('image_download_button')), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('image_viewer_header')),
+            matching: rateButton,
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('image_viewer_footer')),
+            matching: find.byType(IconButton),
+          ),
+          findsNWidgets(3),
+        );
+        final actionRects = [
+          'image_rate_button',
+          'image_o_count_button',
+          'image_download_button',
+          'image_info_button',
+        ].map((key) => tester.getRect(find.byKey(Key(key)))).toList();
+        final actionRow = tester.getRect(
+          find.ancestor(of: rateButton, matching: find.byType(Row)).first,
+        );
+        expect(actionRects.first.left, actionRow.left);
+        expect(actionRects.last.right, actionRow.right);
+        expect(actionRow.width, greaterThan(250));
+        final gap = actionRects[1].left - actionRects[0].right;
+        for (var i = 1; i < actionRects.length; i++) {
+          expect(actionRects[i].center.dy, actionRects.first.center.dy);
+          expect(
+            actionRects[i].left - actionRects[i - 1].right,
+            closeTo(gap, 0.01),
+          );
+        }
         expect(find.byKey(const Key('image_slideshow_button')), findsOneWidget);
         expect(progressBar, findsOneWidget);
         expect(

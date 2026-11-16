@@ -193,6 +193,26 @@ class GraphQLImageRepository {
     return _mapImage(data.toJson());
   }
 
+  /// Increments the server counter and returns its confirmed value.
+  Future<int> incrementImageOCounter(String id) async {
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(r'''
+          mutation IncrementImageO($id: ID!) {
+            imageIncrementO(id: $id)
+          }
+        '''),
+        variables: {'id': id},
+      ),
+    );
+    validateGraphQLResult(result);
+    final count = result.data?['imageIncrementO'];
+    if (count is! int || count < 0) {
+      throw const FormatException('Invalid image O-count response');
+    }
+    return count;
+  }
+
   /// Sends a direct `imageUpdate` GraphQL mutation for `rating100`.
   ///
   /// This method intentionally uses a lightweight inline mutation because only

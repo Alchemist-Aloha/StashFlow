@@ -25,6 +25,52 @@ void main() {
   });
 
   group('GraphQLImageRepository', () {
+    test('increments O-count using the server response', () async {
+      when(mockClient.mutate<Object?>(any)).thenAnswer((invocation) async {
+        final options =
+            invocation.positionalArguments.single as MutationOptions;
+        expect(options.variables, {'id': 'image-1'});
+        expect(options.document.definitions, isNotEmpty);
+        return QueryResult(
+          options: options,
+          source: QueryResultSource.network,
+          data: {'imageIncrementO': 12},
+        );
+      });
+      expect(await repository.incrementImageOCounter('image-1'), 12);
+    });
+
+    for (final value in [null, '12', -1]) {
+      test('rejects invalid O-count response: $value', () async {
+        when(mockClient.mutate<Object?>(any)).thenAnswer(
+          (invocation) async => QueryResult(
+            options: invocation.positionalArguments.single as MutationOptions,
+            source: QueryResultSource.network,
+            data: {'imageIncrementO': value},
+          ),
+        );
+        await expectLater(
+          repository.incrementImageOCounter('1'),
+          throwsFormatException,
+        );
+      });
+    }
+
+    test('normalizes O-count mutation errors', () async {
+      when(mockClient.mutate<Object?>(any)).thenAnswer(
+        (invocation) async => QueryResult(
+          options: invocation.positionalArguments.single as MutationOptions,
+          source: QueryResultSource.network,
+          exception: OperationException(
+            graphqlErrors: [const GraphQLError(message: 'denied')],
+          ),
+        ),
+      );
+      await expectLater(
+        repository.incrementImageOCounter('1'),
+        throwsA(isA<AppGraphQLException>()),
+      );
+    });
     test('findImages returns a list of images on success', () async {
       final data = {
         'findImages': {

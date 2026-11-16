@@ -47,10 +47,37 @@ class ImageChanged extends Notifier<entity.Image?> {
   /// Completes independently of the viewer, but never publishes to another server.
   Future<void> updateRating(entity.Image image, int rating) async {
     final repository = ref.read(imageRepositoryProvider);
-    await repository.updateImageRating(image.id, rating);
-    if (ref.mounted &&
-        identical(repository, ref.read(imageRepositoryProvider))) {
-      publish(image.copyWith(rating100: rating));
+    if (state?.id == image.id) image = state!;
+    final removeListener = listenSelf((_, updated) {
+      if (updated?.id == image.id) image = updated!;
+    });
+    try {
+      await repository.updateImageRating(image.id, rating);
+      if (ref.mounted &&
+          identical(repository, ref.read(imageRepositoryProvider))) {
+        publish(image.copyWith(rating100: rating));
+      }
+    } finally {
+      removeListener();
+    }
+  }
+
+  /// Publishes the confirmed count even after navigation, but not server changes.
+  Future<void> incrementOCounter(entity.Image image) async {
+    final repository = ref.read(imageRepositoryProvider);
+    // Retain other confirmed edits while this request is in flight.
+    if (state?.id == image.id) image = state!;
+    final removeListener = listenSelf((_, updated) {
+      if (updated?.id == image.id) image = updated!;
+    });
+    try {
+      final count = await repository.incrementImageOCounter(image.id);
+      if (ref.mounted &&
+          identical(repository, ref.read(imageRepositoryProvider))) {
+        publish(image.copyWith(oCounter: count));
+      }
+    } finally {
+      removeListener();
     }
   }
 }

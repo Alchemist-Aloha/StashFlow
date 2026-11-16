@@ -602,11 +602,20 @@ page, with no rating editor in that sheet.
 The fullscreen image viewer supports:
 
 - platform-specific window modes: Android and iOS open without immersive
-  system UI; desktop opens windowed and the header button or the image
+  system UI; desktop opens windowed and the footer button or the image
   fullscreen keybind (default F) toggles fullscreen,
   leaving fullscreen on close only when the viewer entered it; web keeps
   requesting immersive system UI on open;
-- previous/next navigation with correct endpoint behavior;
+- a collapsible title action row with the shared rating control, O-count
+  increment (icon and number only, styled like the rating button), download
+  (outside web), and details, spread across the available width with scrolling
+  when needed; expansion survives manual navigation, slideshow advances, and
+  hiding/showing viewer overlays;
+- server-confirmed O-count updates patch every live image browser without
+  refetching, reordering, or reseeding; pending increments are disabled per image,
+  and failed requests leave the displayed count unchanged;
+- an evenly spaced bottom previous/slideshow/next row with correct endpoint
+  behavior, with desktop fullscreen next to slideshow;
 - responsive manual transitions independent of slideshow timing, with repeated
   keyboard input advancing from the intended destination and touch swipes
   resynchronizing navigation to the displayed page;

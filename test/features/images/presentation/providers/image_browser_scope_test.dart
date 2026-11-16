@@ -19,6 +19,16 @@ const _image = Image(id: '1', files: [], paths: ImagePaths());
 
 class _DelayedImages extends MockGraphQLImageRepository {
   final nextPage = Completer<List<Image>>();
+  Completer<int>? pendingOCount;
+  Completer<void>? pendingRating;
+
+  @override
+  Future<int> incrementImageOCounter(String id) =>
+      pendingOCount?.future ?? super.incrementImageOCounter(id);
+
+  @override
+  Future<void> updateImageRating(String id, int rating100) =>
+      pendingRating?.future ?? super.updateImageRating(id, rating100);
 
   /// Gallery whose first page is full, so the provider asks for page 2.
   String? fullPageGallery;
@@ -233,6 +243,82 @@ void main() {
       expect(scope.read(imageRandomSeedProvider), seed);
     },
   );
+
+  test(
+    'confirmed O-count patches all scopes without refetch or reseed',
+    () async {
+      final scope = gallery('a');
+      await library.read(imageListProvider.future);
+      await scope.read(imageListProvider.future);
+      final calls = repository.findImageCalls.length;
+      final seed = scope.read(imageRandomSeedProvider);
+      await scope.read(imageChangedProvider.notifier).incrementOCounter(_image);
+      expect(library.read(imageListProvider).requireValue.single.oCounter, 1);
+      expect(scope.read(imageListProvider).requireValue.single.oCounter, 1);
+      expect(repository.findImageCalls.length, calls);
+      expect(scope.read(imageRandomSeedProvider), seed);
+    },
+  );
+
+  test('failed O-count leaves confirmed image unchanged', () async {
+    await library.read(imageListProvider.future);
+    repository.withError('increment failed');
+    await expectLater(
+      library.read(imageChangedProvider.notifier).incrementOCounter(_image),
+      throwsException,
+    );
+    expect(library.read(imageListProvider).requireValue, [_image]);
+    expect(library.read(imageChangedProvider), isNull);
+  });
+
+  for (final ratingFirst in [true, false]) {
+    test(
+      'overlapping rating and O-count retain both: ratingFirst=$ratingFirst',
+      () async {
+        await library.read(imageListProvider.future);
+        repository.pendingOCount = Completer<int>();
+        repository.pendingRating = Completer<void>();
+        final notifier = library.read(imageChangedProvider.notifier);
+        final count = notifier.incrementOCounter(_image);
+        final rating = notifier.updateRating(_image, 85);
+        if (ratingFirst) {
+          repository.pendingRating!.complete();
+          await rating;
+          repository.pendingOCount!.complete(7);
+          await count;
+        } else {
+          repository.pendingOCount!.complete(7);
+          await count;
+          repository.pendingRating!.complete();
+          await rating;
+        }
+        final image = library.read(imageListProvider).requireValue.single;
+        expect(image.oCounter, 7);
+        expect(image.rating100, 85);
+      },
+    );
+  }
+
+  test('late O-count cannot publish to a different server', () async {
+    await library.read(imageListProvider.future);
+    repository.pendingOCount = Completer<int>();
+    final pending = library
+        .read(imageChangedProvider.notifier)
+        .incrementOCounter(_image);
+    final otherRepository = MockGraphQLImageRepository()..withData([_image]);
+    library.updateOverrides([
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      imageRepositoryProvider.overrideWithValue(otherRepository),
+    ]);
+    await library.read(imageListProvider.future);
+    repository.pendingOCount!.complete(7);
+    await pending;
+    expect(library.read(imageChangedProvider), isNull);
+    expect(
+      library.read(imageListProvider).requireValue.single.oCounter,
+      isNull,
+    );
+  });
 
   test('late pagination cannot overwrite a changed query', () async {
     repository.fullPageGallery = 'a';
