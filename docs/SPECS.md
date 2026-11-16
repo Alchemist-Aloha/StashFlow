@@ -500,7 +500,15 @@ changes use the entity repository, refresh details, and invalidate affected
 lists after confirmation; cancellation or failed saves retain the confirmed
 value, with localized feedback on failure. Performer Details shows the first
 five links, with a Show more/Show less action in the section header when there
-are more.
+are more; group and studio details share this `EntityLinksSection`.
+
+Group lists and Group Details show the group's front cover (and the back cover
+beside it when set), falling back to the group icon for Stash's `default=true`
+placeholder. Group Details also shows duration, aliases, its studio, tags,
+links, and the containing groups and sub-groups with each link's description.
+Related entities open through the shared `RelatedEntityTile` and
+`EntityLinkChips`, and repositories resolve every related image URL against
+the active server.
 
 ### Scene rating and metadata mutation
 

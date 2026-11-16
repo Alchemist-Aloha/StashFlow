@@ -15,6 +15,7 @@ import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/group_saved_filter_config.dart';
+import '../widgets/group_cover.dart';
 import '../widgets/group_filter_panel.dart';
 import '../providers/group_list_provider.dart';
 import '../../domain/entities/group.dart';
@@ -325,7 +326,19 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
         color: Theme.of(context).colorScheme.primaryContainer
             .withValues(alpha: 0.3),
         child: ListTile(
-          leading: const Icon(Icons.group_work),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+            child: GroupCover(
+              imagePath: group.frontImagePath,
+              width: 40 * context.dimensions.fontSizeFactor,
+              height: 60 * context.dimensions.fontSizeFactor,
+              memCacheWidth:
+                  (40 *
+                          context.dimensions.fontSizeFactor *
+                          MediaQuery.devicePixelRatioOf(context))
+                      .ceil(),
+            ),
+          ),
           onTap: () => context.push('/groups/group/${group.id}'),
           title: Text(
             group.name.isEmpty ? context.l10n.groups_unnamed : group.name,

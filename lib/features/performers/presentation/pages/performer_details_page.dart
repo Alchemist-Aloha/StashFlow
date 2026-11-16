@@ -11,7 +11,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../galleries/presentation/gallery_location.dart';
 
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
@@ -19,6 +18,7 @@ import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/performer_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 
+import '../../../../core/presentation/widgets/entity_links_section.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
@@ -378,95 +378,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _PerformerLinks(
-                                  urls: performer.urls,
-                                  linkBuilder: (url) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: AppTheme.spacingSmall,
-                                      ),
-                                      child: InkWell(
-                                        onTap: () async {
-                                          final uri = Uri.tryParse(url);
-                                          if (uri == null) return;
-                                          try {
-                                            if (await canLaunchUrl(uri)) {
-                                              await launchUrl(
-                                                uri,
-                                                mode: LaunchMode
-                                                    .externalApplication,
-                                              );
-                                            } else {
-                                              if (context.mounted) {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      context.l10n.common_error(
-                                                        url,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            }
-                                          } on Exception catch (e, stackTrace) {
-                                            AppLogStore.instance.addError(
-                                              'build',
-                                              e,
-                                              stackTrace,
-                                              source: 'performer_details_page',
-                                            );
-                                            if (context.mounted) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    context.l10n.common_error(
-                                                      e.toString(),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          }
-                                        },
-                                        borderRadius: BorderRadius.circular(4),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.link,
-                                              size: 16,
-                                              color: context.colors.primary,
-                                            ),
-                                            const SizedBox(
-                                              width: AppTheme.spacingSmall,
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                url,
-                                                style: context
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.copyWith(
-                                                      color: context
-                                                          .colors
-                                                          .primary,
-                                                      decoration: TextDecoration
-                                                          .underline,
-                                                    ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
+                                EntityLinksSection(urls: performer.urls),
                               ],
                             ),
                           ),
@@ -624,51 +536,6 @@ class PerformerDetailsPage extends ConsumerWidget {
     return Chip(
       label: Text(label, style: context.textTheme.bodySmall),
       visualDensity: VisualDensity.compact,
-    );
-  }
-}
-
-/// Links section showing the first [collapsedCount] links, with a header
-/// Show more/Show less toggle for the rest.
-class _PerformerLinks extends StatefulWidget {
-  const _PerformerLinks({required this.urls, required this.linkBuilder});
-
-  static const collapsedCount = 5;
-
-  final List<String> urls;
-  final Widget Function(String url) linkBuilder;
-
-  @override
-  State<_PerformerLinks> createState() => _PerformerLinksState();
-}
-
-class _PerformerLinksState extends State<_PerformerLinks> {
-  bool _showAll = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final urls = widget.urls;
-    final collapsible = urls.length > _PerformerLinks.collapsedCount;
-    final visible = _showAll || !collapsible
-        ? urls
-        : urls.take(_PerformerLinks.collapsedCount);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SectionHeader(
-          key: const Key('performer_links_header'),
-          title: context.l10n.details_links,
-          padding: EdgeInsets.zero,
-          onViewAll: collapsible
-              ? () => setState(() => _showAll = !_showAll)
-              : null,
-          actionLabel: _showAll
-              ? context.l10n.details_show_less
-              : context.l10n.details_show_more,
-        ),
-        const SizedBox(height: AppTheme.spacingSmall),
-        ...visible.map(widget.linkBuilder),
-      ],
     );
   }
 }

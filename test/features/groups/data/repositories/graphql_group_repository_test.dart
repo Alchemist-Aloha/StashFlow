@@ -27,6 +27,31 @@ class CapturingGraphQLClient implements GraphQLClient {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _FindGroupClient implements GraphQLClient {
+  _FindGroupClient(this.group);
+
+  final Map<String, dynamic> group;
+
+  @override
+  Link get link => HttpLink('http://192.168.1.5:9999/graphql');
+
+  @override
+  Future<QueryResult<TParsed>> query<TParsed>(
+    QueryOptions<TParsed> options,
+  ) async {
+    return QueryResult<Query$FindGroup>(
+      source: QueryResultSource.network,
+      data: {'findGroup': group, '__typename': 'Query'},
+      options: Options$Query$FindGroup(
+        variables: Variables$Query$FindGroup(id: '1'),
+      ),
+    ) as QueryResult<TParsed>;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 void main() {
   late GraphQLGroupRepository repository;
   late CapturingGraphQLClient mockClient;
@@ -185,5 +210,61 @@ void main() {
         5,
       );
     });
+  });
+
+  test('getGroupById maps relations and resolves image URLs', () async {
+    Map<String, dynamic> relation(String id, String? description) => {
+      'group': {
+        'id': id,
+        'name': 'Group $id',
+        'front_image_path': '/group/$id/frontimage',
+        '__typename': 'Group',
+      },
+      'description': description,
+      '__typename': 'GroupDescription',
+    };
+    final repository = GraphQLGroupRepository(
+      _FindGroupClient({
+        'id': '1',
+        'name': 'Shorts',
+        'date': null,
+        'rating100': null,
+        'director': null,
+        'synopsis': null,
+        'scene_count': 4,
+        'sub_group_count': 1,
+        'front_image_path': '/group/1/frontimage',
+        'back_image_path': '/group/1/backimage?default=true',
+        'aliases': 'LAS-01',
+        'duration': 600,
+        'urls': ['https://example.org'],
+        'studio': {
+          'id': '2',
+          'name': 'Studio',
+          'image_path': '/studio/2/image',
+          '__typename': 'Studio',
+        },
+        'tags': [
+          {'id': '3', 'name': 'Tag', '__typename': 'Tag'},
+        ],
+        'containing_groups': [relation('9', 'Volume one')],
+        'sub_groups': [relation('4', null)],
+        '__typename': 'Group',
+      }),
+    );
+
+    final group = await repository.getGroupById('1');
+
+    expect(group.frontImagePath, 'http://192.168.1.5:9999/group/1/frontimage');
+    expect(group.studioImagePath, 'http://192.168.1.5:9999/studio/2/image');
+    expect(group.aliases, 'LAS-01');
+    expect(group.duration, 600);
+    expect(group.urls, ['https://example.org']);
+    expect(group.tags.single, (id: '3', name: 'Tag'));
+    expect(group.containingGroups.single.description, 'Volume one');
+    expect(
+      group.subGroups.single.imagePath,
+      'http://192.168.1.5:9999/group/4/frontimage',
+    );
   });
 }

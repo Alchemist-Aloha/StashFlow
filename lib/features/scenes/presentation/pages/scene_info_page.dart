@@ -15,6 +15,7 @@ import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/utils/format_duration.dart';
 import '../../../../core/utils/format_bytes.dart';
 import '../providers/scene_details_provider.dart';
 import '../widgets/scene_info_media_section.dart';
@@ -38,17 +39,8 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
     unawaited(router.push(route));
   }
 
-  String _formatDuration(double? seconds) {
-    if (seconds == null) return '--:--';
-    final duration = Duration(seconds: seconds.toInt());
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    final secs = duration.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-  }
+  String _formatDuration(double? seconds) =>
+      seconds == null ? '--:--' : formatClockDuration(seconds);
 
   @override
   void dispose() {

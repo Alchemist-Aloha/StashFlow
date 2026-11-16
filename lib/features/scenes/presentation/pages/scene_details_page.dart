@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/utils/format_duration.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -735,17 +736,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     }
   }
 
-  String _formatDuration(double? seconds) {
-    if (seconds == null) return '00:00';
-    final duration = Duration(seconds: seconds.toInt());
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    final secs = duration.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-  }
+  String _formatDuration(double? seconds) =>
+      seconds == null ? '00:00' : formatClockDuration(seconds);
 
   @override
   void initState() {

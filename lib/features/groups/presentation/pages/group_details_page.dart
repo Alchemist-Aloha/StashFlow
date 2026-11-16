@@ -5,7 +5,13 @@ import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/presentation/widgets/entity_links_section.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/meta_row.dart';
+import '../../../../core/presentation/widgets/related_entities.dart';
+import '../../../../core/utils/format_duration.dart';
+import '../../domain/entities/group.dart';
+import '../widgets/group_cover.dart';
 import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
@@ -75,20 +81,7 @@ class GroupDetailsPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 240,
-                  width: double.infinity,
-                  color: context.colors.surfaceVariant,
-                  child: Center(
-                    child: Icon(
-                      Icons.group_work,
-                      size: 72,
-                      color: context.colors.onSurfaceVariant.withValues(
-                        alpha: 0.5,
-                      ),
-                    ),
-                  ),
-                ),
+                _GroupCovers(group: group),
                 Padding(
                   padding: const EdgeInsets.all(AppTheme.spacingMedium),
                   child: Column(
@@ -113,6 +106,13 @@ class GroupDetailsPage extends ConsumerWidget {
                           if (group.director != null &&
                               group.director!.isNotEmpty)
                             _buildChip(context, group.director!),
+                          if (group.duration case final duration?
+                              when duration > 0)
+                            _buildChip(
+                              context,
+                              formatClockDuration(duration),
+                              icon: Icons.timer_outlined,
+                            ),
                           if (group.rating100 != null)
                             _buildChip(
                               context,
@@ -122,7 +122,45 @@ class GroupDetailsPage extends ConsumerWidget {
                             ),
                         ],
                       ),
+                      if (group.aliases case final aliases?
+                          when aliases.trim().isNotEmpty) ...[
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        MetaRow(
+                          label: context.l10n.common_aliases,
+                          value: aliases,
+                        ),
+                      ],
+                      if (group.studioId case final studioId?)
+                        RelatedEntityTile(
+                          title: group.studioName ?? studioId,
+                          route: '/studios/studio/$studioId',
+                          imagePath: group.studioImagePath,
+                          fallbackIcon: Icons.business_outlined,
+                        ),
                       const SizedBox(height: AppTheme.spacingMedium),
+                      if (group.tags.isNotEmpty)
+                        _buildSectionContainer(
+                          context,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SectionHeader(
+                                title: context.l10n.details_tags,
+                                padding: EdgeInsets.zero,
+                              ),
+                              const SizedBox(height: AppTheme.spacingSmall),
+                              EntityLinkChips(
+                                links: [
+                                  for (final tag in group.tags)
+                                    (
+                                      label: tag.name,
+                                      route: '/tags/tag/${tag.id}',
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       if (group.synopsis != null &&
                           group.synopsis!.isNotEmpty) ...[
                         _buildSectionContainer(
@@ -145,6 +183,41 @@ class GroupDetailsPage extends ConsumerWidget {
                           ),
                         ),
                       ],
+                      if (group.urls.isNotEmpty)
+                        _buildSectionContainer(
+                          context,
+                          EntityLinksSection(urls: group.urls),
+                        ),
+                      for (final (title, relations) in [
+                        (
+                          context.l10n.groups_field_containing_groups,
+                          group.containingGroups,
+                        ),
+                        (context.l10n.groups_field_sub_groups, group.subGroups),
+                      ])
+                        if (relations.isNotEmpty)
+                          _buildSectionContainer(
+                            context,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SectionHeader(
+                                  title: title,
+                                  padding: EdgeInsets.zero,
+                                ),
+                                for (final relation in relations)
+                                  RelatedEntityTile(
+                                    title: relation.name.isEmpty
+                                        ? context.l10n.groups_untitled
+                                        : relation.name,
+                                    subtitle: relation.description,
+                                    route: '/groups/group/${relation.id}',
+                                    imagePath: relation.imagePath,
+                                    fallbackIcon: Icons.group_work,
+                                  ),
+                              ],
+                            ),
+                          ),
                       const SizedBox(height: AppTheme.spacingMedium),
                       _buildSectionContainer(
                         context,
@@ -239,6 +312,45 @@ class GroupDetailsPage extends ConsumerWidget {
           : null,
       label: Text(label, style: context.textTheme.bodySmall),
       visualDensity: VisualDensity.compact,
+    );
+  }
+}
+
+/// Front cover, plus the back cover beside it when the group has one.
+class _GroupCovers extends StatelessWidget {
+  const _GroupCovers({required this.group});
+
+  final Group group;
+
+  @override
+  Widget build(BuildContext context) {
+    final height = 240.0 * context.dimensions.fontSizeFactor;
+    final width = height * 2 / 3;
+    final cacheWidth = (width * MediaQuery.devicePixelRatioOf(context)).ceil();
+    final paths = [
+      group.frontImagePath,
+      if (GroupCover.hasCover(group.backImagePath)) group.backImagePath,
+    ];
+    return Container(
+      height: height,
+      width: double.infinity,
+      color: context.colors.surfaceVariant,
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: context.dimensions.spacingSmall,
+        children: [
+          for (final path in paths)
+            Flexible(
+              child: GroupCover(
+                imagePath: path,
+                width: width,
+                height: height,
+                memCacheWidth: cacheWidth,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

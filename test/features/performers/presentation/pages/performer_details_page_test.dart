@@ -272,7 +272,7 @@ void main() {
     );
     expect(links, findsNWidgets(5));
     final toggle = find.descendant(
-      of: find.byKey(const Key('performer_links_header')),
+      of: find.byKey(const Key('entity_links_header')),
       matching: find.text('Show more'),
     );
     await tester.ensureVisible(toggle);
