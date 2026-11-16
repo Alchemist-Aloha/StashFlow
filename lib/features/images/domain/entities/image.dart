@@ -32,6 +32,13 @@ abstract class Image with _$Image {
     List<String?> performerImagePaths,
     required List<ImageFile> files,
     required ImagePaths paths,
+    String? code,
+    String? details,
+    String? photographer,
+    @JsonKey(name: 'o_counter') int? oCounter,
+    @Default(false) bool organized,
+    @Default([]) List<ImageTag> tags,
+    @Default([]) List<ImageGallery> galleries,
   }) = _Image;
 
   factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
@@ -62,4 +69,28 @@ abstract class ImagePaths with _$ImagePaths {
 
   factory ImagePaths.fromJson(Map<String, dynamic> json) =>
       _$ImagePathsFromJson(json);
+}
+
+/// A tag applied to an image.
+@freezed
+abstract class ImageTag with _$ImageTag {
+  const factory ImageTag({required String id, required String name}) =
+      _ImageTag;
+
+  factory ImageTag.fromJson(Map<String, dynamic> json) =>
+      _$ImageTagFromJson(json);
+}
+
+/// A gallery containing an image. [title] is empty for untitled galleries;
+/// [path] is the zip file or folder backing them.
+@freezed
+abstract class ImageGallery with _$ImageGallery {
+  const factory ImageGallery({
+    required String id,
+    @Default('') String title,
+    String? path,
+  }) = _ImageGallery;
+
+  factory ImageGallery.fromJson(Map<String, dynamic> json) =>
+      _$ImageGalleryFromJson(json);
 }

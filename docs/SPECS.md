@@ -527,6 +527,10 @@ tattoos, piercings, O-count, stash IDs, custom fields) above the biography,
 then related groups and Appears With performers (co-performers, excluding the
 performer). Performer details load career start and end so editing never
 clears them.
+Image details add studio code, photographer, O-count, organized, and the
+description, then tag chips and the containing galleries (untitled galleries
+use their zip or folder name). Links in sheets close the sheet before
+navigating (`closesSheet`).
 
 ### Scene rating and metadata mutation
 

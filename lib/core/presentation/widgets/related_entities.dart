@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -8,6 +10,16 @@ import '../theme/app_theme.dart';
 import 'section_header.dart';
 import 'section_panel.dart';
 import 'stash_image.dart';
+
+void _openRelated(
+  BuildContext context,
+  String route, {
+  required bool closesSheet,
+}) {
+  final router = GoRouter.of(context);
+  if (closesSheet) Navigator.of(context).pop();
+  unawaited(router.push(route));
+}
 
 /// A tappable row that opens a related entity's details page, such as a parent
 /// studio, a sub-group, or a group a scene belongs to.
@@ -20,10 +32,15 @@ class RelatedEntityTile extends StatelessWidget {
     required this.fallbackIcon,
     this.imagePath,
     this.subtitle,
+    this.closesSheet = false,
     super.key,
   });
 
   final String title;
+
+  /// Pops the enclosing bottom sheet before navigating, so the new page is
+  /// not opened underneath it.
+  final bool closesSheet;
 
   /// Location pushed on tap, for example `/groups/group/1`.
   final String route;
@@ -55,17 +72,24 @@ class RelatedEntityTile extends StatelessWidget {
       title: Text(title),
       subtitle: subtitle == null ? null : Text(subtitle!),
       trailing: const Icon(Icons.chevron_right_rounded),
-      onTap: () => context.push(route),
+      onTap: () => _openRelated(context, route, closesSheet: closesSheet),
     );
   }
 }
 
 /// Compact chips that each open a related entity, such as parent tags.
 class EntityLinkChips extends StatelessWidget {
-  const EntityLinkChips({required this.links, super.key});
+  const EntityLinkChips({
+    required this.links,
+    this.closesSheet = false,
+    super.key,
+  });
 
   /// Chip labels with the location each one pushes.
   final List<({String label, String route})> links;
+
+  /// See [RelatedEntityTile.closesSheet].
+  final bool closesSheet;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +101,8 @@ class EntityLinkChips extends StatelessWidget {
           ActionChip(
             label: Text(link.label, style: context.textTheme.bodySmall),
             visualDensity: VisualDensity.compact,
-            onPressed: () => context.push(link.route),
+            onPressed: () =>
+                _openRelated(context, link.route, closesSheet: closesSheet),
           ),
       ],
     );

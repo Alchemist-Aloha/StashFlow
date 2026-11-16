@@ -65,6 +65,9 @@ void main() {
                 'image': 'full.jpg',
                 '__typename': 'ImagePathsType',
               },
+              'organized': false,
+              'tags': <Map<String, dynamic>>[],
+              'galleries': <Map<String, dynamic>>[],
               '__typename': 'Image',
             },
           ],
@@ -218,6 +221,21 @@ void main() {
             'image': 'full.jpg',
             '__typename': 'ImagePathsType',
           },
+          'organized': true,
+          'o_counter': 2,
+          'photographer': 'Audit Photographer',
+          'tags': [
+            {'id': 't1', 'name': 'Demo', '__typename': 'Tag'},
+          ],
+          'galleries': [
+            {
+              'id': 'g1',
+              'title': null,
+              'files': <Map<String, dynamic>>[],
+              'folder': {'path': '/data/Trip', '__typename': 'Folder'},
+              '__typename': 'Gallery',
+            },
+          ],
           '__typename': 'Image',
         },
         '__typename': 'Query',
@@ -242,6 +260,14 @@ void main() {
       expect(result.id, '1');
       expect(result.title, 'Test Image');
       expect(result.files.single.size, 3221225472);
+      expect(result.organized, isTrue);
+      expect(result.oCounter, 2);
+      expect(result.photographer, 'Audit Photographer');
+      expect(result.tags.single, const ImageTag(id: 't1', name: 'Demo'));
+      expect(
+        result.galleries.single,
+        const ImageGallery(id: 'g1', path: '/data/Trip'),
+      );
       expect(result.isClip, isTrue);
       expect(result.files.single.typename, 'VideoFile');
       expect(result.paths.thumbnail, 'http://localhost:9999/thumb.jpg');
@@ -275,6 +301,9 @@ void main() {
                 'image': '/image/gif/image',
                 '__typename': 'ImagePathsType',
               },
+              'organized': false,
+              'tags': <Map<String, dynamic>>[],
+              'galleries': <Map<String, dynamic>>[],
               '__typename': 'Image',
             },
             '__typename': 'Query',

@@ -61,6 +61,20 @@ class GraphQLImageRepository {
         )
         .toList();
 
+    map['galleries'] = [
+      for (final gallery
+          in (map['galleries'] as List<dynamic>? ?? const [])
+              .whereType<Map<String, dynamic>>())
+        {
+          'id': gallery['id'],
+          'title': gallery['title'] ?? '',
+          'path':
+              ((gallery['files'] as List<dynamic>?)?.firstOrNull
+                  as Map<String, dynamic>?)?['path'] ??
+              (gallery['folder'] as Map<String, dynamic>?)?['path'],
+        },
+    ];
+
     return Image.fromJson(map);
   }
 
