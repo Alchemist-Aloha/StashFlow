@@ -67,6 +67,11 @@ void main() {
       for (final factor in [0.8, 1.5]) {
         scale.value = factor;
         await tester.pumpAndSettle();
+        tester
+            .state<ScrollableState>(find.byType(Scrollable).first)
+            .position
+            .jumpTo(0);
+        await tester.pumpAndSettle();
         expect(tester.getTopLeft(find.text(group.name)).dx, 16 * factor);
         final chips = tester.widget<Wrap>(
           find
@@ -82,18 +87,27 @@ void main() {
           tester.widget<Icon>(find.byIcon(Icons.timer_outlined)).size,
           16 * factor,
         );
-        final panels = tester.widgetList<SectionPanel>(
-          find.byType(SectionPanel),
-        );
-        expect(
-          panels.map((panel) => panel.title),
-          containsAll(['Tags', 'Synopsis', 'Sub-Groups']),
-        );
-        for (final panel in panels) {
+        for (final (title, content) in [
+          ('Tags', 'A tag with a long name'),
+          ('Synopsis', 'Description of this collection'),
+          ('Sub-Groups', 'A relationship description'),
+        ]) {
+          await tester.scrollUntilVisible(
+            find.text(title),
+            200,
+            scrollable: find.byType(Scrollable).first,
+          );
+          final panel = tester.widget<SectionPanel>(
+            find
+                .ancestor(
+                  of: find.text(title),
+                  matching: find.byType(SectionPanel),
+                )
+                .first,
+          );
           expect(panel.margin, EdgeInsets.only(bottom: 16 * factor));
+          expect(find.text(content), findsOneWidget);
         }
-        expect(find.text('Description of this collection'), findsOneWidget);
-        expect(find.text('A relationship description'), findsOneWidget);
         expect(tester.takeException(), isNull);
       }
     });
@@ -133,13 +147,19 @@ void main() {
     expect(find.text('LAS-01'), findsOneWidget);
     expect(find.text('1:02:05'), findsOneWidget);
     expect(find.text('Open Movie'), findsOneWidget);
-    expect(find.text('https://example.org/shorts'), findsOneWidget);
     expect(
       find.widgetWithText(RelatedEntityTile, 'Lantern Studio'),
       findsOneWidget,
     );
+    await tester.scrollUntilVisible(
+      find.text('https://example.org/shorts'),
+      200,
+    );
+    expect(find.text('https://example.org/shorts'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Containing Groups'), 200);
     expect(find.text('Containing Groups'), findsOneWidget);
     expect(find.text('Volume one'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Sub-Groups'), 200);
     expect(find.text('Sub-Groups'), findsOneWidget);
     expect(
       find.widgetWithText(RelatedEntityTile, 'Shorts 01 Extras'),

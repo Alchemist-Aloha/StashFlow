@@ -95,6 +95,13 @@ sheets, saved-filter UI, `StashImage`, and common state views.
 - A surface that floats over scrolling content must publish its height as an
   inset (scroll padding, or `MediaQuery` bottom padding) so no content is
   permanently hidden behind it.
+- Scene, performer, studio, tag, and group details use `DetailPageScrollView`
+  for lazy vertical sections with native per-section repaint boundaries.
+  Headers remain full-width, content padding follows the theme, and floating
+  chrome insets and pull-to-refresh remain intact. Visited sections stay mounted
+  for the page's lifetime so inline playback, expanded metadata, and horizontal
+  strip positions survive scrolling away and back. This retention is only for
+  the finite detail-section list, not unbounded media grids.
 - List page and performer, studio, tag, and group details top app bars use the
   shared `FrostedAppBar`: they float over the content as frosted glass, and
   content scrolls underneath them behind a fixed top scroll inset of the bar's
@@ -126,6 +133,7 @@ Canonical implementation:
 - `lib/core/presentation/providers/layout_settings_provider.dart`
 - `lib/core/utils/responsive.dart`
 - `lib/core/presentation/widgets/frosted_surface.dart`
+- `lib/core/presentation/widgets/detail_page_scroll_view.dart`
 
 ### Theme personalization
 

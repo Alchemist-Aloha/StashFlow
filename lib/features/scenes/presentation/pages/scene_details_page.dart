@@ -27,6 +27,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/detail_page_scroll_view.dart';
 import '../../../../core/presentation/widgets/related_entities.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
@@ -803,25 +804,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         // Left Column: Video, Title, Info, Details (61.8%)
                         Expanded(
                           flex: 618,
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SceneVideoPlayer(
-                                  key: _playerKey,
-                                  scene: scene,
-                                  autoPlayOnMount: widget.autoPlayOnMount,
-                                  maxHeight: safeMaxHeight,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(
-                                    AppTheme.spacingMedium,
-                                  ),
-                                  child: _buildMainInfo(context, scene),
-                                ),
-                              ],
+                          child: DetailPageScrollView(
+                            header: SceneVideoPlayer(
+                              key: _playerKey,
+                              scene: scene,
+                              autoPlayOnMount: widget.autoPlayOnMount,
+                              maxHeight: safeMaxHeight,
                             ),
+                            children: [_buildMainInfo(context, scene)],
                           ),
                         ),
                         // Divider
@@ -833,26 +823,19 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         // Right Column: Tags, Performers, Related Scenes (38.2%)
                         Expanded(
                           flex: 382,
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.all(
-                              AppTheme.spacingMedium,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildTagsSection(context, scene),
-                                _buildMarkersSection(context, scene),
-                                _buildPerformersSection(context, scene),
-                                _buildGroupsSection(context, scene),
-                                _buildLinkedGalleriesSection(context, scene),
-                                _buildMoreFromStudioSection(context, scene),
-                                _buildMoreFromPerformersSections(
-                                  context,
-                                  scene,
-                                ),
-                              ],
-                            ),
+                          child: DetailPageScrollView(
+                            children: [
+                              _buildTagsSection(context, scene),
+                              _buildMarkersSection(context, scene),
+                              _buildPerformersSection(context, scene),
+                              _buildGroupsSection(context, scene),
+                              _buildLinkedGalleriesSection(context, scene),
+                              _buildMoreFromStudioSection(context, scene),
+                              ..._buildMoreFromPerformersSections(
+                                context,
+                                scene,
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -872,35 +855,23 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       sceneDetailsProvider(widget.sceneId).future,
                     );
                   },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SceneVideoPlayer(
-                          key: _playerKey,
-                          scene: scene,
-                          autoPlayOnMount: widget.autoPlayOnMount,
-                          maxHeight: safeMaxHeight,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildMainInfo(context, scene),
-                              _buildTagsSection(context, scene),
-                              _buildMarkersSection(context, scene),
-                              _buildPerformersSection(context, scene),
-                              _buildGroupsSection(context, scene),
-                              _buildLinkedGalleriesSection(context, scene),
-                              _buildMoreFromStudioSection(context, scene),
-                              _buildMoreFromPerformersSections(context, scene),
-                            ],
-                          ),
-                        ),
-                      ],
+                  child: DetailPageScrollView(
+                    header: SceneVideoPlayer(
+                      key: _playerKey,
+                      scene: scene,
+                      autoPlayOnMount: widget.autoPlayOnMount,
+                      maxHeight: safeMaxHeight,
                     ),
+                    children: [
+                      _buildMainInfo(context, scene),
+                      _buildTagsSection(context, scene),
+                      _buildMarkersSection(context, scene),
+                      _buildPerformersSection(context, scene),
+                      _buildGroupsSection(context, scene),
+                      _buildLinkedGalleriesSection(context, scene),
+                      _buildMoreFromStudioSection(context, scene),
+                      ..._buildMoreFromPerformersSections(context, scene),
+                    ],
                   ),
                 );
               },
@@ -1854,7 +1825,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildMoreFromPerformersSections(BuildContext context, Scene scene) {
+  List<Widget> _buildMoreFromPerformersSections(
+    BuildContext context,
+    Scene scene,
+  ) {
     final sections = <Widget>[];
 
     for (var index = 0; index < scene.performerIds.length; index++) {
@@ -1910,7 +1884,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       if (section != null) sections.add(section);
     }
 
-    return Column(children: sections);
+    return sections;
   }
 
   Widget _buildChip(

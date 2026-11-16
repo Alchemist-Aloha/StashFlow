@@ -16,6 +16,7 @@ import '../providers/studio_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/detail_page_scroll_view.dart';
 import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
@@ -157,21 +158,16 @@ class StudioDetailsPage extends ConsumerWidget {
                 ),
               ]);
             },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              // Content passes behind the frosted mini player; this inset keeps
-              // the last rows reachable while the player is visible.
+            child: DetailPageScrollView(
               padding: EdgeInsets.only(
                 top: topInset,
                 bottom: MediaQuery.paddingOf(context).bottom,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (studio.imagePath != null &&
+              header:
+                  studio.imagePath != null &&
                       studio.imagePath!.isNotEmpty &&
-                      !studio.imagePath!.contains('default=true'))
-                    Container(
+                      !studio.imagePath!.contains('default=true')
+                  ? Container(
                       height: 200,
                       width: double.infinity,
                       color: context.colors.surfaceVariant,
@@ -180,300 +176,267 @@ class StudioDetailsPage extends ConsumerWidget {
                         fit: BoxFit.contain,
                         memCacheWidth: 600,
                       ),
+                    )
+                  : null,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        studio.name,
+                        style: context.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: context.colors.onSurface,
+                        ),
+                      ),
                     ),
-                  Padding(
-                    padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                studio.name,
-                                style: context.textTheme.headlineMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: context.colors.onSurface,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: context.dimensions.spacingSmall),
-                        Row(
-                          key: const Key('studio_actions'),
-                          children: [
-                            IconButton(
-                              key: const Key('studio_action_favorite'),
-                              icon: Icon(
-                                studio.favorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                              ),
-                              tooltip: studio.favorite
-                                  ? context.l10n.common_remove_favorite
-                                  : context.l10n.common_add_favorite,
-                              onPressed: () async {
-                                try {
-                                  await ref
-                                      .read(studioRepositoryProvider)
-                                      .setStudioFavorite(
-                                        studio.id,
-                                        !studio.favorite,
-                                      );
-                                  ref.invalidate(
-                                    studioDetailsProvider(studio.id),
-                                  );
-                                  ref.invalidate(studioListProvider);
-                                } on Object catch (e, stackTrace) {
-                                  AppLogStore.instance.addError(
-                                    'build',
-                                    e,
-                                    stackTrace,
-                                    source: 'studio_details_page',
-                                  );
-                                  // This operation also reports invalid results through StateError.
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          context.l10n
-                                              .details_failed_update_favorite(
-                                                e.toString(),
-                                              ),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                            ),
-                            SizedBox(width: context.dimensions.spacingSmall),
-                            RatingButton(
-                              key: const Key('studio_action_rating'),
-                              rating100: studio.rating100,
-                              onRatingSelected: (rating) =>
-                                  _updateRating(context, ref, studio, rating),
-                            ),
-                            SizedBox(width: context.dimensions.spacingSmall),
-                            IconButton(
-                              key: const Key('studio_action_edit'),
-                              tooltip: context.l10n.common_edit,
-                              icon: const Icon(Icons.edit_outlined),
-                              onPressed: () => context.push(
-                                '/studios/studio/${studio.id}/edit',
-                                extra: studio,
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (studio.aliases.isNotEmpty) ...[
-                          SizedBox(height: context.dimensions.spacingSmall),
-                          MetaRow(
-                            label: context.l10n.common_aliases,
-                            value: studio.aliases.join(', '),
-                          ),
-                        ],
-                        if (studio.tags.isNotEmpty) ...[
-                          SizedBox(height: context.dimensions.spacingMedium),
-                          _buildSectionContainer(
-                            context,
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SectionHeader(
-                                  title: context.l10n.details_tags,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                SizedBox(
-                                  height: context.dimensions.spacingSmall,
-                                ),
-                                EntityLinkChips(
-                                  links: [
-                                    for (final tag in studio.tags)
-                                      (
-                                        label: tag.name,
-                                        route: '/tags/tag/${tag.id}',
-                                      ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        if (studio.urls.isNotEmpty)
-                          _buildSectionContainer(
-                            context,
-                            // The server may repeat a URL; list each once.
-                            EntityLinksSection(
-                              urls: studio.urls.toSet().toList(),
-                            ),
-                          ),
-                        if (studio.details != null &&
-                            studio.details!.trim().isNotEmpty) ...[
-                          SizedBox(height: context.dimensions.spacingMedium),
-                          _buildSectionContainer(
-                            context,
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SectionHeader(
-                                  title: context.l10n.common_details,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                SizedBox(
-                                  height: context.dimensions.spacingSmall,
-                                ),
-                                Text(
-                                  studio.details!,
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
+                  ],
+                ),
+                SizedBox(height: context.dimensions.spacingSmall),
+                Row(
+                  key: const Key('studio_actions'),
+                  children: [
+                    IconButton(
+                      key: const Key('studio_action_favorite'),
+                      icon: Icon(
+                        studio.favorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                      ),
+                      tooltip: studio.favorite
+                          ? context.l10n.common_remove_favorite
+                          : context.l10n.common_add_favorite,
+                      onPressed: () async {
+                        try {
+                          await ref
+                              .read(studioRepositoryProvider)
+                              .setStudioFavorite(studio.id, !studio.favorite);
+                          ref.invalidate(studioDetailsProvider(studio.id));
+                          ref.invalidate(studioListProvider);
+                        } on Object catch (e, stackTrace) {
+                          AppLogStore.instance.addError(
+                            'build',
+                            e,
+                            stackTrace,
+                            source: 'studio_details_page',
+                          );
+                          // This operation also reports invalid results through StateError.
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  context.l10n.details_failed_update_favorite(
+                                    e.toString(),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        if (studio.parentStudio != null ||
-                            studio.childStudios.isNotEmpty) ...[
-                          SizedBox(height: context.dimensions.spacingMedium),
-                          _buildHierarchySection(context, studio),
-                        ],
-                        SizedBox(height: context.dimensions.spacingMedium),
-                        _buildSectionContainer(
-                          context,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SectionHeader(
-                                title: context.l10n.details_media,
-                                onViewAll: () => context.push(
-                                  '/studios/studio/${studio.id}/media',
-                                ),
-                                padding: EdgeInsets.zero,
-                              ),
-                              mediaAsync.when(
-                                data: (scenes) {
-                                  if (scenes.isEmpty) {
-                                    return Padding(
-                                      padding: EdgeInsets.only(
-                                        top: context.dimensions.spacingSmall,
-                                      ),
-                                      child: Text(
-                                        context.l10n.common_no_media_found,
-                                        style: context.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: context
-                                                  .colors
-                                                  .onSurfaceVariant,
-                                            ),
-                                      ),
-                                    );
-                                  }
-                                  return Padding(
-                                    padding: EdgeInsets.only(
-                                      top: context.dimensions.spacingMedium,
-                                    ),
-                                    child: SceneStrip(
-                                      scenes: scenes,
-                                      queueId: PlaybackQueueIds.studioStrip(
-                                        studio.id,
-                                      ),
-                                      onTap: (scene) => context.push(
-                                        '/scenes/scene/${scene.id}',
-                                        extra: true,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                loading: () => const SizedBox(
-                                  height: 100,
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                                error: (err, stack) => Text(
-                                  context.l10n.common_error(err.toString()),
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        galleriesAsync.when(
-                          data: (galleries) {
-                            if (galleries.isEmpty) {
-                              return const SizedBox.shrink();
-                            }
-                            return _buildSectionContainer(
-                              context,
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SectionHeader(
-                                    title: context.l10n.details_galleries,
-                                    onViewAll: () => context.push(
-                                      '/studios/studio/${studio.id}/galleries',
-                                    ),
-                                    padding: EdgeInsets.zero,
-                                  ),
-                                  SizedBox(
-                                    height: context.dimensions.spacingMedium,
-                                  ),
-                                  GalleryStrip(
-                                    galleries: galleries,
-                                    onTap: (gallery) {
-                                      unawaited(
-                                        context.push(
-                                          galleryLocation(context, gallery.id),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
                               ),
                             );
-                          },
-                          loading: () => const SizedBox(
-                            height: 100,
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
-                          error: (err, stack) => Text(
-                            context.l10n.common_error(err.toString()),
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                            ),
-                          ),
+                          }
+                        }
+                      },
+                    ),
+                    SizedBox(width: context.dimensions.spacingSmall),
+                    RatingButton(
+                      key: const Key('studio_action_rating'),
+                      rating100: studio.rating100,
+                      onRatingSelected: (rating) =>
+                          _updateRating(context, ref, studio, rating),
+                    ),
+                    SizedBox(width: context.dimensions.spacingSmall),
+                    IconButton(
+                      key: const Key('studio_action_edit'),
+                      tooltip: context.l10n.common_edit,
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () => context.push(
+                        '/studios/studio/${studio.id}/edit',
+                        extra: studio,
+                      ),
+                    ),
+                  ],
+                ),
+                if (studio.aliases.isNotEmpty) ...[
+                  SizedBox(height: context.dimensions.spacingSmall),
+                  MetaRow(
+                    label: context.l10n.common_aliases,
+                    value: studio.aliases.join(', '),
+                  ),
+                ],
+                if (studio.tags.isNotEmpty) ...[
+                  SizedBox(height: context.dimensions.spacingMedium),
+                  _buildSectionContainer(
+                    context,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: context.l10n.details_tags,
+                          padding: EdgeInsets.zero,
                         ),
-                        for (final (kind, title, icon) in [
-                          (
-                            RelatedEntityKind.performers,
-                            context.l10n.performers_title,
-                            Icons.person_outline,
-                          ),
-                          (
-                            RelatedEntityKind.groups,
-                            context.l10n.groups_title,
-                            Icons.group_work,
-                          ),
-                        ])
-                          RelatedEntitiesSection(
-                            title: title,
-                            fallbackIcon: icon,
-                            query: (
-                              kind: kind,
-                              owner: RelatedEntityOwner.studio,
-                              id: studio.id,
-                            ),
-                          ),
+                        SizedBox(height: context.dimensions.spacingSmall),
+                        EntityLinkChips(
+                          links: [
+                            for (final tag in studio.tags)
+                              (label: tag.name, route: '/tags/tag/${tag.id}'),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ],
-              ),
+                if (studio.urls.isNotEmpty)
+                  _buildSectionContainer(
+                    context,
+                    // The server may repeat a URL; list each once.
+                    EntityLinksSection(urls: studio.urls.toSet().toList()),
+                  ),
+                if (studio.details != null &&
+                    studio.details!.trim().isNotEmpty) ...[
+                  SizedBox(height: context.dimensions.spacingMedium),
+                  _buildSectionContainer(
+                    context,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: context.l10n.common_details,
+                          padding: EdgeInsets.zero,
+                        ),
+                        SizedBox(height: context.dimensions.spacingSmall),
+                        Text(
+                          studio.details!,
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (studio.parentStudio != null ||
+                    studio.childStudios.isNotEmpty) ...[
+                  SizedBox(height: context.dimensions.spacingMedium),
+                  _buildHierarchySection(context, studio),
+                ],
+                SizedBox(height: context.dimensions.spacingMedium),
+                _buildSectionContainer(
+                  context,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SectionHeader(
+                        title: context.l10n.details_media,
+                        onViewAll: () =>
+                            context.push('/studios/studio/${studio.id}/media'),
+                        padding: EdgeInsets.zero,
+                      ),
+                      mediaAsync.when(
+                        data: (scenes) {
+                          if (scenes.isEmpty) {
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                top: context.dimensions.spacingSmall,
+                              ),
+                              child: Text(
+                                context.l10n.common_no_media_found,
+                                style: context.textTheme.bodySmall?.copyWith(
+                                  color: context.colors.onSurfaceVariant,
+                                ),
+                              ),
+                            );
+                          }
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              top: context.dimensions.spacingMedium,
+                            ),
+                            child: SceneStrip(
+                              scenes: scenes,
+                              queueId: PlaybackQueueIds.studioStrip(studio.id),
+                              onTap: (scene) => context.push(
+                                '/scenes/scene/${scene.id}',
+                                extra: true,
+                              ),
+                            ),
+                          );
+                        },
+                        loading: () => const SizedBox(
+                          height: 100,
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                        error: (err, stack) => Text(
+                          context.l10n.common_error(err.toString()),
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                galleriesAsync.when(
+                  data: (galleries) {
+                    if (galleries.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return _buildSectionContainer(
+                      context,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SectionHeader(
+                            title: context.l10n.details_galleries,
+                            onViewAll: () => context.push(
+                              '/studios/studio/${studio.id}/galleries',
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                          SizedBox(height: context.dimensions.spacingMedium),
+                          GalleryStrip(
+                            galleries: galleries,
+                            onTap: (gallery) {
+                              unawaited(
+                                context.push(
+                                  galleryLocation(context, gallery.id),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  loading: () => const SizedBox(
+                    height: 100,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (err, stack) => Text(
+                    context.l10n.common_error(err.toString()),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                for (final (kind, title, icon) in [
+                  (
+                    RelatedEntityKind.performers,
+                    context.l10n.performers_title,
+                    Icons.person_outline,
+                  ),
+                  (
+                    RelatedEntityKind.groups,
+                    context.l10n.groups_title,
+                    Icons.group_work,
+                  ),
+                ])
+                  RelatedEntitiesSection(
+                    title: title,
+                    fallbackIcon: icon,
+                    query: (
+                      kind: kind,
+                      owner: RelatedEntityOwner.studio,
+                      id: studio.id,
+                    ),
+                  ),
+              ],
             ),
           );
         },

@@ -5,6 +5,7 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/providers/related_entities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/frosted_app_bar.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/meta_row.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/section_header.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/related_entities.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
@@ -63,6 +64,63 @@ class _RatingPerformerRepository extends MockGraphQLPerformerRepository {
 }
 
 void main() {
+  testWidgets('below-fold related sections wait until scrolling near them', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    var relatedRequests = 0;
+    final performer = _performer.copyWith(
+      tagIds: List.generate(40, (index) => 'tag-$index'),
+      tagNames: List.generate(40, (index) => 'Descriptive tag $index'),
+    );
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        performerDetailsProvider(performer.id).overrideWith((ref) => performer),
+        entityMediaPreviewProvider(
+          EntityMediaFilterKind.performer,
+          performer.id,
+        ).overrideWith((ref) => []),
+        entityGalleryPreviewProvider(
+          EntityGalleryFilterKind.performer,
+          performer.id,
+        ).overrideWith((ref) => []),
+        relatedEntitiesProvider((
+          kind: RelatedEntityKind.performers,
+          owner: RelatedEntityOwner.performer,
+          id: performer.id,
+        )).overrideWith((ref) {
+          relatedRequests++;
+          return [
+            (
+              id: 'related',
+              title: 'Related actor',
+              subtitle: null,
+              imagePath: null,
+              route: '/performers/performer/related',
+            ),
+          ];
+        }),
+      ],
+      child: PerformerDetailsPage(performerId: performer.id),
+    );
+    await tester.pumpAndSettle();
+
+    expect(relatedRequests, 0);
+    expect(find.byType(RelatedEntitiesSection), findsNothing);
+    await tester.scrollUntilVisible(
+      find.text('Related actor'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(relatedRequests, 1);
+    expect(find.text('Related actor'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'performer rating confirms, clears, and retains value on failure',
     (tester) async {
@@ -237,11 +295,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(FrostedAppBar), findsOneWidget);
-    final scrollView = find.byType(SingleChildScrollView).first;
+    final scrollView = find.byType(ListView).first;
     // The scroll view runs behind the bar; its content starts below it.
     expect(tester.getTopLeft(scrollView).dy, 0);
     final content = find
-        .descendant(of: scrollView, matching: find.byType(Column))
+        .descendant(of: scrollView, matching: find.byType(StashImage))
         .first;
     expect(
       tester.getTopLeft(content).dy,
@@ -401,6 +459,8 @@ void main() {
         of: header,
         matching: find.text('Show less'),
       );
+      await Scrollable.ensureVisible(tester.element(collapse), alignment: 0.25);
+      await tester.pumpAndSettle();
       await tester.tap(collapse);
       await tester.pumpAndSettle();
       expect(tester.widget<Text>(text).maxLines, 4);
@@ -485,8 +545,28 @@ void main() {
       child: const PerformerDetailsPage(performerId: 'performer-1'),
     );
     await tester.pumpAndSettle();
-    final peers = find.widgetWithText(RelatedEntitiesSection, 'Appears With');
-    final groups = find.widgetWithText(RelatedEntitiesSection, 'Groups');
+    final peers = find.widgetWithText(
+      RelatedEntitiesSection,
+      'Appears With',
+      skipOffstage: false,
+    );
+    final groups = find.widgetWithText(
+      RelatedEntitiesSection,
+      'Groups',
+      skipOffstage: false,
+    );
+    expect(find.byType(MetaRow), findsNWidgets(5));
+    expect(find.text('Biography after the attributes.'), findsNothing);
+    await tester.scrollUntilVisible(
+      find.text('Groups'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.scrollUntilVisible(
+      find.text('Appears With'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     final rows = find.descendant(
       of: peers,
       matching: find.byType(RelatedEntityTile),
@@ -496,8 +576,7 @@ void main() {
       find.descendant(of: groups, matching: find.byType(RelatedEntityTile)),
       findsNWidgets(7),
     );
-    expect(find.byType(MetaRow), findsNWidgets(5));
-    expect(find.text('Biography after the attributes.'), findsNothing);
+    expect(find.byType(MetaRow, skipOffstage: false), findsNWidgets(5));
     final expand = find.descendant(of: peers, matching: find.text('Show more'));
     await tester.ensureVisible(expand);
     expect(
@@ -507,7 +586,7 @@ void main() {
     await tester.tap(expand);
     await tester.pumpAndSettle();
     expect(rows, findsNWidgets(7));
-    expect(find.byType(MetaRow), findsNWidgets(5));
+    expect(find.byType(MetaRow, skipOffstage: false), findsNWidgets(5));
     final collapse = find.descendant(
       of: peers,
       matching: find.text('Show less'),
@@ -516,9 +595,19 @@ void main() {
     await tester.pumpAndSettle();
     expect(rows, findsNWidgets(5));
 
+    tester
+        .state<ScrollableState>(find.byType(Scrollable).first)
+        .position
+        .jumpTo(0);
+    await tester.pumpAndSettle();
     final detailsExpand = find.descendant(
       of: find.byKey(const Key('performer_details_header')),
       matching: find.text('Show more'),
+    );
+    await tester.scrollUntilVisible(
+      detailsExpand,
+      200,
+      scrollable: find.byType(Scrollable).first,
     );
     await Scrollable.ensureVisible(
       tester.element(detailsExpand),
@@ -528,6 +617,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(MetaRow), findsNWidgets(6));
     expect(find.text('Biography after the attributes.'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Appears With'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(rows, findsNWidgets(5));
   });
 

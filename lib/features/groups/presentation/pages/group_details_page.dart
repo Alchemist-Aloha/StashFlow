@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/widgets/entity_links_section.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/detail_page_scroll_view.dart';
 import '../../../../core/presentation/widgets/meta_row.dart';
 import '../../../../core/presentation/widgets/related_entities.dart';
 import '../../../../core/utils/format_duration.dart';
@@ -70,195 +71,163 @@ class GroupDetailsPage extends ConsumerWidget {
               ),
             ]);
           },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            // Content passes behind the frosted mini player; this inset keeps
-            // the last rows reachable while the player is visible.
+          child: DetailPageScrollView(
             padding: EdgeInsets.only(
               top: topInset,
               bottom: MediaQuery.paddingOf(context).bottom,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _GroupCovers(group: group),
-                Padding(
-                  padding: EdgeInsets.all(dims.spacingMedium),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        group.name.isEmpty
-                            ? context.l10n.groups_untitled
-                            : group.name,
-                        style: context.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: context.colors.onSurface,
-                        ),
-                      ),
-                      SizedBox(height: dims.spacingMedium),
-                      Wrap(
-                        spacing: dims.spacingSmall,
-                        runSpacing: dims.spacingSmall,
-                        children: [
-                          if (group.date != null)
-                            _buildChip(context, group.date!),
-                          if (group.director != null &&
-                              group.director!.isNotEmpty)
-                            _buildChip(context, group.director!),
-                          if (group.duration case final duration?
-                              when duration > 0)
-                            _buildChip(
-                              context,
-                              formatClockDuration(duration),
-                              icon: Icons.timer_outlined,
-                            ),
-                          if (group.rating100 != null)
-                            _buildChip(
-                              context,
-                              (group.rating100! / 20).toStringAsFixed(1),
-                              icon: Icons.star,
-                              iconColor: context.colors.ratingColor,
-                            ),
-                        ],
-                      ),
-                      if (group.aliases case final aliases?
-                          when aliases.trim().isNotEmpty) ...[
-                        SizedBox(height: dims.spacingSmall),
-                        MetaRow(
-                          label: context.l10n.common_aliases,
-                          value: aliases,
-                        ),
-                      ],
-                      if (group.studioId case final studioId?)
-                        RelatedEntityTile(
-                          title: group.studioName ?? studioId,
-                          route: '/studios/studio/$studioId',
-                          imagePath: group.studioImagePath,
-                          fallbackIcon: Icons.business_outlined,
-                        ),
-                      SizedBox(height: dims.spacingMedium),
-                      if (group.tags.isNotEmpty)
-                        SectionPanel(
-                          margin: sectionMargin,
-                          title: context.l10n.details_tags,
-                          child: EntityLinkChips(
-                            links: [
-                              for (final tag in group.tags)
-                                (label: tag.name, route: '/tags/tag/${tag.id}'),
-                            ],
-                          ),
-                        ),
-                      if (group.synopsis != null &&
-                          group.synopsis!.isNotEmpty) ...[
-                        SectionPanel(
-                          margin: sectionMargin,
-                          title: context.l10n.details_synopsis,
-                          child: Text(
-                            group.synopsis!,
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (group.urls.isNotEmpty)
-                        SectionPanel(
-                          margin: sectionMargin,
-                          child: EntityLinksSection(urls: group.urls),
-                        ),
-                      for (final (title, relations) in [
-                        (
-                          context.l10n.groups_field_containing_groups,
-                          group.containingGroups,
-                        ),
-                        (context.l10n.groups_field_sub_groups, group.subGroups),
-                      ])
-                        if (relations.isNotEmpty)
-                          SectionPanel(
-                            margin: sectionMargin,
-                            title: title,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                for (final relation in relations)
-                                  RelatedEntityTile(
-                                    title: relation.name.isEmpty
-                                        ? context.l10n.groups_untitled
-                                        : relation.name,
-                                    subtitle: relation.description,
-                                    route: '/groups/group/${relation.id}',
-                                    imagePath: relation.imagePath,
-                                    fallbackIcon: Icons.group_work,
-                                  ),
-                              ],
-                            ),
-                          ),
-                      SizedBox(height: dims.spacingMedium),
-                      SectionPanel(
-                        margin: sectionMargin,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SectionHeader(
-                              title: context.l10n.details_media,
-                              onViewAll: () => context.push(
-                                '/groups/group/${group.id}/media',
-                              ),
-                              padding: EdgeInsets.zero,
-                            ),
-                            mediaAsync.when(
-                              data: (scenes) {
-                                if (scenes.isEmpty) {
-                                  return Padding(
-                                    padding: EdgeInsets.all(dims.spacingSmall),
-                                    child: Text(
-                                      context.l10n.common_no_media_found,
-                                      style: context.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color:
-                                                context.colors.onSurfaceVariant,
-                                          ),
-                                    ),
-                                  );
-                                }
-                                return Padding(
-                                  padding: EdgeInsets.only(
-                                    top: dims.spacingMedium,
-                                  ),
-                                  child: SceneStrip(
-                                    scenes: scenes,
-                                    queueId: PlaybackQueueIds.groupStrip(
-                                      group.id,
-                                    ),
-                                    onTap: (scene) => context.push(
-                                      '/scenes/scene/${scene.id}',
-                                      extra: true,
-                                    ),
-                                  ),
-                                );
-                              },
-                              loading: () => SizedBox(
-                                height: 100 * dims.fontSizeFactor,
-                                child: const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ),
-                              error: (err, stack) => Text(
-                                context.l10n.common_error(err.toString()),
-                                style: context.textTheme.bodyMedium?.copyWith(
-                                  color: context.colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+            header: _GroupCovers(group: group),
+            children: [
+              Text(
+                group.name.isEmpty ? context.l10n.groups_untitled : group.name,
+                style: context.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: context.colors.onSurface,
+                ),
+              ),
+              SizedBox(height: dims.spacingMedium),
+              Wrap(
+                spacing: dims.spacingSmall,
+                runSpacing: dims.spacingSmall,
+                children: [
+                  if (group.date != null) _buildChip(context, group.date!),
+                  if (group.director != null && group.director!.isNotEmpty)
+                    _buildChip(context, group.director!),
+                  if (group.duration case final duration? when duration > 0)
+                    _buildChip(
+                      context,
+                      formatClockDuration(duration),
+                      icon: Icons.timer_outlined,
+                    ),
+                  if (group.rating100 != null)
+                    _buildChip(
+                      context,
+                      (group.rating100! / 20).toStringAsFixed(1),
+                      icon: Icons.star,
+                      iconColor: context.colors.ratingColor,
+                    ),
+                ],
+              ),
+              if (group.aliases case final aliases?
+                  when aliases.trim().isNotEmpty) ...[
+                SizedBox(height: dims.spacingSmall),
+                MetaRow(label: context.l10n.common_aliases, value: aliases),
+              ],
+              if (group.studioId case final studioId?)
+                RelatedEntityTile(
+                  title: group.studioName ?? studioId,
+                  route: '/studios/studio/$studioId',
+                  imagePath: group.studioImagePath,
+                  fallbackIcon: Icons.business_outlined,
+                ),
+              SizedBox(height: dims.spacingMedium),
+              if (group.tags.isNotEmpty)
+                SectionPanel(
+                  margin: sectionMargin,
+                  title: context.l10n.details_tags,
+                  child: EntityLinkChips(
+                    links: [
+                      for (final tag in group.tags)
+                        (label: tag.name, route: '/tags/tag/${tag.id}'),
                     ],
                   ),
                 ),
+              if (group.synopsis != null && group.synopsis!.isNotEmpty) ...[
+                SectionPanel(
+                  margin: sectionMargin,
+                  title: context.l10n.details_synopsis,
+                  child: Text(
+                    group.synopsis!,
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
               ],
-            ),
+              if (group.urls.isNotEmpty)
+                SectionPanel(
+                  margin: sectionMargin,
+                  child: EntityLinksSection(urls: group.urls),
+                ),
+              for (final (title, relations) in [
+                (
+                  context.l10n.groups_field_containing_groups,
+                  group.containingGroups,
+                ),
+                (context.l10n.groups_field_sub_groups, group.subGroups),
+              ])
+                if (relations.isNotEmpty)
+                  SectionPanel(
+                    margin: sectionMargin,
+                    title: title,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (final relation in relations)
+                          RelatedEntityTile(
+                            title: relation.name.isEmpty
+                                ? context.l10n.groups_untitled
+                                : relation.name,
+                            subtitle: relation.description,
+                            route: '/groups/group/${relation.id}',
+                            imagePath: relation.imagePath,
+                            fallbackIcon: Icons.group_work,
+                          ),
+                      ],
+                    ),
+                  ),
+              SizedBox(height: dims.spacingMedium),
+              SectionPanel(
+                margin: sectionMargin,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SectionHeader(
+                      title: context.l10n.details_media,
+                      onViewAll: () =>
+                          context.push('/groups/group/${group.id}/media'),
+                      padding: EdgeInsets.zero,
+                    ),
+                    mediaAsync.when(
+                      data: (scenes) {
+                        if (scenes.isEmpty) {
+                          return Padding(
+                            padding: EdgeInsets.all(dims.spacingSmall),
+                            child: Text(
+                              context.l10n.common_no_media_found,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color: context.colors.onSurfaceVariant,
+                              ),
+                            ),
+                          );
+                        }
+                        return Padding(
+                          padding: EdgeInsets.only(top: dims.spacingMedium),
+                          child: SceneStrip(
+                            scenes: scenes,
+                            queueId: PlaybackQueueIds.groupStrip(group.id),
+                            onTap: (scene) => context.push(
+                              '/scenes/scene/${scene.id}',
+                              extra: true,
+                            ),
+                          ),
+                        );
+                      },
+                      loading: () => SizedBox(
+                        height: 100 * dims.fontSizeFactor,
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
+                      error: (err, stack) => Text(
+                        context.l10n.common_error(err.toString()),
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
