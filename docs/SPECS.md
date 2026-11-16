@@ -487,6 +487,12 @@ The scene media section exposes cover and preview content only when available.
 Cover images open the dedicated fullscreen cover viewer with zoom/pan and a
 predictable exit gesture/action.
 
+Scene Details lists the groups a scene belongs to, after Performers, each with
+the scene's number in that group (`#N`). Scene info's Details card adds studio
+code, director, last played, created and updated times (local time zone and
+locale), stash IDs, and custom fields when present; the Technical card lists
+every file fingerprint by type.
+
 Performer rows may display age derived from the performer's birthdate and the
 scene date. Full birthdates account for whether the birthday had occurred;
 year-only birthdates use calendar-year subtraction. Invalid, missing, or

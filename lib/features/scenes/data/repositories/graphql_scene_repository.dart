@@ -439,6 +439,30 @@ class GraphQLSceneRepository {
       tagIds: s.tags.map((t) => t.id).toList(),
       tagNames: s.tags.map((t) => t.name).toList(),
       markers: _mapSceneMarkers(rawScene?['scene_markers']),
+      code: s.code,
+      director: s.director,
+      createdAt: s.created_at,
+      updatedAt: s.updated_at,
+      lastPlayedAt: s.last_played_at,
+      customFields: s.custom_fields,
+      stashIds: s.stash_ids
+          .map(
+            (id) => SceneStashId(endpoint: id.endpoint, stashId: id.stash_id),
+          )
+          .toList(),
+      groups: s.groups
+          .map(
+            (membership) => SceneGroupMembership(
+              id: membership.group.id,
+              name: membership.group.name,
+              imagePath: resolveGraphqlMediaUrl(
+                rawUrl: membership.group.front_image_path,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
+              sceneIndex: membership.scene_index,
+            ),
+          )
+          .toList(),
     );
   }
 

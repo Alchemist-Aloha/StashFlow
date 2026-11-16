@@ -42,6 +42,15 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
   String _formatDuration(double? seconds) =>
       seconds == null ? '--:--' : formatClockDuration(seconds);
 
+  /// Formats a server timestamp in the local time zone and locale.
+  String? _formatTimestamp(BuildContext context, String? raw) {
+    final parsed = raw == null ? null : DateTime.tryParse(raw)?.toLocal();
+    if (parsed == null) return raw;
+    final localizations = MaterialLocalizations.of(context);
+    return '${localizations.formatMediumDate(parsed)} '
+        '${localizations.formatTimeOfDay(TimeOfDay.fromDateTime(parsed))}';
+  }
+
   @override
   void dispose() {
     _showAllTags.dispose();
@@ -300,6 +309,38 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                           : '--',
                       selectable: true,
                     ),
+                    for (final (label, value) in [
+                      (context.l10n.scenes_field_code, scene.code),
+                      (context.l10n.scenes_field_director, scene.director),
+                      (
+                        context.l10n.scenes_field_last_played_at,
+                        _formatTimestamp(context, scene.lastPlayedAt),
+                      ),
+                      (
+                        context.l10n.sort_created_at,
+                        _formatTimestamp(context, scene.createdAt),
+                      ),
+                      (
+                        context.l10n.sort_updated_at,
+                        _formatTimestamp(context, scene.updatedAt),
+                      ),
+                      if (scene.stashIds.isNotEmpty)
+                        (
+                          context.l10n.common_stash_id,
+                          scene.stashIds
+                              .map((id) => '${id.stashId}\n${id.endpoint}')
+                              .join('\n'),
+                        ),
+                      if (scene.customFields.isNotEmpty)
+                        (
+                          context.l10n.filter_custom_fields,
+                          scene.customFields.entries
+                              .map((field) => '${field.key}: ${field.value}')
+                              .join('\n'),
+                        ),
+                    ])
+                      if (value != null && value.trim().isNotEmpty)
+                        MetaRow(label: label, value: value, selectable: true),
                     if (hasDetails) ...[
                       const SizedBox(height: 8),
                       SelectableText(
@@ -344,6 +385,13 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                       label: context.l10n.scene_info_format,
                       value: file?.format ?? '--',
                     ),
+                    for (final fingerprint
+                        in file?.fingerprints ?? const <Fingerprint>[])
+                      MetaRow(
+                        label: fingerprint.type.toUpperCase(),
+                        value: fingerprint.value,
+                        selectable: true,
+                      ),
                     MetaRow(
                       label: context.l10n.scene_info_video_codec,
                       value: file?.videoCodec ?? '--',

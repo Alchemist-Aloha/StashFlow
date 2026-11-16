@@ -27,6 +27,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/related_entities.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
@@ -848,6 +849,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                 _buildTagsSection(context, scene),
                                 _buildMarkersSection(context, scene),
                                 _buildPerformersSection(context, scene),
+                                _buildGroupsSection(context, scene),
                                 _buildLinkedGalleriesSection(context, scene),
                                 _buildMoreFromStudioSection(context, scene),
                                 _buildMoreFromPerformersSections(
@@ -895,6 +897,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                               _buildTagsSection(context, scene),
                               _buildMarkersSection(context, scene),
                               _buildPerformersSection(context, scene),
+                              _buildGroupsSection(context, scene),
                               _buildLinkedGalleriesSection(context, scene),
                               _buildMoreFromStudioSection(context, scene),
                               _buildMoreFromPerformersSections(context, scene),
@@ -1445,6 +1448,35 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         ],
       ),
       key: const Key('scene_details_section'),
+    );
+  }
+
+  /// Groups the scene belongs to, each with the scene's number in it.
+  Widget _buildGroupsSection(BuildContext context, Scene scene) {
+    if (scene.groups.isEmpty) return const SizedBox.shrink();
+    return _buildSectionContainer(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            title: context.l10n.groups_title,
+            padding: EdgeInsets.zero,
+          ),
+          for (final group in scene.groups)
+            RelatedEntityTile(
+              title: group.name.isEmpty
+                  ? context.l10n.groups_untitled
+                  : group.name,
+              subtitle: group.sceneIndex == null
+                  ? null
+                  : '#${group.sceneIndex}',
+              route: '/groups/group/${group.id}',
+              imagePath: group.imagePath,
+              fallbackIcon: Icons.group_work,
+            ),
+        ],
+      ),
     );
   }
 

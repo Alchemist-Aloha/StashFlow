@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/related_entities.dart';
 import 'package:stash_app_flutter/core/data/preferences/one_time_tips.dart';
 import 'package:go_router/go_router.dart';
 import 'package:media_kit/media_kit.dart' as mk;
@@ -139,6 +140,41 @@ void main() {
 
     expect(find.byType(GalleryStrip), findsOneWidget);
     expect(find.text('Linked Gallery'), findsOneWidget);
+  });
+
+  testWidgets('SceneDetailsPage lists groups with the scene number', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final scene = testScene.copyWith(
+      groups: const [
+        SceneGroupMembership(id: 'g7', name: 'Sample Shorts', sceneIndex: 4),
+      ],
+    );
+    final mockRepo = MockGraphQLSceneRepository()..withData([scene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: scene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final tile = find.widgetWithText(RelatedEntityTile, 'Sample Shorts');
+    await tester.scrollUntilVisible(
+      tile,
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(tile, findsOneWidget);
+    expect(
+      find.descendant(of: tile, matching: find.text('#4')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('SceneDetailsPage asks once for the seek method', (tester) async {
