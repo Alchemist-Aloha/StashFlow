@@ -21,7 +21,7 @@
 
 ## ⚡ Smoother Browsing
 
-- List pages now scroll underneath a frosted top bar instead of stopping below it.
+- List pages and performer, studio, tag, and group details now scroll underneath a frosted top bar instead of stopping below it.
 - With **Hide top app bar while scrolling** on, the bar now slides away and back without shifting the list, so scrolling stays smooth and cards no longer jump while it moves.
 - Scrolling list pages under their frosted top bar and bottom action bar takes less graphics work, and the app does less work when playback starts, pauses, or buffers.
 - Thumbnails in scene and gallery strips and the scene grid now load at your screen's real pixel density: sharper on high-density phones, and less memory on standard-density desktop displays.
@@ -39,9 +39,35 @@
 - Once the details scroll out of view, a compact summary with the title, rating, and image count stays pinned at the top. Its arrow button scrolls back to the full details.
 - Galleries with chapters now show them as a chip row in the header. Tap a chapter to open the viewer at its first image, regardless of the grid's current sort.
 
+## 🖼️ Image Viewer
+
+- Added an O-count button to the viewer. Tap it to add one; confirmed counts update open image lists without changing their order. Failed updates leave the count unchanged and allow retrying.
+- Rating, O-count, download, and details now sit in a collapsible row below the title. Its expanded state stays the same when changing images, running a slideshow, or hiding and showing the controls.
+- Previous, slideshow, and next controls are evenly spaced along the bottom, with the desktop fullscreen button beside slideshow.
+- Image details now show studio code, photographer, O-count, organized status, description, tags, and containing galleries. Tag and gallery links close the details sheet before navigating.
+
+## 🎬 Scene Details
+
+- Scene details now list the groups a scene belongs to, including its scene number in each group. Tap a group to open it.
+- Scene info now shows studio code, director, last-played time, creation and update times, stash IDs, custom fields, and file fingerprints when available. Timestamps use your local time zone.
+
 ## 👤 Performers
 
+- Performer details now show career dates, death date, weight, measurements, body details, tattoos, piercings, O-count, stash IDs, and custom fields when set. Attributes and biography share a compact section with **Show more / Show less**.
+- Added related groups and an **Appears With** section for co-performers. Appears With initially shows five people and expands independently of the details section.
+- Opening a performer for editing now retains their saved career start and end values.
 - Performers without a photo now show Stash's default silhouettes, tinted to the app theme, instead of a broken-image icon. Each performer keeps the same silhouette, and male performers use the male set. The performer details page now shows it too, where the image area was previously hidden.
+
+## 🗂️ Groups
+
+- Group lists now show front covers, and group details show front and back covers when available.
+- Group details now include duration, aliases, studio, tags, links, containing groups, and sub-groups, with descriptions for group relationships.
+- Group media now defaults to ascending **Scene Number in Group** instead of Random, preserving the group's intended order. Saved sort choices are kept; resetting the sort restores scene-number order.
+
+## 🔗 Tags & Studios
+
+- Tag details now show aliases, parent and child tags, and related performers, studios, groups, and markers. Tap a related item to open it; markers open their scene.
+- Studio details now show aliases, tags, all distinct links, and related performers and groups. Long link lists can be expanded with **Show more**.
 
 ## 🔐 Server Sign-in
 
