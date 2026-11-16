@@ -54,7 +54,9 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
           StashImage.prefetch(
             context,
             imageUrl: scenes[i].paths.screenshot,
-            memCacheWidth: (effectiveItemWidth * 2).toInt(),
+            memCacheWidth:
+                (effectiveItemWidth * MediaQuery.devicePixelRatioOf(context))
+                    .ceil(),
           ),
         );
       }
@@ -121,7 +123,10 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
                 StashImage.prefetch(
                   context,
                   imageUrl: scenes[ahead].paths.screenshot,
-                  memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                  memCacheWidth:
+                      (effectiveItemWidth *
+                              MediaQuery.devicePixelRatioOf(context))
+                          .ceil(),
                 ),
               );
             }
@@ -131,7 +136,10 @@ class _SceneStripState extends ConsumerState<SceneStrip> {
                 StashImage.prefetch(
                   context,
                   imageUrl: scenes[behind].paths.screenshot,
-                  memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                  memCacheWidth:
+                      (effectiveItemWidth *
+                              MediaQuery.devicePixelRatioOf(context))
+                          .ceil(),
                 ),
               );
             }

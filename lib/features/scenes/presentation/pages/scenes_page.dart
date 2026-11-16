@@ -489,7 +489,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         final itemWidth =
             (availableWidth - (AppTheme.spacingSmall * (crossAxisCount - 1))) /
             crossAxisCount;
-        return (itemWidth * 2).toInt();
+        return (itemWidth * MediaQuery.devicePixelRatioOf(context)).ceil();
       },
       customBody: isTiktokLayout
           ? TiktokScenesView(actions: sceneActions)
