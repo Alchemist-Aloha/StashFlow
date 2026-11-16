@@ -10,6 +10,7 @@ import 'package:cached_network_image_ce/src/cache/default_cache_manager.dart'
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../theme/app_theme.dart';
 import '../../data/auth/dio_image_client.dart';
@@ -34,6 +35,7 @@ class _RetryingCachedImage extends StatefulWidget {
     this.memCacheWidth,
     this.memCacheHeight,
     this.frameBuilder,
+    this.placeholderAsset,
   });
 
   final String imageUrl;
@@ -45,6 +47,7 @@ class _RetryingCachedImage extends StatefulWidget {
   final int? memCacheWidth;
   final int? memCacheHeight;
   final ImageFrameBuilder? frameBuilder;
+  final String? placeholderAsset;
   static const int maxRetries = 2;
   static const retryBackoff = Duration(seconds: 30);
   static const maxBackoffEntries = 256;
@@ -174,19 +177,62 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
     );
   }
 
-  Widget _buildError(BuildContext context) => Container(
+  Widget _buildError(BuildContext context) => _errorBox(
+    context,
     width: widget.width,
     height: widget.height,
-    color: context.colors.surfaceVariant,
-    child: Center(
-      child: Icon(
-        Icons.broken_image,
-        color: context.colors.onSurfaceVariant,
-        size: 24 * context.dimensions.fontSizeFactor,
-      ),
-    ),
+    placeholderAsset: widget.placeholderAsset,
   );
 }
+
+/// Bundled placeholder art (white on transparent), tinted with [color].
+Widget _placeholder(
+  String asset, {
+  double? width,
+  double? height,
+  required Color color,
+}) => asset.endsWith('.svg')
+    ? SvgPicture.asset(
+        asset,
+        width: width,
+        height: height,
+        colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+        excludeFromSemantics: true,
+      )
+    : Image.asset(
+        asset,
+        width: width,
+        height: height,
+        fit: BoxFit.contain,
+        color: color,
+        excludeFromSemantics: true,
+      );
+
+/// Failed-image fallback: [placeholderAsset] tinted to the theme, or an icon.
+Widget _errorBox(
+  BuildContext context, {
+  double? width,
+  double? height,
+  String? placeholderAsset,
+}) => Container(
+  width: width,
+  height: height,
+  color: context.colors.surfaceVariant,
+  child: placeholderAsset != null
+      ? _placeholder(
+          placeholderAsset,
+          width: width,
+          height: height,
+          color: context.colors.onSurfaceVariant.withValues(alpha: 0.6),
+        )
+      : Center(
+          child: Icon(
+            Icons.broken_image,
+            color: context.colors.onSurfaceVariant,
+            size: 24 * context.dimensions.fontSizeFactor,
+          ),
+        ),
+);
 
 class StashImage extends ConsumerWidget {
   static final CacheManager cacheManager = image_cache.DefaultCacheManager(
@@ -205,6 +251,7 @@ class StashImage extends ConsumerWidget {
     this.memCacheWidth,
     this.memCacheHeight,
     this.frameBuilder,
+    this.placeholderAsset,
     super.key,
   });
 
@@ -218,6 +265,11 @@ class StashImage extends ConsumerWidget {
   /// Optionally decorates decoded image frames without changing cache or retry
   /// ownership. The child excludes image semantics on both native and web.
   final ImageFrameBuilder? frameBuilder;
+
+  /// Bundled image shown instead of the broken-image icon when the URL is
+  /// missing, fails, or is Stash's SVG default (`default=true`), which Flutter
+  /// cannot decode.
+  final String? placeholderAsset;
 
   /// Returns an [ImageProvider] for the given [imageUrl], applying web-specific
   /// authentication fallbacks (apikey query parameter) when running on the web.
@@ -334,7 +386,9 @@ class StashImage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (imageUrl == null || imageUrl!.isEmpty) {
+    if (imageUrl == null ||
+        imageUrl!.isEmpty ||
+        (placeholderAsset != null && imageUrl!.contains('default=true'))) {
       return _buildError(context);
     }
 
@@ -378,6 +432,7 @@ class StashImage extends ConsumerWidget {
       memCacheWidth: memCacheWidth,
       memCacheHeight: memCacheHeight,
       frameBuilder: frameBuilder,
+      placeholderAsset: placeholderAsset,
     );
   }
 
@@ -399,18 +454,10 @@ class StashImage extends ConsumerWidget {
     );
   }
 
-  Widget _buildError(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      color: context.colors.surfaceVariant,
-      child: Center(
-        child: Icon(
-          Icons.broken_image,
-          color: context.colors.onSurfaceVariant,
-          size: 24 * context.dimensions.fontSizeFactor,
-        ),
-      ),
-    );
-  }
+  Widget _buildError(BuildContext context) => _errorBox(
+    context,
+    width: width,
+    height: height,
+    placeholderAsset: placeholderAsset,
+  );
 }

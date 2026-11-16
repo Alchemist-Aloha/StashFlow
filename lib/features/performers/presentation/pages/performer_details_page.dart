@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import '../widgets/performer_placeholder.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/utils/l10n_extensions.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../galleries/presentation/gallery_location.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/presentation/widgets/stash_image.dart';
@@ -148,19 +152,20 @@ class PerformerDetailsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (performer.imagePath != null &&
-                      performer.imagePath!.isNotEmpty &&
-                      !performer.imagePath!.contains('default=true'))
-                    Container(
-                      height: 300,
-                      width: double.infinity,
-                      color: context.colors.surfaceVariant,
-                      child: StashImage(
-                        imageUrl: performer.imagePath!,
-                        fit: BoxFit.contain,
-                        memCacheWidth: 600,
+                  Container(
+                    height: 300,
+                    width: double.infinity,
+                    color: context.colors.surfaceVariant,
+                    child: StashImage(
+                      imageUrl: performer.imagePath,
+                      placeholderAsset: performerPlaceholderAsset(
+                        performer.id,
+                        performer.gender,
                       ),
+                      fit: BoxFit.contain,
+                      memCacheWidth: 600,
                     ),
+                  ),
                   Padding(
                     padding: EdgeInsets.all(context.dimensions.spacingMedium),
                     child: Column(

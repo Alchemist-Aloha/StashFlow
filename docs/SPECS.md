@@ -351,6 +351,12 @@ serialization differences.
   freshness, 100 entries) and Dio transport with persistent session cookies.
   Web display retains its existing `Image.network` authentication fallback.
 - List and strip callers provide appropriate `memCacheWidth`/height hints.
+- Performer cards and details pass a bundled placeholder (`performerPlaceholderAsset`):
+  Stash's own default silhouettes under `asset/performer_placeholders/`, rendered
+  with `flutter_svg` and tinted to the theme. It replaces the broken-image icon
+  on missing or failed images and on Stash's `default=true` URL, whose SVG
+  response the raster decoder cannot read. Performers rotate through the set by
+  numeric id (male set for `MALE`), so each keeps the same silhouette.
 - Prefetch only the visible region plus a small forward buffer.
 - Deduplicate concurrent requests for the same URL and decode size.
 - Scene VTT sprites load only after a hover/scrub-capable interaction begins.

@@ -59,6 +59,10 @@ Future<void> main() async {
       'Whisper',
       'OPUS-MT',
     ], await rootBundle.loadString('asset/licenses/local_captions.txt'));
+    yield LicenseEntryWithLineBreaks(
+      ['Stash performer placeholders'],
+      await rootBundle.loadString('asset/licenses/performer_placeholders.txt'),
+    );
   });
 
   // TEMP perf audit hook (revert after emulator profiling).

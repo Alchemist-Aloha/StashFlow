@@ -71,6 +71,7 @@ dependencies:
     path: packages/stashflow_translation
   local_auth: ^3.0.2
   material_ui: ^1.11.0
+  flutter_svg: ^2.4.0
 
 dev_dependencies:
   msix: ^3.18.0
@@ -104,6 +105,11 @@ flutter_launcher_icons:
   image_path: "asset/stashfluttericon.png"
   min_sdk_android: 24
 
+dependency_overrides:
+  # media_kit (git) needs xml ^7.1.0; flutter_svg's vector_graphics_compiler
+  # caps xml at 7.0.1. Drop once vector_graphics_compiler allows 7.1.
+  xml: ^7.1.0
+
 flutter:
   generate: true
   uses-material-design: true
@@ -128,6 +134,9 @@ flutter:
         - asset: asset/fonts/jetbrains_mono/JetBrainsMono.ttf
   assets:
     - asset/licenses/local_captions.txt
+    - asset/licenses/performer_placeholders.txt
+    - asset/performer_placeholders/female/
+    - asset/performer_placeholders/male/
     - asset/fonts/manrope/OFL.txt
     - asset/fonts/outfit/OFL.txt
     - asset/fonts/space_grotesk/OFL.txt

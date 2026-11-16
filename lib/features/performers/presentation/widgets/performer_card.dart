@@ -1,9 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/performer.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import 'performer_placeholder.dart';
 
 class PerformerCard extends ConsumerWidget {
   const PerformerCard.skeleton({this.onTap, this.memCacheWidth, super.key})
@@ -89,6 +91,10 @@ class PerformerCard extends ConsumerWidget {
                           borderRadius: imageBorderRadius,
                           child: StashImage(
                             imageUrl: performer.imagePath ?? '',
+                            placeholderAsset: performerPlaceholderAsset(
+                              performer.id,
+                              performer.gender,
+                            ),
                             fit: BoxFit.cover,
                             memCacheWidth: memCacheWidth ?? 300,
                           ),
