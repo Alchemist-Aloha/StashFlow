@@ -100,9 +100,19 @@ void main() {
       );
       expect(sheet.options, SceneSortField.values);
       expect(sheet.commonOptions, SceneSortField.commonOptions);
-      expect(sheet.initialOption, SceneSortField.random);
-      expect(sheet.resetOption, SceneSortField.random);
-      expect(find.byType(ChoiceChip), findsNWidgets(7));
+      // Groups default to their own scene order; everything else to random.
+      final defaultOption = kind == EntityMediaFilterKind.group
+          ? SceneSortField.groupSceneNumber
+          : SceneSortField.random;
+      expect(sheet.initialOption, defaultOption);
+      expect(sheet.resetOption, defaultOption);
+      // A selected advanced field joins the common chips to stay visible.
+      expect(
+        find.byType(ChoiceChip),
+        findsNWidgets(
+          SceneSortField.commonOptions.contains(defaultOption) ? 7 : 8,
+        ),
+      );
       expect(find.widgetWithText(ChoiceChip, 'Last Played At'), findsOneWidget);
       await expandAdvanced(tester);
       expect(find.byType(ChoiceChip), findsNWidgets(31));
