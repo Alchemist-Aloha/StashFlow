@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/core/presentation/providers/related_entities_provider.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/related_entities.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/entity_media_filter_scope.dart';
@@ -178,6 +180,70 @@ void main() {
     expect(find.text('Hierarchy'), findsOneWidget);
     expect(find.text('Parent Studio'), findsOneWidget);
     expect(find.text('Child Studio'), findsOneWidget);
+  });
+
+  testWidgets('studio details show aliases, tags, links and performers', (
+    tester,
+  ) async {
+    final repository = _RatingStudioRepository();
+    const studio = Studio(
+      id: 'studio-1',
+      name: 'Studio One',
+      sceneCount: 0,
+      imageCount: 0,
+      galleryCount: 0,
+      performerCount: 0,
+      favorite: false,
+      aliases: ['Works', 'SLS'],
+      tags: [StudioTag(id: 't1', name: 'Demo')],
+      urls: ['https://example.org/a', 'https://example.org/a'],
+    );
+    repository.setData([studio]);
+    RelatedEntityQuery query(RelatedEntityKind kind) =>
+        (kind: kind, owner: RelatedEntityOwner.studio, id: 'studio-1');
+
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        studioRepositoryProvider.overrideWithValue(repository),
+        entityMediaPreviewProvider(
+          EntityMediaFilterKind.studio,
+          'studio-1',
+        ).overrideWith((ref) => []),
+        entityGalleryPreviewProvider(
+          EntityGalleryFilterKind.studio,
+          'studio-1',
+        ).overrideWith((ref) => []),
+        relatedEntitiesProvider(query(RelatedEntityKind.performers))
+            .overrideWith(
+              (ref) => [
+                (
+                  id: 'p1',
+                  title: 'Remy',
+                  subtitle: null,
+                  imagePath: null,
+                  route: '/performers/performer/p1',
+                ),
+              ],
+            ),
+        relatedEntitiesProvider(query(RelatedEntityKind.groups))
+            .overrideWith((ref) => []),
+      ],
+      child: const StudioDetailsPage(studioId: 'studio-1'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Works, SLS'), findsOneWidget);
+    expect(find.widgetWithText(ActionChip, 'Demo'), findsOneWidget);
+    // Duplicate server URLs are listed once.
+    expect(find.text('https://example.org/a'), findsOneWidget);
+    final performer = find.widgetWithText(RelatedEntityTile, 'Remy');
+    await tester.scrollUntilVisible(
+      performer,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(performer, findsOneWidget);
   });
 }
 

@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../galleries/presentation/gallery_location.dart';
+import '../../../../core/presentation/providers/related_entities_provider.dart';
+import '../../../../core/presentation/widgets/entity_links_section.dart';
+import '../../../../core/presentation/widgets/meta_row.dart';
 import '../../../../core/presentation/widgets/related_entities.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
@@ -261,6 +264,48 @@ class StudioDetailsPage extends ConsumerWidget {
                             ),
                           ],
                         ),
+                        if (studio.aliases.isNotEmpty) ...[
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          MetaRow(
+                            label: context.l10n.common_aliases,
+                            value: studio.aliases.join(', '),
+                          ),
+                        ],
+                        if (studio.tags.isNotEmpty) ...[
+                          SizedBox(height: context.dimensions.spacingMedium),
+                          _buildSectionContainer(
+                            context,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SectionHeader(
+                                  title: context.l10n.details_tags,
+                                  padding: EdgeInsets.zero,
+                                ),
+                                SizedBox(
+                                  height: context.dimensions.spacingSmall,
+                                ),
+                                EntityLinkChips(
+                                  links: [
+                                    for (final tag in studio.tags)
+                                      (
+                                        label: tag.name,
+                                        route: '/tags/tag/${tag.id}',
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        if (studio.urls.isNotEmpty)
+                          _buildSectionContainer(
+                            context,
+                            // The server may repeat a URL; list each once.
+                            EntityLinksSection(
+                              urls: studio.urls.toSet().toList(),
+                            ),
+                          ),
                         if (studio.details != null &&
                             studio.details!.trim().isNotEmpty) ...[
                           SizedBox(height: context.dimensions.spacingMedium),
@@ -397,6 +442,27 @@ class StudioDetailsPage extends ConsumerWidget {
                             ),
                           ),
                         ),
+                        for (final (kind, title, icon) in [
+                          (
+                            RelatedEntityKind.performers,
+                            context.l10n.performers_title,
+                            Icons.person_outline,
+                          ),
+                          (
+                            RelatedEntityKind.groups,
+                            context.l10n.groups_title,
+                            Icons.group_work,
+                          ),
+                        ])
+                          RelatedEntitiesSection(
+                            title: title,
+                            fallbackIcon: icon,
+                            query: (
+                              kind: kind,
+                              owner: RelatedEntityOwner.studio,
+                              id: studio.id,
+                            ),
+                          ),
                       ],
                     ),
                   ),

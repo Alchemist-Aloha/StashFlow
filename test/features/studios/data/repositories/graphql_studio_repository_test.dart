@@ -62,9 +62,8 @@ void main() {
         ),
       );
 
-      when(
-        mockClient.query<Query$FindStudios>(any),
-      ).thenAnswer((_) async => mockQueryResult);
+      when(mockClient.query<Query$FindStudios>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.findStudios(page: 1, perPage: 20);
 
@@ -104,6 +103,11 @@ void main() {
             },
           ],
           'favorite': false,
+          'aliases': ['Alias Works'],
+          'urls': ['https://example.org/studio'],
+          'tags': [
+            {'id': 't1', 'name': 'Demo', '__typename': 'Tag'},
+          ],
           '__typename': 'Studio',
         },
         '__typename': 'Query',
@@ -117,9 +121,8 @@ void main() {
         ),
       );
 
-      when(
-        mockClient.query<Query$FindStudio>(any),
-      ).thenAnswer((_) async => mockQueryResult);
+      when(mockClient.query<Query$FindStudio>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.getStudioById('1');
 
@@ -128,6 +131,9 @@ void main() {
       expect(result.name, 'Test Studio');
       expect(result.parentStudio?.name, 'Parent Studio');
       expect(result.childStudios.single.name, 'Child Studio');
+      expect(result.aliases, ['Alias Works']);
+      expect(result.urls, ['https://example.org/studio']);
+      expect(result.tags.single, const StudioTag(id: 't1', name: 'Demo'));
     });
   });
 }

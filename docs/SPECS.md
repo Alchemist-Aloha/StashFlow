@@ -519,7 +519,8 @@ the active server.
 Tag Details shows aliases and parent and child tags as link chips, then lists
 up to 24 related performers, studios, groups, and markers (markers open their
 scene). Related lists load through `relatedEntitiesProvider`, sort by scene
-count, and render no section while loading or when empty.
+count, and render no section while loading or when empty. Studio Details shows
+aliases, tag chips, de-duplicated links, and related performers and groups.
 
 ### Scene rating and metadata mutation
 
