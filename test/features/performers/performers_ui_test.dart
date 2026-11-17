@@ -9,6 +9,7 @@ import 'package:stash_app_flutter/features/performers/presentation/widgets/perfo
 
 import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart'
     as domain;
+
 import '../../helpers/test_helpers.dart';
 
 class MockPerformerSort extends PerformerSort {

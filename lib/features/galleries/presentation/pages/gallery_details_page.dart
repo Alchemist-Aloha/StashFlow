@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,7 @@ import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../images/presentation/pages/images_page.dart';
+import '../../../images/presentation/providers/image_browser_context.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../../scenes/presentation/providers/playback_queue_provider.dart';
 import '../../../scenes/presentation/widgets/scene_strip.dart';
@@ -18,7 +21,8 @@ import '../providers/gallery_list_provider.dart';
 import '../widgets/gallery_details_bottom_sheet.dart';
 import '../../../../core/utils/app_log_store.dart';
 
-/// Browses a gallery's images with compact, scroll-collapsing gallery details.
+/// Browses a gallery's images below its details, which scroll with the grid;
+/// a compact pinned summary takes over once the details scroll away.
 class GalleryDetailsPage extends ConsumerStatefulWidget {
   const GalleryDetailsPage({required this.galleryId, super.key});
 
@@ -30,20 +34,13 @@ class GalleryDetailsPage extends ConsumerStatefulWidget {
 
 class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
   late final ScrollController _scrollController;
+  final _detailsKey = GlobalKey();
   var _detailsCollapsed = false;
-  var _collapseOffset = 0.0;
-  var _deferDetailsReveal = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_handleScroll);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _collapseOffset = context.dimensions.spacingLarge * 2;
   }
 
   @override
@@ -65,30 +62,14 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
     super.dispose();
   }
 
-  void _handleScroll({bool scrollEnded = false}) {
+  /// Pins the compact summary once the scrolling details are out of view.
+  void _handleScroll() {
     if (!mounted || !_scrollController.hasClients) return;
-    final position = _scrollController.position;
-    final shouldCollapse = position.pixels > _collapseOffset;
-    // Expanding mid-drag resizes the image viewport under the user's finger.
-    if (_detailsCollapsed &&
-        _deferDetailsReveal &&
-        (!scrollEnded || position.pixels > position.minScrollExtent)) {
-      return;
-    }
+    final detailsHeight = _detailsKey.currentContext?.size?.height;
+    if (detailsHeight == null) return;
+    final shouldCollapse = _scrollController.position.pixels >= detailsHeight;
     if (shouldCollapse == _detailsCollapsed) return;
     setState(() => _detailsCollapsed = shouldCollapse);
-  }
-
-  bool _handleScrollNotification(ScrollNotification notification) {
-    if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
-      return false;
-    }
-    if (notification is ScrollStartNotification) {
-      _deferDetailsReveal = notification.dragDetails != null;
-    } else if (notification is ScrollEndNotification) {
-      _handleScroll(scrollEnded: true);
-    }
-    return false;
   }
 
   Future<void> _refresh() async {
@@ -134,50 +115,115 @@ class _GalleryDetailsPageState extends ConsumerState<GalleryDetailsPage> {
     }
   }
 
+  /// Opens a chapter's image; Stash numbers chapters 1-based in path order.
+  Future<void> _openChapter(GalleryChapter chapter) async {
+    try {
+      final image =
+          (await ref
+                  .read(imageRepositoryProvider)
+                  .findImages(
+                    page: chapter.imageIndex,
+                    perPage: 1,
+                    sort: 'path',
+                    galleryId: widget.galleryId,
+                  ))
+              .firstOrNull;
+      if (image == null || !mounted) return;
+
+      // Fullscreen pages through the loaded grid, so the target must be in it.
+      await ref.read(imageListProvider.future);
+      final images = ref.read(imageListProvider.notifier);
+      bool loaded() =>
+          ref.read(imageListProvider).value?.any((i) => i.id == image.id) ??
+          false;
+      while (mounted && !loaded() && images.hasMore) {
+        final before = ref.read(imageListProvider).value?.length;
+        await images.fetchNextPage();
+        if (ref.read(imageListProvider).value?.length == before) break;
+      }
+      if (!mounted) return;
+
+      ref.read(imageFullscreenCurrentIdProvider.notifier).setCurrent(image.id);
+      final browser = ref.read(imageBrowserContextProvider);
+      final imageId = Uri.encodeComponent(image.id);
+      await context.push<void>(
+        browser == null
+            ? '/galleries/images/$imageId'
+            : '${browser.path}/image/$imageId',
+      );
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'openChapter',
+        error,
+        stackTrace,
+        source: 'gallery_details_page',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.common_error('$error'))),
+      );
+    }
+  }
+
   void _expandDetails() {
-    if (!_detailsCollapsed) return;
-    setState(() => _detailsCollapsed = false);
+    if (!_scrollController.hasClients) return;
+    unawaited(
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final galleryAsync = ref.watch(galleryDetailsProvider(widget.galleryId));
 
-    return NotificationListener<ScrollNotification>(
-      onNotification: _handleScrollNotification,
-      child: ImagesPage(
-        title: context.l10n.details_gallery,
-        showAppBarTitle: false,
-        searchOnlyAppBar: true,
-        topContent: AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          alignment: Alignment.topCenter,
-          child: galleryAsync.when(
-            data: (gallery) => _detailsCollapsed
-                ? _CollapsedGalleryDetails(
-                    key: const Key('gallery_details_collapsed'),
-                    gallery: gallery,
-                    onExpand: _expandDetails,
-                    onRatingSelected: (rating) =>
-                        _updateRating(gallery, rating),
-                  )
-                : _CompactGalleryDetails(
-                    key: const Key('gallery_details_expanded'),
-                    gallery: gallery,
-                    onRatingSelected: (rating) =>
-                        _updateRating(gallery, rating),
-                  ),
-            loading: () => const LinearProgressIndicator(),
-            error: (error, stack) => ErrorStateView(
-              message: context.l10n.common_error(error.toString()),
-              onRetry: () =>
-                  ref.invalidate(galleryDetailsProvider(widget.galleryId)),
-            ),
+    final gallery = galleryAsync.value;
+
+    return ImagesPage(
+      title: context.l10n.details_gallery,
+      showAppBarTitle: false,
+      searchOnlyAppBar: true,
+      scrollHeader: KeyedSubtree(
+        key: _detailsKey,
+        child: galleryAsync.when(
+          data: (gallery) => _CompactGalleryDetails(
+            key: const Key('gallery_details_expanded'),
+            gallery: gallery,
+            onRatingSelected: (rating) => _updateRating(gallery, rating),
+            onChapterSelected: _openChapter,
+          ),
+          loading: () => const LinearProgressIndicator(),
+          error: (error, stack) => ErrorStateView(
+            message: context.l10n.common_error(error.toString()),
+            onRetry: () =>
+                ref.invalidate(galleryDetailsProvider(widget.galleryId)),
           ),
         ),
-        scrollController: _scrollController,
-        onRefresh: _refresh,
       ),
+      stickyHeader: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: SizeTransition(
+            sizeFactor: animation,
+            alignment: Alignment.topCenter,
+            child: child,
+          ),
+        ),
+        child: gallery != null && _detailsCollapsed
+            ? _CollapsedGalleryDetails(
+                key: const Key('gallery_details_collapsed'),
+                gallery: gallery,
+                onExpand: _expandDetails,
+                onRatingSelected: (rating) => _updateRating(gallery, rating),
+              )
+            : const SizedBox(width: double.infinity),
+      ),
+      scrollController: _scrollController,
+      onRefresh: _refresh,
     );
   }
 }
@@ -204,14 +250,13 @@ class _CollapsedGalleryDetails extends StatelessWidget {
     ].join(' • ');
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        dims.spacingSmall,
-        dims.spacingSmall,
-        dims.spacingSmall,
-        dims.spacingMedium,
-      ),
+      padding: EdgeInsets.all(dims.spacingSmall),
       child: Material(
         color: colors.surfaceContainerHigh,
+        // It floats over the image grid, so it takes M3 level-2 elevation.
+        elevation: 3,
+        shadowColor: colors.shadow,
+        surfaceTintColor: Colors.transparent,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
@@ -268,7 +313,7 @@ class _CollapsedGalleryDetails extends StatelessWidget {
               IconButton.filledTonal(
                 tooltip: context.l10n.details_show_more,
                 onPressed: onExpand,
-                icon: const Icon(Icons.expand_more_rounded),
+                icon: const Icon(Icons.keyboard_arrow_up_rounded),
               ),
             ],
           ),
@@ -282,11 +327,13 @@ class _CompactGalleryDetails extends ConsumerWidget {
   const _CompactGalleryDetails({
     required this.gallery,
     required this.onRatingSelected,
+    required this.onChapterSelected,
     super.key,
   });
 
   final Gallery gallery;
   final ValueChanged<int> onRatingSelected;
+  final ValueChanged<GalleryChapter> onChapterSelected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -296,11 +343,12 @@ class _CompactGalleryDetails extends ConsumerWidget {
     return SizedBox(
       width: double.infinity,
       child: Padding(
+        // The image grid's own padding supplies the gap below the card.
         padding: EdgeInsets.fromLTRB(
           dims.spacingSmall,
           dims.spacingSmall,
           dims.spacingSmall,
-          dims.spacingMedium,
+          0,
         ),
         child: Material(
           color: colors.surfaceContainerLow,
@@ -414,6 +462,34 @@ class _CompactGalleryDetails extends ConsumerWidget {
                     style: context.textTheme.bodyMedium?.copyWith(
                       color: colors.onSurfaceVariant,
                       height: 1.35,
+                    ),
+                  ),
+                ],
+                if (gallery.chapters.isNotEmpty) ...[
+                  SizedBox(height: dims.spacingMedium),
+                  SectionHeader(
+                    title: context.l10n.gallery_chapters_title,
+                    padding: EdgeInsets.zero,
+                  ),
+                  SizedBox(height: dims.spacingSmall),
+                  SingleChildScrollView(
+                    key: const Key('gallery_chapters'),
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (final chapter in gallery.chapters) ...[
+                          if (chapter != gallery.chapters.first)
+                            SizedBox(width: dims.spacingSmall),
+                          ActionChip(
+                            avatar: const Icon(Icons.bookmark_outline_rounded),
+                            label: Text(chapter.title),
+                            tooltip: context.l10n.gallery_chapter_image(
+                              chapter.imageIndex,
+                            ),
+                            onPressed: () => onChapterSelected(chapter),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],

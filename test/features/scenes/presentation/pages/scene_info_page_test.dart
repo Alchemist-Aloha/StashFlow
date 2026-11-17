@@ -25,7 +25,7 @@ void main() {
         final scene = Scene(
           id: 'scene-1',
           title: 'Scene',
-          date: DateTime(2026),
+          date: size == null ? null : DateTime(2026),
           rating100: null,
           oCounter: 0,
           organized: false,
@@ -81,6 +81,10 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        expect(
+          find.byIcon(Icons.calendar_today_rounded),
+          size == null ? findsNothing : findsOneWidget,
+        );
         final label = find.text('File Size');
         await tester.scrollUntilVisible(
           label,
@@ -110,4 +114,83 @@ void main() {
       });
     }
   }
+
+  testWidgets('details list code, director, custom fields and fingerprints', (
+    tester,
+  ) async {
+    final scene = Scene(
+      id: 'scene-1',
+      title: 'Scene',
+      date: DateTime(2026),
+      rating100: null,
+      oCounter: 0,
+      organized: false,
+      interactive: false,
+      resumeTime: null,
+      playCount: 0,
+      playDuration: null,
+      files: const [
+        SceneFile(
+          format: 'mp4',
+          width: null,
+          height: null,
+          videoCodec: null,
+          audioCodec: null,
+          bitRate: null,
+          duration: null,
+          frameRate: null,
+          fingerprints: [Fingerprint(type: 'phash', value: 'abc123')],
+        ),
+      ],
+      paths: const ScenePaths(screenshot: null, preview: null, stream: null),
+      urls: const [],
+      studioId: null,
+      studioName: null,
+      studioImagePath: null,
+      performerIds: const [],
+      performerNames: const [],
+      performerImagePaths: const [],
+      tagIds: const [],
+      tagNames: const [],
+      code: 'LS-SC-0582',
+      director: 'Celyn Vale',
+      customFields: const {'source': 'archive'},
+      stashIds: const [
+        SceneStashId(endpoint: 'https://stashdb.org/graphql', stashId: 'id-1'),
+      ],
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sceneDetailsProvider(scene.id)
+              .overrideWith(() => _SceneDetails(scene)),
+          mediaHeadersProvider.overrideWithValue(const {}),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.buildTheme(Brightness.dark, const Color(0xFF0F766E)),
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(body: SceneInfoPage(scene: scene)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    for (final text in [
+      'LS-SC-0582',
+      'Celyn Vale',
+      'source: archive',
+      'id-1\nhttps://stashdb.org/graphql',
+      'PHASH',
+      'abc123',
+    ]) {
+      final finder = find.text(text, findRichText: true);
+      await tester.scrollUntilVisible(
+        finder,
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(finder, findsOneWidget, reason: text);
+    }
+  });
 }

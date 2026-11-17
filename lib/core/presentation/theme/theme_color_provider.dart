@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../data/preferences/shared_preferences_provider.dart';
 
 const appThemeSeedColorPreferenceKey = 'app_theme_seed_color';

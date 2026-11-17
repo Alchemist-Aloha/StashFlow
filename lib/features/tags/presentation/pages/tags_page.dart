@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../providers/tag_list_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../widgets/tag_filter_panel.dart';
@@ -256,9 +257,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     if (!mounted) return;
 
     if (randomTag == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.tags_no_random)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.tags_no_random)));
       return;
     }
 
@@ -342,9 +342,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           horizontal: AppTheme.spacingMedium,
           vertical: 4,
         ),
-        color: Theme.of(
-          context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+        color: Theme.of(context).colorScheme.primaryContainer
+            .withValues(alpha: 0.3),
         child: ListTile(
           onTap: () => context.push('/tags/tag/${tag.id}'),
           title: Text(
@@ -367,9 +366,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
             horizontal: AppTheme.spacingMedium,
             vertical: 4,
           ),
-          color: Theme.of(
-            context,
-          ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+          color: Theme.of(context).colorScheme.primaryContainer
+              .withValues(alpha: 0.3),
           child: ListTile(
             title: Text(
               context.l10n.loading,

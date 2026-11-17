@@ -847,6 +847,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get details_links => 'Links';
 
   @override
+  String get details_appears_with => 'Appears With';
+
+  @override
   String get details_scene_scrape => 'Scrape metadata';
 
   @override
@@ -1773,13 +1776,77 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose the default layout for the page';
 
   @override
-  String get settings_interface_layout_list => 'List';
-
-  @override
   String get settings_interface_layout_grid => 'Grid';
 
   @override
   String get settings_interface_layout_tiktok => 'Feed';
+
+  @override
+  String get scene_view_mode_prompt_title => 'Choose a scene view';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => 'Scenes in a two-column grid.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'One scene at a time in an endless, swipeable feed.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'You can change this later in Settings › Interface Settings.';
+
+  @override
+  String get onboarding_got_it => 'Got it';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'You can change this later in Settings › Playback Settings.';
+
+  @override
+  String get onboarding_grid_title => 'Browsing scenes';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Long press a scene card to see its details and actions.';
+
+  @override
+  String get onboarding_feed_title => 'Using the feed';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Long press the video to fast-forward. Slide up while holding to go even faster.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Tap the title to hide the controls. Tap the video to bring them back.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Tap the up arrow to show more actions.';
+
+  @override
+  String get onboarding_details_title => 'Watching a scene';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Swipe the title left or right to go to the previous or next scene.';
+
+  @override
+  String get onboarding_details_seek_label => 'How would you like to seek?';
+
+  @override
+  String get onboarding_image_title => 'Choose a swipe direction';
+
+  @override
+  String get settings_develop_reset_onboarding => 'Reset First-Run Tips';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Show the one-time tips and choices again.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'First-run tips will show again.';
 
   @override
   String get settings_interface_grid_columns => 'Grid Columns';
@@ -1808,39 +1875,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_interface_waterfall_columns => 'Waterfall Grid Columns';
 
   @override
-  String get settings_interface_performer_layouts => 'Performer Layouts';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Media and gallery defaults for performers';
-
-  @override
-  String get settings_interface_studio_layouts => 'Studio Layouts';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Media and gallery defaults for studios';
 
   @override
-  String get settings_interface_tag_layouts => 'Tag Layouts';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Media and gallery defaults for tags';
-
-  @override
-  String get settings_interface_media_layout => 'Media Layout';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Layout for Media page';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Galleries Layout';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout for Galleries page';
 
   @override
   String get settings_server_title => 'Server Settings';
@@ -2063,6 +2107,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_playback_subtitle_lang => 'Default Subtitle Language';
+
+  @override
+  String get player_stream_resolution => 'Resolution';
+
+  @override
+  String get player_stream_original => 'Original';
+
+  @override
+  String get player_stream_source => 'Stream source';
+
+  @override
+  String get player_stream_direct => 'Direct';
+
+  @override
+  String get settings_playback_stream_source => 'Default Stream Source';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Used when playback starts; falls back to Direct';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>
@@ -3674,19 +3737,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sub_group_count_title => 'Sub-group Count';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Default browsing mode for groups';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Default browsing mode for markers';
-
-  @override
-  String get entity_layouts_title => 'Entity Layouts';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Media and gallery layout defaults for performers, studios and tags';
 
   @override
   String get stats_subtitle_0_gb => '0.00 GB';

@@ -65,9 +65,8 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
       setState(() {
         _savedFiltersFuture = widget.loadPresets();
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(widget.saveSuccessMessage)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(widget.saveSuccessMessage)));
     } on Object catch (error, stackTrace) {
       AppLogStore.instance.addError(
         'save',
@@ -130,9 +129,8 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
       setState(() {
         _savedFiltersFuture = widget.loadPresets();
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.preset_deleted)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.preset_deleted)));
     } on Object catch (error, stackTrace) {
       AppLogStore.instance.addError(
         'promptDelete',

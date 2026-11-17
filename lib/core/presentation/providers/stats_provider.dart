@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../data/graphql/graphql_client.dart';
 import '../../data/graphql/stats_repository.dart';
 

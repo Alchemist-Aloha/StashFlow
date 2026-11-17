@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/shell_page.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/grid_utils.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_card.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/frosted_surface.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
@@ -533,6 +535,57 @@ void main() {
       });
     }
 
+    for (final scale in [0.8, 1.5]) {
+      for (final gallery in [false, true]) {
+        for (final withHeader in [false, true]) {
+          testWidgets(
+            'masonry loading fits narrow screens ($scale, gallery: $gallery, header: $withHeader)',
+            (tester) async {
+              tester.view.physicalSize = const Size(320, 640);
+              tester.view.devicePixelRatio = 1;
+              addTearDown(tester.view.reset);
+              await pumpTestWidget(
+                tester,
+                child: Theme(
+                  data: AppTheme.buildTheme(
+                    Brightness.light,
+                    Colors.teal,
+                    fontSizeFactor: scale,
+                  ),
+                  child: Builder(
+                    builder: (context) => ListPageScaffold<String>(
+                      title: 'Loading',
+                      searchHint: 'Search',
+                      onSearchChanged: (_) {},
+                      provider: const AsyncValue.loading(),
+                      useMasonry: true,
+                      gridDelegate: GridUtils.createDelegate(context),
+                      padding: GridUtils.defaultPadding(context),
+                      scrollHeader: withHeader ? const Text('Header') : null,
+                      loadingItemBuilder: (context, isGrid, index) {
+                        expect(isGrid, isTrue);
+                        return gallery
+                            ? const GalleryCard.skeleton()
+                            : SceneCard.skeleton();
+                      },
+                    ),
+                  ),
+                ),
+              );
+              await tester.pump();
+
+              expect(find.byType(SliverMasonryGrid), findsOneWidget);
+              expect(
+                find.byType(gallery ? GalleryCard : SceneCard),
+                findsWidgets,
+              );
+              expect(tester.takeException(), isNull);
+            },
+          );
+        }
+      }
+    }
+
     testWidgets('shows loading state correctly', (WidgetTester tester) async {
       await pumpTestWidget(
         tester,
@@ -582,7 +635,7 @@ void main() {
       expect(tester.widget<AnimatedSlide>(slide).offset, Offset.zero);
     });
 
-    testWidgets('frosts the app bar and lets rows scroll behind it', (
+    testWidgets('frosts the auto-hide bar while rows scroll behind it', (
       WidgetTester tester,
     ) async {
       SharedPreferences.setMockInitialValues({'auto_hide_top_app_bar': true});
@@ -631,6 +684,139 @@ void main() {
       expect(resolved.bottom, 66);
     });
 
+    testWidgets('auto-hide keeps a fixed inset and blurs only when shown', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({'auto_hide_top_app_bar': true});
+      final prefs = await SharedPreferences.getInstance();
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: ListPageScaffold<int>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: AsyncValue.data(List.generate(50, (index) => index)),
+          itemBuilder: (context, item, mw, mh) =>
+              SizedBox(height: 80, child: Text('Item $item')),
+        ),
+      );
+      await tester.pumpAndSettle();
+      double topPadding() => tester
+          .widget<ListView>(find.byType(ListView).first)
+          .padding!
+          .resolve(TextDirection.ltr)
+          .top;
+      final before = topPadding();
+
+      final blur = find.descendant(
+        of: find.byKey(const Key('top-app-bar-slide')),
+        matching: find.byType(BackdropFilter),
+      );
+      expect(blur, findsOneWidget);
+
+      await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(topPadding(), before);
+      // Still blurring mid-slide; dropped once the bar is fully off screen.
+      expect(blur, findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(topPadding(), before);
+      expect(
+        tester
+            .widget<AnimatedSlide>(find.byKey(const Key('top-app-bar-slide')))
+            .offset,
+        const Offset(0, -1),
+      );
+      expect(blur, findsNothing);
+
+      await tester.drag(find.byType(ListView).first, const Offset(0, 100));
+      await tester.pump();
+      expect(blur, findsOneWidget);
+    });
+
+    testWidgets('docked bar is frosted with rows scrolling under it', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({'auto_hide_top_app_bar': false});
+      final prefs = await SharedPreferences.getInstance();
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: ListPageScaffold<int>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: AsyncValue.data(List.generate(50, (index) => index)),
+          itemBuilder: (context, item, mw, mh) =>
+              SizedBox(height: 80, child: Text('Item $item')),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final bar = find.byKey(const Key('top-app-bar-slide'));
+      final blur = find.descendant(
+        of: bar,
+        matching: find.byType(BackdropFilter),
+      );
+      expect(blur, findsOneWidget);
+      expect(
+        tester
+            .widget<ListView>(find.byType(ListView).first)
+            .padding!
+            .resolve(TextDirection.ltr)
+            .top,
+        kToolbarHeight,
+      );
+
+      // Without auto-hide the bar never slides away.
+      await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+      await tester.pumpAndSettle();
+      expect(tester.widget<AnimatedSlide>(bar).offset, Offset.zero);
+      expect(blur, findsOneWidget);
+    });
+
+    testWidgets('custom bodies such as the feed keep a fixed app bar', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({'auto_hide_top_app_bar': true});
+      final prefs = await SharedPreferences.getInstance();
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: ListPageScaffold<int>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.data([1, 2, 3]),
+          customBody: PageView(
+            key: const Key('feed-body'),
+            scrollDirection: Axis.vertical,
+            children: const [Text('Page 1'), Text('Page 2'), Text('Page 3')],
+          ),
+          itemBuilder: (context, item, mw, mh) => Text('Item $item'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Swiping to the next feed page must not hide the bar.
+      await tester.drag(
+        find.byKey(const Key('feed-body')),
+        const Offset(0, -400),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Page 2'), findsOneWidget);
+      expect(
+        tester
+            .widget<AnimatedSlide>(find.byKey(const Key('top-app-bar-slide')))
+            .offset,
+        Offset.zero,
+      );
+      expect(find.text('Test Title'), findsOneWidget);
+    });
+
     testWidgets('shows empty state correctly', (WidgetTester tester) async {
       const emptyMessage = 'Nothing here';
       await pumpTestWidget(
@@ -660,13 +846,49 @@ void main() {
           searchHint: 'Search...',
           onSearchChanged: (_) {},
           provider: const AsyncValue.data(['Only item']),
-          onFetchNextPage: () => fetches++,
+          onFetchNextPage: () async {
+            fetches++;
+          },
           itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
         ),
       );
       await tester.pumpAndSettle();
 
       expect(fetches, greaterThan(0));
+    });
+
+    testWidgets('pagination errors keep items visible and offer retry', (
+      tester,
+    ) async {
+      var fail = true;
+      var calls = 0;
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.data(['Loaded item']),
+          onFetchNextPage: () async {
+            calls++;
+            if (fail) throw StateError('offline');
+          },
+          itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Loaded item'), findsOneWidget);
+      expect(find.textContaining('offline'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      final failedCalls = calls;
+      fail = false;
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+      expect(calls, greaterThan(failedCalls));
+      expect(find.text('Loaded item'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('shows list view when gridDelegate is null', (

@@ -73,6 +73,20 @@ final authProvider = NotifierProvider<AuthProvider, AuthState>(
 );
 
 class AuthProvider extends Notifier<AuthState> {
+  int _generation = 0;
+  Future<void> _hydration = Future.value();
+  Future<bool>? _loginFuture;
+
+  void _credentialsChanged() {
+    _generation++;
+    _loginFuture = null;
+  }
+
+  bool _isCurrent(int generation, ServerProfile profile) =>
+      ref.mounted &&
+      generation == _generation &&
+      ref.read(activeProfileProvider) == profile;
+
   String _getAuthModeKey(String profileId) => 'profile_${profileId}_auth_mode';
   String _getUsernameKey(String profileId) => 'profile_${profileId}_username';
   String _getPasswordKey(String profileId) => 'profile_${profileId}_password';
@@ -82,16 +96,18 @@ class AuthProvider extends Notifier<AuthState> {
   @override
   AuthState build() {
     final profile = ref.watch(activeProfileProvider);
-    unawaited(_hydrateForProfile(profile));
+    final generation = ++_generation;
+    _loginFuture = null;
+    ref.onDispose(() => _generation++);
+    if (profile == null) {
+      return const AuthState.initial().copyWith(hydrated: true);
+    }
+    _hydration = _hydrateForProfile(profile, generation);
+    unawaited(_hydration);
     return const AuthState.initial();
   }
 
-  Future<void> _hydrateForProfile(ServerProfile? profile) async {
-    if (profile == null) {
-      state = const AuthState.initial().copyWith(hydrated: true);
-      return;
-    }
-
+  Future<void> _hydrateForProfile(ServerProfile profile, int generation) async {
     final prefs = ref.read(sharedPreferencesProvider);
     final secureStorage = ref.read(secureStorageProvider);
 
@@ -105,41 +121,40 @@ class AuthProvider extends Notifier<AuthState> {
         await secureStorage.read(key: _getUsernameKey(profile.id)) ?? '';
     final password =
         await secureStorage.read(key: _getPasswordKey(profile.id)) ?? '';
-    final storedCookieHeader =
-        await secureStorage.read(key: _getCookieHeaderKey(profile.id)) ?? '';
+    if (!_isCurrent(generation, profile)) return;
 
-    String cookieHeader = storedCookieHeader;
-    AuthLoginStatus loginStatus = AuthLoginStatus.loggedOut;
-
-    if (mode == AuthMode.password) {
-      if (cookieHeader.isEmpty) {
-        cookieHeader = await _refreshCookieHeaderForProfile(profile);
-      }
-      loginStatus = cookieHeader.isNotEmpty
-          ? AuthLoginStatus.loggedIn
-          : AuthLoginStatus.loggedOut;
-    } else if (mode == AuthMode.basic || mode == AuthMode.bearer) {
-      loginStatus = AuthLoginStatus.loggedIn;
-    }
-
+    final loginStatus = mode == AuthMode.basic || mode == AuthMode.bearer
+        ? AuthLoginStatus.loggedIn
+        : AuthLoginStatus.loggedOut;
     state = state.copyWith(
       mode: mode,
       username: username,
       password: password,
       loginStatus: loginStatus,
-      cookieHeader: cookieHeader,
+      cookieHeader: '',
       hydrated: true,
       clearError: true,
     );
+    // A serialized Cookie header has no expiry or server-side validity metadata.
+    if (mode == AuthMode.password &&
+        username.isNotEmpty &&
+        password.isNotEmpty) {
+      unawaited(login());
+    }
   }
 
   Future<void> setMode(AuthMode mode) async {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return;
 
+    final generation = _generation;
+    await _hydration;
+    if (!_isCurrent(generation, profile)) return;
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString(_getAuthModeKey(profile.id), mode.name);
+    if (!_isCurrent(generation, profile)) return;
 
+    if (state.mode != mode) _credentialsChanged();
     AuthLoginStatus loginStatus = state.loginStatus;
     if (mode == AuthMode.apiKey) {
       loginStatus = AuthLoginStatus.loggedOut;
@@ -158,6 +173,9 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return;
 
+    final generation = _generation;
+    await _hydration;
+    if (!_isCurrent(generation, profile)) return;
     final secureStorage = ref.read(secureStorageProvider);
     final trimmed = username.trim();
 
@@ -170,6 +188,8 @@ class AuthProvider extends Notifier<AuthState> {
       );
     }
 
+    if (!_isCurrent(generation, profile)) return;
+    if (state.username != trimmed) _credentialsChanged();
     state = state.copyWith(username: trimmed, clearError: true);
   }
 
@@ -177,6 +197,9 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return;
 
+    final generation = _generation;
+    await _hydration;
+    if (!_isCurrent(generation, profile)) return;
     final secureStorage = ref.read(secureStorageProvider);
 
     if (password.isEmpty) {
@@ -188,13 +211,29 @@ class AuthProvider extends Notifier<AuthState> {
       );
     }
 
+    if (!_isCurrent(generation, profile)) return;
+    if (state.password != password) _credentialsChanged();
     state = state.copyWith(password: password, clearError: true);
   }
 
-  Future<bool> login() async {
+  /// Waits for stored credentials and shares an in-flight attempt for this revision.
+  Future<bool> login() {
     final profile = ref.read(activeProfileProvider);
-    if (profile == null) return false;
+    if (profile == null) return Future.value(false);
+    return _loginFuture ??= _loginWhenReady(profile, _generation);
+  }
 
+  Future<bool> _loginWhenReady(ServerProfile profile, int generation) async {
+    try {
+      await _hydration;
+      if (!_isCurrent(generation, profile)) return false;
+      return await _login(profile, generation);
+    } finally {
+      if (ref.mounted && generation == _generation) _loginFuture = null;
+    }
+  }
+
+  Future<bool> _login(ServerProfile profile, int generation) async {
     if (state.mode != AuthMode.password) {
       return false;
     }
@@ -216,20 +255,29 @@ class AuthProvider extends Notifier<AuthState> {
       return false;
     }
 
+    final username = state.username;
+    final password = state.password;
     state = state.copyWith(
       loginStatus: AuthLoginStatus.loggingIn,
+      cookieHeader: '',
       clearError: true,
     );
     debugPrint('AuthProvider: Initiating login process...');
 
     try {
+      final secureStorage = ref.read(secureStorageProvider);
+      await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
+      if (!_isCurrent(generation, profile)) return false;
+      ref.invalidate(profileCookieHeaderProvider(profile.id));
       final service = await ref.read(authServiceProvider.future);
+      if (!_isCurrent(generation, profile)) return false;
       final endpointUri = Uri.parse(endpoint);
       final ok = await service.login(
         graphqlEndpoint: endpointUri,
-        username: state.username,
-        password: state.password,
+        username: username,
+        password: password,
       );
+      if (!_isCurrent(generation, profile)) return false;
 
       if (!ok) {
         debugPrint(
@@ -245,10 +293,10 @@ class AuthProvider extends Notifier<AuthState> {
       final cookieHeader = await service.cookieHeaderFor(
         requestUri: endpointUri,
       );
+      if (!_isCurrent(generation, profile)) return false;
       debugPrint(
         'AuthProvider: Cookie header acquired: ${cookieHeader.isNotEmpty}',
       );
-      final secureStorage = ref.read(secureStorageProvider);
       if (cookieHeader.isEmpty) {
         await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
       } else {
@@ -257,6 +305,7 @@ class AuthProvider extends Notifier<AuthState> {
           value: cookieHeader,
         );
       }
+      if (!_isCurrent(generation, profile)) return false;
       ref.invalidate(profileCookieHeaderProvider(profile.id));
 
       state = state.copyWith(
@@ -276,6 +325,7 @@ class AuthProvider extends Notifier<AuthState> {
         source: 'auth_provider',
       );
       // Auth recovery must also handle storage and provider failures.
+      if (!_isCurrent(generation, profile)) return false;
       state = state.copyWith(
         loginStatus: AuthLoginStatus.error,
         errorMessage: 'Login failed: $error',
@@ -288,12 +338,18 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return;
 
+    var generation = _generation;
+    await _hydration;
+    if (!_isCurrent(generation, profile)) return;
+    _credentialsChanged();
+    generation = _generation;
     final endpoint = profile.baseUrl.trim();
     final secureStorage = ref.read(secureStorageProvider);
 
     if (endpoint.isNotEmpty) {
       try {
         final service = await ref.read(authServiceProvider.future);
+        if (!_isCurrent(generation, profile)) return;
         await service.logout(graphqlEndpoint: Uri.parse(endpoint));
       } on Object catch (error, stackTrace) {
         AppLogStore.instance.addError(
@@ -308,6 +364,7 @@ class AuthProvider extends Notifier<AuthState> {
     }
 
     await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
+    if (!_isCurrent(generation, profile)) return;
     state = state.copyWith(
       cookieHeader: '',
       loginStatus: AuthLoginStatus.loggedOut,
@@ -319,7 +376,9 @@ class AuthProvider extends Notifier<AuthState> {
     final profile = ref.read(activeProfileProvider);
     if (profile == null) return '';
 
+    final generation = _generation;
     final cookieHeader = await _refreshCookieHeaderForProfile(profile);
+    if (!_isCurrent(generation, profile)) return '';
     final secureStorage = ref.read(secureStorageProvider);
 
     if (cookieHeader.isEmpty) {
@@ -330,6 +389,7 @@ class AuthProvider extends Notifier<AuthState> {
         value: cookieHeader,
       );
     }
+    if (!_isCurrent(generation, profile)) return '';
     ref.invalidate(profileCookieHeaderProvider(profile.id));
 
     state = state.copyWith(

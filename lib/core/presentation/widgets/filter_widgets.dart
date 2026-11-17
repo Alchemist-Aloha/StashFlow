@@ -1,12 +1,14 @@
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../features/performers/presentation/providers/performer_details_provider.dart';
 import '../../../features/tags/presentation/providers/tag_details_provider.dart';
 import '../../../features/studios/presentation/providers/studio_details_provider.dart';
 import '../../../features/groups/presentation/providers/group_details_provider.dart';
 import '../../../features/scenes/presentation/providers/scene_details_provider.dart';
 import '../../../features/galleries/presentation/providers/gallery_details_provider.dart';
+import '../../../features/scenes/presentation/widgets/entity_picker.dart';
 import '../theme/app_theme.dart';
 import '../../domain/entities/criterion.dart';
 
@@ -125,6 +127,187 @@ class FilterField extends StatelessWidget {
       ],
     ),
   );
+}
+
+/// Picks entities for a multi-value ID criterion through [EntityPicker].
+///
+/// Emits `null` when the last entity is removed so the criterion is dropped.
+class EntityCriterionInput<T> extends StatelessWidget {
+  const EntityCriterionInput({
+    required this.label,
+    required this.providerType,
+    required this.criterion,
+    required this.onChanged,
+    this.isHierarchical = false,
+    super.key,
+  });
+
+  final String label;
+  final String providerType;
+
+  /// A [MultiCriterion], [HierarchicalMultiCriterion], or `null`.
+  final Object? criterion;
+
+  /// Receives a [HierarchicalMultiCriterion] when [isHierarchical], otherwise
+  /// a [MultiCriterion]; `null` clears the criterion.
+  final ValueChanged<Object?> onChanged;
+  final bool isHierarchical;
+
+  void _emit(List<String> ids, CriterionModifier modifier) => onChanged(
+    ids.isEmpty
+        ? null
+        : isHierarchical
+        ? HierarchicalMultiCriterion(value: ids, modifier: modifier)
+        : MultiCriterion(value: ids, modifier: modifier),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final (selectedIds, modifier) = switch (criterion) {
+      MultiCriterion(:final value, :final modifier) => (value, modifier),
+      HierarchicalMultiCriterion(:final value, :final modifier) => (
+        value,
+        modifier,
+      ),
+      null => (<String>[], CriterionModifier.includes),
+      _ => throw ArgumentError.value(criterion, 'criterion'),
+    };
+
+    return SelectionCriterionInput(
+      label: label,
+      selectedIds: selectedIds,
+      providerType: providerType,
+      modifier: modifier,
+      // Modifier changes keep an empty list so nullary modifiers still apply.
+      onModifierChanged: (next) => onChanged(
+        isHierarchical
+            ? HierarchicalMultiCriterion(value: selectedIds, modifier: next)
+            : MultiCriterion(value: selectedIds, modifier: next),
+      ),
+      onAddPressed: () async {
+        final result = await showDialog<List<T>>(
+          context: context,
+          builder: (context) => EntityPicker<T>(
+            title: context.l10n.common_select(label),
+            providerType: providerType,
+            multiSelect: true,
+            initialSelection: selectedIds,
+          ),
+        );
+        if (result == null) return;
+        _emit(
+          result.map((entity) {
+            final id = entityPickerId(entity);
+            if (id.isEmpty) {
+              throw StateError(
+                'Unsupported filter entity: ${entity.runtimeType}',
+              );
+            }
+            return id;
+          }).toList(),
+          modifier,
+        );
+      },
+      onRemoveId: (id) =>
+          _emit(List<String>.from(selectedIds)..remove(id), modifier),
+    );
+  }
+}
+
+/// Any / Yes / No choice for a nullable boolean criterion.
+class BooleanCriterionInput extends StatelessWidget {
+  const BooleanCriterionInput({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    super.key,
+  });
+
+  final String label;
+  final bool? value;
+  final ValueChanged<bool?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return FilterField(
+      label: label,
+      children: [
+        Wrap(
+          spacing: context.dimensions.spacingSmall,
+          children: [
+            for (final (option, text) in [
+              (null, l10n.common_any),
+              (true, l10n.common_yes),
+              (false, l10n.common_no),
+            ])
+              ChoiceChip(
+                label: Text(text),
+                selected: value == option,
+                onSelected: (selected) {
+                  if (selected) onChanged(option);
+                },
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Minimum star rating, stored as `rating100 > (stars - 1) * 20`.
+class RatingCriterionInput extends StatelessWidget {
+  const RatingCriterionInput({
+    required this.criterion,
+    required this.onChanged,
+    super.key,
+  });
+
+  final IntCriterion? criterion;
+  final ValueChanged<IntCriterion?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final gap = context.dimensions.spacingSmall / 2;
+    return FilterField(
+      label: context.l10n.galleries_min_rating,
+      children: [
+        Wrap(
+          spacing: gap,
+          children: [
+            for (var stars = 0; stars <= 5; stars++)
+              ChoiceChip(
+                label: stars == 0
+                    ? Text(context.l10n.common_any)
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('$stars'),
+                          SizedBox(width: gap),
+                          Icon(
+                            Icons.star,
+                            size: 16 * context.dimensions.fontSizeFactor,
+                          ),
+                        ],
+                      ),
+                selected: stars == 0
+                    ? criterion == null
+                    : criterion?.value == (stars - 1) * 20 &&
+                          criterion?.modifier == CriterionModifier.greaterThan,
+                onSelected: (_) => onChanged(
+                  stars == 0
+                      ? null
+                      : IntCriterion(
+                          value: (stars - 1) * 20,
+                          modifier: CriterionModifier.greaterThan,
+                        ),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
 }
 
 /// Full-width filter dropdown with scalable field and menu sizing.

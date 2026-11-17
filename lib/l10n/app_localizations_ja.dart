@@ -838,6 +838,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get details_links => 'リンク';
 
   @override
+  String get details_appears_with => '共演者';
+
+  @override
   String get details_scene_scrape => 'メタデータ取得';
 
   @override
@@ -1739,13 +1742,71 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_layout_default_desc => 'ページのデフォルトレイアウトを選択します';
 
   @override
-  String get settings_interface_layout_list => 'リスト';
-
-  @override
   String get settings_interface_layout_grid => 'グリッド';
 
   @override
   String get settings_interface_layout_tiktok => '無限スクロール';
+
+  @override
+  String get scene_view_mode_prompt_title => 'シーンの表示方法を選択';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '2列のグリッドでシーンを表示します。';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => 'シーンを1つずつ、スワイプで無限に表示します。';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'この設定は後で「設定 › インターフェース設定」から変更できます。';
+
+  @override
+  String get onboarding_got_it => '了解';
+
+  @override
+  String get onboarding_playback_settings_hint => 'この設定は後で「設定 › 再生設定」から変更できます。';
+
+  @override
+  String get onboarding_grid_title => 'シーンの閲覧';
+
+  @override
+  String get onboarding_grid_long_press => 'シーンカードを長押しすると、詳細と操作を表示できます。';
+
+  @override
+  String get onboarding_feed_title => 'フィードの使い方';
+
+  @override
+  String get onboarding_feed_long_press =>
+      '動画を長押しすると早送りします。押したまま上にスライドするとさらに速くなります。';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'タイトルをタップすると操作ボタンを非表示にします。動画をタップすると再表示します。';
+
+  @override
+  String get onboarding_feed_chevron => '上向き矢印をタップすると、その他の操作を表示します。';
+
+  @override
+  String get onboarding_details_title => 'シーンの視聴';
+
+  @override
+  String get onboarding_details_swipe_title => 'タイトルを左右にスワイプすると、前後のシーンに移動します。';
+
+  @override
+  String get onboarding_details_seek_label => 'シーク方法を選んでください';
+
+  @override
+  String get onboarding_image_title => 'スワイプ方向を選択';
+
+  @override
+  String get settings_develop_reset_onboarding => '初回ヒントをリセット';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      '1回限りのヒントと選択を再表示します。';
+
+  @override
+  String get settings_develop_reset_onboarding_done => '初回ヒントが再表示されます。';
 
   @override
   String get settings_interface_grid_columns => 'グリッドの列数';
@@ -1773,38 +1834,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_waterfall_columns => 'ウォーターフォールグリッドの列数';
 
   @override
-  String get settings_interface_performer_layouts => 'パフォーマーのレイアウト';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'パフォーマーのメディアおよびギャラリーのデフォルト設定';
-
-  @override
-  String get settings_interface_studio_layouts => 'スタジオのレイアウト';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'スタジオのメディアおよびギャラリーのデフォルト設定';
 
   @override
-  String get settings_interface_tag_layouts => 'タグのレイアウト';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'タグのメディアおよびギャラリーのデフォルト設定';
-
-  @override
-  String get settings_interface_media_layout => 'メディアのレイアウト';
-
-  @override
-  String get settings_interface_media_layout_subtitle => 'メディアページのレイアウト';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'ギャラリーのレイアウト';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'ギャラリーページのレイアウト';
 
   @override
   String get settings_server_title => 'サーバー設定';
@@ -2012,6 +2051,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_playback_subtitle_lang => 'デフォルトの字幕言語';
+
+  @override
+  String get player_stream_resolution => '解像度';
+
+  @override
+  String get player_stream_original => 'オリジナル';
+
+  @override
+  String get player_stream_source => 'ストリームソース';
+
+  @override
+  String get player_stream_direct => 'ダイレクト';
+
+  @override
+  String get settings_playback_stream_source => 'デフォルトのストリームソース';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      '再生開始時に使用。利用できない場合はダイレクト';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '利用可能な場合に自動読み込み';
@@ -3601,16 +3659,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sub_group_count_title => 'サブグループ数';
 
   @override
-  String get groups_browsing_mode_subtitle => 'グループのデフォルトの閲覧モード';
-
-  @override
   String get markers_browsing_mode_subtitle => 'マーカーのデフォルトの閲覧モード';
-
-  @override
-  String get entity_layouts_title => 'エンティティのレイアウト';
-
-  @override
-  String get entity_layouts_subtitle => 'パフォーマー、スタジオ、タグのメディアとギャラリーのデフォルトのレイアウト';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';

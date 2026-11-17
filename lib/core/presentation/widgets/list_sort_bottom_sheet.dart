@@ -73,9 +73,8 @@ class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
     Navigator.pop(context);
     final message = widget.saveDefaultSuccessMessage;
     if (message != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     }
   }
 

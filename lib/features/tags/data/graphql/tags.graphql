@@ -10,6 +10,19 @@ fragment TagData on Tag {
   favorite
 }
 
+fragment TagDetailData on Tag {
+  ...TagData
+  aliases
+  parents {
+    id
+    name
+  }
+  children {
+    id
+    name
+  }
+}
+
 query FindTags($filter: FindFilterType, $tag_filter: TagFilterType) {
   findTags(filter: $filter, tag_filter: $tag_filter) {
     count
@@ -21,7 +34,7 @@ query FindTags($filter: FindFilterType, $tag_filter: TagFilterType) {
 
 query FindTag($id: ID!) {
   findTag(id: $id) {
-    ...TagData
+    ...TagDetailData
   }
 }
 

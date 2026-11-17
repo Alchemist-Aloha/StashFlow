@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
@@ -59,21 +58,11 @@ Future<void> main() async {
       'Whisper',
       'OPUS-MT',
     ], await rootBundle.loadString('asset/licenses/local_captions.txt'));
+    yield LicenseEntryWithLineBreaks(
+      ['Stash performer placeholders'],
+      await rootBundle.loadString('asset/licenses/performer_placeholders.txt'),
+    );
   });
-
-  // TEMP perf audit hook (revert after emulator profiling).
-  if (kProfileMode) {
-    SchedulerBinding.instance.addTimingsCallback((timings) {
-      for (final t in timings) {
-        // ignore: avoid_print
-        print(
-          'PERFFRAME build=${t.buildDuration.inMicroseconds} '
-          'raster=${t.rasterDuration.inMicroseconds} '
-          'span=${t.totalSpan.inMicroseconds}',
-        );
-      }
-    });
-  }
 
   try {
     if (!kIsWeb &&

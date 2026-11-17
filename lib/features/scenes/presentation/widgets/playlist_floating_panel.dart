@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/frosted_surface.dart';
+import '../../../../core/presentation/widgets/pagination_feedback.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene.dart';
@@ -30,7 +31,7 @@ class PlaylistFloatingPanel extends ConsumerStatefulWidget {
         final curve = Curves.easeOutBack.transform(anim1.value);
         return Transform.scale(
           scale: curve,
-          child: Opacity(opacity: anim1.value, child: child),
+          child: FadeTransition(opacity: anim1, child: child),
         );
       },
     );
@@ -105,7 +106,9 @@ class _PlaylistFloatingPanelState extends ConsumerState<PlaylistFloatingPanel> {
     final queueId = ref.read(playbackQueueProvider).activeQueueId;
     setState(() => _isPaging = true);
     try {
-      await maybeLoadNextPlaylistPage(ref, queueId);
+      await loadNextPageWithFeedback(context, () async {
+        await maybeLoadNextPlaylistPage(ref, queueId);
+      });
     } finally {
       if (mounted) setState(() => _isPaging = false);
     }

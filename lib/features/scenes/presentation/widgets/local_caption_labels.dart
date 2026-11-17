@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../data/local_captions/local_caption_model.dart';
 

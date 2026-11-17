@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:graphql/client.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
 import 'package:stash_app_flutter/core/data/repositories/graphql_saved_filter_repository.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -30,6 +32,54 @@ void main() {
     director: 'Director',
     synopsis: 'Synopsis',
   );
+
+  testWidgets('GroupsPage margins follow live UI scale on narrow screens', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final scale = ValueNotifier(0.8);
+    addTearDown(scale.dispose);
+    final repository = MockGraphQLGroupRepository()..withData([testGroup]);
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [groupRepositoryProvider.overrideWithValue(repository)],
+      child: ValueListenableBuilder<double>(
+        valueListenable: scale,
+        child: const GroupsPage(),
+        builder: (context, factor, child) => Theme(
+          data: AppTheme.buildTheme(
+            Brightness.light,
+            Colors.teal,
+            fontSizeFactor: factor,
+          ),
+          child: child!,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    for (final factor in [0.8, 1.5]) {
+      scale.value = factor;
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<Card>(find.byType(Card)).margin,
+        EdgeInsets.symmetric(horizontal: 16 * factor, vertical: 4 * factor),
+      );
+      expect(
+        tester
+            .widget<ListPageScaffold<Group>>(
+              find.byType(ListPageScaffold<Group>),
+            )
+            .padding,
+        EdgeInsets.symmetric(vertical: 8 * factor),
+      );
+      expect(find.text(testGroup.name), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+  });
 
   testWidgets('GroupsPage exposes sort and filter actions', (tester) async {
     final mockRepo = MockGraphQLGroupRepository()..withData([testGroup]);

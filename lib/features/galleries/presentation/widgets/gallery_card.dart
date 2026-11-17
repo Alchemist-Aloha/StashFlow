@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../gallery_location.dart';
+
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/thumbnail_badge.dart';
 import '../../../../core/presentation/widgets/media_card_text.dart';
@@ -18,7 +21,6 @@ import '../../../../core/presentation/providers/layout_settings_provider.dart';
 /// A card widget that displays a summary of a [Gallery].
 class GalleryCard extends ConsumerWidget {
   const GalleryCard.skeleton({
-    required this.isGrid,
     this.useMasonry = false,
     this.onTap,
     this.thumbnailUrl,
@@ -34,7 +36,6 @@ class GalleryCard extends ConsumerWidget {
 
   const GalleryCard({
     required this.gallery,
-    this.isGrid = true,
     this.useMasonry = false,
     this.onTap,
     this.thumbnailUrl,
@@ -47,9 +48,6 @@ class GalleryCard extends ConsumerWidget {
 
   /// The gallery data to display.
   final Gallery gallery;
-
-  /// Whether to display in a compact grid format or a wide list format.
-  final bool isGrid;
 
   /// Whether to use dynamic aspect ratio in grid mode (for masonry layouts).
   final bool useMasonry;
@@ -82,93 +80,7 @@ class GalleryCard extends ConsumerWidget {
       aspectRatio = gallery.coverWidth! / gallery.coverHeight!;
     }
 
-    if (isGrid) {
-      return _buildGridCard(context, ref, aspectRatio);
-    }
-    return _buildListCard(context, ref, aspectRatio);
-  }
-
-  Widget _buildListCard(
-    BuildContext context,
-    WidgetRef ref,
-    double aspectRatio,
-  ) {
-    return Skeletonizer(
-      enabled: skeletonize,
-      effect: const ShimmerEffect(duration: Duration(seconds: 2)),
-      child: Material(
-        color: Theme.of(
-          context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: skeletonize ? null : onTap ?? () => _openDetails(context, ref),
-          onLongPress: () => GalleryDetailsBottomSheet.show(context, gallery),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildThumbnail(context, aspectRatio.clamp(0.5, 2.5)),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            gallery.displayName,
-                            style: context.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: context.dimensions.cardTitleFontSize,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            [
-                              gallery.studioName ?? context.l10n.common_unknown,
-                              if (gallery.date != null)
-                                gallery.date!.split('-').first,
-                            ].join(' • '),
-                            style: context.textTheme.labelMedium?.copyWith(
-                              color: context.colors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (ref.watch(showPerformerAvatarsProvider) &&
-                              gallery.performerNames.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            ScenePerformerAvatarRow(
-                              performerImagePaths: gallery.performerImagePaths,
-                              performerNames: gallery.performerNames,
-                              performerIds: gallery.performerIds,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: context.l10n.common_more,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () =>
-                          GalleryDetailsBottomSheet.show(context, gallery),
-                      icon: const Icon(Icons.more_vert, size: 20),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return _buildGridCard(context, ref, aspectRatio);
   }
 
   Widget _buildGridCard(
@@ -180,9 +92,8 @@ class GalleryCard extends ConsumerWidget {
       enabled: skeletonize,
       effect: const ShimmerEffect(duration: Duration(seconds: 2)),
       child: Material(
-        color: Theme.of(
-          context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+        color: Theme.of(context).colorScheme.primaryContainer
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -195,58 +106,20 @@ class GalleryCard extends ConsumerWidget {
                 context,
                 useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            gallery.displayName,
-                            style: MediaCardText.title(context),
-                            maxLines: MediaCardText.titleMaxLines,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            gallery.studioName ?? context.l10n.common_unknown,
-                            style: MediaCardText.subtitle(context),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (showPerformers &&
-                              ref.watch(showPerformerAvatarsProvider) &&
-                              gallery.performerNames.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            ScenePerformerAvatarRow(
-                              performerImagePaths: gallery.performerImagePaths,
-                              performerNames: gallery.performerNames,
-                              performerIds: gallery.performerIds,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    SizedBox.square(
-                      dimension: 32,
-                      child: IconButton(
-                        tooltip: context.l10n.common_more,
-                        padding: EdgeInsets.zero,
-                        visualDensity: VisualDensity.compact,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 32,
-                          height: 32,
-                        ),
-                        onPressed: () =>
-                            GalleryDetailsBottomSheet.show(context, gallery),
-                        icon: const Icon(Icons.more_vert, size: 16),
-                      ),
-                    ),
-                  ],
-                ),
+              MediaCardMetadata(
+                title: gallery.displayName,
+                subtitle: gallery.studioName ?? context.l10n.common_unknown,
+                onMore: () => GalleryDetailsBottomSheet.show(context, gallery),
+                performers:
+                    showPerformers &&
+                        ref.watch(showPerformerAvatarsProvider) &&
+                        gallery.performerNames.isNotEmpty
+                    ? ScenePerformerAvatarRow(
+                        performerImagePaths: gallery.performerImagePaths,
+                        performerNames: gallery.performerNames,
+                        performerIds: gallery.performerIds,
+                      )
+                    : null,
               ),
             ],
           ),
@@ -276,22 +149,21 @@ class GalleryCard extends ConsumerWidget {
         ),
         if (gallery.rating100 != null && gallery.rating100! > 0)
           Positioned(
-            top: ThumbnailBadge.inset(compact: isGrid),
-            right: ThumbnailBadge.inset(compact: isGrid),
+            top: ThumbnailBadge.inset(context, compact: true),
+            right: ThumbnailBadge.inset(context, compact: true),
             child: ThumbnailBadge.rating(
               context,
               rating100: gallery.rating100!,
-              compact: isGrid,
+              compact: true,
             ),
           ),
         if (gallery.imageCount != null && gallery.imageCount! > 0)
           Positioned(
-            bottom: ThumbnailBadge.inset(compact: isGrid),
-            right: ThumbnailBadge.inset(compact: isGrid),
+            bottom: ThumbnailBadge.inset(context, compact: true),
+            right: ThumbnailBadge.inset(context, compact: true),
             child: ThumbnailBadge(
               label: '${gallery.imageCount}',
-              compact: isGrid,
-              icon: isGrid ? null : Icons.photo_library,
+              compact: true,
             ),
           ),
       ],

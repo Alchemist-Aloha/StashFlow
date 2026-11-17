@@ -856,6 +856,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get details_links => 'Enlaces';
 
   @override
+  String get details_appears_with => 'Aparece con';
+
+  @override
   String get details_scene_scrape => 'extraer metadatos';
 
   @override
@@ -1799,13 +1802,80 @@ class AppLocalizationsEs extends AppLocalizations {
       'Elige el diseño predeterminado para la página';
 
   @override
-  String get settings_interface_layout_list => 'Lista';
-
-  @override
   String get settings_interface_layout_grid => 'Cuadrícula';
 
   @override
   String get settings_interface_layout_tiktok => 'Desplazamiento infinito';
+
+  @override
+  String get scene_view_mode_prompt_title => 'Elige la vista de escenas';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc =>
+      'Escenas en una cuadrícula de dos columnas.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'Una escena cada vez en un feed infinito que se desliza.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'Puedes cambiarlo más tarde en Ajustes › Ajustes de interfaz.';
+
+  @override
+  String get onboarding_got_it => 'Entendido';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'Puedes cambiarlo más tarde en Ajustes › Ajustes de reproducción.';
+
+  @override
+  String get onboarding_grid_title => 'Explorar escenas';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Mantén pulsada una tarjeta de escena para ver sus detalles y acciones.';
+
+  @override
+  String get onboarding_feed_title => 'Usar el feed';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Mantén pulsado el vídeo para avanzar rápido. Desliza hacia arriba sin soltar para ir aún más rápido.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Toca el título para ocultar los controles. Toca el vídeo para volver a mostrarlos.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Toca la flecha hacia arriba para ver más acciones.';
+
+  @override
+  String get onboarding_details_title => 'Ver una escena';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Desliza el título a la izquierda o a la derecha para ir a la escena anterior o siguiente.';
+
+  @override
+  String get onboarding_details_seek_label =>
+      '¿Cómo quieres buscar en el vídeo?';
+
+  @override
+  String get onboarding_image_title => 'Elige la dirección de deslizamiento';
+
+  @override
+  String get settings_develop_reset_onboarding =>
+      'Restablecer consejos iniciales';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Volver a mostrar los consejos y opciones de un solo uso.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'Los consejos iniciales se mostrarán de nuevo.';
 
   @override
   String get settings_interface_grid_columns => 'Columnas de la cuadrícula';
@@ -1836,39 +1906,16 @@ class AppLocalizationsEs extends AppLocalizations {
       'Columnas de cuadrícula en cascada';
 
   @override
-  String get settings_interface_performer_layouts => 'Diseños de actores';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Valores predeterminados de medios y galerías para actores';
-
-  @override
-  String get settings_interface_studio_layouts => 'Diseños de estudios';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Valores predeterminados de medios y galerías para estudios';
 
   @override
-  String get settings_interface_tag_layouts => 'Diseños de etiquetas';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Valores predeterminados de medios y galerías para etiquetas';
-
-  @override
-  String get settings_interface_media_layout => 'Diseño de medios';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Diseño para la página de medios';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Diseño de galerías';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Diseño para la página de galerías';
 
   @override
   String get settings_server_title => 'Ajustes del servidor';
@@ -2097,6 +2144,26 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settings_playback_subtitle_lang =>
       'Idioma de subtítulos predeterminado';
+
+  @override
+  String get player_stream_resolution => 'Resolución';
+
+  @override
+  String get player_stream_original => 'Original';
+
+  @override
+  String get player_stream_source => 'Fuente de transmisión';
+
+  @override
+  String get player_stream_direct => 'Directa';
+
+  @override
+  String get settings_playback_stream_source =>
+      'Fuente de transmisión predeterminada';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Se usa al iniciar la reproducción; si no, Directa';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>
@@ -3746,19 +3813,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sub_group_count_title => 'Recuento de subgrupos';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Modo de navegación predeterminado para grupos';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Modo de navegación predeterminado para marcadores';
-
-  @override
-  String get entity_layouts_title => 'Diseños de entidad';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Valores predeterminados de diseño de galería y medios para artistas, estudios y etiquetas';
 
   @override
   String get stats_subtitle_0_gb => '0,00GB';

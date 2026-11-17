@@ -1,10 +1,13 @@
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
+
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
     as domain;
+
 import '../../domain/entities/image.dart';
 import '../../domain/entities/image_filter.dart';
 import '../graphql/images.graphql.dart';
@@ -57,6 +60,20 @@ class GraphQLImageRepository {
           ),
         )
         .toList();
+
+    map['galleries'] = [
+      for (final gallery
+          in (map['galleries'] as List<dynamic>? ?? const [])
+              .whereType<Map<String, dynamic>>())
+        {
+          'id': gallery['id'],
+          'title': gallery['title'] ?? '',
+          'path':
+              ((gallery['files'] as List<dynamic>?)?.firstOrNull
+                  as Map<String, dynamic>?)?['path'] ??
+              (gallery['folder'] as Map<String, dynamic>?)?['path'],
+        },
+    ];
 
     return Image.fromJson(map);
   }
@@ -174,6 +191,26 @@ class GraphQLImageRepository {
     if (data == null) throw Exception('Image not found');
 
     return _mapImage(data.toJson());
+  }
+
+  /// Increments the server counter and returns its confirmed value.
+  Future<int> incrementImageOCounter(String id) async {
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(r'''
+          mutation IncrementImageO($id: ID!) {
+            imageIncrementO(id: $id)
+          }
+        '''),
+        variables: {'id': id},
+      ),
+    );
+    validateGraphQLResult(result);
+    final count = result.data?['imageIncrementO'];
+    if (count is! int || count < 0) {
+      throw const FormatException('Invalid image O-count response');
+    }
+    return count;
   }
 
   /// Sends a direct `imageUpdate` GraphQL mutation for `rating100`.

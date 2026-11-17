@@ -14,6 +14,12 @@ fragment StudioListData on Studio {
 
 fragment StudioDetailData on Studio {
   ...StudioListData
+  aliases
+  urls
+  tags {
+    id
+    name
+  }
   parent_studio {
     id
     name

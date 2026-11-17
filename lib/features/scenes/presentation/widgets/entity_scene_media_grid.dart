@@ -28,7 +28,6 @@ class EntitySceneMediaGrid extends ConsumerStatefulWidget {
     required this.entityId,
     required this.filterKind,
     required this.mediaAsync,
-    required this.isGridView,
     required this.gridColumns,
     this.gridColumnSetting,
     required this.queueId,
@@ -41,14 +40,13 @@ class EntitySceneMediaGrid extends ConsumerStatefulWidget {
   final String entityId;
   final EntityMediaFilterKind filterKind;
   final AsyncValue<List<Scene>> mediaAsync;
-  final bool isGridView;
   final int? gridColumns;
 
   /// Category preference shared with the Interface settings page.
   final GridColumnSetting? gridColumnSetting;
   final String queueId;
   final Future<void> Function() onRefresh;
-  final VoidCallback onFetchNextPage;
+  final Future<void> Function() onFetchNextPage;
 
   @override
   ConsumerState<EntitySceneMediaGrid> createState() =>
@@ -96,8 +94,12 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
           commonOptions: SceneSortField.commonOptions,
           initialOption: _sortField,
           initialDescending: _sortDescending,
-          resetOption: SceneSortField.random,
-          resetDescending: true,
+          resetOption: SceneSortField.fromKey(
+            EntityMediaSort.defaultSortFor(widget.filterKind),
+          ),
+          resetDescending: EntityMediaSort.defaultDescendingFor(
+            widget.filterKind,
+          ),
           optionLabel: (field) => field.label(context),
           onApply: (field, descending) {
             setState(() {
@@ -157,9 +159,8 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
                   .saveAsDefault(),
               ref
                   .read(
-                    entityMediaOrganizedOnlyProvider(
-                      widget.filterKind,
-                    ).notifier,
+                    entityMediaOrganizedOnlyProvider(widget.filterKind)
+                        .notifier,
                   )
                   .saveAsDefault(),
             ]);
@@ -241,17 +242,13 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
       onRefresh: widget.onRefresh,
       onFetchNextPage: widget.onFetchNextPage,
       loadingItemBuilder: (context, isGrid, index) =>
-          SceneCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
-      gridDelegate: widget.isGridView
-          ? GridUtils.createDelegate(
-              context,
-              crossAxisCount: widget.gridColumns ?? 2,
-            )
-          : null,
-      useMasonry: widget.isGridView,
-      padding: widget.isGridView
-          ? GridUtils.defaultPadding(context)
-          : EdgeInsets.zero,
+          SceneCard.skeleton(useMasonry: true),
+      gridDelegate: GridUtils.createDelegate(
+        context,
+        crossAxisCount: widget.gridColumns ?? 2,
+      ),
+      useMasonry: true,
+      padding: GridUtils.defaultPadding(context),
       actions: [
         Stack(
           children: [
@@ -284,13 +281,11 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) {
         return SceneCard(
           scene: item,
-          isGrid: widget.isGridView,
-          useMasonry: widget.isGridView,
+          useMasonry: true,
           memCacheWidth: memCacheWidth,
           memCacheHeight: memCacheHeight,
-          useHero: GoRouter.of(
-            context,
-          ).routeInformationProvider.value.uri.path.endsWith('/media'),
+          useHero: GoRouter.of(context).routeInformationProvider.value.uri.path
+              .endsWith('/media'),
           onTap: () {
             ref
                 .read(playbackQueueProvider.notifier)

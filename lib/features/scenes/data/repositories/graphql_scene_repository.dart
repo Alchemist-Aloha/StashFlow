@@ -1,16 +1,21 @@
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
+
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
     as domain;
+
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_deduplication.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/models/scraper.dart';
 import '../graphql/scenes.graphql.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
+
 import '../utils/scrape_normalizer.dart';
 
 class GraphQLSceneRepository {
@@ -107,7 +112,7 @@ class GraphQLSceneRepository {
             title: s.title ?? '',
             details: null,
             path: s.files.isNotEmpty ? s.files.first.path : null,
-            date: DateTime.tryParse(s.date ?? '') ?? DateTime.now(),
+            date: DateTime.tryParse(s.date ?? ''),
             rating100: s.rating100,
             oCounter: s.o_counter ?? 0,
             organized: s.organized,
@@ -351,7 +356,7 @@ class GraphQLSceneRepository {
       title: s.title ?? '',
       details: s.details,
       path: s.files.isNotEmpty ? s.files.first.path : null,
-      date: DateTime.tryParse(s.date ?? '') ?? DateTime.now(),
+      date: DateTime.tryParse(s.date ?? ''),
       rating100: s.rating100,
       oCounter: s.o_counter ?? 0,
       organized: s.organized,
@@ -434,6 +439,30 @@ class GraphQLSceneRepository {
       tagIds: s.tags.map((t) => t.id).toList(),
       tagNames: s.tags.map((t) => t.name).toList(),
       markers: _mapSceneMarkers(rawScene?['scene_markers']),
+      code: s.code,
+      director: s.director,
+      createdAt: s.created_at,
+      updatedAt: s.updated_at,
+      lastPlayedAt: s.last_played_at,
+      customFields: s.custom_fields,
+      stashIds: s.stash_ids
+          .map(
+            (id) => SceneStashId(endpoint: id.endpoint, stashId: id.stash_id),
+          )
+          .toList(),
+      groups: s.groups
+          .map(
+            (membership) => SceneGroupMembership(
+              id: membership.group.id,
+              name: membership.group.name,
+              imagePath: resolveGraphqlMediaUrl(
+                rawUrl: membership.group.front_image_path,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
+              sceneIndex: membership.scene_index,
+            ),
+          )
+          .toList(),
     );
   }
 

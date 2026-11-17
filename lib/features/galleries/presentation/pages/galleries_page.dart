@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
@@ -205,9 +208,6 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     final imagesTabVisible = ref
         .watch(navigationTabsProvider)
         .any((tab) => tab.type == NavigationTabType.images && tab.visible);
-    final isGridView = ref.watch(
-      gridLayoutSettingProvider(GridLayoutSetting.gallery),
-    );
     final gridColumns = ref.watch(
       gridColumnSettingProvider(GridColumnSetting.gallery),
     );
@@ -310,17 +310,17 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       onFetchNextPage: () =>
           ref.read(galleryListProvider.notifier).fetchNextPage(),
       loadingItemBuilder: (context, isGrid, index) =>
-          GalleryCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
-      gridDelegate: isGridView
-          ? GridUtils.createDelegate(context, crossAxisCount: gridColumns ?? 2)
-          : null,
-      useMasonry: isGridView,
-      padding: isGridView ? GridUtils.defaultPadding(context) : EdgeInsets.zero,
+          GalleryCard.skeleton(useMasonry: true),
+      gridDelegate: GridUtils.createDelegate(
+        context,
+        crossAxisCount: gridColumns ?? 2,
+      ),
+      useMasonry: true,
+      padding: GridUtils.defaultPadding(context),
       itemBuilder: (context, gallery, memCacheWidth, memCacheHeight) =>
           GalleryCard(
             gallery: gallery,
-            isGrid: isGridView,
-            useMasonry: isGridView,
+            useMasonry: true,
             thumbnailUrl: resolveGraphqlMediaUrl(
               rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
               graphqlEndpoint: endpoint,

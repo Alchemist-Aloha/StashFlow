@@ -834,6 +834,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get details_links => '链接';
 
   @override
+  String get details_appears_with => '合作演员';
+
+  @override
   String get details_scene_scrape => '抓取元数据';
 
   @override
@@ -1728,13 +1731,67 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_layout_default_desc => '选择页面的默认布局';
 
   @override
-  String get settings_interface_layout_list => '列表';
-
-  @override
   String get settings_interface_layout_grid => '网格';
 
   @override
   String get settings_interface_layout_tiktok => '无限滚动';
+
+  @override
+  String get scene_view_mode_prompt_title => '选择场景浏览方式';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '以两列网格显示场景。';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => '在无限滑动的信息流中逐个浏览场景。';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint => '之后可在 设置 › 界面设置 中更改。';
+
+  @override
+  String get onboarding_got_it => '知道了';
+
+  @override
+  String get onboarding_playback_settings_hint => '之后可在 设置 › 播放设置 中更改。';
+
+  @override
+  String get onboarding_grid_title => '浏览场景';
+
+  @override
+  String get onboarding_grid_long_press => '长按场景卡片可查看详情和操作。';
+
+  @override
+  String get onboarding_feed_title => '使用信息流';
+
+  @override
+  String get onboarding_feed_long_press => '长按视频可快进，按住并上滑可进一步加速。';
+
+  @override
+  String get onboarding_feed_title_tap => '点击标题可隐藏控件，点击视频可重新显示。';
+
+  @override
+  String get onboarding_feed_chevron => '点击向上箭头可显示更多操作。';
+
+  @override
+  String get onboarding_details_title => '观看场景';
+
+  @override
+  String get onboarding_details_swipe_title => '在标题上左右滑动可切换到上一个或下一个场景。';
+
+  @override
+  String get onboarding_details_seek_label => '你希望如何快进/快退？';
+
+  @override
+  String get onboarding_image_title => '选择滑动方向';
+
+  @override
+  String get settings_develop_reset_onboarding => '重置首次使用提示';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle => '重新显示一次性提示和选项。';
+
+  @override
+  String get settings_develop_reset_onboarding_done => '首次使用提示将再次显示。';
 
   @override
   String get settings_interface_grid_columns => '网格列数';
@@ -1761,34 +1818,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_waterfall_columns => '瀑布流网格列数';
 
   @override
-  String get settings_interface_performer_layouts => '演员布局';
-
-  @override
   String get settings_interface_performer_layouts_subtitle => '演员的媒体和图库默认设置';
-
-  @override
-  String get settings_interface_studio_layouts => '制片商布局';
 
   @override
   String get settings_interface_studio_layouts_subtitle => '制片商的媒体和图库默认设置';
 
   @override
-  String get settings_interface_tag_layouts => '标签布局';
-
-  @override
   String get settings_interface_tag_layouts_subtitle => '标签的媒体和图库默认设置';
-
-  @override
-  String get settings_interface_media_layout => '媒体布局';
-
-  @override
-  String get settings_interface_media_layout_subtitle => '媒体页面的布局';
-
-  @override
-  String get settings_interface_galleries_layout_item => '图库布局';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item => '图库页面的布局';
 
   @override
   String get settings_server_title => '服务器设置';
@@ -1989,6 +2025,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_playback_subtitle_lang => '默认字幕语言';
+
+  @override
+  String get player_stream_resolution => '分辨率';
+
+  @override
+  String get player_stream_original => '原画';
+
+  @override
+  String get player_stream_source => '串流来源';
+
+  @override
+  String get player_stream_direct => '直连';
+
+  @override
+  String get settings_playback_stream_source => '默认串流来源';
+
+  @override
+  String get settings_playback_stream_source_subtitle => '开始播放时使用；不可用时回退到直连';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用则自动加载';
@@ -3562,16 +3616,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sub_group_count_title => '子组计数';
 
   @override
-  String get groups_browsing_mode_subtitle => '群组的默认浏览模式';
-
-  @override
   String get markers_browsing_mode_subtitle => '标记的默认浏览模式';
-
-  @override
-  String get entity_layouts_title => '实体布局';
-
-  @override
-  String get entity_layouts_subtitle => '演员、制片商和标签的媒体和图库布局默认值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';
@@ -4790,6 +4835,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get details_links => '链接';
 
   @override
+  String get details_appears_with => '合作演员';
+
+  @override
   String get details_scene_scrape => '抓取元数据';
 
   @override
@@ -5684,13 +5732,67 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_layout_default_desc => '选择页面的默认布局';
 
   @override
-  String get settings_interface_layout_list => '列表';
-
-  @override
   String get settings_interface_layout_grid => '网格';
 
   @override
   String get settings_interface_layout_tiktok => '无限滚动';
+
+  @override
+  String get scene_view_mode_prompt_title => '选择场景浏览方式';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '以两列网格显示场景。';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => '在无限滑动的信息流中逐个浏览场景。';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint => '之后可在 设置 › 界面设置 中更改。';
+
+  @override
+  String get onboarding_got_it => '知道了';
+
+  @override
+  String get onboarding_playback_settings_hint => '之后可在 设置 › 播放设置 中更改。';
+
+  @override
+  String get onboarding_grid_title => '浏览场景';
+
+  @override
+  String get onboarding_grid_long_press => '长按场景卡片可查看详情和操作。';
+
+  @override
+  String get onboarding_feed_title => '使用信息流';
+
+  @override
+  String get onboarding_feed_long_press => '长按视频可快进，按住并上滑可进一步加速。';
+
+  @override
+  String get onboarding_feed_title_tap => '点击标题可隐藏控件，点击视频可重新显示。';
+
+  @override
+  String get onboarding_feed_chevron => '点击向上箭头可显示更多操作。';
+
+  @override
+  String get onboarding_details_title => '观看场景';
+
+  @override
+  String get onboarding_details_swipe_title => '在标题上左右滑动可切换到上一个或下一个场景。';
+
+  @override
+  String get onboarding_details_seek_label => '你希望如何快进/快退？';
+
+  @override
+  String get onboarding_image_title => '选择滑动方向';
+
+  @override
+  String get settings_develop_reset_onboarding => '重置首次使用提示';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle => '重新显示一次性提示和选项。';
+
+  @override
+  String get settings_develop_reset_onboarding_done => '首次使用提示将再次显示。';
 
   @override
   String get settings_interface_grid_columns => '网格列数';
@@ -5717,34 +5819,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_waterfall_columns => '瀑布流网格列数';
 
   @override
-  String get settings_interface_performer_layouts => '演员布局';
-
-  @override
   String get settings_interface_performer_layouts_subtitle => '演员的媒体和图库默认设置';
-
-  @override
-  String get settings_interface_studio_layouts => '制片商布局';
 
   @override
   String get settings_interface_studio_layouts_subtitle => '制片商的媒体和图库默认设置';
 
   @override
-  String get settings_interface_tag_layouts => '标签布局';
-
-  @override
   String get settings_interface_tag_layouts_subtitle => '标签的媒体和图库默认设置';
-
-  @override
-  String get settings_interface_media_layout => '媒体布局';
-
-  @override
-  String get settings_interface_media_layout_subtitle => '媒体页面的布局';
-
-  @override
-  String get settings_interface_galleries_layout_item => '图库布局';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item => '图库页面的布局';
 
   @override
   String get settings_server_title => '服务器设置';
@@ -5945,6 +6026,24 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_playback_subtitle_lang => '默认字幕语言';
+
+  @override
+  String get player_stream_resolution => '分辨率';
+
+  @override
+  String get player_stream_original => '原画';
+
+  @override
+  String get player_stream_source => '串流来源';
+
+  @override
+  String get player_stream_direct => '直连';
+
+  @override
+  String get settings_playback_stream_source => '默认串流来源';
+
+  @override
+  String get settings_playback_stream_source_subtitle => '开始播放时使用；不可用时回退到直连';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用则自动加载';
@@ -7518,16 +7617,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get sub_group_count_title => '子组计数';
 
   @override
-  String get groups_browsing_mode_subtitle => '群组的默认浏览模式';
-
-  @override
   String get markers_browsing_mode_subtitle => '标记的默认浏览模式';
-
-  @override
-  String get entity_layouts_title => '实体布局';
-
-  @override
-  String get entity_layouts_subtitle => '演员、制片商和标签的媒体和图库布局默认值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';
@@ -8748,6 +8838,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get details_links => '連結';
 
   @override
+  String get details_appears_with => '合作演員';
+
+  @override
   String get details_scene_scrape => '擷取中繼資料';
 
   @override
@@ -9642,13 +9735,67 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_layout_default_desc => '選擇頁面的預設佈局';
 
   @override
-  String get settings_interface_layout_list => '列表';
-
-  @override
   String get settings_interface_layout_grid => '網格';
 
   @override
   String get settings_interface_layout_tiktok => '無限捲動';
+
+  @override
+  String get scene_view_mode_prompt_title => '選擇場景瀏覽方式';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '以兩欄網格顯示場景。';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => '在無限滑動的資訊流中逐一瀏覽場景。';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint => '之後可在 設定 › 介面設定 中變更。';
+
+  @override
+  String get onboarding_got_it => '知道了';
+
+  @override
+  String get onboarding_playback_settings_hint => '之後可在 設定 › 播放設定 中變更。';
+
+  @override
+  String get onboarding_grid_title => '瀏覽場景';
+
+  @override
+  String get onboarding_grid_long_press => '長按場景卡片可查看詳情與操作。';
+
+  @override
+  String get onboarding_feed_title => '使用資訊流';
+
+  @override
+  String get onboarding_feed_long_press => '長按影片可快轉，按住並上滑可進一步加速。';
+
+  @override
+  String get onboarding_feed_title_tap => '點擊標題可隱藏控制項，點擊影片可重新顯示。';
+
+  @override
+  String get onboarding_feed_chevron => '點擊向上箭頭可顯示更多操作。';
+
+  @override
+  String get onboarding_details_title => '觀看場景';
+
+  @override
+  String get onboarding_details_swipe_title => '在標題上左右滑動可切換到上一個或下一個場景。';
+
+  @override
+  String get onboarding_details_seek_label => '你希望如何快轉／倒轉？';
+
+  @override
+  String get onboarding_image_title => '選擇滑動方向';
+
+  @override
+  String get settings_develop_reset_onboarding => '重設首次使用提示';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle => '重新顯示一次性提示與選項。';
+
+  @override
+  String get settings_develop_reset_onboarding_done => '首次使用提示將再次顯示。';
 
   @override
   String get settings_interface_grid_columns => '網格欄數';
@@ -9675,34 +9822,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_waterfall_columns => '瀑布流網格欄數';
 
   @override
-  String get settings_interface_performer_layouts => '演員佈局';
-
-  @override
   String get settings_interface_performer_layouts_subtitle => '演員的媒體和圖庫預設';
-
-  @override
-  String get settings_interface_studio_layouts => '製片商佈局';
 
   @override
   String get settings_interface_studio_layouts_subtitle => '製片商的媒體和圖庫預設';
 
   @override
-  String get settings_interface_tag_layouts => '標籤佈局';
-
-  @override
   String get settings_interface_tag_layouts_subtitle => '標籤的媒體和圖庫預設';
-
-  @override
-  String get settings_interface_media_layout => '媒體佈局';
-
-  @override
-  String get settings_interface_media_layout_subtitle => '媒體頁面的佈局';
-
-  @override
-  String get settings_interface_galleries_layout_item => '圖庫佈局';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item => '圖庫頁面的佈局';
 
   @override
   String get settings_server_title => '伺服器設定';
@@ -9905,6 +10031,24 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_playback_subtitle_lang => '預設字幕語言';
+
+  @override
+  String get player_stream_resolution => '解析度';
+
+  @override
+  String get player_stream_original => '原始畫質';
+
+  @override
+  String get player_stream_source => '串流來源';
+
+  @override
+  String get player_stream_direct => '直連';
+
+  @override
+  String get settings_playback_stream_source => '預設串流來源';
+
+  @override
+  String get settings_playback_stream_source_subtitle => '開始播放時使用；無法使用時改用直連';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用則自動載入';
@@ -11483,16 +11627,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get sub_group_count_title => '子組計數';
 
   @override
-  String get groups_browsing_mode_subtitle => '群組的預設瀏覽模式';
-
-  @override
   String get markers_browsing_mode_subtitle => '標記的預設瀏覽模式';
-
-  @override
-  String get entity_layouts_title => '實體佈局';
-
-  @override
-  String get entity_layouts_subtitle => '演員、製片商和標籤的媒體與圖庫佈局預設值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';

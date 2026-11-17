@@ -1,21 +1,30 @@
 import 'dart:async';
 
+import '../widgets/performer_placeholder.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/utils/l10n_extensions.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../galleries/presentation/gallery_location.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
+import '../../domain/entities/performer.dart';
 import '../providers/performer_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 
+import '../../../../core/presentation/widgets/entity_links_section.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/detail_page_scroll_view.dart';
+import '../../../../core/presentation/providers/related_entities_provider.dart';
+import '../../../../core/presentation/widgets/meta_row.dart';
+import '../../../../core/presentation/widgets/related_entities.dart';
+import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -92,8 +101,15 @@ class PerformerDetailsPage extends ConsumerWidget {
     );
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
+    // Content scrolls under the frosted bar from a fixed top inset.
+    final appBar = FrostedAppBar(
+      bar: AppBar(backgroundColor: Colors.transparent),
+    );
+    final topInset = appBar.topInset(context);
+
     return Scaffold(
-      appBar: AppBar(),
+      extendBodyBehindAppBar: true,
+      appBar: appBar,
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomPerformer(context, ref),
@@ -105,6 +121,7 @@ class PerformerDetailsPage extends ConsumerWidget {
         data: (performer) {
           final age = _calculateAge(performer.birthdate);
           return RefreshIndicator(
+            edgeOffset: topInset,
             onRefresh: () async {
               await ref
                   .read(performerRepositoryProvider)
@@ -138,439 +155,266 @@ class PerformerDetailsPage extends ConsumerWidget {
                 ),
               ]);
             },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              // Content passes behind the frosted mini player; this inset keeps
-              // the last rows reachable while the player is visible.
+            child: DetailPageScrollView(
               padding: EdgeInsets.only(
+                top: topInset,
                 bottom: MediaQuery.paddingOf(context).bottom,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (performer.imagePath != null &&
-                      performer.imagePath!.isNotEmpty &&
-                      !performer.imagePath!.contains('default=true'))
-                    Container(
-                      height: 300,
-                      width: double.infinity,
-                      color: context.colors.surfaceVariant,
-                      child: StashImage(
-                        imageUrl: performer.imagePath!,
-                        fit: BoxFit.contain,
-                        memCacheWidth: 600,
+              header: Container(
+                height: 300,
+                width: double.infinity,
+                color: context.colors.surfaceVariant,
+                child: StashImage(
+                  imageUrl: performer.imagePath,
+                  placeholderAsset: performerPlaceholderAsset(
+                    performer.id,
+                    performer.gender,
+                  ),
+                  fit: BoxFit.contain,
+                  memCacheWidth: 600,
+                ),
+              ),
+              children: [
+                Text(
+                  performer.name,
+                  style: context.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: context.colors.onSurface,
+                  ),
+                ),
+                if (performer.disambiguation != null)
+                  Text(
+                    performer.disambiguation!,
+                    style: context.textTheme.titleMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                if (performer.aliasList.isNotEmpty) ...[
+                  SizedBox(height: context.dimensions.spacingSmall / 2),
+                  Text(
+                    performer.aliasList.join(', '),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppTheme.spacingSmall),
+                Wrap(
+                  spacing: context.dimensions.spacingSmall,
+                  runSpacing: context.dimensions.spacingSmall,
+                  children: [
+                    if (performer.gender != null)
+                      _buildChip(context, performer.gender!),
+                    if (age != null) _buildChip(context, '$age'),
+                    if (performer.birthdate != null)
+                      _buildChip(context, performer.birthdate!),
+                    if (performer.country != null)
+                      _buildChip(context, performer.country!),
+                    if (performer.ethnicity != null)
+                      _buildChip(context, performer.ethnicity!),
+                    if (performer.heightCm != null)
+                      _buildChip(context, '${performer.heightCm} cm'),
+                    if (performer.eyeColor != null)
+                      _buildChip(context, performer.eyeColor!),
+                    if (performer.hairColor != null)
+                      _buildChip(context, performer.hairColor!),
+                  ],
+                ),
+                SizedBox(height: context.dimensions.spacingSmall),
+                Row(
+                  key: const Key('performer_actions'),
+                  children: [
+                    IconButton(
+                      key: const Key('performer_action_favorite'),
+                      icon: Icon(
+                        performer.favorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                      ),
+                      tooltip: performer.favorite
+                          ? context.l10n.common_remove_favorite
+                          : context.l10n.common_add_favorite,
+                      onPressed: () async {
+                        try {
+                          await ref
+                              .read(performerRepositoryProvider)
+                              .setPerformerFavorite(
+                                performer.id,
+                                !performer.favorite,
+                              );
+                          ref.invalidate(
+                            performerDetailsProvider(performer.id),
+                          );
+                          ref.invalidate(performerListProvider);
+                        } on Object catch (e, stackTrace) {
+                          AppLogStore.instance.addError(
+                            'build',
+                            e,
+                            stackTrace,
+                            source: 'performer_details_page',
+                          );
+                          // This operation also reports invalid results through StateError.
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  context.l10n.details_failed_update_favorite(
+                                    e.toString(),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                    SizedBox(width: context.dimensions.spacingSmall),
+                    RatingButton(
+                      key: const Key('performer_action_rating'),
+                      rating100: performer.rating100,
+                      onRatingSelected: (rating) async {
+                        try {
+                          final repository = ref.read(
+                            performerRepositoryProvider,
+                          );
+                          await repository.updatePerformer(
+                            id: performer.id,
+                            input: {'rating100': rating},
+                          );
+                          await repository.getPerformerById(
+                            performer.id,
+                            refresh: true,
+                          );
+                          if (!context.mounted) return;
+                          ref.invalidate(
+                            performerDetailsProvider(performer.id),
+                          );
+                          ref.invalidate(performerListProvider);
+                        } on Object catch (error, stackTrace) {
+                          AppLogStore.instance.addError(
+                            'build',
+                            error,
+                            stackTrace,
+                            source: 'performer_details_page',
+                          );
+                          // This operation also reports invalid results through StateError.
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                context.l10n.details_failed_update_rating(
+                                  '$error',
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    SizedBox(width: context.dimensions.spacingSmall),
+                    IconButton(
+                      key: const Key('performer_action_edit'),
+                      tooltip: context.l10n.common_edit,
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () => context.push(
+                        '/performers/performer/${performer.id}/edit',
+                        extra: performer,
                       ),
                     ),
-                  Padding(
-                    padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                    child: Column(
+                  ],
+                ),
+                SizedBox(height: context.dimensions.spacingMedium),
+                if (performer.tagNames.isNotEmpty) ...[
+                  _buildSectionContainer(
+                    context,
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          performer.name,
-                          style: context.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: context.colors.onSurface,
-                          ),
+                        SectionHeader(
+                          title: context.l10n.details_tags,
+                          padding: EdgeInsets.zero,
                         ),
-                        if (performer.disambiguation != null)
-                          Text(
-                            performer.disambiguation!,
-                            style: context.textTheme.titleMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                            ),
-                          ),
-                        if (performer.aliasList.isNotEmpty) ...[
-                          SizedBox(height: context.dimensions.spacingSmall / 2),
-                          Text(
-                            performer.aliasList.join(', '),
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
                         const SizedBox(height: AppTheme.spacingSmall),
                         Wrap(
-                          spacing: context.dimensions.spacingSmall,
-                          runSpacing: context.dimensions.spacingSmall,
-                          children: [
-                            if (performer.gender != null)
-                              _buildChip(context, performer.gender!),
-                            if (age != null) _buildChip(context, '$age'),
-                            if (performer.birthdate != null)
-                              _buildChip(context, performer.birthdate!),
-                            if (performer.country != null)
-                              _buildChip(context, performer.country!),
-                            if (performer.ethnicity != null)
-                              _buildChip(context, performer.ethnicity!),
-                            if (performer.heightCm != null)
-                              _buildChip(context, '${performer.heightCm} cm'),
-                            if (performer.eyeColor != null)
-                              _buildChip(context, performer.eyeColor!),
-                            if (performer.hairColor != null)
-                              _buildChip(context, performer.hairColor!),
-                          ],
-                        ),
-                        SizedBox(height: context.dimensions.spacingSmall),
-                        Row(
-                          key: const Key('performer_actions'),
-                          children: [
-                            IconButton(
-                              key: const Key('performer_action_favorite'),
-                              icon: Icon(
-                                performer.favorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
+                          spacing: AppTheme.spacingSmall,
+                          runSpacing: AppTheme.spacingSmall,
+                          children: List.generate(performer.tagNames.length, (
+                            index,
+                          ) {
+                            return ActionChip(
+                              label: Text(
+                                performer.tagNames[index],
+                                style: context.textTheme.bodySmall,
                               ),
-                              tooltip: performer.favorite
-                                  ? context.l10n.common_remove_favorite
-                                  : context.l10n.common_add_favorite,
-                              onPressed: () async {
-                                try {
-                                  await ref
-                                      .read(performerRepositoryProvider)
-                                      .setPerformerFavorite(
-                                        performer.id,
-                                        !performer.favorite,
-                                      );
-                                  ref.invalidate(
-                                    performerDetailsProvider(performer.id),
-                                  );
-                                  ref.invalidate(performerListProvider);
-                                } on Object catch (e, stackTrace) {
-                                  AppLogStore.instance.addError(
-                                    'build',
-                                    e,
-                                    stackTrace,
-                                    source: 'performer_details_page',
-                                  );
-                                  // This operation also reports invalid results through StateError.
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          context.l10n
-                                              .details_failed_update_favorite(
-                                                e.toString(),
-                                              ),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                            ),
-                            SizedBox(width: context.dimensions.spacingSmall),
-                            RatingButton(
-                              key: const Key('performer_action_rating'),
-                              rating100: performer.rating100,
-                              onRatingSelected: (rating) async {
-                                try {
-                                  final repository = ref.read(
-                                    performerRepositoryProvider,
-                                  );
-                                  await repository.updatePerformer(
-                                    id: performer.id,
-                                    input: {'rating100': rating},
-                                  );
-                                  await repository.getPerformerById(
-                                    performer.id,
-                                    refresh: true,
-                                  );
-                                  if (!context.mounted) return;
-                                  ref.invalidate(
-                                    performerDetailsProvider(performer.id),
-                                  );
-                                  ref.invalidate(performerListProvider);
-                                } on Object catch (error, stackTrace) {
-                                  AppLogStore.instance.addError(
-                                    'build',
-                                    error,
-                                    stackTrace,
-                                    source: 'performer_details_page',
-                                  );
-                                  // This operation also reports invalid results through StateError.
-                                  if (!context.mounted) return;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        context.l10n
-                                            .details_failed_update_rating(
-                                              '$error',
-                                            ),
-                                      ),
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () {
+                                if (index < performer.tagIds.length) {
+                                  unawaited(
+                                    context.push(
+                                      '/tags/tag/${performer.tagIds[index]}',
                                     ),
                                   );
                                 }
                               },
-                            ),
-                            SizedBox(width: context.dimensions.spacingSmall),
-                            IconButton(
-                              key: const Key('performer_action_edit'),
-                              tooltip: context.l10n.common_edit,
-                              icon: const Icon(Icons.edit_outlined),
-                              onPressed: () => context.push(
-                                '/performers/performer/${performer.id}/edit',
-                                extra: performer,
-                              ),
-                            ),
-                          ],
+                            );
+                          }),
                         ),
-                        SizedBox(height: context.dimensions.spacingMedium),
-                        if (performer.tagNames.isNotEmpty) ...[
-                          _buildSectionContainer(
-                            context,
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SectionHeader(
-                                  title: context.l10n.details_tags,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                const SizedBox(height: AppTheme.spacingSmall),
-                                Wrap(
-                                  spacing: AppTheme.spacingSmall,
-                                  runSpacing: AppTheme.spacingSmall,
-                                  children: List.generate(
-                                    performer.tagNames.length,
-                                    (index) {
-                                      return ActionChip(
-                                        label: Text(
-                                          performer.tagNames[index],
-                                          style: context.textTheme.bodySmall,
-                                        ),
-                                        visualDensity: VisualDensity.compact,
-                                        onPressed: () {
-                                          if (index < performer.tagIds.length) {
-                                            unawaited(
-                                              context.push(
-                                                '/tags/tag/${performer.tagIds[index]}',
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (performer.urls.isNotEmpty) ...[
+                  _buildSectionContainer(
+                    context,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [EntityLinksSection(urls: performer.urls)],
+                    ),
+                  ),
+                ],
+                if (_attributes(context, performer) case final attributes
+                    when attributes.isNotEmpty ||
+                        (performer.details?.trim().isNotEmpty ?? false)) ...[
+                  _buildSectionContainer(
+                    context,
+                    _PerformerDetailsSection(
+                      key: ValueKey(performer.id),
+                      attributes: attributes,
+                      details: performer.details ?? '',
+                    ),
+                  ),
+                ],
+                if (mediaAsync.maybeWhen(
+                  data: (scenes) => scenes.isNotEmpty,
+                  orElse: () => true,
+                ))
+                  _buildSectionContainer(
+                    context,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: context.l10n.details_media,
+                          onViewAll: () => context.push(
+                            '/performers/performer/${performer.id}/media',
                           ),
-                        ],
-                        if (performer.urls.isNotEmpty) ...[
-                          _buildSectionContainer(
-                            context,
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _PerformerLinks(
-                                  urls: performer.urls,
-                                  linkBuilder: (url) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: AppTheme.spacingSmall,
-                                      ),
-                                      child: InkWell(
-                                        onTap: () async {
-                                          final uri = Uri.tryParse(url);
-                                          if (uri == null) return;
-                                          try {
-                                            if (await canLaunchUrl(uri)) {
-                                              await launchUrl(
-                                                uri,
-                                                mode: LaunchMode
-                                                    .externalApplication,
-                                              );
-                                            } else {
-                                              if (context.mounted) {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      context.l10n.common_error(
-                                                        url,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            }
-                                          } on Exception catch (e, stackTrace) {
-                                            AppLogStore.instance.addError(
-                                              'build',
-                                              e,
-                                              stackTrace,
-                                              source: 'performer_details_page',
-                                            );
-                                            if (context.mounted) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    context.l10n.common_error(
-                                                      e.toString(),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          }
-                                        },
-                                        borderRadius: BorderRadius.circular(4),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.link,
-                                              size: 16,
-                                              color: context.colors.primary,
-                                            ),
-                                            const SizedBox(
-                                              width: AppTheme.spacingSmall,
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                url,
-                                                style: context
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.copyWith(
-                                                      color: context
-                                                          .colors
-                                                          .primary,
-                                                      decoration: TextDecoration
-                                                          .underline,
-                                                    ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        if (performer.details != null &&
-                            performer.details!.trim().isNotEmpty) ...[
-                          _buildSectionContainer(
-                            context,
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SectionHeader(
-                                  title: context.l10n.common_details,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                const SizedBox(height: AppTheme.spacingSmall),
-                                Text(
-                                  performer.details!,
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        _buildSectionContainer(
-                          context,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SectionHeader(
-                                title: context.l10n.details_media,
-                                onViewAll: () => context.push(
-                                  '/performers/performer/${performer.id}/media',
-                                ),
-                                padding: EdgeInsets.zero,
-                              ),
-                              mediaAsync.when(
-                                data: (scenes) {
-                                  if (scenes.isEmpty) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                        top: AppTheme.spacingSmall,
-                                      ),
-                                      child: Text(
-                                        context.l10n.common_no_media_found,
-                                        style: context.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: context
-                                                  .colors
-                                                  .onSurfaceVariant,
-                                            ),
-                                      ),
-                                    );
-                                  }
-                                  return Padding(
-                                    padding: EdgeInsets.only(
-                                      top: context.dimensions.spacingMedium,
-                                    ),
-                                    child: SceneStrip(
-                                      scenes: scenes,
-                                      queueId: PlaybackQueueIds.performerStrip(
-                                        performer.id,
-                                      ),
-                                      onTap: (scene) => context.push(
-                                        '/scenes/scene/${scene.id}',
-                                        extra: true,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                loading: () => const SizedBox(
-                                  height: 100,
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                                error: (err, stack) => Text(
-                                  context.l10n.common_error(err.toString()),
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          padding: EdgeInsets.zero,
                         ),
-                        galleriesAsync.when(
-                          data: (galleries) {
-                            if (galleries.isEmpty) {
-                              return const SizedBox.shrink();
-                            }
-                            return _buildSectionContainer(
-                              context,
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SectionHeader(
-                                    title: context.l10n.details_galleries,
-                                    onViewAll: () => context.push(
-                                      '/performers/performer/${performer.id}/galleries',
-                                    ),
-                                    padding: EdgeInsets.zero,
-                                  ),
-                                  SizedBox(
-                                    height: context.dimensions.spacingMedium,
-                                  ),
-                                  GalleryStrip(
-                                    galleries: galleries,
-                                    onTap: (gallery) {
-                                      unawaited(
-                                        context.push(
-                                          galleryLocation(context, gallery.id),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
+                        mediaAsync.when(
+                          data: (scenes) {
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                top: context.dimensions.spacingMedium,
+                              ),
+                              child: SceneStrip(
+                                scenes: scenes,
+                                queueId: PlaybackQueueIds.performerStrip(
+                                  performer.id,
+                                ),
+                                onTap: (scene) => context.push(
+                                  '/scenes/scene/${scene.id}',
+                                  extra: true,
+                                ),
                               ),
                             );
                           },
@@ -579,9 +423,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            context.l10n.details_failed_load_galleries(
-                              err.toString(),
-                            ),
+                            context.l10n.common_error(err.toString()),
                             style: context.textTheme.bodyMedium?.copyWith(
                               color: context.colors.onSurfaceVariant,
                             ),
@@ -590,8 +432,74 @@ class PerformerDetailsPage extends ConsumerWidget {
                       ],
                     ),
                   ),
-                ],
-              ),
+                galleriesAsync.when(
+                  data: (galleries) {
+                    if (galleries.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return _buildSectionContainer(
+                      context,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SectionHeader(
+                            title: context.l10n.details_galleries,
+                            onViewAll: () => context.push(
+                              '/performers/performer/${performer.id}/galleries',
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                          SizedBox(height: context.dimensions.spacingMedium),
+                          GalleryStrip(
+                            galleries: galleries,
+                            onTap: (gallery) {
+                              unawaited(
+                                context.push(
+                                  galleryLocation(context, gallery.id),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  loading: () => const SizedBox(
+                    height: 100,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (err, stack) => Text(
+                    context.l10n.details_failed_load_galleries(err.toString()),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                for (final (kind, title, icon) in [
+                  (
+                    RelatedEntityKind.groups,
+                    context.l10n.groups_title,
+                    Icons.group_work,
+                  ),
+                  (
+                    RelatedEntityKind.performers,
+                    context.l10n.details_appears_with,
+                    Icons.person_outline,
+                  ),
+                ])
+                  RelatedEntitiesSection(
+                    title: title,
+                    fallbackIcon: icon,
+                    collapsedCount: kind == RelatedEntityKind.performers
+                        ? 5
+                        : null,
+                    query: (
+                      kind: kind,
+                      owner: RelatedEntityOwner.performer,
+                      id: performer.id,
+                    ),
+                  ),
+              ],
             ),
           );
         },
@@ -604,6 +512,56 @@ class PerformerDetailsPage extends ConsumerWidget {
     );
   }
 
+  /// Labelled performer attributes that are set, in the web UI's order.
+  List<(String, String)> _attributes(
+    BuildContext context,
+    Performer performer,
+  ) {
+    final l10n = context.l10n;
+    String? text(String? value) =>
+        value == null || value.trim().isEmpty ? null : value.trim();
+    final circumcised = switch (performer.circumcised) {
+      'CUT' => l10n.performers_circumcised_cut,
+      'UNCUT' => l10n.performers_circumcised_uncut,
+      final other => text(other),
+    };
+    return [
+      for (final (label, value) in [
+        (l10n.performers_field_career_start, text(performer.careerStart)),
+        (l10n.performers_field_career_end, text(performer.careerEnd)),
+        (l10n.performers_field_deathdate, text(performer.deathDate)),
+        (l10n.performers_field_weight_kg, performer.weight?.toString()),
+        (l10n.performers_field_measurements, text(performer.measurements)),
+        (l10n.performers_field_fake_tits, text(performer.fakeTits)),
+        (
+          l10n.performers_field_penis_length,
+          performer.penisLength == null ? null : '${performer.penisLength} cm',
+        ),
+        (l10n.performers_circumcised, circumcised),
+        (l10n.performers_field_tattoos, text(performer.tattoos)),
+        (l10n.performers_field_piercings, text(performer.piercings)),
+        (l10n.performers_field_o_counter, performer.oCounter?.toString()),
+        (
+          l10n.common_stash_id,
+          text(
+            performer.stashIds
+                .map((id) => '${id.stashId}\n${id.endpoint}')
+                .join('\n'),
+          ),
+        ),
+        (
+          l10n.filter_custom_fields,
+          text(
+            performer.customFields.entries
+                .map((field) => '${field.key}: ${field.value}')
+                .join('\n'),
+          ),
+        ),
+      ])
+        if (value != null) (label, value),
+    ];
+  }
+
   Widget _buildChip(BuildContext context, String label) {
     if (label.isEmpty) return const SizedBox.shrink();
     return Chip(
@@ -613,47 +571,79 @@ class PerformerDetailsPage extends ConsumerWidget {
   }
 }
 
-/// Links section showing the first [collapsedCount] links, with a header
-/// Show more/Show less toggle for the rest.
-class _PerformerLinks extends StatefulWidget {
-  const _PerformerLinks({required this.urls, required this.linkBuilder});
+class _PerformerDetailsSection extends StatefulWidget {
+  const _PerformerDetailsSection({
+    required this.attributes,
+    required this.details,
+    super.key,
+  });
 
-  static const collapsedCount = 5;
-
-  final List<String> urls;
-  final Widget Function(String url) linkBuilder;
+  final List<(String, String)> attributes;
+  final String details;
 
   @override
-  State<_PerformerLinks> createState() => _PerformerLinksState();
+  State<_PerformerDetailsSection> createState() =>
+      _PerformerDetailsSectionState();
 }
 
-class _PerformerLinksState extends State<_PerformerLinks> {
+class _PerformerDetailsSectionState extends State<_PerformerDetailsSection> {
+  static const _collapsedRows = 5;
   bool _showAll = false;
 
   @override
   Widget build(BuildContext context) {
-    final urls = widget.urls;
-    final collapsible = urls.length > _PerformerLinks.collapsedCount;
-    final visible = _showAll || !collapsible
-        ? urls
-        : urls.take(_PerformerLinks.collapsedCount);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SectionHeader(
-          key: const Key('performer_links_header'),
-          title: context.l10n.details_links,
-          padding: EdgeInsets.zero,
-          onViewAll: collapsible
-              ? () => setState(() => _showAll = !_showAll)
-              : null,
-          actionLabel: _showAll
-              ? context.l10n.details_show_less
-              : context.l10n.details_show_more,
-        ),
-        const SizedBox(height: AppTheme.spacingSmall),
-        ...visible.map(widget.linkBuilder),
-      ],
+    final attributes = widget.attributes;
+    final details = widget.details.trim();
+    final remainingLines = _collapsedRows - attributes.length;
+    final style = context.textTheme.bodyMedium?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var collapsible = attributes.length > _collapsedRows;
+        if (details.isNotEmpty) {
+          if (remainingLines <= 0) {
+            collapsible = true;
+          } else {
+            final painter = TextPainter(
+              text: TextSpan(text: details, style: style),
+              maxLines: remainingLines,
+              textDirection: Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+            )..layout(maxWidth: constraints.maxWidth);
+            collapsible = painter.didExceedMaxLines;
+            painter.dispose();
+          }
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SectionHeader(
+              key: const Key('performer_details_header'),
+              title: context.l10n.common_details,
+              padding: EdgeInsets.zero,
+              onViewAll: collapsible
+                  ? () => setState(() => _showAll = !_showAll)
+                  : null,
+              actionLabel: _showAll
+                  ? context.l10n.details_show_less
+                  : context.l10n.details_show_more,
+            ),
+            SizedBox(height: context.dimensions.spacingSmall),
+            for (final (label, value)
+                in _showAll ? attributes : attributes.take(_collapsedRows))
+              MetaRow(label: label, value: value, selectable: true),
+            if (details.isNotEmpty && (_showAll || remainingLines > 0))
+              Text(
+                details,
+                maxLines: _showAll ? null : remainingLines,
+                overflow: _showAll ? null : TextOverflow.ellipsis,
+                style: style,
+              ),
+          ],
+        );
+      },
     );
   }
 }

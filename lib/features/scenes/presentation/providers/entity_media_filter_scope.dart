@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/domain/entities/criterion.dart';
 import '../../../../core/domain/entities/filter_options.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import 'scene_list_provider.dart';
@@ -42,8 +43,9 @@ class EntityMediaSort extends _$EntityMediaSort {
     EntityMediaFilterKind kind,
   ) {
     final prefs = ref.read(sharedPreferencesProvider);
-    final sort = prefs.getString(_sortKey(kind)) ?? 'random';
-    final descending = prefs.getBool(_descKey(kind)) ?? true;
+    final sort = prefs.getString(_sortKey(kind)) ?? defaultSortFor(kind);
+    final descending =
+        prefs.getBool(_descKey(kind)) ?? defaultDescendingFor(kind);
     final seed = sort == 'random'
         ? ref.read(entityMediaRandomSeedProvider(kind))
         : null;
@@ -51,8 +53,12 @@ class EntityMediaSort extends _$EntityMediaSort {
     return (sort: sort, descending: descending, randomSeed: seed);
   }
 
+  /// Applies [sort]; `null` restores the kind's default sort and direction.
   void setSort({String? sort, bool descending = true}) {
-    sort ??= 'random';
+    if (sort == null) {
+      sort = defaultSortFor(kind);
+      descending = defaultDescendingFor(kind);
+    }
     final seed = sort == 'random'
         ? ref.read(entityMediaRandomSeedProvider(kind))
         : null;
@@ -67,6 +73,15 @@ class EntityMediaSort extends _$EntityMediaSort {
     }
     await prefs.setBool(_descKey(kind), state.descending);
   }
+
+  /// Sort used when none is saved. Groups are ordered collections, so they
+  /// open in their own scene order.
+  static String defaultSortFor(EntityMediaFilterKind kind) =>
+      kind == EntityMediaFilterKind.group ? 'group_scene_number' : 'random';
+
+  /// Direction paired with [defaultSortFor].
+  static bool defaultDescendingFor(EntityMediaFilterKind kind) =>
+      kind != EntityMediaFilterKind.group;
 
   static String _sortKey(EntityMediaFilterKind kind) =>
       'entity_media_${kind.name}_sort_field';
@@ -179,12 +194,8 @@ FutureOr<List<Scene>> entityMediaPreview(
 }
 
 @riverpod
-class EntityMediaGrid extends _$EntityMediaGrid {
+class EntityMediaGrid extends _$EntityMediaGrid with ListPagination<Scene> {
   static const int _perPage = 30;
-  int _currentPage = 1;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
   EntityMediaFilterKind? _kind;
   String? _entityId;
 
@@ -198,22 +209,20 @@ class EntityMediaGrid extends _$EntityMediaGrid {
     if (sortConfig.sort == 'random') {
       ref.watch(entityMediaRandomSeedProvider(kind));
     }
-    _requestGeneration++;
-    _isLoadingMore = false;
+    final generation = resetPagination();
     _kind = kind;
     _entityId = entityId;
-    _currentPage = 1;
-    _hasMore = true;
-    return _fetchFirstPage(kind, entityId);
+    return _fetchFirstPage(kind, entityId, generation);
   }
 
   Future<List<Scene>> _fetchFirstPage(
     EntityMediaFilterKind kind,
     String entityId,
+    int generation,
   ) async {
     final firstPage = await _fetchPage(kind: kind, entityId: entityId, page: 1);
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
@@ -263,36 +272,11 @@ class EntityMediaGrid extends _$EntityMediaGrid {
   Future<void> fetchNextPage() async {
     final kind = _kind;
     final entityId = _entityId;
-    if (_isLoadingMore ||
-        !_hasMore ||
-        state.isLoading ||
-        kind == null ||
-        entityId == null) {
-      return;
-    }
+    if (kind == null || entityId == null) return;
 
-    final generation = _requestGeneration;
-    _isLoadingMore = true;
-    try {
-      final nextPage = _currentPage + 1;
-      final nextItems = await _fetchPage(
-        kind: kind,
-        entityId: entityId,
-        page: nextPage,
-      );
-
-      if (!ref.mounted || generation != _requestGeneration) return;
-
-      _hasMore = nextItems.length >= _perPage;
-      if (nextItems.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...(state.value ?? <Scene>[]), ...nextItems]);
-      }
-    } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
-    }
+    await loadNextPage(
+      perPage: _perPage,
+      fetch: (page) => _fetchPage(kind: kind, entityId: entityId, page: page),
+    );
   }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
 }

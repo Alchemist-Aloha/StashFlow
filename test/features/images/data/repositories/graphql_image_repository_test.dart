@@ -25,6 +25,52 @@ void main() {
   });
 
   group('GraphQLImageRepository', () {
+    test('increments O-count using the server response', () async {
+      when(mockClient.mutate<Object?>(any)).thenAnswer((invocation) async {
+        final options =
+            invocation.positionalArguments.single as MutationOptions;
+        expect(options.variables, {'id': 'image-1'});
+        expect(options.document.definitions, isNotEmpty);
+        return QueryResult(
+          options: options,
+          source: QueryResultSource.network,
+          data: {'imageIncrementO': 12},
+        );
+      });
+      expect(await repository.incrementImageOCounter('image-1'), 12);
+    });
+
+    for (final value in [null, '12', -1]) {
+      test('rejects invalid O-count response: $value', () async {
+        when(mockClient.mutate<Object?>(any)).thenAnswer(
+          (invocation) async => QueryResult(
+            options: invocation.positionalArguments.single as MutationOptions,
+            source: QueryResultSource.network,
+            data: {'imageIncrementO': value},
+          ),
+        );
+        await expectLater(
+          repository.incrementImageOCounter('1'),
+          throwsFormatException,
+        );
+      });
+    }
+
+    test('normalizes O-count mutation errors', () async {
+      when(mockClient.mutate<Object?>(any)).thenAnswer(
+        (invocation) async => QueryResult(
+          options: invocation.positionalArguments.single as MutationOptions,
+          source: QueryResultSource.network,
+          exception: OperationException(
+            graphqlErrors: [const GraphQLError(message: 'denied')],
+          ),
+        ),
+      );
+      await expectLater(
+        repository.incrementImageOCounter('1'),
+        throwsA(isA<AppGraphQLException>()),
+      );
+    });
     test('findImages returns a list of images on success', () async {
       final data = {
         'findImages': {
@@ -65,6 +111,9 @@ void main() {
                 'image': 'full.jpg',
                 '__typename': 'ImagePathsType',
               },
+              'organized': false,
+              'tags': <Map<String, dynamic>>[],
+              'galleries': <Map<String, dynamic>>[],
               '__typename': 'Image',
             },
           ],
@@ -218,6 +267,21 @@ void main() {
             'image': 'full.jpg',
             '__typename': 'ImagePathsType',
           },
+          'organized': true,
+          'o_counter': 2,
+          'photographer': 'Audit Photographer',
+          'tags': [
+            {'id': 't1', 'name': 'Demo', '__typename': 'Tag'},
+          ],
+          'galleries': [
+            {
+              'id': 'g1',
+              'title': null,
+              'files': <Map<String, dynamic>>[],
+              'folder': {'path': '/data/Trip', '__typename': 'Folder'},
+              '__typename': 'Gallery',
+            },
+          ],
           '__typename': 'Image',
         },
         '__typename': 'Query',
@@ -242,6 +306,14 @@ void main() {
       expect(result.id, '1');
       expect(result.title, 'Test Image');
       expect(result.files.single.size, 3221225472);
+      expect(result.organized, isTrue);
+      expect(result.oCounter, 2);
+      expect(result.photographer, 'Audit Photographer');
+      expect(result.tags.single, const ImageTag(id: 't1', name: 'Demo'));
+      expect(
+        result.galleries.single,
+        const ImageGallery(id: 'g1', path: '/data/Trip'),
+      );
       expect(result.isClip, isTrue);
       expect(result.files.single.typename, 'VideoFile');
       expect(result.paths.thumbnail, 'http://localhost:9999/thumb.jpg');
@@ -275,6 +347,9 @@ void main() {
                 'image': '/image/gif/image',
                 '__typename': 'ImagePathsType',
               },
+              'organized': false,
+              'tags': <Map<String, dynamic>>[],
+              'galleries': <Map<String, dynamic>>[],
               '__typename': 'Image',
             },
             '__typename': 'Query',

@@ -1,6 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/meta_row.dart';
+import '../../../../core/presentation/widgets/related_entities.dart';
+import '../../../galleries/presentation/gallery_location.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/studio_performer_info_sections.dart';
@@ -100,6 +103,16 @@ class ImageDetailsContent extends StatelessWidget {
     return image.id;
   }
 
+  /// A gallery's title, else its zip or folder name, else its ID.
+  static String _galleryName(entity.ImageGallery gallery) {
+    if (gallery.title.trim().isNotEmpty) return gallery.title.trim();
+    final name = gallery.path
+        ?.replaceAll('\\', '/')
+        .split('/')
+        .lastWhere((segment) => segment.isNotEmpty, orElse: () => '');
+    return name?.isNotEmpty == true ? name! : gallery.id;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dims = context.dimensions;
@@ -124,34 +137,84 @@ class ImageDetailsContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _MetaRow(label: context.l10n.images_field_id, value: image.id),
-              _MetaRow(
+              MetaRow(label: context.l10n.images_field_id, value: image.id),
+              MetaRow(
                 label: context.l10n.common_date,
                 value: image.date ?? '--',
               ),
-              _MetaRow(
+              MetaRow(
                 label: context.l10n.images_field_url,
                 value: image.urls.isEmpty ? '--' : image.urls.join('\n'),
                 selectable: true,
               ),
+              for (final (label, value) in [
+                (context.l10n.scenes_field_code, image.code),
+                (context.l10n.gallery_photographer_title, image.photographer),
+                (
+                  context.l10n.images_field_o_counter,
+                  image.oCounter?.toString(),
+                ),
+              ])
+                if (value != null && value.trim().isNotEmpty)
+                  MetaRow(label: label, value: value, selectable: true),
+              MetaRow(
+                label: context.l10n.common_organized,
+                value: image.organized
+                    ? context.l10n.common_yes
+                    : context.l10n.common_no,
+              ),
+              if (image.details?.trim().isNotEmpty ?? false) ...[
+                SizedBox(height: dims.spacingSmall),
+                Text(image.details!, style: context.textTheme.bodyMedium),
+              ],
             ],
           ),
         ),
+        if (image.tags.isNotEmpty) ...[
+          SizedBox(height: dims.spacingMedium),
+          _SectionCard(
+            title: context.l10n.details_tags,
+            child: EntityLinkChips(
+              closesSheet: true,
+              links: [
+                for (final tag in image.tags)
+                  (label: tag.name, route: '/tags/tag/${tag.id}'),
+              ],
+            ),
+          ),
+        ],
+        if (image.galleries.isNotEmpty) ...[
+          SizedBox(height: dims.spacingMedium),
+          _SectionCard(
+            title: context.l10n.galleries_title,
+            child: Column(
+              children: [
+                for (final gallery in image.galleries)
+                  RelatedEntityTile(
+                    title: _galleryName(gallery),
+                    route: galleryLocation(context, gallery.id),
+                    fallbackIcon: Icons.photo_library_outlined,
+                    closesSheet: true,
+                  ),
+              ],
+            ),
+          ),
+        ],
         SizedBox(height: dims.spacingMedium),
         _SectionCard(
           title: context.l10n.scene_info_technical,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _MetaRow(
+              MetaRow(
                 label: context.l10n.common_resolution,
                 value: file == null ? '--' : '${file.width} x ${file.height}',
               ),
-              _MetaRow(
+              MetaRow(
                 label: context.l10n.sort_filesize,
                 value: file?.size != null ? formatBytes(file!.size!) : '--',
               ),
-              _MetaRow(
+              MetaRow(
                 label: context.l10n.scene_info_original_file_path,
                 value: file?.path.isNotEmpty == true ? file!.path : '--',
                 selectable: true,
@@ -173,44 +236,4 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       SectionPanel(title: title, child: child);
-}
-
-class _MetaRow extends StatelessWidget {
-  const _MetaRow({
-    required this.label,
-    required this.value,
-    this.selectable = false,
-  });
-
-  final String label;
-  final String value;
-  final bool selectable;
-
-  @override
-  Widget build(BuildContext context) {
-    final dims = context.dimensions;
-    return Padding(
-      padding: EdgeInsets.only(bottom: dims.spacingSmall),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 128 * dims.fontSizeFactor,
-            child: Text(
-              label,
-              style: context.textTheme.bodySmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Expanded(
-            child: selectable
-                ? SelectableText(value, style: context.textTheme.bodySmall)
-                : Text(value, style: context.textTheme.bodySmall),
-          ),
-        ],
-      ),
-    );
-  }
 }

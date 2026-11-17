@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
-import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -19,17 +17,19 @@ import '../../data/repositories/preview_availability_service.dart';
 import '../../data/repositories/playback_media.dart';
 import '../providers/player_settings.dart';
 import 'scene_cover_fullscreen_viewer.dart';
+import 'preview_video_controls_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 
-typedef SceneInfoMediaBuilder =
-    Widget Function(BuildContext context, Scene scene);
-typedef SceneInfoPreviewBuilder =
-    Widget Function(
-      BuildContext context,
-      Scene scene,
-      bool autoplay,
-      VoidCallback onUnavailable,
-    );
+typedef SceneInfoMediaBuilder = Widget Function(
+  BuildContext context,
+  Scene scene,
+);
+typedef SceneInfoPreviewBuilder = Widget Function(
+  BuildContext context,
+  Scene scene,
+  bool autoplay,
+  VoidCallback onUnavailable,
+);
 
 enum _SceneInfoMediaMode { cover, preview }
 
@@ -389,9 +389,8 @@ class _SceneInfoPreviewPlayerState
     final player = Player();
     final controller = VideoController(
       player,
-      configuration: PlayerSettingsStore(
-        ref.read(sharedPreferencesProvider),
-      ).loadVideoConfiguration(),
+      configuration: PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+          .loadVideoConfiguration(),
     );
     _player = player;
     _controller = controller;
@@ -415,21 +414,10 @@ class _SceneInfoPreviewPlayerState
             );
       final effectiveHeaders = ref.read(mediaPlaybackHeadersProvider);
 
-      if (kIsWeb) {
-        final authState = ref.read(authProvider);
-        effectiveUrl = applyWebMediaAuthFallback(
-          url: effectiveUrl,
-          authMode: authState.mode,
-          apiKey: ref.read(serverApiKeyProvider),
-          username: authState.username,
-          password: authState.password,
-          graphqlEndpoint: graphqlEndpoint,
-        );
-      }
+      effectiveUrl = ref.read(webMediaUrlProvider)(effectiveUrl);
 
-      await PlayerSettingsStore(
-        ref.read(sharedPreferencesProvider),
-      ).applyMpvProperties(player);
+      await PlayerSettingsStore(ref.read(sharedPreferencesProvider))
+          .applyMpvProperties(player);
       await player.open(
         createPlaybackMedia(effectiveUrl, httpHeaders: effectiveHeaders),
         play: widget.autoplay,
@@ -468,37 +456,9 @@ class _SceneInfoPreviewPlayerState
       fit: StackFit.expand,
       children: [
         if (controller != null)
-          _PreviewNativeControls(child: Video(controller: controller)),
+          PreviewVideoControlsTheme(child: Video(controller: controller)),
         if (_initializing) const Center(child: CircularProgressIndicator()),
       ],
-    );
-  }
-}
-
-class _PreviewNativeControls extends StatelessWidget {
-  const _PreviewNativeControls({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    const mobileControls = MaterialVideoControlsThemeData(
-      bottomButtonBarMargin: EdgeInsets.fromLTRB(12, 0, 4, 8),
-      seekBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
-    );
-    const desktopControls = MaterialDesktopVideoControlsThemeData(
-      bottomButtonBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
-      seekBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
-    );
-
-    return MaterialVideoControlsTheme(
-      normal: mobileControls,
-      fullscreen: mobileControls,
-      child: MaterialDesktopVideoControlsTheme(
-        normal: desktopControls,
-        fullscreen: desktopControls,
-        child: child,
-      ),
     );
   }
 }

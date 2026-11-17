@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/related_entities.dart';
+import 'package:stash_app_flutter/core/data/preferences/one_time_tips.dart';
 import 'package:go_router/go_router.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
@@ -137,6 +140,69 @@ void main() {
 
     expect(find.byType(GalleryStrip), findsOneWidget);
     expect(find.text('Linked Gallery'), findsOneWidget);
+  });
+
+  testWidgets('SceneDetailsPage lists groups with the scene number', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final scene = testScene.copyWith(
+      groups: const [
+        SceneGroupMembership(id: 'g7', name: 'Sample Shorts', sceneIndex: 4),
+      ],
+    );
+    final mockRepo = MockGraphQLSceneRepository()..withData([scene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: scene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final tile = find.widgetWithText(RelatedEntityTile, 'Sample Shorts');
+    await tester.scrollUntilVisible(
+      tile,
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(tile, findsOneWidget);
+    expect(
+      find.descendant(of: tile, matching: find.text('#4')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('SceneDetailsPage asks once for the seek method', (tester) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    await prefs.setBool(OneTimeTip.sceneDetails.key, true);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    expect(find.text('Watching a scene'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('scene-seek-double-tap')));
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    expect(find.text('Watching a scene'), findsNothing);
+    expect(prefs.getBool('video_use_double_tap_seek'), isTrue);
+    expect(OneTimeTip.sceneDetails.isPending(prefs), isFalse);
   });
 
   testWidgets('SceneDetailsPage renders scene info', (tester) async {
@@ -956,6 +1022,7 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneGalleriesProvider.overrideWith((ref, arg) => const []),
+        sceneStreamsProvider.overrideWith((ref, arg) => const []),
       ],
     );
     addTearDown(container.dispose);
@@ -1014,6 +1081,7 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneGalleriesProvider.overrideWith((ref, arg) => const []),
+        sceneStreamsProvider.overrideWith((ref, arg) => const []),
       ],
     );
     addTearDown(container.dispose);
@@ -1082,6 +1150,7 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneGalleriesProvider.overrideWith((ref, arg) => const []),
+        sceneStreamsProvider.overrideWith((ref, arg) => const []),
       ],
     );
     addTearDown(container.dispose);
@@ -1277,7 +1346,7 @@ void main() {
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      child: Scaffold(body: SceneCard(scene: sceneWithMedia, isGrid: false)),
+      child: Scaffold(body: SceneCard(scene: sceneWithMedia)),
     );
 
     await tester.pump(const Duration(milliseconds: 500));

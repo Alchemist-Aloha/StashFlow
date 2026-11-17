@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../galleries/presentation/gallery_location.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
@@ -11,15 +14,22 @@ import '../providers/tag_details_provider.dart';
 import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/detail_page_scroll_view.dart';
+import '../../../../core/presentation/providers/related_entities_provider.dart';
+import '../../../../core/presentation/widgets/meta_row.dart';
+import '../../../../core/presentation/widgets/related_entities.dart';
+import '../../../../core/presentation/widgets/frosted_app_bar.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/tag_list_provider.dart';
+
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
+
 import '../../../../core/utils/app_log_store.dart';
 
 class TagDetailsPage extends ConsumerWidget {
@@ -40,9 +50,8 @@ class TagDetailsPage extends ConsumerWidget {
     if (!context.mounted) return;
 
     if (randomTag == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.tags_no_random)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.tags_no_random)));
       return;
     }
 
@@ -60,8 +69,15 @@ class TagDetailsPage extends ConsumerWidget {
     );
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
+    // Content scrolls under the frosted bar from a fixed top inset.
+    final appBar = FrostedAppBar(
+      bar: AppBar(backgroundColor: Colors.transparent),
+    );
+    final topInset = appBar.topInset(context);
+
     return Scaffold(
-      appBar: AppBar(),
+      extendBodyBehindAppBar: true,
+      appBar: appBar,
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomTag(context, ref),
@@ -72,7 +88,12 @@ class TagDetailsPage extends ConsumerWidget {
       body: tagAsync.when(
         data: (tag) {
           return RefreshIndicator(
+            edgeOffset: topInset,
             onRefresh: () async {
+              // Bypass the GraphQL cache so the details provider reloads fresh data.
+              await ref
+                  .read(tagRepositoryProvider)
+                  .getTagById(tagId, refresh: true);
               ref.invalidate(tagDetailsProvider(tagId));
               ref.invalidate(
                 entityMediaPreviewProvider(EntityMediaFilterKind.tag, tagId),
@@ -99,20 +120,16 @@ class TagDetailsPage extends ConsumerWidget {
                 ),
               ]);
             },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              // Content passes behind the frosted mini player; this inset keeps
-              // the last rows reachable while the player is visible.
+            child: DetailPageScrollView(
               padding: EdgeInsets.only(
+                top: topInset,
                 bottom: MediaQuery.paddingOf(context).bottom,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (tag.imagePath != null &&
+              header:
+                  tag.imagePath != null &&
                       tag.imagePath!.isNotEmpty &&
-                      !tag.imagePath!.contains('default=true'))
-                    Container(
+                      !tag.imagePath!.contains('default=true')
+                  ? Container(
                       height: 200,
                       width: double.infinity,
                       color: context.colors.surfaceVariant,
@@ -121,181 +138,143 @@ class TagDetailsPage extends ConsumerWidget {
                         fit: BoxFit.contain,
                         memCacheWidth: 600,
                       ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                tag.name,
-                                style: context.textTheme.headlineMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: context.colors.onSurface,
-                                    ),
-                              ),
-                            ),
-                            IconButton.filledTonal(
-                              icon: Icon(
-                                tag.favorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                              ),
-                              tooltip: tag.favorite
-                                  ? context.l10n.common_remove_favorite
-                                  : context.l10n.common_add_favorite,
-                              onPressed: () async {
-                                try {
-                                  await ref
-                                      .read(tagRepositoryProvider)
-                                      .setTagFavorite(tag.id, !tag.favorite);
-                                  ref.invalidate(tagDetailsProvider(tag.id));
-                                  ref.invalidate(tagListProvider);
-                                } on Object catch (e, stackTrace) {
-                                  AppLogStore.instance.addError(
-                                    'build',
-                                    e,
-                                    stackTrace,
-                                    source: 'tag_details_page',
-                                  );
-                                  // This operation also reports invalid results through StateError.
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          context.l10n
-                                              .details_failed_update_favorite(
-                                                e.toString(),
-                                              ),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                            ),
-                          ],
+                    )
+                  : null,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        tag.name,
+                        style: context.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: context.colors.onSurface,
                         ),
-                        if (tag.description != null &&
-                            tag.description!.trim().isNotEmpty) ...[
-                          const SizedBox(height: AppTheme.spacingMedium),
-                          _buildSectionContainer(
-                            context,
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SectionHeader(
-                                  title: context.l10n.common_details,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                const SizedBox(height: AppTheme.spacingSmall),
-                                Text(
-                                  tag.description!,
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: AppTheme.spacingMedium),
-                        _buildSectionContainer(
-                          context,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SectionHeader(
-                                title: context.l10n.details_media,
-                                onViewAll: () =>
-                                    context.push('/tags/tag/${tag.id}/media'),
-                                padding: EdgeInsets.zero,
-                              ),
-                              mediaAsync.when(
-                                data: (scenes) {
-                                  if (scenes.isEmpty) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(
-                                        AppTheme.spacingSmall,
-                                      ),
-                                      child: Text(
-                                        context.l10n.common_no_media_found,
-                                        style: context.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: context
-                                                  .colors
-                                                  .onSurfaceVariant,
-                                            ),
-                                      ),
-                                    );
-                                  }
-                                  return Padding(
-                                    padding: EdgeInsets.only(
-                                      top: context.dimensions.spacingMedium,
-                                    ),
-                                    child: SceneStrip(
-                                      scenes: scenes,
-                                      queueId: PlaybackQueueIds.tagStrip(
-                                        tag.id,
-                                      ),
-                                      onTap: (scene) => context.push(
-                                        '/scenes/scene/${scene.id}',
-                                        extra: true,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                loading: () => const SizedBox(
-                                  height: 100,
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                                error: (err, stack) => Text(
-                                  context.l10n.common_error(err.toString()),
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
+                      ),
+                    ),
+                    IconButton.filledTonal(
+                      icon: Icon(
+                        tag.favorite ? Icons.favorite : Icons.favorite_border,
+                      ),
+                      tooltip: tag.favorite
+                          ? context.l10n.common_remove_favorite
+                          : context.l10n.common_add_favorite,
+                      onPressed: () async {
+                        try {
+                          await ref
+                              .read(tagRepositoryProvider)
+                              .setTagFavorite(tag.id, !tag.favorite);
+                          ref.invalidate(tagDetailsProvider(tag.id));
+                          ref.invalidate(tagListProvider);
+                        } on Object catch (e, stackTrace) {
+                          AppLogStore.instance.addError(
+                            'build',
+                            e,
+                            stackTrace,
+                            source: 'tag_details_page',
+                          );
+                          // This operation also reports invalid results through StateError.
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  context.l10n.details_failed_update_favorite(
+                                    e.toString(),
                                   ),
                                 ),
                               ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                if (tag.aliases.isNotEmpty) ...[
+                  SizedBox(height: context.dimensions.spacingSmall),
+                  MetaRow(
+                    label: context.l10n.common_aliases,
+                    value: tag.aliases.join(', '),
+                  ),
+                ],
+                for (final (title, relations) in [
+                  (context.l10n.tags_field_parent_tags, tag.parents),
+                  (context.l10n.tags_field_child_tags, tag.children),
+                ])
+                  if (relations.isNotEmpty) ...[
+                    SizedBox(height: context.dimensions.spacingMedium),
+                    _buildSectionContainer(
+                      context,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SectionHeader(title: title, padding: EdgeInsets.zero),
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          EntityLinkChips(
+                            links: [
+                              for (final related in relations)
+                                (
+                                  label: related.name,
+                                  route: '/tags/tag/${related.id}',
+                                ),
                             ],
                           ),
+                        ],
+                      ),
+                    ),
+                  ],
+                if (tag.description != null &&
+                    tag.description!.trim().isNotEmpty) ...[
+                  const SizedBox(height: AppTheme.spacingMedium),
+                  _buildSectionContainer(
+                    context,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: context.l10n.common_details,
+                          padding: EdgeInsets.zero,
                         ),
-                        galleriesAsync.when(
-                          data: (galleries) {
-                            if (galleries.isEmpty) {
-                              return const SizedBox.shrink();
-                            }
-                            return _buildSectionContainer(
-                              context,
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SectionHeader(
-                                    title: context.l10n.galleries_title,
-                                    onViewAll: () => context.push(
-                                      '/tags/tag/${tag.id}/galleries',
-                                    ),
-                                    padding: EdgeInsets.zero,
-                                  ),
-                                  SizedBox(
-                                    height: context.dimensions.spacingMedium,
-                                  ),
-                                  GalleryStrip(
-                                    galleries: galleries,
-                                    onTap: (gallery) {
-                                      unawaited(
-                                        context.push(
-                                          galleryLocation(context, gallery.id),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        Text(
+                          tag.description!,
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (mediaAsync.maybeWhen(
+                  data: (scenes) => scenes.isNotEmpty,
+                  orElse: () => true,
+                )) ...[
+                  const SizedBox(height: AppTheme.spacingMedium),
+                  _buildSectionContainer(
+                    context,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: context.l10n.details_media,
+                          onViewAll: () =>
+                              context.push('/tags/tag/${tag.id}/media'),
+                          padding: EdgeInsets.zero,
+                        ),
+                        mediaAsync.when(
+                          data: (scenes) {
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                top: context.dimensions.spacingMedium,
+                              ),
+                              child: SceneStrip(
+                                scenes: scenes,
+                                queueId: PlaybackQueueIds.tagStrip(tag.id),
+                                onTap: (scene) => context.push(
+                                  '/scenes/scene/${scene.id}',
+                                  extra: true,
+                                ),
                               ),
                             );
                           },
@@ -314,7 +293,80 @@ class TagDetailsPage extends ConsumerWidget {
                     ),
                   ),
                 ],
-              ),
+                galleriesAsync.when(
+                  data: (galleries) {
+                    if (galleries.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return _buildSectionContainer(
+                      context,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SectionHeader(
+                            title: context.l10n.galleries_title,
+                            onViewAll: () =>
+                                context.push('/tags/tag/${tag.id}/galleries'),
+                            padding: EdgeInsets.zero,
+                          ),
+                          SizedBox(height: context.dimensions.spacingMedium),
+                          GalleryStrip(
+                            galleries: galleries,
+                            onTap: (gallery) {
+                              unawaited(
+                                context.push(
+                                  galleryLocation(context, gallery.id),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  loading: () => const SizedBox(
+                    height: 100,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (err, stack) => Text(
+                    context.l10n.common_error(err.toString()),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                for (final (kind, title, icon) in [
+                  (
+                    RelatedEntityKind.performers,
+                    context.l10n.performers_title,
+                    Icons.person_outline,
+                  ),
+                  (
+                    RelatedEntityKind.studios,
+                    context.l10n.studios_title,
+                    Icons.business_outlined,
+                  ),
+                  (
+                    RelatedEntityKind.groups,
+                    context.l10n.groups_title,
+                    Icons.group_work,
+                  ),
+                  (
+                    RelatedEntityKind.markers,
+                    context.l10n.markers_title,
+                    Icons.bookmark_outline,
+                  ),
+                ])
+                  RelatedEntitiesSection(
+                    title: title,
+                    fallbackIcon: icon,
+                    query: (
+                      kind: kind,
+                      owner: RelatedEntityOwner.tag,
+                      id: tag.id,
+                    ),
+                  ),
+              ],
             ),
           );
         },

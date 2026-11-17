@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../features/scenes/data/repositories/stream_resolver.dart';
 import '../../../features/scenes/presentation/providers/player_settings.dart';
 import '../../../features/scenes/data/local_captions/local_caption_model.dart';
 import '../../../features/scenes/data/local_captions/caption_options.dart';
@@ -147,6 +148,7 @@ final class AppConfigSettingsRegistry {
     _jsonString('desktop_keybinds'),
     _string('video_play_end_behavior', allowed: {'stop', 'next', 'loop'}),
     _bool('video_use_double_tap_seek'),
+    _string(defaultStreamSourceKey, allowed: streamSourceKinds.toSet()),
     _int(
       PlayerSettingsStore.controlsAutoHideSecondsKey,
       min: PlayerSettingsStore.minControlsAutoHideSeconds,

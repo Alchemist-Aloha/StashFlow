@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'dart:convert';
+
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart' as domain;
 import '../../data/repositories/graphql_performer_repository.dart';
@@ -8,6 +10,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 
@@ -98,19 +101,12 @@ class PerformerFilterState extends _$PerformerFilterState {
 }
 
 @Riverpod(keepAlive: true)
-class PerformerList extends _$PerformerList {
-  int _currentPage = 1;
+class PerformerList extends _$PerformerList with ListPagination<Performer> {
   int _perPage = kDefaultPageSize;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Performer>> build() async {
-    _requestGeneration++;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    final generation = resetPagination();
     final query = ref.watch(performerSearchQueryProvider);
     final sortConfig = ref.watch(performerSortProvider);
     final filterState = ref.watch(performerFilterStateProvider);
@@ -122,7 +118,7 @@ class PerformerList extends _$PerformerList {
     }
 
     final firstPage = await repository.findPerformers(
-      page: _currentPage,
+      page: 1,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
@@ -130,16 +126,14 @@ class PerformerList extends _$PerformerList {
       performerFilter: filterState,
     );
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
   /// Manually refreshes the performer list and generates a new random seed.
   Future<void> refresh() async {
     ref.read(performerRandomSeedProvider.notifier).next();
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
     await future;
   }
@@ -148,9 +142,7 @@ class PerformerList extends _$PerformerList {
     ref
         .read(performerSortProvider.notifier)
         .setSort(sort: sort, descending: descending);
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
@@ -159,68 +151,39 @@ class PerformerList extends _$PerformerList {
     ref
         .read(performerFilterStateProvider.notifier)
         .update(currentFilter.copyWith(favorite: enabled));
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
   void setPerPage(int perPage) {
     if (_perPage == perPage) return;
     _perPage = perPage;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
-  Future<void> fetchNextPage() async {
-    if (_isLoadingMore || !_hasMore || state.isLoading) return;
+  Future<void> fetchNextPage() => loadNextPage(
+    perPage: _perPage,
+    fetch: (page) {
+      final repository = ref.read(performerRepositoryProvider);
+      final query = ref.read(performerSearchQueryProvider);
+      final sortConfig = ref.read(performerSortProvider);
+      final filterState = ref.read(performerFilterStateProvider);
 
-    final generation = _requestGeneration;
-    _isLoadingMore = true;
-    final repository = ref.read(performerRepositoryProvider);
-    final query = ref.read(performerSearchQueryProvider);
-    final sortConfig = ref.read(performerSortProvider);
-    final filterState = ref.read(performerFilterStateProvider);
-
-    String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random') {
-      effectiveSort = 'random_${ref.read(performerRandomSeedProvider)}';
-    }
-
-    try {
-      final nextPage = _currentPage + 1;
-      final nextPerformers = await repository.findPerformers(
-        page: nextPage,
+      String? effectiveSort = sortConfig.sort;
+      if (effectiveSort == 'random') {
+        effectiveSort = 'random_${ref.read(performerRandomSeedProvider)}';
+      }
+      return repository.findPerformers(
+        page: page,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
         descending: sortConfig.descending,
         performerFilter: filterState,
       );
-      if (generation != _requestGeneration) return;
-
-      _hasMore = nextPerformers.length >= _perPage;
-      if (nextPerformers.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...state.value ?? [], ...nextPerformers]);
-      }
-    } on Exception catch (error, stackTrace) {
-      AppLogStore.instance.addError(
-        'fetchNextPage',
-        error,
-        stackTrace,
-        source: 'performer_list_provider',
-      );
-      // In a real app, you might want to show a snackbar for error during pagination
-    } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
-    }
-  }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
+    },
+  );
 
   Future<Performer?> getRandomPerformer({String? excludePerformerId}) async {
     final useCurrentFilter = ref.read(sceneRandomRespectActiveFilterProvider);

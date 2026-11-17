@@ -276,22 +276,32 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       previous,
       path,
     ) {
-      if (path != null && mounted) {
-        context.pushReplacement(path);
-      }
+      if (path == null || !mounted) return;
+      // Only swap the details page itself; a page covering it (image viewer,
+      // scene editor, ...) stays put while the next scene plays behind it.
+      final top = Uri.parse(GoRouter.of(context).state.uri.path).pathSegments;
+      final onSceneDetails =
+          (top.length == 3 && top[0] == 'scenes' && top[1] == 'scene') ||
+          (top.length == 2 && top[0] == 'scene');
+      if (onSceneDetails) context.pushReplacement(path);
     });
 
     final navigationShell = widget.navigationShell;
     final currentPath = GoRouterState.of(context).uri.path;
-    final playerState = ref.watch(playerStateProvider);
-    final activeSceneId = playerState.activeScene?.id;
+    // Select only what the shell reads so play/pause/buffering ticks skip it.
+    final activeSceneId = ref.watch(
+      playerStateProvider.select((s) => s.activeScene?.id),
+    );
+    final isPlayerFullScreen = ref.watch(
+      playerStateProvider.select((s) => s.isFullScreen),
+    );
     final pathSceneId = _extractSceneIdFromPath(currentPath);
     final isTiktokFullScreen = ref.watch(fullScreenModeProvider);
     final allowMainPageGravityOrientation = ref.watch(
       mainPageGravityOrientationProvider,
     );
 
-    final isVideoFullScreen = playerState.isFullScreen || isTiktokFullScreen;
+    final isVideoFullScreen = isPlayerFullScreen || isTiktokFullScreen;
     _syncMainPageOrientations(
       allowGravity: allowMainPageGravityOrientation,
       isVideoFullScreen: isVideoFullScreen,
@@ -306,7 +316,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         currentPath.startsWith('/images/');
 
     final isFullScreen =
-        playerState.isFullScreen || isTiktokFullScreen || isFullscreenPath;
+        isPlayerFullScreen || isTiktokFullScreen || isFullscreenPath;
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isMobile = Responsive.isMobile(context);
 
@@ -617,7 +627,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         if (!didPop && isFullScreen) {
           // Back gesture was blocked because canPop=false in fullscreen mode.
           // Exit fullscreen instead of navigating back.
-          if (playerState.isFullScreen) {
+          if (isPlayerFullScreen) {
             final notifier = ref.read(playerStateProvider.notifier);
             notifier.syncBackgroundToActiveScene(context);
             notifier.requestExitFullscreen();

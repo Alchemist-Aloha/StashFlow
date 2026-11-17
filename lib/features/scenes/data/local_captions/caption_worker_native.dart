@@ -1,8 +1,10 @@
 import 'dart:isolate';
 import 'dart:typed_data';
+
 import 'package:path/path.dart' as p;
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 import 'package:stashflow_translation/stashflow_translation.dart';
+
 import 'caption_cue.dart';
 import 'caption_options.dart';
 import 'local_caption_model.dart';

@@ -855,6 +855,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get details_links => 'Links';
 
   @override
+  String get details_appears_with => 'Tritt auf mit';
+
+  @override
   String get details_scene_scrape => 'Metadaten scrapen';
 
   @override
@@ -1789,13 +1792,79 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wählen Sie das Standard-Layout für die Seite';
 
   @override
-  String get settings_interface_layout_list => 'Liste';
-
-  @override
   String get settings_interface_layout_grid => 'Raster';
 
   @override
   String get settings_interface_layout_tiktok => 'Endloses Scrollen';
+
+  @override
+  String get scene_view_mode_prompt_title => 'Szenenansicht wählen';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc =>
+      'Szenen in einem zweispaltigen Raster.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'Eine Szene nach der anderen in einem endlosen Wisch-Feed.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'Du kannst dies später unter Einstellungen › Interface-Einstellungen ändern.';
+
+  @override
+  String get onboarding_got_it => 'Verstanden';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'Du kannst dies später unter Einstellungen › Wiedergabe-Einstellungen ändern.';
+
+  @override
+  String get onboarding_grid_title => 'Szenen durchsuchen';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Halte eine Szenenkarte gedrückt, um Details und Aktionen zu sehen.';
+
+  @override
+  String get onboarding_feed_title => 'Den Feed nutzen';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Halte das Video gedrückt, um vorzuspulen. Wische dabei nach oben, um noch schneller zu spulen.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Tippe auf den Titel, um die Steuerelemente auszublenden. Tippe auf das Video, um sie wieder anzuzeigen.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Tippe auf den Pfeil nach oben, um weitere Aktionen anzuzeigen.';
+
+  @override
+  String get onboarding_details_title => 'Eine Szene ansehen';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Wische über den Titel nach links oder rechts, um zur vorherigen oder nächsten Szene zu wechseln.';
+
+  @override
+  String get onboarding_details_seek_label => 'Wie möchtest du spulen?';
+
+  @override
+  String get onboarding_image_title => 'Wischrichtung wählen';
+
+  @override
+  String get settings_develop_reset_onboarding =>
+      'Erststart-Hinweise zurücksetzen';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Die einmaligen Hinweise und Auswahlen erneut anzeigen.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'Die Erststart-Hinweise werden erneut angezeigt.';
 
   @override
   String get settings_interface_grid_columns => 'Rasterspalten';
@@ -1824,39 +1893,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_interface_waterfall_columns => 'Wasserfall-Rasterspalten';
 
   @override
-  String get settings_interface_performer_layouts => 'Darsteller-Layouts';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Medien- und Galerie-Standards für Darsteller';
-
-  @override
-  String get settings_interface_studio_layouts => 'Studio-Layouts';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Medien- und Galerie-Standards für Studios';
 
   @override
-  String get settings_interface_tag_layouts => 'Tag-Layouts';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Medien- und Galerie-Standards für Tags';
-
-  @override
-  String get settings_interface_media_layout => 'Medien-Layout';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Layout für die Medienseite';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Galerien-Layout';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout für die Galerieseite';
 
   @override
   String get settings_server_title => 'Server-Einstellungen';
@@ -2083,6 +2129,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_playback_subtitle_lang => 'Standard-Untertitelsprache';
+
+  @override
+  String get player_stream_resolution => 'Auflösung';
+
+  @override
+  String get player_stream_original => 'Original';
+
+  @override
+  String get player_stream_source => 'Streamquelle';
+
+  @override
+  String get player_stream_direct => 'Direkt';
+
+  @override
+  String get settings_playback_stream_source => 'Standard-Streamquelle';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Beim Wiedergabestart verwendet; sonst Direkt';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>
@@ -3721,19 +3786,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sub_group_count_title => 'Anzahl der Untergruppen';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Standardbrowsermodus für Gruppen';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Standard-Browsing-Modus für Markierungen';
-
-  @override
-  String get entity_layouts_title => 'Entitätslayouts';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Standardeinstellungen für das Medien- und Galerielayout für Künstler, Studios und Tags';
 
   @override
   String get stats_subtitle_0_gb => '0,00 GB';

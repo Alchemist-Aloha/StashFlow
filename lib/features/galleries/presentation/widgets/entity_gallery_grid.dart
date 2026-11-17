@@ -28,7 +28,6 @@ class EntityGalleryGrid extends ConsumerStatefulWidget {
     required this.entityId,
     required this.filterKind,
     required this.galleriesAsync,
-    required this.isGridView,
     required this.gridColumns,
     this.gridColumnSetting,
     required this.onRefresh,
@@ -40,13 +39,12 @@ class EntityGalleryGrid extends ConsumerStatefulWidget {
   final String entityId;
   final EntityGalleryFilterKind filterKind;
   final AsyncValue<List<Gallery>> galleriesAsync;
-  final bool isGridView;
   final int? gridColumns;
 
   /// Category preference shared with the Interface settings page.
   final GridColumnSetting? gridColumnSetting;
   final Future<void> Function() onRefresh;
-  final VoidCallback onFetchNextPage;
+  final Future<void> Function() onFetchNextPage;
 
   @override
   ConsumerState<EntityGalleryGrid> createState() => _EntityGalleryGridState();
@@ -131,9 +129,8 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
                 .update(filter);
             ref
                 .read(
-                  entityGalleryOrganizedOnlyProvider(
-                    widget.filterKind,
-                  ).notifier,
+                  entityGalleryOrganizedOnlyProvider(widget.filterKind)
+                      .notifier,
                 )
                 .set(organized);
           },
@@ -145,24 +142,21 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
                 .update(filter);
             ref
                 .read(
-                  entityGalleryOrganizedOnlyProvider(
-                    widget.filterKind,
-                  ).notifier,
+                  entityGalleryOrganizedOnlyProvider(widget.filterKind)
+                      .notifier,
                 )
                 .set(organized);
             await Future.wait([
               ref
                   .read(
-                    entityGalleryFilterStateProvider(
-                      widget.filterKind,
-                    ).notifier,
+                    entityGalleryFilterStateProvider(widget.filterKind)
+                        .notifier,
                   )
                   .saveAsDefault(),
               ref
                   .read(
-                    entityGalleryOrganizedOnlyProvider(
-                      widget.filterKind,
-                    ).notifier,
+                    entityGalleryOrganizedOnlyProvider(widget.filterKind)
+                        .notifier,
                   )
                   .saveAsDefault(),
             ]);
@@ -296,17 +290,13 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
       onRefresh: widget.onRefresh,
       onFetchNextPage: widget.onFetchNextPage,
       loadingItemBuilder: (context, isGrid, index) =>
-          GalleryCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
-      gridDelegate: widget.isGridView
-          ? GridUtils.createDelegate(
-              context,
-              crossAxisCount: widget.gridColumns ?? 2,
-            )
-          : null,
-      useMasonry: widget.isGridView,
-      padding: widget.isGridView
-          ? GridUtils.defaultPadding(context)
-          : EdgeInsets.zero,
+          GalleryCard.skeleton(useMasonry: true),
+      gridDelegate: GridUtils.createDelegate(
+        context,
+        crossAxisCount: widget.gridColumns ?? 2,
+      ),
+      useMasonry: true,
+      padding: GridUtils.defaultPadding(context),
       actions: [
         Stack(
           children: [
@@ -344,8 +334,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) {
         return GalleryCard(
           gallery: item,
-          isGrid: widget.isGridView,
-          useMasonry: widget.isGridView,
+          useMasonry: true,
           memCacheWidth: memCacheWidth,
         );
       },

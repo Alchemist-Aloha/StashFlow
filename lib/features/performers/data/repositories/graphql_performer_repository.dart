@@ -1,11 +1,13 @@
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
+
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart';
 import '../graphql/performers.graphql.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
 
 class GraphQLPerformerRepository {
@@ -138,6 +140,7 @@ class GraphQLPerformerRepository {
       tags: mapHierarchicalMultiCriterion(performerFilter?.tags),
       groups: mapHierarchicalMultiCriterion(performerFilter?.groups),
       studios: mapHierarchicalMultiCriterion(performerFilter?.studios),
+      performers: mapMultiCriterion(performerFilter?.performers),
       url: mapStringCriterion(performerFilter?.url),
       rating100: mapIntCriterion(performerFilter?.rating100),
       tag_count: mapIntCriterion(performerFilter?.tagCount),
@@ -234,8 +237,8 @@ class GraphQLPerformerRepository {
       fakeTits: p.fake_tits,
       penisLength: p.penis_length,
       circumcised: p.circumcised?.name,
-      careerStart: null,
-      careerEnd: null,
+      careerStart: p.career_start,
+      careerEnd: p.career_end,
       tattoos: p.tattoos,
       piercings: p.piercings,
       aliasList: p.alias_list,
@@ -255,6 +258,12 @@ class GraphQLPerformerRepository {
       weight: p.weight,
       tagIds: p.tags.map((t) => t.id).toList(),
       tagNames: p.tags.map((t) => t.name).toList(),
+      oCounter: p.o_counter,
+      customFields: p.custom_fields,
+      stashIds: [
+        for (final id in p.stash_ids)
+          PerformerStashId(endpoint: id.endpoint, stashId: id.stash_id),
+      ],
     );
   }
 

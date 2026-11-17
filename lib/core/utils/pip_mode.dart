@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart' show VideoParams;
+
 import 'app_log_store.dart';
 
 /// Minimum window size the desktop layouts are designed around.

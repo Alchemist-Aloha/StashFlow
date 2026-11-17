@@ -851,6 +851,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get details_links => 'Ссылки';
 
   @override
+  String get details_appears_with => 'Снимается с';
+
+  @override
   String get details_scene_scrape => 'собрать метаданные';
 
   @override
@@ -1781,13 +1784,79 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выберите макет по умолчанию для страницы';
 
   @override
-  String get settings_interface_layout_list => 'Список';
-
-  @override
   String get settings_interface_layout_grid => 'Сетка';
 
   @override
   String get settings_interface_layout_tiktok => 'Бесконечная прокрутка';
+
+  @override
+  String get scene_view_mode_prompt_title => 'Выберите вид сцен';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc =>
+      'Сцены в сетке из двух колонок.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'По одной сцене в бесконечной ленте с пролистыванием.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'Это можно изменить позже в разделе Настройки › Настройки интерфейса.';
+
+  @override
+  String get onboarding_got_it => 'Понятно';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'Это можно изменить позже в разделе Настройки › Настройки воспроизведения.';
+
+  @override
+  String get onboarding_grid_title => 'Просмотр сцен';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Нажмите и удерживайте карточку сцены, чтобы увидеть сведения и действия.';
+
+  @override
+  String get onboarding_feed_title => 'Как пользоваться лентой';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Нажмите и удерживайте видео для перемотки вперёд. Проведите вверх, не отпуская, чтобы ускорить ещё больше.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Нажмите на название, чтобы скрыть элементы управления. Нажмите на видео, чтобы вернуть их.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Нажмите на стрелку вверх, чтобы открыть другие действия.';
+
+  @override
+  String get onboarding_details_title => 'Просмотр сцены';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Проведите по названию влево или вправо, чтобы перейти к предыдущей или следующей сцене.';
+
+  @override
+  String get onboarding_details_seek_label => 'Как вы хотите перематывать?';
+
+  @override
+  String get onboarding_image_title => 'Выберите направление пролистывания';
+
+  @override
+  String get settings_develop_reset_onboarding =>
+      'Сбросить подсказки первого запуска';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Снова показать одноразовые подсказки и выборы.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'Подсказки первого запуска будут показаны снова.';
 
   @override
   String get settings_interface_grid_columns => 'Колонки сетки';
@@ -1817,39 +1886,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_interface_waterfall_columns => 'Колонки сетки «Водопад»';
 
   @override
-  String get settings_interface_performer_layouts => 'Макеты исполнителей';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Настройки медиа и галерей для исполнителей по умолчанию';
-
-  @override
-  String get settings_interface_studio_layouts => 'Макеты студий';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Настройки медиа и галерей для студий по умолчанию';
 
   @override
-  String get settings_interface_tag_layouts => 'Макеты тегов';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Настройки медиа и галерей для тегов по умолчанию';
-
-  @override
-  String get settings_interface_media_layout => 'Макет медиа';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Макет для страницы Медиа';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Макет галерей';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Макет для страницы Галереи';
 
   @override
   String get settings_server_title => 'Настройки сервера';
@@ -2076,6 +2122,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_playback_subtitle_lang => 'Язык субтитров по умолчанию';
+
+  @override
+  String get player_stream_resolution => 'Разрешение';
+
+  @override
+  String get player_stream_original => 'Оригинал';
+
+  @override
+  String get player_stream_source => 'Источник потока';
+
+  @override
+  String get player_stream_direct => 'Прямой';
+
+  @override
+  String get settings_playback_stream_source => 'Источник потока по умолчанию';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Используется при запуске; иначе Прямой';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>
@@ -3717,19 +3782,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sub_group_count_title => 'Количество подгрупп';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Режим просмотра по умолчанию для групп';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Режим просмотра по умолчанию для маркеров';
-
-  @override
-  String get entity_layouts_title => 'Макеты объектов';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Настройки макета мультимедиа и галереи по умолчанию для исполнителей, студий и тегов';
 
   @override
   String get stats_subtitle_0_gb => '0,00 ГБ';

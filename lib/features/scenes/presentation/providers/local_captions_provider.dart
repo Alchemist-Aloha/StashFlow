@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
+
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/services/cast_service.dart';
 import '../../data/local_captions/caption_audio_decoder.dart';

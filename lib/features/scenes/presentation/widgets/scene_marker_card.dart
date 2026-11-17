@@ -6,41 +6,28 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene_marker.dart';
 import 'scene_card.dart';
+import '../../../../core/utils/format_duration.dart';
 
 class SceneMarkerCard extends StatelessWidget {
   const SceneMarkerCard({
     required this.marker,
-    required this.isGrid,
     this.memCacheWidth,
     this.memCacheHeight,
     super.key,
   });
 
   final SceneMarkerSummary marker;
-  final bool isGrid;
   final int? memCacheWidth;
   final int? memCacheHeight;
 
-  String _formatDuration(double seconds) {
-    final duration = Duration(seconds: seconds.toInt());
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    final secs = duration.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-  }
-
   String _formatRange() {
-    final start = _formatDuration(marker.seconds);
+    final start = formatClockDuration(marker.seconds);
     final end = marker.endSeconds;
     if (end == null) return start;
-    return '$start - ${_formatDuration(end)}';
+    return '$start - ${formatClockDuration(end)}';
   }
 
   void _openMarker(BuildContext context) {
@@ -60,7 +47,7 @@ class SceneMarkerCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
-      margin: isGrid ? EdgeInsets.zero : GridUtils.defaultPadding(context),
+      margin: EdgeInsets.zero,
       color: colorScheme.primaryContainer.withValues(alpha: 0.3),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -68,45 +55,24 @@ class SceneMarkerCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _openMarker(context),
-        child: isGrid
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _MarkerImage(
-                    imageUrl: imageUrl,
-                    range: _formatRange(),
-                    memCacheWidth: memCacheWidth,
-                    memCacheHeight: memCacheHeight,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: context.dimensions.spacingSmall,
-                      vertical: context.dimensions.spacingSmall / 2,
-                    ),
-                    child: _MarkerDetails(marker: marker),
-                  ),
-                ],
-              )
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: context.dimensions.spacingLarge * 6.25,
-                    child: _MarkerImage(
-                      imageUrl: imageUrl,
-                      range: _formatRange(),
-                      memCacheWidth: memCacheWidth,
-                      memCacheHeight: memCacheHeight,
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                      child: _MarkerDetails(marker: marker),
-                    ),
-                  ),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _MarkerImage(
+              imageUrl: imageUrl,
+              range: _formatRange(),
+              memCacheWidth: memCacheWidth,
+              memCacheHeight: memCacheHeight,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingSmall,
+                vertical: context.dimensions.spacingSmall / 2,
               ),
+              child: _MarkerDetails(marker: marker),
+            ),
+          ],
+        ),
       ),
     );
   }

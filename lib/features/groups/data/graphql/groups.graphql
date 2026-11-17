@@ -7,6 +7,42 @@ fragment GroupData on Group {
   synopsis
   scene_count
   sub_group_count
+  front_image_path
+}
+
+fragment GroupRelationData on Group {
+  id
+  name
+  front_image_path
+}
+
+fragment GroupDetailData on Group {
+  ...GroupData
+  back_image_path
+  aliases
+  duration
+  urls
+  studio {
+    id
+    name
+    image_path
+  }
+  tags {
+    id
+    name
+  }
+  containing_groups {
+    group {
+      ...GroupRelationData
+    }
+    description
+  }
+  sub_groups {
+    group {
+      ...GroupRelationData
+    }
+    description
+  }
 }
 
 query FindGroups($filter: FindFilterType, $group_filter: GroupFilterType) {
@@ -20,6 +56,6 @@ query FindGroups($filter: FindFilterType, $group_filter: GroupFilterType) {
 
 query FindGroup($id: ID!) {
   findGroup(id: $id) {
-    ...GroupData
+    ...GroupDetailData
   }
 }

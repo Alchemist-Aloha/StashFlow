@@ -110,7 +110,29 @@ void main() {
     expect(repository.lastFindScenesPage, 1);
   });
 
-  for (final kind in EntityMediaFilterKind.values) {
+  test('group media defaults to ascending scene number in group', () async {
+    final repository = MockGraphQLSceneRepository();
+    final container = await _containerWith(repository);
+    const kind = EntityMediaFilterKind.group;
+    final preview = entityMediaPreviewProvider(kind, 'page-entity');
+    container.listen(preview, (_, _) {});
+    await container.read(preview.future);
+    expect(repository.lastFindScenesSort, 'group_scene_number');
+    expect(repository.lastFindScenesDescending, false);
+
+    final notifier = container.read(entityMediaSortProvider(kind).notifier);
+    notifier.setSort(sort: 'title');
+    notifier.setSort();
+    expect(container.read(entityMediaSortProvider(kind)), (
+      sort: 'group_scene_number',
+      descending: false,
+      randomSeed: null,
+    ));
+  });
+
+  for (final kind in EntityMediaFilterKind.values.where(
+    (kind) => kind != EntityMediaFilterKind.group,
+  )) {
     test('$kind preview and grid share the default random order', () async {
       final repository = MockGraphQLSceneRepository();
       final container = await _containerWith(repository);
@@ -171,7 +193,12 @@ void main() {
 
       container.read(entityMediaSortProvider(kind).notifier).setSort();
       await container.read(preview.future);
-      expect(repository.lastFindScenesSort, startsWith('random_'));
+      expect(
+        repository.lastFindScenesSort,
+        kind == EntityMediaFilterKind.group
+            ? 'group_scene_number'
+            : startsWith('random_'),
+      );
     });
 
     test('$kind media grid reloads when query settings are applied', () async {

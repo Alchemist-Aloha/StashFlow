@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/presentation/widgets/thumbnail_badge.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/image.dart' as entity;
@@ -53,7 +54,7 @@ class ImageCard extends StatelessWidget {
       enabled: image.id == 'skeleton',
       effect: const ShimmerEffect(duration: Duration(seconds: 2)),
       child: Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: EdgeInsets.all(context.dimensions.spacingSmall / 2),
         child: InkWell(
           focusNode: focusNode,
           onTap: onTap ?? () => context.push('/galleries/images/${image.id}'),
@@ -101,37 +102,12 @@ class ImageCard extends StatelessWidget {
                     ),
                   if (image.rating100 != null && image.rating100! > 0)
                     Positioned(
-                      bottom: 4,
-                      right: 4,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.6),
-                          borderRadius: BorderRadius.circular(
-                            AppTheme.radiusSmall,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.star,
-                              color: context.colors.ratingColor,
-                              size: 10,
-                            ),
-                            const SizedBox(width: 2),
-                            Text(
-                              (image.rating100! / 20).toStringAsFixed(1),
-                              style: context.textTheme.labelSmall?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+                      bottom: ThumbnailBadge.inset(context, compact: true),
+                      right: ThumbnailBadge.inset(context, compact: true),
+                      child: ThumbnailBadge.rating(
+                        context,
+                        rating100: image.rating100!,
+                        compact: true,
                       ),
                     ),
                 ],

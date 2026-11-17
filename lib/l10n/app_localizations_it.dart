@@ -855,6 +855,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get details_links => 'Link';
 
   @override
+  String get details_appears_with => 'Appare con';
+
+  @override
   String get details_scene_scrape => 'scarica metadati';
 
   @override
@@ -1792,13 +1795,80 @@ class AppLocalizationsIt extends AppLocalizations {
       'Scegli il layout predefinito per la pagina';
 
   @override
-  String get settings_interface_layout_list => 'Elenco';
-
-  @override
   String get settings_interface_layout_grid => 'Griglia';
 
   @override
   String get settings_interface_layout_tiktok => 'Scorrimento Infinito';
+
+  @override
+  String get scene_view_mode_prompt_title => 'Scegli la vista delle scene';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc =>
+      'Scene in una griglia a due colonne.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc =>
+      'Una scena alla volta in un feed infinito da scorrere.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      'Puoi cambiarlo in seguito in Impostazioni › Impostazioni Interfaccia.';
+
+  @override
+  String get onboarding_got_it => 'Ho capito';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      'Puoi cambiarlo in seguito in Impostazioni › Impostazioni Riproduzione.';
+
+  @override
+  String get onboarding_grid_title => 'Sfogliare le scene';
+
+  @override
+  String get onboarding_grid_long_press =>
+      'Tieni premuta una scheda scena per vederne dettagli e azioni.';
+
+  @override
+  String get onboarding_feed_title => 'Usare il feed';
+
+  @override
+  String get onboarding_feed_long_press =>
+      'Tieni premuto il video per avanzare velocemente. Scorri verso l\'alto tenendo premuto per andare ancora più veloce.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      'Tocca il titolo per nascondere i controlli. Tocca il video per mostrarli di nuovo.';
+
+  @override
+  String get onboarding_feed_chevron =>
+      'Tocca la freccia in su per mostrare altre azioni.';
+
+  @override
+  String get onboarding_details_title => 'Guardare una scena';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      'Scorri il titolo a sinistra o a destra per passare alla scena precedente o successiva.';
+
+  @override
+  String get onboarding_details_seek_label =>
+      'Come preferisci spostarti nel video?';
+
+  @override
+  String get onboarding_image_title => 'Scegli la direzione di scorrimento';
+
+  @override
+  String get settings_develop_reset_onboarding =>
+      'Reimposta suggerimenti iniziali';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      'Mostra di nuovo i suggerimenti e le scelte una tantum.';
+
+  @override
+  String get settings_develop_reset_onboarding_done =>
+      'I suggerimenti iniziali verranno mostrati di nuovo.';
 
   @override
   String get settings_interface_grid_columns => 'Colonne Griglia';
@@ -1829,39 +1899,16 @@ class AppLocalizationsIt extends AppLocalizations {
       'Colonne Griglia Waterfall';
 
   @override
-  String get settings_interface_performer_layouts => 'Layout Attori';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       'Predefiniti media e gallerie per gli attori';
-
-  @override
-  String get settings_interface_studio_layouts => 'Layout Studi';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       'Predefiniti media e gallerie per gli studi';
 
   @override
-  String get settings_interface_tag_layouts => 'Layout Tag';
-
-  @override
   String get settings_interface_tag_layouts_subtitle =>
       'Predefiniti media e gallerie per i tag';
-
-  @override
-  String get settings_interface_media_layout => 'Layout Media';
-
-  @override
-  String get settings_interface_media_layout_subtitle =>
-      'Layout per la pagina Media';
-
-  @override
-  String get settings_interface_galleries_layout_item => 'Layout Gallerie';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout per la pagina Gallerie';
 
   @override
   String get settings_server_title => 'Impostazioni Server';
@@ -2091,6 +2138,25 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get settings_playback_subtitle_lang =>
       'Lingua Sottotitoli Predefinita';
+
+  @override
+  String get player_stream_resolution => 'Risoluzione';
+
+  @override
+  String get player_stream_original => 'Originale';
+
+  @override
+  String get player_stream_source => 'Sorgente stream';
+
+  @override
+  String get player_stream_direct => 'Diretta';
+
+  @override
+  String get settings_playback_stream_source => 'Sorgente stream predefinita';
+
+  @override
+  String get settings_playback_stream_source_subtitle =>
+      'Usata all\'avvio della riproduzione; altrimenti Diretta';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>
@@ -3736,19 +3802,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sub_group_count_title => 'Conteggio sottogruppi';
 
   @override
-  String get groups_browsing_mode_subtitle =>
-      'Modalità di navigazione predefinita per i gruppi';
-
-  @override
   String get markers_browsing_mode_subtitle =>
       'Modalità di navigazione predefinita per i marcatori';
-
-  @override
-  String get entity_layouts_title => 'Layout di entità';
-
-  @override
-  String get entity_layouts_subtitle =>
-      'Impostazioni predefinite del layout multimediale e della galleria per artisti, studi e tag';
 
   @override
   String get stats_subtitle_0_gb => '0,00GB';

@@ -69,9 +69,8 @@ class FilterBottomSheetScaffold extends StatelessWidget {
                         Navigator.pop(context);
                         final message = saveDefaultSuccessMessage;
                         if (message != null) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(message)));
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(content: Text(message)));
                         }
                       },
               ),

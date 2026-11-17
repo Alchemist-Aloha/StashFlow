@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/models/scraper.dart';
 import '../providers/scene_list_provider.dart';
@@ -122,9 +123,8 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
                   icon: const Icon(Icons.download),
                   onPressed: () {
                     if (_urlController.text.isNotEmpty) {
-                      Navigator.of(
-                        context,
-                      ).pop(ScrapeRequest(url: _urlController.text));
+                      Navigator.of(context)
+                          .pop(ScrapeRequest(url: _urlController.text));
                     }
                   },
                 ),

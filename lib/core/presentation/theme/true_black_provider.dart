@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../data/preferences/shared_preferences_provider.dart';
 
 /// Notifier to manage the "True Black" (AMOLED) theme setting.

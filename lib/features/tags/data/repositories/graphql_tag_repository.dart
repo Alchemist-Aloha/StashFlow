@@ -1,5 +1,6 @@
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
+
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -190,6 +191,15 @@ class GraphQLTagRepository {
       galleryCount: t.gallery_count,
       performerCount: t.performer_count,
       favorite: t.favorite,
+      aliases: t.aliases,
+      parents: [
+        for (final parent in t.parents)
+          TagRelation(id: parent.id, name: parent.name),
+      ],
+      children: [
+        for (final child in t.children)
+          TagRelation(id: child.id, name: child.name),
+      ],
     );
   }
 

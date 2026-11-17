@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../scenes/presentation/widgets/scrape_query_dialog.dart';
@@ -8,7 +10,9 @@ import '../../../scenes/presentation/widgets/enhanced_scrape_dialog.dart';
 import '../../domain/entities/performer.dart';
 import '../providers/performer_details_provider.dart';
 import '../providers/performer_list_provider.dart';
+
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
+
 import '../../../../core/utils/app_log_store.dart';
 
 class PerformerEditPage extends ConsumerStatefulWidget {

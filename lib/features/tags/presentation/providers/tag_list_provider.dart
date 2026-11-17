@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../domain/entities/tag.dart';
 import '../../domain/entities/tag_filter.dart';
 import '../../data/repositories/graphql_tag_repository.dart';
@@ -9,6 +10,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/presentation/providers/list_pagination.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 
@@ -101,19 +103,12 @@ class TagListFilterNotifier extends Notifier<TagFilter> {
 }
 
 @Riverpod(keepAlive: true)
-class TagList extends _$TagList {
-  int _currentPage = 1;
+class TagList extends _$TagList with ListPagination<Tag> {
   int _perPage = kDefaultPageSize;
-  bool _hasMore = true;
-  bool _isLoadingMore = false;
-  int _requestGeneration = 0;
 
   @override
   FutureOr<List<Tag>> build() async {
-    _requestGeneration++;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    final generation = resetPagination();
     final query = ref.watch(tagSearchQueryProvider);
     final sortConfig = ref.watch(tagSortProvider);
     final tagFilter = ref.watch(tagListFilterProvider);
@@ -125,7 +120,7 @@ class TagList extends _$TagList {
     }
 
     final firstPage = await repository.findTags(
-      page: _currentPage,
+      page: 1,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
@@ -133,16 +128,14 @@ class TagList extends _$TagList {
       tagFilter: tagFilter,
     );
     // A short page is the last one; this also stops layout-driven paging.
-    if (ref.mounted) _hasMore = firstPage.length >= _perPage;
+    updatePagination(firstPage, _perPage, generation);
     return firstPage;
   }
 
   /// Manually refreshes the tag list and generates a new random seed.
   Future<void> refresh() async {
     ref.read(tagRandomSeedProvider.notifier).next();
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
     await future;
   }
@@ -151,69 +144,45 @@ class TagList extends _$TagList {
     ref
         .read(tagSortProvider.notifier)
         .setSort(sort: sort, descending: descending);
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
   void setFilter(TagFilter filter) {
     ref.read(tagListFilterProvider.notifier).set(filter);
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
   void setPerPage(int perPage) {
     if (_perPage == perPage) return;
     _perPage = perPage;
-    _currentPage = 1;
-    _hasMore = true;
-    _isLoadingMore = false;
+    resetPagination();
     ref.invalidateSelf();
   }
 
-  Future<void> fetchNextPage() async {
-    if (_isLoadingMore || !_hasMore || state.isLoading) return;
+  Future<void> fetchNextPage() => loadNextPage(
+    perPage: _perPage,
+    fetch: (page) {
+      final repository = ref.read(tagRepositoryProvider);
+      final query = ref.read(tagSearchQueryProvider);
+      final sortConfig = ref.read(tagSortProvider);
+      final tagFilter = ref.read(tagListFilterProvider);
 
-    final generation = _requestGeneration;
-    _isLoadingMore = true;
-    final repository = ref.read(tagRepositoryProvider);
-    final query = ref.read(tagSearchQueryProvider);
-    final sortConfig = ref.read(tagSortProvider);
-    final tagFilter = ref.read(tagListFilterProvider);
-
-    String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random') {
-      effectiveSort = 'random_${ref.read(tagRandomSeedProvider)}';
-    }
-
-    try {
-      final nextPage = _currentPage + 1;
-      final nextTags = await repository.findTags(
-        page: nextPage,
+      String? effectiveSort = sortConfig.sort;
+      if (effectiveSort == 'random') {
+        effectiveSort = 'random_${ref.read(tagRandomSeedProvider)}';
+      }
+      return repository.findTags(
+        page: page,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
         descending: sortConfig.descending,
         tagFilter: tagFilter,
       );
-
-      if (generation != _requestGeneration) return;
-
-      _hasMore = nextTags.length >= _perPage;
-      if (nextTags.isNotEmpty) {
-        _currentPage = nextPage;
-        state = AsyncData([...state.value ?? [], ...nextTags]);
-      }
-    } finally {
-      if (generation == _requestGeneration) _isLoadingMore = false;
-    }
-  }
-
-  bool get hasMore => _hasMore;
-  bool get isLoadingMore => _isLoadingMore;
+    },
+  );
 
   Future<Tag?> getRandomTag({String? excludeTagId}) async {
     final useCurrentFilter = ref.read(sceneRandomRespectActiveFilterProvider);

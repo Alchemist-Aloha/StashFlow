@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,6 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_mode.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_provider.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_service.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
+import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
+import 'package:stash_app_flutter/features/setup/data/graphql/version.graphql.dart';
 import 'package:stash_app_flutter/core/data/preferences/secure_storage_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/setup/domain/models/server_profile.dart';
@@ -76,7 +80,7 @@ void main() {
   );
 
   group('AuthProvider', () {
-    test('hydrates mode and credentials from storage', () async {
+    test('a saved cookie alone cannot restore a password session', () async {
       SharedPreferences.setMockInitialValues({
         'profile_${profileId}_auth_mode': 'password',
       });
@@ -84,7 +88,6 @@ void main() {
 
       final secureStorage = FakeSecureStorage({
         'profile_${profileId}_username': 'alice',
-        'profile_${profileId}_password': 'secret',
         'profile_${profileId}_cookie_header': 'session=restored',
       });
 
@@ -109,12 +112,12 @@ void main() {
       final state = container.read(authProvider);
       expect(state.mode, AuthMode.password);
       expect(state.username, 'alice');
-      expect(state.password, 'secret');
-      expect(state.cookieHeader, 'session=restored');
-      expect(state.loginStatus, AuthLoginStatus.loggedIn);
+      expect(state.password, '');
+      expect(state.cookieHeader, '');
+      expect(state.loginStatus, AuthLoginStatus.loggedOut);
     });
 
-    test('login stores cookie header and updates status', () async {
+    test('startup renews an expired session for GraphQL and media', () async {
       SharedPreferences.setMockInitialValues({
         'profile_${profileId}_auth_mode': 'password',
       });
@@ -123,6 +126,7 @@ void main() {
       final secureStorage = FakeSecureStorage({
         'profile_${profileId}_username': 'alice',
         'profile_${profileId}_password': 'secret',
+        'profile_${profileId}_cookie_header': 'session=expired',
       });
 
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
@@ -147,14 +151,29 @@ void main() {
           return;
         }
 
-        request.response.statusCode = HttpStatus.notFound;
+        if (request.uri.path == '/graphql' &&
+            request.headers.value(HttpHeaders.cookieHeader) ==
+                'session=provider-cookie') {
+          request.response.headers.contentType = ContentType.json;
+          request.response.write(
+            '{"data":{"__typename":"Query","version":'
+            '{"__typename":"StashVersion","version":"v-test"}}}',
+          );
+        } else {
+          request.response.statusCode = HttpStatus.unauthorized;
+        }
         await request.response.close();
       });
 
       final endpoint = 'http://${server.address.host}:${server.port}/graphql';
       final profileWithDynamicUrl = testProfile.copyWith(baseUrl: endpoint);
 
-      final cookieJar = CookieJar();
+      final cookieJar = CookieJar(ignoreExpires: false);
+      await cookieJar.saveFromResponse(Uri.parse(endpoint), [
+        Cookie('session', 'expired')
+          ..path = '/'
+          ..expires = DateTime.now().subtract(const Duration(days: 1)),
+      ]);
       final dio = Dio()
         ..interceptors.add(CookieManager(cookieJar))
         ..options.validateStatus = (status) =>
@@ -177,22 +196,34 @@ void main() {
 
       addTearDown(() async {
         container.dispose();
+        dio.close(force: true);
         await server.close(force: true);
         if (tempDir.existsSync()) {
           await tempDir.delete(recursive: true);
         }
       });
 
-      await container.read(authProvider.notifier).setMode(AuthMode.password);
-      await container.read(authProvider.notifier).updateUsername('alice');
-      await container.read(authProvider.notifier).updatePassword('secret');
-
-      final success = await container.read(authProvider.notifier).login();
-      expect(success, isTrue);
+      final loggedIn = Completer<void>();
+      container.listen(authProvider, (previous, next) {
+        if (next.loginStatus == AuthLoginStatus.loggedIn &&
+            !loggedIn.isCompleted) {
+          loggedIn.complete();
+        }
+      });
+      await loggedIn.future.timeout(const Duration(seconds: 5));
 
       final state = container.read(authProvider);
       expect(state.loginStatus, AuthLoginStatus.loggedIn);
       expect(state.cookieHeader, contains('session=provider-cookie'));
+      expect(
+        container.read(mediaHeadersProvider)['Cookie'],
+        state.cookieHeader,
+      );
+      final result = await container
+          .read(graphqlClientProvider)
+          .query$GetVersion();
+      expect(result.hasException, isFalse);
+      expect(result.parsedData?.version.version, 'v-test');
       expect(
         await secureStorage.read(key: 'profile_${profileId}_cookie_header'),
         isNotEmpty,

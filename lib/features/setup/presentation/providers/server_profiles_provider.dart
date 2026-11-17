@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'dart:convert';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/data/preferences/one_time_tips.dart';
 import '../../../../core/data/preferences/secure_storage_provider.dart';
 import '../../../../core/data/auth/auth_mode.dart';
 import '../../domain/models/server_profile.dart';
@@ -92,6 +95,9 @@ class ServerProfiles extends _$ServerProfiles {
     final shouldActivate =
         state.isEmpty ||
         (ref.read(activeServerProfileIdProvider) ?? '').isEmpty;
+    if (state.isEmpty) {
+      await OneTimeTip.armAll(ref.read(sharedPreferencesProvider));
+    }
     final newList = [...state, profile];
     await saveProfiles(newList);
     if (shouldActivate) {

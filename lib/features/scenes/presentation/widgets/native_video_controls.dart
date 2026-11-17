@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
@@ -35,6 +37,8 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/services/cast_service.dart';
 
 import 'package:media_kit_video/media_kit_video.dart';
+
+import '../../../../core/utils/format_duration.dart';
 
 class NativeVideoControls extends ConsumerStatefulWidget {
   const NativeVideoControls({
@@ -733,17 +737,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
     });
   }
 
-  String _formatDuration(Duration d) {
-    final totalSeconds = d.inSeconds;
-    final hours = totalSeconds ~/ 3600;
-    final minutes = (totalSeconds % 3600) ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
   Widget _buildTimePill(
     BuildContext context,
     String label, {
@@ -1159,7 +1152,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                         }
                                       }),
                                     );
-                                  } else if (!Platform.isAndroid) {
+                                  } else if (kIsWeb || !Platform.isAndroid) {
                                     _dragStartValue = ref
                                         .read(desktopSettingsProvider)
                                         .volume;
@@ -1192,7 +1185,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                     Icons.brightness_6,
                                     '${(_dragStartValue * 100).round()}%',
                                   );
-                                } else if (Platform.isAndroid) {
+                                } else if (!kIsWeb && Platform.isAndroid) {
                                   unawaited(
                                     SystemMediaVolume.adjustMediaVolume(delta)
                                         .then((volume) {
@@ -1559,13 +1552,17 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                           children: [
                                             _buildTimePill(
                                               context,
-                                              _formatDuration(position),
+                                              formatClockDuration(
+                                                position.inSeconds,
+                                              ),
                                               compact: compact,
                                             ),
                                             const Spacer(),
                                             _buildTimePill(
                                               context,
-                                              _formatDuration(duration),
+                                              formatClockDuration(
+                                                duration.inSeconds,
+                                              ),
                                               compact: compact,
                                             ),
                                           ],

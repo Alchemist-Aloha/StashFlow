@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../../../core/data/auth/auth_mode.dart';
 
 part 'server_profile.freezed.dart';

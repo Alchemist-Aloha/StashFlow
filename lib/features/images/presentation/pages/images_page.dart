@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../galleries/presentation/gallery_location.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
@@ -51,7 +54,8 @@ class ImagesPage extends ConsumerStatefulWidget {
     this.title,
     this.showAppBarTitle = true,
     this.searchOnlyAppBar = false,
-    this.topContent,
+    this.scrollHeader,
+    this.stickyHeader,
     this.scrollController,
     this.onRefresh,
   });
@@ -68,8 +72,11 @@ class ImagesPage extends ConsumerStatefulWidget {
   /// Restricts the app-bar actions to search for embedded detail browsing.
   final bool searchOnlyAppBar;
 
-  /// Optional content shown above the image grid.
-  final Widget? topContent;
+  /// Optional content scrolled above the image grid; see [ListPageScaffold.scrollHeader].
+  final Widget? scrollHeader;
+
+  /// Optional overlay pinned over the image grid; see [ListPageScaffold.stickyHeader].
+  final Widget? stickyHeader;
 
   /// Optional controller used by an embedding page to observe image scrolling.
   final ScrollController? scrollController;
@@ -523,30 +530,32 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               child: const Icon(Icons.casino_outlined),
             )
           : null,
-      sortBar:
-          widget.topContent ??
-          (filterState.galleryId != null
-              ? Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.dimensions.spacingMedium,
-                    vertical: context.dimensions.spacingSmall,
-                  ),
-                  child: Row(
-                    children: [
-                      InputChip(
-                        label: Text(context.l10n.images_filtered_by_gallery),
-                        onDeleted: browser != null
-                            ? null
-                            : () {
-                                ref
-                                    .read(imageFilterStateProvider.notifier)
-                                    .clearGalleryId();
-                              },
-                      ),
-                    ],
-                  ),
-                )
-              : null),
+      scrollHeader: widget.scrollHeader,
+      stickyHeader: widget.stickyHeader,
+      sortBar: widget.scrollHeader != null
+          ? null
+          : (filterState.galleryId != null
+                ? Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.dimensions.spacingMedium,
+                      vertical: context.dimensions.spacingSmall,
+                    ),
+                    child: Row(
+                      children: [
+                        InputChip(
+                          label: Text(context.l10n.images_filtered_by_gallery),
+                          onDeleted: browser != null
+                              ? null
+                              : () {
+                                  ref
+                                      .read(imageFilterStateProvider.notifier)
+                                      .clearGalleryId();
+                                },
+                        ),
+                      ],
+                    ),
+                  )
+                : null),
       scrollController:
           widget.scrollController ??
           (browser != null

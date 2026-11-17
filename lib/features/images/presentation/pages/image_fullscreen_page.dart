@@ -1,6 +1,8 @@
+import '../../../../core/data/preferences/one_time_tips.dart';
+import '../widgets/image_swipe_direction_dialog.dart';
+
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -16,7 +18,9 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/pagination_feedback.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
+import '../../../../core/presentation/widgets/frosted_surface.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/desktop_fullscreen.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -30,6 +34,7 @@ import '../widgets/image_details_bottom_sheet.dart';
 import '../widgets/image_clip_player.dart';
 import '../widgets/zoomable_image.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/utils/gal_error_message.dart';
 
 enum _SlideshowDirection { forward, backward }
 
@@ -67,6 +72,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   int _manualNavigationRevision = 0;
   bool _initialPageSet = false;
   bool _showOverlays = true;
+  bool _headerExpanded = false;
+  final Set<String> _pendingOCounts = {};
   // Desktop opens windowed; the header button owns window fullscreen.
   bool _desktopFullscreen = false;
   bool _isSlideshowPlaying = false;
@@ -110,7 +117,18 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Mobile stays non-immersive; desktop waits for the header toggle.
       if (mounted && kIsWeb) unawaited(_enterFullScreen());
+      unawaited(_maybeAskSwipeDirection());
     });
+  }
+
+  /// Asks for the swipe direction the first time the viewer opens.
+  Future<void> _maybeAskSwipeDirection() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (!mounted || !OneTimeTip.imageViewer.consume(prefs)) return;
+    final vertical = await showImageSwipeDirectionDialog(context);
+    if (vertical == null || !mounted) return;
+    await prefs.setBool(_imageFullscreenVerticalSwipeKey, vertical);
+    if (mounted) setState(() {});
   }
 
   @override
@@ -248,7 +266,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     _warmAdjacentFiles(items, index, headers);
 
     if (!_standalone && index >= items.length - 5) {
-      unawaited(ref.read(imageListProvider.notifier).fetchNextPage());
+      unawaited(
+        loadNextPageWithFeedback(
+          context,
+          () => ref.read(imageListProvider.notifier).fetchNextPage(),
+        ),
+      );
     }
   }
 
@@ -471,13 +494,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         stackTrace,
         source: 'image_fullscreen_page',
       );
-      final message = switch (e.type) {
-        GalExceptionType.accessDenied =>
-          'Permission to access the gallery is denied.',
-        GalExceptionType.notEnoughSpace => 'Not enough space for storage.',
-        GalExceptionType.notSupportedFormat => 'Unsupported file format.',
-        GalExceptionType.unexpected => 'An unexpected error has occurred.',
-      };
+      final message = galErrorMessage(e.type);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -807,6 +824,31 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     }
   }
 
+  Future<void> _incrementOCount(entity.Image image) async {
+    if (!_pendingOCounts.add(image.id)) return;
+    setState(() {});
+    try {
+      await ref.read(imageChangedProvider.notifier).incrementOCounter(image);
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'incrementImageOCounter',
+        error,
+        stackTrace,
+        source: 'image_fullscreen_page',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.details_failed_increment_o_count(error.toString()),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _pendingOCounts.remove(image.id));
+    }
+  }
+
   void _warmAdjacentFiles(
     List<entity.Image> items,
     int index,
@@ -885,13 +927,16 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     double horizontalPadding,
   ) {
     final colorScheme = Theme.of(context).colorScheme;
-    final rating100 = currentImage?.rating100;
-    final hasRating = rating100 != null && rating100 > 0;
-    final ratingLabel = hasRating ? (rating100 / 20).toStringAsFixed(1) : '';
+    final dims = context.dimensions;
+    final buttonStyle = IconButton.styleFrom(
+      minimumSize: const Size.square(kMinInteractiveDimension),
+      backgroundColor: colorScheme.secondaryContainer,
+      foregroundColor: colorScheme.onSecondaryContainer,
+    );
 
     return Padding(
       key: const Key('image_viewer_header'),
-      padding: EdgeInsets.only(top: context.dimensions.spacingSmall),
+      padding: EdgeInsets.only(top: dims.spacingSmall / 2),
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: _onOverlayPointerDown,
@@ -902,32 +947,29 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               constraints: BoxConstraints(maxWidth: maxOverlayWidth),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                child: ClipRRect(
+                child: FrostedSurface(
+                  tint: colorScheme.surface.withValues(alpha: 0.78),
+                  blurSigma: 12,
                   borderRadius: BorderRadius.circular(24),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: context.dimensions.spacingSmall + 4,
-                        vertical: context.dimensions.spacingSmall + 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface.withValues(alpha: 0.78),
-                        border: Border.all(
-                          color: colorScheme.outlineVariant.withValues(
-                            alpha: 0.35,
-                          ),
-                        ),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Row(
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.35),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: dims.spacingSmall,
+                    vertical: dims.spacingSmall / 2,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
                         children: [
                           IconButton.filledTonal(
+                            style: buttonStyle,
                             icon: const Icon(Icons.arrow_back_rounded),
                             onPressed: () => context.pop(),
                             tooltip: context.l10n.common_back,
                           ),
-                          SizedBox(width: context.dimensions.spacingSmall + 2),
+                          SizedBox(width: dims.spacingSmall),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -940,9 +982,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                SizedBox(
-                                  height: context.dimensions.spacingSmall / 4,
-                                ),
+                                SizedBox(height: dims.spacingSmall / 4),
                                 Text(
                                   '${_currentIndex + 1} / $totalItemCount',
                                   style: Theme.of(context).textTheme.bodySmall,
@@ -950,75 +990,122 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                               ],
                             ),
                           ),
-                          SizedBox(width: context.dimensions.spacingSmall),
-                          if (hasRating)
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: context.dimensions.spacingSmall + 2,
-                                vertical: context.dimensions.spacingSmall - 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainerHighest
-                                    .withValues(alpha: 0.88),
-                                borderRadius: BorderRadius.circular(999),
-                                border: Border.all(
-                                  color: colorScheme.outlineVariant.withValues(
-                                    alpha: 0.55,
-                                  ),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.star_rounded,
-                                    size: 14,
-                                    color: colorScheme.tertiary,
-                                  ),
-                                  SizedBox(
-                                    width: context.dimensions.spacingSmall / 2,
-                                  ),
-                                  Text(
-                                    ratingLabel,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelMedium
-                                        ?.copyWith(fontWeight: FontWeight.w700),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          if (hasRating)
-                            SizedBox(width: context.dimensions.spacingSmall),
-                          if (_isDesktop) ...[
-                            IconButton.filledTonal(
-                              key: const Key('image_fullscreen_toggle_button'),
+                          SizedBox(width: dims.spacingSmall),
+                          Semantics(
+                            expanded: _headerExpanded,
+                            child: IconButton.filledTonal(
+                              key: const Key('image_header_expand_button'),
+                              style: buttonStyle,
                               icon: Icon(
-                                _desktopFullscreen
-                                    ? Icons.fullscreen_exit_rounded
-                                    : Icons.fullscreen_rounded,
+                                _headerExpanded
+                                    ? Icons.expand_less_rounded
+                                    : Icons.expand_more_rounded,
                               ),
-                              onPressed: _toggleDesktopFullscreen,
-                              tooltip: _desktopFullscreen
-                                  ? context.l10n.common_exit_fullscreen
-                                  : context.l10n.common_toggle_fullscreen,
+                              tooltip: _headerExpanded
+                                  ? context.l10n.details_show_less
+                                  : context.l10n.details_show_more,
+                              onPressed: () => setState(
+                                () => _headerExpanded = !_headerExpanded,
+                              ),
                             ),
-                            SizedBox(width: context.dimensions.spacingSmall),
-                          ],
-                          IconButton.filledTonal(
-                            key: const Key('image_info_button'),
-                            icon: const Icon(Icons.info_outline_rounded),
-                            onPressed: currentImage == null
-                                ? null
-                                : () => ImageDetailsBottomSheet.show(
-                                    context,
-                                    currentImage,
-                                  ),
-                            tooltip: context.l10n.common_details,
                           ),
                         ],
                       ),
-                    ),
+                      if (_headerExpanded) ...[
+                        SizedBox(height: dims.spacingSmall / 2),
+                        LayoutBuilder(
+                          builder: (context, constraints) =>
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minWidth: constraints.maxWidth,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    spacing: dims.spacingSmall,
+                                    children: [
+                                      RatingButton(
+                                        key: const Key('image_rate_button'),
+                                        rating100: currentImage?.rating100,
+                                        style: buttonStyle,
+                                        onPressed: currentImage == null
+                                            ? null
+                                            : () => _showRatingDialog(
+                                                currentImage,
+                                              ),
+                                      ),
+                                      IconButton(
+                                        key: const Key('image_o_count_button'),
+                                        tooltip: context.l10n.sort_o_count,
+                                        style: buttonStyle,
+                                        onPressed:
+                                            currentImage == null ||
+                                                _pendingOCounts.contains(
+                                                  currentImage.id,
+                                                )
+                                            ? null
+                                            : () => _incrementOCount(
+                                                currentImage,
+                                              ),
+                                        icon: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.water_drop_outlined,
+                                              size: 24 * dims.fontSizeFactor,
+                                            ),
+                                            SizedBox(
+                                              width: dims.spacingSmall / 2,
+                                            ),
+                                            Text(
+                                              (currentImage?.oCounter ?? 0)
+                                                  .toString(),
+                                              style:
+                                                  context.textTheme.labelLarge,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (!kIsWeb)
+                                        IconButton.filledTonal(
+                                          key: const Key(
+                                            'image_download_button',
+                                          ),
+                                          style: buttonStyle,
+                                          icon: const Icon(
+                                            Icons.download_rounded,
+                                          ),
+                                          onPressed: currentImage == null
+                                              ? null
+                                              : () => _saveImageToGallery(
+                                                  currentImage,
+                                                ),
+                                          tooltip: context.l10n.common_download,
+                                        ),
+                                      IconButton.filledTonal(
+                                        key: const Key('image_info_button'),
+                                        style: buttonStyle,
+                                        icon: const Icon(
+                                          Icons.info_outline_rounded,
+                                        ),
+                                        onPressed: currentImage == null
+                                            ? null
+                                            : () =>
+                                                  ImageDetailsBottomSheet.show(
+                                                    context,
+                                                    currentImage,
+                                                  ),
+                                        tooltip: context.l10n.common_details,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
@@ -1031,22 +1118,25 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
   Widget _buildOverlayFooter(
     BuildContext context,
-    entity.Image? currentImage,
     int loadedItemCount,
     int totalItemCount,
     double maxOverlayWidth,
     double horizontalPadding,
   ) {
     final colorScheme = Theme.of(context).colorScheme;
+    final dims = context.dimensions;
     final progress = totalItemCount > 1
         ? _currentIndex / (totalItemCount - 1)
         : 0.0;
     final canGoPrevious = _currentIndex > 0;
     final canGoNext = _currentIndex < loadedItemCount - 1;
+    final buttonStyle = IconButton.styleFrom(
+      minimumSize: const Size.square(kMinInteractiveDimension),
+    );
 
     return Padding(
       key: const Key('image_viewer_footer'),
-      padding: EdgeInsets.only(bottom: context.dimensions.spacingSmall),
+      padding: EdgeInsets.only(bottom: dims.spacingSmall / 2),
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: _onOverlayPointerDown,
@@ -1057,93 +1147,80 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               constraints: BoxConstraints(maxWidth: maxOverlayWidth),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                child: ClipRRect(
+                child: FrostedSurface(
+                  tint: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.72,
+                  ),
+                  blurSigma: 10,
                   borderRadius: BorderRadius.circular(20),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: context.dimensions.spacingSmall + 6,
-                        vertical: context.dimensions.spacingSmall + 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest.withValues(
-                          alpha: 0.72,
-                        ),
-                        border: Border.all(
-                          color: colorScheme.outlineVariant.withValues(
-                            alpha: 0.3,
-                          ),
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: dims.spacingMedium,
+                    vertical: dims.spacingSmall / 2,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton.filledTonal(
-                                icon: const Icon(Icons.chevron_left_rounded),
-                                tooltip: context.l10n.common_previous,
-                                onPressed: canGoPrevious
-                                    ? _goToPreviousImage
-                                    : null,
-                              ),
-                              RatingButton(
-                                key: const Key('image_rate_button'),
-                                rating100: currentImage?.rating100,
-                                style: IconButton.styleFrom(
-                                  backgroundColor:
-                                      colorScheme.secondaryContainer,
-                                  foregroundColor:
-                                      colorScheme.onSecondaryContainer,
-                                ),
-                                onPressed: currentImage == null
-                                    ? null
-                                    : () => _showRatingDialog(currentImage),
-                              ),
-                              if (!kIsWeb)
-                                IconButton.filledTonal(
-                                  key: const Key('image_download_button'),
-                                  icon: const Icon(Icons.download_rounded),
-                                  onPressed: currentImage == null
-                                      ? null
-                                      : () => _saveImageToGallery(currentImage),
-                                  tooltip: context.l10n.common_download,
-                                ),
-                              IconButton.filledTonal(
-                                key: const Key('image_slideshow_button'),
-                                icon: Icon(
-                                  _isSlideshowPlaying
-                                      ? Icons.stop_rounded
-                                      : Icons.slideshow_rounded,
-                                ),
-                                onPressed: () =>
-                                    _toggleSlideshow(loadedItemCount),
-                                tooltip: _isSlideshowPlaying
-                                    ? context.l10n.common_pause
-                                    : context.l10n.images_slideshow_start_title,
-                              ),
-                              IconButton.filledTonal(
-                                icon: const Icon(Icons.chevron_right_rounded),
-                                tooltip: context.l10n.common_next,
-                                onPressed: canGoNext
-                                    ? () => _goToNextImage(loadedItemCount)
-                                    : null,
-                              ),
-                            ],
+                          IconButton.filledTonal(
+                            key: const Key('image_previous_button'),
+                            style: buttonStyle,
+                            icon: const Icon(Icons.chevron_left_rounded),
+                            tooltip: context.l10n.common_previous,
+                            onPressed: canGoPrevious
+                                ? _goToPreviousImage
+                                : null,
                           ),
-                          SizedBox(height: context.dimensions.spacingSmall),
-                          LinearProgressIndicator(
-                            key: const Key('image_progress_bar'),
-                            value: progress,
-                            minHeight: 6,
-                            borderRadius: BorderRadius.circular(999),
+                          IconButton.filledTonal(
+                            key: const Key('image_slideshow_button'),
+                            style: buttonStyle,
+                            icon: Icon(
+                              _isSlideshowPlaying
+                                  ? Icons.stop_rounded
+                                  : Icons.slideshow_rounded,
+                            ),
+                            onPressed: () => _toggleSlideshow(loadedItemCount),
+                            tooltip: _isSlideshowPlaying
+                                ? context.l10n.common_pause
+                                : context.l10n.images_slideshow_start_title,
+                          ),
+                          if (_isDesktop)
+                            IconButton.filledTonal(
+                              key: const Key('image_fullscreen_toggle_button'),
+                              style: buttonStyle,
+                              icon: Icon(
+                                _desktopFullscreen
+                                    ? Icons.fullscreen_exit_rounded
+                                    : Icons.fullscreen_rounded,
+                              ),
+                              onPressed: _toggleDesktopFullscreen,
+                              tooltip: _desktopFullscreen
+                                  ? context.l10n.common_exit_fullscreen
+                                  : context.l10n.common_toggle_fullscreen,
+                            ),
+                          IconButton.filledTonal(
+                            key: const Key('image_next_button'),
+                            style: buttonStyle,
+                            icon: const Icon(Icons.chevron_right_rounded),
+                            tooltip: context.l10n.common_next,
+                            onPressed: canGoNext
+                                ? () => _goToNextImage(loadedItemCount)
+                                : null,
                           ),
                         ],
                       ),
-                    ),
+                      SizedBox(height: dims.spacingSmall / 2),
+                      LinearProgressIndicator(
+                        key: const Key('image_progress_bar'),
+                        value: progress,
+                        minHeight: 6,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -1318,7 +1395,6 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                 );
                 final footer = _buildOverlayFooter(
                   context,
-                  currentImage,
                   items.length,
                   totalItemCount,
                   maxOverlayWidth,

@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../navigation/presentation/current_route_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
@@ -15,6 +18,9 @@ import '../providers/player_view_mode.dart';
 import '../providers/video_player_provider.dart';
 import '../widgets/scene_card.dart';
 import '../widgets/tiktok_scenes_view.dart';
+import '../widgets/scene_onboarding_dialogs.dart';
+import '../../../../core/data/preferences/one_time_tips.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
@@ -62,6 +68,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   String? _focusedSceneId;
   String? _lastRoutePath;
   bool _restoreFocusPending = false;
+  bool _onboardingScheduled = false;
 
   @override
   void dispose() {
@@ -107,6 +114,42 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         _sortDescending = sortConfig.descending;
       });
       _applyServerSort();
+    });
+  }
+
+  /// Runs the first-run Scenes dialogs in order: the grid/feed choice (from
+  /// the grid), then the gesture tip for whichever layout is showing.
+  void _maybeShowOnboarding({required bool isTiktok}) {
+    if (_onboardingScheduled) return;
+    final prefs = ref.read(sharedPreferencesProvider);
+    final pending = isTiktok
+        ? OneTimeTip.sceneFeed.isPending(prefs)
+        : OneTimeTip.sceneViewMode.isPending(prefs) ||
+              OneTimeTip.sceneGrid.isPending(prefs);
+    if (!pending) return;
+    _onboardingScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        if (!mounted) return;
+        var useFeed = ref.read(sceneTiktokLayoutProvider);
+        if (!useFeed && OneTimeTip.sceneViewMode.consume(prefs)) {
+          useFeed = await showSceneViewModeDialog(context) ?? false;
+          if (!mounted) return;
+          if (useFeed) {
+            await ref.read(sceneTiktokLayoutProvider.notifier).set(true);
+            if (!mounted) return;
+          }
+        }
+        if (useFeed) {
+          if (OneTimeTip.sceneFeed.consume(prefs)) {
+            await showSceneFeedTip(context);
+          }
+        } else if (OneTimeTip.sceneGrid.consume(prefs)) {
+          await showSceneGridTip(context);
+        }
+      } finally {
+        _onboardingScheduled = false;
+      }
     });
   }
 
@@ -309,7 +352,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     });
 
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
-    final isGridView = ref.watch(sceneGridLayoutProvider);
     final gridColumns = ref.watch(
       gridColumnSettingProvider(GridColumnSetting.scene),
     );
@@ -354,6 +396,13 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     }
     _lastRoutePath = currentPath;
     if (!isAtRoot || isTiktokLayout) _restoreFocusPending = false;
+    if (isAtRoot &&
+        !scenesAsync.isLoading &&
+        !scenesAsync.hasError &&
+        scenes.isNotEmpty &&
+        ref.read(playerStateProvider).viewMode != PlayerViewMode.fullscreen) {
+      _maybeShowOnboarding(isTiktok: isTiktokLayout);
+    }
     if (_restoreFocusPending &&
         !scenesAsync.isLoading &&
         scenesAsync.hasValue) {
@@ -432,36 +481,33 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       onSearchChanged: _onSearchChanged,
       provider: scenesAsync,
       memCacheWidthBuilder: (context, isGrid) {
-        if (!isGrid) return 640;
         final padding = AppTheme.spacingSmall * 2;
-        final crossAxisCount = _getGridColumnCount(context);
+        final crossAxisCount = gridColumns ?? _getGridColumnCount(context);
         // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
         // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
         final availableWidth = MediaQuery.sizeOf(context).width - padding;
         final itemWidth =
             (availableWidth - (AppTheme.spacingSmall * (crossAxisCount - 1))) /
             crossAxisCount;
-        return (itemWidth * 2).toInt();
+        return (itemWidth * MediaQuery.devicePixelRatioOf(context)).ceil();
       },
       customBody: isTiktokLayout
           ? TiktokScenesView(actions: sceneActions)
           : null,
       scrollController: scrollController,
-      useMasonry: isGridView,
+      useMasonry: true,
       hideAppBar: isTiktokLayout && isFullScreen,
       onRefresh: () => ref.read(sceneListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(sceneListProvider.notifier).fetchNextPage(),
       loadingItemBuilder: (context, isGrid, index) =>
-          SceneCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
+          SceneCard.skeleton(useMasonry: true),
       actions: isTiktokLayout ? const [] : sceneActions,
-      gridDelegate: isGridView
-          ? GridUtils.createDelegate(
-              context,
-              crossAxisCount: gridColumns ?? _getGridColumnCount(context),
-            )
-          : null,
-      padding: isGridView ? GridUtils.defaultPadding(context) : EdgeInsets.zero,
+      gridDelegate: GridUtils.createDelegate(
+        context,
+        crossAxisCount: gridColumns ?? _getGridColumnCount(context),
+      ),
+      padding: GridUtils.defaultPadding(context),
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
         final index = sceneIndexMap[scene.id] ?? -1;
         final focused = scene.id == _focusedSceneId;
@@ -472,8 +518,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           child: SceneCard(
             key: focused ? _focusedSceneKey : null,
             scene: scene,
-            isGrid: isGridView,
-            useMasonry: isGridView,
+            useMasonry: true,
             memCacheWidth: memCacheWidth,
             memCacheHeight: memCacheHeight,
             useHero: isAtRoot,

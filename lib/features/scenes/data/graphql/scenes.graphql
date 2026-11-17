@@ -72,6 +72,23 @@ fragment SceneData on Scene {
   details
   urls
   director
+  code
+  created_at
+  updated_at
+  last_played_at
+  custom_fields
+  stash_ids {
+    endpoint
+    stash_id
+  }
+  groups {
+    group {
+      id
+      name
+      front_image_path
+    }
+    scene_index
+  }
   files {
     path
     basename

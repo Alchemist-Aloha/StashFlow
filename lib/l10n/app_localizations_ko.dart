@@ -838,6 +838,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get details_links => '링크';
 
   @override
+  String get details_appears_with => '함께 출연';
+
+  @override
   String get details_scene_scrape => '메타데이터 스크래핑';
 
   @override
@@ -1739,13 +1742,73 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_layout_default_desc => '페이지의 기본 레이아웃 선택';
 
   @override
-  String get settings_interface_layout_list => '목록';
-
-  @override
   String get settings_interface_layout_grid => '그리드';
 
   @override
   String get settings_interface_layout_tiktok => '무한 스크롤';
+
+  @override
+  String get scene_view_mode_prompt_title => '장면 보기 방식 선택';
+
+  @override
+  String get scene_view_mode_prompt_grid_desc => '장면을 2열 그리드로 표시합니다.';
+
+  @override
+  String get scene_view_mode_prompt_feed_desc => '장면을 하나씩 끝없이 스와이프하며 봅니다.';
+
+  @override
+  String get scene_view_mode_prompt_settings_hint =>
+      '나중에 설정 › 인터페이스 설정에서 변경할 수 있습니다.';
+
+  @override
+  String get onboarding_got_it => '확인';
+
+  @override
+  String get onboarding_playback_settings_hint =>
+      '나중에 설정 › 재생 설정에서 변경할 수 있습니다.';
+
+  @override
+  String get onboarding_grid_title => '장면 둘러보기';
+
+  @override
+  String get onboarding_grid_long_press => '장면 카드를 길게 누르면 세부 정보와 작업을 볼 수 있습니다.';
+
+  @override
+  String get onboarding_feed_title => '피드 사용하기';
+
+  @override
+  String get onboarding_feed_long_press =>
+      '동영상을 길게 누르면 빨리 감기 됩니다. 누른 채로 위로 밀면 더 빨라집니다.';
+
+  @override
+  String get onboarding_feed_title_tap =>
+      '제목을 탭하면 컨트롤이 숨겨집니다. 동영상을 탭하면 다시 표시됩니다.';
+
+  @override
+  String get onboarding_feed_chevron => '위쪽 화살표를 탭하면 더 많은 작업이 표시됩니다.';
+
+  @override
+  String get onboarding_details_title => '장면 시청하기';
+
+  @override
+  String get onboarding_details_swipe_title =>
+      '제목을 좌우로 스와이프하면 이전 또는 다음 장면으로 이동합니다.';
+
+  @override
+  String get onboarding_details_seek_label => '탐색 방식을 선택하세요';
+
+  @override
+  String get onboarding_image_title => '스와이프 방향 선택';
+
+  @override
+  String get settings_develop_reset_onboarding => '첫 실행 안내 초기화';
+
+  @override
+  String get settings_develop_reset_onboarding_subtitle =>
+      '일회성 안내와 선택 창을 다시 표시합니다.';
+
+  @override
+  String get settings_develop_reset_onboarding_done => '첫 실행 안내가 다시 표시됩니다.';
 
   @override
   String get settings_interface_grid_columns => '그리드 열';
@@ -1773,37 +1836,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_waterfall_columns => '폭포수 그리드 열';
 
   @override
-  String get settings_interface_performer_layouts => '출연자 레이아웃';
-
-  @override
   String get settings_interface_performer_layouts_subtitle =>
       '출연자의 미디어 및 갤러리 기본값';
-
-  @override
-  String get settings_interface_studio_layouts => '스튜디오 레이아웃';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
       '스튜디오의 미디어 및 갤러리 기본값';
 
   @override
-  String get settings_interface_tag_layouts => '태그 레이아웃';
-
-  @override
   String get settings_interface_tag_layouts_subtitle => '태그의 미디어 및 갤러리 기본값';
-
-  @override
-  String get settings_interface_media_layout => '미디어 레이아웃';
-
-  @override
-  String get settings_interface_media_layout_subtitle => '미디어 페이지용 레이아웃';
-
-  @override
-  String get settings_interface_galleries_layout_item => '갤러리 레이아웃';
-
-  @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      '갤러리 페이지용 레이아웃';
 
   @override
   String get settings_server_title => '서버 설정';
@@ -2012,6 +2053,24 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_playback_subtitle_lang => '기본 자막 언어';
+
+  @override
+  String get player_stream_resolution => '해상도';
+
+  @override
+  String get player_stream_original => '원본';
+
+  @override
+  String get player_stream_source => '스트림 소스';
+
+  @override
+  String get player_stream_direct => '다이렉트';
+
+  @override
+  String get settings_playback_stream_source => '기본 스트림 소스';
+
+  @override
+  String get settings_playback_stream_source_subtitle => '재생 시작 시 사용, 없으면 다이렉트';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '가능한 경우 자동 로드';
@@ -3600,16 +3659,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sub_group_count_title => '하위 그룹 수';
 
   @override
-  String get groups_browsing_mode_subtitle => '그룹의 기본 탐색 모드';
-
-  @override
   String get markers_browsing_mode_subtitle => '마커의 기본 탐색 모드';
-
-  @override
-  String get entity_layouts_title => '엔터티 레이아웃';
-
-  @override
-  String get entity_layouts_subtitle => '공연자, 스튜디오 및 태그에 대한 미디어 및 갤러리 레이아웃 기본값';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';

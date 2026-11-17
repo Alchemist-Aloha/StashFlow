@@ -1,11 +1,14 @@
 import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../scenes/data/local_captions/caption_model_catalog.dart';
 import '../../../scenes/data/local_captions/local_caption_model.dart';
 import '../../../scenes/presentation/providers/local_caption_settings.dart';
@@ -125,7 +128,7 @@ class _CaptionModelPickerState extends ConsumerState<CaptionModelPicker> {
       children: [
         SearchAnchor(
           searchController: _search,
-          isFullScreen: MediaQuery.sizeOf(context).width < 600,
+          isFullScreen: Responsive.isMobile(context),
           viewHintText: context.l10n.common_search,
           // Let the search route supply the height, including keyboard insets.
           viewBuilder: (suggestions) => Builder(

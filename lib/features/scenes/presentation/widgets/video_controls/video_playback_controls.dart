@@ -1,17 +1,21 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../../core/utils/l10n_extensions.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
+
 import 'package:media_kit_video/media_kit_video.dart';
 
 import '../../../domain/entities/scene.dart';
 import '../../../domain/entities/scene_title_utils.dart';
 import 'cast_selection_sheet.dart';
+import 'scene_stream_menu.dart';
 import 'scene_subtitle_menu.dart';
 import '../../providers/video_player_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../../core/data/services/cast_service.dart';
 import '../../../../../core/utils/pip_mode.dart';
 
@@ -230,6 +234,12 @@ class VideoPlaybackControls extends ConsumerWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    SceneStreamMenu(
+                      controller: controller,
+                      scene: scene,
+                      onInteract: onInteract,
+                    ),
+                    SizedBox(width: buttonGap),
                     SceneSubtitleMenu(
                       controller: controller,
                       scene: scene,

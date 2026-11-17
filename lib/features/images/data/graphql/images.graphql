@@ -1,6 +1,25 @@
 fragment ImageData on Image {
   id
   title
+  code
+  details
+  photographer
+  o_counter
+  organized
+  tags {
+    id
+    name
+  }
+  galleries {
+    id
+    title
+    files {
+      path
+    }
+    folder {
+      path
+    }
+  }
   rating100
   date
   urls

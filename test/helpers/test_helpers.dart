@@ -555,6 +555,18 @@ class MockGraphQLImageRepository extends MockRepositoryState<Image>
   Future<void> updateImageRating(String id, int rating100) async {
     if (shouldThrow) throw Exception(errorMessage);
   }
+
+  final List<String> incrementImageOCalls = [];
+
+  @override
+  Future<int> incrementImageOCounter(String id) async {
+    incrementImageOCalls.add(id);
+    if (shouldThrow) throw Exception(errorMessage);
+    final index = data.indexWhere((image) => image.id == id);
+    final count = (data[index].oCounter ?? 0) + 1;
+    data[index] = data[index].copyWith(oCounter: count);
+    return count;
+  }
 }
 
 Future<void> pumpTestWidget(

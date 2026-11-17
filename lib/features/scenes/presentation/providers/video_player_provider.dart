@@ -34,7 +34,6 @@ import '../widgets/desktop_pip_window_stub.dart'
     if (dart.library.io) '../widgets/desktop_pip_window.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
-import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -842,6 +841,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     unawaited(_settingsStore.saveResumePlayPosition(value));
   }
 
+  /// Records a source switched in place on the active player.
+  void setActiveStream(StreamChoice choice) {
+    state = state.copyWith(
+      streamMimeType: choice.mimeType,
+      streamLabel: choice.label,
+      streamSource: 'manual-switch',
+    );
+  }
+
   void setDefaultSubtitleLanguage(String value) {
     state = state.copyWith(defaultSubtitleLanguage: value);
     unawaited(_settingsStore.saveDefaultSubtitleLanguage(value));
@@ -1367,17 +1375,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
     var effectiveStreamUrl = streamUrl;
     if (kIsWeb) {
-      final authState = ref.read(authProvider);
-      final apiKey = ref.read(serverApiKeyProvider);
-      final serverUrl = ref.read(serverUrlProvider);
-      effectiveStreamUrl = applyWebMediaAuthFallback(
-        url: streamUrl,
-        authMode: authState.mode,
-        apiKey: apiKey,
-        username: authState.username,
-        password: authState.password,
-        graphqlEndpoint: Uri.tryParse(serverUrl),
-      );
+      effectiveStreamUrl = ref.read(webMediaUrlProvider)(streamUrl);
 
       AppLogStore.instance.add(
         'provider playScene: web effective url=${redactUrl(effectiveStreamUrl)}',
@@ -1474,6 +1472,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
           effectiveStreamUrl,
           httpHeaders: httpHeaders ?? const <String, String>{},
           start: initialPosition,
+          duration: sceneFileDuration(scene),
         ),
         play: false,
       );

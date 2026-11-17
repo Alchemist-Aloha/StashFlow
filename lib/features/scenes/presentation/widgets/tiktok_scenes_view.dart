@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -28,14 +27,14 @@ import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/playback_media.dart';
-import '../../../../core/data/auth/auth_provider.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
-import '../../../../core/data/graphql/url_resolver.dart';
+import '../../data/repositories/stash_player.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/pagination_feedback.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'transformable_video_surface.dart';
+import 'video_controls/scene_stream_menu.dart';
 import 'video_controls/scene_subtitle_menu.dart';
 
 class FullScreenMode extends Notifier<bool> {
@@ -243,7 +242,12 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
     // Load next page if nearing the end
     if (_currentIndex >= scenes.length - 2) {
-      unawaited(ref.read(sceneListProvider.notifier).fetchNextPage());
+      unawaited(
+        loadNextPageWithFeedback(
+          context,
+          () => ref.read(sceneListProvider.notifier).fetchNextPage(),
+        ),
+      );
     }
 
     // Window size: current-1 to current+1 (reduced from +2 to save CPU/RAM)
@@ -386,20 +390,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       if (choice == null || !mounted) return;
 
       final headers = ref.read(mediaPlaybackHeadersProvider);
-      var effectiveUrl = choice.url;
-      if (kIsWeb) {
-        final authState = ref.read(authProvider);
-        effectiveUrl = applyWebMediaAuthFallback(
-          url: effectiveUrl,
-          authMode: authState.mode,
-          apiKey: ref.read(serverApiKeyProvider),
-          username: authState.username,
-          password: authState.password,
-          graphqlEndpoint: Uri.tryParse(ref.read(serverUrlProvider)),
-        );
-      }
+      final effectiveUrl = ref.read(webMediaUrlProvider)(choice.url);
 
-      final player = Player();
+      final player = StashPlayer();
       final controller = VideoController(
         player,
         configuration: PlayerSettingsStore(ref.read(sharedPreferencesProvider))
@@ -442,6 +435,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           effectiveUrl,
           httpHeaders: headers,
           start: startPosition,
+          duration: sceneFileDuration(scene),
         ),
         play: false,
       );
@@ -642,6 +636,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   double _currentSpeed = 5.0;
   bool _isSpeedingUp = false;
   int? _localRating;
+  late int _localOCount;
 
   // Scrubbing state
   bool _isScrubbing = false;
@@ -651,15 +646,18 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   void initState() {
     super.initState();
     _localRating = widget.scene.rating100;
+    _localOCount = widget.scene.oCounter;
   }
 
   @override
   void didUpdateWidget(TiktokSceneItem oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.scene.id != widget.scene.id ||
-        oldWidget.scene.rating100 != widget.scene.rating100) {
+        oldWidget.scene.rating100 != widget.scene.rating100 ||
+        oldWidget.scene.oCounter != widget.scene.oCounter) {
       setState(() {
         _localRating = widget.scene.rating100;
+        _localOCount = widget.scene.oCounter;
       });
     }
   }
@@ -693,6 +691,32 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(context.l10n.details_failed_update_rating('$error')),
+        ),
+      );
+    }
+  }
+
+  Future<void> _incrementOCount() async {
+    try {
+      await ref
+          .read(sceneRepositoryProvider)
+          .incrementSceneOCounter(widget.scene.id);
+      if (!mounted) return;
+      setState(() => _localOCount++);
+      ref.invalidate(sceneListProvider);
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'incrementSceneOCounter',
+        error,
+        stackTrace,
+        source: 'tiktok_scenes_view',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.details_failed_increment_o_count('$error'),
+          ),
         ),
       );
     }
@@ -1025,15 +1049,20 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                       ),
                                     ),
                                   ],
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    widget.scene.date.toString().split(' ')[0],
-                                    style: context.textTheme.bodyMedium
-                                        ?.copyWith(
-                                          color: Colors.white70,
-                                          fontSize: context.fontSizes.body,
-                                        ),
-                                  ),
+                                  if (widget.scene.date != null) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      widget.scene.date!
+                                          .toIso8601String()
+                                          .split('T')
+                                          .first,
+                                      style: context.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: Colors.white70,
+                                            fontSize: context.fontSizes.body,
+                                          ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -1045,14 +1074,42 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  SceneSubtitleMenu(
-                                    controller: controller,
-                                    scene: widget.scene,
+                                  FeedActionMenu(
+                                    actions: [
+                                      SceneStreamMenu(
+                                        controller: controller,
+                                        scene: widget.scene,
+                                      ),
+                                      SceneSubtitleMenu(
+                                        controller: controller,
+                                        scene: widget.scene,
+                                      ),
+                                      ...widget.actions,
+                                    ],
                                   ),
                                   SizedBox(
                                     height: context.dimensions.spacingSmall,
                                   ),
-                                  FeedActionMenu(actions: widget.actions),
+                                  Column(
+                                    children: [
+                                      _OverlayButton(
+                                        key: const Key('feed_o_count'),
+                                        icon: Icons.water_drop_outlined,
+                                        tooltip: context.l10n.sort_o_count,
+                                        onTap: () =>
+                                            unawaited(_incrementOCount()),
+                                      ),
+                                      Text(
+                                        '$_localOCount',
+                                        style: context.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color: Colors.white,
+                                              fontSize:
+                                                  context.fontSizes.regular,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                   SizedBox(
                                     height: context.dimensions.spacingSmall,
                                   ),

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+
 import '../../../../core/presentation/theme/app_theme.dart';
 
 /// Shared appearance for server subtitles and on-device captions.

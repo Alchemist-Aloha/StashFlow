@@ -1,16 +1,16 @@
 import 'package:material_ui/material_ui.dart';
+
 import '../../../../core/utils/l10n_extensions.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../domain/entities/studio_filter.dart';
 import '../../../../core/domain/entities/criterion.dart';
 import '../providers/studio_list_provider.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
 import '../../../../core/presentation/widgets/filter_widgets.dart';
-import '../../../scenes/presentation/widgets/entity_picker.dart';
 import '../../domain/entities/studio.dart';
 import '../../../tags/domain/entities/tag.dart';
-import '../../../../core/domain/entities/filter_options.dart';
 
 class StudioFilterPanel extends ConsumerStatefulWidget {
   const StudioFilterPanel({super.key});
@@ -60,13 +60,18 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
       title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
-        _buildBooleanFilter(
-          'Favorite',
-          _tempFilter.favorite,
-          (val) =>
+        BooleanCriterionInput(
+          label: 'Favorite',
+          value: _tempFilter.favorite,
+          onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(favorite: val)),
         ),
-        _buildRatingFilter(),
+        RatingCriterionInput(
+          criterion: _tempFilter.rating100,
+          onChanged: (value) => setState(
+            () => _tempFilter = _tempFilter.copyWith(rating100: value),
+          ),
+        ),
       ],
     );
   }
@@ -107,28 +112,34 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
     return FilterSection(
       title: context.l10n.filter_group_library,
       children: [
-        _buildOrganizedFilter(),
-        _buildEntityFilter<Studio>(
-          'Parent Studios',
-          'studio',
-          _tempFilter.parentStudios,
-          (val) => setState(
+        BooleanCriterionInput(
+          label: context.l10n.common_organized,
+          value: _tempFilter.organized,
+          onChanged: (value) => setState(
+            () => _tempFilter = _tempFilter.copyWith(organized: value),
+          ),
+        ),
+        EntityCriterionInput<Studio>(
+          label: 'Parent Studios',
+          providerType: 'studio',
+          criterion: _tempFilter.parentStudios,
+          onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               parentStudios: val as HierarchicalMultiCriterion?,
             ),
           ),
-          true,
+          isHierarchical: true,
         ),
-        _buildEntityFilter<Tag>(
-          'Tags',
-          'tag',
-          _tempFilter.tags,
-          (val) => setState(
+        EntityCriterionInput<Tag>(
+          label: 'Tags',
+          providerType: 'tag',
+          criterion: _tempFilter.tags,
+          onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(
               tags: val as HierarchicalMultiCriterion?,
             ),
           ),
-          true,
+          isHierarchical: true,
         ),
         IntCriterionInput(
           label: context.l10n.studios_field_tag_count,
@@ -171,10 +182,10 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
             () => _tempFilter = _tempFilter.copyWith(customFields: value),
           ),
         ),
-        _buildBooleanFilter(
-          'Ignore Auto Tag',
-          _tempFilter.ignoreAutoTag,
-          (val) => setState(
+        BooleanCriterionInput(
+          label: 'Ignore Auto Tag',
+          value: _tempFilter.ignoreAutoTag,
+          onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: val),
           ),
         ),
@@ -222,211 +233,5 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
         ),
       ],
     );
-  }
-
-  Widget _buildRatingFilter() {
-    return FilterField(
-      label: context.l10n.galleries_min_rating,
-      children: [
-        Wrap(
-          spacing: context.dimensions.spacingSmall / 2,
-          children: [
-            for (var stars = 0; stars <= 5; stars++)
-              ChoiceChip(
-                label: stars == 0
-                    ? Text(context.l10n.common_any)
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('$stars'),
-                          SizedBox(width: context.dimensions.spacingSmall / 2),
-                          Icon(
-                            Icons.star,
-                            size: 16 * context.dimensions.fontSizeFactor,
-                          ),
-                        ],
-                      ),
-                selected:
-                    (stars == 0 && _tempFilter.rating100 == null) ||
-                    (stars > 0 &&
-                        _tempFilter.rating100?.value == (stars - 1) * 20 &&
-                        _tempFilter.rating100?.modifier ==
-                            CriterionModifier.greaterThan),
-                onSelected: (_) {
-                  setState(() {
-                    if (stars == 0) {
-                      _tempFilter = _tempFilter.copyWith(rating100: null);
-                    } else {
-                      _tempFilter = _tempFilter.copyWith(
-                        rating100: IntCriterion(
-                          value: (stars - 1) * 20,
-                          modifier: CriterionModifier.greaterThan,
-                        ),
-                      );
-                    }
-                  });
-                },
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOrganizedFilter() {
-    return FilterField(
-      label: context.l10n.common_organized,
-      children: [
-        Wrap(
-          spacing: context.dimensions.spacingSmall,
-          children: OrganizedFilter.values.map((option) {
-            return ChoiceChip(
-              label: Text(option.name.toUpperCase()),
-              selected:
-                  OrganizedFilter.fromBool(_tempFilter.organized) == option,
-              onSelected: (selected) {
-                if (selected) {
-                  setState(
-                    () => _tempFilter = _tempFilter.copyWith(
-                      organized: option.toBool(),
-                    ),
-                  );
-                }
-              },
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBooleanFilter(
-    String label,
-    bool? value,
-    ValueChanged<bool?> onChanged,
-  ) {
-    return FilterField(
-      label: label,
-      children: [
-        Wrap(
-          spacing: context.dimensions.spacingSmall,
-          children: [
-            ChoiceChip(
-              label: Text(context.l10n.common_any),
-              selected: value == null,
-              onSelected: (selected) {
-                if (selected) onChanged(null);
-              },
-            ),
-            ChoiceChip(
-              label: Text(context.l10n.common_yes),
-              selected: value == true,
-              onSelected: (selected) {
-                if (selected) onChanged(true);
-              },
-            ),
-            ChoiceChip(
-              label: Text(context.l10n.common_no),
-              selected: value == false,
-              onSelected: (selected) {
-                if (selected) onChanged(false);
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEntityFilter<T>(
-    String label,
-    String providerType,
-    Object? criterion,
-    ValueChanged<Object?> onChanged,
-    bool isHierarchical,
-  ) {
-    final (selectedIds, modifier) = switch (criterion) {
-      MultiCriterion(:final value, :final modifier) => (value, modifier),
-      HierarchicalMultiCriterion(:final value, :final modifier) => (
-        value,
-        modifier,
-      ),
-      null => (<String>[], CriterionModifier.includes),
-      _ => throw ArgumentError.value(criterion, 'criterion'),
-    };
-
-    return SelectionCriterionInput(
-      label: label,
-      selectedIds: selectedIds,
-      providerType: providerType,
-      modifier: modifier,
-      onModifierChanged: (next) {
-        onChanged(
-          _buildEntityCriterion(
-            ids: selectedIds,
-            modifier: next,
-            isHierarchical: isHierarchical,
-          ),
-        );
-      },
-      onAddPressed: () async {
-        final result = await showDialog<List<T>>(
-          context: context,
-          builder: (context) => EntityPicker<T>(
-            title: context.l10n.common_select(label),
-            providerType: providerType,
-            multiSelect: true,
-            initialSelection: selectedIds,
-          ),
-        );
-        if (result == null) return;
-
-        final ids = result.map(_extractEntityId).toList();
-        if (ids.isEmpty) {
-          onChanged(null);
-          return;
-        }
-
-        onChanged(
-          _buildEntityCriterion(
-            ids: ids,
-            modifier: modifier,
-            isHierarchical: isHierarchical,
-          ),
-        );
-      },
-      onRemoveId: (id) {
-        final newList = List<String>.from(selectedIds)..remove(id);
-        if (newList.isEmpty) {
-          onChanged(null);
-          return;
-        }
-
-        onChanged(
-          _buildEntityCriterion(
-            ids: newList,
-            modifier: modifier,
-            isHierarchical: isHierarchical,
-          ),
-        );
-      },
-    );
-  }
-
-  dynamic _buildEntityCriterion({
-    required List<String> ids,
-    required CriterionModifier modifier,
-    required bool isHierarchical,
-  }) {
-    if (isHierarchical) {
-      return HierarchicalMultiCriterion(value: ids, modifier: modifier);
-    }
-    return MultiCriterion(value: ids, modifier: modifier);
-  }
-
-  String _extractEntityId(Object? entity) {
-    if (entity is Studio) return entity.id;
-    if (entity is Tag) return entity.id;
-    throw StateError('Unsupported studio filter entity: ${entity.runtimeType}');
   }
 }

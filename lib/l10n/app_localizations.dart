@@ -1428,6 +1428,12 @@ abstract class AppLocalizations {
   /// **'Links'**
   String get details_links;
 
+  /// No description provided for @details_appears_with.
+  ///
+  /// In en, this message translates to:
+  /// **'Appears With'**
+  String get details_appears_with;
+
   /// No description provided for @details_scene_scrape.
   ///
   /// In en, this message translates to:
@@ -3156,12 +3162,6 @@ abstract class AppLocalizations {
   /// **'Choose the default layout for the page'**
   String get settings_interface_layout_default_desc;
 
-  /// No description provided for @settings_interface_layout_list.
-  ///
-  /// In en, this message translates to:
-  /// **'List'**
-  String get settings_interface_layout_list;
-
   /// No description provided for @settings_interface_layout_grid.
   ///
   /// In en, this message translates to:
@@ -3173,6 +3173,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Feed'**
   String get settings_interface_layout_tiktok;
+
+  /// No description provided for @scene_view_mode_prompt_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a scene view'**
+  String get scene_view_mode_prompt_title;
+
+  /// No description provided for @scene_view_mode_prompt_grid_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes in a two-column grid.'**
+  String get scene_view_mode_prompt_grid_desc;
+
+  /// No description provided for @scene_view_mode_prompt_feed_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'One scene at a time in an endless, swipeable feed.'**
+  String get scene_view_mode_prompt_feed_desc;
+
+  /// No description provided for @scene_view_mode_prompt_settings_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later in Settings › Interface Settings.'**
+  String get scene_view_mode_prompt_settings_hint;
+
+  /// No description provided for @onboarding_got_it.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get onboarding_got_it;
+
+  /// No description provided for @onboarding_playback_settings_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later in Settings › Playback Settings.'**
+  String get onboarding_playback_settings_hint;
+
+  /// No description provided for @onboarding_grid_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Browsing scenes'**
+  String get onboarding_grid_title;
+
+  /// No description provided for @onboarding_grid_long_press.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press a scene card to see its details and actions.'**
+  String get onboarding_grid_long_press;
+
+  /// No description provided for @onboarding_feed_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Using the feed'**
+  String get onboarding_feed_title;
+
+  /// No description provided for @onboarding_feed_long_press.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press the video to fast-forward. Slide up while holding to go even faster.'**
+  String get onboarding_feed_long_press;
+
+  /// No description provided for @onboarding_feed_title_tap.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the title to hide the controls. Tap the video to bring them back.'**
+  String get onboarding_feed_title_tap;
+
+  /// No description provided for @onboarding_feed_chevron.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the up arrow to show more actions.'**
+  String get onboarding_feed_chevron;
+
+  /// No description provided for @onboarding_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Watching a scene'**
+  String get onboarding_details_title;
+
+  /// No description provided for @onboarding_details_swipe_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe the title left or right to go to the previous or next scene.'**
+  String get onboarding_details_swipe_title;
+
+  /// No description provided for @onboarding_details_seek_label.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you like to seek?'**
+  String get onboarding_details_seek_label;
+
+  /// No description provided for @onboarding_image_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a swipe direction'**
+  String get onboarding_image_title;
+
+  /// No description provided for @settings_develop_reset_onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset First-Run Tips'**
+  String get settings_develop_reset_onboarding;
+
+  /// No description provided for @settings_develop_reset_onboarding_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the one-time tips and choices again.'**
+  String get settings_develop_reset_onboarding_subtitle;
+
+  /// No description provided for @settings_develop_reset_onboarding_done.
+  ///
+  /// In en, this message translates to:
+  /// **'First-run tips will show again.'**
+  String get settings_develop_reset_onboarding_done;
 
   /// No description provided for @settings_interface_grid_columns.
   ///
@@ -3222,23 +3336,11 @@ abstract class AppLocalizations {
   /// **'Waterfall Grid Columns'**
   String get settings_interface_waterfall_columns;
 
-  /// No description provided for @settings_interface_performer_layouts.
-  ///
-  /// In en, this message translates to:
-  /// **'Performer Layouts'**
-  String get settings_interface_performer_layouts;
-
   /// No description provided for @settings_interface_performer_layouts_subtitle.
   ///
   /// In en, this message translates to:
   /// **'Media and gallery defaults for performers'**
   String get settings_interface_performer_layouts_subtitle;
-
-  /// No description provided for @settings_interface_studio_layouts.
-  ///
-  /// In en, this message translates to:
-  /// **'Studio Layouts'**
-  String get settings_interface_studio_layouts;
 
   /// No description provided for @settings_interface_studio_layouts_subtitle.
   ///
@@ -3246,41 +3348,11 @@ abstract class AppLocalizations {
   /// **'Media and gallery defaults for studios'**
   String get settings_interface_studio_layouts_subtitle;
 
-  /// No description provided for @settings_interface_tag_layouts.
-  ///
-  /// In en, this message translates to:
-  /// **'Tag Layouts'**
-  String get settings_interface_tag_layouts;
-
   /// No description provided for @settings_interface_tag_layouts_subtitle.
   ///
   /// In en, this message translates to:
   /// **'Media and gallery defaults for tags'**
   String get settings_interface_tag_layouts_subtitle;
-
-  /// No description provided for @settings_interface_media_layout.
-  ///
-  /// In en, this message translates to:
-  /// **'Media Layout'**
-  String get settings_interface_media_layout;
-
-  /// No description provided for @settings_interface_media_layout_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Layout for Media page'**
-  String get settings_interface_media_layout_subtitle;
-
-  /// No description provided for @settings_interface_galleries_layout_item.
-  ///
-  /// In en, this message translates to:
-  /// **'Galleries Layout'**
-  String get settings_interface_galleries_layout_item;
-
-  /// No description provided for @settings_interface_galleries_layout_subtitle_item.
-  ///
-  /// In en, this message translates to:
-  /// **'Layout for Galleries page'**
-  String get settings_interface_galleries_layout_subtitle_item;
 
   /// No description provided for @settings_server_title.
   ///
@@ -3665,6 +3737,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default Subtitle Language'**
   String get settings_playback_subtitle_lang;
+
+  /// No description provided for @player_stream_resolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution'**
+  String get player_stream_resolution;
+
+  /// No description provided for @player_stream_original.
+  ///
+  /// In en, this message translates to:
+  /// **'Original'**
+  String get player_stream_original;
+
+  /// No description provided for @player_stream_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Stream source'**
+  String get player_stream_source;
+
+  /// No description provided for @player_stream_direct.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct'**
+  String get player_stream_direct;
+
+  /// No description provided for @settings_playback_stream_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Stream Source'**
+  String get settings_playback_stream_source;
+
+  /// No description provided for @settings_playback_stream_source_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Used when playback starts; falls back to Direct'**
+  String get settings_playback_stream_source_subtitle;
 
   /// No description provided for @settings_playback_subtitle_lang_subtitle.
   ///
@@ -6432,29 +6540,11 @@ abstract class AppLocalizations {
   /// **'Sub-group Count'**
   String get sub_group_count_title;
 
-  /// No description provided for @groups_browsing_mode_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Default browsing mode for groups'**
-  String get groups_browsing_mode_subtitle;
-
   /// No description provided for @markers_browsing_mode_subtitle.
   ///
   /// In en, this message translates to:
   /// **'Default browsing mode for markers'**
   String get markers_browsing_mode_subtitle;
-
-  /// No description provided for @entity_layouts_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Entity Layouts'**
-  String get entity_layouts_title;
-
-  /// No description provided for @entity_layouts_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Media and gallery layout defaults for performers, studios and tags'**
-  String get entity_layouts_subtitle;
 
   /// No description provided for @stats_subtitle_0_gb.
   ///

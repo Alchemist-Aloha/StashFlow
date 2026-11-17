@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 import 'dart:convert';
+
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+
 import 'caption_options.dart';
 import 'local_caption_model.dart';
 
@@ -25,9 +27,8 @@ class CaptionHubModel {
     bool translation,
   ) {
     final id = json['id'] as String? ?? '';
-    if (!RegExp(
-          r'^[A-Za-z0-9][A-Za-z0-9_.-]*/[A-Za-z0-9][A-Za-z0-9_.-]*$',
-        ).hasMatch(id) ||
+    if (!RegExp(r'^[A-Za-z0-9][A-Za-z0-9_.-]*/[A-Za-z0-9][A-Za-z0-9_.-]*$')
+            .hasMatch(id) ||
         (json['gated'] != null && json['gated'] != false)) {
       return null;
     }

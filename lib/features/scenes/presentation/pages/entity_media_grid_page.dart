@@ -30,9 +30,11 @@ class EntityMediaGridPage extends ConsumerWidget {
       entityId: entityId,
       filterKind: filterKind,
       mediaAsync: mediaAsync,
-      isGridView: ref.watch(gridLayoutSettingProvider(_layoutSetting)),
-      gridColumns: ref.watch(gridColumnSettingProvider(_columnSetting)),
-      gridColumnSetting: _columnSetting,
+      // Every entity media page shares the Scenes column preference.
+      gridColumns: ref.watch(
+        gridColumnSettingProvider(GridColumnSetting.scene),
+      ),
+      gridColumnSetting: GridColumnSetting.scene,
       queueId: _queueId,
       onRefresh: () => ref
           .read(entityMediaGridProvider(filterKind, entityId).notifier)
@@ -42,20 +44,6 @@ class EntityMediaGridPage extends ConsumerWidget {
           .fetchNextPage(),
     );
   }
-
-  GridLayoutSetting get _layoutSetting => switch (filterKind) {
-    EntityMediaFilterKind.performer => GridLayoutSetting.performerMedia,
-    EntityMediaFilterKind.studio => GridLayoutSetting.studioMedia,
-    EntityMediaFilterKind.tag => GridLayoutSetting.tagMedia,
-    EntityMediaFilterKind.group => GridLayoutSetting.groupMedia,
-  };
-
-  GridColumnSetting get _columnSetting => switch (filterKind) {
-    EntityMediaFilterKind.performer => GridColumnSetting.performer,
-    EntityMediaFilterKind.studio => GridColumnSetting.studio,
-    EntityMediaFilterKind.tag => GridColumnSetting.tag,
-    EntityMediaFilterKind.group => GridColumnSetting.group,
-  };
 
   String get _queueId => switch (filterKind) {
     EntityMediaFilterKind.performer => PlaybackQueueIds.performerMedia(

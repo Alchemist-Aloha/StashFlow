@@ -66,7 +66,9 @@ class FrostedSurface extends StatelessWidget {
     final radius = borderRadius;
     Widget body = _tintedBody(radius);
     if (tint.a < 1.0 && blurSigma > 0) {
-      body = BackdropFilter(
+      // Joins the nearest [BackdropGroup], if any, so sibling chrome that
+      // never overlaps shares one backdrop read; ungrouped otherwise.
+      body = BackdropFilter.grouped(
         filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
         child: body,
       );

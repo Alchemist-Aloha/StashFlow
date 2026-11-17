@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/thumbnail_badge.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
     as entity;
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
@@ -10,6 +12,40 @@ import 'package:stash_app_flutter/features/images/presentation/widgets/image_det
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
+  for (final rating in [null, 0, 80]) {
+    testWidgets('image card uses a shared badge for rating $rating', (
+      tester,
+    ) async {
+      await pumpTestWidget(
+        tester,
+        child: Scaffold(
+          body: SizedBox(
+            width: 200,
+            child: ImageCard(
+              image: entity.Image(
+                id: 'rated-image',
+                files: const [],
+                rating100: rating,
+                paths: const entity.ImagePaths(thumbnail: ''),
+              ),
+            ),
+          ),
+        ),
+      );
+      if (rating == 80) {
+        expect(find.byType(ThumbnailBadge), findsOneWidget);
+        expect(find.text('4.0'), findsOneWidget);
+        final thumbnail = tester.getRect(find.byType(StashImage));
+        final badge = tester.getRect(find.byType(ThumbnailBadge));
+        expect(thumbnail.bottom - badge.bottom, closeTo(4, 0.01));
+        expect(thumbnail.right - badge.right, closeTo(4, 0.01));
+      } else {
+        expect(find.byType(ThumbnailBadge), findsNothing);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('clips show a play indicator without starting a player', (
     tester,
   ) async {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+
 import '../../../../core/data/auth/auth_mode.dart';
 import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/auth/auth_service.dart';
@@ -31,6 +32,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   late TextEditingController _usernameController;
   late TextEditingController _passwordController;
   late AuthMode _authMode;
+  late final String _profileId;
+  bool _isSaving = false;
+  bool _loginFailed = false;
   bool _allowSelfSignedCertificates = false;
   bool _isTesting = false;
   String? _testResult;
@@ -41,6 +45,8 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   @override
   void initState() {
     super.initState();
+    _profileId =
+        widget.profile?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
     _nameController = TextEditingController(text: widget.profile?.name);
     _urlController = TextEditingController(text: widget.profile?.baseUrl);
     _apiKeyController = TextEditingController();
@@ -90,7 +96,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   }
 
   Future<void> _testConnection() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_isTesting || _isSaving || !_formKey.currentState!.validate()) return;
 
     setState(() {
       _isTesting = true;
@@ -180,10 +186,20 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_isSaving || _isTesting || !_formKey.currentState!.validate()) return;
+    setState(() {
+      _isSaving = true;
+      _loginFailed = false;
+    });
+    try {
+      await _saveProfile();
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
 
-    final id =
-        widget.profile?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
+  Future<void> _saveProfile() async {
+    final id = _profileId;
 
     final notifier = ref.read(serverProfilesProvider.notifier);
 
@@ -204,10 +220,10 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       allowSelfSignedCertificates: _allowSelfSignedCertificates,
     );
 
-    if (widget.profile == null) {
-      await notifier.addProfile(profile);
-    } else {
+    if (ref.read(serverProfilesProvider).any((saved) => saved.id == id)) {
       await notifier.updateProfile(profile);
+    } else {
+      await notifier.addProfile(profile);
     }
     if (!mounted) return;
 
@@ -221,7 +237,12 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       if (!mounted) return;
 
       if (_authMode == AuthMode.password) {
-        await authNotifier.login();
+        final loggedIn = await authNotifier.login();
+        if (!mounted) return;
+        if (!loggedIn) {
+          setState(() => _loginFailed = true);
+          return;
+        }
       } else {
         await authNotifier.refreshCookieHeader();
       }
@@ -352,19 +373,33 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                       style: context.textTheme.bodyMedium?.copyWith(
                         color: _testResult!.startsWith('Error')
                             ? Theme.of(context).colorScheme.onErrorContainer
-                            : Theme.of(
-                                context,
-                              ).colorScheme.onSecondaryContainer,
+                            : Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
                 ],
+                if (_loginFailed) ...[
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      l10n.settings_server_login_failed,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: context.dimensions.spacingMedium),
+                ],
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: _isTesting ? null : _testConnection,
+                        onPressed: _isTesting || _isSaving
+                            ? null
+                            : _testConnection,
                         icon: _isTesting
                             ? const SizedBox(
                                 width: 16,
@@ -380,25 +415,26 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                Row(
+                Wrap(
+                  alignment: WrapAlignment.end,
+                  spacing: context.dimensions.spacingSmall,
+                  runSpacing: context.dimensions.spacingSmall,
                   children: [
                     if (widget.profile != null)
                       IconButton(
-                        onPressed: _delete,
+                        onPressed: _isSaving ? null : _delete,
                         icon: Icon(
                           Icons.delete_outline,
                           color: Theme.of(context).colorScheme.error,
                         ),
                         tooltip: l10n.settings_server_profile_delete,
                       ),
-                    const Spacer(),
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
                       child: Text(l10n.common_cancel),
                     ),
-                    const SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: _save,
+                      onPressed: _isSaving || _isTesting ? null : _save,
                       child: Text(l10n.common_save),
                     ),
                   ],

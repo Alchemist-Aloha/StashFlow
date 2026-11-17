@@ -3,8 +3,8 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'player_mpv_properties_stub.dart'
-    if (dart.library.io) 'player_mpv_properties_native.dart';
+import '../../data/repositories/player_mpv_properties_stub.dart'
+    if (dart.library.io) '../../data/repositories/player_mpv_properties_native.dart';
 
 class PlayerSettings {
   final String playEndBehaviorName;
@@ -323,7 +323,7 @@ class PlayerSettingsStore {
   const PlayerSettingsStore(this.prefs);
 
   PlayerSettings load() {
-    final autoplayNext = prefs.getBool(autoplayNextKey) ?? false;
+    final autoplayNext = prefs.getBool(autoplayNextKey) ?? true;
     final controlsAutoHideValue = prefs.get(controlsAutoHideSecondsKey);
     final endBehaviorStr = prefs.getString(playEndBehaviorKey);
     String playEndBehaviorName;

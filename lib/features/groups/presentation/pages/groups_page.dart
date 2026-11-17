@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -14,6 +15,7 @@ import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/group_saved_filter_config.dart';
+import '../widgets/group_cover.dart';
 import '../widgets/group_filter_panel.dart';
 import '../providers/group_list_provider.dart';
 import '../../domain/entities/group.dart';
@@ -247,6 +249,11 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final dims = context.dimensions;
+    final cardMargin = EdgeInsets.symmetric(
+      horizontal: dims.spacingMedium,
+      vertical: dims.spacingSmall / 2,
+    );
     final groupsAsync = ref.watch(groupListProvider);
     final activeFilterCount = _activeFilterCount();
     final scrollController = ref.watch(
@@ -315,17 +322,25 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
           onPressed: _showSavedFilterDialog,
         ),
       ],
-      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      padding: EdgeInsets.symmetric(vertical: dims.spacingSmall),
       itemBuilder: (context, group, memCacheWidth, memCacheHeight) => Card(
-        margin: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacingMedium,
-          vertical: 4,
-        ),
-        color: Theme.of(
-          context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+        margin: cardMargin,
+        color: Theme.of(context).colorScheme.primaryContainer
+            .withValues(alpha: 0.3),
         child: ListTile(
-          leading: const Icon(Icons.group_work),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+            child: GroupCover(
+              imagePath: group.frontImagePath,
+              width: 40 * context.dimensions.fontSizeFactor,
+              height: 60 * context.dimensions.fontSizeFactor,
+              memCacheWidth:
+                  (40 *
+                          context.dimensions.fontSizeFactor *
+                          MediaQuery.devicePixelRatioOf(context))
+                      .ceil(),
+            ),
+          ),
           onTap: () => context.push('/groups/group/${group.id}'),
           title: Text(
             group.name.isEmpty ? context.l10n.groups_unnamed : group.name,
@@ -346,13 +361,9 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
         enabled: true,
         effect: const ShimmerEffect(duration: Duration(seconds: 2)),
         child: Card(
-          margin: const EdgeInsets.symmetric(
-            horizontal: AppTheme.spacingMedium,
-            vertical: 4,
-          ),
-          color: Theme.of(
-            context,
-          ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+          margin: cardMargin,
+          color: Theme.of(context).colorScheme.primaryContainer
+              .withValues(alpha: 0.3),
           child: ListTile(
             leading: const Icon(Icons.group_work),
             title: Text(

@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/player_mpv_properties_stub.dart'
+import 'package:stash_app_flutter/features/scenes/data/repositories/player_mpv_properties_native.dart'
+    as native;
+import 'package:stash_app_flutter/features/scenes/data/repositories/player_mpv_properties_stub.dart'
     as web;
 
 class _RecordingNativePlayer implements NativePlayer {
@@ -345,8 +347,20 @@ void main() {
 
     test('web ignores runtime mpv options', () async {
       final native = _RecordingNativePlayer();
-      await web.applyPlayerMpvProperties(native, {'deband': 'yes'});
+      await web.applyPlayerMpvProperties(native, {
+        'deband': 'yes',
+        'sub-delay': '-30.000',
+      });
+      await web.applyPlayerMpvProperties(native, {'sub-delay': '0.000'});
       expect(native.properties, isEmpty);
+    });
+
+    test('native subtitle delay can be offset and reset', () async {
+      final player = _RecordingNativePlayer();
+      await native.applyPlayerMpvProperties(player, {'sub-delay': '-30.000'});
+      expect(player.properties['sub-delay'], '-30.000');
+      await native.applyPlayerMpvProperties(player, {'sub-delay': '0.000'});
+      expect(player.properties['sub-delay'], '0.000');
     });
 
     test(
@@ -385,6 +399,18 @@ void main() {
         expect(settings.playEndBehaviorName, 'next');
       },
     );
+
+    test('defaults to next and keeps legacy autoplay_next opt-out', () async {
+      SharedPreferences.setMockInitialValues({});
+      var prefs = await SharedPreferences.getInstance();
+      expect(PlayerSettingsStore(prefs).load().playEndBehaviorName, 'next');
+
+      SharedPreferences.setMockInitialValues({
+        PlayerSettingsStore.autoplayNextKey: false,
+      });
+      prefs = await SharedPreferences.getInstance();
+      expect(PlayerSettingsStore(prefs).load().playEndBehaviorName, 'stop');
+    });
 
     test(
       'prefers explicit play_end_behavior over legacy autoplay_next',

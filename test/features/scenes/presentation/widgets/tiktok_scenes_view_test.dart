@@ -58,6 +58,8 @@ class _FeedScene extends Fake implements Scene {
   final String id;
   @override
   int get rating100 => 0;
+  @override
+  int get oCounter => 3;
 }
 
 class _UiFeedScene extends _FeedScene {
@@ -594,6 +596,41 @@ void main() {
     await tester.pump();
     expect(player.playCalls, 1);
     expect(player.playing, isTrue);
+  });
+
+  testWidgets('O-count button increments the shown count', (tester) async {
+    final scene = _UiFeedScene();
+    final player = _UiFeedPlayer()..playing = false;
+    final controller = _UiFeedController(player);
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        playerStateProvider.overrideWith(
+          () => _FeedState(scene, player: player),
+        ),
+        sceneRepositoryProvider.overrideWithValue(MockGraphQLSceneRepository()),
+      ],
+      child: Scaffold(
+        body: TiktokSceneItem(
+          scene: scene,
+          controller: controller,
+          useHero: false,
+          showFeedUi: true,
+          onFeedUiVisibilityChanged: (_) {},
+        ),
+      ),
+    );
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+      controller.notifier.dispose();
+    });
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.text('3'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('feed_o_count')));
+    await tester.pump();
+    expect(find.text('4'), findsOneWidget);
   });
 
   testWidgets('feed action chevron expands and collapses actions', (

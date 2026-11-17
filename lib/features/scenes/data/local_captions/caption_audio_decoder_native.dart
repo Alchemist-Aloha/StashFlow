@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:media_kit/media_kit.dart';
 import 'package:path/path.dart' as p;
 
@@ -70,10 +71,8 @@ class CaptionAudioDecoder {
         player.open(Media(url, httpHeaders: headers, start: start, end: end)),
         done.future,
       ]);
-      await Future.any([
-        opened,
-        cancelled.future,
-      ]).timeout(const Duration(seconds: 30));
+      await Future.any([opened, cancelled.future])
+          .timeout(const Duration(seconds: 30));
       await player.stop(); // Flush the file writer before reading.
       if (cancelled.isCompleted || _closed) throw StateError('Cancelled');
       final maximum = (end - start).inMilliseconds * 64 + 65536;

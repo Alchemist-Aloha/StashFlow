@@ -62,6 +62,15 @@ sheets, saved-filter UI, `StashImage`, and common state views.
 - Layout must react immediately to `appGlobalScaleProvider` changes without
   overflow at supported scale extremes.
 - Card titles use the already scaled `context.dimensions.cardTitleFontSize` once.
+  Scene and gallery cards share `MediaCardMetadata` for title, studio, optional
+  avatars, and the localized More action. Metadata spacing and icons scale with
+  the theme; the action keeps a minimum 48-logical-pixel touch target. Horizontal
+  strips measure this same recipe, including action height, rather than keeping
+  a separate set of fixed row dimensions.
+- Scene tagger and deduplicator share `SceneToolLayout`. Its spacing, panel
+  widths, and manual icon sizes follow the UI scale; the side-column breakpoint
+  reserves the corresponding scaled width. Pagination labels wrap within the
+  space between buttons rather than overflowing on narrow screens.
 - Primary list-page app-bar titles keep the larger list title size. Performer,
   studio, tag, and gallery details omit the app-bar heading while keeping
   navigation and toolbar actions; their entity identity remains in the content.
@@ -81,9 +90,28 @@ sheets, saved-filter UI, `StashImage`, and common state views.
   hand-rolled `BackdropFilter` + `Container` pairs, and apply it only where
   content passes behind the surface. Opaque fills omit the backdrop blur layer
   while retaining their tint, clipping, border, shadow, and layout.
+  `FrostedSurface` joins the nearest `BackdropGroup`; a group may only hold
+  surfaces that never overlap, such as the list-page app bar and action pill.
 - A surface that floats over scrolling content must publish its height as an
   inset (scroll padding, or `MediaQuery` bottom padding) so no content is
   permanently hidden behind it.
+- Scene, performer, studio, tag, and group details use `DetailPageScrollView`
+  for lazy vertical sections with native per-section repaint boundaries.
+  Headers remain full-width, content padding follows the theme, and floating
+  chrome insets and pull-to-refresh remain intact. Visited sections stay mounted
+  for the page's lifetime so inline playback, expanded metadata, and horizontal
+  strip positions survive scrolling away and back. This retention is only for
+  the finite detail-section list, not unbounded media grids.
+- List page and performer, studio, tag, and group details top app bars use the
+  shared `FrostedAppBar`: they float over the content as frosted glass, and
+  content scrolls underneath them behind a fixed top scroll inset of the bar's
+  height (`FrostedAppBar.topInset`).
+- With "auto-hide top app bar" on, list pages slide the bar away on downward
+  user scrolls and back on upward ones. The floating bar stays frosted with the
+  stronger `frostedFloatingChromeAlpha` tint, drops its backdrop blur once fully
+  slid out (restoring it as it slides back), the content keeps a fixed top
+  scroll inset of the full bar height, and toggling rebuilds only the bar.
+  Custom bodies such as the scene feed keep a fixed bar.
 - Floating list actions and pull-up panels clear the mini-player inset. The
   shell publishes its floating band in both bottom `padding` and `viewPadding`
   so default Scaffold FAB placement also clears it. Pages
@@ -105,6 +133,7 @@ Canonical implementation:
 - `lib/core/presentation/providers/layout_settings_provider.dart`
 - `lib/core/utils/responsive.dart`
 - `lib/core/presentation/widgets/frosted_surface.dart`
+- `lib/core/presentation/widgets/detail_page_scroll_view.dart`
 
 ### Theme personalization
 
@@ -254,16 +283,44 @@ and scroll ownership.
 List invariants:
 
 - Initial load, explicit refresh, and pagination are distinct states.
+  Masonry pages keep the same content-sized grid layout while loading, including
+  when a scroll header is present, so skeleton cards fit at narrow widths and
+  supported UI scales.
 - Entity list and scene-detail queries read from the network; the GraphQL cache
   is updated but never served as the one-shot answer, so refresh shows current
   server data.
+- Performer, studio, tag, and group details pull-to-refresh fetch the entity
+  from the network before reloading their providers and media strips.
 - Pagination appends without resetting the current scroll position or active
   playback context.
 - Pagination also reacts to layout changes, so a page that fits without
   scrolling still loads the next one.
 - Duplicate fetches are coalesced or ignored while the same page is in flight.
+  Entity lists and scoped media grids share pagination state and ignore results
+  and failures from superseded queries or disposed providers.
+- Failed next-page requests preserve loaded items and the page number. List,
+  feed, fullscreen-image, and playlist paging show a localized error snackbar
+  with Retry, which requests the failed page again.
 - Empty and error states provide an appropriate recovery action.
-- Grid/list layout and supported column preferences persist.
+- Scene, gallery, and marker pages always use grids; there is no list layout
+  mode. Column preferences persist. Entity media pages (performer, studio,
+  tag, group) share the Scenes column preference, and entity gallery pages
+  share the Galleries column preference.
+- First-run dialogs (`OneTimeTip`) appear at most once per install. Saving the
+  first server profile arms them all; installs that predate them never see
+  them, and Develop settings can re-arm them. Each screen consumes its tip
+  before opening the dialog, so dismissal or a rebuild never repeats it.
+  - Scenes (route current, scenes loaded and non-empty, player not
+    fullscreen): from the grid, first a Grid/Feed choice with layout sketches;
+    then the tip for the active layout. Grid: long press a card for details.
+    Feed: long press to fast-forward, tap the title to hide controls, open the
+    up chevron for more actions.
+  - Scene details (scene loaded): swipe the title to change scenes, plus a
+    double-tap/drag seek choice saved to the playback setting.
+  - Fullscreen images (first open): vertical/horizontal swipe choice saved to
+    the Interface setting.
+  - Choice dialogs close on a choice and keep the current value when
+    dismissed; each notes where the setting can be changed later.
 - In grids with a column setting, Ctrl+mouse wheel adjusts that category's
   persisted Interface setting by one column per event within the existing 1–10
   range. Wheel up reduces columns (larger cards); wheel down adds columns.
@@ -295,6 +352,8 @@ Sort/filter sheets must:
 - support reset and persisted defaults where offered;
 - preserve search, sort direction, and feature-specific criteria together;
 - use shared filter widgets when their semantics match;
+- present boolean criteria, including Organized, as localized Any/Yes/No
+  chips, and minimum rating as Any plus one to five stars;
 - display names (or media titles) for selected entity criteria, including restored
   filters; retain IDs for queries/removal and as a fallback if a name is unavailable;
 - use `FilterField` for consistently start-aligned labels, scaled outer spacing,
@@ -314,8 +373,9 @@ Other sort fields remain available in an expandable advanced section; a selected
 advanced field stays in the first group so its selection remains visible when
 collapsed. Sharing catalogues does not share query state: entity sorts and saved
 defaults remain scoped to their existing providers.
-Entity scene media categories (performer, studio, tag, and group) default to
-Random when no sort is saved. Their horizontal previews, including the scene
+Entity scene media categories (performer, studio, and tag) default to
+Random when no sort is saved; group media defaults to ascending Scene Number in
+Group, matching the group's own order, and resetting the sort restores it. Their horizontal previews, including the scene
 detail page's More From rows, follow the corresponding expanded list's sort
 field and direction, sharing its random seed so random ordering also agrees.
 Previews preserve server order while excluding the current scene where relevant.
@@ -351,6 +411,12 @@ serialization differences.
   freshness, 100 entries) and Dio transport with persistent session cookies.
   Web display retains its existing `Image.network` authentication fallback.
 - List and strip callers provide appropriate `memCacheWidth`/height hints.
+- Performer cards and details pass a bundled placeholder (`performerPlaceholderAsset`):
+  Stash's own default silhouettes under `asset/performer_placeholders/`, rendered
+  with `flutter_svg` and tinted to the theme. It replaces the broken-image icon
+  on missing or failed images and on Stash's `default=true` URL, whose SVG
+  response the raster decoder cannot read. Performers rotate through the set by
+  numeric id (male set for `MALE`), so each keeps the same silhouette.
 - Prefetch only the visible region plus a small forward buffer.
 - Deduplicate concurrent requests for the same URL and decode size.
 - Scene VTT sprites load only after a hover/scrub-capable interaction begins.
@@ -361,16 +427,18 @@ serialization differences.
 
 ### Scene cards
 
-Scene cards support grid/list layouts, localized metadata, thumbnail badges,
-context actions, and optional performer avatars. Scene and gallery cards share
-`ThumbnailBadge`: rounded translucent corner badges with the rating (yellow
-star) top-right; scenes show the O-count bottom-left and the length (or scrub
-position) bottom-right, galleries the image count bottom-right. Rating and
-count badges are omitted when empty. The avatar count is
+Scene cards support grid and masonry layouts, localized metadata, thumbnail
+badges, context actions, and optional performer avatars. Scene, gallery, and image
+cards share `ThumbnailBadge`: rounded translucent corner badges with the rating
+(yellow star) top-right for scenes and galleries, bottom-right for images;
+scenes show the O-count bottom-left and the length (or scrub position)
+bottom-right, galleries the image count bottom-right. Badge padding, corner
+insets, and icons follow the UI scale alongside text. Rating and count badges
+are omitted when empty. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
 scaling.
 
-Grid, list, masonry, and horizontal-strip scene cards show a thin, accessible
+Grid, masonry, and horizontal-strip scene cards show a thin, accessible
 playback-position bar directly below the thumbnail when the saved `resumeTime`
 and primary file duration are finite and positive. The ratio is clamped to
 0–100%; a saved position at or beyond the duration displays a full bar. Play
@@ -448,7 +516,19 @@ confirmation and must not seek playback.
 
 The scene media section exposes cover and preview content only when available.
 Cover images open the dedicated fullscreen cover viewer with zoom/pan and a
-predictable exit gesture/action.
+predictable exit gesture/action. Scene-info and tagger previews share
+`PreviewVideoControlsTheme` for mobile and desktop control insets in normal
+and fullscreen modes. These insets follow the global UI scale; sharing the
+layout does not share or transfer player ownership.
+
+Scene Details lists the groups a scene belongs to, after Performers, each with
+the scene's number in that group (`#N`). Scene info's Details card adds studio
+code, director, last played, created and updated times (local time zone and
+locale), stash IDs, and custom fields when present; the Technical card lists
+every file fingerprint by type.
+
+Missing or unparseable scene dates remain absent in the domain model and UI;
+saving an unrelated edit must not invent or send a scene date.
 
 Performer rows may display age derived from the performer's birthdate and the
 scene date. Full birthdates account for whether the birthday had occurred;
@@ -463,7 +543,41 @@ changes use the entity repository, refresh details, and invalidate affected
 lists after confirmation; cancellation or failed saves retain the confirmed
 value, with localized feedback on failure. Performer Details shows the first
 five links, with a Show more/Show less action in the section header when there
-are more.
+are more; group and studio details share this `EntityLinksSection`.
+
+Group lists and Group Details show the group's front cover (and the back cover
+beside it when set), falling back to the group icon for Stash's `default=true`
+placeholder. Group Details also shows duration, aliases, its studio, tags,
+links, and the containing groups and sub-groups with each link's description.
+Group list margins, detail padding, chip gaps and icons follow scaled theme
+dimensions. Group detail sections use `SectionPanel` headings rather than a
+second local heading recipe. Studio detail section gaps likewise follow the
+scaled theme dimensions.
+Related entities open through the shared `RelatedEntityTile` and
+`EntityLinkChips`, and repositories resolve every related image URL against
+the active server.
+
+Tag Details shows aliases and parent and child tags as link chips, then lists
+up to 24 related performers, studios, groups, and markers (markers open their
+scene). Related lists load through `relatedEntitiesProvider`, sort by scene
+count, and render no section while loading or when empty. Studio Details shows
+aliases, tag chips, de-duplicated links, and related performers and groups.
+Performer Details' Details section lists set attributes (career start and
+end, death date, weight, measurements, fake tits, penis length, circumcision,
+tattoos, piercings, O-count, stash IDs, custom fields) above the biography,
+then related groups and Appears With performers (co-performers, excluding the
+performer). Details initially shows up to five attribute rows, with any
+remaining lines used for the biography; Appears With initially shows five
+performers, using Scene Details' performer-row avatar, typography, chevron, and
+spacing. Blank relationship subtitles do not reserve a second line, keeping
+single-line names centered with the avatar and chevron. Each overflowing
+section has an independent top-right Show more /
+Show less action using the shared section-header style. Performer details load
+career start and end so editing never clears them.
+Image details add studio code, photographer, O-count, organized, and the
+description, then tag chips and the containing galleries (untitled galleries
+use their zip or folder name). Links in sheets close the sheet before
+navigating (`closesSheet`).
 
 ### Scene rating and metadata mutation
 
@@ -514,13 +628,18 @@ fills the available content width, retaining scaled theme padding. Both headers
 show the title and metadata without a cover thumbnail beside the title. The unfilled
 details button sits beside the rating button, with the image count immediately
 after it in the expanded header's action row, wrapping when space is limited.
-The section collapses after scrolling beyond its scaled threshold. During touch
-or drag scrolling it stays collapsed until the grid settles at the top after
-release, including any fling or overscroll rebound; merely crossing the collapse
-threshold on the way back does not expand it. Wheel, keyboard, and programmatic
-scrolls retain immediate threshold-based reveal. The explicit expand button
-always responds immediately without changing the image scroll offset. Nested
-and horizontal scrolling must not trigger header reveal.
+The expanded section scrolls with the image grid as the first item of one
+scroll view, so a tall header (chapters, performers, linked scenes) never
+shrinks the grid viewport and dragging anywhere on the page scrolls it. Once
+the expanded section has fully scrolled out of view, the collapsed header
+floats as an elevated overlay pinned below the app bar, without taking layout
+space or shifting the grid; it disappears as soon as any of the expanded
+section scrolls back into view. Its expand button animates the page back to
+the top. Nested and horizontal scrolling must not toggle the collapsed header.
+When the gallery has chapters, the expanded header shows them as a horizontal
+chip row; tapping one opens the scoped fullscreen viewer at the chapter's
+1-based `image_index` in Stash path order, loading grid pages until that image
+is present, independent of the grid's current sort.
 Confirmed rating changes
 refresh gallery details and update the gallery list without reshuffling it;
 failures retain the confirmed value and show localized feedback. Gallery card
@@ -530,11 +649,20 @@ page, with no rating editor in that sheet.
 The fullscreen image viewer supports:
 
 - platform-specific window modes: Android and iOS open without immersive
-  system UI; desktop opens windowed and the header button or the image
+  system UI; desktop opens windowed and the footer button or the image
   fullscreen keybind (default F) toggles fullscreen,
   leaving fullscreen on close only when the viewer entered it; web keeps
   requesting immersive system UI on open;
-- previous/next navigation with correct endpoint behavior;
+- a collapsible title action row with the shared rating control, O-count
+  increment (icon and number only, styled like the rating button), download
+  (outside web), and details, spread across the available width with scrolling
+  when needed; expansion survives manual navigation, slideshow advances, and
+  hiding/showing viewer overlays;
+- server-confirmed O-count updates patch every live image browser without
+  refetching, reordering, or reseeding; pending increments are disabled per image,
+  and failed requests leave the displayed count unchanged;
+- an evenly spaced bottom previous/slideshow/next row with correct endpoint
+  behavior, with desktop fullscreen next to slideshow;
 - responsive manual transitions independent of slideshow timing, with repeated
   keyboard input advancing from the intended destination and touch swipes
   resynchronizing navigation to the displayed page;
@@ -589,6 +717,11 @@ slot width, and omit performer avatars so cards neither clip nor leave a gap.
 The row adds equal small-spacing padding above and below the cards; the
 horizontal scrollbar sits in the bottom padding.
 On details pages, a strip sits medium spacing below its section header.
+When a media or gallery preview successfully loads an empty list, omit its
+entire section: heading, View all action, container, and section-only spacing.
+Do not show a "No media found" placeholder there or rely on entity counts to
+infer availability. Media and gallery sections hide independently; preserve
+existing loading and failure states until a successful result is available.
 Details-page scene and gallery strips keep the preview's server order, which
 uses the same sort (including the random seed) and entity restriction as the
 View all grid, and never reorder it client-side.
@@ -634,7 +767,9 @@ Responsibilities:
   pausing; subsequent video taps retain normal play/pause behavior. Visibility
   is shared across feed pages and remains manually controlled, with no timed
   auto-hide. Subtitles and playback continue independently of overlay visibility.
-- Scene grid/list returns restore scroll position and keyboard focus to the
+- The feed's right-side buttons show the scene's O-count above its rating;
+  tapping the O-count adds one O through `sceneAddO` and updates the count.
+- Scene grid returns restore scroll position and keyboard focus to the
   active scene (or the saved playlist item for random returns). Restoration is
   driven by returning to the list route, waits for list data, and must not depend
   on the original details push completing: next-scene navigation can replace it.
@@ -656,6 +791,27 @@ steps for the player controls' auto-hide delay. Two seconds is the default when
 no valid preference is saved; existing saved delays are preserved. The selected
 delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
 included in configuration backups.
+
+Inline, fullscreen, and feed controls share a stream source menu built from
+the scene's `sceneStreams` endpoints: a two-column panel with Source (direct,
+MP4, WebM, HLS, DASH) and Resolution (the selected source's variants, disabled
+for direct). Selections are staged; Apply or dismissing the panel commits them,
+and changing source keeps the staged resolution when offered. Committing a
+different stream reopens the current player at the same
+position and play state, keeping the active external subtitle; it is disabled
+while casting.
+
+Stash's MP4 and WebM transcodes are live ffmpeg pipes: they cannot byte-seek,
+report no full duration, and restart timestamps at zero even when opened with
+`start=`. `StashPlayer` (used by the global session and feed players) opens
+them with `start=<seconds>`, reopens on every seek, and reports position,
+buffer, and the scene file's duration on the absolute scene timeline, offsetting
+subtitles to match. HLS, DASH, and direct streams pass through unchanged. Playback settings choose
+the default source kind used when playback starts (direct by default, which
+skips the `sceneStreams` query); its original-resolution endpoint is used, and
+an unavailable kind or failed query falls back to the direct stream. Downloads
+always use the direct file. The preference is included in configuration
+backups.
 
 The optional video debug overlay groups stream, active decoder/output, and
 performance diagnostics in a bounded, scrollable panel. It follows controls
@@ -1100,7 +1256,20 @@ Supported authentication modes are:
 GraphQL, images, downloads, and video resolution must derive authentication
 from the same active profile. Switching profiles flushes or invalidates
 profile-bound clients, media headers, lists, details, caches, and playback URLs
-so data cannot leak across servers.
+so data cannot leak across servers. Asynchronous credential loading and auth
+operations may update runtime state only for the profile revision that started
+them; switching profiles or disposing the provider discards stale completions.
+Password profiles reauthenticate with stored credentials on activation, including
+app startup. A saved raw Cookie header is not proof of a valid session; renewal
+clears it before login and publishes the new cookie to GraphQL and media only
+after success. Failed renewal leaves no stale runtime or stored cookie header.
+Login and credential edits wait for credential hydration. Concurrent login calls
+share one attempt for the current credential revision; profile changes, credential
+edits, and logout prevent older login results from restoring runtime auth.
+Saving the active password profile closes the editor only after successful login.
+On failure, the editor retains the entered values and shows a localized error;
+the saved configuration remains available, and retries update the same profile.
+Only one save or connection test can be submitted at a time.
 
 Server URL input accepts a user-friendly base address and normalizes it at the
 network boundary. Validation errors must not echo credentials.

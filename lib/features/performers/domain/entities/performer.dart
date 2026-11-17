@@ -38,8 +38,26 @@ abstract class Performer with _$Performer {
     int? weight,
     @JsonKey(name: 'tag_ids') required List<String> tagIds,
     @JsonKey(name: 'tag_names') required List<String> tagNames,
+    // Details-only metadata; list queries leave these at their defaults.
+    @JsonKey(name: 'o_counter') int? oCounter,
+    @JsonKey(name: 'custom_fields')
+    @Default({})
+    Map<String, dynamic> customFields,
+    @JsonKey(name: 'stash_ids') @Default([]) List<PerformerStashId> stashIds,
   }) = _Performer;
 
   factory Performer.fromJson(Map<String, dynamic> json) =>
       _$PerformerFromJson(json);
+}
+
+/// A stash-box identifier linking this performer to a remote database entry.
+@freezed
+abstract class PerformerStashId with _$PerformerStashId {
+  const factory PerformerStashId({
+    required String endpoint,
+    @JsonKey(name: 'stash_id') required String stashId,
+  }) = _PerformerStashId;
+
+  factory PerformerStashId.fromJson(Map<String, dynamic> json) =>
+      _$PerformerStashIdFromJson(json);
 }

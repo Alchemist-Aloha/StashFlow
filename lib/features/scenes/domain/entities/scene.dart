@@ -10,7 +10,7 @@ abstract class Scene with _$Scene {
     required String title,
     String? details,
     String? path,
-    required DateTime date,
+    required DateTime? date,
     required int? rating100,
     @JsonKey(name: 'o_counter') required int oCounter,
     required bool organized,
@@ -35,9 +35,46 @@ abstract class Scene with _$Scene {
     @JsonKey(name: 'tag_ids') required List<String> tagIds,
     @JsonKey(name: 'tag_names') required List<String> tagNames,
     @Default([]) List<SceneMarker> markers,
+    // Details-only metadata; list queries leave these at their defaults.
+    String? code,
+    String? director,
+    @JsonKey(name: 'created_at') String? createdAt,
+    @JsonKey(name: 'updated_at') String? updatedAt,
+    @JsonKey(name: 'last_played_at') String? lastPlayedAt,
+    @JsonKey(name: 'custom_fields')
+    @Default({})
+    Map<String, dynamic> customFields,
+    @JsonKey(name: 'stash_ids') @Default([]) List<SceneStashId> stashIds,
+    @Default([]) List<SceneGroupMembership> groups,
   }) = _Scene;
 
   factory Scene.fromJson(Map<String, dynamic> json) => _$SceneFromJson(json);
+}
+
+/// A group this scene belongs to, with its position in that group.
+@freezed
+abstract class SceneGroupMembership with _$SceneGroupMembership {
+  const factory SceneGroupMembership({
+    required String id,
+    required String name,
+    @JsonKey(name: 'image_path') String? imagePath,
+    @JsonKey(name: 'scene_index') int? sceneIndex,
+  }) = _SceneGroupMembership;
+
+  factory SceneGroupMembership.fromJson(Map<String, dynamic> json) =>
+      _$SceneGroupMembershipFromJson(json);
+}
+
+/// A stash-box identifier linking this scene to a remote database entry.
+@freezed
+abstract class SceneStashId with _$SceneStashId {
+  const factory SceneStashId({
+    required String endpoint,
+    @JsonKey(name: 'stash_id') required String stashId,
+  }) = _SceneStashId;
+
+  factory SceneStashId.fromJson(Map<String, dynamic> json) =>
+      _$SceneStashIdFromJson(json);
 }
 
 @freezed

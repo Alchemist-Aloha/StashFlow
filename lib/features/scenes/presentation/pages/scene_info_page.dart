@@ -6,11 +6,16 @@ import 'package:go_router/go_router.dart';
 
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+
+import '../../../../core/presentation/widgets/meta_row.dart';
+
 import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
+
 import '../../domain/entities/scene.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/utils/format_duration.dart';
 import '../../../../core/utils/format_bytes.dart';
 import '../providers/scene_details_provider.dart';
 import '../widgets/scene_info_media_section.dart';
@@ -34,16 +39,16 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
     unawaited(router.push(route));
   }
 
-  String _formatDuration(double? seconds) {
-    if (seconds == null) return '--:--';
-    final duration = Duration(seconds: seconds.toInt());
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    final secs = duration.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+  String _formatDuration(double? seconds) =>
+      seconds == null ? '--:--' : formatClockDuration(seconds);
+
+  /// Formats a server timestamp in the local time zone and locale.
+  String? _formatTimestamp(BuildContext context, String? raw) {
+    final parsed = raw == null ? null : DateTime.tryParse(raw)?.toLocal();
+    if (parsed == null) return raw;
+    final localizations = MaterialLocalizations.of(context);
+    return '${localizations.formatMediumDate(parsed)} '
+        '${localizations.formatTimeOfDay(TimeOfDay.fromDateTime(parsed))}';
   }
 
   @override
@@ -111,10 +116,11 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _InfoChip(
-                    icon: Icons.calendar_today_rounded,
-                    text: scene.date.toIso8601String().split('T').first,
-                  ),
+                  if (scene.date != null)
+                    _InfoChip(
+                      icon: Icons.calendar_today_rounded,
+                      text: scene.date!.toIso8601String().split('T').first,
+                    ),
                   _InfoChip(
                     icon: Icons.timelapse_rounded,
                     text: _formatDuration(file?.duration),
@@ -281,32 +287,61 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _MetaRow(
-                      label: context.l10n.scene_info_id,
-                      value: scene.id,
-                    ),
-                    _MetaRow(
+                    MetaRow(label: context.l10n.scene_info_id, value: scene.id),
+                    MetaRow(
                       label: context.l10n.scene_info_original_file_path,
                       value: scene.path?.trim().isNotEmpty == true
                           ? scene.path!
                           : '--',
                       selectable: true,
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_resume_time,
                       value: _formatDuration(scene.resumeTime),
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_play_duration,
                       value: _formatDuration(scene.playDuration),
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_urls,
                       value: scene.urls.isNotEmpty
                           ? scene.urls.join('\n')
                           : '--',
                       selectable: true,
                     ),
+                    for (final (label, value) in [
+                      (context.l10n.scenes_field_code, scene.code),
+                      (context.l10n.scenes_field_director, scene.director),
+                      (
+                        context.l10n.scenes_field_last_played_at,
+                        _formatTimestamp(context, scene.lastPlayedAt),
+                      ),
+                      (
+                        context.l10n.sort_created_at,
+                        _formatTimestamp(context, scene.createdAt),
+                      ),
+                      (
+                        context.l10n.sort_updated_at,
+                        _formatTimestamp(context, scene.updatedAt),
+                      ),
+                      if (scene.stashIds.isNotEmpty)
+                        (
+                          context.l10n.common_stash_id,
+                          scene.stashIds
+                              .map((id) => '${id.stashId}\n${id.endpoint}')
+                              .join('\n'),
+                        ),
+                      if (scene.customFields.isNotEmpty)
+                        (
+                          context.l10n.filter_custom_fields,
+                          scene.customFields.entries
+                              .map((field) => '${field.key}: ${field.value}')
+                              .join('\n'),
+                        ),
+                    ])
+                      if (value != null && value.trim().isNotEmpty)
+                        MetaRow(label: label, value: value, selectable: true),
                     if (hasDetails) ...[
                       const SizedBox(height: 8),
                       SelectableText(
@@ -323,63 +358,70 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_resolution,
                       value: file?.width != null && file?.height != null
                           ? '${file!.width} x ${file.height}'
                           : '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.sort_filesize,
                       value: file?.size != null
                           ? formatBytes(file!.size!)
                           : '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_bitrate,
                       value: file?.bitRate != null
                           ? formatBytes(file!.bitRate!)
                           : '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_frame_rate,
                       value: file?.frameRate != null
                           ? '${file!.frameRate!.toStringAsFixed(2)} fps'
                           : '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_format,
                       value: file?.format ?? '--',
                     ),
-                    _MetaRow(
+                    for (final fingerprint
+                        in file?.fingerprints ?? const <Fingerprint>[])
+                      MetaRow(
+                        label: fingerprint.type.toUpperCase(),
+                        value: fingerprint.value,
+                        selectable: true,
+                      ),
+                    MetaRow(
                       label: context.l10n.scene_info_video_codec,
                       value: file?.videoCodec ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_audio_codec,
                       value: file?.audioCodec ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_stream,
                       value: scene.paths.stream ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_preview,
                       value: scene.paths.preview ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_screenshot,
                       value: scene.paths.screenshot ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_caption,
                       value: scene.paths.caption ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_vtt,
                       value: scene.paths.vtt ?? '--',
                     ),
-                    _MetaRow(
+                    MetaRow(
                       label: context.l10n.scene_info_sprite,
                       value: scene.paths.sprite ?? '--',
                     ),
@@ -418,46 +460,6 @@ class _InfoChip extends StatelessWidget {
       avatar: Icon(icon, size: 16),
       label: Text(text, style: context.textTheme.bodySmall),
       visualDensity: VisualDensity.compact,
-    );
-  }
-}
-
-class _MetaRow extends StatelessWidget {
-  const _MetaRow({
-    required this.label,
-    required this.value,
-    this.selectable = false,
-  });
-
-  final String label;
-  final String value;
-  final bool selectable;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 128,
-            child: Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Expanded(
-            child: selectable
-                ? SelectableText(value, style: theme.textTheme.bodySmall)
-                : Text(value, style: theme.textTheme.bodySmall),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 
 /// Playback state shared with the native desktop PiP window implementation.

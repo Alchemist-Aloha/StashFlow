@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/filter_widgets.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
 import 'package:stash_app_flutter/features/groups/data/repositories/graphql_group_repository.dart';
@@ -263,16 +264,6 @@ class TestSceneTiktokLayout extends SceneTiktokLayout {
   bool build() => false;
 }
 
-class TestSceneGridLayout extends SceneGridLayout {
-  @override
-  bool build() => false;
-}
-
-class MockSceneGridLayoutTrue extends SceneGridLayout {
-  @override
-  bool build() => true;
-}
-
 class _FullscreenBackPlayerState extends PlayerState {
   _FullscreenBackPlayerState(this._scene);
 
@@ -322,7 +313,6 @@ void main() {
       overrides: [
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-        sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
       ],
       child: Consumer(
         builder: (context, ref, _) {
@@ -408,7 +398,13 @@ void main() {
     await tester.tap(find.byIcon(Icons.filter_list));
     await tester.pumpAndSettle();
 
-    final organizedOnly = find.text('ORGANIZED');
+    final organizedOnly = find.descendant(
+      of: find.ancestor(
+        of: find.text('Organized'),
+        matching: find.byType(FilterField),
+      ),
+      matching: find.text('Yes'),
+    );
     await tester.tap(organizedOnly);
     await tester.pumpAndSettle();
 
@@ -435,7 +431,6 @@ void main() {
       overrides: [
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-        sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
       ],
       child: Consumer(
         builder: (context, ref, _) {
@@ -500,7 +495,6 @@ void main() {
             LocalMockGraphQLSceneRepository(scenes),
           ),
           sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-          sceneGridLayoutProvider.overrideWith(MockSceneGridLayoutTrue.new),
         ],
         child: Consumer(
           builder: (context, ref, _) => MaterialApp.router(
@@ -579,7 +573,6 @@ void main() {
             LocalMockGraphQLSceneRepository(testScenes),
           ),
           sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-          sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
           playerStateProvider.overrideWith(() => playerState),
         ],
         child: Consumer(
@@ -642,7 +635,6 @@ void main() {
             LocalMockGraphQLSceneRepository([...testScenes, prefixScene]),
           ),
           sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-          sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
           playerStateProvider.overrideWith(() => playerState),
           sceneGalleriesProvider.overrideWith((ref, arg) => const []),
         ],
@@ -743,7 +735,6 @@ void main() {
         overrides: [
           sceneRepositoryProvider.overrideWithValue(mockRepo),
           sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-          sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
         ],
         child: Consumer(
           builder: (context, ref, _) {
@@ -808,7 +799,6 @@ void main() {
         overrides: [
           sceneRepositoryProvider.overrideWithValue(mockRepo),
           sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-          sceneGridLayoutProvider.overrideWith(MockSceneGridLayoutTrue.new),
         ],
         child: Consumer(
           builder: (context, ref, _) {
@@ -952,7 +942,6 @@ void main() {
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         performerRepositoryProvider.overrideWithValue(mockPerformerRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-        sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
       ],
       child: Consumer(
         builder: (context, ref, _) {
@@ -1007,7 +996,6 @@ void main() {
         performerRepositoryProvider.overrideWithValue(mockPerformerRepo),
         groupRepositoryProvider.overrideWithValue(mockGroupRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-        sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
       ],
       child: Consumer(
         builder: (context, ref, _) {
@@ -1045,7 +1033,6 @@ void main() {
         performerRepositoryProvider.overrideWithValue(mockPerformerRepo),
         groupRepositoryProvider.overrideWithValue(mockGroupRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
-        sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
         navigationTabsProvider.overrideWith(
           () => MockNavigationTabsNotifier([
             const NavigationTab(type: NavigationTabType.scenes),

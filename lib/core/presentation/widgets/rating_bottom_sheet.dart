@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+
 import '../theme/app_theme.dart';
 import 'bottom_sheet_panel_chrome.dart';
 import 'rating_control.dart';

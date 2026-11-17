@@ -61,9 +61,8 @@ void main() {
         ),
       );
 
-      when(
-        mockClient.query<Query$FindTags>(any),
-      ).thenAnswer((_) async => mockQueryResult);
+      when(mockClient.query<Query$FindTags>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.findTags(
         page: 1,
@@ -114,6 +113,13 @@ void main() {
           'gallery_count': 0,
           'performer_count': 0,
           'favorite': true,
+          'aliases': ['Alias'],
+          'parents': [
+            {'id': '2', 'name': 'Parent', '__typename': 'Tag'},
+          ],
+          'children': [
+            {'id': '3', 'name': 'Child', '__typename': 'Tag'},
+          ],
           '__typename': 'Tag',
         },
         '__typename': 'Query',
@@ -127,9 +133,8 @@ void main() {
         ),
       );
 
-      when(
-        mockClient.query<Query$FindTag>(any),
-      ).thenAnswer((_) async => mockQueryResult);
+      when(mockClient.query<Query$FindTag>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.getTagById('1');
 
@@ -137,6 +142,9 @@ void main() {
       expect(result.id, '1');
       expect(result.name, 'Test Tag');
       expect(result.favorite, true);
+      expect(result.aliases, ['Alias']);
+      expect(result.parents, [const TagRelation(id: '2', name: 'Parent')]);
+      expect(result.children, [const TagRelation(id: '3', name: 'Child')]);
     });
   });
 }

@@ -53,7 +53,9 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
             imageUrl:
                 galleries[i].coverPath ??
                 '/gallery/${galleries[i].id}/thumbnail',
-            memCacheWidth: (effectiveItemWidth * 2).toInt(),
+            memCacheWidth:
+                (effectiveItemWidth * MediaQuery.devicePixelRatioOf(context))
+                    .ceil(),
           ),
         );
       }
@@ -117,7 +119,10 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
                   imageUrl:
                       galleries[ahead].coverPath ??
                       '/gallery/${galleries[ahead].id}/thumbnail',
-                  memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                  memCacheWidth:
+                      (effectiveItemWidth *
+                              MediaQuery.devicePixelRatioOf(context))
+                          .ceil(),
                 ),
               );
             }
@@ -129,7 +134,10 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
                   imageUrl:
                       galleries[behind].coverPath ??
                       '/gallery/${galleries[behind].id}/thumbnail',
-                  memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                  memCacheWidth:
+                      (effectiveItemWidth *
+                              MediaQuery.devicePixelRatioOf(context))
+                          .ceil(),
                 ),
               );
             }
@@ -162,7 +170,6 @@ class _GalleryStripState extends ConsumerState<GalleryStrip> {
                   width: effectiveItemWidth,
                   child: GalleryCard(
                     gallery: gallery,
-                    isGrid: true,
                     showPerformers: false,
                     onTap: onTap == null ? null : () => onTap(gallery),
                   ),

@@ -1,3 +1,7 @@
+import '../../../../core/data/preferences/one_time_tips.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../widgets/scene_onboarding_dialogs.dart';
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' show min;
@@ -10,9 +14,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/utils/format_duration.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../galleries/presentation/gallery_location.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -21,6 +27,8 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../../../core/presentation/widgets/detail_page_scroll_view.dart';
+import '../../../../core/presentation/widgets/related_entities.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/section_panel.dart';
 import '../../../../core/presentation/widgets/rating_control.dart';
@@ -42,6 +50,7 @@ import '../widgets/scene_video_player.dart';
 import '../widgets/scene_strip.dart';
 import '../../../galleries/presentation/providers/gallery_details_provider.dart';
 import '../../../galleries/presentation/widgets/gallery_strip.dart';
+import '../../../../core/utils/gal_error_message.dart';
 
 /// A detailed view for a single scene,
 ///
@@ -608,9 +617,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
 
     try {
-      final resolver = ref.read(streamResolverProvider);
-      final choice = await resolver(scene);
-      final videoUrl = choice?.url ?? scene.paths.stream;
+      // Always download the original file, never a transcoded source.
+      final videoUrl = scene.paths.stream?.trim();
 
       if (videoUrl == null || videoUrl.isEmpty) {
         throw Exception('No stream URL found');
@@ -704,13 +712,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         stackTrace,
         source: 'scene_details_page',
       );
-      final message = switch (e.type) {
-        GalExceptionType.accessDenied =>
-          'Permission to access the gallery is denied.',
-        GalExceptionType.notEnoughSpace => 'Not enough space for storage.',
-        GalExceptionType.notSupportedFormat => 'Unsupported file format.',
-        GalExceptionType.unexpected => 'An unexpected error has occurred.',
-      };
+      final message = galErrorMessage(e.type);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.gallery_error(message))),
@@ -731,17 +733,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     }
   }
 
-  String _formatDuration(double? seconds) {
-    if (seconds == null) return '00:00';
-    final duration = Duration(seconds: seconds.toInt());
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    final secs = duration.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-  }
+  String _formatDuration(double? seconds) =>
+      seconds == null ? '00:00' : formatClockDuration(seconds);
 
   @override
   void initState() {
@@ -749,10 +742,27 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     _showTechnicalMetadata = !ref.read(hideSceneTechnicalMetadataProvider);
   }
 
+  /// Shows the first-run details tip and applies the chosen seek method.
+  void _maybeShowDetailsTip() {
+    if (!OneTimeTip.sceneDetails.consume(ref.read(sharedPreferencesProvider))) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final useDoubleTap = await showSceneDetailsTip(context);
+      if (useDoubleTap != null && mounted) {
+        ref
+            .read(playerStateProvider.notifier)
+            .setUseDoubleTapSeek(useDoubleTap);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+    if (sceneAsync.hasValue) _maybeShowDetailsTip();
     final isVideoFullScreen = ref.watch(
       playerStateProvider.select((state) => state.isFullScreen),
     );
@@ -794,25 +804,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         // Left Column: Video, Title, Info, Details (61.8%)
                         Expanded(
                           flex: 618,
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SceneVideoPlayer(
-                                  key: _playerKey,
-                                  scene: scene,
-                                  autoPlayOnMount: widget.autoPlayOnMount,
-                                  maxHeight: safeMaxHeight,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(
-                                    AppTheme.spacingMedium,
-                                  ),
-                                  child: _buildMainInfo(context, scene),
-                                ),
-                              ],
+                          child: DetailPageScrollView(
+                            header: SceneVideoPlayer(
+                              key: _playerKey,
+                              scene: scene,
+                              autoPlayOnMount: widget.autoPlayOnMount,
+                              maxHeight: safeMaxHeight,
                             ),
+                            children: [_buildMainInfo(context, scene)],
                           ),
                         ),
                         // Divider
@@ -824,25 +823,19 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         // Right Column: Tags, Performers, Related Scenes (38.2%)
                         Expanded(
                           flex: 382,
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.all(
-                              AppTheme.spacingMedium,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildTagsSection(context, scene),
-                                _buildMarkersSection(context, scene),
-                                _buildPerformersSection(context, scene),
-                                _buildLinkedGalleriesSection(context, scene),
-                                _buildMoreFromStudioSection(context, scene),
-                                _buildMoreFromPerformersSections(
-                                  context,
-                                  scene,
-                                ),
-                              ],
-                            ),
+                          child: DetailPageScrollView(
+                            children: [
+                              _buildTagsSection(context, scene),
+                              _buildMarkersSection(context, scene),
+                              _buildPerformersSection(context, scene),
+                              _buildGroupsSection(context, scene),
+                              _buildLinkedGalleriesSection(context, scene),
+                              _buildMoreFromStudioSection(context, scene),
+                              ..._buildMoreFromPerformersSections(
+                                context,
+                                scene,
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -862,34 +855,23 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       sceneDetailsProvider(widget.sceneId).future,
                     );
                   },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SceneVideoPlayer(
-                          key: _playerKey,
-                          scene: scene,
-                          autoPlayOnMount: widget.autoPlayOnMount,
-                          maxHeight: safeMaxHeight,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildMainInfo(context, scene),
-                              _buildTagsSection(context, scene),
-                              _buildMarkersSection(context, scene),
-                              _buildPerformersSection(context, scene),
-                              _buildLinkedGalleriesSection(context, scene),
-                              _buildMoreFromStudioSection(context, scene),
-                              _buildMoreFromPerformersSections(context, scene),
-                            ],
-                          ),
-                        ),
-                      ],
+                  child: DetailPageScrollView(
+                    header: SceneVideoPlayer(
+                      key: _playerKey,
+                      scene: scene,
+                      autoPlayOnMount: widget.autoPlayOnMount,
+                      maxHeight: safeMaxHeight,
                     ),
+                    children: [
+                      _buildMainInfo(context, scene),
+                      _buildTagsSection(context, scene),
+                      _buildMarkersSection(context, scene),
+                      _buildPerformersSection(context, scene),
+                      _buildGroupsSection(context, scene),
+                      _buildLinkedGalleriesSection(context, scene),
+                      _buildMoreFromStudioSection(context, scene),
+                      ..._buildMoreFromPerformersSections(context, scene),
+                    ],
                   ),
                 );
               },
@@ -1056,19 +1038,20 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     ),
                   ),
                 ),
-              if (scene.studioName != null)
+              if (scene.studioName != null && scene.date != null)
                 Text(
                   ' • ',
                   style: context.textTheme.titleMedium?.copyWith(
                     color: context.colors.onSurfaceVariant,
                   ),
                 ),
-              Text(
-                scene.date.year.toString(),
-                style: context.textTheme.titleMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+              if (scene.date != null)
+                Text(
+                  scene.date!.year.toString(),
+                  style: context.textTheme.titleMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -1432,6 +1415,35 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         ],
       ),
       key: const Key('scene_details_section'),
+    );
+  }
+
+  /// Groups the scene belongs to, each with the scene's number in it.
+  Widget _buildGroupsSection(BuildContext context, Scene scene) {
+    if (scene.groups.isEmpty) return const SizedBox.shrink();
+    return _buildSectionContainer(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            title: context.l10n.groups_title,
+            padding: EdgeInsets.zero,
+          ),
+          for (final group in scene.groups)
+            RelatedEntityTile(
+              title: group.name.isEmpty
+                  ? context.l10n.groups_untitled
+                  : group.name,
+              subtitle: group.sceneIndex == null
+                  ? null
+                  : '#${group.sceneIndex}',
+              route: '/groups/group/${group.id}',
+              imagePath: group.imagePath,
+              fallbackIcon: Icons.group_work,
+            ),
+        ],
+      ),
     );
   }
 
@@ -1813,7 +1825,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildMoreFromPerformersSections(BuildContext context, Scene scene) {
+  List<Widget> _buildMoreFromPerformersSections(
+    BuildContext context,
+    Scene scene,
+  ) {
     final sections = <Widget>[];
 
     for (var index = 0; index < scene.performerIds.length; index++) {
@@ -1869,7 +1884,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       if (section != null) sections.add(section);
     }
 
-    return Column(children: sections);
+    return sections;
   }
 
   Widget _buildChip(

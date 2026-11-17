@@ -123,45 +123,28 @@ void main() {
     },
   );
 
-  testWidgets(
-    'InterfaceSettingsPage exposes and saves group and marker layout settings',
-    (tester) async {
-      tester.view.physicalSize = const Size(1200, 1800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
+  testWidgets('InterfaceSettingsPage offers no list layout choices', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
 
-      await pumpTestWidget(
-        tester,
-        prefs: prefs,
-        child: const InterfaceSettingsPage(),
-      );
-      await tester.pumpAndSettle();
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const InterfaceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
 
-      await tester.scrollUntilVisible(
-        find.byKey(const Key('marker-layout-segmented')),
-        200,
-      );
-      final markerSegmented = find.byKey(const Key('marker-layout-segmented'));
-      tester
-          .widget<SegmentedButton<String>>(markerSegmented)
-          .onSelectionChanged!({'list'});
-      await tester.pumpAndSettle();
-
-      expect(prefs.getBool('scene_marker_grid_layout'), isFalse);
-
-      await tester.scrollUntilVisible(
-        find.byKey(const Key('group-layout-segmented')),
-        200,
-      );
-      final groupSegmented = find.byKey(const Key('group-layout-segmented'));
-      tester
-          .widget<SegmentedButton<String>>(groupSegmented)
-          .onSelectionChanged!({'list'});
-      await tester.pumpAndSettle();
-
-      expect(prefs.getBool('group_media_grid_layout'), isFalse);
-    },
-  );
+    final segmentValues = tester
+        .widgetList<SegmentedButton<String>>(
+          find.byType(SegmentedButton<String>, skipOffstage: false),
+        )
+        .expand((button) => button.segments.map((segment) => segment.value));
+    expect(segmentValues, containsAll(['grid', 'tiktok']));
+    expect(segmentValues, isNot(contains('list')));
+  });
 
   testWidgets('InterfaceSettingsPage saves performer list grid columns', (
     tester,

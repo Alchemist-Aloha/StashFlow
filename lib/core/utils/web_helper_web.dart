@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+
 import 'app_log_store.dart';
 
 @JS('document')

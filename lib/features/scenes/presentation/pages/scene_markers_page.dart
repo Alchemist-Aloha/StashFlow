@@ -201,9 +201,6 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
   Widget build(BuildContext context) {
     final markersAsync = ref.watch(sceneMarkerListProvider);
     final filter = ref.watch(sceneMarkerFilterStateProvider);
-    final isGridLayout = ref.watch(
-      gridLayoutSettingProvider(GridLayoutSetting.sceneMarker),
-    );
     final gridColumns =
         ref.watch(gridColumnSettingProvider(GridColumnSetting.sceneMarker)) ??
         2;
@@ -224,10 +221,11 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
       onRefresh: () => ref.read(sceneMarkerListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(sceneMarkerListProvider.notifier).fetchNextPage(),
-      useMasonry: isGridLayout,
-      gridDelegate: isGridLayout
-          ? GridUtils.createDelegate(context, crossAxisCount: gridColumns)
-          : null,
+      useMasonry: true,
+      gridDelegate: GridUtils.createDelegate(
+        context,
+        crossAxisCount: gridColumns,
+      ),
       padding: GridUtils.defaultPadding(context),
       actions: [
         Stack(
@@ -261,7 +259,6 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
       itemBuilder: (context, marker, memCacheWidth, memCacheHeight) {
         return SceneMarkerCard(
           marker: marker,
-          isGrid: isGridLayout,
           memCacheWidth: memCacheWidth,
           memCacheHeight: memCacheHeight,
         );

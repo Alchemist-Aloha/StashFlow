@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+
 import '../../../../../core/presentation/theme/app_theme.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
 import '../../../data/local_captions/caption_options.dart';
@@ -134,9 +135,8 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
           LinearProgressIndicator(
             value: settings.progress,
             semanticsLabel: context.l10n.common_download,
-            semanticsValue: NumberFormat.percentPattern(
-              context.l10n.localeName,
-            ).format(settings.progress),
+            semanticsValue: NumberFormat.percentPattern(context.l10n.localeName)
+                .format(settings.progress),
           ),
           Align(
             alignment: AlignmentDirectional.centerStart,
@@ -347,9 +347,8 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
               1,
               8,
               7,
-              NumberFormat.decimalPattern(
-                context.l10n.localeName,
-              ).format(_options.threads),
+              NumberFormat.decimalPattern(context.l10n.localeName)
+                  .format(_options.threads),
               (v) => _options = _options.copyWith(threads: v.round()),
             ),
             if ([
