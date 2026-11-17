@@ -1,9 +1,6 @@
 #include "my_application.h"
 
 #include <flutter_linux/flutter_linux.h>
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#endif
 
 #include "flutter/generated_plugin_registrant.h"
 #include "icon_path.h"
@@ -56,24 +53,13 @@ static void my_application_activate(GApplication* application) {
   GtkWindow* window =
       GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
 
-  // Use a header bar when running in GNOME as this is the common style used
-  // by applications and is the setup most users will be using (e.g. Ubuntu
-  // desktop).
-  // If running on X and not using GNOME then just use a traditional title bar
-  // in case the window manager does more exotic layout, e.g. tiling.
+  // Only GNOME gets a GTK header bar. Elsewhere GTK leaves decorations to the
+  // compositor (KWin draws Breeze buttons on both X11 and Wayland), and
   // Hyprland and niri manage windows without an application title bar.
-  gboolean use_header_bar = TRUE;
-#ifdef GDK_WINDOWING_X11
-  GdkScreen* screen = gtk_window_get_screen(window);
-  if (GDK_IS_X11_SCREEN(screen)) {
-    const gchar* wm_name = gdk_x11_screen_get_window_manager_name(screen);
-    if (g_strcmp0(wm_name, "GNOME Shell") != 0) {
-      use_header_bar = FALSE;
-    }
-  }
-#endif
-  const bool hide_decorations = app_should_hide_window_decorations(
-      g_getenv("XDG_CURRENT_DESKTOP"));
+  const gchar* current_desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  const bool use_header_bar = app_should_use_header_bar(current_desktop);
+  const bool hide_decorations =
+      app_should_hide_window_decorations(current_desktop);
   if (hide_decorations) {
     gtk_window_set_title(window, "StashFlow");
     gtk_window_set_decorated(window, FALSE);

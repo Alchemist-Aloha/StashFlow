@@ -1513,9 +1513,11 @@ and the AppImage runtime before publishing.
 
 The main window hides its GTK header bar and window decorations in Hyprland and
 niri sessions, detected by complete, case-insensitive tokens in the colon-separated
-`XDG_CURRENT_DESKTOP` value. Window management uses compositor shortcuts there;
-other desktops retain their existing title-bar behavior. Missing session metadata
-retains decorations rather than guessing the compositor.
+`XDG_CURRENT_DESKTOP` value. Window management uses compositor shortcuts there.
+Only GNOME sessions (a `GNOME` token) get a GTK client-side header bar; every
+other desktop, including KDE Plasma on X11 and Wayland, gets the compositor's
+native title bar with its own minimize, maximize, and close buttons. Missing
+session metadata keeps decorations rather than guessing the compositor.
 
 The runner resolves its icon/resource path relative to the executable rather
 than the process working directory. Installed and directly launched builds must
