@@ -2974,6 +2974,38 @@ class AppLocalizationsJa extends AppLocalizations {
   String get performer_filters => '出演者フィルター';
 
   @override
+  String get update_download_install_prompt =>
+      '今すぐダウンロードしてインストールするか、リリース ページで詳細を確認してください。';
+
+  @override
+  String get update_download_and_install => 'ダウンロードしてインストール';
+
+  @override
+  String get update_downloading => 'アップデートをダウンロード中…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return 'アップデートをダウンロード中… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => 'アップデートをインストールする準備ができました。';
+
+  @override
+  String get update_install => 'インストール';
+
+  @override
+  String get update_install_permission_required =>
+      'StashFlow に不明なアプリのインストールを許可してから、ここに戻って続行してください。';
+
+  @override
+  String get update_download_failed =>
+      'アップデートをダウンロードできませんでした。接続を確認してもう一度お試しください。';
+
+  @override
+  String get update_install_failed => 'システムのインストーラーを開けませんでした。';
+
+  @override
   String update_available(String version) {
     return 'StashFlowの新しいバージョン ($version) が利用可能です。';
   }

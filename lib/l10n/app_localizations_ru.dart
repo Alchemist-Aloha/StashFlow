@@ -3081,6 +3081,39 @@ class AppLocalizationsRu extends AppLocalizations {
   String get performer_filters => 'Фильтры исполнителей';
 
   @override
+  String get update_download_install_prompt =>
+      'Скачайте и установите её сейчас или откройте страницу релиза, чтобы узнать подробности.';
+
+  @override
+  String get update_download_and_install => 'Скачать и установить';
+
+  @override
+  String get update_downloading => 'Загрузка обновления…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return 'Загрузка обновления… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => 'Обновление готово к установке.';
+
+  @override
+  String get update_install => 'Установить';
+
+  @override
+  String get update_install_permission_required =>
+      'Разрешите StashFlow устанавливать неизвестные приложения, затем вернитесь сюда, чтобы продолжить.';
+
+  @override
+  String get update_download_failed =>
+      'Не удалось скачать обновление. Проверьте подключение и повторите попытку.';
+
+  @override
+  String get update_install_failed =>
+      'Не удалось открыть системный установщик.';
+
+  @override
   String update_available(String version) {
     return 'Доступна новая версия StashFlow ($version).';
   }

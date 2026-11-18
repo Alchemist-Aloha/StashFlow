@@ -5460,6 +5460,60 @@ abstract class AppLocalizations {
   /// **'Performer Filters'**
   String get performer_filters;
 
+  /// No description provided for @update_download_install_prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Download and install it now, or open the release page for details.'**
+  String get update_download_install_prompt;
+
+  /// No description provided for @update_download_and_install.
+  ///
+  /// In en, this message translates to:
+  /// **'Download & Install'**
+  String get update_download_and_install;
+
+  /// No description provided for @update_downloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update…'**
+  String get update_downloading;
+
+  /// No description provided for @update_downloading_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update… {percent}%'**
+  String update_downloading_progress(int percent);
+
+  /// No description provided for @update_ready_to_install.
+  ///
+  /// In en, this message translates to:
+  /// **'The update is ready to install.'**
+  String get update_ready_to_install;
+
+  /// No description provided for @update_install.
+  ///
+  /// In en, this message translates to:
+  /// **'Install'**
+  String get update_install;
+
+  /// No description provided for @update_install_permission_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow StashFlow to install unknown apps, then return here to continue.'**
+  String get update_install_permission_required;
+
+  /// No description provided for @update_download_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The update could not be downloaded. Check your connection and try again.'**
+  String get update_download_failed;
+
+  /// No description provided for @update_install_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The system installer could not be opened.'**
+  String get update_install_failed;
+
   /// No description provided for @update_available.
   ///
   /// In en, this message translates to:

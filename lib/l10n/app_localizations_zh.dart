@@ -2941,6 +2941,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get performer_filters => '演员筛选';
 
   @override
+  String get update_download_install_prompt => '立即下载并安装，或打开发布页面查看详情。';
+
+  @override
+  String get update_download_and_install => '下载并安装';
+
+  @override
+  String get update_downloading => '正在下载更新…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return '正在下载更新… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => '更新已准备好安装。';
+
+  @override
+  String get update_install => '安装';
+
+  @override
+  String get update_install_permission_required =>
+      '请允许 StashFlow 安装未知应用，然后返回此处继续。';
+
+  @override
+  String get update_download_failed => '无法下载更新。请检查网络连接后重试。';
+
+  @override
+  String get update_install_failed => '无法打开系统安装程序。';
+
+  @override
   String update_available(String version) {
     return 'StashFlow 的新版本（$version）已发布。';
   }
@@ -6952,6 +6982,36 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get performer_filters => '演员筛选';
+
+  @override
+  String get update_download_install_prompt => '立即下载并安装，或打开发布页面查看详情。';
+
+  @override
+  String get update_download_and_install => '下载并安装';
+
+  @override
+  String get update_downloading => '正在下载更新…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return '正在下载更新… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => '更新已准备好安装。';
+
+  @override
+  String get update_install => '安装';
+
+  @override
+  String get update_install_permission_required =>
+      '请允许 StashFlow 安装未知应用，然后返回此处继续。';
+
+  @override
+  String get update_download_failed => '无法下载更新。请检查网络连接后重试。';
+
+  @override
+  String get update_install_failed => '无法打开系统安装程序。';
 
   @override
   String update_available(String version) {
@@ -10970,6 +11030,36 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get performer_filters => '演員篩選';
+
+  @override
+  String get update_download_install_prompt => '立即下載並安裝，或開啟發佈頁面查看詳細資訊。';
+
+  @override
+  String get update_download_and_install => '下載並安裝';
+
+  @override
+  String get update_downloading => '正在下載更新…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return '正在下載更新… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => '更新已準備好安裝。';
+
+  @override
+  String get update_install => '安裝';
+
+  @override
+  String get update_install_permission_required =>
+      '請允許 StashFlow 安裝不明的應用程式，然後返回此處繼續。';
+
+  @override
+  String get update_download_failed => '無法下載更新。請檢查網路連線後再試一次。';
+
+  @override
+  String get update_install_failed => '無法開啟系統安裝程式。';
 
   @override
   String update_available(String version) {

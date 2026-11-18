@@ -3101,6 +3101,40 @@ class AppLocalizationsIt extends AppLocalizations {
   String get performer_filters => 'Filtri artisti';
 
   @override
+  String get update_download_install_prompt =>
+      'Scaricala e installala ora, oppure apri la pagina della release per i dettagli.';
+
+  @override
+  String get update_download_and_install => 'Scarica e installa';
+
+  @override
+  String get update_downloading => 'Download dell\'aggiornamento…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return 'Download dell\'aggiornamento… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install =>
+      'L\'aggiornamento è pronto per l\'installazione.';
+
+  @override
+  String get update_install => 'Installa';
+
+  @override
+  String get update_install_permission_required =>
+      'Consenti a StashFlow di installare app sconosciute, quindi torna qui per continuare.';
+
+  @override
+  String get update_download_failed =>
+      'Impossibile scaricare l\'aggiornamento. Controlla la connessione e riprova.';
+
+  @override
+  String get update_install_failed =>
+      'Impossibile aprire il programma di installazione di sistema.';
+
+  @override
   String update_available(String version) {
     return 'Una nuova versione di StashFlow ($version) è disponibile.';
   }

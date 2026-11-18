@@ -1143,6 +1143,22 @@
   "loading": "Loading",
   "wip": "WIP",
   "performer_filters": "Performer Filters",
+  "update_download_install_prompt": "Download and install it now, or open the release page for details.",
+  "update_download_and_install": "Download & Install",
+  "update_downloading": "Downloading update…",
+  "update_downloading_progress": "Downloading update… {percent}%",
+  "@update_downloading_progress": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "update_ready_to_install": "The update is ready to install.",
+  "update_install": "Install",
+  "update_install_permission_required": "Allow StashFlow to install unknown apps, then return here to continue.",
+  "update_download_failed": "The update could not be downloaded. Check your connection and try again.",
+  "update_install_failed": "The system installer could not be opened.",
   "update_available": "A new version of StashFlow ({version}) is available.",
   "@update_available": {
     "placeholders": {

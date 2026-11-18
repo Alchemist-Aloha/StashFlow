@@ -3,7 +3,9 @@ package io.github.alchemistaloha.stashflow
 import android.app.PictureInPictureParams
 import android.util.Rational
 import android.content.Context
+import android.content.Intent
 import android.media.AudioManager
+import android.provider.Settings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -12,8 +14,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
+import java.io.File
 import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
@@ -84,6 +88,42 @@ class MainActivityTest {
         val activity = Robolectric.buildActivity(TestMainActivity::class.java).get()
         assertFalse(activity.updatePipAspectRatio(9, 16))
         assertNull(activity.lastPipParams)
+    }
+
+    @Test
+    @Config(sdk = [33])
+    fun `rejects update apks outside the update cache`() {
+        val activity = Robolectric.buildActivity(MainActivity::class.java).get()
+        val outside = File(activity.cacheDir, "outside.apk").apply { writeText("apk") }
+        val traversal = File(activity.cacheDir, "app_update/../outside.apk")
+
+        assertEquals("failed", activity.installApk(outside))
+        assertEquals("failed", activity.installApk(traversal))
+    }
+
+    @Test
+    @Config(sdk = [33])
+    fun `opens install permission settings before the installer`() {
+        val activity = Robolectric.buildActivity(MainActivity::class.java).get()
+        val apk = File(activity.cacheDir, "app_update/StashFlow-1.0.0.apk").apply {
+            parentFile!!.mkdirs()
+            writeText("apk")
+        }
+        val shadowPackageManager = Shadows.shadowOf(activity.packageManager)
+
+        shadowPackageManager.setCanRequestPackageInstalls(false)
+        assertEquals("permission_required", activity.installApk(apk))
+        assertEquals(
+            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+            Shadows.shadowOf(activity).nextStartedActivity.action,
+        )
+
+        shadowPackageManager.setCanRequestPackageInstalls(true)
+        assertEquals("started", activity.installApk(apk))
+        val installIntent = Shadows.shadowOf(activity).nextStartedActivity
+        assertEquals(Intent.ACTION_VIEW, installIntent.action)
+        assertEquals("application/vnd.android.package-archive", installIntent.type)
+        assertEquals("${activity.packageName}.app_update", installIntent.data?.authority)
     }
 
     class TestMainActivity : MainActivity() {

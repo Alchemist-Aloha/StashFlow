@@ -2976,6 +2976,37 @@ class AppLocalizationsKo extends AppLocalizations {
   String get performer_filters => '출연자 필터';
 
   @override
+  String get update_download_install_prompt =>
+      '지금 다운로드하여 설치하거나 릴리스 페이지에서 자세한 내용을 확인하세요.';
+
+  @override
+  String get update_download_and_install => '다운로드 및 설치';
+
+  @override
+  String get update_downloading => '업데이트 다운로드 중…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return '업데이트 다운로드 중… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => '업데이트를 설치할 준비가 되었습니다.';
+
+  @override
+  String get update_install => '설치';
+
+  @override
+  String get update_install_permission_required =>
+      'StashFlow가 출처를 알 수 없는 앱을 설치하도록 허용한 다음 여기로 돌아와 계속하세요.';
+
+  @override
+  String get update_download_failed => '업데이트를 다운로드할 수 없습니다. 연결을 확인하고 다시 시도하세요.';
+
+  @override
+  String get update_install_failed => '시스템 설치 프로그램을 열 수 없습니다.';
+
+  @override
   String update_available(String version) {
     return 'StashFlow의 새 버전 ($version)을(를) 사용할 수 있습니다.';
   }

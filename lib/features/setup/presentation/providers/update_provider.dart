@@ -11,14 +11,24 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../data/android_update_installer.dart';
 import '../../domain/entities/update_info.dart';
 import '../../../../core/utils/app_log_store.dart';
 
 part 'update_provider.g.dart';
 
+/// A release APK selected for this device.
+///
+/// [sha256] is the lowercase hex digest from GitHub's `digest` asset field, or
+/// null when the release does not publish one.
+typedef AndroidApkAsset = ({String url, String? sha256});
+
 /// Finds the Android APK matching [primaryAbi], regardless of release label.
 @visibleForTesting
-String? resolveAndroidApkUrlForAbi(List<dynamic> assets, String primaryAbi) {
+AndroidApkAsset? resolveAndroidApkAssetForAbi(
+  List<dynamic> assets,
+  String primaryAbi,
+) {
   final normalizedAbi = primaryAbi.toLowerCase();
   final abiToken = switch (normalizedAbi) {
     final abi when abi.contains('arm64') => 'arm64-v8a',
@@ -36,7 +46,12 @@ String? resolveAndroidApkUrlForAbi(List<dynamic> assets, String primaryAbi) {
     if (name.endsWith('.apk') &&
         name.contains(abiToken) &&
         downloadUrl != null) {
-      return downloadUrl;
+      final digest = (asset['digest'] as String?)?.toLowerCase();
+      final sha256 =
+          digest != null && RegExp(r'^sha256:[0-9a-f]{64}$').hasMatch(digest)
+          ? digest.substring('sha256:'.length)
+          : null;
+      return (url: downloadUrl, sha256: sha256);
     }
   }
   return null;
@@ -77,18 +92,9 @@ class AppUpdate extends _$AppUpdate {
           cleanLatestTag = latestTag.substring(1);
         }
 
+        bool? isUpdateAvailable;
         try {
-          final latestVersion = Version.parse(cleanLatestTag);
-          final androidApkUrl = await _resolveAndroidApkUrl(data);
-
-          return UpdateInfo(
-            isUpdateAvailable: latestVersion > currentVersion,
-            latestVersion: latestTag,
-            currentVersion: currentVersionStr,
-            releaseUrl: data['html_url'] as String,
-            releaseNotes: data['body'] as String?,
-            androidApkUrl: androidApkUrl,
-          );
+          isUpdateAvailable = Version.parse(cleanLatestTag) > currentVersion;
         } on FormatException catch (error, stackTrace) {
           AppLogStore.instance.addError(
             'build',
@@ -96,17 +102,24 @@ class AppUpdate extends _$AppUpdate {
             stackTrace,
             source: 'update_provider',
           );
-          if (cleanLatestTag != currentVersionStr) {
-            final androidApkUrl = await _resolveAndroidApkUrl(data);
-            return UpdateInfo(
-              isUpdateAvailable: true,
-              latestVersion: latestTag,
-              currentVersion: currentVersionStr,
-              releaseUrl: data['html_url'] as String,
-              releaseNotes: data['body'] as String?,
-              androidApkUrl: androidApkUrl,
-            );
-          }
+          if (cleanLatestTag != currentVersionStr) isUpdateAvailable = true;
+        }
+
+        if (isUpdateAvailable == false) {
+          // The installed build is current, so any downloaded APK is stale.
+          unawaited(ref.read(androidUpdateInstallerProvider).deleteDownloads());
+        }
+        if (isUpdateAvailable != null) {
+          final apk = await _resolveAndroidApk(data);
+          return UpdateInfo(
+            isUpdateAvailable: isUpdateAvailable,
+            latestVersion: latestTag,
+            currentVersion: currentVersionStr,
+            releaseUrl: data['html_url'] as String,
+            releaseNotes: data['body'] as String?,
+            androidApkUrl: apk?.url,
+            androidApkSha256: apk?.sha256,
+          );
         }
       }
     } on Object catch (error, stackTrace) {
@@ -122,7 +135,7 @@ class AppUpdate extends _$AppUpdate {
     return null;
   }
 
-  Future<String?> _resolveAndroidApkUrl(
+  Future<AndroidApkAsset?> _resolveAndroidApk(
     Map<String, dynamic> releaseData,
   ) async {
     if (kIsWeb || !Platform.isAndroid) return null;
@@ -136,7 +149,7 @@ class AppUpdate extends _$AppUpdate {
       final assets = releaseData['assets'];
       if (assets is! List) return null;
 
-      return resolveAndroidApkUrlForAbi(assets, primaryAbi);
+      return resolveAndroidApkAssetForAbi(assets, primaryAbi);
     } on Exception catch (error, stackTrace) {
       AppLogStore.instance.addError(
         'resolveAndroidApkUrl',

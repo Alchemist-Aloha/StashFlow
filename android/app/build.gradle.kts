@@ -75,6 +75,8 @@ kotlin {
 }
 
 dependencies {
+    // FileProvider for handing downloaded update APKs to the package installer.
+    implementation("androidx.core:core:1.16.0")
     testImplementation("androidx.test:core:1.7.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.17")

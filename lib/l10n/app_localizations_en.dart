@@ -3045,6 +3045,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get performer_filters => 'Performer Filters';
 
   @override
+  String get update_download_install_prompt =>
+      'Download and install it now, or open the release page for details.';
+
+  @override
+  String get update_download_and_install => 'Download & Install';
+
+  @override
+  String get update_downloading => 'Downloading update…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return 'Downloading update… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => 'The update is ready to install.';
+
+  @override
+  String get update_install => 'Install';
+
+  @override
+  String get update_install_permission_required =>
+      'Allow StashFlow to install unknown apps, then return here to continue.';
+
+  @override
+  String get update_download_failed =>
+      'The update could not be downloaded. Check your connection and try again.';
+
+  @override
+  String get update_install_failed =>
+      'The system installer could not be opened.';
+
+  @override
   String update_available(String version) {
     return 'A new version of StashFlow ($version) is available.';
   }

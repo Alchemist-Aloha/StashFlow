@@ -6,11 +6,32 @@ void main() {
     for (final label in ['1.29.0', 'rc', 'nightly']) {
       final url = 'https://example.test/StashFlow-$label-android-arm64-v8a.apk';
       expect(
-        resolveAndroidApkUrlForAbi([
+        resolveAndroidApkAssetForAbi([
           {'name': url.split('/').last, 'browser_download_url': url},
         ], 'arm64-v8a'),
-        url,
+        (url: url, sha256: null),
       );
     }
+  });
+
+  test('reads the GitHub SHA-256 digest and ignores malformed digests', () {
+    const url = 'https://example.test/StashFlow-android-armeabi-v7a.apk';
+    final digest = 'AB' * 32;
+    List<Map<String, dynamic>> assets(String value) => [
+      {
+        'name': 'StashFlow-android-armeabi-v7a.apk',
+        'browser_download_url': url,
+        'digest': value,
+      },
+    ];
+
+    expect(
+      resolveAndroidApkAssetForAbi(assets('sha256:$digest'), 'armeabi-v7a'),
+      (url: url, sha256: digest.toLowerCase()),
+    );
+    expect(
+      resolveAndroidApkAssetForAbi(assets('md5:1234'), 'armeabi-v7a')?.sha256,
+      isNull,
+    );
   });
 }

@@ -1430,7 +1430,18 @@ contain the target architecture; embedded universal libraries are allowed.
   checksum), Android Gradle Plugin 9.5.1, and Kotlin 2.4.21. Toolchain upgrades
   must remain compatible with the checked-in build configuration and CI.
 - Manifest permissions must be justified by current features; do not restore
-  removed broad storage or obsolete permissions.
+  removed broad storage or obsolete permissions. `REQUEST_INSTALL_PACKAGES`
+  backs one-click updates.
+- One-click updates: when the latest GitHub release has an APK for the device's
+  primary ABI, the startup update dialog offers Download & Install. The APK
+  downloads with visible progress and cancellation into the app cache
+  `app_update/` folder (the only path `AppUpdateFileProvider` exposes),
+  replacing earlier downloads; it must match the release asset's SHA-256
+  `digest` when GitHub publishes one. The system installer then opens; if
+  StashFlow lacks the "install unknown apps" permission, its settings screen
+  opens and the install continues automatically on return once granted.
+  Failures offer retry and the release page. Downloaded APKs are deleted once
+  the installed version is current.
 - Audio service, PiP, and notification behavior must continue to work after
   build or lifecycle changes.
 

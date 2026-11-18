@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/utils/responsive.dart';
 import '../../../core/utils/l10n_extensions.dart';
@@ -29,9 +27,9 @@ import '../../setup/domain/entities/update_info.dart';
 import '../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../core/presentation/providers/app_language_provider.dart';
 import '../../setup/presentation/widgets/app_language_picker.dart';
+import '../../setup/presentation/widgets/app_update_dialog.dart';
 import 'widgets/mini_player.dart';
 import '../../scenes/presentation/widgets/global_fullscreen_overlay.dart';
-import '../../../core/utils/app_log_store.dart';
 
 class ShellPage extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -139,78 +137,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: Text(context.l10n.common_update_available),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(context.l10n.update_available(updateInfo.latestVersion)),
-              const SizedBox(height: 12),
-              Text(
-                context
-                    .l10n
-                    .would_you_like_to_visit_the_release_page_to_download_it,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                ref.read(startupUpdateCheckProvider.notifier).markChecked();
-                Navigator.pop(context);
-              },
-              child: Text(context.l10n.common_later),
-            ),
-            if (!kIsWeb &&
-                Platform.isAndroid &&
-                updateInfo.androidApkUrl != null &&
-                updateInfo.androidApkUrl!.isNotEmpty)
-              TextButton(
-                onPressed: () async {
-                  final url = Uri.parse(updateInfo.androidApkUrl!);
-                  try {
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(
-                        url,
-                        mode: LaunchMode.externalApplication,
-                      );
-                    }
-                  } on Exception catch (error, stackTrace) {
-                    AppLogStore.instance.addError(
-                      'showUpdateDialog',
-                      error,
-                      stackTrace,
-                      source: 'shell_page',
-                    );
-                  }
-                },
-                child: Text(context.l10n.common_download),
-              ),
-            FilledButton(
-              onPressed: () async {
-                final url = Uri.parse(updateInfo.releaseUrl);
-                try {
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
-                  }
-                } on Exception catch (error, stackTrace) {
-                  AppLogStore.instance.addError(
-                    'showUpdateDialog',
-                    error,
-                    stackTrace,
-                    source: 'shell_page',
-                  );
-                }
-                if (context.mounted) {
-                  ref.read(startupUpdateCheckProvider.notifier).markChecked();
-                  Navigator.pop(context);
-                }
-              },
-              child: Text(context.l10n.common_release_details),
-            ),
-          ],
-        ),
+        builder: (context) => AppUpdateDialog(updateInfo: updateInfo),
       ),
     );
   }
