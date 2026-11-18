@@ -13,6 +13,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/local_cap
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/subtitle_presentation.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/scene_subtitle_menu.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+
 import '../../helpers/test_helpers.dart';
 
 class _Scene extends Fake implements Scene {

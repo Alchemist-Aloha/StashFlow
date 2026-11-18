@@ -72,6 +72,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get local_captions_threshold_help => '低くすると小さな声も含め、高くすると雑音をより多く除外します。';
 
   @override
+  String get local_captions_acceleration => 'ハードウェアアクセラレーション';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '量子化されていない音声モデルには $accelerator を使用します。量子化 (int8) モデルは CPU を使用します。';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'このデバイスには対応する音声アクセラレータがないため、認識には CPU を使用します。';
+
+  @override
   String get local_captions_delay => '字幕の遅延';
 
   @override

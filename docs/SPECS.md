@@ -860,8 +860,9 @@ landscape and keyboard insets. Actions stay below the scrollable form when
 height permits and join its scroll area on short viewports. Model catalogs
 scroll their loading/error/retry states as well as results.
 The dialog stages speech-model, source/output-language, preferred downloaded
-translation-model, ASR-thread (1–8), audio-window (4–12 seconds), VAD-threshold
-(0.2–0.8), subtitle-delay (±5 seconds) and bilingual-display settings. Cancel
+translation-model, ASR-thread (1–8, also used by translation), audio-window
+(4–12 seconds), VAD-threshold (0.2–0.8), subtitle-delay (±5 seconds),
+hardware-acceleration and bilingual-display settings. Cancel
 changes neither preferences nor active inference; Apply commits one configuration.
 The next dialog restores the last applied models and inference options, including
 the translation switch and preferred model when applying transcription; these
@@ -874,9 +875,19 @@ language. A fixed source language disables automatic language detection and
 its dialog status; recognizer metadata cannot override the chosen language or
 translation routing. Selecting Auto enables detection again when applied.
 Offline recognizers use phrase-level VAD timing, not token timestamps.
-Translation lazily loads one downloaded Marian model matching each phrase's
-source and selected output language. A missing pair stops with a localized recovery
-message, never a wrong-language fallback; same-language output passes through.
+Translation lazily loads the downloaded Marian model matching each phrase's
+source and selected output language, keeping the two most recently used models
+loaded, and translates each pair's phrases of a window in one batch. A missing
+pair stops with a localized recovery message, never a wrong-language fallback;
+same-language output passes through.
+
+Hardware acceleration (on by default; saved options without it default on)
+selects the ONNX Runtime provider linked into the bundled sherpa-onnx binaries:
+Core ML on iOS and NNAPI on Android. The macOS, Windows and Linux packages are
+CPU-only, so the dialog shows acceleration as unavailable there. Speech models
+with int8 graphs stay on the CPU because these providers cannot run dynamically
+quantized operators. If accelerated recognizer creation fails, the worker
+retries once on the CPU; Silero VAD always runs on the CPU.
 
 The shared subtitle menu is available even without server captions, including
 the feed. Transcription, with or without translation, is opt-in and session-scoped and disables
@@ -890,9 +901,12 @@ ambient system text scaler; media-kit's default viewport-relative subtitle
 shrinking must be overridden so external SRT and generated captions retain the
 same configured font size even in small video surfaces.
 
-A separate, silent, untimed mpv PCM decoder reads bounded configured windows
-with one-second context around them. It reuses the active media URL, headers
-and audio-track ID; it never changes audible playback settings. PCM output must
+A separate, silent, untimed mpv PCM decoder serves configured windows with
+one-second context around them from one continuous segment that decodes ahead
+of transcription (at most 30 seconds past the latest request, then paused).
+A seek outside the decoded buffer, a source change, a failure or three minutes
+of audio opens a new segment. It reuses the active media URL, headers and
+audio-track ID; it never changes audible playback settings. PCM output must
 be accepted before opening media. ASR (sherpa-onnx) and translation
 (CTranslate2/Marian with SentencePiece) run on a worker isolate. No microphone,
 cloud inference, Google ML Kit, or extra FFmpeg distribution is involved.
@@ -902,13 +916,17 @@ throughput and accuracy depend on hardware and models, not guaranteed latency.
 Seeks invalidate pending results. Scene/controller, audio-track, server/auth or
 model-selection or inference-option changes stop the session and clear cues; inline/fullscreen/PiP
 handoffs of the same controller do not. At most 32 windows of text are kept in
-session memory; temporary PCM is removed after each extraction. Native errors
+session memory; each segment's temporary append-only PCM file is removed when
+the segment closes. Native errors
 are replaced with localized recovery messages, never authenticated URLs or
 transcript logs. Model removal first stops inference and releases its resources.
 
 The local `packages/stashflow_translation` package builds pinned CTranslate2
 and SentencePiece sources using CMake and Dart code assets, with a CPU Ruy
-backend, no Python runtime and no bundled weights. Android retains all three
+backend, no Python runtime and no bundled weights. x86_64 targets compile
+AVX/AVX2/AVX-512 kernels with runtime dispatch when CMake's processor agrees
+with the target; Apple targets add Accelerate for float32 GEMM (int8 stays on
+Ruy). CTranslate2 offers no non-CUDA GPU backend. Android retains all three
 release ABIs and its existing minimum SDK. Native changes require host smoke
 tests and split-ABI APK builds; sustained performance, GPU/driver behavior,
 mobile PiP and non-host platforms require device/platform acceptance.

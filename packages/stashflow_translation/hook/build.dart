@@ -26,7 +26,7 @@ void main(List<String> arguments) async {
           : input.outputDirectory.resolve('cmake/'),
     );
     final source = Directory.fromUri(input.packageRoot.resolve('src/'));
-    await for (final file in source.list()) {
+    await for (final file in source.list(recursive: true)) {
       if (file is File) output.dependencies.add(file.uri);
     }
     final flags = <String>[];

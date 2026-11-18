@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,9 +80,8 @@ void main() {
         expect(await store.isInstalled(model), isFalse);
         await store.install(model, cancel: CancelToken(), onProgress: (_) {});
         expect(await store.isInstalled(model), isTrue);
-        await File(
-          '${store.directory(model).path}/.verified',
-        ).writeAsString('older');
+        await File('${store.directory(model).path}/.verified')
+            .writeAsString('older');
         expect(await store.isInstalled(model), isFalse);
         await store.delete(model);
         expect(await root.list().toList(), isEmpty);

@@ -5,6 +5,8 @@ include(FetchContent)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "" FORCE)
 
 # Build one self-contained CPU library; no Python, GPU runtime or model assets.
+# CTranslate2's only GPU backend is CUDA, which is not bundled. Hardware
+# acceleration here means CPU ISA dispatch on x86_64 and Accelerate on Apple.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if(MSVC)
@@ -16,7 +18,38 @@ set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 set(WITH_MKL OFF CACHE BOOL "" FORCE)
 set(WITH_RUY ON CACHE BOOL "" FORCE)
 set(OPENMP_RUNTIME NONE CACHE STRING "" FORCE)
-set(ENABLE_CPU_DISPATCH OFF CACHE BOOL "" FORCE)
+# CTranslate2 derives its kernel ISA from CMAKE_SYSTEM_PROCESSOR. Enable runtime
+# AVX/AVX2/AVX-512 dispatch only when that agrees with an x86_64 target, so a
+# mismatched Apple cross-build never compiles x86 kernels for ARM (or the
+# reverse). ARM64 already uses NEON kernels without dispatch.
+if(APPLE AND CMAKE_OSX_ARCHITECTURES)
+  set(sf_target_arch "${CMAKE_OSX_ARCHITECTURES}")
+elseif(ANDROID)
+  set(sf_target_arch "${ANDROID_ABI}")
+elseif(WIN32 AND CMAKE_GENERATOR_PLATFORM)
+  set(sf_target_arch "${CMAKE_GENERATOR_PLATFORM}")
+else()
+  set(sf_target_arch "${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+if(sf_target_arch MATCHES "^(x86_64|x64|AMD64|amd64)$" AND
+   CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|amd64)$")
+  set(ENABLE_CPU_DISPATCH ON CACHE BOOL "" FORCE)
+else()
+  set(ENABLE_CPU_DISPATCH OFF CACHE BOOL "" FORCE)
+endif()
+# Accelerate serves float32 GEMM on Apple (AMX on Apple silicon); int8 stays on
+# Ruy. Our FindBLAS override avoids FindBLAS's link probes, which cannot run for
+# iOS device targets.
+set(WITH_ACCELERATE OFF CACHE BOOL "" FORCE)
+if(APPLE)
+  find_library(SF_ACCELERATE_FRAMEWORK Accelerate)
+  if(SF_ACCELERATE_FRAMEWORK)
+    list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+    set(WITH_ACCELERATE ON CACHE BOOL "" FORCE)
+  endif()
+endif()
+message(STATUS "stashflow_translation: arch=${sf_target_arch} "
+  "cpu_dispatch=${ENABLE_CPU_DISPATCH} accelerate=${WITH_ACCELERATE}")
 set(BUILD_CLI OFF CACHE BOOL "" FORCE)
 set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
 # Ruy's cpuinfo tools are unused, and their install rules lack an iOS bundle destination.

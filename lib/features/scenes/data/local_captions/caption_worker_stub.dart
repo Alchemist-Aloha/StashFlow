@@ -14,6 +14,7 @@ class CaptionWorker {
     CaptionOptions options = const CaptionOptions(),
     bool translate = false,
   }) => Future.error(UnsupportedError('Native inference required'));
+  String get speechProvider => 'cpu';
   Future<List<CaptionCue>> process(
     Float32List samples,
     Duration audioStart,

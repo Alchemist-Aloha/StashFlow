@@ -71,9 +71,9 @@ void main() {
                   child: FilledButton(
                     key: const Key('return_to_scene_list'),
                     onPressed: () {
-                      final playerState =
-                          ref.read(playerStateProvider.notifier)
-                              as _FocusPlayerState;
+                      final playerState = ref.read(
+                        playerStateProvider.notifier,
+                      ) as _FocusPlayerState;
                       playerState.setActiveScene(scenes[30]);
                       if (randomReturn) {
                         ref

@@ -76,6 +76,18 @@ class AppLocalizationsEs extends AppLocalizations {
       'Los valores bajos incluyen voces más suaves; los altos rechazan más ruido.';
 
   @override
+  String get local_captions_acceleration => 'Aceleración por hardware';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return 'Usa $accelerator con modelos de voz de grafos no cuantizados. Los modelos cuantizados (int8) usan la CPU.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'Este dispositivo no tiene un acelerador de voz compatible; el reconocimiento usa la CPU.';
+
+  @override
   String get local_captions_delay => 'Retardo de subtítulos';
 
   @override

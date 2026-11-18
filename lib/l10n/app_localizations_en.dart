@@ -76,6 +76,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Lower values include quieter speech; higher values reject more noise.';
 
   @override
+  String get local_captions_acceleration => 'Hardware acceleration';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return 'Uses $accelerator for speech models with non-quantized graphs. Quantized (int8) models use the CPU.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'This device has no supported speech accelerator; recognition uses the CPU.';
+
+  @override
   String get local_captions_delay => 'Subtitle delay';
 
   @override

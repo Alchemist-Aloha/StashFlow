@@ -195,17 +195,14 @@ void main() {
       verifyNever(player1.dispose());
     });
 
-    test(
-      'a released feed pool transfers disposal responsibility to the global session',
-      () async {
-        final session = PlaybackSessionController();
-        session.adoptBorrowedSession(player1, controller1);
-        session.takeOwnership(controller1);
-        await session.disposeSession(isTestMode: false, log: (_) {});
-        verify(player1.dispose()).called(1);
-        verifyNever(player1.pause());
-      },
-    );
+    test('a released feed pool transfers disposal responsibility to the global session', () async {
+      final session = PlaybackSessionController();
+      session.adoptBorrowedSession(player1, controller1);
+      session.takeOwnership(controller1);
+      await session.disposeSession(isTestMode: false, log: (_) {});
+      verify(player1.dispose()).called(1);
+      verifyNever(player1.pause());
+    });
 
     test(
       'a stale feed pool cannot take ownership of a replacement controller',

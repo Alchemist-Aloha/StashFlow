@@ -18,6 +18,12 @@ Windows builds use the static MSVC runtime throughout the bridge, CTranslate2
 and SentencePiece. Windows ARM64 uses Ruy's fallback CPU detection because the
 pinned cpuinfo dependency does not implement that platform; other targets retain
 CPU detection.
+x86_64 targets enable CTranslate2's AVX/AVX2/AVX-512 runtime dispatch when
+`CMAKE_SYSTEM_PROCESSOR` agrees with the target (Apple cross-builds need
+`CMAKE_APPLE_SILICON_PROCESSOR`); ARM64 uses NEON kernels directly. Apple
+targets link Accelerate for float32 GEMM through `src/cmake/FindBLAS.cmake`,
+which avoids FindBLAS link probes that cannot run for iOS devices; int8 models
+stay on Ruy. CTranslate2's only GPU backend is CUDA, which is not bundled.
 Windows CMake intermediates live in the workspace's `build/tr/<hook-cache-key>/`
 directory to keep Ruy's MSBuild tracking paths below Windows path limits. Other
 platforms keep their intermediates in the hook output directory.
@@ -29,7 +35,9 @@ device runtime require their own acceptance checks. Web uses an app-level stub.
 ## Ownership
 
 Create, translate and close a `MarianTranslator` on the same worker isolate.
-Requests on a handle must be serialized. `close()` releases native memory;
+Requests on a handle must be serialized. `MarianTranslator(directory, threads:)`
+sets CTranslate2's intra-op threads; `translateAll` translates up to 64
+phrases per native batch, preserving order. `close()` releases native memory;
 no Dart finalizer races inference. Native exceptions never cross the C ABI.
 Returned text/error strings are freed by the same library that allocated them.
 Inference input/output token counts are bounded.

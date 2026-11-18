@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -351,6 +352,7 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
                   .format(_options.threads),
               (v) => _options = _options.copyWith(threads: v.round()),
             ),
+            _accelerationTile(context),
             if ([
               'whisper',
               'sensevoice',
@@ -509,6 +511,31 @@ class _CaptionTuningDialogState extends ConsumerState<_CaptionTuningDialog> {
       );
     },
   );
+
+  /// Shows the provider this platform's bundled speech runtime can use; the
+  /// worker still falls back to the CPU for quantized models or failures.
+  Widget _accelerationTile(BuildContext context) {
+    final accelerator = kIsWeb
+        ? null
+        : captionAccelerator(defaultTargetPlatform.name.toLowerCase());
+    return SwitchListTile.adaptive(
+      key: const ValueKey('caption-acceleration'),
+      contentPadding: EdgeInsets.zero,
+      value: accelerator != null && _options.accelerate,
+      title: Text(context.l10n.local_captions_acceleration),
+      subtitle: Text(
+        accelerator == null
+            ? context.l10n.local_captions_acceleration_unavailable
+            : context.l10n.local_captions_acceleration_help(
+                captionAcceleratorName(accelerator),
+              ),
+      ),
+      onChanged: accelerator == null
+          ? null
+          : (value) =>
+                setState(() => _options = _options.copyWith(accelerate: value)),
+    );
+  }
 
   Widget _slider(
     String title,

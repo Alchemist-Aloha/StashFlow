@@ -234,6 +234,24 @@ abstract class AppLocalizations {
   /// **'Lower values include quieter speech; higher values reject more noise.'**
   String get local_captions_threshold_help;
 
+  /// No description provided for @local_captions_acceleration.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware acceleration'**
+  String get local_captions_acceleration;
+
+  /// No description provided for @local_captions_acceleration_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses {accelerator} for speech models with non-quantized graphs. Quantized (int8) models use the CPU.'**
+  String local_captions_acceleration_help(String accelerator);
+
+  /// No description provided for @local_captions_acceleration_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This device has no supported speech accelerator; recognition uses the CPU.'**
+  String get local_captions_acceleration_unavailable;
+
   /// No description provided for @local_captions_delay.
   ///
   /// In en, this message translates to:

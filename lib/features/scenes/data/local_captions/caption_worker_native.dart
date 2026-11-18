@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
@@ -9,12 +10,21 @@ import 'caption_cue.dart';
 import 'caption_options.dart';
 import 'local_caption_model.dart';
 
-/// Isolate-confined ASR plus one lazily loaded Marian model at a time.
-/// Requests are serialized by CaptionSession; close queues behind inference.
+/// Marian models kept loaded at once, so auto-detected speech alternating
+/// between two languages does not reload a model for every window.
+const _maxTranslators = 2;
+
+/// Isolate-confined ASR plus up to [_maxTranslators] lazily loaded Marian
+/// models. Requests are serialized by CaptionSession; close queues behind
+/// inference.
 class CaptionWorker {
-  CaptionWorker._(this._isolate, this._commands);
+  CaptionWorker._(this._isolate, this._commands, this.speechProvider);
   final Isolate _isolate;
   final SendPort _commands;
+
+  /// The sherpa-onnx provider the speech recognizer actually initialized with:
+  /// `cpu` when acceleration is off, unsupported, or failed to initialize.
+  final String speechProvider;
 
   static Future<CaptionWorker> start(
     LocalCaptionModel model,
@@ -40,10 +50,10 @@ class CaptionWorker {
     ));
     try {
       final result = await ready.first.timeout(const Duration(seconds: 90));
-      if (result is! SendPort) {
+      if (result is! (SendPort, String)) {
         throw StateError('Caption engine initialization failed');
       }
-      return CaptionWorker._(isolate, result);
+      return CaptionWorker._(isolate, result.$1, result.$2);
     } on Object {
       isolate.kill();
       rethrow;
@@ -90,36 +100,26 @@ class CaptionWorker {
   }
 }
 
-Future<void> _worker(
-  (
-    SendPort,
-    LocalCaptionModel,
-    String,
-    List<(LocalCaptionModel, String)>,
-    CaptionOptions,
-    bool,
-  )
-  args,
-) async {
-  final (ready, model, directory, translations, options, translate) = args;
-  final source = options.sourceLanguage == 'auto' && !model.canDetectLanguage
-      ? model.sourceLanguages.first
-      : options.sourceLanguage;
-  sherpa.OnlineRecognizer? online;
-  sherpa.OfflineRecognizer? offline;
-  sherpa.VoiceActivityDetector? vad;
-  MarianTranslator? translator;
-  String? activeTranslation;
-  final commands = ReceivePort();
-  try {
-    sherpa.initBindings();
-    if ([
-      'whisper',
-      'sensevoice',
-      'paraformer',
-      'offline-transducer',
-    ].contains(model.engine)) {
-      offline = sherpa.OfflineRecognizer(
+const _offlineEngines = [
+  'whisper',
+  'sensevoice',
+  'paraformer',
+  'offline-transducer',
+];
+
+/// Builds the recognizer for [model] on [provider]. Throws when sherpa-onnx
+/// cannot create it, so the caller can retry on the CPU.
+(sherpa.OnlineRecognizer?, sherpa.OfflineRecognizer?) _recognizer(
+  LocalCaptionModel model,
+  String directory,
+  String source,
+  CaptionOptions options,
+  String provider,
+) {
+  if (_offlineEngines.contains(model.engine)) {
+    return (
+      null,
+      sherpa.OfflineRecognizer(
         sherpa.OfflineRecognizerConfig(
           model: sherpa.OfflineModelConfig(
             whisper: model.engine == 'whisper'
@@ -150,10 +150,115 @@ Future<void> _worker(
                 : const sherpa.OfflineTransducerModelConfig(),
             tokens: p.join(directory, model.tokensFile),
             numThreads: options.threads,
+            provider: provider,
             debug: false,
           ),
         ),
+      ),
+    );
+  }
+  return (
+    sherpa.OnlineRecognizer(
+      sherpa.OnlineRecognizerConfig(
+        model: sherpa.OnlineModelConfig(
+          transducer: sherpa.OnlineTransducerModelConfig(
+            encoder: p.join(directory, model.files[0].name),
+            decoder: p.join(directory, model.files[1].name),
+            joiner: p.join(directory, model.files[2].name),
+          ),
+          tokens: p.join(directory, model.tokensFile),
+          modelType: model.engine == 'transducer' ? '' : model.engine,
+          numThreads: options.threads,
+          provider: provider,
+          debug: false,
+        ),
+        enableEndpoint: false,
+      ),
+    ),
+    null,
+  );
+}
+
+Future<void> _worker(
+  (
+    SendPort,
+    LocalCaptionModel,
+    String,
+    List<(LocalCaptionModel, String)>,
+    CaptionOptions,
+    bool,
+  )
+  args,
+) async {
+  final (ready, model, directory, translations, options, translate) = args;
+  final source = options.sourceLanguage == 'auto' && !model.canDetectLanguage
+      ? model.sourceLanguages.first
+      : options.sourceLanguage;
+  sherpa.OnlineRecognizer? online;
+  sherpa.OfflineRecognizer? offline;
+  sherpa.VoiceActivityDetector? vad;
+  // Map literals keep insertion order, which is recency order here: the first
+  // entry is evicted first.
+  final translators = <String, MarianTranslator>{};
+  final commands = ReceivePort();
+
+  MarianTranslator translatorFor(LocalCaptionModel pair, String path) {
+    final cached = translators.remove(pair.id);
+    if (cached != null) return translators[pair.id] = cached;
+    while (translators.length >= _maxTranslators) {
+      final oldest = translators.keys.first;
+      translators.remove(oldest)!.close();
+    }
+    return translators[pair.id] = MarianTranslator(
+      path,
+      threads: options.threads,
+    );
+  }
+
+  void release() {
+    online?.free();
+    online = null;
+    offline?.free();
+    offline = null;
+    vad?.free();
+    vad = null;
+    for (final translator in translators.values) {
+      translator.close();
+    }
+    translators.clear();
+  }
+
+  try {
+    sherpa.initBindings();
+    var provider = captionSpeechProvider(
+      accelerate: options.accelerate,
+      os: Platform.operatingSystem,
+      graphFiles: model.files.map((file) => file.name),
+    );
+    try {
+      (online, offline) = _recognizer(
+        model,
+        directory,
+        source,
+        options,
+        provider,
       );
+    } on Object {
+      if (provider == 'cpu') rethrow;
+      // Accelerator delegates can reject a model or a driver at session
+      // creation. Fall back once and report the provider actually in use.
+      provider = 'cpu';
+      (online, offline) = _recognizer(
+        model,
+        directory,
+        source,
+        options,
+        provider,
+      );
+    }
+    if (offline != null) {
+      // Silero VAD is tiny and runs per 32 ms chunk; accelerator dispatch
+      // overhead would exceed its compute, so it always stays on the CPU.
       vad = sherpa.VoiceActivityDetector(
         config: sherpa.VadModelConfig(
           sileroVad: sherpa.SileroVadModelConfig(
@@ -168,36 +273,12 @@ Future<void> _worker(
         ),
         bufferSizeInSeconds: options.windowSeconds + 4,
       );
-    } else {
-      online = sherpa.OnlineRecognizer(
-        sherpa.OnlineRecognizerConfig(
-          model: sherpa.OnlineModelConfig(
-            transducer: sherpa.OnlineTransducerModelConfig(
-              encoder: p.join(directory, model.files[0].name),
-              decoder: p.join(directory, model.files[1].name),
-              joiner: p.join(directory, model.files[2].name),
-            ),
-            tokens: p.join(directory, model.tokensFile),
-            modelType: model.engine == 'transducer' ? '' : model.engine,
-            numThreads: options.threads,
-            debug: false,
-          ),
-          enableEndpoint: false,
-        ),
-      );
     }
-    ready.send(commands.sendPort);
+    ready.send((commands.sendPort, provider));
     await for (final message in commands) {
       final (input, reply) = message as (Object?, SendPort);
       if (input == null) {
-        online?.free();
-        online = null;
-        offline?.free();
-        offline = null;
-        vad?.free();
-        vad = null;
-        translator?.close();
-        translator = null;
+        release();
         reply.send(true);
         break;
       }
@@ -205,8 +286,9 @@ Future<void> _worker(
         final (samples, audioStart, windowStart, windowEnd) =
             input as (Float32List, Duration, Duration, Duration);
         final cues = <CaptionCue>[];
-        if (online != null) {
-          final stream = online.createStream();
+        final streaming = online;
+        if (streaming != null) {
+          final stream = streaming.createStream();
           try {
             for (var offset = 0; offset < samples.length; offset += 3200) {
               stream.acceptWaveform(
@@ -217,8 +299,8 @@ Future<void> _worker(
                 ),
                 sampleRate: 16000,
               );
-              while (online.isReady(stream)) {
-                online.decode(stream);
+              while (streaming.isReady(stream)) {
+                streaming.decode(stream);
               }
             }
             stream.acceptWaveform(
@@ -226,10 +308,10 @@ Future<void> _worker(
               sampleRate: 16000,
             );
             stream.inputFinished();
-            while (online.isReady(stream)) {
-              online.decode(stream);
+            while (streaming.isReady(stream)) {
+              streaming.decode(stream);
             }
-            final result = online.getResult(stream);
+            final result = streaming.getResult(stream);
             cues.addAll(
               captionCuesFromTokens(
                 tokens: result.tokens,
@@ -244,29 +326,26 @@ Future<void> _worker(
             stream.free();
           }
         } else {
-          vad!.reset();
+          final detector = vad!;
+          final recognizer = offline!;
+          detector.reset();
+          final chunk = Float32List(512);
           for (var offset = 0; offset < samples.length; offset += 512) {
-            final chunk = Float32List(512);
-            chunk.setRange(
-              0,
-              (samples.length - offset).clamp(0, 512),
-              Float32List.sublistView(
-                samples,
-                offset,
-                (offset + 512).clamp(0, samples.length),
-              ),
-            );
-            vad.acceptWaveform(chunk);
+            final end = (offset + 512).clamp(0, samples.length);
+            chunk
+              ..setRange(0, end - offset, samples, offset)
+              ..fillRange(end - offset, 512, 0);
+            detector.acceptWaveform(chunk);
           }
-          vad.flush();
-          while (!vad.isEmpty()) {
-            final speech = vad.front();
-            vad.pop();
-            final stream = offline!.createStream();
+          detector.flush();
+          while (!detector.isEmpty()) {
+            final speech = detector.front();
+            detector.pop();
+            final stream = recognizer.createStream();
             try {
               stream.acceptWaveform(samples: speech.samples, sampleRate: 16000);
-              offline.decode(stream);
-              final result = offline.getResult(stream);
+              recognizer.decode(stream);
+              final result = recognizer.getResult(stream);
               final language = captionResultLanguage(result.lang, source);
               final start =
                   audioStart +
@@ -303,11 +382,14 @@ Future<void> _worker(
           reply.send(cues);
           continue;
         }
-        final output = <CaptionCue>[];
-        for (final cue in cues) {
-          final language = cue.language ?? source;
+        // Route every phrase first so a missing pair fails before any model
+        // loads, then translate each pair's phrases in one native batch.
+        final output = List<CaptionCue?>.filled(cues.length, null);
+        final batches = <String, (LocalCaptionModel, String, List<int>)>{};
+        for (var i = 0; i < cues.length; i++) {
+          final language = cues[i].language ?? source;
           if (language == options.outputLanguage) {
-            output.add(cue);
+            output[i] = cues[i];
             continue;
           }
           final pair = translations
@@ -323,26 +405,26 @@ Future<void> _worker(
               options.outputLanguage,
             );
           }
-          if (activeTranslation != pair.$1.id) {
-            translator?.close();
-            translator = null;
-            translator = MarianTranslator(pair.$2);
-            activeTranslation = pair.$1.id;
-          }
-          final text = translator!.translate(
-            cue.text,
-            languageToken: pair.$1.languageToken(options.outputLanguage),
-          );
-          output.add(
-            CaptionCue(
+          batches
+              .putIfAbsent(pair.$1.id, () => (pair.$1, pair.$2, []))
+              .$3
+              .add(i);
+        }
+        for (final (pair, path, indices) in batches.values) {
+          final texts = translatorFor(pair, path).translateAll([
+            for (final i in indices) cues[i].text,
+          ], languageToken: pair.languageToken(options.outputLanguage));
+          for (var j = 0; j < indices.length; j++) {
+            final cue = cues[indices[j]];
+            output[indices[j]] = CaptionCue(
               cue.start,
               cue.end,
-              options.bilingual ? '${cue.text}\n$text' : text,
-              language: language,
-            ),
-          );
+              options.bilingual ? '${cue.text}\n${texts[j]}' : texts[j],
+              language: cue.language ?? source,
+            );
+          }
         }
-        reply.send(output);
+        reply.send([for (final cue in output) cue!]);
       } on CaptionTranslationUnavailable catch (error) {
         reply.send(error);
       } on Object {
@@ -352,10 +434,7 @@ Future<void> _worker(
   } on Object {
     ready.send('Caption engine initialization failed');
   } finally {
-    online?.free();
-    offline?.free();
-    vad?.free();
-    translator?.close();
+    release();
     commands.close();
   }
 }

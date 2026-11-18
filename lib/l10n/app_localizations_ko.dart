@@ -74,6 +74,18 @@ class AppLocalizationsKo extends AppLocalizations {
       '낮추면 작은 목소리도 포함하고, 높이면 더 많은 잡음을 제외합니다.';
 
   @override
+  String get local_captions_acceleration => '하드웨어 가속';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '양자화되지 않은 음성 모델에는 $accelerator을(를) 사용합니다. 양자화(int8) 모델은 CPU를 사용합니다.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      '이 기기에는 지원되는 음성 가속기가 없어 인식에 CPU를 사용합니다.';
+
+  @override
   String get local_captions_delay => '자막 지연';
 
   @override

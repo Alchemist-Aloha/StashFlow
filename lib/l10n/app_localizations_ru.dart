@@ -75,6 +75,18 @@ class AppLocalizationsRu extends AppLocalizations {
       'Низкие значения учитывают тихую речь; высокие отсекают больше шума.';
 
   @override
+  String get local_captions_acceleration => 'Аппаратное ускорение';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return 'Использует $accelerator для речевых моделей с неквантованными графами. Квантованные (int8) модели используют ЦП.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'На этом устройстве нет поддерживаемого ускорителя речи; распознавание выполняется на ЦП.';
+
+  @override
   String get local_captions_delay => 'Задержка субтитров';
 
   @override

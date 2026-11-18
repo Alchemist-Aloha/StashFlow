@@ -76,6 +76,18 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les valeurs basses incluent les voix plus faibles ; les valeurs hautes filtrent davantage le bruit.';
 
   @override
+  String get local_captions_acceleration => 'Accélération matérielle';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return 'Utilise $accelerator pour les modèles vocaux aux graphes non quantifiés. Les modèles quantifiés (int8) utilisent le processeur.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'Cet appareil n’a aucun accélérateur vocal pris en charge ; la reconnaissance utilise le processeur.';
+
+  @override
   String get local_captions_delay => 'Décalage des sous-titres';
 
   @override

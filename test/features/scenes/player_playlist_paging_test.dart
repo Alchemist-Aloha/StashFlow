@@ -14,9 +14,8 @@ void main() {
 
     test('detects entity media queues', () {
       expect(
-        playlistPagingTargetForQueueId(
-          PlaybackQueueIds.performerMedia('p1'),
-        ).kind,
+        playlistPagingTargetForQueueId(PlaybackQueueIds.performerMedia('p1'))
+            .kind,
         PlaylistPagingKind.performerMedia,
       );
       expect(

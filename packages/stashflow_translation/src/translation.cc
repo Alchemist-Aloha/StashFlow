@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
@@ -16,6 +17,10 @@
 #endif
 
 namespace {
+constexpr std::size_t kMaxTextBytes = 16384;
+constexpr std::size_t kMaxTokens = 256;
+constexpr int32_t kMaxBatch = 64;
+
 struct Translator {
   sentencepiece::SentencePieceProcessor source;
   sentencepiece::SentencePieceProcessor target;
@@ -36,11 +41,26 @@ void fail(char** error) noexcept {
     try { *error = copy_string("Local translation failed"); } catch (...) {}
   }
 }
+
+std::vector<std::string> encode(Translator& translator, const char* text,
+                                const char* language_token) {
+  if (!text || std::strlen(text) > kMaxTextBytes)
+    throw std::invalid_argument("input");
+  std::vector<std::string> tokens;
+  if (!translator.source.Encode(text, &tokens).ok())
+    throw std::runtime_error("tokenize");
+  if (tokens.size() > kMaxTokens) throw std::invalid_argument("too long");
+  if (language_token && *language_token) tokens.insert(tokens.begin(), language_token);
+  if (translator.append_source_eos) tokens.emplace_back(translator.source_eos);
+  return tokens;
+}
 }
 
 // A handle is isolate-confined: close only after its last translation completes.
 // All returned strings, including errors, must be released with sf_translation_free.
-SF_EXPORT void* sf_translation_open(const char* directory, char** error) noexcept {
+// `threads` is CTranslate2's intra-op thread count (clamped to 1-8).
+SF_EXPORT void* sf_translation_open(const char* directory, int32_t threads,
+                                    char** error) noexcept {
   if (error) *error = nullptr;
   try {
     if (!directory || !*directory) throw std::invalid_argument("directory");
@@ -54,7 +74,8 @@ SF_EXPORT void* sf_translation_open(const char* directory, char** error) noexcep
     result->append_source_eos = !model_config.value("add_source_eos", false);
     result->source_eos = model_config.value("eos_token", std::string("</s>"));
     ctranslate2::ReplicaPoolConfig config;
-    config.num_threads_per_replica = 2;
+    config.num_threads_per_replica =
+        static_cast<std::size_t>(threads < 1 ? 1 : threads > 8 ? 8 : threads);
     config.max_queued_batches = 1;
     result->engine = std::make_unique<ctranslate2::Translator>(
       root, ctranslate2::Device::CPU, ctranslate2::ComputeType::AUTO,
@@ -66,34 +87,44 @@ SF_EXPORT void* sf_translation_open(const char* directory, char** error) noexcep
   }
 }
 
-SF_EXPORT char* sf_translation_run(void* handle, const char* text,
-                                   const char* language_token, char** error) noexcept {
+// Translates `count` texts in one CTranslate2 batch. On success writes `count`
+// owned strings to `outputs` and returns 1; on failure writes no outputs.
+SF_EXPORT int32_t sf_translation_run_batch(void* handle, const char* const* texts,
+                                           int32_t count, const char* language_token,
+                                           char** outputs, char** error) noexcept {
   if (error) *error = nullptr;
+  std::vector<char*> owned;
   try {
-    if (!handle || !text || std::strlen(text) > 16384)
+    if (!handle || !texts || !outputs || count < 1 || count > kMaxBatch)
       throw std::invalid_argument("input");
     auto& translator = *static_cast<Translator*>(handle);
-    std::vector<std::string> tokens;
-    if (!translator.source.Encode(text, &tokens).ok())
-      throw std::runtime_error("tokenize");
-    if (tokens.size() > 256) throw std::invalid_argument("too long");
-    if (language_token && *language_token) tokens.insert(tokens.begin(), language_token);
-    if (translator.append_source_eos) tokens.emplace_back(translator.source_eos);
+    std::vector<std::vector<std::string>> batch;
+    batch.reserve(static_cast<std::size_t>(count));
+    for (int32_t i = 0; i < count; ++i)
+      batch.push_back(encode(translator, texts[i], language_token));
     ctranslate2::TranslationOptions options;
     options.beam_size = 1;
-    options.max_input_length = 258;
-    options.max_decoding_length = 256;
-    const auto results = translator.engine->translate_batch({tokens}, options);
-    std::string output;
-    if (results.empty() || results.front().hypotheses.empty() ||
-        !translator.target.Decode(results.front().hypotheses.front(), &output).ok())
-      throw std::runtime_error("translate");
-    return copy_string(output);
+    options.max_input_length = kMaxTokens + 2;
+    options.max_decoding_length = kMaxTokens;
+    const auto results = translator.engine->translate_batch(batch, options);
+    if (results.size() != batch.size()) throw std::runtime_error("translate");
+    owned.reserve(results.size());
+    for (const auto& result : results) {
+      std::string output;
+      if (result.hypotheses.empty() ||
+          !translator.target.Decode(result.hypotheses.front(), &output).ok())
+        throw std::runtime_error("translate");
+      owned.push_back(copy_string(output));
+    }
+    for (std::size_t i = 0; i < owned.size(); ++i) outputs[i] = owned[i];
+    return 1;
   } catch (...) {
+    for (auto* text : owned) std::free(text);
     fail(error);
-    return nullptr;
+    return 0;
   }
 }
+
 SF_EXPORT void sf_translation_close(void* handle) noexcept {
   delete static_cast<Translator*>(handle);
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +16,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/local_c
 import 'package:stash_app_flutter/features/scenes/presentation/providers/local_captions_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/local_caption_settings_section.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/caption_tuning_dialog.dart';
+
 import '../../helpers/test_helpers.dart';
 
 class _Store extends CaptionModelStore {

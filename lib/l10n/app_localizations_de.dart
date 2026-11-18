@@ -77,6 +77,18 @@ class AppLocalizationsDe extends AppLocalizations {
       'Niedrigere Werte erfassen leisere Sprache; höhere Werte filtern mehr Rauschen.';
 
   @override
+  String get local_captions_acceleration => 'Hardwarebeschleunigung';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return 'Verwendet $accelerator für Sprachmodelle mit nicht quantisierten Graphen. Quantisierte Modelle (int8) nutzen die CPU.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'Dieses Gerät hat keinen unterstützten Sprachbeschleuniger; die Erkennung nutzt die CPU.';
+
+  @override
   String get local_captions_delay => 'Untertitelverzögerung';
 
   @override

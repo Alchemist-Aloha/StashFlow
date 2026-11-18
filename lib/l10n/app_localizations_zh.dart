@@ -72,6 +72,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get local_captions_threshold_help => '较低值可识别更轻的声音；较高值可排除更多噪声。';
 
   @override
+  String get local_captions_acceleration => '硬件加速';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '对未量化的语音模型使用 $accelerator。量化（int8）模型使用 CPU。';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      '此设备没有受支持的语音加速器；识别将使用 CPU。';
+
+  @override
   String get local_captions_delay => '字幕延迟';
 
   @override
@@ -4073,6 +4085,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get local_captions_threshold_help => '较低值可识别更轻的声音；较高值可排除更多噪声。';
 
   @override
+  String get local_captions_acceleration => '硬件加速';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '对未量化的语音模型使用 $accelerator。量化（int8）模型使用 CPU。';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      '此设备没有受支持的语音加速器；识别将使用 CPU。';
+
+  @override
   String get local_captions_delay => '字幕延迟';
 
   @override
@@ -8072,6 +8096,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get local_captions_threshold_help => '較低值可辨識更輕的聲音；較高值可排除更多雜訊。';
+
+  @override
+  String get local_captions_acceleration => '硬體加速';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '對未量化的語音模型使用 $accelerator。量化（int8）模型使用 CPU。';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      '此裝置沒有支援的語音加速器；辨識將使用 CPU。';
 
   @override
   String get local_captions_delay => '字幕延遲';
