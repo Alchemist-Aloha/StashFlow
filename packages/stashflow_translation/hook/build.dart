@@ -62,7 +62,7 @@ void main(List<String> arguments) async {
         flags.addAll([
           '-DCMAKE_SYSTEM_NAME=iOS',
           '-DCMAKE_OSX_SYSROOT=${result.stdout.toString().trim()}',
-          '-DCMAKE_OSX_DEPLOYMENT_TARGET=${input.config.code.iOS.targetVersion}',
+          '-DCMAKE_OSX_DEPLOYMENT_TARGET=${input.config.code.iOS.deploymentVersion.major}',
         ]);
       }
     } else if (os == OS.windows) {
