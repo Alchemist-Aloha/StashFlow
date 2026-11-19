@@ -173,6 +173,13 @@ class AppUpdate extends _$AppUpdate {
             androidApkSha256: apk?.sha256,
           );
         }
+      } else {
+        AppLogStore.instance.addError(
+          'build',
+          'GitHub release check failed: HTTP ${response.statusCode}',
+          StackTrace.current,
+          source: 'update_provider',
+        );
       }
     } on Object catch (error, stackTrace) {
       AppLogStore.instance.addError(
@@ -231,7 +238,17 @@ class StartupUpdateCheck extends _$StartupUpdateCheck {
     final prefs = ref.watch(sharedPreferencesProvider);
     if (prefs.getBool(forceKey) ?? false) {
       final updateInfo = await ref.watch(appUpdateProvider.future);
-      return updateInfo?.copyWith(isUpdateAvailable: true);
+      if (updateInfo != null) {
+        return updateInfo.copyWith(isUpdateAvailable: true);
+      }
+      // The check failed (offline or GitHub rate limit); still show the dialog.
+      final version = await ref.watch(appVersionProvider.future);
+      return UpdateInfo(
+        isUpdateAvailable: true,
+        latestVersion: version,
+        currentVersion: version,
+        releaseUrl: 'https://github.com/Alchemist-Aloha/StashFlow/releases',
+      );
     }
     final lastCheck = prefs.getInt(_lastCheckKey) ?? 0;
     final now = DateTime.now().millisecondsSinceEpoch;

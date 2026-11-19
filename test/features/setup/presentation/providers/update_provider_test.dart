@@ -1,4 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/features/setup/domain/entities/update_info.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/update_provider.dart';
 
 void main() {
@@ -41,4 +46,40 @@ void main() {
     expect(nightlyReleaseCommit('no commit here'), isNull);
     expect(nightlyReleaseCommit(null), isNull);
   });
+
+  test(
+    'forced startup check still shows the dialog when the check fails',
+    () async {
+      PackageInfo.setMockInitialValues(
+        appName: 'StashFlow',
+        packageName: 'stashflow',
+        version: '1.42.0',
+        buildNumber: '1',
+        buildSignature: '',
+      );
+      SharedPreferences.setMockInitialValues({
+        StartupUpdateCheck.forceKey: true,
+        'last_app_update_check_timestamp':
+            DateTime.now().millisecondsSinceEpoch,
+      });
+      final container = ProviderContainer(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(
+            await SharedPreferences.getInstance(),
+          ),
+          appUpdateProvider.overrideWith(_FailedUpdate.new),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final info = await container.read(startupUpdateCheckProvider.future);
+      expect(info?.isUpdateAvailable, isTrue);
+      expect(info?.currentVersion, '1.42.0');
+    },
+  );
+}
+
+class _FailedUpdate extends AppUpdate {
+  @override
+  Future<UpdateInfo?> build() async => null;
 }
