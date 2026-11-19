@@ -57,6 +57,29 @@ AndroidApkAsset? resolveAndroidApkAssetForAbi(
   return null;
 }
 
+/// Commit the running build was compiled from; empty for local builds.
+const appBuildCommit = String.fromEnvironment('STASHFLOW_COMMIT');
+
+/// Extracts the commit SHA the rolling nightly release body records.
+@visibleForTesting
+String? nightlyReleaseCommit(String? body) =>
+    RegExp(r'Commit:\s*([0-9a-f]{7,40})').firstMatch(body ?? '')?.group(1);
+
+/// Whether the built-in update check follows the rolling nightly release
+/// instead of the latest stable release.
+@riverpod
+class NightlyUpdateChannel extends _$NightlyUpdateChannel {
+  static const key = 'update_channel_nightly';
+
+  @override
+  bool build() => ref.watch(sharedPreferencesProvider).getBool(key) ?? false;
+
+  Future<void> set(bool nightly) async {
+    state = nightly;
+    await ref.read(sharedPreferencesProvider).setBool(key, nightly);
+  }
+}
+
 /// Returns the current application version.
 @riverpod
 Future<String> appVersion(Ref ref) async {
@@ -76,16 +99,45 @@ class AppUpdate extends _$AppUpdate {
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersionStr = packageInfo.version;
       final currentVersion = Version.parse(currentVersionStr);
+      final nightly = ref.watch(nightlyUpdateChannelProvider);
 
       final response = await http.get(
         Uri.parse(
-          'https://api.github.com/repos/Alchemist-Aloha/StashFlow/releases/latest',
+          'https://api.github.com/repos/Alchemist-Aloha/StashFlow/releases/'
+          '${nightly ? 'tags/nightly' : 'latest'}',
         ),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
         final latestTag = data['tag_name'] as String;
+
+        if (nightly) {
+          final commit = nightlyReleaseCommit(data['body'] as String?);
+          if (commit == null) return null;
+          // Builds without a commit (local/dev) always see nightly as newer.
+          final isUpdateAvailable =
+              appBuildCommit.isEmpty ||
+              !(appBuildCommit.startsWith(commit) ||
+                  commit.startsWith(appBuildCommit));
+          if (!isUpdateAvailable) {
+            unawaited(
+              ref.read(androidUpdateInstallerProvider).deleteDownloads(),
+            );
+          }
+          final apk = await _resolveAndroidApk(data);
+          return UpdateInfo(
+            isUpdateAvailable: isUpdateAvailable,
+            latestVersion: '$latestTag (${commit.substring(0, 7)})',
+            currentVersion: appBuildCommit.isEmpty
+                ? currentVersionStr
+                : '$currentVersionStr (${appBuildCommit.substring(0, 7)})',
+            releaseUrl: data['html_url'] as String,
+            releaseNotes: data['body'] as String?,
+            androidApkUrl: apk?.url,
+            androidApkSha256: apk?.sha256,
+          );
+        }
 
         String cleanLatestTag = latestTag;
         if (latestTag.startsWith('v')) {
@@ -164,14 +216,23 @@ class AppUpdate extends _$AppUpdate {
 }
 
 /// A provider that handles the logic for the initial app update check.
-/// It ensures that the update check is performed at most once per day.
+/// It ensures that the update check is performed at most once per day, unless
+/// the developer setting [forceKey] shows the dialog on every startup.
 @riverpod
 class StartupUpdateCheck extends _$StartupUpdateCheck {
   static const _lastCheckKey = 'last_app_update_check_timestamp';
 
+  /// Developer setting: show the update dialog at every startup, even when
+  /// the installed build is current.
+  static const forceKey = 'force_update_dialog_at_startup';
+
   @override
   FutureOr<UpdateInfo?> build() async {
     final prefs = ref.watch(sharedPreferencesProvider);
+    if (prefs.getBool(forceKey) ?? false) {
+      final updateInfo = await ref.watch(appUpdateProvider.future);
+      return updateInfo?.copyWith(isUpdateAvailable: true);
+    }
     final lastCheck = prefs.getInt(_lastCheckKey) ?? 0;
     final now = DateTime.now().millisecondsSinceEpoch;
 

@@ -10,6 +10,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/video_p
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 
+import '../../providers/update_provider.dart';
 import '../../widgets/settings_page_shell.dart';
 
 class DeveloperSettingsPage extends ConsumerStatefulWidget {
@@ -26,6 +27,7 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
 
   bool _showVideoDebugInfo = false;
   bool _enableDebugLogging = false;
+  bool _forceUpdateDialog = false;
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
     setState(() {
       _showVideoDebugInfo = prefs.getBool(_showVideoDebugInfoKey) ?? false;
       _enableDebugLogging = prefs.getBool(_enableDebugLoggingKey) ?? false;
+      _forceUpdateDialog = prefs.getBool(StartupUpdateCheck.forceKey) ?? false;
     });
   }
 
@@ -84,6 +87,20 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
                       setState(() => _enableDebugLogging = value);
                       unawaited(_saveSetting(_enableDebugLoggingKey, value));
                       AppLogStore.instance.isEnabled = value;
+                    },
+                  ),
+                  const Divider(height: 1),
+                  SwitchListTile(
+                    title: Text(l10n.settings_develop_force_update_dialog),
+                    subtitle: Text(
+                      l10n.settings_develop_force_update_dialog_subtitle,
+                    ),
+                    value: _forceUpdateDialog,
+                    onChanged: (value) {
+                      setState(() => _forceUpdateDialog = value);
+                      unawaited(
+                        _saveSetting(StartupUpdateCheck.forceKey, value),
+                      );
                     },
                   ),
                   const Divider(height: 1),

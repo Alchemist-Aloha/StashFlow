@@ -2333,6 +2333,27 @@ class AppLocalizationsEs extends AppLocalizations {
       'Nuevas características y mejoras te esperan.';
 
   @override
+  String get settings_support_update_channel => 'Canal de actualizaciones';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      'Qué versiones sigue la comprobación de actualizaciones integrada';
+
+  @override
+  String get settings_support_update_channel_stable => 'Estable';
+
+  @override
+  String get settings_support_update_channel_nightly => 'Nightly';
+
+  @override
+  String get settings_develop_force_update_dialog =>
+      'Mostrar siempre el diálogo de actualización al iniciar';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      'Mostrar el diálogo de actualización en cada inicio, aunque la app esté al día';
+
+  @override
   String get settings_support_about => 'Acerca de';
 
   @override

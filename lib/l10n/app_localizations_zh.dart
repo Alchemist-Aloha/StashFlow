@@ -2196,6 +2196,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_support_update_to_subtitle => '新功能和改进正等着您。';
 
   @override
+  String get settings_support_update_channel => '更新通道';
+
+  @override
+  String get settings_support_update_channel_subtitle => '内置版本检查所跟随的发布版本';
+
+  @override
+  String get settings_support_update_channel_stable => '稳定版';
+
+  @override
+  String get settings_support_update_channel_nightly => '每夜版';
+
+  @override
+  String get settings_develop_force_update_dialog => '启动时始终显示更新对话框';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '即使已是最新版本，每次启动时也显示更新对话框';
+
+  @override
   String get settings_support_about => '关于';
 
   @override
@@ -6262,6 +6281,25 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_support_update_to_subtitle => '新功能和改进正等着您。';
+
+  @override
+  String get settings_support_update_channel => '更新通道';
+
+  @override
+  String get settings_support_update_channel_subtitle => '内置版本检查所跟随的发布版本';
+
+  @override
+  String get settings_support_update_channel_stable => '稳定版';
+
+  @override
+  String get settings_support_update_channel_nightly => '每夜版';
+
+  @override
+  String get settings_develop_force_update_dialog => '启动时始终显示更新对话框';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '即使已是最新版本，每次启动时也显示更新对话框';
 
   @override
   String get settings_support_about => '关于';
@@ -10335,6 +10373,25 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_support_update_to_subtitle => '新功能和改進正在等著您。';
+
+  @override
+  String get settings_support_update_channel => '更新通道';
+
+  @override
+  String get settings_support_update_channel_subtitle => '內建版本檢查所跟隨的發佈版本';
+
+  @override
+  String get settings_support_update_channel_stable => '穩定版';
+
+  @override
+  String get settings_support_update_channel_nightly => '每夜版';
+
+  @override
+  String get settings_develop_force_update_dialog => '啟動時始終顯示更新對話框';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '即使已是最新版本，每次啟動時也顯示更新對話框';
 
   @override
   String get settings_support_about => '關於';

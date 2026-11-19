@@ -2324,6 +2324,27 @@ class AppLocalizationsFr extends AppLocalizations {
       'De nouvelles fonctionnalités et améliorations vous attendent.';
 
   @override
+  String get settings_support_update_channel => 'Canal de mise à jour';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      'Versions suivies par la vérification des mises à jour intégrée';
+
+  @override
+  String get settings_support_update_channel_stable => 'Stable';
+
+  @override
+  String get settings_support_update_channel_nightly => 'Nightly';
+
+  @override
+  String get settings_develop_force_update_dialog =>
+      'Toujours afficher la boîte de mise à jour au démarrage';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      'Afficher la boîte de mise à jour à chaque lancement, même si l\'app est à jour';
+
+  @override
   String get settings_support_about => 'À propos';
 
   @override

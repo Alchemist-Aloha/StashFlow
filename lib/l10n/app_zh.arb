@@ -626,6 +626,12 @@
     }
   },
   "settings_support_update_to_subtitle": "新功能和改进正等着您。",
+  "settings_support_update_channel": "更新通道",
+  "settings_support_update_channel_subtitle": "内置版本检查所跟随的发布版本",
+  "settings_support_update_channel_stable": "稳定版",
+  "settings_support_update_channel_nightly": "每夜版",
+  "settings_develop_force_update_dialog": "启动时始终显示更新对话框",
+  "settings_develop_force_update_dialog_subtitle": "即使已是最新版本，每次启动时也显示更新对话框",
   "settings_support_about": "关于",
   "settings_support_about_subtitle": "项目和源代码信息",
   "settings_support_version": "版本",

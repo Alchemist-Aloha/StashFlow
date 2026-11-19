@@ -209,6 +209,8 @@ final class AppConfigSettingsRegistry {
     ),
     _bool('show_video_debug_info'),
     _bool('enable_debug_logging'),
+    _bool('update_channel_nightly'),
+    _bool('force_update_dialog_at_startup'),
     _bool('app_lock_enabled'),
     _int('app_lock_background_seconds', min: 0, max: 86400),
     _bool('app_lock_on_launch'),

@@ -79,6 +79,29 @@ class SupportSettingsPage extends ConsumerWidget {
                 ),
 
             SettingsSectionCard(
+              title: l10n.settings_support_update_channel,
+              subtitle: l10n.settings_support_update_channel_subtitle,
+              child: SegmentedButton<bool>(
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(
+                    value: false,
+                    label: Text(l10n.settings_support_update_channel_stable),
+                  ),
+                  ButtonSegment(
+                    value: true,
+                    label: Text(l10n.settings_support_update_channel_nightly),
+                  ),
+                ],
+                selected: {ref.watch(nightlyUpdateChannelProvider)},
+                onSelectionChanged: (selection) => ref
+                    .read(nightlyUpdateChannelProvider.notifier)
+                    .set(selection.single),
+              ),
+            ),
+            SizedBox(height: context.dimensions.spacingLarge),
+
+            SettingsSectionCard(
               title: l10n.settings_support_about,
               subtitle: l10n.settings_support_about_subtitle,
               child: Column(

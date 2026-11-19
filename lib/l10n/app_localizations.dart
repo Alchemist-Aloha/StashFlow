@@ -4056,6 +4056,42 @@ abstract class AppLocalizations {
   /// **'New features and improvements are waiting for you.'**
   String get settings_support_update_to_subtitle;
 
+  /// No description provided for @settings_support_update_channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update channel'**
+  String get settings_support_update_channel;
+
+  /// No description provided for @settings_support_update_channel_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Which releases the built-in update check follows'**
+  String get settings_support_update_channel_subtitle;
+
+  /// No description provided for @settings_support_update_channel_stable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable'**
+  String get settings_support_update_channel_stable;
+
+  /// No description provided for @settings_support_update_channel_nightly.
+  ///
+  /// In en, this message translates to:
+  /// **'Nightly'**
+  String get settings_support_update_channel_nightly;
+
+  /// No description provided for @settings_develop_force_update_dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Always show update dialog at startup'**
+  String get settings_develop_force_update_dialog;
+
+  /// No description provided for @settings_develop_force_update_dialog_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the update dialog on every launch, even when up to date'**
+  String get settings_develop_force_update_dialog_subtitle;
+
   /// No description provided for @settings_support_about.
   ///
   /// In en, this message translates to:

@@ -194,11 +194,11 @@ jobs:
         if: matrix.target != 'windows'
         run: |
           if [ "${{ matrix.target }}" = "android" ]; then
-            flutter build apk --release --split-per-abi
+            flutter build apk --release --split-per-abi --dart-define=STASHFLOW_COMMIT=${{ github.sha }}
           elif [ "${{ matrix.target }}" = "linux" ]; then
-            flutter build linux --release
+            flutter build linux --release --dart-define=STASHFLOW_COMMIT=${{ github.sha }}
           elif [ "${{ matrix.target }}" = "web" ]; then
-            flutter build web --release --base-href /StashFlow/
+            flutter build web --release --base-href /StashFlow/ --dart-define=STASHFLOW_COMMIT=${{ github.sha }}
           elif [ "${{ matrix.target }}" = "macos" ]; then
             case "$TARGET_ARCH" in
               x64) macos_arch=x86_64 ;;
@@ -206,10 +206,10 @@ jobs:
               *) echo "Unsupported macOS architecture: $TARGET_ARCH" >&2; exit 1 ;;
             esac
             # CTranslate2/Ruy also inspect CMake's processor, not just OSX_ARCHITECTURES.
-            CMAKE_APPLE_SILICON_PROCESSOR="$macos_arch" FLUTTER_MACOS_ARM64_ONLY=false FLUTTER_XCODE_ARCHS="$macos_arch" flutter build macos --release
+            CMAKE_APPLE_SILICON_PROCESSOR="$macos_arch" FLUTTER_MACOS_ARM64_ONLY=false FLUTTER_XCODE_ARCHS="$macos_arch" flutter build macos --release --dart-define=STASHFLOW_COMMIT=${{ github.sha }}
           elif [ "${{ matrix.target }}" = "ios" ]; then
             # Flutter hides Xcode's real error behind a generic signing hint; keep the verbose log.
-            CMAKE_APPLE_SILICON_PROCESSOR=arm64 flutter build ios --release --no-codesign -v > ios-build.log 2>&1 || {
+            CMAKE_APPLE_SILICON_PROCESSOR=arm64 flutter build ios --release --no-codesign --dart-define=STASHFLOW_COMMIT=${{ github.sha }} -v > ios-build.log 2>&1 || {
               grep -nE 'error:|Error:|FAILED|failed with|StateError|CMake Error' ios-build.log | grep -v 'warning:' | tail -80
               tail -150 ios-build.log
               exit 1
@@ -293,7 +293,7 @@ jobs:
           sudo install -m755 scripts/appimagetool.sh /usr/local/bin/appimagetool
           export APPIMAGE_EXTRACT_AND_RUN=1
           dart pub global activate fastforge 0.6.12
-          fastforge package --platform linux --targets deb,appimage --artifact-name 'StashFlow-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}'
+          fastforge package --platform linux --targets deb,appimage --build-dart-define=STASHFLOW_COMMIT=${{ github.sha }} --artifact-name 'StashFlow-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}'
           find dist -type f \( -name '*.deb' -o -name '*.AppImage' \) -print0 | while IFS= read -r -d '' file; do
             extension="${file##*.}"
             mv "$file" "$(dirname "$file")/StashFlow-${STASHFLOW_ARTIFACT_VERSION}-linux-${TARGET_ARCH}.${extension}"
@@ -364,7 +364,7 @@ jobs:
           $env:PATH += ";$env:LOCALAPPDATA\Pub\Cache\bin"
           dart pub global activate fastforge 0.6.12
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          fastforge package --platform windows --targets exe --artifact-name 'StashFlow-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}'
+          fastforge package --platform windows --targets exe --build-dart-define=STASHFLOW_COMMIT=${{ github.sha }} --artifact-name 'StashFlow-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/validate_windows_bundle.py build/windows/${{ matrix.arch }}/runner/Release ${{ matrix.arch }}
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

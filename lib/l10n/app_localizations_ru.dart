@@ -2308,6 +2308,27 @@ class AppLocalizationsRu extends AppLocalizations {
       'Вас ждут новые функции и улучшения.';
 
   @override
+  String get settings_support_update_channel => 'Канал обновлений';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      'Какие выпуски отслеживает встроенная проверка обновлений';
+
+  @override
+  String get settings_support_update_channel_stable => 'Стабильный';
+
+  @override
+  String get settings_support_update_channel_nightly => 'Ночной';
+
+  @override
+  String get settings_develop_force_update_dialog =>
+      'Всегда показывать окно обновления при запуске';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      'Показывать окно обновления при каждом запуске, даже если версия актуальна';
+
+  @override
   String get settings_support_about => 'О программе';
 
   @override

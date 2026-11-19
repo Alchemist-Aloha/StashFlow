@@ -2226,6 +2226,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_support_update_to_subtitle => '새로운 기능과 개선 사항이 기다리고 있습니다.';
 
   @override
+  String get settings_support_update_channel => '업데이트 채널';
+
+  @override
+  String get settings_support_update_channel_subtitle => '내장 업데이트 확인이 따르는 릴리스';
+
+  @override
+  String get settings_support_update_channel_stable => '안정판';
+
+  @override
+  String get settings_support_update_channel_nightly => '나이틀리';
+
+  @override
+  String get settings_develop_force_update_dialog => '시작 시 항상 업데이트 대화상자 표시';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '최신 상태여도 실행할 때마다 업데이트 대화상자를 표시합니다';
+
+  @override
   String get settings_support_about => '정보';
 
   @override

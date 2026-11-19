@@ -1453,6 +1453,14 @@ contain the target architecture; embedded universal libraries are allowed.
   opens and the install continues automatically on return once granted.
   Failures offer retry and the release page. Downloaded APKs are deleted once
   the installed version is current.
+- Update channel: Support settings choose Stable (default, `releases/latest`,
+  semver comparison) or Nightly (the rolling `nightly` release). Release builds
+  embed their commit via `--dart-define=STASHFLOW_COMMIT`; a nightly is newer
+  when the `Commit:` SHA in its release body differs from the build's commit,
+  and builds without one always treat the nightly as newer. The startup check
+  runs at most once per 24 hours unless the Developer setting "Always show
+  update dialog at startup" is on, which shows the dialog on every launch even
+  when current.
 - Audio service, PiP, and notification behavior must continue to work after
   build or lifecycle changes.
 

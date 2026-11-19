@@ -34,4 +34,11 @@ void main() {
       isNull,
     );
   });
+
+  test('reads the commit from the nightly release body', () {
+    final sha = 'a1b2c3d' * 5 + 'e' * 5;
+    expect(nightlyReleaseCommit('Latest development build. Commit: $sha'), sha);
+    expect(nightlyReleaseCommit('no commit here'), isNull);
+    expect(nightlyReleaseCommit(null), isNull);
+  });
 }

@@ -2225,6 +2225,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_support_update_to_subtitle => '新しい機能と改善が用意されています。';
 
   @override
+  String get settings_support_update_channel => 'アップデートチャンネル';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      '組み込みのアップデート確認が追跡するリリース';
+
+  @override
+  String get settings_support_update_channel_stable => '安定版';
+
+  @override
+  String get settings_support_update_channel_nightly => 'ナイトリー';
+
+  @override
+  String get settings_develop_force_update_dialog => '起動時に常にアップデートダイアログを表示';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '最新の場合でも、起動するたびにアップデートダイアログを表示します';
+
+  @override
   String get settings_support_about => 'アプリについて';
 
   @override

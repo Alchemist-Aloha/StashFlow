@@ -2288,6 +2288,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'New features and improvements are waiting for you.';
 
   @override
+  String get settings_support_update_channel => 'Update channel';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      'Which releases the built-in update check follows';
+
+  @override
+  String get settings_support_update_channel_stable => 'Stable';
+
+  @override
+  String get settings_support_update_channel_nightly => 'Nightly';
+
+  @override
+  String get settings_develop_force_update_dialog =>
+      'Always show update dialog at startup';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      'Show the update dialog on every launch, even when up to date';
+
+  @override
   String get settings_support_about => 'About';
 
   @override
