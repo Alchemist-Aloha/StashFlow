@@ -792,6 +792,17 @@ no valid preference is saved; existing saved delays are preserved. The selected
 delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
 included in configuration backups.
 
+Playback Settings links to a Player controls page that customizes inline and
+fullscreen utility buttons separately: stream source, subtitles, speed, volume
+(desktop), cast, PiP, fullscreen, playlist, and random scene. Each button can
+be hidden, reordered by drag, and placed in the bottom row or the top-right
+cluster; order within each placement follows the list. Buttons unavailable in
+the current context (no PiP support, no random callback, no desktop volume) are
+skipped. Defaults reproduce the original layout: playlist top right in both
+modes, random top right and fullscreen-only, everything else in the bottom row.
+Saved layouts tolerate unknown or duplicate ids, append newly added buttons,
+and are included in configuration backups; Reset restores the defaults.
+
 Inline, fullscreen, and feed controls share a stream source menu built from
 the scene's `sceneStreams` endpoints: a two-column panel with Source (direct,
 MP4, WebM, HLS, DASH) and Resolution (the selected source's variants, disabled

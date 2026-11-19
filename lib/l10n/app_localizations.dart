@@ -3882,6 +3882,54 @@ abstract class AppLocalizations {
   /// **'Open selected and random scenes in fullscreen. Player next and previous keep the current view.'**
   String get settings_playback_open_fullscreen_subtitle;
 
+  /// No description provided for @settings_playback_controls_layout.
+  ///
+  /// In en, this message translates to:
+  /// **'Player controls'**
+  String get settings_playback_controls_layout;
+
+  /// No description provided for @settings_playback_controls_layout_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which player buttons appear, their order, and where they sit'**
+  String get settings_playback_controls_layout_subtitle;
+
+  /// No description provided for @settings_playback_controls_inline.
+  ///
+  /// In en, this message translates to:
+  /// **'Inline'**
+  String get settings_playback_controls_inline;
+
+  /// No description provided for @settings_playback_controls_fullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Fullscreen'**
+  String get settings_playback_controls_fullscreen;
+
+  /// No description provided for @settings_playback_controls_bottom.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom row'**
+  String get settings_playback_controls_bottom;
+
+  /// No description provided for @settings_playback_controls_top_right.
+  ///
+  /// In en, this message translates to:
+  /// **'Top right'**
+  String get settings_playback_controls_top_right;
+
+  /// No description provided for @player_control_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist'**
+  String get player_control_playlist;
+
+  /// No description provided for @player_control_volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get player_control_volume;
+
   /// No description provided for @settings_playback_gravity_orientation_subtitle.
   ///
   /// In en, this message translates to:

@@ -2193,6 +2193,31 @@ class AppLocalizationsEn extends AppLocalizations {
       'Open selected and random scenes in fullscreen. Player next and previous keep the current view.';
 
   @override
+  String get settings_playback_controls_layout => 'Player controls';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      'Choose which player buttons appear, their order, and where they sit';
+
+  @override
+  String get settings_playback_controls_inline => 'Inline';
+
+  @override
+  String get settings_playback_controls_fullscreen => 'Fullscreen';
+
+  @override
+  String get settings_playback_controls_bottom => 'Bottom row';
+
+  @override
+  String get settings_playback_controls_top_right => 'Top right';
+
+  @override
+  String get player_control_playlist => 'Playlist';
+
+  @override
+  String get player_control_volume => 'Volume';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Allow rotating between matching orientations using the device sensor (e.g. flipping landscape left/right).';
 

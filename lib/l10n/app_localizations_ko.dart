@@ -2133,6 +2133,31 @@ class AppLocalizationsKo extends AppLocalizations {
       '선택한 장면과 무작위 장면을 전체 화면으로 엽니다. 이전/다음은 현재 보기를 유지합니다.';
 
   @override
+  String get settings_playback_controls_layout => '플레이어 컨트롤';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '표시할 플레이어 버튼과 순서, 위치를 선택합니다';
+
+  @override
+  String get settings_playback_controls_inline => '인라인';
+
+  @override
+  String get settings_playback_controls_fullscreen => '전체 화면';
+
+  @override
+  String get settings_playback_controls_bottom => '하단 줄';
+
+  @override
+  String get settings_playback_controls_top_right => '오른쪽 상단';
+
+  @override
+  String get player_control_playlist => '재생목록';
+
+  @override
+  String get player_control_volume => '볼륨';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '기기 센서를 사용하여 일치하는 방향으로 회전하도록 허용합니다(예: 좌/우 가로 방향 전환).';
 

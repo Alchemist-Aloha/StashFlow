@@ -41,6 +41,7 @@ import '../../setup/presentation/pages/settings/playback_settings_page.dart';
 import '../../setup/presentation/pages/settings/appearance_settings_page.dart';
 import '../../setup/presentation/pages/settings/interface_settings_page.dart';
 import '../../setup/presentation/pages/settings/navigation_customization_page.dart';
+import '../../setup/presentation/pages/settings/player_controls_customization_page.dart';
 import '../../setup/presentation/pages/settings/support_settings_page.dart';
 import '../../setup/presentation/pages/settings/developer_settings_page.dart';
 import '../../setup/presentation/pages/settings/keybind_settings_page.dart';
@@ -475,6 +476,13 @@ GoRouter router(Ref ref) {
           GoRoute(
             path: 'playback',
             builder: (context, state) => const PlaybackSettingsPage(),
+            routes: [
+              GoRoute(
+                path: 'controls',
+                builder: (context, state) =>
+                    const PlayerControlsCustomizationPage(),
+              ),
+            ],
           ),
           GoRoute(
             path: 'appearance',

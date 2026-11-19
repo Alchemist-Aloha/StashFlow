@@ -2132,6 +2132,31 @@ class AppLocalizationsJa extends AppLocalizations {
       '選択したシーンやランダムシーンを全画面で開きます。前へ／次へでは現在の表示を維持します。';
 
   @override
+  String get settings_playback_controls_layout => 'プレーヤーのコントロール';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '表示するプレーヤーボタン、その順序と配置を選択します';
+
+  @override
+  String get settings_playback_controls_inline => 'インライン';
+
+  @override
+  String get settings_playback_controls_fullscreen => '全画面';
+
+  @override
+  String get settings_playback_controls_bottom => '下部の列';
+
+  @override
+  String get settings_playback_controls_top_right => '右上';
+
+  @override
+  String get player_control_playlist => 'プレイリスト';
+
+  @override
+  String get player_control_volume => '音量';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'デバイスのセンサーを使って一致する向きに回転できるようにします（例：左右の横向きに反転）。';
 

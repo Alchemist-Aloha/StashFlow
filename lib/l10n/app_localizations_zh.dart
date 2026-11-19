@@ -2105,6 +2105,31 @@ class AppLocalizationsZh extends AppLocalizations {
       '以全屏模式打开所选和随机场景。上一个和下一个场景会保持当前视图。';
 
   @override
+  String get settings_playback_controls_layout => '播放器控件';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '选择显示哪些播放器按钮、它们的顺序和位置';
+
+  @override
+  String get settings_playback_controls_inline => '内嵌';
+
+  @override
+  String get settings_playback_controls_fullscreen => '全屏';
+
+  @override
+  String get settings_playback_controls_bottom => '底部栏';
+
+  @override
+  String get settings_playback_controls_top_right => '右上角';
+
+  @override
+  String get player_control_playlist => '播放列表';
+
+  @override
+  String get player_control_volume => '音量';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
 
@@ -6146,6 +6171,31 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_playback_open_fullscreen_subtitle =>
       '以全屏模式打开所选和随机场景。上一个和下一个场景会保持当前视图。';
+
+  @override
+  String get settings_playback_controls_layout => '播放器控件';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '选择显示哪些播放器按钮、它们的顺序和位置';
+
+  @override
+  String get settings_playback_controls_inline => '内嵌';
+
+  @override
+  String get settings_playback_controls_fullscreen => '全屏';
+
+  @override
+  String get settings_playback_controls_bottom => '底部栏';
+
+  @override
+  String get settings_playback_controls_top_right => '右上角';
+
+  @override
+  String get player_control_playlist => '播放列表';
+
+  @override
+  String get player_control_volume => '音量';
 
   @override
   String get settings_playback_gravity_orientation_subtitle =>
@@ -10193,6 +10243,31 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settings_playback_open_fullscreen_subtitle =>
       '以全螢幕模式開啟所選和隨機場景。上一個和下一個場景會保留目前檢視。';
+
+  @override
+  String get settings_playback_controls_layout => '播放器控制項';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '選擇要顯示哪些播放器按鈕、它們的順序與位置';
+
+  @override
+  String get settings_playback_controls_inline => '內嵌';
+
+  @override
+  String get settings_playback_controls_fullscreen => '全螢幕';
+
+  @override
+  String get settings_playback_controls_bottom => '底部列';
+
+  @override
+  String get settings_playback_controls_top_right => '右上角';
+
+  @override
+  String get player_control_playlist => '播放清單';
+
+  @override
+  String get player_control_volume => '音量';
 
   @override
   String get settings_playback_gravity_orientation_subtitle =>

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../../core/utils/l10n_extensions.dart';
 
@@ -227,6 +230,26 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         ),
                         Divider(height: context.dimensions.spacingLarge),
                         _buildControlsAutoHideSlider(),
+                        Divider(height: context.dimensions.spacingLarge),
+                        ListTile(
+                          key: const Key('player_controls_layout_tile'),
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context.l10n.settings_playback_controls_layout,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_playback_controls_layout_subtitle,
+                          ),
+                          trailing: Icon(
+                            Icons.chevron_right,
+                            size: 24 * context.dimensions.fontSizeFactor,
+                          ),
+                          onTap: () => unawaited(
+                            context.push('/settings/playback/controls'),
+                          ),
+                        ),
                         Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,

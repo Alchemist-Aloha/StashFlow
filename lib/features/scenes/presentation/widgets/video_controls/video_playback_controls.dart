@@ -12,6 +12,7 @@ import '../../../domain/entities/scene_title_utils.dart';
 import 'cast_selection_sheet.dart';
 import 'scene_stream_menu.dart';
 import 'scene_subtitle_menu.dart';
+import '../../providers/player_controls_layout.dart';
 import '../../providers/video_player_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -168,6 +169,9 @@ class VideoPlaybackControls extends ConsumerWidget {
     required this.isSpeedSliderVisible,
     this.onStopCast,
     this.transportControls,
+    this.placement = PlayerControlPlacement.bottom,
+    this.onPlaylist,
+    this.onRandomScene,
   });
 
   final VideoController controller;
@@ -186,6 +190,11 @@ class VideoPlaybackControls extends ConsumerWidget {
 
   /// Desktop/web transport shown to the left of the utility controls.
   final Widget? transportControls;
+
+  /// Which configured group of buttons this instance renders.
+  final PlayerControlPlacement placement;
+  final VoidCallback? onPlaylist;
+  final VoidCallback? onRandomScene;
 
   static const _playbackSpeeds = <double>[
     0.25,
@@ -211,12 +220,24 @@ class VideoPlaybackControls extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scale = context.dimensions.fontSizeFactor;
-    final controlIconSize = 24.0 * scale;
-    final buttonMinSize = context.dimensions.buttonHeight;
     final buttonGap = context.dimensions.spacingSmall;
-    final colorScheme = Theme.of(context).colorScheme;
-    final castState = ref.watch(castServiceProvider);
+
+    final layout = ref.watch(playerControlsLayoutProvider(isFullScreen));
+    final buttons = [
+      for (final item in layout)
+        if (item.visible && item.placement == placement)
+          ?_buildButton(context, ref, item.button),
+    ];
+    final row = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < buttons.length; i++) ...[
+          if (i > 0) SizedBox(width: buttonGap),
+          buttons[i],
+        ],
+      ],
+    );
+    if (placement == PlayerControlPlacement.topRight) return row;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -229,206 +250,233 @@ class VideoPlaybackControls extends ConsumerWidget {
                   ? MainAxisAlignment.end
                   : MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ?transportControls,
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SceneStreamMenu(
-                      controller: controller,
-                      scene: scene,
-                      onInteract: onInteract,
-                    ),
-                    SizedBox(width: buttonGap),
-                    SceneSubtitleMenu(
-                      controller: controller,
-                      scene: scene,
-                      onSubtitleSelected: onSubtitleSelected,
-                      onInteract: onInteract,
-                    ),
-                    SizedBox(width: buttonGap),
-                    PopupMenuButton<double>(
-                      tooltip: context.l10n.common_playback_speed,
-                      initialValue: playbackSpeed,
-                      color: colorScheme.surfaceContainerHigh,
-                      surfaceTintColor: colorScheme.surfaceTint,
-                      onSelected: (speed) {
-                        onSpeedSelected(speed);
-                        onInteract();
-                      },
-                      itemBuilder: (context) {
-                        return _playbackSpeeds
-                            .map(
-                              (speed) => PopupMenuItem<double>(
-                                value: speed,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      speed == playbackSpeed
-                                          ? Icons.check_circle
-                                          : Icons.circle_outlined,
-                                      size: 16,
-                                      color: speed == playbackSpeed
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurfaceVariant,
-                                    ),
-                                    Text(
-                                      _formatSpeed(speed),
-                                      style: TextStyle(
-                                        color: colorScheme.onSurface,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                            .toList();
-                      },
-                      child: Semantics(
-                        button: true,
-                        label: context.l10n.common_playback_speed,
-                        child: Tooltip(
-                          message: context.l10n.common_playback_speed,
-                          child: Material(
-                            color: Colors.transparent,
-                            shape: const CircleBorder(),
-                            clipBehavior: Clip.hardEdge,
-                            child: InkWell(
-                              onTap: onSpeedTap,
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  minWidth: buttonMinSize,
-                                  minHeight: buttonMinSize,
-                                ),
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.circular(999),
-                                    border: isSpeedSliderVisible
-                                        ? Border.all(
-                                            color: colorScheme.primary,
-                                            width: 1.5,
-                                          )
-                                        : null,
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4),
-                                    child: Center(
-                                      child: Text(
-                                        _formatSpeed(playbackSpeed),
-                                        style: context.textTheme.bodyMedium
-                                            ?.copyWith(
-                                              color: isSpeedSliderVisible
-                                                  ? colorScheme.primary
-                                                  : Colors.white,
-                                              fontSize: context.fontSizes.small,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: buttonGap),
-                    if (desktopVolumeControl != null) ...[
-                      desktopVolumeControl!,
-                      SizedBox(width: buttonGap),
-                    ],
-                    if (castState.isCasting)
-                      IconButton(
-                        tooltip: context.l10n.cast_stop_casting,
-                        style: playerOverlayButtonStyle(context),
-                        icon: Icon(
-                          Icons.cast_connected_rounded,
-                          size: controlIconSize,
-                          color: colorScheme.primary,
-                        ),
-                        onPressed: () {
-                          onInteract();
-                          onStopCast?.call();
-                        },
-                      )
-                    else
-                      IconButton(
-                        tooltip: context.l10n.cast_cast,
-                        style: playerOverlayButtonStyle(context),
-                        icon: Icon(Icons.cast_rounded, size: controlIconSize),
-                        onPressed: () {
-                          onInteract();
-                          unawaited(
-                            showModalBottomSheet<void>(
-                              context: context,
-                              backgroundColor: Colors.transparent,
-                              isScrollControlled: true,
-                              builder: (context) => CastSelectionSheet(
-                                videoUrl:
-                                    controller
-                                        .player
-                                        .state
-                                        .playlist
-                                        .medias
-                                        .firstOrNull
-                                        ?.uri ??
-                                    '',
-                                title: scene.displayTitle,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    SizedBox(width: buttonGap),
-                    if (enableNativePip && PipMode.isSupported) ...[
-                      IconButton(
-                        tooltip: context.l10n.common_pip,
-                        style: playerOverlayButtonStyle(context),
-                        icon: Icon(
-                          Icons.picture_in_picture_alt_outlined,
-                          size: controlIconSize,
-                        ),
-                        onPressed: () async {
-                          final w = controller.player.state.width;
-                          final h = controller.player.state.height;
-                          final r = (w != null && h != null && h > 0)
-                              ? w / h
-                              : 16 / 9;
-                          await ref
-                              .read(playerStateProvider.notifier)
-                              .requestEnterPip(aspectRatio: r);
-                          onInteract();
-                        },
-                      ),
-                      SizedBox(width: buttonGap),
-                    ],
-                    GestureDetector(
-                      onTap: () {}, // Consume tap to prevent propagation
-                      child: IconButton(
-                        key: const Key('video_fullscreen_button'),
-                        tooltip: context.l10n.common_toggle_fullscreen,
-                        style: playerOverlayButtonStyle(context),
-                        icon: Icon(
-                          isFullScreen
-                              ? Icons.fullscreen_exit_rounded
-                              : Icons.fullscreen_rounded,
-                          size: controlIconSize,
-                        ),
-                        onPressed: () {
-                          onFullScreenToggle?.call();
-                          onInteract();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              children: [?transportControls, row],
             ),
           ),
         );
       },
     );
+  }
+
+  /// The widget for [button], or null when unavailable in this context.
+  Widget? _buildButton(
+    BuildContext context,
+    WidgetRef ref,
+    PlayerControlButton button,
+  ) {
+    final scale = context.dimensions.fontSizeFactor;
+    final controlIconSize = 24.0 * scale;
+    final buttonMinSize = context.dimensions.buttonHeight;
+    final colorScheme = Theme.of(context).colorScheme;
+    final castState = ref.watch(castServiceProvider);
+
+    switch (button) {
+      case PlayerControlButton.stream:
+        return SceneStreamMenu(
+          controller: controller,
+          scene: scene,
+          onInteract: onInteract,
+        );
+      case PlayerControlButton.subtitles:
+        return SceneSubtitleMenu(
+          controller: controller,
+          scene: scene,
+          onSubtitleSelected: onSubtitleSelected,
+          onInteract: onInteract,
+        );
+      case PlayerControlButton.speed:
+        return PopupMenuButton<double>(
+          tooltip: context.l10n.common_playback_speed,
+          initialValue: playbackSpeed,
+          color: colorScheme.surfaceContainerHigh,
+          surfaceTintColor: colorScheme.surfaceTint,
+          onSelected: (speed) {
+            onSpeedSelected(speed);
+            onInteract();
+          },
+          itemBuilder: (context) {
+            return _playbackSpeeds
+                .map(
+                  (speed) => PopupMenuItem<double>(
+                    value: speed,
+                    child: Row(
+                      children: [
+                        Icon(
+                          speed == playbackSpeed
+                              ? Icons.check_circle
+                              : Icons.circle_outlined,
+                          size: 16,
+                          color: speed == playbackSpeed
+                              ? colorScheme.primary
+                              : colorScheme.onSurfaceVariant,
+                        ),
+                        Text(
+                          _formatSpeed(speed),
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList();
+          },
+          child: Semantics(
+            button: true,
+            label: context.l10n.common_playback_speed,
+            child: Tooltip(
+              message: context.l10n.common_playback_speed,
+              child: Material(
+                color: Colors.transparent,
+                shape: const CircleBorder(),
+                clipBehavior: Clip.hardEdge,
+                child: InkWell(
+                  onTap: onSpeedTap,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: buttonMinSize,
+                      minHeight: buttonMinSize,
+                    ),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(999),
+                        border: isSpeedSliderVisible
+                            ? Border.all(color: colorScheme.primary, width: 1.5)
+                            : null,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Center(
+                          child: Text(
+                            _formatSpeed(playbackSpeed),
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              color: isSpeedSliderVisible
+                                  ? colorScheme.primary
+                                  : Colors.white,
+                              fontSize: context.fontSizes.small,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      case PlayerControlButton.volume:
+        return desktopVolumeControl;
+      case PlayerControlButton.cast:
+        return castState.isCasting
+            ? IconButton(
+                tooltip: context.l10n.cast_stop_casting,
+                style: playerOverlayButtonStyle(context),
+                icon: Icon(
+                  Icons.cast_connected_rounded,
+                  size: controlIconSize,
+                  color: colorScheme.primary,
+                ),
+                onPressed: () {
+                  onInteract();
+                  onStopCast?.call();
+                },
+              )
+            : IconButton(
+                tooltip: context.l10n.cast_cast,
+                style: playerOverlayButtonStyle(context),
+                icon: Icon(Icons.cast_rounded, size: controlIconSize),
+                onPressed: () {
+                  onInteract();
+                  unawaited(
+                    showModalBottomSheet<void>(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      isScrollControlled: true,
+                      builder: (context) => CastSelectionSheet(
+                        videoUrl:
+                            controller
+                                .player
+                                .state
+                                .playlist
+                                .medias
+                                .firstOrNull
+                                ?.uri ??
+                            '',
+                        title: scene.displayTitle,
+                      ),
+                    ),
+                  );
+                },
+              );
+      case PlayerControlButton.pip:
+        if (!enableNativePip || !PipMode.isSupported) return null;
+        return IconButton(
+          tooltip: context.l10n.common_pip,
+          style: playerOverlayButtonStyle(context),
+          icon: Icon(
+            Icons.picture_in_picture_alt_outlined,
+            size: controlIconSize,
+          ),
+          onPressed: () async {
+            final w = controller.player.state.width;
+            final h = controller.player.state.height;
+            final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
+            await ref
+                .read(playerStateProvider.notifier)
+                .requestEnterPip(aspectRatio: r);
+            onInteract();
+          },
+        );
+      case PlayerControlButton.fullscreen:
+        return GestureDetector(
+          onTap: () {}, // Consume tap to prevent propagation
+          child: IconButton(
+            key: const Key('video_fullscreen_button'),
+            tooltip: context.l10n.common_toggle_fullscreen,
+            style: playerOverlayButtonStyle(context),
+            icon: Icon(
+              isFullScreen
+                  ? Icons.fullscreen_exit_rounded
+                  : Icons.fullscreen_rounded,
+              size: controlIconSize,
+            ),
+            onPressed: () {
+              onFullScreenToggle?.call();
+              onInteract();
+            },
+          ),
+        );
+      case PlayerControlButton.playlist:
+        if (onPlaylist == null) return null;
+        return IconButton(
+          key: Key(
+            isFullScreen
+                ? 'fullscreen_playlist_button'
+                : 'inline_video_playlist_button',
+          ),
+          tooltip: context.l10n.player_control_playlist,
+          style: playerOverlayButtonStyle(context),
+          icon: Icon(Icons.queue_music_rounded, size: controlIconSize),
+          onPressed: onPlaylist,
+        );
+      case PlayerControlButton.random:
+        if (onRandomScene == null) return null;
+        return IconButton(
+          key: Key(
+            isFullScreen
+                ? 'fullscreen_random_scene_button'
+                : 'inline_random_scene_button',
+          ),
+          tooltip: context.l10n.random_scene,
+          style: playerOverlayButtonStyle(context),
+          icon: Icon(Icons.casino_outlined, size: controlIconSize),
+          onPressed: () {
+            onRandomScene!();
+            onInteract();
+          },
+        );
+    }
   }
 }

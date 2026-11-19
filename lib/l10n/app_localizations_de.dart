@@ -2218,6 +2218,31 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ausgewählte und zufällige Szenen im Vollbild öffnen. Vorherige und nächste Szene behalten die aktuelle Ansicht.';
 
   @override
+  String get settings_playback_controls_layout => 'Player-Steuerung';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      'Wählen Sie, welche Player-Schaltflächen angezeigt werden, ihre Reihenfolge und Position';
+
+  @override
+  String get settings_playback_controls_inline => 'Eingebettet';
+
+  @override
+  String get settings_playback_controls_fullscreen => 'Vollbild';
+
+  @override
+  String get settings_playback_controls_bottom => 'Untere Leiste';
+
+  @override
+  String get settings_playback_controls_top_right => 'Oben rechts';
+
+  @override
+  String get player_control_playlist => 'Wiedergabeliste';
+
+  @override
+  String get player_control_volume => 'Lautstärke';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Erlaube die Rotation zwischen passenden Ausrichtungen mithilfe des Gerätesensors (z. B. Landschaft links/rechts).';
 

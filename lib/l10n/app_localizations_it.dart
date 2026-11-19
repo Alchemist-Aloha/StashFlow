@@ -2228,6 +2228,31 @@ class AppLocalizationsIt extends AppLocalizations {
       'Apri le scene selezionate e casuali a schermo intero. Precedente e successiva mantengono la vista corrente.';
 
   @override
+  String get settings_playback_controls_layout => 'Controlli del lettore';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      'Scegli quali pulsanti del lettore mostrare, il loro ordine e la loro posizione';
+
+  @override
+  String get settings_playback_controls_inline => 'Incorporato';
+
+  @override
+  String get settings_playback_controls_fullscreen => 'Schermo intero';
+
+  @override
+  String get settings_playback_controls_bottom => 'Riga inferiore';
+
+  @override
+  String get settings_playback_controls_top_right => 'In alto a destra';
+
+  @override
+  String get player_control_playlist => 'Playlist';
+
+  @override
+  String get player_control_volume => 'Volume';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Consenti la rotazione tra orientamenti corrispondenti usando il sensore del dispositivo (es. capovolgere il paesaggio a sinistra/destra).';
 

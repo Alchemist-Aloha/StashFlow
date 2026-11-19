@@ -2212,6 +2212,31 @@ class AppLocalizationsRu extends AppLocalizations {
       'Открывать выбранные и случайные сцены в полноэкранном режиме. Переходы назад и вперёд сохраняют текущий вид.';
 
   @override
+  String get settings_playback_controls_layout => 'Элементы управления плеером';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      'Выберите, какие кнопки плеера показывать, их порядок и расположение';
+
+  @override
+  String get settings_playback_controls_inline => 'Встроенный';
+
+  @override
+  String get settings_playback_controls_fullscreen => 'Полноэкранный';
+
+  @override
+  String get settings_playback_controls_bottom => 'Нижняя панель';
+
+  @override
+  String get settings_playback_controls_top_right => 'Справа вверху';
+
+  @override
+  String get player_control_playlist => 'Плейлист';
+
+  @override
+  String get player_control_volume => 'Громкость';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Разрешить поворот между совпадающими ориентациями с помощью датчика устройства (например, переворачивать альбомную ориентацию влево/вправо).';
 

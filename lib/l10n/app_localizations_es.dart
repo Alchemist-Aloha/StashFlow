@@ -2236,6 +2236,31 @@ class AppLocalizationsEs extends AppLocalizations {
       'Abrir las escenas seleccionadas y aleatorias en pantalla completa. Anterior y siguiente mantienen la vista actual.';
 
   @override
+  String get settings_playback_controls_layout => 'Controles del reproductor';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      'Elige qué botones del reproductor se muestran, su orden y su posición';
+
+  @override
+  String get settings_playback_controls_inline => 'Integrado';
+
+  @override
+  String get settings_playback_controls_fullscreen => 'Pantalla completa';
+
+  @override
+  String get settings_playback_controls_bottom => 'Fila inferior';
+
+  @override
+  String get settings_playback_controls_top_right => 'Arriba a la derecha';
+
+  @override
+  String get player_control_playlist => 'Lista de reproducción';
+
+  @override
+  String get player_control_volume => 'Volumen';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Permitir rotar entre orientaciones coincidentes usando el sensor del dispositivo (p. ej., girar el paisaje izquierda/derecha).';
 
