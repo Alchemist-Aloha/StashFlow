@@ -241,13 +241,17 @@ class StartupUpdateCheck extends _$StartupUpdateCheck {
       if (updateInfo != null) {
         return updateInfo.copyWith(isUpdateAvailable: true);
       }
-      // The check failed (offline or GitHub rate limit); still show the dialog.
+      // The check failed (offline or GitHub rate limit); still show the dialog
+      // for the selected channel.
       final version = await ref.watch(appVersionProvider.future);
+      final nightly = ref.watch(nightlyUpdateChannelProvider);
       return UpdateInfo(
         isUpdateAvailable: true,
-        latestVersion: version,
+        latestVersion: nightly ? 'nightly' : version,
         currentVersion: version,
-        releaseUrl: 'https://github.com/Alchemist-Aloha/StashFlow/releases',
+        releaseUrl: nightly
+            ? 'https://github.com/Alchemist-Aloha/StashFlow/releases/tag/nightly'
+            : 'https://github.com/Alchemist-Aloha/StashFlow/releases',
       );
     }
     final lastCheck = prefs.getInt(_lastCheckKey) ?? 0;

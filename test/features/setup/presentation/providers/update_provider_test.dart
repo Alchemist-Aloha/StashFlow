@@ -47,9 +47,9 @@ void main() {
     expect(nightlyReleaseCommit(null), isNull);
   });
 
-  test(
-    'forced startup check still shows the dialog when the check fails',
-    () async {
+  for (final nightly in [false, true]) {
+    test('forced startup check still shows the dialog when the check fails '
+        '(nightly: $nightly)', () async {
       PackageInfo.setMockInitialValues(
         appName: 'StashFlow',
         packageName: 'stashflow',
@@ -59,6 +59,7 @@ void main() {
       );
       SharedPreferences.setMockInitialValues({
         StartupUpdateCheck.forceKey: true,
+        NightlyUpdateChannel.key: nightly,
         'last_app_update_check_timestamp':
             DateTime.now().millisecondsSinceEpoch,
       });
@@ -75,8 +76,10 @@ void main() {
       final info = await container.read(startupUpdateCheckProvider.future);
       expect(info?.isUpdateAvailable, isTrue);
       expect(info?.currentVersion, '1.42.0');
-    },
-  );
+      expect(info?.latestVersion, nightly ? 'nightly' : '1.42.0');
+      expect(info?.releaseUrl.endsWith('/tag/nightly'), nightly);
+    });
+  }
 }
 
 class _FailedUpdate extends AppUpdate {
