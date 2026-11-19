@@ -56,7 +56,10 @@ The app is primarily tested on Android, Linux and Windows. The MacOS and iOS bui
 
 ### 📱 Android
 
-1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
+1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page, or add StashFlow to [Obtainium](https://github.com/ImranR98/Obtainium) to receive updates automatically:
+
+   [<img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="54">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Alchemist-Aloha/StashFlow)
+
 2. **Connect:** Open the app ➔ Settings ➔ Enter your credentials.
 
 ### 💻 Desktop (Windows, macOS, Linux)
