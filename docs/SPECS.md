@@ -947,6 +947,9 @@ mobile PiP and non-host platforms require device/platform acceptance.
 - `media_kit` and `media_kit_video` come from the same revision of the
   `Alchemist-Aloha/media-kit` fork. Its core build hook downloads, verifies, and
   packages native playback libraries; do not add `media_kit_libs_*` packages.
+  Windows hardware rendering uses upstream mpv's Direct3D 11 render API, not
+  the former fork-specific DXGI extension. Custom/system Windows libmpv builds
+  must provide the D3D11 render backend (client API 2.6 or newer).
 
 - Playback settings persist `video_mpv_vo` and `video_mpv_hwdec`; `default`
   leaves media-kit's platform defaults unchanged. `hwdec=no` selects software
@@ -1361,18 +1364,18 @@ Encryption and cloud synchronization are outside the current backup scope.
 Stable and nightly builds share `.github/workflows/reusable-release.yml`.
 Version-tag pushes (`v*`) publish stable releases; pushes to `dev` publish
 nightly builds. Pushes to `main` do not create release candidates.
-Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.47.9
+Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.50.1
 and resolves dependencies with
 `flutter pub get`
 Pub fetches the media-kit fork rather than
 using the ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
 libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
 
-The app requires Flutter 3.47.9 or newer and Dart 3.13 or newer within Dart 3.x.
+The app requires Flutter 3.50.1 or newer and Dart 3.14 or newer within Dart 3.x.
 `msix` is a development dependency used only for packaging. `fastforge` runs as a
 globally activated tool so its `archive` 3 pin stays out of app resolution.
 
-Desktop window control uses the `window_manager` 0.6 native API, not its legacy
+Desktop window control uses the `window_manager` 0.7 native API, not its legacy
 MethodChannel bridge.
 Startup captures the main native window before PiP can open; later fullscreen
 requests must use that same window rather than the
