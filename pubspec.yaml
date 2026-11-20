@@ -71,6 +71,7 @@ dependencies:
   local_auth: ^3.0.2
   material_ui: ^1.11.0
   flutter_svg: ^2.4.0
+  cupertino_icons: ^2.0.0
 
 dev_dependencies:
   msix: ^3.18.0
