@@ -234,6 +234,24 @@ abstract class AppLocalizations {
   /// **'Lower values include quieter speech; higher values reject more noise.'**
   String get local_captions_threshold_help;
 
+  /// No description provided for @local_captions_acceleration.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware acceleration'**
+  String get local_captions_acceleration;
+
+  /// No description provided for @local_captions_acceleration_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses {accelerator} for speech models with non-quantized graphs. Quantized (int8) models use the CPU.'**
+  String local_captions_acceleration_help(String accelerator);
+
+  /// No description provided for @local_captions_acceleration_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This device has no supported speech accelerator; recognition uses the CPU.'**
+  String get local_captions_acceleration_unavailable;
+
   /// No description provided for @local_captions_delay.
   ///
   /// In en, this message translates to:
@@ -3864,6 +3882,54 @@ abstract class AppLocalizations {
   /// **'Open selected and random scenes in fullscreen. Player next and previous keep the current view.'**
   String get settings_playback_open_fullscreen_subtitle;
 
+  /// No description provided for @settings_playback_controls_layout.
+  ///
+  /// In en, this message translates to:
+  /// **'Player controls'**
+  String get settings_playback_controls_layout;
+
+  /// No description provided for @settings_playback_controls_layout_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which player buttons appear, their order, and where they sit'**
+  String get settings_playback_controls_layout_subtitle;
+
+  /// No description provided for @settings_playback_controls_inline.
+  ///
+  /// In en, this message translates to:
+  /// **'Inline'**
+  String get settings_playback_controls_inline;
+
+  /// No description provided for @settings_playback_controls_fullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Fullscreen'**
+  String get settings_playback_controls_fullscreen;
+
+  /// No description provided for @settings_playback_controls_bottom.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom row'**
+  String get settings_playback_controls_bottom;
+
+  /// No description provided for @settings_playback_controls_top_right.
+  ///
+  /// In en, this message translates to:
+  /// **'Top right'**
+  String get settings_playback_controls_top_right;
+
+  /// No description provided for @player_control_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist'**
+  String get player_control_playlist;
+
+  /// No description provided for @player_control_volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get player_control_volume;
+
   /// No description provided for @settings_playback_gravity_orientation_subtitle.
   ///
   /// In en, this message translates to:
@@ -3989,6 +4055,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New features and improvements are waiting for you.'**
   String get settings_support_update_to_subtitle;
+
+  /// No description provided for @settings_support_update_channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update channel'**
+  String get settings_support_update_channel;
+
+  /// No description provided for @settings_support_update_channel_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Which releases the built-in update check follows'**
+  String get settings_support_update_channel_subtitle;
+
+  /// No description provided for @settings_support_update_channel_stable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable'**
+  String get settings_support_update_channel_stable;
+
+  /// No description provided for @settings_support_update_channel_nightly.
+  ///
+  /// In en, this message translates to:
+  /// **'Nightly'**
+  String get settings_support_update_channel_nightly;
+
+  /// No description provided for @settings_develop_force_update_dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Always show update dialog at startup'**
+  String get settings_develop_force_update_dialog;
+
+  /// No description provided for @settings_develop_force_update_dialog_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the update dialog on every launch, even when up to date'**
+  String get settings_develop_force_update_dialog_subtitle;
 
   /// No description provided for @settings_support_about.
   ///
@@ -5441,6 +5543,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Performer Filters'**
   String get performer_filters;
+
+  /// No description provided for @update_download_install_prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Download and install it now, or open the release page for details.'**
+  String get update_download_install_prompt;
+
+  /// No description provided for @update_download_and_install.
+  ///
+  /// In en, this message translates to:
+  /// **'Download & Install'**
+  String get update_download_and_install;
+
+  /// No description provided for @update_downloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update…'**
+  String get update_downloading;
+
+  /// No description provided for @update_downloading_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update… {percent}%'**
+  String update_downloading_progress(int percent);
+
+  /// No description provided for @update_ready_to_install.
+  ///
+  /// In en, this message translates to:
+  /// **'The update is ready to install.'**
+  String get update_ready_to_install;
+
+  /// No description provided for @update_install.
+  ///
+  /// In en, this message translates to:
+  /// **'Install'**
+  String get update_install;
+
+  /// No description provided for @update_install_permission_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow StashFlow to install unknown apps, then return here to continue.'**
+  String get update_install_permission_required;
+
+  /// No description provided for @update_download_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The update could not be downloaded. Check your connection and try again.'**
+  String get update_download_failed;
+
+  /// No description provided for @update_install_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The system installer could not be opened.'**
+  String get update_install_failed;
 
   /// No description provided for @update_available.
   ///

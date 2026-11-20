@@ -792,6 +792,17 @@ no valid preference is saved; existing saved delays are preserved. The selected
 delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
 included in configuration backups.
 
+Playback Settings links to a Player controls page that customizes inline and
+fullscreen utility buttons separately: stream source, subtitles, speed, volume
+(desktop), cast, PiP, fullscreen, playlist, and random scene. Each button can
+be hidden, reordered by drag, and placed in the bottom row or the top-right
+cluster; order within each placement follows the list. Buttons unavailable in
+the current context (no PiP support, no random callback, no desktop volume) are
+skipped. Defaults reproduce the original layout: playlist top right in both
+modes, random top right and fullscreen-only, everything else in the bottom row.
+Saved layouts tolerate unknown or duplicate ids, append newly added buttons,
+and are included in configuration backups; Reset restores the defaults.
+
 Inline, fullscreen, and feed controls share a stream source menu built from
 the scene's `sceneStreams` endpoints: a two-column panel with Source (direct,
 MP4, WebM, HLS, DASH) and Resolution (the selected source's variants, disabled
@@ -860,8 +871,9 @@ landscape and keyboard insets. Actions stay below the scrollable form when
 height permits and join its scroll area on short viewports. Model catalogs
 scroll their loading/error/retry states as well as results.
 The dialog stages speech-model, source/output-language, preferred downloaded
-translation-model, ASR-thread (1–8), audio-window (4–12 seconds), VAD-threshold
-(0.2–0.8), subtitle-delay (±5 seconds) and bilingual-display settings. Cancel
+translation-model, ASR-thread (1–8, also used by translation), audio-window
+(4–12 seconds), VAD-threshold (0.2–0.8), subtitle-delay (±5 seconds),
+hardware-acceleration and bilingual-display settings. Cancel
 changes neither preferences nor active inference; Apply commits one configuration.
 The next dialog restores the last applied models and inference options, including
 the translation switch and preferred model when applying transcription; these
@@ -874,9 +886,19 @@ language. A fixed source language disables automatic language detection and
 its dialog status; recognizer metadata cannot override the chosen language or
 translation routing. Selecting Auto enables detection again when applied.
 Offline recognizers use phrase-level VAD timing, not token timestamps.
-Translation lazily loads one downloaded Marian model matching each phrase's
-source and selected output language. A missing pair stops with a localized recovery
-message, never a wrong-language fallback; same-language output passes through.
+Translation lazily loads the downloaded Marian model matching each phrase's
+source and selected output language, keeping the two most recently used models
+loaded, and translates each pair's phrases of a window in one batch. A missing
+pair stops with a localized recovery message, never a wrong-language fallback;
+same-language output passes through.
+
+Hardware acceleration (on by default; saved options without it default on)
+selects the ONNX Runtime provider linked into the bundled sherpa-onnx binaries:
+Core ML on iOS and NNAPI on Android. The macOS, Windows and Linux packages are
+CPU-only, so the dialog shows acceleration as unavailable there. Speech models
+with int8 graphs stay on the CPU because these providers cannot run dynamically
+quantized operators. If accelerated recognizer creation fails, the worker
+retries once on the CPU; Silero VAD always runs on the CPU.
 
 The shared subtitle menu is available even without server captions, including
 the feed. Transcription, with or without translation, is opt-in and session-scoped and disables
@@ -890,9 +912,12 @@ ambient system text scaler; media-kit's default viewport-relative subtitle
 shrinking must be overridden so external SRT and generated captions retain the
 same configured font size even in small video surfaces.
 
-A separate, silent, untimed mpv PCM decoder reads bounded configured windows
-with one-second context around them. It reuses the active media URL, headers
-and audio-track ID; it never changes audible playback settings. PCM output must
+A separate, silent, untimed mpv PCM decoder serves configured windows with
+one-second context around them from one continuous segment that decodes ahead
+of transcription (at most 30 seconds past the latest request, then paused).
+A seek outside the decoded buffer, a source change, a failure or three minutes
+of audio opens a new segment. It reuses the active media URL, headers and
+audio-track ID; it never changes audible playback settings. PCM output must
 be accepted before opening media. ASR (sherpa-onnx) and translation
 (CTranslate2/Marian with SentencePiece) run on a worker isolate. No microphone,
 cloud inference, Google ML Kit, or extra FFmpeg distribution is involved.
@@ -902,13 +927,17 @@ throughput and accuracy depend on hardware and models, not guaranteed latency.
 Seeks invalidate pending results. Scene/controller, audio-track, server/auth or
 model-selection or inference-option changes stop the session and clear cues; inline/fullscreen/PiP
 handoffs of the same controller do not. At most 32 windows of text are kept in
-session memory; temporary PCM is removed after each extraction. Native errors
+session memory; each segment's temporary append-only PCM file is removed when
+the segment closes. Native errors
 are replaced with localized recovery messages, never authenticated URLs or
 transcript logs. Model removal first stops inference and releases its resources.
 
 The local `packages/stashflow_translation` package builds pinned CTranslate2
 and SentencePiece sources using CMake and Dart code assets, with a CPU Ruy
-backend, no Python runtime and no bundled weights. Android retains all three
+backend, no Python runtime and no bundled weights. x86_64 targets compile
+AVX/AVX2/AVX-512 kernels with runtime dispatch when CMake's processor agrees
+with the target; Apple targets add Accelerate for float32 GEMM (int8 stays on
+Ruy). CTranslate2 offers no non-CUDA GPU backend. Android retains all three
 release ABIs and its existing minimum SDK. Native changes require host smoke
 tests and split-ABI APK builds; sustained performance, GPU/driver behavior,
 mobile PiP and non-host platforms require device/platform acceptance.
@@ -1412,7 +1441,26 @@ contain the target architecture; embedded universal libraries are allowed.
   checksum), Android Gradle Plugin 9.5.1, and Kotlin 2.4.21. Toolchain upgrades
   must remain compatible with the checked-in build configuration and CI.
 - Manifest permissions must be justified by current features; do not restore
-  removed broad storage or obsolete permissions.
+  removed broad storage or obsolete permissions. `REQUEST_INSTALL_PACKAGES`
+  backs one-click updates.
+- One-click updates: when the latest GitHub release has an APK for the device's
+  primary ABI, the startup update dialog offers Download & Install. The APK
+  downloads with visible progress and cancellation into the app cache
+  `app_update/` folder (the only path `AppUpdateFileProvider` exposes),
+  replacing earlier downloads; it must match the release asset's SHA-256
+  `digest` when GitHub publishes one. The system installer then opens; if
+  StashFlow lacks the "install unknown apps" permission, its settings screen
+  opens and the install continues automatically on return once granted.
+  Failures offer retry and the release page. Downloaded APKs are deleted once
+  the installed version is current.
+- Update channel: Support settings choose Stable (default, `releases/latest`,
+  semver comparison) or Nightly (the rolling `nightly` release). Release builds
+  embed their commit via `--dart-define=STASHFLOW_COMMIT`; a nightly is newer
+  when the `Commit:` SHA in its release body differs from the build's commit,
+  and builds without one always treat the nightly as newer. The startup check
+  runs at most once per 24 hours unless the Developer setting "Always show
+  update dialog at startup" is on, which shows the dialog on every launch even
+  when current.
 - Audio service, PiP, and notification behavior must continue to work after
   build or lifecycle changes.
 
@@ -1513,9 +1561,11 @@ and the AppImage runtime before publishing.
 
 The main window hides its GTK header bar and window decorations in Hyprland and
 niri sessions, detected by complete, case-insensitive tokens in the colon-separated
-`XDG_CURRENT_DESKTOP` value. Window management uses compositor shortcuts there;
-other desktops retain their existing title-bar behavior. Missing session metadata
-retains decorations rather than guessing the compositor.
+`XDG_CURRENT_DESKTOP` value. Window management uses compositor shortcuts there.
+Only GNOME sessions (a `GNOME` token) get a GTK client-side header bar; every
+other desktop, including KDE Plasma on X11 and Wayland, gets the compositor's
+native title bar with its own minimize, maximize, and close buttons. Missing
+session metadata keeps decorations rather than guessing the compositor.
 
 The runner resolves its icon/resource path relative to the executable rather
 than the process working directory. Installed and directly launched builds must

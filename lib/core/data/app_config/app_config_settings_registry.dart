@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../features/scenes/data/repositories/stream_resolver.dart';
+import '../../../features/scenes/presentation/providers/player_controls_layout.dart';
 import '../../../features/scenes/presentation/providers/player_settings.dart';
 import '../../../features/scenes/data/local_captions/local_caption_model.dart';
 import '../../../features/scenes/data/local_captions/caption_options.dart';
@@ -148,6 +149,8 @@ final class AppConfigSettingsRegistry {
     _jsonString('desktop_keybinds'),
     _string('video_play_end_behavior', allowed: {'stop', 'next', 'loop'}),
     _bool('video_use_double_tap_seek'),
+    _jsonString(PlayerControlsLayoutNotifier.inlineKey, expectList: true),
+    _jsonString(PlayerControlsLayoutNotifier.fullscreenKey, expectList: true),
     _string(defaultStreamSourceKey, allowed: streamSourceKinds.toSet()),
     _int(
       PlayerSettingsStore.controlsAutoHideSecondsKey,
@@ -206,6 +209,8 @@ final class AppConfigSettingsRegistry {
     ),
     _bool('show_video_debug_info'),
     _bool('enable_debug_logging'),
+    _bool('update_channel_nightly'),
+    _bool('force_update_dialog_at_startup'),
     _bool('app_lock_enabled'),
     _int('app_lock_background_seconds', min: 0, max: 86400),
     _bool('app_lock_on_launch'),

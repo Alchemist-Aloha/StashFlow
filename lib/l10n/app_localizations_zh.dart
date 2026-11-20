@@ -72,6 +72,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get local_captions_threshold_help => '较低值可识别更轻的声音；较高值可排除更多噪声。';
 
   @override
+  String get local_captions_acceleration => '硬件加速';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '对未量化的语音模型使用 $accelerator。量化（int8）模型使用 CPU。';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      '此设备没有受支持的语音加速器；识别将使用 CPU。';
+
+  @override
   String get local_captions_delay => '字幕延迟';
 
   @override
@@ -2093,6 +2105,31 @@ class AppLocalizationsZh extends AppLocalizations {
       '以全屏模式打开所选和随机场景。上一个和下一个场景会保持当前视图。';
 
   @override
+  String get settings_playback_controls_layout => '播放器控件';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '选择显示哪些播放器按钮、它们的顺序和位置';
+
+  @override
+  String get settings_playback_controls_inline => '内嵌';
+
+  @override
+  String get settings_playback_controls_fullscreen => '全屏';
+
+  @override
+  String get settings_playback_controls_bottom => '底部栏';
+
+  @override
+  String get settings_playback_controls_top_right => '右上角';
+
+  @override
+  String get player_control_playlist => '播放列表';
+
+  @override
+  String get player_control_volume => '音量';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
 
@@ -2157,6 +2194,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_support_update_to_subtitle => '新功能和改进正等着您。';
+
+  @override
+  String get settings_support_update_channel => '更新通道';
+
+  @override
+  String get settings_support_update_channel_subtitle => '内置版本检查所跟随的发布版本';
+
+  @override
+  String get settings_support_update_channel_stable => '稳定版';
+
+  @override
+  String get settings_support_update_channel_nightly => '每夜版';
+
+  @override
+  String get settings_develop_force_update_dialog => '启动时始终显示更新对话框';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '即使已是最新版本，每次启动时也显示更新对话框';
 
   @override
   String get settings_support_about => '关于';
@@ -2927,6 +2983,36 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get performer_filters => '演员筛选';
+
+  @override
+  String get update_download_install_prompt => '立即下载并安装，或打开发布页面查看详情。';
+
+  @override
+  String get update_download_and_install => '下载并安装';
+
+  @override
+  String get update_downloading => '正在下载更新…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return '正在下载更新… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => '更新已准备好安装。';
+
+  @override
+  String get update_install => '安装';
+
+  @override
+  String get update_install_permission_required =>
+      '请允许 StashFlow 安装未知应用，然后返回此处继续。';
+
+  @override
+  String get update_download_failed => '无法下载更新。请检查网络连接后重试。';
+
+  @override
+  String get update_install_failed => '无法打开系统安装程序。';
 
   @override
   String update_available(String version) {
@@ -4071,6 +4157,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get local_captions_threshold_help => '较低值可识别更轻的声音；较高值可排除更多噪声。';
+
+  @override
+  String get local_captions_acceleration => '硬件加速';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '对未量化的语音模型使用 $accelerator。量化（int8）模型使用 CPU。';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      '此设备没有受支持的语音加速器；识别将使用 CPU。';
 
   @override
   String get local_captions_delay => '字幕延迟';
@@ -6094,6 +6192,31 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '以全屏模式打开所选和随机场景。上一个和下一个场景会保持当前视图。';
 
   @override
+  String get settings_playback_controls_layout => '播放器控件';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '选择显示哪些播放器按钮、它们的顺序和位置';
+
+  @override
+  String get settings_playback_controls_inline => '内嵌';
+
+  @override
+  String get settings_playback_controls_fullscreen => '全屏';
+
+  @override
+  String get settings_playback_controls_bottom => '底部栏';
+
+  @override
+  String get settings_playback_controls_top_right => '右上角';
+
+  @override
+  String get player_control_playlist => '播放列表';
+
+  @override
+  String get player_control_volume => '音量';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
 
@@ -6158,6 +6281,25 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_support_update_to_subtitle => '新功能和改进正等着您。';
+
+  @override
+  String get settings_support_update_channel => '更新通道';
+
+  @override
+  String get settings_support_update_channel_subtitle => '内置版本检查所跟随的发布版本';
+
+  @override
+  String get settings_support_update_channel_stable => '稳定版';
+
+  @override
+  String get settings_support_update_channel_nightly => '每夜版';
+
+  @override
+  String get settings_develop_force_update_dialog => '启动时始终显示更新对话框';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '即使已是最新版本，每次启动时也显示更新对话框';
 
   @override
   String get settings_support_about => '关于';
@@ -6928,6 +7070,36 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get performer_filters => '演员筛选';
+
+  @override
+  String get update_download_install_prompt => '立即下载并安装，或打开发布页面查看详情。';
+
+  @override
+  String get update_download_and_install => '下载并安装';
+
+  @override
+  String get update_downloading => '正在下载更新…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return '正在下载更新… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => '更新已准备好安装。';
+
+  @override
+  String get update_install => '安装';
+
+  @override
+  String get update_install_permission_required =>
+      '请允许 StashFlow 安装未知应用，然后返回此处继续。';
+
+  @override
+  String get update_download_failed => '无法下载更新。请检查网络连接后重试。';
+
+  @override
+  String get update_install_failed => '无法打开系统安装程序。';
 
   @override
   String update_available(String version) {
@@ -8072,6 +8244,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get local_captions_threshold_help => '較低值可辨識更輕的聲音；較高值可排除更多雜訊。';
+
+  @override
+  String get local_captions_acceleration => '硬體加速';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '對未量化的語音模型使用 $accelerator。量化（int8）模型使用 CPU。';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      '此裝置沒有支援的語音加速器；辨識將使用 CPU。';
 
   @override
   String get local_captions_delay => '字幕延遲';
@@ -10099,6 +10283,31 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '以全螢幕模式開啟所選和隨機場景。上一個和下一個場景會保留目前檢視。';
 
   @override
+  String get settings_playback_controls_layout => '播放器控制項';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '選擇要顯示哪些播放器按鈕、它們的順序與位置';
+
+  @override
+  String get settings_playback_controls_inline => '內嵌';
+
+  @override
+  String get settings_playback_controls_fullscreen => '全螢幕';
+
+  @override
+  String get settings_playback_controls_bottom => '底部列';
+
+  @override
+  String get settings_playback_controls_top_right => '右上角';
+
+  @override
+  String get player_control_playlist => '播放清單';
+
+  @override
+  String get player_control_volume => '音量';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '允許使用裝置感測器在相符方向之間旋轉（例如：將橫向向左/向右翻轉）。';
 
@@ -10164,6 +10373,25 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_support_update_to_subtitle => '新功能和改進正在等著您。';
+
+  @override
+  String get settings_support_update_channel => '更新通道';
+
+  @override
+  String get settings_support_update_channel_subtitle => '內建版本檢查所跟隨的發佈版本';
+
+  @override
+  String get settings_support_update_channel_stable => '穩定版';
+
+  @override
+  String get settings_support_update_channel_nightly => '每夜版';
+
+  @override
+  String get settings_develop_force_update_dialog => '啟動時始終顯示更新對話框';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '即使已是最新版本，每次啟動時也顯示更新對話框';
 
   @override
   String get settings_support_about => '關於';
@@ -10934,6 +11162,36 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get performer_filters => '演員篩選';
+
+  @override
+  String get update_download_install_prompt => '立即下載並安裝，或開啟發佈頁面查看詳細資訊。';
+
+  @override
+  String get update_download_and_install => '下載並安裝';
+
+  @override
+  String get update_downloading => '正在下載更新…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return '正在下載更新… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => '更新已準備好安裝。';
+
+  @override
+  String get update_install => '安裝';
+
+  @override
+  String get update_install_permission_required =>
+      '請允許 StashFlow 安裝不明的應用程式，然後返回此處繼續。';
+
+  @override
+  String get update_download_failed => '無法下載更新。請檢查網路連線後再試一次。';
+
+  @override
+  String get update_install_failed => '無法開啟系統安裝程式。';
 
   @override
   String update_available(String version) {

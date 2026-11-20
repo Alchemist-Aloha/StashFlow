@@ -2,8 +2,11 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dart_cast/dart_cast.dart' as dc;
+
+import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/services/cast_service.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -13,6 +16,7 @@ import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/sprite_info.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/player_controls_layout.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
@@ -334,7 +338,13 @@ void main() {
     final transport = tester.getRect(
       find.byKey(const Key('video_transport_controls')),
     );
-    final bottomControls = tester.getRect(find.byType(VideoPlaybackControls));
+    final bottomControls = tester.getRect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is VideoPlaybackControls &&
+            w.placement == PlayerControlPlacement.bottom,
+      ),
+    );
     expect(transport.overlaps(bottomControls), isFalse);
   });
 
@@ -577,6 +587,34 @@ void main() {
     expect(
       find.byKey(const Key('inline_video_back_button')).hitTestable(),
       findsNothing,
+    );
+  });
+
+  testWidgets('inline controls follow the saved button layout', (tester) async {
+    final prefs = await SharedPreferences.getInstance();
+    addTearDown(() => prefs.remove(PlayerControlsLayoutNotifier.inlineKey));
+    await prefs.setString(
+      PlayerControlsLayoutNotifier.inlineKey,
+      jsonEncode([
+        {'id': 'fullscreen', 'visible': true, 'placement': 'topRight'},
+        {'id': 'playlist', 'visible': true, 'placement': 'topRight'},
+        {'id': 'cast', 'visible': false, 'placement': 'bottom'},
+      ]),
+    );
+    await _pumpControls(tester, scene: _buildScene());
+
+    expect(find.byIcon(Icons.cast_rounded), findsNothing);
+    final fullscreen = tester.getCenter(
+      find.byKey(const Key('video_fullscreen_button')),
+    );
+    final playlist = tester.getCenter(
+      find.byKey(const Key('inline_video_playlist_button')),
+    );
+    expect(fullscreen.dy, playlist.dy);
+    expect(fullscreen.dx, lessThan(playlist.dx));
+    expect(
+      fullscreen.dy,
+      lessThan(tester.getCenter(find.byType(NativeVideoControls)).dy),
     );
   });
 

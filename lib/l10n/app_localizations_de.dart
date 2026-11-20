@@ -77,6 +77,18 @@ class AppLocalizationsDe extends AppLocalizations {
       'Niedrigere Werte erfassen leisere Sprache; höhere Werte filtern mehr Rauschen.';
 
   @override
+  String get local_captions_acceleration => 'Hardwarebeschleunigung';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return 'Verwendet $accelerator für Sprachmodelle mit nicht quantisierten Graphen. Quantisierte Modelle (int8) nutzen die CPU.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'Dieses Gerät hat keinen unterstützten Sprachbeschleuniger; die Erkennung nutzt die CPU.';
+
+  @override
   String get local_captions_delay => 'Untertitelverzögerung';
 
   @override
@@ -2206,6 +2218,31 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ausgewählte und zufällige Szenen im Vollbild öffnen. Vorherige und nächste Szene behalten die aktuelle Ansicht.';
 
   @override
+  String get settings_playback_controls_layout => 'Player-Steuerung';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      'Wählen Sie, welche Player-Schaltflächen angezeigt werden, ihre Reihenfolge und Position';
+
+  @override
+  String get settings_playback_controls_inline => 'Eingebettet';
+
+  @override
+  String get settings_playback_controls_fullscreen => 'Vollbild';
+
+  @override
+  String get settings_playback_controls_bottom => 'Untere Leiste';
+
+  @override
+  String get settings_playback_controls_top_right => 'Oben rechts';
+
+  @override
+  String get player_control_playlist => 'Wiedergabeliste';
+
+  @override
+  String get player_control_volume => 'Lautstärke';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Erlaube die Rotation zwischen passenden Ausrichtungen mithilfe des Gerätesensors (z. B. Landschaft links/rechts).';
 
@@ -2275,6 +2312,27 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settings_support_update_to_subtitle =>
       'Neue Funktionen und Verbesserungen warten auf Sie.';
+
+  @override
+  String get settings_support_update_channel => 'Update-Kanal';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      'Welche Versionen die integrierte Update-Prüfung verfolgt';
+
+  @override
+  String get settings_support_update_channel_stable => 'Stabil';
+
+  @override
+  String get settings_support_update_channel_nightly => 'Nightly';
+
+  @override
+  String get settings_develop_force_update_dialog =>
+      'Update-Dialog beim Start immer anzeigen';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      'Den Update-Dialog bei jedem Start anzeigen, auch wenn die App aktuell ist';
 
   @override
   String get settings_support_about => 'Über';
@@ -3073,6 +3131,40 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get performer_filters => 'Darstellerfilter';
+
+  @override
+  String get update_download_install_prompt =>
+      'Jetzt herunterladen und installieren oder die Release-Seite für Details öffnen.';
+
+  @override
+  String get update_download_and_install => 'Herunterladen & installieren';
+
+  @override
+  String get update_downloading => 'Update wird heruntergeladen…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return 'Update wird heruntergeladen… $percent %';
+  }
+
+  @override
+  String get update_ready_to_install =>
+      'Das Update ist bereit zur Installation.';
+
+  @override
+  String get update_install => 'Installieren';
+
+  @override
+  String get update_install_permission_required =>
+      'Erlauben Sie StashFlow, unbekannte Apps zu installieren, und kehren Sie dann hierher zurück.';
+
+  @override
+  String get update_download_failed =>
+      'Das Update konnte nicht heruntergeladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.';
+
+  @override
+  String get update_install_failed =>
+      'Das Installationsprogramm des Systems konnte nicht geöffnet werden.';
 
   @override
   String update_available(String version) {

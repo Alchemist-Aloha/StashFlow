@@ -11,6 +11,7 @@ class CaptionOptions {
     this.delayMilliseconds = 0,
     this.bilingual = false,
     this.translate = false,
+    this.accelerate = true,
   });
   final String sourceLanguage, outputLanguage;
   final int threads, windowSeconds, delayMilliseconds;
@@ -19,6 +20,10 @@ class CaptionOptions {
 
   /// Whether the transcription dialog should also enable translation.
   final bool translate;
+
+  /// Whether speech recognition may use the platform accelerator; see
+  /// [captionSpeechProvider]. Saved options without this key default to true.
+  final bool accelerate;
 
   bool get isValid =>
       (sourceLanguage == 'auto' ||
@@ -44,6 +49,7 @@ class CaptionOptions {
     'delay': delayMilliseconds,
     'bilingual': bilingual,
     'translate': translate,
+    'accelerate': accelerate,
   };
 
   static CaptionOptions? parse(String? text) {
@@ -61,6 +67,9 @@ class CaptionOptions {
         translate: json.containsKey('translate')
             ? json['translate'] as bool
             : false,
+        accelerate: json.containsKey('accelerate')
+            ? json['accelerate'] as bool
+            : true,
       );
       return result.isValid ? result : null;
     } on Object {
@@ -77,6 +86,7 @@ class CaptionOptions {
     int? delayMilliseconds,
     bool? bilingual,
     bool? translate,
+    bool? accelerate,
   }) => CaptionOptions(
     sourceLanguage: sourceLanguage ?? this.sourceLanguage,
     outputLanguage: outputLanguage ?? this.outputLanguage,
@@ -86,7 +96,44 @@ class CaptionOptions {
     delayMilliseconds: delayMilliseconds ?? this.delayMilliseconds,
     bilingual: bilingual ?? this.bilingual,
     translate: translate ?? this.translate,
+    accelerate: accelerate ?? this.accelerate,
   );
+}
+
+/// The ONNX Runtime execution provider compiled into the bundled sherpa-onnx
+/// binaries for [os] (a `Platform.operatingSystem` value), or null when only
+/// the CPU provider exists. iOS links Core ML and Android links NNAPI; the
+/// macOS, Windows and Linux packages are CPU-only builds. Update this table
+/// whenever the sherpa-onnx native packages change.
+String? captionAccelerator(String os) => switch (os) {
+  'ios' => 'coreml',
+  'android' => 'nnapi',
+  _ => null,
+};
+
+/// User-facing accelerator name; provider IDs are not localized product names.
+String captionAcceleratorName(String provider) => switch (provider) {
+  'coreml' => 'Core ML',
+  'nnapi' => 'NNAPI',
+  _ => provider,
+};
+
+/// The sherpa-onnx provider for a speech model's graphs.
+///
+/// Core ML and NNAPI cannot execute dynamically quantized (int8) operators, so
+/// those graphs would be split into many CPU/accelerator partitions that are
+/// typically slower than the CPU alone. Such models therefore stay on the CPU.
+String captionSpeechProvider({
+  required bool accelerate,
+  required String os,
+  required Iterable<String> graphFiles,
+}) {
+  final accelerator = captionAccelerator(os);
+  if (!accelerate || accelerator == null) return 'cpu';
+  final quantized = graphFiles.any(
+    (name) => name.endsWith('.onnx') && name.contains('int8'),
+  );
+  return quantized ? 'cpu' : accelerator;
 }
 
 /// Fixed source languages override recognizer metadata, including translation routing.

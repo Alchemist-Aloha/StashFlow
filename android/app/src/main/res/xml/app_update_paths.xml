@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only downloaded update APKs are shareable; keep in sync with
+     AndroidUpdateInstaller.updateDirectoryName in Dart. -->
+<paths>
+    <cache-path name="app_update" path="app_update/" />
+</paths>

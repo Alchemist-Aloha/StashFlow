@@ -88,7 +88,8 @@ class LocalCaptionsNotifier extends Notifier<LocalCaptions> {
     final worker = _worker;
     final opening = _opening;
     final track = _track;
-    _decoder?.close();
+    // Closing cancels any in-flight read first, so the session can settle.
+    final decoderClosed = _decoder?.close().catchError((Object _) {});
     _session = null;
     _worker = null;
     _opening = null;
@@ -101,8 +102,12 @@ class LocalCaptionsNotifier extends Notifier<LocalCaptions> {
           try {
             await pending;
           } finally {
-            final ownedWorker = worker ?? await opening;
-            await ownedWorker?.close();
+            try {
+              await decoderClosed;
+            } finally {
+              final ownedWorker = worker ?? await opening;
+              await ownedWorker?.close();
+            }
           }
         })
         .catchError((Object _) {

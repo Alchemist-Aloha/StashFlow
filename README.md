@@ -56,13 +56,14 @@ The app is primarily tested on Android, Linux and Windows. The MacOS and iOS bui
 
 ### 📱 Android
 
-1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
-2. **Connect:** Open the app ➔ Settings ➔ Enter your credentials.
+Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page, or add StashFlow to [Obtainium](https://github.com/ImranR98/Obtainium) to receive updates automatically:
+
+   [<img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="54">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Alchemist-Aloha/StashFlow)
+
 
 ### 💻 Desktop (Windows, macOS, Linux)
 
-1. **Download:** Download the appropriate installer for your OS from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
-2. **Setup:** Install and launch ➔ Enter your credentials in Settings.
+**Download:** Download the appropriate installer for your OS from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
 
 ### 🌐 Web
 
@@ -73,25 +74,6 @@ The app is primarily tested on Android, Linux and Windows. The MacOS and iOS bui
    - **Recommendation:** Use the **Android** or **Desktop** versions for the complete feature set and optimal performance.
 
 ---
-
-## 🤓 For Developers
-
-### Build
-
-Build the project for the platform you need:
-
-```bash
-# Get dependencies
-flutter pub get
-
-# Regenerate code (GraphQL & Notifiers)
-dart run build_runner build
-
-# Build flutter app
-flutter build apk --debug --split-per-abi
-flutter build windows --debug
-flutter build linux --debug
-```
 
 ## 📚 Internal Docs
 

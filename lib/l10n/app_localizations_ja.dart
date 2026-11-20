@@ -72,6 +72,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get local_captions_threshold_help => '低くすると小さな声も含め、高くすると雑音をより多く除外します。';
 
   @override
+  String get local_captions_acceleration => 'ハードウェアアクセラレーション';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '量子化されていない音声モデルには $accelerator を使用します。量子化 (int8) モデルは CPU を使用します。';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'このデバイスには対応する音声アクセラレータがないため、認識には CPU を使用します。';
+
+  @override
   String get local_captions_delay => '字幕の遅延';
 
   @override
@@ -2120,6 +2132,31 @@ class AppLocalizationsJa extends AppLocalizations {
       '選択したシーンやランダムシーンを全画面で開きます。前へ／次へでは現在の表示を維持します。';
 
   @override
+  String get settings_playback_controls_layout => 'プレーヤーのコントロール';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '表示するプレーヤーボタン、その順序と配置を選択します';
+
+  @override
+  String get settings_playback_controls_inline => 'インライン';
+
+  @override
+  String get settings_playback_controls_fullscreen => '全画面';
+
+  @override
+  String get settings_playback_controls_bottom => '下部の列';
+
+  @override
+  String get settings_playback_controls_top_right => '右上';
+
+  @override
+  String get player_control_playlist => 'プレイリスト';
+
+  @override
+  String get player_control_volume => '音量';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'デバイスのセンサーを使って一致する向きに回転できるようにします（例：左右の横向きに反転）。';
 
@@ -2186,6 +2223,26 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_support_update_to_subtitle => '新しい機能と改善が用意されています。';
+
+  @override
+  String get settings_support_update_channel => 'アップデートチャンネル';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      '組み込みのアップデート確認が追跡するリリース';
+
+  @override
+  String get settings_support_update_channel_stable => '安定版';
+
+  @override
+  String get settings_support_update_channel_nightly => 'ナイトリー';
+
+  @override
+  String get settings_develop_force_update_dialog => '起動時に常にアップデートダイアログを表示';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '最新の場合でも、起動するたびにアップデートダイアログを表示します';
 
   @override
   String get settings_support_about => 'アプリについて';
@@ -2960,6 +3017,38 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get performer_filters => '出演者フィルター';
+
+  @override
+  String get update_download_install_prompt =>
+      '今すぐダウンロードしてインストールするか、リリース ページで詳細を確認してください。';
+
+  @override
+  String get update_download_and_install => 'ダウンロードしてインストール';
+
+  @override
+  String get update_downloading => 'アップデートをダウンロード中…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return 'アップデートをダウンロード中… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => 'アップデートをインストールする準備ができました。';
+
+  @override
+  String get update_install => 'インストール';
+
+  @override
+  String get update_install_permission_required =>
+      'StashFlow に不明なアプリのインストールを許可してから、ここに戻って続行してください。';
+
+  @override
+  String get update_download_failed =>
+      'アップデートをダウンロードできませんでした。接続を確認してもう一度お試しください。';
+
+  @override
+  String get update_install_failed => 'システムのインストーラーを開けませんでした。';
 
   @override
   String update_available(String version) {

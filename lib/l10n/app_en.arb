@@ -20,6 +20,10 @@
   "local_captions_threads": "Speech recognition threads",
   "local_captions_threshold": "Speech detection threshold",
   "local_captions_threshold_help": "Lower values include quieter speech; higher values reject more noise.",
+  "local_captions_acceleration": "Hardware acceleration",
+  "local_captions_acceleration_help": "Uses {accelerator} for speech models with non-quantized graphs. Quantized (int8) models use the CPU.",
+  "@local_captions_acceleration_help": {"placeholders":{"accelerator":{"type":"String"}}},
+  "local_captions_acceleration_unavailable": "This device has no supported speech accelerator; recognition uses the CPU.",
   "local_captions_delay": "Subtitle delay",
   "local_captions_bilingual": "Show original with translation",
   "local_captions_missing_pair": "No downloaded model for {source} → {target}. Choose a matching translation model in settings.",
@@ -680,6 +684,14 @@
   "settings_playback_gravity_orientation": "Gravity-controlled orientation",
   "settings_playback_open_fullscreen": "Open scenes in fullscreen",
   "settings_playback_open_fullscreen_subtitle": "Open selected and random scenes in fullscreen. Player next and previous keep the current view.",
+  "settings_playback_controls_layout": "Player controls",
+  "settings_playback_controls_layout_subtitle": "Choose which player buttons appear, their order, and where they sit",
+  "settings_playback_controls_inline": "Inline",
+  "settings_playback_controls_fullscreen": "Fullscreen",
+  "settings_playback_controls_bottom": "Bottom row",
+  "settings_playback_controls_top_right": "Top right",
+  "player_control_playlist": "Playlist",
+  "player_control_volume": "Volume",
   "settings_playback_gravity_orientation_subtitle": "Allow rotating between matching orientations using the device sensor (e.g. flipping landscape left/right).",
   "settings_playback_subtitle_lang_none_disabled": "None (Disabled)",
   "settings_playback_subtitle_lang_auto_if_only_one": "Auto (if only one)",
@@ -701,6 +713,12 @@
   "settings_support_update_available_subtitle": "A newer version is available on GitHub",
   "settings_support_update_to": "Update to {version}",
   "settings_support_update_to_subtitle": "New features and improvements are waiting for you.",
+  "settings_support_update_channel": "Update channel",
+  "settings_support_update_channel_subtitle": "Which releases the built-in update check follows",
+  "settings_support_update_channel_stable": "Stable",
+  "settings_support_update_channel_nightly": "Nightly",
+  "settings_develop_force_update_dialog": "Always show update dialog at startup",
+  "settings_develop_force_update_dialog_subtitle": "Show the update dialog on every launch, even when up to date",
   "settings_support_about": "About",
   "settings_support_about_subtitle": "Project and source information",
   "settings_support_version": "Version",
@@ -1139,6 +1157,22 @@
   "loading": "Loading",
   "wip": "WIP",
   "performer_filters": "Performer Filters",
+  "update_download_install_prompt": "Download and install it now, or open the release page for details.",
+  "update_download_and_install": "Download & Install",
+  "update_downloading": "Downloading update…",
+  "update_downloading_progress": "Downloading update… {percent}%",
+  "@update_downloading_progress": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "update_ready_to_install": "The update is ready to install.",
+  "update_install": "Install",
+  "update_install_permission_required": "Allow StashFlow to install unknown apps, then return here to continue.",
+  "update_download_failed": "The update could not be downloaded. Check your connection and try again.",
+  "update_install_failed": "The system installer could not be opened.",
   "update_available": "A new version of StashFlow ({version}) is available.",
   "@update_available": {
     "placeholders": {

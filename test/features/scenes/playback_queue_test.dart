@@ -6,6 +6,7 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:async';
 
 Scene mockScene({required String id, required String title}) {

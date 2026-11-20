@@ -12,6 +12,8 @@ part 'update_info.g.dart';
 /// - `releaseUrl` (String): The URL to the latest release on GitHub.
 /// - `releaseNotes` (String?): Optional release notes for the update.
 /// - `androidApkUrl` (String?): Optional direct download URL for the matching Android APK.
+/// - `androidApkSha256` (String?): Lowercase hex SHA-256 digest GitHub reports
+///   for that APK, used to verify one-click downloads when present.
 ///
 /// Example:
 /// ```dart
@@ -32,6 +34,7 @@ abstract class UpdateInfo with _$UpdateInfo {
     required String releaseUrl,
     String? releaseNotes,
     String? androidApkUrl,
+    String? androidApkSha256,
   }) = _UpdateInfo;
 
   factory UpdateInfo.fromJson(Map<String, dynamic> json) =>

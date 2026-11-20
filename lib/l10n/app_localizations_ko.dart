@@ -74,6 +74,18 @@ class AppLocalizationsKo extends AppLocalizations {
       '낮추면 작은 목소리도 포함하고, 높이면 더 많은 잡음을 제외합니다.';
 
   @override
+  String get local_captions_acceleration => '하드웨어 가속';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return '양자화되지 않은 음성 모델에는 $accelerator을(를) 사용합니다. 양자화(int8) 모델은 CPU를 사용합니다.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      '이 기기에는 지원되는 음성 가속기가 없어 인식에 CPU를 사용합니다.';
+
+  @override
   String get local_captions_delay => '자막 지연';
 
   @override
@@ -2121,6 +2133,31 @@ class AppLocalizationsKo extends AppLocalizations {
       '선택한 장면과 무작위 장면을 전체 화면으로 엽니다. 이전/다음은 현재 보기를 유지합니다.';
 
   @override
+  String get settings_playback_controls_layout => '플레이어 컨트롤';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      '표시할 플레이어 버튼과 순서, 위치를 선택합니다';
+
+  @override
+  String get settings_playback_controls_inline => '인라인';
+
+  @override
+  String get settings_playback_controls_fullscreen => '전체 화면';
+
+  @override
+  String get settings_playback_controls_bottom => '하단 줄';
+
+  @override
+  String get settings_playback_controls_top_right => '오른쪽 상단';
+
+  @override
+  String get player_control_playlist => '재생목록';
+
+  @override
+  String get player_control_volume => '볼륨';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '기기 센서를 사용하여 일치하는 방향으로 회전하도록 허용합니다(예: 좌/우 가로 방향 전환).';
 
@@ -2187,6 +2224,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_support_update_to_subtitle => '새로운 기능과 개선 사항이 기다리고 있습니다.';
+
+  @override
+  String get settings_support_update_channel => '업데이트 채널';
+
+  @override
+  String get settings_support_update_channel_subtitle => '내장 업데이트 확인이 따르는 릴리스';
+
+  @override
+  String get settings_support_update_channel_stable => '안정판';
+
+  @override
+  String get settings_support_update_channel_nightly => '나이틀리';
+
+  @override
+  String get settings_develop_force_update_dialog => '시작 시 항상 업데이트 대화상자 표시';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      '최신 상태여도 실행할 때마다 업데이트 대화상자를 표시합니다';
 
   @override
   String get settings_support_about => '정보';
@@ -2962,6 +3018,37 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get performer_filters => '출연자 필터';
+
+  @override
+  String get update_download_install_prompt =>
+      '지금 다운로드하여 설치하거나 릴리스 페이지에서 자세한 내용을 확인하세요.';
+
+  @override
+  String get update_download_and_install => '다운로드 및 설치';
+
+  @override
+  String get update_downloading => '업데이트 다운로드 중…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return '업데이트 다운로드 중… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => '업데이트를 설치할 준비가 되었습니다.';
+
+  @override
+  String get update_install => '설치';
+
+  @override
+  String get update_install_permission_required =>
+      'StashFlow가 출처를 알 수 없는 앱을 설치하도록 허용한 다음 여기로 돌아와 계속하세요.';
+
+  @override
+  String get update_download_failed => '업데이트를 다운로드할 수 없습니다. 연결을 확인하고 다시 시도하세요.';
+
+  @override
+  String get update_install_failed => '시스템 설치 프로그램을 열 수 없습니다.';
 
   @override
   String update_available(String version) {

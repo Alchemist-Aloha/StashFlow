@@ -75,6 +75,18 @@ class AppLocalizationsRu extends AppLocalizations {
       'Низкие значения учитывают тихую речь; высокие отсекают больше шума.';
 
   @override
+  String get local_captions_acceleration => 'Аппаратное ускорение';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return 'Использует $accelerator для речевых моделей с неквантованными графами. Квантованные (int8) модели используют ЦП.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'На этом устройстве нет поддерживаемого ускорителя речи; распознавание выполняется на ЦП.';
+
+  @override
   String get local_captions_delay => 'Задержка субтитров';
 
   @override
@@ -2200,6 +2212,31 @@ class AppLocalizationsRu extends AppLocalizations {
       'Открывать выбранные и случайные сцены в полноэкранном режиме. Переходы назад и вперёд сохраняют текущий вид.';
 
   @override
+  String get settings_playback_controls_layout => 'Элементы управления плеером';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      'Выберите, какие кнопки плеера показывать, их порядок и расположение';
+
+  @override
+  String get settings_playback_controls_inline => 'Встроенный';
+
+  @override
+  String get settings_playback_controls_fullscreen => 'Полноэкранный';
+
+  @override
+  String get settings_playback_controls_bottom => 'Нижняя панель';
+
+  @override
+  String get settings_playback_controls_top_right => 'Справа вверху';
+
+  @override
+  String get player_control_playlist => 'Плейлист';
+
+  @override
+  String get player_control_volume => 'Громкость';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Разрешить поворот между совпадающими ориентациями с помощью датчика устройства (например, переворачивать альбомную ориентацию влево/вправо).';
 
@@ -2269,6 +2306,27 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settings_support_update_to_subtitle =>
       'Вас ждут новые функции и улучшения.';
+
+  @override
+  String get settings_support_update_channel => 'Канал обновлений';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      'Какие выпуски отслеживает встроенная проверка обновлений';
+
+  @override
+  String get settings_support_update_channel_stable => 'Стабильный';
+
+  @override
+  String get settings_support_update_channel_nightly => 'Ночной';
+
+  @override
+  String get settings_develop_force_update_dialog =>
+      'Всегда показывать окно обновления при запуске';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      'Показывать окно обновления при каждом запуске, даже если версия актуальна';
 
   @override
   String get settings_support_about => 'О программе';
@@ -3067,6 +3125,39 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get performer_filters => 'Фильтры исполнителей';
+
+  @override
+  String get update_download_install_prompt =>
+      'Скачайте и установите её сейчас или откройте страницу релиза, чтобы узнать подробности.';
+
+  @override
+  String get update_download_and_install => 'Скачать и установить';
+
+  @override
+  String get update_downloading => 'Загрузка обновления…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return 'Загрузка обновления… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => 'Обновление готово к установке.';
+
+  @override
+  String get update_install => 'Установить';
+
+  @override
+  String get update_install_permission_required =>
+      'Разрешите StashFlow устанавливать неизвестные приложения, затем вернитесь сюда, чтобы продолжить.';
+
+  @override
+  String get update_download_failed =>
+      'Не удалось скачать обновление. Проверьте подключение и повторите попытку.';
+
+  @override
+  String get update_install_failed =>
+      'Не удалось открыть системный установщик.';
 
   @override
   String update_available(String version) {

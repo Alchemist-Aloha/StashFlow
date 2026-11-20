@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scenes_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+
 import '../../../../helpers/test_helpers.dart';
 
 void main() {

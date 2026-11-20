@@ -14,6 +14,16 @@
 - Autoplay next is now on by default. If you never changed this setting, the next scene now plays automatically; a setting you chose yourself is kept.
 - When the next scene starts while an image viewer, scene editor, or another page covers the scene details, that page now stays open instead of being replaced.
 
+## 🎛️ Player Controls
+
+- Added **Settings → Playback → Player Controls** to customize the inline and fullscreen player buttons separately. Hide, reorder, or move stream source, subtitles, speed, volume (desktop), cast, PiP, fullscreen, playlist, and random scene between the bottom row and the top-right corner.
+- Defaults match the previous layout, **Reset** restores them, and your layout is included in configuration backups.
+
+## 💬 Local Captions
+
+- Added a hardware acceleration option, on by default, that runs speech recognition on Core ML (iOS) or NNAPI (Android). It shows as unavailable on desktop, and it falls back to the CPU automatically if acceleration fails.
+- Captions keep up better: audio is decoded ahead of transcription, phrases are translated in batches, and the two most recently used translation models stay loaded.
+
 ## 🧱 Grid Layouts
 
 - Removed the list layout. Scenes, galleries, markers, and the media and gallery pages of performers, studios, tags, and groups now always use the grid. If you used list mode, set the column count to 1 for full-width cards.
@@ -25,6 +35,9 @@
 - With **Hide top app bar while scrolling** on, the bar now slides away and back without shifting the list, so scrolling stays smooth and cards no longer jump while it moves.
 - Scrolling list pages under their frosted top bar and bottom action bar takes less graphics work, and the app does less work when playback starts, pauses, or buffers.
 - Thumbnails in scene and gallery strips and the scene grid now load at your screen's real pixel density: sharper on high-density phones, and less memory on standard-density desktop displays.
+- Scene, performer, studio, tag, and group details now load their sections as you scroll, and keep inline playback, expanded details, and strip positions when you scroll away and back.
+- Media and gallery sections with nothing in them are now hidden on performer, studio, tag, and group details instead of showing an empty placeholder.
+- Card text, badges, and spacing on scene, gallery, and image cards, plus group and studio details and the scene tagger and deduplicator, now follow the UI scale. Loading placeholders fit narrow screens.
 
 ## 👋 First-Run Guide
 
@@ -74,3 +87,20 @@
 - Password-based server profiles now sign in again with the saved credentials when activated, including at app startup, instead of reusing a possibly expired session.
 - Fixed sign-in attempts that could fail when started before saved credentials had finished loading, and results from a previous profile can no longer apply after switching servers.
 - When saving the active server profile fails to sign in, the editor stays open with your entries and shows an error, so you can correct them and retry.
+
+## 🛠️ Reliability
+
+- When loading the next page fails in lists, the feed, the fullscreen image viewer, or the playlist, items already loaded stay visible and a message offers **Retry**.
+- Pulling to refresh on performer, studio, tag, and group details now fetches fresh data from the server.
+- Filter panels show Organized and other yes/no criteria as Any/Yes/No chips, and minimum rating as Any or one to five stars.
+- Scenes without a date no longer get one invented when you save an unrelated edit.
+
+## ⬆️ App Updates
+
+- On Android, the startup update prompt can now download the matching APK in the app, with progress and cancel, and open the system installer. Downloads are checked against GitHub's SHA-256 digest when one is published.
+- Added an update channel choice in **Settings → Support**: Stable (default) or Nightly. Nightly follows the latest development build and offers it whenever a newer build is published.
+- Added **Settings → Develop → Always show update dialog at startup** for testing the update prompt.
+
+## 🐧 Desktop
+
+- On Linux, only GNOME now uses the app's built-in header bar. KDE Plasma and other desktops get their native title bar with the usual minimize, maximize, and close buttons.

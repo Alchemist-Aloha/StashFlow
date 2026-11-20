@@ -76,6 +76,18 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les valeurs basses incluent les voix plus faibles ; les valeurs hautes filtrent davantage le bruit.';
 
   @override
+  String get local_captions_acceleration => 'Accélération matérielle';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return 'Utilise $accelerator pour les modèles vocaux aux graphes non quantifiés. Les modèles quantifiés (int8) utilisent le processeur.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'Cet appareil n’a aucun accélérateur vocal pris en charge ; la reconnaissance utilise le processeur.';
+
+  @override
   String get local_captions_delay => 'Décalage des sous-titres';
 
   @override
@@ -2215,6 +2227,31 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ouvrir les scènes sélectionnées et aléatoires en plein écran. Précédent et suivant conservent la vue actuelle.';
 
   @override
+  String get settings_playback_controls_layout => 'Commandes du lecteur';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      'Choisissez les boutons du lecteur affichés, leur ordre et leur position';
+
+  @override
+  String get settings_playback_controls_inline => 'Intégré';
+
+  @override
+  String get settings_playback_controls_fullscreen => 'Plein écran';
+
+  @override
+  String get settings_playback_controls_bottom => 'Barre inférieure';
+
+  @override
+  String get settings_playback_controls_top_right => 'En haut à droite';
+
+  @override
+  String get player_control_playlist => 'Liste de lecture';
+
+  @override
+  String get player_control_volume => 'Volume';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Permettre la rotation entre orientations correspondantes à l\'aide du capteur de l\'appareil (par ex. basculer paysage gauche/droite).';
 
@@ -2285,6 +2322,27 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settings_support_update_to_subtitle =>
       'De nouvelles fonctionnalités et améliorations vous attendent.';
+
+  @override
+  String get settings_support_update_channel => 'Canal de mise à jour';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      'Versions suivies par la vérification des mises à jour intégrée';
+
+  @override
+  String get settings_support_update_channel_stable => 'Stable';
+
+  @override
+  String get settings_support_update_channel_nightly => 'Nightly';
+
+  @override
+  String get settings_develop_force_update_dialog =>
+      'Toujours afficher la boîte de mise à jour au démarrage';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      'Afficher la boîte de mise à jour à chaque lancement, même si l\'app est à jour';
 
   @override
   String get settings_support_about => 'À propos';
@@ -3088,6 +3146,40 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get performer_filters => 'Filtres d\'artistes';
+
+  @override
+  String get update_download_install_prompt =>
+      'Téléchargez-la et installez-la maintenant, ou ouvrez la page de publication pour plus de détails.';
+
+  @override
+  String get update_download_and_install => 'Télécharger et installer';
+
+  @override
+  String get update_downloading => 'Téléchargement de la mise à jour…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return 'Téléchargement de la mise à jour… $percent %';
+  }
+
+  @override
+  String get update_ready_to_install =>
+      'La mise à jour est prête à être installée.';
+
+  @override
+  String get update_install => 'Installer';
+
+  @override
+  String get update_install_permission_required =>
+      'Autorisez StashFlow à installer des applications inconnues, puis revenez ici pour continuer.';
+
+  @override
+  String get update_download_failed =>
+      'Impossible de télécharger la mise à jour. Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get update_install_failed =>
+      'Impossible d\'ouvrir le programme d\'installation du système.';
 
   @override
   String update_available(String version) {

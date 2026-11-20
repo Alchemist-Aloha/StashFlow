@@ -16,12 +16,10 @@ void main() {
     await pumpTestWidget(
       tester,
       overrides: [
-        performerDetailsProvider(
-          '42',
-        ).overrideWith((ref) async => throw StateError('Unavailable')),
-        tagDetailsProvider(
-          '77',
-        ).overrideWith((ref) async => throw StateError('Unavailable')),
+        performerDetailsProvider('42')
+            .overrideWith((ref) async => throw StateError('Unavailable')),
+        tagDetailsProvider('77')
+            .overrideWith((ref) async => throw StateError('Unavailable')),
       ],
       child: const Scaffold(
         body: SceneFilterPanel(

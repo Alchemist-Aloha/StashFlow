@@ -99,7 +99,8 @@ class ReleaseArtifactsTest(unittest.TestCase):
                         ["bash", "-euo", "pipefail", "-c",
                          workflow_script("Build").replace("${{ matrix.target }}", "macos")],
                         env={**os.environ, "PATH": f"{root}:{os.environ['PATH']}",
-                             "TARGET_ARCH": architecture}, text=True,
+                             "TARGET_ARCH": architecture, "GITHUB_SHA": "0" * 40},
+                        text=True,
                     )
                     self.assertEqual(result, f"{cpu}:false:{cpu}\n")
 

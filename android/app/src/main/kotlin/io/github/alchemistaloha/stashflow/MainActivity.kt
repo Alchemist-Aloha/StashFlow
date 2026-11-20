@@ -2,19 +2,25 @@ package io.github.alchemistaloha.stashflow
 
 import android.app.PictureInPictureParams
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Rational
 import android.util.Log
+import androidx.core.content.FileProvider
 import io.flutter.embedding.engine.FlutterEngine
 import com.ryanheise.audioservice.AudioServiceFragmentActivity
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
 import kotlin.math.roundToInt
 
 open class MainActivity : AudioServiceFragmentActivity() {
 	private val pipChannel = "stash_app_flutter/pip"
+	private val appUpdateChannel = "stash_app_flutter/app_update"
 	private val volumeChannel = "stash_app_flutter/media_volume"
 	private var channel: MethodChannel? = null
 	private var pendingMediaVolumeSteps = 0.0
@@ -47,6 +53,22 @@ open class MainActivity : AudioServiceFragmentActivity() {
 			}
 		}
 
+		MethodChannel(flutterEngine.dartExecutor.binaryMessenger, appUpdateChannel)
+			.setMethodCallHandler { call, result ->
+				when (call.method) {
+					"canRequestPackageInstalls" -> result.success(canInstallPackages())
+					"installApk" -> {
+						val path = call.argument<String>("path")
+						if (path.isNullOrEmpty()) {
+							result.error("invalid_path", "APK path is required.", null)
+						} else {
+							result.success(installApk(File(path)))
+						}
+					}
+					else -> result.notImplemented()
+				}
+			}
+
 		MethodChannel(flutterEngine.dartExecutor.binaryMessenger, volumeChannel)
 			.setMethodCallHandler { call, result ->
 				when (call.method) {
@@ -61,6 +83,50 @@ open class MainActivity : AudioServiceFragmentActivity() {
 					else -> result.notImplemented()
 				}
 			}
+	}
+
+	internal fun canInstallPackages(): Boolean =
+		Build.VERSION.SDK_INT < Build.VERSION_CODES.O || packageManager.canRequestPackageInstalls()
+
+	/**
+	 * Opens the system installer for an APK inside the app_update cache folder.
+	 *
+	 * Returns "permission_required" after opening the per-app "install unknown
+	 * apps" settings screen when that permission is missing, "started" when the
+	 * installer opens, and "failed" otherwise.
+	 */
+	internal fun installApk(apk: File): String {
+		val updateDirectory = File(cacheDir, "app_update").canonicalFile
+		val canonicalApk = apk.canonicalFile
+		if (canonicalApk.parentFile != updateDirectory || !canonicalApk.isFile) {
+			Log.w("StashFlow", "Rejected update APK outside the update cache")
+			return "failed"
+		}
+		if (!canInstallPackages()) {
+			return try {
+				startActivity(
+					Intent(
+						Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+						Uri.parse("package:$packageName"),
+					),
+				)
+				"permission_required"
+			} catch (error: Throwable) {
+				Log.w("StashFlow", "Failed to open install permission settings", error)
+				"failed"
+			}
+		}
+		return try {
+			val uri = FileProvider.getUriForFile(this, "$packageName.app_update", canonicalApk)
+			val intent = Intent(Intent.ACTION_VIEW)
+				.setDataAndType(uri, "application/vnd.android.package-archive")
+				.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+			startActivity(intent)
+			"started"
+		} catch (error: Throwable) {
+			Log.w("StashFlow", "Failed to open the package installer", error)
+			"failed"
+		}
 	}
 
 	internal fun adjustMediaVolume(delta: Double): Double? = try {

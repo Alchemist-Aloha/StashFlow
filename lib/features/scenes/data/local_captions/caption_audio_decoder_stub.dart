@@ -11,5 +11,5 @@ class CaptionAudioDecoder {
     required Directory temporaryDirectory,
   }) => Future.error(UnsupportedError('Native audio required'));
   void cancel() {}
-  void close() {}
+  Future<void> close() async {}
 }

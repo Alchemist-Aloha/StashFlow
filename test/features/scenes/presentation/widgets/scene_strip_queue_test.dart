@@ -184,9 +184,8 @@ void main() {
               home: Scaffold(
                 body: Builder(
                   builder: (context) => MediaQuery(
-                    data: MediaQuery.of(
-                      context,
-                    ).copyWith(padding: const EdgeInsets.only(bottom: 66)),
+                    data: MediaQuery.of(context)
+                        .copyWith(padding: const EdgeInsets.only(bottom: 66)),
                     child: SceneStrip(
                       scenes: List.generate(
                         12,

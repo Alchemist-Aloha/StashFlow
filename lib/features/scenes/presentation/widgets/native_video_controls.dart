@@ -17,6 +17,7 @@ import 'package:screen_brightness/screen_brightness.dart';
 
 import 'video_controls/video_progress_bar.dart';
 import 'video_controls/video_debug_overlay.dart';
+import '../providers/player_controls_layout.dart';
 import 'video_controls/video_playback_controls.dart';
 import 'video_controls/player_gesture_feedback.dart';
 import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
@@ -955,6 +956,52 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
         ),
       ),
     );
+    Widget utilityControls(PlayerControlPlacement placement) =>
+        VideoPlaybackControls(
+          transportControls:
+              isDesktop && placement == PlayerControlPlacement.bottom
+              ? transportControls
+              : null,
+          placement: placement,
+          onPlaylist: _openPlaylist,
+          onRandomScene: widget.onRandomScene == null
+              ? null
+              : () {
+                  widget.onRandomScene?.call();
+                  _showControlsTemporarily();
+                },
+          controller: widget.controller,
+          scene: widget.scene,
+          playbackSpeed: playbackSpeed,
+          isFullScreen: isFullScreen,
+          onStopCast: _stopCast,
+          onSubtitleSelected: (val) async {
+            if (val == null || val == 'none') {
+              await ref.read(playerStateProvider.notifier).setSubtitle('none');
+            } else {
+              final parts = val.split(':');
+              final lang = parts[0];
+              final type = parts.length > 1 ? parts[1] : '';
+              await ref
+                  .read(playerStateProvider.notifier)
+                  .setSubtitle(lang, captionType: type.isEmpty ? null : type);
+            }
+          },
+          onSpeedSelected: (speed) async {
+            await widget.controller.player.setRate(speed);
+          },
+          onFullScreenToggle: widget.onFullScreenToggle,
+          enableNativePip: widget.enableNativePip,
+          onInteract: _showControlsTemporarily,
+          desktopVolumeControl: ref.watch(desktopCapabilitiesProvider)
+              ? _buildDesktopVolumeControl(context, colorScheme)
+              : null,
+          onSpeedTap: () {
+            setState(() => _showSpeedSlider = !_showSpeedSlider);
+            _showControlsTemporarily();
+          },
+          isSpeedSliderVisible: _showSpeedSlider,
+        );
     final keybinds = ref.watch(keybindsProvider);
 
     final bindings = _getBindings(keybinds);
@@ -1392,12 +1439,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                           child: AnimatedOpacity(
                             opacity: _controlsVisible ? 1 : 0,
                             duration: const Duration(milliseconds: 180),
-                            child: IconButton(
-                              key: const Key('inline_video_playlist_button'),
-                              tooltip: 'Playlist',
-                              style: playerOverlayButtonStyle(context),
-                              icon: const Icon(Icons.queue_music_rounded),
-                              onPressed: _openPlaylist,
+                            child: utilityControls(
+                              PlayerControlPlacement.topRight,
                             ),
                           ),
                         ),
@@ -1445,28 +1488,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              IconButton(
-                                key: const Key('fullscreen_playlist_button'),
-                                tooltip: 'Playlist',
-                                style: playerOverlayButtonStyle(context),
-                                icon: const Icon(Icons.queue_music_rounded),
-                                onPressed: _openPlaylist,
-                              ),
-                              if (widget.onRandomScene != null) ...[
-                                const SizedBox(width: 8),
-                                IconButton(
-                                  key: const Key(
-                                    'fullscreen_random_scene_button',
-                                  ),
-                                  tooltip: context.l10n.random_scene,
-                                  style: playerOverlayButtonStyle(context),
-                                  icon: const Icon(Icons.casino_outlined),
-                                  onPressed: () {
-                                    widget.onRandomScene?.call();
-                                    _showControlsTemporarily();
-                                  },
-                                ),
-                              ],
+                              utilityControls(PlayerControlPlacement.topRight),
                             ],
                           ),
                         ),
@@ -1624,64 +1646,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                       ),
                                     ),
                                     SizedBox(height: compact ? 1 : 2),
-                                    VideoPlaybackControls(
-                                      transportControls: isDesktop
-                                          ? transportControls
-                                          : null,
-                                      controller: widget.controller,
-                                      scene: widget.scene,
-                                      playbackSpeed: playbackSpeed,
-                                      isFullScreen: isFullScreen,
-                                      onStopCast: _stopCast,
-                                      onSubtitleSelected: (val) async {
-                                        if (val == null || val == 'none') {
-                                          await ref
-                                              .read(
-                                                playerStateProvider.notifier,
-                                              )
-                                              .setSubtitle('none');
-                                        } else {
-                                          final parts = val.split(':');
-                                          final lang = parts[0];
-                                          final type = parts.length > 1
-                                              ? parts[1]
-                                              : '';
-                                          await ref
-                                              .read(
-                                                playerStateProvider.notifier,
-                                              )
-                                              .setSubtitle(
-                                                lang,
-                                                captionType: type.isEmpty
-                                                    ? null
-                                                    : type,
-                                              );
-                                        }
-                                      },
-                                      onSpeedSelected: (speed) async {
-                                        await widget.controller.player.setRate(
-                                          speed,
-                                        );
-                                      },
-                                      onFullScreenToggle:
-                                          widget.onFullScreenToggle,
-                                      enableNativePip: widget.enableNativePip,
-                                      onInteract: _showControlsTemporarily,
-                                      desktopVolumeControl:
-                                          ref.watch(desktopCapabilitiesProvider)
-                                          ? _buildDesktopVolumeControl(
-                                              context,
-                                              colorScheme,
-                                            )
-                                          : null,
-                                      onSpeedTap: () {
-                                        setState(
-                                          () => _showSpeedSlider =
-                                              !_showSpeedSlider,
-                                        );
-                                        _showControlsTemporarily();
-                                      },
-                                      isSpeedSliderVisible: _showSpeedSlider,
+                                    utilityControls(
+                                      PlayerControlPlacement.bottom,
                                     ),
                                   ],
                                 ),

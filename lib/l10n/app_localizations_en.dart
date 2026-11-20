@@ -76,6 +76,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Lower values include quieter speech; higher values reject more noise.';
 
   @override
+  String get local_captions_acceleration => 'Hardware acceleration';
+
+  @override
+  String local_captions_acceleration_help(String accelerator) {
+    return 'Uses $accelerator for speech models with non-quantized graphs. Quantized (int8) models use the CPU.';
+  }
+
+  @override
+  String get local_captions_acceleration_unavailable =>
+      'This device has no supported speech accelerator; recognition uses the CPU.';
+
+  @override
   String get local_captions_delay => 'Subtitle delay';
 
   @override
@@ -2181,6 +2193,31 @@ class AppLocalizationsEn extends AppLocalizations {
       'Open selected and random scenes in fullscreen. Player next and previous keep the current view.';
 
   @override
+  String get settings_playback_controls_layout => 'Player controls';
+
+  @override
+  String get settings_playback_controls_layout_subtitle =>
+      'Choose which player buttons appear, their order, and where they sit';
+
+  @override
+  String get settings_playback_controls_inline => 'Inline';
+
+  @override
+  String get settings_playback_controls_fullscreen => 'Fullscreen';
+
+  @override
+  String get settings_playback_controls_bottom => 'Bottom row';
+
+  @override
+  String get settings_playback_controls_top_right => 'Top right';
+
+  @override
+  String get player_control_playlist => 'Playlist';
+
+  @override
+  String get player_control_volume => 'Volume';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Allow rotating between matching orientations using the device sensor (e.g. flipping landscape left/right).';
 
@@ -2249,6 +2286,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settings_support_update_to_subtitle =>
       'New features and improvements are waiting for you.';
+
+  @override
+  String get settings_support_update_channel => 'Update channel';
+
+  @override
+  String get settings_support_update_channel_subtitle =>
+      'Which releases the built-in update check follows';
+
+  @override
+  String get settings_support_update_channel_stable => 'Stable';
+
+  @override
+  String get settings_support_update_channel_nightly => 'Nightly';
+
+  @override
+  String get settings_develop_force_update_dialog =>
+      'Always show update dialog at startup';
+
+  @override
+  String get settings_develop_force_update_dialog_subtitle =>
+      'Show the update dialog on every launch, even when up to date';
 
   @override
   String get settings_support_about => 'About';
@@ -3031,6 +3089,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get performer_filters => 'Performer Filters';
+
+  @override
+  String get update_download_install_prompt =>
+      'Download and install it now, or open the release page for details.';
+
+  @override
+  String get update_download_and_install => 'Download & Install';
+
+  @override
+  String get update_downloading => 'Downloading update…';
+
+  @override
+  String update_downloading_progress(int percent) {
+    return 'Downloading update… $percent%';
+  }
+
+  @override
+  String get update_ready_to_install => 'The update is ready to install.';
+
+  @override
+  String get update_install => 'Install';
+
+  @override
+  String get update_install_permission_required =>
+      'Allow StashFlow to install unknown apps, then return here to continue.';
+
+  @override
+  String get update_download_failed =>
+      'The update could not be downloaded. Check your connection and try again.';
+
+  @override
+  String get update_install_failed =>
+      'The system installer could not be opened.';
 
   @override
   String update_available(String version) {

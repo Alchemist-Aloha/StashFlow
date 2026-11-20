@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -215,43 +216,37 @@ void main() {
     expect(hub.requests.any((u) => u.path.endsWith('/model.bin')), isFalse);
   });
 
-  test(
-    'imported manifests reject traversal, external URLs, wrong identity and incomplete layouts',
-    () {
-      final valid = LocalCaptionModel.find('zipformer-en')!.toJson();
-      for (final invalid in [
-        {...valid, 'repository': '../private'},
-        {...valid, 'id': 'hub-s-${List.filled(32, '0').join()}'},
-        {
-          ...valid,
-          'files': [
-            {
-              'name': '../escape',
-              'bytes': 1,
-              'sha256': List.filled(64, 'b').join(),
-            },
-          ],
-        },
-        {
-          ...valid,
-          'files': [
-            {
-              'name': 'encoder.onnx',
-              'bytes': 1,
-              'sha256': List.filled(64, 'b').join(),
-              'url': 'http://localhost/private',
-            },
-          ],
-        },
-        {...valid, 'files': <Object>[]},
-      ]) {
-        expect(
-          () => LocalCaptionModel.fromJson(invalid),
-          throwsFormatException,
-        );
-      }
-    },
-  );
+  test('imported manifests reject traversal, external URLs, wrong identity and incomplete layouts', () {
+    final valid = LocalCaptionModel.find('zipformer-en')!.toJson();
+    for (final invalid in [
+      {...valid, 'repository': '../private'},
+      {...valid, 'id': 'hub-s-${List.filled(32, '0').join()}'},
+      {
+        ...valid,
+        'files': [
+          {
+            'name': '../escape',
+            'bytes': 1,
+            'sha256': List.filled(64, 'b').join(),
+          },
+        ],
+      },
+      {
+        ...valid,
+        'files': [
+          {
+            'name': 'encoder.onnx',
+            'bytes': 1,
+            'sha256': List.filled(64, 'b').join(),
+            'url': 'http://localhost/private',
+          },
+        ],
+      },
+      {...valid, 'files': <Object>[]},
+    ]) {
+      expect(() => LocalCaptionModel.fromJson(invalid), throwsFormatException);
+    }
+  });
 
   test(
     'tuning JSON validates bounds and language codes without losing precision',
@@ -290,4 +285,32 @@ void main() {
       }
     },
   );
+
+  test('acceleration preference survives JSON and defaults on', () {
+    const off = CaptionOptions(accelerate: false);
+    expect(CaptionOptions.parse(jsonEncode(off.toJson()))!.accelerate, isFalse);
+    final legacy = const CaptionOptions().toJson()..remove('accelerate');
+    expect(CaptionOptions.parse(jsonEncode(legacy))!.accelerate, isTrue);
+    expect(
+      CaptionOptions.parse(
+        jsonEncode({...const CaptionOptions().toJson(), 'accelerate': 'yes'}),
+      ),
+      isNull,
+    );
+  });
+
+  test('speech provider uses linked accelerators only for float graphs', () {
+    const float = ['encoder.onnx', 'decoder.onnx', 'tokens.txt'];
+    const int8 = ['encoder.int8.onnx', 'decoder.onnx', 'tokens.txt'];
+    String provider(String os, List<String> files, {bool on = true}) =>
+        captionSpeechProvider(accelerate: on, os: os, graphFiles: files);
+    expect(provider('ios', float), 'coreml');
+    expect(provider('android', float), 'nnapi');
+    expect(provider('ios', int8), 'cpu');
+    expect(provider('android', float, on: false), 'cpu');
+    for (final os in ['macos', 'windows', 'linux']) {
+      expect(captionAccelerator(os), isNull);
+      expect(provider(os, float), 'cpu');
+    }
+  });
 }
