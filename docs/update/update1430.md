@@ -98,8 +98,9 @@
 ## ⬆️ App Updates
 
 - On Android, the startup update prompt can now download the matching APK in the app, with progress and cancel, and open the system installer. Downloads are checked against GitHub's SHA-256 digest when one is published.
-- Added an update channel choice in **Settings → Support**: Stable (default) or Nightly. Nightly follows the latest development build and offers it whenever a newer build is published.
-- Added **Settings → Develop → Always show update dialog at startup** for testing the update prompt.
+- Added an update channel choice in **Settings → Support**: Stable (default) or Nightly. Nightly follows the rolling development release and offers an update when its build commit differs from the installed build, even if the version number is unchanged.
+- The README now includes an **Obtainium** button to add StashFlow for Android update tracking.
+- Added **Settings → Develop → Always show update dialog at startup** for testing the update prompt. If the release check fails, the test dialog still opens the selected channel's release page.
 
 ## 🐧 Desktop
 
