@@ -2126,6 +2126,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'StashFlow pausieren, wenn eine andere App den Audiofokus übernimmt. Deaktivieren, um gleichzeitige Wiedergabe zu erlauben.';
 
   @override
+  String get settings_playback_system_controls => 'System-Mediensteuerung';
+
+  @override
+  String get settings_playback_system_controls_subtitle =>
+      'Wiedergabe in der Benachrichtigungsleiste und auf dem Sperrbildschirm anzeigen und Headset-Tasten annehmen. Wenn deaktiviert, kann Android die Hintergrundwiedergabe beenden.';
+
+  @override
   String get settings_playback_pip => 'Natives Bild-im-Bild';
 
   @override

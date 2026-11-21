@@ -2049,6 +2049,13 @@ class AppLocalizationsJa extends AppLocalizations {
       '他のアプリがオーディオフォーカスを取得したらStashFlowを一時停止します。オフにすると同時再生を許可します。';
 
   @override
+  String get settings_playback_system_controls => 'システムのメディアコントロール';
+
+  @override
+  String get settings_playback_system_controls_subtitle =>
+      '通知シェードとロック画面に再生コントロールを表示し、ヘッドセットのボタンに応答します。オフにすると、Android がバックグラウンド再生を停止することがあります。';
+
+  @override
   String get settings_playback_pip => 'ネイティブ ピクチャー・イン・ピクチャー';
 
   @override

@@ -2134,6 +2134,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Mette in pausa StashFlow quando un’altra app acquisisce il focus audio. Disattiva per consentire la riproduzione simultanea.';
 
   @override
+  String get settings_playback_system_controls =>
+      'Controlli multimediali di sistema';
+
+  @override
+  String get settings_playback_system_controls_subtitle =>
+      'Mostra la riproduzione nell’area notifiche e nella schermata di blocco e accetta i tasti delle cuffie. Se disattivato, Android può interrompere la riproduzione in background.';
+
+  @override
   String get settings_playback_pip => 'Picture-in-Picture Nativo';
 
   @override

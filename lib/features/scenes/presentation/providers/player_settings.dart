@@ -65,6 +65,9 @@ class PlayerSettingsStore {
       value <= maxControlsAutoHideSeconds;
   static const enableBackgroundPlaybackKey = 'video_background_playback';
   static const respectAudioFocusKey = 'video_respect_audio_focus';
+
+  /// Android only: publishes playback to the system media notification.
+  static const systemMediaControlsKey = 'android_system_media_controls';
   static const enableNativePipKey = 'video_native_pip';
   static const videoGravityOrientationKey = 'video_gravity_orientation';
 

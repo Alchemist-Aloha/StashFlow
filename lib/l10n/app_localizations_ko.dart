@@ -2051,6 +2051,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '다른 앱이 오디오 포커스를 가져오면 StashFlow를 일시 정지합니다. 동시 재생을 허용하려면 끄세요.';
 
   @override
+  String get settings_playback_system_controls => '시스템 미디어 컨트롤';
+
+  @override
+  String get settings_playback_system_controls_subtitle =>
+      '알림 창과 잠금 화면에 재생 컨트롤을 표시하고 헤드셋 버튼에 응답합니다. 끄면 Android가 백그라운드 재생을 중지할 수 있습니다.';
+
+  @override
   String get settings_playback_pip => '네이티브 화면 속 화면 (PiP)';
 
   @override

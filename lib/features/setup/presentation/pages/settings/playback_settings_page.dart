@@ -12,6 +12,7 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
+import 'package:stash_app_flutter/main.dart' show mediaHandler;
 
 import '../../widgets/settings_page_shell.dart';
 import '../../widgets/local_caption_settings_section.dart';
@@ -44,6 +45,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   int _controlsAutoHideSeconds = 2;
   bool _enableBackgroundPlayback = false;
   bool _respectAudioFocus = true;
+  bool _systemMediaControls = true;
   bool _enableNativePip = false;
   bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
@@ -96,6 +98,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
     _respectAudioFocus = PlayerSettingsStore(prefs).load().respectAudioFocus;
+    _systemMediaControls =
+        prefs.getBool(PlayerSettingsStore.systemMediaControlsKey) ?? true;
     _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
     _videoGravityOrientation =
         prefs.getBool(_videoGravityOrientationKey) ?? true;
@@ -283,6 +287,30 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             onChanged: (value) async {
                               setState(() => _respectAudioFocus = value);
                               await _saveToggleSettings();
+                            },
+                          ),
+                          Divider(height: context.dimensions.spacingLarge),
+                          SwitchListTile.adaptive(
+                            key: const Key('settings_system_media_controls'),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              context.l10n.settings_playback_system_controls,
+                            ),
+                            subtitle: Text(
+                              context
+                                  .l10n
+                                  .settings_playback_system_controls_subtitle,
+                            ),
+                            value: _systemMediaControls,
+                            onChanged: (value) async {
+                              setState(() => _systemMediaControls = value);
+                              mediaHandler?.enabled = value;
+                              await ref
+                                  .read(sharedPreferencesProvider)
+                                  .setBool(
+                                    PlayerSettingsStore.systemMediaControlsKey,
+                                    value,
+                                  );
                             },
                           ),
                         ],

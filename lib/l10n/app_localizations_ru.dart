@@ -2119,6 +2119,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Приостанавливать StashFlow, когда другое приложение получает аудиофокус. Отключите для одновременного воспроизведения.';
 
   @override
+  String get settings_playback_system_controls =>
+      'Системные элементы управления';
+
+  @override
+  String get settings_playback_system_controls_subtitle =>
+      'Показывать воспроизведение в шторке уведомлений и на экране блокировки и принимать кнопки гарнитуры. Если отключить, Android может остановить фоновое воспроизведение.';
+
+  @override
   String get settings_playback_pip => 'Нативная «Картинка в картинке»';
 
   @override

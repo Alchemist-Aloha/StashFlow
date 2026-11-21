@@ -1200,10 +1200,19 @@ Casting and preloaded/auxiliary players do not acquire global session focus.
 Android can still enforce interruptions regardless of this opt-out; background
 focus requests are subject to OS foreground-service restrictions.
 
+Android Playback Settings owns the `android_system_media_controls` boolean
+(default enabled; included in configuration backups). Turning it off dismisses
+the notification and stops publishing to the media session immediately, so the
+playback foreground service and headset controls stop; Android may then stop
+background playback. The latest metadata and state are held and republished
+when it is turned back on.
+
 The Android media session publishes current title, artwork, duration, position,
 playing state, and supported actions. Notification seeking performs true player
 seeks and keeps position/duration synchronized. Playback completion follows the
 configured end behavior. The notification intentionally has no Stop action.
+The playback service leaves the foreground on pause, so a paused notification can
+be swiped away and ending the session removes it.
 Notification titles use the same scene display title as the app: trimmed title,
 then the cleaned file-path stem, then the stream-path stem, then the default
 scene label. Artwork publication and duration refreshes preserve this fallback.

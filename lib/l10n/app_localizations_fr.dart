@@ -2132,6 +2132,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Met StashFlow en pause lorsqu’une autre app prend le focus audio. Désactivez cette option pour autoriser la lecture simultanée.';
 
   @override
+  String get settings_playback_system_controls =>
+      'Commandes multimédias du système';
+
+  @override
+  String get settings_playback_system_controls_subtitle =>
+      'Affiche la lecture dans le volet des notifications et sur l’écran de verrouillage, et accepte les boutons du casque. Si vous la désactivez, Android peut arrêter la lecture en arrière-plan.';
+
+  @override
   String get settings_playback_pip => 'Image dans l\'image native';
 
   @override

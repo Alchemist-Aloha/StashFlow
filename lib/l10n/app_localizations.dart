@@ -3726,6 +3726,18 @@ abstract class AppLocalizations {
   /// **'Pause StashFlow when another app takes audio focus. Turn off to allow simultaneous playback.'**
   String get settings_playback_audio_focus_subtitle;
 
+  /// No description provided for @settings_playback_system_controls.
+  ///
+  /// In en, this message translates to:
+  /// **'System media controls'**
+  String get settings_playback_system_controls;
+
+  /// No description provided for @settings_playback_system_controls_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show playback in the notification shade and lock screen, and accept headset buttons. Turning this off may let Android stop background playback.'**
+  String get settings_playback_system_controls_subtitle;
+
   /// No description provided for @settings_playback_pip.
   ///
   /// In en, this message translates to:

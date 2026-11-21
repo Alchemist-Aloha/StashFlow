@@ -2024,6 +2024,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。';
 
   @override
+  String get settings_playback_system_controls => '系统媒体控件';
+
+  @override
+  String get settings_playback_system_controls_subtitle =>
+      '在通知栏和锁屏显示播放控件，并响应耳机按键。关闭后 Android 可能会停止后台播放。';
+
+  @override
   String get settings_playback_pip => '原生画中画';
 
   @override
@@ -6109,6 +6116,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_playback_audio_focus_subtitle =>
       '当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。';
+
+  @override
+  String get settings_playback_system_controls => '系统媒体控件';
+
+  @override
+  String get settings_playback_system_controls_subtitle =>
+      '在通知栏和锁屏显示播放控件，并响应耳机按键。关闭后 Android 可能会停止后台播放。';
 
   @override
   String get settings_playback_pip => '原生画中画';
@@ -10200,6 +10214,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settings_playback_audio_focus_subtitle =>
       '當其他應用程式取得音訊焦點時暫停 StashFlow。關閉後允許同時播放。';
+
+  @override
+  String get settings_playback_system_controls => '系統媒體控制項';
+
+  @override
+  String get settings_playback_system_controls_subtitle =>
+      '在通知欄和鎖定畫面顯示播放控制項，並回應耳機按鍵。關閉後 Android 可能會停止背景播放。';
 
   @override
   String get settings_playback_pip => '原生子母畫面';
