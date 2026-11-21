@@ -788,16 +788,12 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
             return sceneAsync.when(
               data: (scene) {
-                final useTwoColumns = !Responsive.isMobile(context);
+                // Same 768 breakpoint as the header; portrait tablets stay single-column.
+                final useTwoColumns = constraints.maxWidth >= 768;
 
                 if (useTwoColumns) {
                   return RefreshIndicator(
-                    onRefresh: () async {
-                      ref.invalidate(sceneDetailsProvider(widget.sceneId));
-                      return ref.read(
-                        sceneDetailsProvider(widget.sceneId).future,
-                      );
-                    },
+                    onRefresh: _refreshScene,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -845,16 +841,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
                 // Mobile View (Default Column)
                 return RefreshIndicator(
-                  onRefresh: () async {
-                    await ref
-                        .read(sceneRepositoryProvider)
-                        .getSceneById(widget.sceneId, refresh: true);
-                    ref.invalidate(sceneDetailsProvider(widget.sceneId));
-                    ref.invalidate(sceneGalleriesProvider(widget.sceneId));
-                    return ref.read(
-                      sceneDetailsProvider(widget.sceneId).future,
-                    );
-                  },
+                  onRefresh: _refreshScene,
                   child: DetailPageScrollView(
                     header: SceneVideoPlayer(
                       key: _playerKey,
@@ -900,6 +887,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       },
       child: page,
     );
+  }
+
+  Future<void> _refreshScene() async {
+    await ref
+        .read(sceneRepositoryProvider)
+        .getSceneById(widget.sceneId, refresh: true);
+    ref.invalidate(sceneDetailsProvider(widget.sceneId));
+    ref.invalidate(sceneGalleriesProvider(widget.sceneId));
+    await ref.read(sceneDetailsProvider(widget.sceneId).future);
   }
 
   Widget _buildSectionContainer(

@@ -15,6 +15,7 @@ import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/detail_page_scroll_view.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
@@ -204,6 +205,31 @@ void main() {
     expect(prefs.getBool('video_use_double_tap_seek'), isTrue);
     expect(OneTimeTip.sceneDetails.isPending(prefs), isFalse);
   });
+
+  for (final (width, twoColumns) in [(692.0, false), (1000.0, true)]) {
+    testWidgets('SceneDetailsPage at $width uses two columns: $twoColumns', (
+      tester,
+    ) async {
+      tester.view.physicalSize = Size(width, 1100);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(
+        find.byType(DetailPageScrollView),
+        twoColumns ? findsNWidgets(2) : findsOneWidget,
+      );
+    });
+  }
 
   testWidgets('SceneDetailsPage renders scene info', (tester) async {
     tester.view.physicalSize = const Size(1200, 1600);

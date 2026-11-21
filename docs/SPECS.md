@@ -490,8 +490,11 @@ metadata, using readable byte units or a placeholder when unavailable.
 
 Layout contract:
 
+- Breakpoints use the page body width beside any navigation rail, so portrait
+  tablets get the single column.
 - Below 768 logical pixels, content uses a mobile vertical composition.
-- At 768 logical pixels and above, identity, actions, and supporting metadata
+- At 768 logical pixels and above, the page splits into a playback and identity
+  column and a related-content column; identity, actions, and supporting metadata
   use the responsive large-screen composition.
 - Header actions remain reachable without crowding the title or studio.
 - Rating, add-O, details, download (where supported), and More share one action
