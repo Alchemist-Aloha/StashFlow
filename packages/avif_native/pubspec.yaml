@@ -1,0 +1,15 @@
+name: avif_native
+description: Pure Dart AVIF encoder and decoder using native assets and libavif.
+version: 0.2.0
+publish_to: none
+repository: https://github.com/Zhangw1998/avif_native
+issue_tracker: https://github.com/Zhangw1998/avif_native/issues
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  code_assets: ^2.0.0
+  crypto: ^3.0.7
+  ffi: ^2.1.4
+  hooks: ^2.2.0

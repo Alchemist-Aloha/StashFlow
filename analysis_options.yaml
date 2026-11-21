@@ -8,6 +8,7 @@ analyzer:
     # gen-l10n hardcodes the deprecated flutter_localizations delegates.
     - lib/l10n/app_localizations*.dart
     - media-kit/**
+    - packages/avif_native/** # vendored upstream copy
     - build/**
     - android/**
     - ios/**

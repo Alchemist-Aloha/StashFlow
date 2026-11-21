@@ -111,6 +111,10 @@ dependency_overrides:
   # media_kit (git) needs xml ^7.1.0; flutter_svg's vector_graphics_compiler
   # caps xml at 7.0.1. Drop once vector_graphics_compiler allows 7.1.
   xml: ^7.1.0
+  # Patched hook skips targets without a prebuilt libavif (Windows ARM64).
+  # See packages/avif_native/PATCHED.md.
+  avif_native:
+    path: packages/avif_native
 
 flutter:
   generate: true

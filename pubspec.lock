@@ -92,10 +92,9 @@ packages:
   avif_native:
     dependency: "direct main"
     description:
-      name: avif_native
-      sha256: fed1aad8f8e855abf40a16484dcbfacea89b65154832d6af8ad46bf9353faf7a
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/avif_native"
+      relative: true
+    source: path
     version: "0.2.0"
   boolean_selector:
     dependency: transitive

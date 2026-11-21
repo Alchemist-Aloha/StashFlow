@@ -1,0 +1,17 @@
+{
+  "libavif": {
+    "version": "1.4.2",
+    "repository": "https://github.com/AOMediaCodec/libavif.git",
+    "commit": "c5240fc79fe5c2407e10afd35f5505ef6333ea49"
+  },
+  "libaom": {
+    "version": "3.14.1",
+    "repository": "https://aomedia.googlesource.com/aom",
+    "commit": "03087864cf4bea6abb0d28f95cf7843511413d8f"
+  },
+  "dav1d": {
+    "version": "1.5.3",
+    "repository": "https://code.videolan.org/videolan/dav1d.git",
+    "commit": "b546257f770768b2c88258c533da38b91a06f737"
+  }
+}

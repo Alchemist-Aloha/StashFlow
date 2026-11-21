@@ -415,6 +415,9 @@ serialization differences.
   (`avif_native` libavif/dav1d, pure-Dart `koni_jxl`) into an engine-decodable
   BMP, so resizing and the image cache behave as for any other format.
   Animated files show their first frame. Browsers decode AVIF natively.
+  `avif_native` is overridden by `packages/avif_native`, whose build hook skips
+  targets without a prebuilt libavif (Windows ARM64); AVIF shows the error
+  state there.
 - List and strip callers provide appropriate `memCacheWidth`/height hints.
 - Performer cards and details pass a bundled placeholder (`performerPlaceholderAsset`):
   Stash's own default silhouettes under `asset/performer_placeholders/`, rendered
