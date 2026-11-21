@@ -26,12 +26,12 @@ dependencies:
   media_kit:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: 0f60e96a78969494b9a1d109ce55be5508e8b6da
+      ref: 0a66ca7270b6b68040d0801b8e2f9328ad883f9f
       path: ./media_kit
   media_kit_video:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: 0f60e96a78969494b9a1d109ce55be5508e8b6da
+      ref: 0a66ca7270b6b68040d0801b8e2f9328ad883f9f
       path: ./media_kit_video
   audio_session: ^0.2.4
   audio_service: ^0.18.19
@@ -72,7 +72,10 @@ dependencies:
   material_ui: ^1.11.0
   flutter_svg: ^2.4.0
   cupertino_icons: ^2.0.0
-  avif_native: ^0.2.0
+  avif_native:
+    git:
+      url: https://github.com/Alchemist-Aloha/avif_native.git
+      ref: 3b4fece030f6fae6894cc79a268b87ab9c86a277
   jxl_native:
     git:
       url: https://github.com/Alchemist-Aloha/jxl_native.git
@@ -111,14 +114,7 @@ flutter_launcher_icons:
   min_sdk_android: 24
 
 dependency_overrides:
-  # media_kit (git) needs xml ^7.1.0; flutter_svg's vector_graphics_compiler
-  # caps xml at 7.0.1. Drop once vector_graphics_compiler allows 7.1.
-  xml: ^7.1.0
-  # Fork adds Windows ARM64 and newer dav1d/libaom; drop once upstream does.
-  avif_native:
-    git:
-      url: https://github.com/Alchemist-Aloha/avif_native.git
-      ref: 3b4fece030f6fae6894cc79a268b87ab9c86a277
+
 
 flutter:
   generate: true
