@@ -51,9 +51,7 @@ final relatedEntitiesProvider = FutureProvider.autoDispose
                 perPage: relatedEntityLimit,
                 sort: 'scenes_count',
                 performerFilter: switch (query.owner) {
-                  RelatedEntityOwner.tag => PerformerFilter(
-                    tags: hierarchical,
-                  ),
+                  RelatedEntityOwner.tag => PerformerFilter(tags: hierarchical),
                   RelatedEntityOwner.studio => PerformerFilter(
                     studios: hierarchical,
                   ),

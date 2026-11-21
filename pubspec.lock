@@ -89,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.4"
+  avif_native:
+    dependency: "direct main"
+    description:
+      name: avif_native
+      sha256: fed1aad8f8e855abf40a16484dcbfacea89b65154832d6af8ad46bf9353faf7a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -877,6 +885,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.15.2"
+  koni_jxl:
+    dependency: "direct main"
+    description:
+      name: koni_jxl
+      sha256: "16835e98bf138fce787a9ce75c2b58fe467b771e860ad607ba4fa8848e6be75a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
   leak_tracker:
     dependency: transitive
     description:

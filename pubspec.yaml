@@ -72,6 +72,8 @@ dependencies:
   material_ui: ^1.11.0
   flutter_svg: ^2.4.0
   cupertino_icons: ^2.0.0
+  avif_native: ^0.2.0
+  koni_jxl: ^0.1.4
 
 dev_dependencies:
   msix: ^3.18.0
@@ -143,3 +145,9 @@ flutter:
     - asset/fonts/inter/OFL.txt
     - asset/fonts/lora/OFL.txt
     - asset/fonts/jetbrains_mono/OFL.txt
+
+# Decode-only libavif build (dav1d); StashFlow never encodes AVIF.
+hooks:
+  user_defines:
+    avif_native:
+      features: decode

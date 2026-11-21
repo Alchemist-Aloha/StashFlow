@@ -410,6 +410,11 @@ serialization differences.
   and VTT sprite sheets share its `cached_network_image_ce` manager (7-day
   freshness, 100 entries) and Dio transport with persistent session cookies.
   Web display retains its existing `Image.network` authentication fallback.
+- On native platforms, AVIF and JPEG XL bytes that the engine codec rejects
+  are sniffed from the same cache entry and transcoded off the UI isolate
+  (`avif_native` libavif/dav1d, pure-Dart `koni_jxl`) into an engine-decodable
+  BMP, so resizing and the image cache behave as for any other format.
+  Animated files show their first frame. Browsers decode AVIF natively.
 - List and strip callers provide appropriate `memCacheWidth`/height hints.
 - Performer cards and details pass a bundled placeholder (`performerPlaceholderAsset`):
   Stash's own default silhouettes under `asset/performer_placeholders/`, rendered
