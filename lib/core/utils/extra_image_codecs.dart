@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:koni_jxl/koni_jxl.dart';
 
-import 'avif_rgba_web.dart' if (dart.library.ffi) 'avif_rgba_native.dart';
+import 'extra_rgba_web.dart' if (dart.library.ffi) 'extra_rgba_native.dart';
 
 /// Formats Flutter's engine codec cannot decode but StashFlow renders itself.
 enum ExtraImageFormat { avif, jxl }
@@ -47,14 +46,9 @@ Uint8List _transcode((ExtraImageFormat, Uint8List) request) {
   final (format, bytes) = request;
   final (width, height, rgba) = switch (format) {
     ExtraImageFormat.avif => decodeAvifRgba(bytes),
-    ExtraImageFormat.jxl => _decodeJxl(bytes),
+    ExtraImageFormat.jxl => decodeJxlRgba(bytes),
   };
   return _bmp(width, height, rgba);
-}
-
-(int, int, Uint8List) _decodeJxl(Uint8List bytes) {
-  final image = JxlDecoder.decode(bytes);
-  return (image.width, image.height, image.toRgba8());
 }
 
 /// Wraps straight RGBA8 as a top-down 32-bit BMP with a V4 header, whose

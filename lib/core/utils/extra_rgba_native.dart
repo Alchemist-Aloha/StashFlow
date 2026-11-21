@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:avif_native/avif_native.dart';
+import 'package:jxl_native/jxl_native.dart';
 
 /// Decodes the first AVIF frame to straight RGBA8.
 (int, int, Uint8List) decodeAvifRgba(Uint8List bytes) {
@@ -13,4 +14,10 @@ import 'package:avif_native/avif_native.dart';
   } finally {
     decoder.dispose();
   }
+}
+
+/// Decodes the first JPEG XL frame to straight RGBA8 with libjxl.
+(int, int, Uint8List) decodeJxlRgba(Uint8List bytes) {
+  final image = decodeJxl(bytes);
+  return (image.width, image.height, image.rgba);
 }
