@@ -1182,7 +1182,12 @@ the prior inline/fullscreen/feed presentation and the page underneath. The
 retired `video_native_pip` key is still accepted by backups and ignored.
 
 Background playback follows the persisted preference (default enabled; an
-explicit saved choice is kept):
+explicit saved choice is kept). Only Android, iOS, and web show the preference;
+desktop builds always keep playing when minimized and ignore the stored key.
+On Android, audio focus opt-out, `android_auto_pip`, and system media controls
+are shown and take effect only while background playback is on; otherwise
+StashFlow pauses on focus loss, never auto-enters PiP, and publishes no media
+session:
 
 - when enabled, playback may continue while the app is backgrounded and the
   media notification remains synchronized;

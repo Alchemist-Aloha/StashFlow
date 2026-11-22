@@ -95,7 +95,10 @@ void main() {
     );
   }
 
-  testWidgets('audio focus switch is Android-only', (tester) async {
+  testWidgets('desktop hides background playback and always enables it', (
+    tester,
+  ) async {
+    await prefs.setBool(PlayerSettingsStore.enableBackgroundPlaybackKey, false);
     await pumpTestWidget(
       tester,
       prefs: prefs,
@@ -103,7 +106,39 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Pause when other apps play media'), findsNothing);
+    expect(find.text('Background Playback'), findsNothing);
+    expect(PlayerSettingsStore(prefs).load().enableBackgroundPlayback, isTrue);
   }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+
+  testWidgets('Android background-only options follow background playback', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const PlaybackSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+    const dependent = [
+      'Pause when other apps play media',
+      'Picture-in-picture on leave',
+      'System media controls',
+    ];
+    for (final title in dependent) {
+      expect(find.text(title), findsOneWidget);
+    }
+    await tester.tap(
+      find.widgetWithText(SwitchListTile, 'Background Playback'),
+    );
+    await tester.pumpAndSettle();
+    for (final title in dependent) {
+      expect(find.text(title), findsNothing);
+    }
+  }, variant: TargetPlatformVariant.only(TargetPlatform.android));
 
   testWidgets(
     'mpv selectors persist, pair direct output, and restore defaults',

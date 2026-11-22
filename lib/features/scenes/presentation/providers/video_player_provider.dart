@@ -472,7 +472,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
             .read(sharedPreferencesProvider)
             .getBool(PlayerSettingsStore.autoPipKey) ??
         true;
-    listenSelf((_, next) => _syncAutoPip(next));
+    listenSelf((_, next) {
+      _syncAutoPip(next);
+      _syncSystemMediaControls(next);
+    });
     ref.listen(castServiceProvider, (previous, next) {
       if (previous?.isCasting != next.isCasting) _syncAutoPip(state);
     });
@@ -598,12 +601,31 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     _syncAutoPip(state);
   }
 
+  /// Re-reads the Android system media controls preference.
+  void syncSystemMediaControls() => _syncSystemMediaControls(state);
+
+  // Android media controls only apply while background playback is on.
+  void _syncSystemMediaControls(GlobalPlayerState next) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+    mediaHandler?.enabled =
+        next.enableBackgroundPlayback &&
+        (ref
+                .read(sharedPreferencesProvider)
+                .getBool(PlayerSettingsStore.systemMediaControlsKey) ??
+            true);
+  }
+
+  // Without background playback, focus opt-out is ignored: pause like default.
+  bool get _respectsAudioFocus =>
+      state.respectAudioFocus || !state.enableBackgroundPlayback;
+
   /// Keeps Android's auto-PiP armed exactly while a scene plays locally.
   void _syncAutoPip(GlobalPlayerState next) {
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
     final player = next.player;
     final armed =
         _autoPip &&
+        next.enableBackgroundPlayback &&
         player != null &&
         next.activeScene != null &&
         next.isPlaying &&
@@ -857,7 +879,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     if (state.respectAudioFocus == value) return;
     state = state.copyWith(respectAudioFocus: value);
     unawaited(_settingsStore.saveRespectAudioFocus(value));
-    if (!value) {
+    if (!_respectsAudioFocus) {
       _releaseAudioFocus();
     } else {
       final player = state.player;
@@ -866,8 +888,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   void setEnableBackgroundPlayback(bool value) {
+    if (!PlayerSettingsStore.backgroundPlaybackConfigurable) return;
+    final respected = _respectsAudioFocus;
     state = state.copyWith(enableBackgroundPlayback: value);
     unawaited(_settingsStore.saveEnableBackgroundPlayback(value));
+    if (respected && !_respectsAudioFocus) _releaseAudioFocus();
   }
 
   void setVideoGravityOrientation(bool value) {
@@ -1821,7 +1846,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       return;
     }
     final token = ++_localPlayToken;
-    if (_audioFocus.supported && state.respectAudioFocus && !_hasAudioFocus) {
+    if (_audioFocus.supported && _respectsAudioFocus && !_hasAudioFocus) {
       bool granted;
       try {
         granted = await _audioFocus.setActive(true);
@@ -1848,7 +1873,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
   void _onAudioInterruption(AudioInterruptionEvent event) {
     if (!ref.mounted ||
-        !state.respectAudioFocus ||
+        !_respectsAudioFocus ||
         ref.read(castServiceProvider).isCasting) {
       return;
     }

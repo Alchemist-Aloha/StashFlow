@@ -62,6 +62,13 @@ class PlayerSettingsStore {
       value >= minControlsAutoHideSeconds &&
       value <= maxControlsAutoHideSeconds;
   static const enableBackgroundPlaybackKey = 'video_background_playback';
+
+  /// Desktop always keeps playing when minimized, so only mobile and web
+  /// expose the background playback preference.
+  static bool get backgroundPlaybackConfigurable =>
+      kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
   static const respectAudioFocusKey = 'video_respect_audio_focus';
 
   /// Android only: publishes playback to the system media notification.
@@ -346,7 +353,8 @@ class PlayerSettingsStore {
           ? controlsAutoHideValue
           : 2,
       enableBackgroundPlayback:
-          prefs.getBool(enableBackgroundPlaybackKey) ?? true,
+          !backgroundPlaybackConfigurable ||
+          (prefs.getBool(enableBackgroundPlaybackKey) ?? true),
       respectAudioFocus: prefs.get(respectAudioFocusKey) is bool
           ? prefs.getBool(respectAudioFocusKey)!
           : true,

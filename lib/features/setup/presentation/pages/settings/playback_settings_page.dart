@@ -12,7 +12,6 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
-import 'package:stash_app_flutter/main.dart' show mediaHandler;
 
 import '../../widgets/settings_page_shell.dart';
 import '../../widgets/local_caption_settings_section.dart';
@@ -251,24 +250,30 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             context.push('/settings/playback/controls'),
                           ),
                         ),
-                        Divider(height: context.dimensions.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            context.l10n.settings_playback_background,
+                        if (PlayerSettingsStore
+                            .backgroundPlaybackConfigurable) ...[
+                          Divider(height: context.dimensions.spacingLarge),
+                          SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              context.l10n.settings_playback_background,
+                            ),
+                            subtitle: Text(
+                              context
+                                  .l10n
+                                  .settings_playback_background_subtitle,
+                            ),
+                            value: _enableBackgroundPlayback,
+                            onChanged: (value) async {
+                              setState(() => _enableBackgroundPlayback = value);
+                              await _saveToggleSettings();
+                            },
                           ),
-                          subtitle: Text(
-                            context.l10n.settings_playback_background_subtitle,
-                          ),
-                          value: _enableBackgroundPlayback,
-                          onChanged: (value) async {
-                            setState(() => _enableBackgroundPlayback = value);
-                            await _saveToggleSettings();
-                          },
-                        ),
+                        ],
+                        // These Android options only apply with background playback.
                         if (!kIsWeb &&
-                            defaultTargetPlatform ==
-                                TargetPlatform.android) ...[
+                            defaultTargetPlatform == TargetPlatform.android &&
+                            _enableBackgroundPlayback) ...[
                           Divider(height: context.dimensions.spacingLarge),
                           SwitchListTile.adaptive(
                             contentPadding: EdgeInsets.zero,
@@ -319,13 +324,15 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             value: _systemMediaControls,
                             onChanged: (value) async {
                               setState(() => _systemMediaControls = value);
-                              mediaHandler?.enabled = value;
                               await ref
                                   .read(sharedPreferencesProvider)
                                   .setBool(
                                     PlayerSettingsStore.systemMediaControlsKey,
                                     value,
                                   );
+                              ref
+                                  .read(playerStateProvider.notifier)
+                                  .syncSystemMediaControls();
                             },
                           ),
                         ],

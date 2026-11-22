@@ -5,7 +5,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -128,13 +127,6 @@ Future<void> main() async {
 
     final sharedPreferences = await SharedPreferences.getInstance();
     installServerCertificatePolicy(sharedPreferences);
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-      mediaHandler?.enabled =
-          sharedPreferences.getBool(
-            PlayerSettingsStore.systemMediaControlsKey,
-          ) ??
-          true;
-    }
 
     AppLogStore.instance.isEnabled =
         sharedPreferences.getBool('enable_debug_logging') ?? false;

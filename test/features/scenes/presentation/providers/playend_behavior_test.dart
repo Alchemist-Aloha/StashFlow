@@ -665,6 +665,22 @@ void main() {
 
     Future<void> tick() => Future<void>.delayed(Duration.zero);
 
+    test('focus opt-out only applies with background playback', () async {
+      final notifier = await prepare();
+      notifier.setRespectAudioFocus(false);
+      audioFocus.operations.clear();
+      notifier.play();
+      await tick();
+      expect(audioFocus.operations, isEmpty);
+      notifier.pause();
+      await tick();
+      notifier.setEnableBackgroundPlayback(false);
+      audioFocus.operations.clear();
+      notifier.play();
+      await tick();
+      expect(audioFocus.operations, [true]);
+    });
+
     test(
       'auto-PiP arms while playing and system entry restores inline',
       () async {
