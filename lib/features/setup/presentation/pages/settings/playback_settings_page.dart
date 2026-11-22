@@ -45,6 +45,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _enableBackgroundPlayback = true;
   bool _respectAudioFocus = true;
   bool _systemMediaControls = true;
+  bool _autoPip = true;
   bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
   String _defaultStreamSource = 'direct';
@@ -98,6 +99,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _respectAudioFocus = PlayerSettingsStore(prefs).load().respectAudioFocus;
     _systemMediaControls =
         prefs.getBool(PlayerSettingsStore.systemMediaControlsKey) ?? true;
+    _autoPip = prefs.getBool(PlayerSettingsStore.autoPipKey) ?? true;
     _videoGravityOrientation =
         prefs.getBool(_videoGravityOrientationKey) ?? true;
     _defaultStreamSource = prefs.getString(defaultStreamSourceKey) ?? 'direct';
@@ -282,6 +284,24 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             onChanged: (value) async {
                               setState(() => _respectAudioFocus = value);
                               await _saveToggleSettings();
+                            },
+                          ),
+                          Divider(height: context.dimensions.spacingLarge),
+                          SwitchListTile.adaptive(
+                            key: const Key('settings_auto_pip'),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              context.l10n.settings_playback_auto_pip,
+                            ),
+                            subtitle: Text(
+                              context.l10n.settings_playback_auto_pip_subtitle,
+                            ),
+                            value: _autoPip,
+                            onChanged: (value) {
+                              setState(() => _autoPip = value);
+                              ref
+                                  .read(playerStateProvider.notifier)
+                                  .setAutoPip(value);
                             },
                           ),
                           Divider(height: context.dimensions.spacingLarge),

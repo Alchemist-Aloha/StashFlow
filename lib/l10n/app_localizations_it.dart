@@ -2142,6 +2142,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Mostra la riproduzione nell’area notifiche e nella schermata di blocco e accetta i tasti delle cuffie. Se disattivato, Android può interrompere la riproduzione in background.';
 
   @override
+  String get settings_playback_auto_pip => 'Picture-in-picture all’uscita';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'Se esci da StashFlow mentre è in riproduzione una scena, continua a guardarla in una finestra picture-in-picture. Al ritorno viene ripristinata la pagina in cui eri.';
+
+  @override
   String get settings_playback_subtitles => 'Impostazioni sottotitoli';
 
   @override

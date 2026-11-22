@@ -2058,6 +2058,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '알림 창과 잠금 화면에 재생 컨트롤을 표시하고 헤드셋 버튼에 응답합니다. 끄면 Android가 백그라운드 재생을 중지할 수 있습니다.';
 
   @override
+  String get settings_playback_auto_pip => '나갈 때 화면 속 화면';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      '장면 재생 중에 StashFlow에서 나가면 화면 속 화면 창에서 계속 시청합니다. 돌아오면 이전 페이지로 복원됩니다.';
+
+  @override
   String get settings_playback_subtitles => '자막 설정';
 
   @override

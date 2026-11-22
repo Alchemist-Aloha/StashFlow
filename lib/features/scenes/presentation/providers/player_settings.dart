@@ -68,6 +68,9 @@ class PlayerSettingsStore {
   static const systemMediaControlsKey = 'android_system_media_controls';
   static const videoGravityOrientationKey = 'video_gravity_orientation';
 
+  /// Android only: playing scenes move to PiP when the user leaves the app.
+  static const autoPipKey = 'android_auto_pip';
+
   /// Opens explicit scene playback navigation in the fullscreen player.
   static const enterFullscreenOnNavigationKey =
       'video_enter_fullscreen_on_navigation';

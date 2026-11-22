@@ -24,6 +24,8 @@ open class MainActivity : AudioServiceFragmentActivity() {
 	private val volumeChannel = "stash_app_flutter/media_volume"
 	private var channel: MethodChannel? = null
 	private var pendingMediaVolumeSteps = 0.0
+	// Set by Dart while a scene plays locally and auto-PiP is on.
+	private var autoPipRatio: Rational? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -45,6 +47,11 @@ open class MainActivity : AudioServiceFragmentActivity() {
 					val numerator = call.argument<Int>("numerator") ?: 0
 					val denominator = call.argument<Int>("denominator") ?: 0
 					result.success(updatePipAspectRatio(numerator, denominator))
+				}
+				"setAutoPip" -> {
+					val numerator = call.argument<Int>("numerator") ?: 0
+					val denominator = call.argument<Int>("denominator") ?: 0
+					result.success(setAutoPip(call.argument<Boolean>("enabled") == true, numerator, denominator))
 				}
 				"getPrimaryAbi" -> {
 					result.success(Build.SUPPORTED_ABIS.firstOrNull())
@@ -167,6 +174,32 @@ open class MainActivity : AudioServiceFragmentActivity() {
 		}
 	}
 
+	/** Android 12+ lets the system enter PiP itself; older versions use [onUserLeaveHint]. */
+	private fun setAutoPip(enabled: Boolean, numerator: Int, denominator: Int): Boolean {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
+		autoPipRatio = if (enabled && numerator > 0 && denominator > 0) Rational(numerator, denominator) else null
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			return try {
+				val builder = PictureInPictureParams.Builder().setAutoEnterEnabled(autoPipRatio != null)
+				autoPipRatio?.let { builder.setAspectRatio(it) }
+				setPictureInPictureParams(builder.build())
+				true
+			} catch (error: Throwable) {
+				Log.w("StashFlow", "Failed to update auto picture-in-picture", error)
+				false
+			}
+		}
+		return true
+	}
+
+	override fun onUserLeaveHint() {
+		super.onUserLeaveHint()
+		val ratio = autoPipRatio ?: return
+		if (Build.VERSION.SDK_INT in Build.VERSION_CODES.O until Build.VERSION_CODES.S && !isInPictureInPictureMode) {
+			enterPipMode(ratio.numerator, ratio.denominator)
+		}
+	}
+
 	internal fun updatePipAspectRatio(numerator: Int, denominator: Int): Boolean {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !isInPictureInPictureMode) {
 			return false
@@ -185,9 +218,11 @@ open class MainActivity : AudioServiceFragmentActivity() {
 		require(numerator > 0 && denominator > 0)
 		val ratio = numerator.toDouble() / denominator
 		require(ratio in (1.0 / 2.39)..2.39)
-		return PictureInPictureParams.Builder()
+		val builder = PictureInPictureParams.Builder()
 			.setAspectRatio(Rational(numerator, denominator))
-			.build()
+		// Params replace the activity's previous ones; keep auto-enter as Dart last set it.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) builder.setAutoEnterEnabled(autoPipRatio != null)
+		return builder.build()
 	}
 
 	internal fun applyRecentsScreenshotPolicy() {

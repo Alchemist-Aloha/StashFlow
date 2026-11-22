@@ -388,6 +388,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   bool _pipRequestInFlight = false;
   Completer<bool>? _pipFullscreenExit;
   double? _lastAndroidPipRatio;
+  bool _autoPip = true;
+  // NaN = never sent, null = disarmed.
+  double? _armedAutoPipRatio = double.nan;
   DateTime? _lastPipRequestAt;
   static const Duration _pipRequestCooldown = Duration(milliseconds: 700);
   AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
@@ -464,6 +467,15 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     });
 
     PipMode.isInPipMode.addListener(_onPipModeChanged);
+    _autoPip =
+        ref
+            .read(sharedPreferencesProvider)
+            .getBool(PlayerSettingsStore.autoPipKey) ??
+        true;
+    listenSelf((_, next) => _syncAutoPip(next));
+    ref.listen(castServiceProvider, (previous, next) {
+      if (previous?.isCasting != next.isCasting) _syncAutoPip(state);
+    });
     if (PipMode.isWindowed) {
       PipMode.configureWindowedHandlers(
         enter: _openDesktopPipWindow,
@@ -573,9 +585,58 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     );
   }
 
+  /// Whether leaving the app moves a playing scene to Android PiP.
+  bool get autoPip => _autoPip;
+
+  void setAutoPip(bool value) {
+    _autoPip = value;
+    unawaited(
+      ref
+          .read(sharedPreferencesProvider)
+          .setBool(PlayerSettingsStore.autoPipKey, value),
+    );
+    _syncAutoPip(state);
+  }
+
+  /// Keeps Android's auto-PiP armed exactly while a scene plays locally.
+  void _syncAutoPip(GlobalPlayerState next) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+    final player = next.player;
+    final armed =
+        _autoPip &&
+        player != null &&
+        next.activeScene != null &&
+        next.isPlaying &&
+        !ref.read(castServiceProvider).isCasting;
+    final ratio = armed
+        ? pipDisplayAspectRatio(player.state.videoParams) ?? 16 / 9
+        : null;
+    if (ratio == _armedAutoPipRatio) return;
+    _armedAutoPipRatio = ratio;
+    unawaited(PipMode.setAutoPip(ratio));
+  }
+
   void _onPipModeChanged() {
     final nextInPip = PipMode.isInPipMode.value;
     final wasInPip = state.isInPipMode;
+    if (nextInPip &&
+        !wasInPip &&
+        !PipMode.isWindowed &&
+        !_pipRequestInFlight &&
+        _fullscreenBeforePip == null) {
+      // Android entered PiP by itself; show the video-only surface and
+      // restore this presentation when the user returns.
+      _fullscreenBeforePip = state.isFullScreen;
+      _viewModeBeforePip = state.viewMode;
+      state = !state.isFullScreen || state.viewMode == PlayerViewMode.tiktok
+          ? state.copyWith(
+              isInPipMode: true,
+              isFullScreen: true,
+              viewMode: PlayerViewMode.fullscreen,
+              fullscreenPhase: FullscreenPhase.entering,
+            )
+          : state.copyWith(isInPipMode: true);
+    }
     if (!nextInPip) {
       _lastAndroidPipRatio = null;
     } else {
@@ -1877,14 +1938,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     final player = this.state.player;
     if (player == null || !player.state.playing) return;
 
-    final canEnterPip = _canEnterBackgroundPip(player);
-    if (canEnterPip &&
-        (state == AppLifecycleState.hidden ||
-            state == AppLifecycleState.paused)) {
-      _requestBackgroundPipOrApplyPolicy(player);
-      return;
-    }
-
     _applyBackgroundPlaybackPolicy(player);
   }
 
@@ -1924,15 +1977,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
   }
 
-  bool _canEnterBackgroundPip(Player player) {
-    return !kIsWeb &&
-        Platform.isAndroid &&
-        state.isFullScreen &&
-        !state.isInPipMode &&
-        !PipMode.isInPipMode.value &&
-        player.state.playing;
-  }
-
   void _applyBackgroundPlaybackPolicy(Player player) {
     if (!ref.mounted || state.player != player || !player.state.playing) return;
     if (state.isInPipMode || PipMode.isInPipMode.value) return;
@@ -1942,34 +1986,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     } else {
       pause(suppressBackgroundRecovery: true);
     }
-  }
-
-  void _requestBackgroundPipOrApplyPolicy(Player player) {
-    if (_pipRequestInFlight || state.isInPipMode || PipMode.isInPipMode.value) {
-      return;
-    }
-
-    final elapsedSinceLast = _lastPipRequestAt == null
-        ? null
-        : DateTime.now().difference(_lastPipRequestAt!);
-    if (elapsedSinceLast != null && elapsedSinceLast < _pipRequestCooldown) {
-      return;
-    }
-
-    final width = player.state.width;
-    final height = player.state.height;
-    final aspect = (width != null && height != null && height > 0)
-        ? width / height
-        : 16 / 9;
-
-    unawaited(() async {
-      final enteredPip = await requestEnterPip(aspectRatio: aspect);
-      if (!ref.mounted || state.player != player || !player.state.playing) {
-        return;
-      }
-      if (enteredPip || state.isInPipMode || PipMode.isInPipMode.value) return;
-      _applyBackgroundPlaybackPolicy(player);
-    }());
   }
 
   Future<void> _handleMediaPauseCommand() async {

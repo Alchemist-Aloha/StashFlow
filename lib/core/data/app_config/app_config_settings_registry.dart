@@ -160,6 +160,7 @@ final class AppConfigSettingsRegistry {
     _bool('video_background_playback'),
     _bool('video_respect_audio_focus'),
     _bool(PlayerSettingsStore.systemMediaControlsKey),
+    _bool(PlayerSettingsStore.autoPipKey),
     // Retired setting; kept so older backups still validate and import.
     _bool('video_native_pip'),
     _bool('video_gravity_orientation'),

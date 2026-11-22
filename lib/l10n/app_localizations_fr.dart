@@ -2140,6 +2140,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Affiche la lecture dans le volet des notifications et sur l’écran de verrouillage, et accepte les boutons du casque. Si vous la désactivez, Android peut arrêter la lecture en arrière-plan.';
 
   @override
+  String get settings_playback_auto_pip => 'Image dans l’image en quittant';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'Si vous quittez StashFlow pendant la lecture d’une scène, elle continue dans une fenêtre image dans l’image. Au retour, la page où vous étiez est restaurée.';
+
+  @override
   String get settings_playback_subtitles => 'Paramètres des sous-titres';
 
   @override

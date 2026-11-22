@@ -158,6 +158,28 @@ class PipMode {
     }
   }
 
+  /// Arms or disarms Android's automatic PiP when the user leaves the app.
+  ///
+  /// [aspectRatio] is required while armed; a null ratio disarms.
+  static Future<void> setAutoPip(double? aspectRatio) async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+    final args = _androidAspectRatioArguments(aspectRatio);
+    try {
+      await _channel.invokeMethod<bool>('setAutoPip', {
+        'enabled': args != null,
+        'numerator': args?['numerator'] ?? 0,
+        'denominator': args?['denominator'] ?? 0,
+      });
+    } on Exception catch (error, stackTrace) {
+      AppLogStore.instance.addError(
+        'setAutoPip',
+        error,
+        stackTrace,
+        source: 'pip_mode',
+      );
+    }
+  }
+
   static Map<String, int>? _androidAspectRatioArguments(double? ratio) {
     if (ratio == null || !ratio.isFinite || ratio <= 0) return null;
     // Rounding must stay inside Android's inclusive [1/2.39, 2.39] range.

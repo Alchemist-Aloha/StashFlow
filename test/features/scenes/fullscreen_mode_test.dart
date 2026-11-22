@@ -375,6 +375,7 @@ void main() {
             });
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(pipChannel, (call) {
+              if (call.method == 'setAutoPip') return Future.value(true);
               entryRequested = true;
               entryLatency = tester.binding.clock.now().difference(
                 requestStartedAt,

@@ -2148,6 +2148,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Muestra la reproducción en el panel de notificaciones y la pantalla de bloqueo, y acepta los botones de los auriculares. Si lo desactivas, Android puede detener la reproducción en segundo plano.';
 
   @override
+  String get settings_playback_auto_pip => 'Imagen en imagen al salir';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'Si sales de StashFlow mientras se reproduce una escena, sigue viéndola en una ventana de imagen en imagen. Al volver, se restaura la página en la que estabas.';
+
+  @override
   String get settings_playback_subtitles => 'Ajustes de subtítulos';
 
   @override

@@ -2111,6 +2111,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show playback in the notification shade and lock screen, and accept headset buttons. Turning this off may let Android stop background playback.';
 
   @override
+  String get settings_playback_auto_pip => 'Picture-in-picture on leave';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'When you leave StashFlow while a scene is playing, keep watching it in a picture-in-picture window. Returning restores the page you were on.';
+
+  @override
   String get settings_playback_subtitles => 'Subtitle settings';
 
   @override

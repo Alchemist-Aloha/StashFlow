@@ -2133,6 +2133,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wiedergabe in der Benachrichtigungsleiste und auf dem Sperrbildschirm anzeigen und Headset-Tasten annehmen. Wenn deaktiviert, kann Android die Hintergrundwiedergabe beenden.';
 
   @override
+  String get settings_playback_auto_pip => 'Bild-im-Bild beim Verlassen';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'Wenn du StashFlow während der Wiedergabe einer Szene verlässt, läuft sie in einem Bild-im-Bild-Fenster weiter. Bei der Rückkehr wird die vorherige Seite wiederhergestellt.';
+
+  @override
   String get settings_playback_subtitles => 'Untertitel-Einstellungen';
 
   @override

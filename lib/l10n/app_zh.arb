@@ -571,6 +571,8 @@
   "settings_playback_audio_focus_subtitle": "当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。",
   "settings_playback_system_controls": "系统媒体控件",
   "settings_playback_system_controls_subtitle": "在通知栏和锁屏显示播放控件，并响应耳机按键。关闭后 Android 可能会停止后台播放。",
+  "settings_playback_auto_pip": "离开时画中画",
+  "settings_playback_auto_pip_subtitle": "播放场景时离开 StashFlow，会在画中画窗口中继续观看。返回后恢复到之前所在的页面。",
   "settings_playback_subtitles": "字幕设置",
   "settings_playback_subtitles_subtitle": "自动加载和外观",
   "settings_playback_subtitle_lang": "默认字幕语言",

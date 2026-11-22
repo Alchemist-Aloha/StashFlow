@@ -2127,6 +2127,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Показывать воспроизведение в шторке уведомлений и на экране блокировки и принимать кнопки гарнитуры. Если отключить, Android может остановить фоновое воспроизведение.';
 
   @override
+  String get settings_playback_auto_pip => '«Картинка в картинке» при выходе';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'Если выйти из StashFlow во время воспроизведения сцены, просмотр продолжится в окне «картинка в картинке». При возврате откроется прежняя страница.';
+
+  @override
   String get settings_playback_subtitles => 'Настройки субтитров';
 
   @override

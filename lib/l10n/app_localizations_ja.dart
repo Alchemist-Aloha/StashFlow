@@ -2056,6 +2056,13 @@ class AppLocalizationsJa extends AppLocalizations {
       '通知シェードとロック画面に再生コントロールを表示し、ヘッドセットのボタンに応答します。オフにすると、Android がバックグラウンド再生を停止することがあります。';
 
   @override
+  String get settings_playback_auto_pip => '離れるときにピクチャー・イン・ピクチャー';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'シーンの再生中に StashFlow を離れると、ピクチャー・イン・ピクチャーのウィンドウで視聴を続けます。戻ると元のページに戻ります。';
+
+  @override
   String get settings_playback_subtitles => '字幕設定';
 
   @override

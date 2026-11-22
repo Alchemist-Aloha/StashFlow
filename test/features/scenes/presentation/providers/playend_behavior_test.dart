@@ -220,7 +220,8 @@ void main() {
         final calls = <MethodCall>[];
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(channel, (call) async {
-              calls.add(call);
+              // Auto-PiP arming is covered separately.
+              if (call.method != 'setAutoPip') calls.add(call);
               return true;
             });
         addTearDown(() {
@@ -663,6 +664,52 @@ void main() {
     }
 
     Future<void> tick() => Future<void>.delayed(Duration.zero);
+
+    test(
+      'auto-PiP arms while playing and system entry restores inline',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        const channel = MethodChannel('stash_app_flutter/pip');
+        final armed = <bool>[];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, (call) async {
+              if (call.method == 'setAutoPip') {
+                armed.add((call.arguments as Map)['enabled'] as bool);
+              }
+              return true;
+            });
+        addTearDown(() {
+          PipMode.isInPipMode.value = false;
+          debugDefaultTargetPlatformOverride = null;
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, null);
+        });
+        final notifier = await prepare();
+        notifier.play();
+        await tick();
+        expect(armed.last, isTrue);
+        notifier.pause();
+        await tick();
+        expect(armed.last, isFalse);
+        notifier.play();
+        await tick();
+        notifier.setAutoPip(false);
+        await tick();
+        expect(armed.last, isFalse);
+        notifier.setAutoPip(true);
+        await tick();
+        expect(armed.last, isTrue);
+
+        expect(container.read(playerStateProvider).isFullScreen, isFalse);
+        PipMode.isInPipMode.value = true;
+        expect(container.read(playerStateProvider).isInPipMode, isTrue);
+        expect(container.read(playerStateProvider).isFullScreen, isTrue);
+        PipMode.isInPipMode.value = false;
+        expect(container.read(playerStateProvider).isInPipMode, isFalse);
+        expect(container.read(playerStateProvider).isFullScreen, isFalse);
+      },
+    );
+
     void interrupt(AudioInterruptionType type, {bool begin = true}) {
       audioFocus.onInterruption?.call(AudioInterruptionEvent(begin, type));
     }

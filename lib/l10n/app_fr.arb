@@ -516,6 +516,8 @@
   "settings_playback_audio_focus_subtitle": "Met StashFlow en pause lorsqu’une autre app prend le focus audio. Désactivez cette option pour autoriser la lecture simultanée.",
   "settings_playback_system_controls": "Commandes multimédias du système",
   "settings_playback_system_controls_subtitle": "Affiche la lecture dans le volet des notifications et sur l’écran de verrouillage, et accepte les boutons du casque. Si vous la désactivez, Android peut arrêter la lecture en arrière-plan.",
+  "settings_playback_auto_pip": "Image dans l’image en quittant",
+  "settings_playback_auto_pip_subtitle": "Si vous quittez StashFlow pendant la lecture d’une scène, elle continue dans une fenêtre image dans l’image. Au retour, la page où vous étiez est restaurée.",
   "settings_playback_subtitles": "Paramètres des sous-titres",
   "settings_playback_subtitles_subtitle": "Chargement automatique et apparence",
   "settings_playback_subtitle_lang": "Langue par défaut des sous-titres",

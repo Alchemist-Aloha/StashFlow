@@ -461,6 +461,8 @@
   "settings_playback_audio_focus_subtitle": "Mette in pausa StashFlow quando un’altra app acquisisce il focus audio. Disattiva per consentire la riproduzione simultanea.",
   "settings_playback_system_controls": "Controlli multimediali di sistema",
   "settings_playback_system_controls_subtitle": "Mostra la riproduzione nell’area notifiche e nella schermata di blocco e accetta i tasti delle cuffie. Se disattivato, Android può interrompere la riproduzione in background.",
+  "settings_playback_auto_pip": "Picture-in-picture all’uscita",
+  "settings_playback_auto_pip_subtitle": "Se esci da StashFlow mentre è in riproduzione una scena, continua a guardarla in una finestra picture-in-picture. Al ritorno viene ripristinata la pagina in cui eri.",
   "settings_playback_subtitles": "Impostazioni sottotitoli",
   "settings_playback_subtitles_subtitle": "Caricamento automatico e aspetto",
   "settings_playback_subtitle_lang": "Lingua Sottotitoli Predefinita",
