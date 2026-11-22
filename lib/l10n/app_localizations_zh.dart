@@ -2031,12 +2031,6 @@ class AppLocalizationsZh extends AppLocalizations {
       '在通知栏和锁屏显示播放控件，并响应耳机按键。关闭后 Android 可能会停止后台播放。';
 
   @override
-  String get settings_playback_pip => '原生画中画';
-
-  @override
-  String get settings_playback_pip_subtitle => '启用画中画按钮，并在进入后台时自动进入画中画';
-
-  @override
   String get settings_playback_subtitles => '字幕设置';
 
   @override
@@ -6123,12 +6117,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_playback_system_controls_subtitle =>
       '在通知栏和锁屏显示播放控件，并响应耳机按键。关闭后 Android 可能会停止后台播放。';
-
-  @override
-  String get settings_playback_pip => '原生画中画';
-
-  @override
-  String get settings_playback_pip_subtitle => '启用画中画按钮，并在进入后台时自动进入画中画';
 
   @override
   String get settings_playback_subtitles => '字幕设置';
@@ -10221,12 +10209,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settings_playback_system_controls_subtitle =>
       '在通知欄和鎖定畫面顯示播放控制項，並回應耳機按鍵。關閉後 Android 可能會停止背景播放。';
-
-  @override
-  String get settings_playback_pip => '原生子母畫面';
-
-  @override
-  String get settings_playback_pip_subtitle => '啟用子母畫面按鈕，並在背景執行時自動進入子母畫面';
 
   @override
   String get settings_playback_subtitles => '字幕設定';

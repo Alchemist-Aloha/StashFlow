@@ -30,7 +30,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _playEndBehaviorKey = 'video_play_end_behavior';
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
-  static const _enableNativePipKey = 'video_native_pip';
   static const _videoGravityOrientationKey = 'video_gravity_orientation';
   static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
   static const _subtitleFontSizeKey = 'subtitle_font_size';
@@ -46,7 +45,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _enableBackgroundPlayback = true;
   bool _respectAudioFocus = true;
   bool _systemMediaControls = true;
-  bool _enableNativePip = true;
   bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
   String _defaultStreamSource = 'direct';
@@ -100,7 +98,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _respectAudioFocus = PlayerSettingsStore(prefs).load().respectAudioFocus;
     _systemMediaControls =
         prefs.getBool(PlayerSettingsStore.systemMediaControlsKey) ?? true;
-    _enableNativePip = prefs.getBool(_enableNativePipKey) ?? true;
     _videoGravityOrientation =
         prefs.getBool(_videoGravityOrientationKey) ?? true;
     _defaultStreamSource = prefs.getString(defaultStreamSourceKey) ?? 'direct';
@@ -141,7 +138,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       _enableBackgroundPlaybackKey,
       _enableBackgroundPlayback,
     );
-    await prefs.setBool(_enableNativePipKey, _enableNativePip);
     await prefs.setBool(_videoGravityOrientationKey, _videoGravityOrientation);
     await prefs.setString(
       _defaultSubtitleLanguageKey,
@@ -166,7 +162,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     playerStateNotifier.setControlsAutoHideSeconds(_controlsAutoHideSeconds);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
     playerStateNotifier.setRespectAudioFocus(_respectAudioFocus);
-    playerStateNotifier.setEnableNativePip(_enableNativePip);
     playerStateNotifier.setVideoGravityOrientation(_videoGravityOrientation);
     playerStateNotifier.setDefaultSubtitleLanguage(_defaultSubtitleLanguage);
     playerStateNotifier.setSubtitleFontSize(_subtitleFontSize);
@@ -314,19 +309,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             },
                           ),
                         ],
-                        Divider(height: context.dimensions.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_playback_pip),
-                          subtitle: Text(
-                            context.l10n.settings_playback_pip_subtitle,
-                          ),
-                          value: _enableNativePip,
-                          onChanged: (value) async {
-                            setState(() => _enableNativePip = value);
-                            await _saveToggleSettings();
-                          },
-                        ),
                         Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,

@@ -169,7 +169,6 @@ class _TestPlayerState extends PlayerState {
       showVideoDebugInfo: state.showVideoDebugInfo,
       useDoubleTapSeek: state.useDoubleTapSeek,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
-      enableNativePip: state.enableNativePip,
       videoGravityOrientation: state.videoGravityOrientation,
       defaultSubtitleLanguage: state.defaultSubtitleLanguage,
       subtitleFontSize: state.subtitleFontSize,

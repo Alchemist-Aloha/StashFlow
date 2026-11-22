@@ -2148,13 +2148,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Muestra la reproducción en el panel de notificaciones y la pantalla de bloqueo, y acepta los botones de los auriculares. Si lo desactivas, Android puede detener la reproducción en segundo plano.';
 
   @override
-  String get settings_playback_pip => 'Imagen en imagen nativa';
-
-  @override
-  String get settings_playback_pip_subtitle =>
-      'Habilitar el botón de imagen en imagen y entrar automáticamente al pasar a segundo plano';
-
-  @override
   String get settings_playback_subtitles => 'Ajustes de subtítulos';
 
   @override

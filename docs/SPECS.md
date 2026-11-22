@@ -1172,8 +1172,10 @@ queue and its previous/next navigation.
 
 ### Background playback and Android media session
 
-Native Picture-in-Picture (`video_native_pip`) is enabled by default; an explicit
-saved choice is kept.
+Native Picture-in-Picture has no setting: it is available wherever supported,
+its button placement follows Player Controls, and Android fullscreen playback
+enters it when the app is backgrounded. The retired `video_native_pip` key is
+still accepted by configuration backups and ignored.
 
 Background playback follows the persisted preference (default enabled; an
 explicit saved choice is kept):

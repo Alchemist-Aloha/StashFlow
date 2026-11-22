@@ -244,7 +244,6 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                   child: NativeVideoControls(
                     controller: widget.controller,
                     useDoubleTapSeek: playerState.useDoubleTapSeek,
-                    enableNativePip: playerState.enableNativePip,
                     onFullScreenToggle: widget.onFullScreenToggle,
                     onInlineBack: widget.onInlineBack,
                     onRandomScene: widget.onRandomScene,

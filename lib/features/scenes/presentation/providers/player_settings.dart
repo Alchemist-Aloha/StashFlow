@@ -13,7 +13,6 @@ class PlayerSettings {
   final int controlsAutoHideSeconds;
   final bool enableBackgroundPlayback;
   final bool respectAudioFocus;
-  final bool enableNativePip;
   final bool videoGravityOrientation;
   final bool useActualSceneVideoInMiniPlayer;
   final String defaultSubtitleLanguage;
@@ -37,7 +36,6 @@ class PlayerSettings {
     this.controlsAutoHideSeconds = 2,
     this.enableBackgroundPlayback = true,
     this.respectAudioFocus = true,
-    this.enableNativePip = true,
     this.videoGravityOrientation = true,
     this.useActualSceneVideoInMiniPlayer = true,
     this.defaultSubtitleLanguage = 'none',
@@ -68,7 +66,6 @@ class PlayerSettingsStore {
 
   /// Android only: publishes playback to the system media notification.
   static const systemMediaControlsKey = 'android_system_media_controls';
-  static const enableNativePipKey = 'video_native_pip';
   static const videoGravityOrientationKey = 'video_gravity_orientation';
 
   /// Opens explicit scene playback navigation in the fullscreen player.
@@ -350,7 +347,6 @@ class PlayerSettingsStore {
       respectAudioFocus: prefs.get(respectAudioFocusKey) is bool
           ? prefs.getBool(respectAudioFocusKey)!
           : true,
-      enableNativePip: prefs.getBool(enableNativePipKey) ?? true,
       videoGravityOrientation:
           prefs.getBool(videoGravityOrientationKey) ?? true,
       useActualSceneVideoInMiniPlayer:
@@ -435,9 +431,6 @@ class PlayerSettingsStore {
 
   Future<void> saveRespectAudioFocus(bool value) =>
       prefs.setBool(respectAudioFocusKey, value);
-
-  Future<void> saveEnableNativePip(bool value) =>
-      prefs.setBool(enableNativePipKey, value);
 
   Future<void> saveVideoGravityOrientation(bool value) =>
       prefs.setBool(videoGravityOrientationKey, value);

@@ -2058,13 +2058,6 @@ class AppLocalizationsKo extends AppLocalizations {
       '알림 창과 잠금 화면에 재생 컨트롤을 표시하고 헤드셋 버튼에 응답합니다. 끄면 Android가 백그라운드 재생을 중지할 수 있습니다.';
 
   @override
-  String get settings_playback_pip => '네이티브 화면 속 화면 (PiP)';
-
-  @override
-  String get settings_playback_pip_subtitle =>
-      'PIP 버튼을 활성화하고 백그라운드 전환 시 자동 진입합니다';
-
-  @override
   String get settings_playback_subtitles => '자막 설정';
 
   @override

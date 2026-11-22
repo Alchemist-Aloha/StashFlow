@@ -2111,13 +2111,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show playback in the notification shade and lock screen, and accept headset buttons. Turning this off may let Android stop background playback.';
 
   @override
-  String get settings_playback_pip => 'Native Picture-in-Picture';
-
-  @override
-  String get settings_playback_pip_subtitle =>
-      'Enable the Picture-in-Picture button and auto-enter on background';
-
-  @override
   String get settings_playback_subtitles => 'Subtitle settings';
 
   @override

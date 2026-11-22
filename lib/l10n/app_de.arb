@@ -499,8 +499,6 @@
   "settings_playback_audio_focus_subtitle": "StashFlow pausieren, wenn eine andere App den Audiofokus übernimmt. Deaktivieren, um gleichzeitige Wiedergabe zu erlauben.",
   "settings_playback_system_controls": "System-Mediensteuerung",
   "settings_playback_system_controls_subtitle": "Wiedergabe in der Benachrichtigungsleiste und auf dem Sperrbildschirm anzeigen und Headset-Tasten annehmen. Wenn deaktiviert, kann Android die Hintergrundwiedergabe beenden.",
-  "settings_playback_pip": "Natives Bild-im-Bild",
-  "settings_playback_pip_subtitle": "Bild-im-Bild-Schaltfläche aktivieren und automatisch bei Hintergrundwechsel starten",
   "settings_playback_subtitles": "Untertitel-Einstellungen",
   "settings_playback_subtitles_subtitle": "Automatisches Laden und Erscheinungsbild",
   "settings_playback_subtitle_lang": "Standard-Untertitelsprache",

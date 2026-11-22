@@ -45,7 +45,6 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   const NativeVideoControls({
     required this.controller,
     required this.useDoubleTapSeek,
-    required this.enableNativePip,
     this.onFullScreenToggle,
     this.onInlineBack,
     this.onRandomScene,
@@ -60,7 +59,6 @@ class NativeVideoControls extends ConsumerStatefulWidget {
 
   final VideoController controller;
   final bool useDoubleTapSeek;
-  final bool enableNativePip;
   final VoidCallback? onFullScreenToggle;
   final VoidCallback? onInlineBack;
   final VoidCallback? onRandomScene;
@@ -821,7 +819,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
           break;
         case KeybindAction.togglePip:
           callback = () {
-            if (!widget.enableNativePip || !PipMode.isSupported) return;
+            if (!PipMode.isSupported) return;
             final w = widget.controller.player.state.width;
             final h = widget.controller.player.state.height;
             final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
@@ -991,7 +989,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
             await widget.controller.player.setRate(speed);
           },
           onFullScreenToggle: widget.onFullScreenToggle,
-          enableNativePip: widget.enableNativePip,
           onInteract: _showControlsTemporarily,
           desktopVolumeControl: ref.watch(desktopCapabilitiesProvider)
               ? _buildDesktopVolumeControl(context, colorScheme)

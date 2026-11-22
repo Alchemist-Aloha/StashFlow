@@ -2127,13 +2127,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Показывать воспроизведение в шторке уведомлений и на экране блокировки и принимать кнопки гарнитуры. Если отключить, Android может остановить фоновое воспроизведение.';
 
   @override
-  String get settings_playback_pip => 'Нативная «Картинка в картинке»';
-
-  @override
-  String get settings_playback_pip_subtitle =>
-      'Включить кнопку «картинка в картинке» и автоматический переход при сворачивании';
-
-  @override
   String get settings_playback_subtitles => 'Настройки субтитров';
 
   @override

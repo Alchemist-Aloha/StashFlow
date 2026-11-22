@@ -660,8 +660,6 @@
   "settings_playback_audio_focus_subtitle": "Pause StashFlow when another app takes audio focus. Turn off to allow simultaneous playback.",
   "settings_playback_system_controls": "System media controls",
   "settings_playback_system_controls_subtitle": "Show playback in the notification shade and lock screen, and accept headset buttons. Turning this off may let Android stop background playback.",
-  "settings_playback_pip": "Native Picture-in-Picture",
-  "settings_playback_pip_subtitle": "Enable the Picture-in-Picture button and auto-enter on background",
   "settings_playback_subtitles": "Subtitle settings",
   "settings_playback_subtitles_subtitle": "Automatic loading and appearance",
   "settings_playback_subtitle_lang": "Default Subtitle Language",

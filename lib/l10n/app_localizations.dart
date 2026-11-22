@@ -3738,18 +3738,6 @@ abstract class AppLocalizations {
   /// **'Show playback in the notification shade and lock screen, and accept headset buttons. Turning this off may let Android stop background playback.'**
   String get settings_playback_system_controls_subtitle;
 
-  /// No description provided for @settings_playback_pip.
-  ///
-  /// In en, this message translates to:
-  /// **'Native Picture-in-Picture'**
-  String get settings_playback_pip;
-
-  /// No description provided for @settings_playback_pip_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable the Picture-in-Picture button and auto-enter on background'**
-  String get settings_playback_pip_subtitle;
-
   /// No description provided for @settings_playback_subtitles.
   ///
   /// In en, this message translates to:

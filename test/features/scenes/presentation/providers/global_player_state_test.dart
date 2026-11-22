@@ -102,7 +102,6 @@ void main() {
       final optOut = state.copyWith(respectAudioFocus: false);
       expect(optOut.respectAudioFocus, isFalse);
       expect(optOut.copyWith().respectAudioFocus, isFalse);
-      expect(state.enableNativePip, isTrue);
       expect(state.videoGravityOrientation, isTrue);
       expect(state.subtitleTextAlignment, equals('center'));
     });
@@ -125,7 +124,6 @@ void main() {
         showVideoDebugInfo: true,
         useDoubleTapSeek: false,
         enableBackgroundPlayback: true,
-        enableNativePip: true,
         videoGravityOrientation: false,
       );
 
@@ -144,7 +142,6 @@ void main() {
       expect(state.showVideoDebugInfo, isTrue);
       expect(state.useDoubleTapSeek, isFalse);
       expect(state.enableBackgroundPlayback, isTrue);
-      expect(state.enableNativePip, isTrue);
       expect(state.videoGravityOrientation, isFalse);
     });
 

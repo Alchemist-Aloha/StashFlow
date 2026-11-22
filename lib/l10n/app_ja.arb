@@ -487,8 +487,6 @@
   "settings_playback_audio_focus_subtitle": "他のアプリがオーディオフォーカスを取得したらStashFlowを一時停止します。オフにすると同時再生を許可します。",
   "settings_playback_system_controls": "システムのメディアコントロール",
   "settings_playback_system_controls_subtitle": "通知シェードとロック画面に再生コントロールを表示し、ヘッドセットのボタンに応答します。オフにすると、Android がバックグラウンド再生を停止することがあります。",
-  "settings_playback_pip": "ネイティブ ピクチャー・イン・ピクチャー",
-  "settings_playback_pip_subtitle": "ピクチャーインピクチャーボタンを有効にし、バックグラウンド時に自動移行します",
   "settings_playback_subtitles": "字幕設定",
   "settings_playback_subtitles_subtitle": "自動読み込みと外観",
   "settings_playback_subtitle_lang": "デフォルトの字幕言語",

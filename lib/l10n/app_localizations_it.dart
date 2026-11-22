@@ -2142,13 +2142,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Mostra la riproduzione nell’area notifiche e nella schermata di blocco e accetta i tasti delle cuffie. Se disattivato, Android può interrompere la riproduzione in background.';
 
   @override
-  String get settings_playback_pip => 'Picture-in-Picture Nativo';
-
-  @override
-  String get settings_playback_pip_subtitle =>
-      'Abilita il pulsante PiP e l\'ingresso automatico in background';
-
-  @override
   String get settings_playback_subtitles => 'Impostazioni sottotitoli';
 
   @override

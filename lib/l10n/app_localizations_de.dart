@@ -2133,13 +2133,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wiedergabe in der Benachrichtigungsleiste und auf dem Sperrbildschirm anzeigen und Headset-Tasten annehmen. Wenn deaktiviert, kann Android die Hintergrundwiedergabe beenden.';
 
   @override
-  String get settings_playback_pip => 'Natives Bild-im-Bild';
-
-  @override
-  String get settings_playback_pip_subtitle =>
-      'Bild-im-Bild-Schaltfläche aktivieren und automatisch bei Hintergrundwechsel starten';
-
-  @override
   String get settings_playback_subtitles => 'Untertitel-Einstellungen';
 
   @override

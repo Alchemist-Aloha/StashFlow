@@ -2056,13 +2056,6 @@ class AppLocalizationsJa extends AppLocalizations {
       '通知シェードとロック画面に再生コントロールを表示し、ヘッドセットのボタンに応答します。オフにすると、Android がバックグラウンド再生を停止することがあります。';
 
   @override
-  String get settings_playback_pip => 'ネイティブ ピクチャー・イン・ピクチャー';
-
-  @override
-  String get settings_playback_pip_subtitle =>
-      'ピクチャーインピクチャーボタンを有効にし、バックグラウンド時に自動移行します';
-
-  @override
   String get settings_playback_subtitles => '字幕設定';
 
   @override

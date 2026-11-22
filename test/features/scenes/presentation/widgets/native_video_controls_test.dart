@@ -840,7 +840,6 @@ Future<void> _pumpControls(
           body: NativeVideoControls(
             controller: mockController,
             useDoubleTapSeek: useDoubleTapSeek,
-            enableNativePip: false,
             onInlineBack: onInlineBack,
             onFullScreenToggle: onFullScreenToggle,
             onRandomScene: onRandomScene,

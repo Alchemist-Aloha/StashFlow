@@ -143,9 +143,6 @@ class GlobalPlayerState {
   /// Android preference: pause local playback when another app takes focus.
   final bool respectAudioFocus;
 
-  /// User preference: whether to trigger native Android PiP on minimize.
-  final bool enableNativePip;
-
   /// Currently selected subtitle language code. null if disabled.
   final String? selectedSubtitleLanguage;
 
@@ -206,7 +203,6 @@ class GlobalPlayerState {
     this.controlsAutoHideSeconds = 2,
     this.enableBackgroundPlayback = true,
     this.respectAudioFocus = true,
-    this.enableNativePip = true,
     this.videoGravityOrientation = true,
     this.useActualSceneVideoInMiniPlayer = true,
     this.feedStartRandom = false,
@@ -254,7 +250,6 @@ class GlobalPlayerState {
     int? controlsAutoHideSeconds,
     bool? enableBackgroundPlayback,
     bool? respectAudioFocus,
-    bool? enableNativePip,
     bool? videoGravityOrientation,
     bool? useActualSceneVideoInMiniPlayer,
     bool? feedStartRandom,
@@ -309,7 +304,6 @@ class GlobalPlayerState {
       enableBackgroundPlayback:
           enableBackgroundPlayback ?? this.enableBackgroundPlayback,
       respectAudioFocus: respectAudioFocus ?? this.respectAudioFocus,
-      enableNativePip: enableNativePip ?? this.enableNativePip,
       videoGravityOrientation:
           videoGravityOrientation ?? this.videoGravityOrientation,
       useActualSceneVideoInMiniPlayer:
@@ -566,7 +560,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       controlsAutoHideSeconds: loadedSettings.controlsAutoHideSeconds,
       enableBackgroundPlayback: loadedSettings.enableBackgroundPlayback,
       respectAudioFocus: loadedSettings.respectAudioFocus,
-      enableNativePip: loadedSettings.enableNativePip,
       videoGravityOrientation: loadedSettings.videoGravityOrientation,
       useActualSceneVideoInMiniPlayer:
           loadedSettings.useActualSceneVideoInMiniPlayer,
@@ -814,11 +807,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   void setEnableBackgroundPlayback(bool value) {
     state = state.copyWith(enableBackgroundPlayback: value);
     unawaited(_settingsStore.saveEnableBackgroundPlayback(value));
-  }
-
-  void setEnableNativePip(bool value) {
-    state = state.copyWith(enableNativePip: value);
-    unawaited(_settingsStore.saveEnableNativePip(value));
   }
 
   void setVideoGravityOrientation(bool value) {
@@ -1441,7 +1429,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         controlsAutoHideSeconds: state.controlsAutoHideSeconds,
         enableBackgroundPlayback: state.enableBackgroundPlayback,
         respectAudioFocus: state.respectAudioFocus,
-        enableNativePip: state.enableNativePip,
         videoGravityOrientation: state.videoGravityOrientation,
         useActualSceneVideoInMiniPlayer: state.useActualSceneVideoInMiniPlayer,
         selectedSubtitleLanguage: effectiveSubtitleLanguage,
@@ -1940,7 +1927,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   bool _canEnterBackgroundPip(Player player) {
     return !kIsWeb &&
         Platform.isAndroid &&
-        state.enableNativePip &&
         state.isFullScreen &&
         !state.isInPipMode &&
         !PipMode.isInPipMode.value &&
@@ -2082,7 +2068,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       controlsAutoHideSeconds: state.controlsAutoHideSeconds,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
       respectAudioFocus: state.respectAudioFocus,
-      enableNativePip: state.enableNativePip,
       videoGravityOrientation: state.videoGravityOrientation,
       useActualSceneVideoInMiniPlayer: state.useActualSceneVideoInMiniPlayer,
       defaultSubtitleLanguage: state.defaultSubtitleLanguage,

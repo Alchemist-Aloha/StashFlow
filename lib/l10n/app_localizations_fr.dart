@@ -2140,13 +2140,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Affiche la lecture dans le volet des notifications et sur l’écran de verrouillage, et accepte les boutons du casque. Si vous la désactivez, Android peut arrêter la lecture en arrière-plan.';
 
   @override
-  String get settings_playback_pip => 'Image dans l\'image native';
-
-  @override
-  String get settings_playback_pip_subtitle =>
-      'Activer le bouton image dans l\'image et l\'entrée automatique en arrière-plan';
-
-  @override
   String get settings_playback_subtitles => 'Paramètres des sous-titres';
 
   @override

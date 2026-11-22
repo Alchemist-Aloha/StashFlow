@@ -9,6 +9,8 @@ The app is primarily tested on Android, Linux and Windows. The MacOS and iOS bui
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.43.0-green.svg)](pubspec.yaml)
 
+[<img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="54">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Alchemist-Aloha/StashFlow)
+
 ## 📸 Screenshots
 
 ### Android mobile
