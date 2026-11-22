@@ -62221,10 +62221,7 @@ aXx:function aXx(a,b,c){var _=this
 _.w=a
 _.x=!1
 _.y=2
-_.z=!1
-_.Q=!0
-_.at=!1
-_.ax=!0
+_.ax=_.at=_.Q=_.z=!0
 _.ay="none"
 _.ch="direct"
 _.CW=18
@@ -223252,7 +223249,7 @@ g=A.a3(d.h(e,"feed_start_random"))
 e=A.a3(d.h(e,"video_resume_play_position"))
 this.aJA("video_mpv_vo",B.a4r)
 this.aJA("video_mpv_hwdec",B.a4q)
-return new A.bG8(s,c===!0,r===!0,q,p===!0,o,n===!0,m!==!1,l!==!1,k,j,i,h,g===!0,e!==!1)},
+return new A.bG8(s,c===!0,r===!0,q,p!==!1,o,n!==!1,m!==!1,l!==!1,k,j,i,h,g===!0,e!==!1)},
 aJA(a,b){var s=J.a8(this.a.a,a)
 return typeof s=="string"&&b.p(0,s)?s:"default"},
 bWc(a){return B.bKl},
@@ -232970,11 +232967,11 @@ n.w=s!==!1?B.pa:B.mj}s=A.a3(k.h(l,"video_use_double_tap_seek"))
 n.x=s===!0
 n.y=new A.kX(m).agu(0).d
 s=A.a3(k.h(l,"video_background_playback"))
-n.z=s===!0
+n.z=s!==!1
 n.Q=new A.kX(m).agu(0).f
 A.a3(k.h(l,"android_system_media_controls"))
 s=A.a3(k.h(l,"video_native_pip"))
-n.at=s===!0
+n.at=s!==!1
 s=A.a3(k.h(l,"video_gravity_orientation"))
 n.ax=s!==!1
 s=A.F(k.h(l,"video_default_stream_source"))
@@ -235063,7 +235060,7 @@ a4=a5.ib(a4==null?"":a4)
 f=a4==null?null:a4.b[1]
 if(f==null){q=null
 s=1
-break}b=!(B.e.bf("f8cc7f2725875d61561f2c8b3a4cd506a83097ec",f)||B.e.bf(f,"f8cc7f2725875d61561f2c8b3a4cd506a83097ec"))
+break}b=!(B.e.bf("1bd7d4db7e3264274190e7db407455d783596d41",f)||B.e.bf(f,"1bd7d4db7e3264274190e7db407455d783596d41"))
 e=b
 if(!e)A.J(n).q(0,$.ann(),t.ma).aeD()
 s=14
@@ -235072,7 +235069,7 @@ case 14:d=b6
 a4=A.j(g)
 a5=B.e.a8(f,0,7)
 a6=A.j(l)
-a7=B.e.a8("f8cc7f2725875d61561f2c8b3a4cd506a83097ec",0,7)
+a7=B.e.a8("1bd7d4db7e3264274190e7db407455d783596d41",0,7)
 a8=A.C(J.a8(h,"html_url"))
 a9=A.F(J.a8(h,"body"))
 b0=d
