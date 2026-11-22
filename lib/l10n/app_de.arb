@@ -510,6 +510,8 @@
   "player_stream_direct": "Direkt",
   "settings_playback_stream_source": "Standard-Streamquelle",
   "settings_playback_stream_source_subtitle": "Beim Wiedergabestart verwendet; sonst Direkt",
+  "settings_playback_stream_resolution": "Standardauflösung",
+  "settings_playback_stream_resolution_subtitle": "Für transkodierte Quellen; nicht verfügbar wird die nächstniedrigere genutzt",
   "settings_playback_subtitle_lang_subtitle": "Automatisch laden, falls verfügbar",
   "settings_playback_subtitle_size": "Schriftgröße der Untertitel",
   "settings_playback_subtitle_pos": "Vertikale Position der Untertitel",

@@ -2092,6 +2092,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_stream_source_subtitle => '재생 시작 시 사용, 없으면 다이렉트';
 
   @override
+  String get settings_playback_stream_resolution => '기본 해상도';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      '트랜스코딩된 소스에 사용, 없으면 다음 낮은 해상도 사용';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle => '가능한 경우 자동 로드';
 
   @override

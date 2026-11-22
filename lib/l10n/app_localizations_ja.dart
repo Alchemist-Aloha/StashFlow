@@ -2091,6 +2091,13 @@ class AppLocalizationsJa extends AppLocalizations {
       '再生開始時に使用。利用できない場合はダイレクト';
 
   @override
+  String get settings_playback_stream_resolution => 'デフォルトの解像度';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'トランスコードされたソースに使用。利用できない場合は次に低い解像度を使用';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle => '利用可能な場合に自動読み込み';
 
   @override

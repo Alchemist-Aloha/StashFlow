@@ -2177,6 +2177,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Utilisée au démarrage de la lecture ; sinon Direct';
 
   @override
+  String get settings_playback_stream_resolution => 'Résolution par défaut';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'Pour les sources transcodées ; à défaut, la résolution inférieure suivante est utilisée';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Chargement automatique si disponible';
 

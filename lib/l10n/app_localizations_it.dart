@@ -2179,6 +2179,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Usata all\'avvio della riproduzione; altrimenti Diretta';
 
   @override
+  String get settings_playback_stream_resolution => 'Risoluzione predefinita';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'Per le sorgenti transcodificate; se non disponibile, si usa quella inferiore successiva';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Carica automaticamente se disponibile';
 

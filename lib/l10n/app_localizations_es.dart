@@ -2186,6 +2186,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Se usa al iniciar la reproducción; si no, Directa';
 
   @override
+  String get settings_playback_stream_resolution => 'Resolución predeterminada';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'Para fuentes transcodificadas; si no está disponible, se usa la siguiente inferior';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Carga automática si está disponible';
 

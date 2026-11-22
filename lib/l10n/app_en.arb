@@ -671,6 +671,8 @@
   "player_stream_direct": "Direct",
   "settings_playback_stream_source": "Default Stream Source",
   "settings_playback_stream_source_subtitle": "Used when playback starts; falls back to Direct",
+  "settings_playback_stream_resolution": "Default Resolution",
+  "settings_playback_stream_resolution_subtitle": "For transcoded sources; uses the next lower resolution when unavailable",
   "settings_playback_subtitle_lang_subtitle": "Auto-load if available",
   "settings_playback_subtitle_size": "Subtitle Font Size",
   "settings_playback_subtitle_pos": "Subtitle Vertical Position",

@@ -2147,6 +2147,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Used when playback starts; falls back to Direct';
 
   @override
+  String get settings_playback_stream_resolution => 'Default Resolution';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'For transcoded sources; uses the next lower resolution when unavailable';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Auto-load if available';
 

@@ -2169,6 +2169,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Beim Wiedergabestart verwendet; sonst Direkt';
 
   @override
+  String get settings_playback_stream_resolution => 'Standardauflösung';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'Für transkodierte Quellen; nicht verfügbar wird die nächstniedrigere genutzt';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Automatisch laden, falls verfügbar';
 

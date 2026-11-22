@@ -554,6 +554,8 @@
   "player_stream_direct": "Прямой",
   "settings_playback_stream_source": "Источник потока по умолчанию",
   "settings_playback_stream_source_subtitle": "Используется при запуске; иначе Прямой",
+  "settings_playback_stream_resolution": "Разрешение по умолчанию",
+  "settings_playback_stream_resolution_subtitle": "Для перекодированных источников; если недоступно, используется ближайшее меньшее",
   "settings_playback_subtitle_lang_subtitle": "Автозагрузка при наличии",
   "settings_playback_subtitle_size": "Размер шрифта субтитров",
   "settings_playback_subtitle_pos": "Вертикальное положение субтитров",

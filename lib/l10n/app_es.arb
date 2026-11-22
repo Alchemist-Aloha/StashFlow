@@ -527,6 +527,8 @@
   "player_stream_direct": "Directa",
   "settings_playback_stream_source": "Fuente de transmisión predeterminada",
   "settings_playback_stream_source_subtitle": "Se usa al iniciar la reproducción; si no, Directa",
+  "settings_playback_stream_resolution": "Resolución predeterminada",
+  "settings_playback_stream_resolution_subtitle": "Para fuentes transcodificadas; si no está disponible, se usa la siguiente inferior",
   "settings_playback_subtitle_lang_subtitle": "Carga automática si está disponible",
   "settings_playback_subtitle_size": "Tamaño de fuente de los subtítulos",
   "settings_playback_subtitle_pos": "Posición vertical de los subtítulos",

@@ -14,10 +14,6 @@ import '../../../data/repositories/stream_resolver.dart';
 import '../../../domain/entities/scene.dart';
 import '../../providers/video_player_provider.dart';
 
-/// Stash's `resolution` query value; direct streams count as original.
-String? _resolution(String url) =>
-    Uri.tryParse(url)?.queryParameters['resolution'] ?? 'ORIGINAL';
-
 /// Server labels are the format then the resolution, e.g. "MP4 HD (720p)".
 String _resolutionLabel(BuildContext context, StreamChoice s) {
   final rest = (s.label ?? '').split(' ').skip(1).join(' ').trim();
@@ -129,7 +125,7 @@ class _SceneStreamMenuState extends ConsumerState<SceneStreamMenu> {
 
 bool _sameStream(String a, String b) =>
     streamSourceKind(a) == streamSourceKind(b) &&
-    _resolution(a) == _resolution(b);
+    streamResolution(a) == streamResolution(b);
 
 /// The two-column source/resolution panel shown as the menu's only entry.
 class _StreamPickerEntry extends PopupMenuEntry<StreamChoice> {
@@ -161,7 +157,7 @@ class _StreamPickerEntryState extends State<_StreamPickerEntry> {
     super.initState();
     final current = widget.currentUrl;
     _kind = current == null ? 'direct' : streamSourceKind(current);
-    _res = current == null ? 'ORIGINAL' : _resolution(current);
+    _res = current == null ? 'ORIGINAL' : streamResolution(current);
   }
 
   List<StreamChoice> _of(String kind) =>
@@ -178,7 +174,7 @@ class _StreamPickerEntryState extends State<_StreamPickerEntry> {
 
   StreamChoice get _selected {
     final options = _of(_kind);
-    return options.where((s) => _resolution(s.url) == _res).firstOrNull ??
+    return options.where((s) => streamResolution(s.url) == _res).firstOrNull ??
         options.first;
   }
 
@@ -291,10 +287,10 @@ class _StreamPickerEntryState extends State<_StreamPickerEntry> {
                     _option(
                       context,
                       label: _resolutionLabel(context, s),
-                      selected: !direct && _resolution(s.url) == _res,
+                      selected: !direct && streamResolution(s.url) == _res,
                       onTap: direct
                           ? null
-                          : () => _update(() => _res = _resolution(s.url)),
+                          : () => _update(() => _res = streamResolution(s.url)),
                     ),
                 ]),
               ],

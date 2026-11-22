@@ -498,6 +498,8 @@
   "player_stream_direct": "ダイレクト",
   "settings_playback_stream_source": "デフォルトのストリームソース",
   "settings_playback_stream_source_subtitle": "再生開始時に使用。利用できない場合はダイレクト",
+  "settings_playback_stream_resolution": "デフォルトの解像度",
+  "settings_playback_stream_resolution_subtitle": "トランスコードされたソースに使用。利用できない場合は次に低い解像度を使用",
   "settings_playback_subtitle_lang_subtitle": "利用可能な場合に自動読み込み",
   "settings_playback_subtitle_size": "字幕フォントサイズ",
   "settings_playback_subtitle_pos": "字幕の垂直位置",

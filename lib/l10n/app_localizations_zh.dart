@@ -2065,6 +2065,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_stream_source_subtitle => '开始播放时使用；不可用时回退到直连';
 
   @override
+  String get settings_playback_stream_resolution => '默认分辨率';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      '用于转码来源；不可用时使用较低的分辨率';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用则自动加载';
 
   @override
@@ -6158,6 +6165,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_playback_stream_source_subtitle => '开始播放时使用；不可用时回退到直连';
+
+  @override
+  String get settings_playback_stream_resolution => '默认分辨率';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      '用于转码来源；不可用时使用较低的分辨率';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用则自动加载';
@@ -10257,6 +10271,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_playback_stream_source_subtitle => '開始播放時使用；無法使用時改用直連';
+
+  @override
+  String get settings_playback_stream_resolution => '預設解析度';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      '用於轉碼來源；不可用時使用較低的解析度';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用則自動載入';

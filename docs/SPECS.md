@@ -831,10 +831,13 @@ them with `start=<seconds>`, reopens on every seek, and reports position,
 buffer, and the scene file's duration on the absolute scene timeline, offsetting
 subtitles to match. HLS, DASH, and direct streams pass through unchanged. Playback settings choose
 the default source kind used when playback starts (direct by default, which
-skips the `sceneStreams` query); its original-resolution endpoint is used, and
-an unavailable kind or failed query falls back to the direct stream. Downloads
-always use the direct file. The preference is included in configuration
-backups.
+skips the `sceneStreams` query). For transcoded kinds, a default resolution
+(`video_default_stream_resolution`: Original by default, then 4K, 1080p, 720p,
+480p, 240p; shown only when the source is not direct) picks the highest offered
+endpoint not above it, preferring the original on equal height and using the
+lowest offered when all are higher. An unavailable kind or failed query falls
+back to the direct stream. Downloads always use the direct file. Both
+preferences are included in configuration backups.
 
 The optional video debug overlay groups stream, active decoder/output, and
 performance diagnostics in a bounded, scrollable panel. It follows controls

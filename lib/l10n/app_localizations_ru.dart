@@ -2163,6 +2163,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Используется при запуске; иначе Прямой';
 
   @override
+  String get settings_playback_stream_resolution => 'Разрешение по умолчанию';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'Для перекодированных источников; если недоступно, используется ближайшее меньшее';
+
+  @override
   String get settings_playback_subtitle_lang_subtitle =>
       'Автозагрузка при наличии';
 

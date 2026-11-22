@@ -152,6 +152,10 @@ final class AppConfigSettingsRegistry {
     _jsonString(PlayerControlsLayoutNotifier.inlineKey, expectList: true),
     _jsonString(PlayerControlsLayoutNotifier.fullscreenKey, expectList: true),
     _string(defaultStreamSourceKey, allowed: streamSourceKinds.toSet()),
+    _string(
+      defaultStreamResolutionKey,
+      allowed: streamResolutionHeights.keys.toSet(),
+    ),
     _int(
       PlayerSettingsStore.controlsAutoHideSecondsKey,
       min: PlayerSettingsStore.minControlsAutoHideSeconds,

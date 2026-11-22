@@ -472,6 +472,8 @@
   "player_stream_direct": "Diretta",
   "settings_playback_stream_source": "Sorgente stream predefinita",
   "settings_playback_stream_source_subtitle": "Usata all'avvio della riproduzione; altrimenti Diretta",
+  "settings_playback_stream_resolution": "Risoluzione predefinita",
+  "settings_playback_stream_resolution_subtitle": "Per le sorgenti transcodificate; se non disponibile, si usa quella inferiore successiva",
   "settings_playback_subtitle_lang_subtitle": "Carica automaticamente se disponibile",
   "settings_playback_subtitle_size": "Dimensione Carattere Sottotitoli",
   "settings_playback_subtitle_pos": "Posizione Verticale Sottotitoli",

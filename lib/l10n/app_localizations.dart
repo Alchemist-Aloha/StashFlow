@@ -3804,6 +3804,18 @@ abstract class AppLocalizations {
   /// **'Used when playback starts; falls back to Direct'**
   String get settings_playback_stream_source_subtitle;
 
+  /// No description provided for @settings_playback_stream_resolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Resolution'**
+  String get settings_playback_stream_resolution;
+
+  /// No description provided for @settings_playback_stream_resolution_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'For transcoded sources; uses the next lower resolution when unavailable'**
+  String get settings_playback_stream_resolution_subtitle;
+
   /// No description provided for @settings_playback_subtitle_lang_subtitle.
   ///
   /// In en, this message translates to:

@@ -48,6 +48,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
   String _defaultStreamSource = 'direct';
+  String _defaultStreamResolution = 'ORIGINAL';
   double _subtitleFontSize = 18.0;
   double _subtitlePositionBottomRatio = 0.15;
   String _subtitleTextAlignment = 'center';
@@ -102,6 +103,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _videoGravityOrientation =
         prefs.getBool(_videoGravityOrientationKey) ?? true;
     _defaultStreamSource = prefs.getString(defaultStreamSourceKey) ?? 'direct';
+    _defaultStreamResolution =
+        prefs.getString(defaultStreamResolutionKey) ?? 'ORIGINAL';
     _defaultSubtitleLanguage =
         prefs.getString(_defaultSubtitleLanguageKey) ?? 'none';
     _subtitleFontSize = prefs.getDouble(_subtitleFontSizeKey) ?? 18.0;
@@ -228,6 +231,37 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                                 .setString(defaultStreamSourceKey, value);
                           },
                         ),
+                        // Direct plays the file as-is, so resolution only applies to transcodes.
+                        if (_defaultStreamSource != 'direct') ...[
+                          Divider(height: context.dimensions.spacingLarge),
+                          _buildChoiceSelector(
+                            title: context
+                                .l10n
+                                .settings_playback_stream_resolution,
+                            description: context
+                                .l10n
+                                .settings_playback_stream_resolution_subtitle,
+                            value: _defaultStreamResolution,
+                            choices: [
+                              for (final MapEntry(key: res, value: height)
+                                  in streamResolutionHeights.entries)
+                                (
+                                  res,
+                                  height == null
+                                      ? context.l10n.player_stream_original
+                                      : height == 2160
+                                      ? '4K'
+                                      : '${height}p',
+                                ),
+                            ],
+                            onChanged: (value) async {
+                              setState(() => _defaultStreamResolution = value);
+                              await ref
+                                  .read(sharedPreferencesProvider)
+                                  .setString(defaultStreamResolutionKey, value);
+                            },
+                          ),
+                        ],
                         Divider(height: context.dimensions.spacingLarge),
                         _buildControlsAutoHideSlider(),
                         Divider(height: context.dimensions.spacingLarge),

@@ -582,6 +582,8 @@
   "player_stream_direct": "直连",
   "settings_playback_stream_source": "默认串流来源",
   "settings_playback_stream_source_subtitle": "开始播放时使用；不可用时回退到直连",
+  "settings_playback_stream_resolution": "默认分辨率",
+  "settings_playback_stream_resolution_subtitle": "用于转码来源；不可用时使用较低的分辨率",
   "settings_playback_subtitle_lang_subtitle": "如果可用则自动加载",
   "settings_playback_subtitle_size": "字幕字体大小",
   "settings_playback_subtitle_pos": "字幕垂直位置",
