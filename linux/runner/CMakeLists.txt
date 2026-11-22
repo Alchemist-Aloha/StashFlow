@@ -22,6 +22,10 @@ apply_standard_settings(${BINARY_NAME})
 add_definitions(-DAPPLICATION_ID="${APPLICATION_ID}")
 
 # Add dependency libraries. Add any application-specific dependencies here.
+# Flutter 3.50 exports its own _Unwind_* symbols. Unless libgcc_s is loaded before
+# the engine, C++ exceptions thrown in any library (such as VA-API drivers) abort.
+target_link_libraries(${BINARY_NAME} PRIVATE
+  "-Wl,--push-state,--no-as-needed,-l:libgcc_s.so.1,--pop-state")
 target_link_libraries(${BINARY_NAME} PRIVATE flutter)
 target_link_libraries(${BINARY_NAME} PRIVATE PkgConfig::GTK)
 
