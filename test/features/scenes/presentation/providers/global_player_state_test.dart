@@ -97,12 +97,12 @@ void main() {
       expect(state.playEndBehavior, VideoEndBehavior.stop);
       expect(state.showVideoDebugInfo, isFalse);
       expect(state.useDoubleTapSeek, isFalse);
-      expect(state.enableBackgroundPlayback, isFalse);
+      expect(state.enableBackgroundPlayback, isTrue);
       expect(state.respectAudioFocus, isTrue);
       final optOut = state.copyWith(respectAudioFocus: false);
       expect(optOut.respectAudioFocus, isFalse);
       expect(optOut.copyWith().respectAudioFocus, isFalse);
-      expect(state.enableNativePip, isFalse);
+      expect(state.enableNativePip, isTrue);
       expect(state.videoGravityOrientation, isTrue);
       expect(state.subtitleTextAlignment, equals('center'));
     });

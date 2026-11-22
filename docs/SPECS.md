@@ -1172,7 +1172,11 @@ queue and its previous/next navigation.
 
 ### Background playback and Android media session
 
-Background playback follows the persisted preference:
+Native Picture-in-Picture (`video_native_pip`) is enabled by default; an explicit
+saved choice is kept.
+
+Background playback follows the persisted preference (default enabled; an
+explicit saved choice is kept):
 
 - when enabled, playback may continue while the app is backgrounded and the
   media notification remains synchronized;

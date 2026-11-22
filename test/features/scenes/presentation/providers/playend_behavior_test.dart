@@ -792,6 +792,7 @@ void main() {
 
     test('focus gain respects background-disabled policy', () async {
       final notifier = await prepare();
+      notifier.setEnableBackgroundPlayback(false);
       notifier.play();
       await tick();
       interrupt(AudioInterruptionType.pause);

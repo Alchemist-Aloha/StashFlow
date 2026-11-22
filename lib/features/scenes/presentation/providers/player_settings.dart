@@ -35,9 +35,9 @@ class PlayerSettings {
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = false,
     this.controlsAutoHideSeconds = 2,
-    this.enableBackgroundPlayback = false,
+    this.enableBackgroundPlayback = true,
     this.respectAudioFocus = true,
-    this.enableNativePip = false,
+    this.enableNativePip = true,
     this.videoGravityOrientation = true,
     this.useActualSceneVideoInMiniPlayer = true,
     this.defaultSubtitleLanguage = 'none',
@@ -346,11 +346,11 @@ class PlayerSettingsStore {
           ? controlsAutoHideValue
           : 2,
       enableBackgroundPlayback:
-          prefs.getBool(enableBackgroundPlaybackKey) ?? false,
+          prefs.getBool(enableBackgroundPlaybackKey) ?? true,
       respectAudioFocus: prefs.get(respectAudioFocusKey) is bool
           ? prefs.getBool(respectAudioFocusKey)!
           : true,
-      enableNativePip: prefs.getBool(enableNativePipKey) ?? false,
+      enableNativePip: prefs.getBool(enableNativePipKey) ?? true,
       videoGravityOrientation:
           prefs.getBool(videoGravityOrientationKey) ?? true,
       useActualSceneVideoInMiniPlayer:

@@ -43,10 +43,10 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
   bool _useDoubleTapSeek = false;
   int _controlsAutoHideSeconds = 2;
-  bool _enableBackgroundPlayback = false;
+  bool _enableBackgroundPlayback = true;
   bool _respectAudioFocus = true;
   bool _systemMediaControls = true;
-  bool _enableNativePip = false;
+  bool _enableNativePip = true;
   bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
   String _defaultStreamSource = 'direct';
@@ -96,11 +96,11 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         .load()
         .controlsAutoHideSeconds;
     _enableBackgroundPlayback =
-        prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
+        prefs.getBool(_enableBackgroundPlaybackKey) ?? true;
     _respectAudioFocus = PlayerSettingsStore(prefs).load().respectAudioFocus;
     _systemMediaControls =
         prefs.getBool(PlayerSettingsStore.systemMediaControlsKey) ?? true;
-    _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
+    _enableNativePip = prefs.getBool(_enableNativePipKey) ?? true;
     _videoGravityOrientation =
         prefs.getBool(_videoGravityOrientationKey) ?? true;
     _defaultStreamSource = prefs.getString(defaultStreamSourceKey) ?? 'direct';

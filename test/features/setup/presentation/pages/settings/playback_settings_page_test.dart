@@ -74,7 +74,7 @@ void main() {
         expect(tester.widget<SwitchListTile>(tile).value, isTrue);
         expect(
           PlayerSettingsStore(prefs).load().enableBackgroundPlayback,
-          isFalse,
+          isTrue,
         );
         await tester.tap(tile);
         await tester.pumpAndSettle();
