@@ -9,7 +9,7 @@ on:
       stash-version:
         description: Stash release to test against (blank = server repo's pinned version, or "latest")
         required: false
-        default: ""
+        default: "latest"
 
 permissions:
   contents: read
@@ -39,6 +39,14 @@ jobs:
           channel: stable
           flutter-version: "3.50.1"
           cache: true
+
+      # flutter test runs native-asset build hooks (e.g. cnativeapi) for the host.
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config \
+            libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev \
+            libsecret-1-dev
 
       - name: Install dependencies
         run: flutter pub get
