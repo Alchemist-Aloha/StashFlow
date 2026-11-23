@@ -12,13 +12,13 @@
 ///
 /// On the Android emulator the host's loopback is `http://10.0.2.2:9999`.
 ///
-/// Preferences are in memory (`setMockInitialValues`), so a desktop run never
-/// reads or overwrites the developer's real profiles. Credentials still go to
-/// the platform keychain; the test deletes the keys it created.
+/// Preferences and credentials stay in memory; the test never reads or
+/// overwrites the developer's profiles or keychain.
 library;
 
 import 'dart:async';
-import 'dart:convert';
+import 'dart:io' show Platform;
+import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,23 +26,19 @@ import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/data/preferences/one_time_tips.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/player_surface.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/main.dart' as app;
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 const _url = String.fromEnvironment('STASH_URL');
 const _apiKey = String.fromEnvironment('STASH_API_KEY');
 
 // Values from stash-test-server fixtures/profile.json (pinned by tag v1).
-const _sceneTitles = {
-  'Coastal Drift',
-  'Harbor Lights',
-  'Ember Field',
-  'Prism Study',
-  'Mandelbrot Zoom',
-  'Cellular Bloom',
-  'Pocket Garden',
-  'Pulse Lab',
-};
+const _sceneTitle = 'Pocket Garden';
 const _tabs = <(IconData, Set<String>)>[
   (Icons.people, {'Mara Quill', 'Theo Vance', 'Iris Kade', 'June Ash'}),
   (
@@ -95,13 +91,6 @@ Future<void> _pumpUntil(
   );
 }
 
-Future<bool> _appears(WidgetTester tester, Finder finder, Duration timeout) =>
-    _pumpUntil(
-      tester,
-      finder,
-      timeout: timeout,
-    ).then((_) => true, onError: (Object _) => false);
-
 // `uri` keeps the base location under pushed routes; the last match is the top page.
 String _location(WidgetTester tester) =>
     GoRouter.of(tester.element(find.byType(Scaffold).first))
@@ -118,25 +107,16 @@ Future<void> _backTo(WidgetTester tester, String path) async {
   expect(_location(tester), path);
 }
 
-Future<void> _deleteProfileSecrets() async {
-  final prefs = await SharedPreferences.getInstance();
-  final raw = prefs.getString('server_profiles');
-  final ids = [
-    'test', // written by the drawer's "Test connection"
-    if (raw != null)
-      for (final p in jsonDecode(raw) as List<dynamic>)
-        (p as Map<String, dynamic>)['id'] as String,
-  ];
-  const storage = FlutterSecureStorage();
-  for (final id in ids) {
-    for (final key in ['api_key', 'username', 'password', 'cookie_header']) {
-      try {
-        await storage.delete(key: 'profile_${id}_$key');
-      } on Object catch (_) {
-        // Keychain unavailable (unsigned macOS build): the app used prefs.
-      }
-    }
-  }
+// Headless Linux need not provide the desktop power-management portal.
+class _NoopWakelock implements WakelockPlusLinuxPlugin {
+  @override
+  bool get isMock => true;
+
+  @override
+  Future<void> toggle({required bool enable}) async {}
+
+  @override
+  Future<bool> get enabled async => false;
 }
 
 void main() {
@@ -147,89 +127,116 @@ void main() {
     skip: _url.isEmpty,
     timeout: const Timeout(Duration(minutes: 10)),
     (tester) async {
+      FlutterSecureStorage.setMockInitialValues({});
       SharedPreferences.setMockInitialValues({
-        // Skip the first-run language picker and the GitHub update dialog.
         'app_language': 'en',
         'last_app_update_check_timestamp':
             DateTime.now().millisecondsSinceEpoch,
+        // The test covers server setup, not the one-time browsing tips or auto-next.
+        for (final tip in OneTimeTip.values) tip.key: false,
+        PlayerSettingsStore.playEndBehaviorKey: 'stop',
+        PlayerSettingsStore.resumePlayPositionKey: false,
       });
+      if (Platform.isLinux) {
+        final wakelock = wakelockPlusPlatformInstance;
+        wakelockPlusPlatformInstance = _NoopWakelock();
+        addTearDown(() => wakelockPlusPlatformInstance = wakelock);
+      }
       final l10n = lookupAppLocalizations(const Locale('en'));
 
-      // main() installs its own error hooks; flutter_test requires them back.
+      // Keep the test binding's error handlers active while pumping the app.
       final onError = FlutterError.onError;
+      final onPlatformError = PlatformDispatcher.instance.onError;
       final print = debugPrint;
       try {
         await app.main();
+      } finally {
+        FlutterError.onError = onError;
+        PlatformDispatcher.instance.onError = onPlatformError;
+        debugPrint = print;
+      }
 
-        // First launch prompts for a server; test builds skip that prompt.
-        // The empty scenes list behind the dialog offers the same button.
+      if (app.isTestMode) {
+        // The shell skips the first-run prompt in test mode.
+        final scaffold = find.byType(Scaffold).first;
+        await _pumpUntil(tester, scaffold);
+        unawaited(
+          GoRouter.of(tester.element(scaffold)).push('/settings/server'),
+        );
+      } else {
         final configure = find.descendant(
           of: find.byType(AlertDialog),
           matching: find.text(l10n.common_configure_now),
         );
-        if (await _appears(tester, configure, const Duration(seconds: 20))) {
-          await tester.tap(configure);
-        } else {
-          unawaited(
-            GoRouter.of(tester.element(find.byType(Scaffold).first))
-                .push('/settings/server'),
-          );
-        }
+        await _pumpUntil(tester, configure);
+        await tester.tap(configure);
+      }
 
-        final add = find.text(l10n.settings_server_profile_add);
-        await _pumpUntil(tester, add);
-        await tester.tap(add.last);
+      final add = find.text(l10n.settings_server_profile_add);
+      await _pumpUntil(tester, add);
+      await tester.tap(add.last);
 
-        await _pumpUntil(tester, _field(l10n.common_url));
-        await tester.enterText(
-          _field(l10n.settings_server_profile_name),
-          'stash-test-server',
-        );
-        await tester.enterText(_field(l10n.common_url), _url);
-        await tester.enterText(
-          _field(l10n.settings_server_auth_apikey),
-          _apiKey,
-        );
+      await _pumpUntil(tester, _field(l10n.common_url));
+      await tester.enterText(
+        _field(l10n.settings_server_profile_name),
+        'stash-test-server',
+      );
+      await tester.enterText(_field(l10n.common_url), _url);
+      await tester.enterText(_field(l10n.settings_server_auth_apikey), _apiKey);
 
-        final testButton = find.text(l10n.settings_server_test);
-        await tester.ensureVisible(testButton);
-        await tester.tap(testButton);
-        // Success shows the server version; failures start with "Error".
-        await _pumpUntil(
-          tester,
-          find.textContaining(RegExp(r'^(v?\d+\.\d+|Error)')),
-        );
-        expect(find.textContaining(RegExp(r'^Error')), findsNothing);
+      final testButton = find.text(l10n.settings_server_test);
+      await tester.ensureVisible(testButton);
+      await tester.tap(testButton);
+      // Success shows the server version; failures start with "Error".
+      await _pumpUntil(
+        tester,
+        find.textContaining(RegExp(r'^(v?\d+\.\d+|Error)')),
+      );
+      expect(find.textContaining(RegExp(r'^Error')), findsNothing);
 
-        final save = find.text(l10n.common_save);
-        await tester.ensureVisible(save);
-        await tester.tap(save);
-        await _pumpUntil(tester, _field(l10n.common_url), gone: true);
-        expect(find.text('stash-test-server'), findsWidgets);
+      final save = find.text(l10n.common_save);
+      await tester.ensureVisible(save);
+      await tester.tap(save);
+      await _pumpUntil(tester, _field(l10n.common_url), gone: true);
+      expect(find.text('stash-test-server'), findsWidgets);
 
-        await _backTo(tester, '/scenes');
-        final sceneCard = _anyText(_sceneTitles);
-        await _pumpUntil(tester, sceneCard);
+      await _backTo(tester, '/scenes');
+      final sceneCard = find.byWidgetPredicate(
+        (widget) => widget is SceneCard && widget.scene.title == _sceneTitle,
+        description: 'SceneCard for $_sceneTitle',
+      );
+      await _pumpUntil(tester, sceneCard);
+      final id = tester.widget<SceneCard>(sceneCard).scene.id;
+      await tester.ensureVisible(sceneCard);
+      await tester.tap(sceneCard);
+      await _pumpUntil(
+        tester,
+        find.byWidgetPredicate(
+          (widget) => widget is PlayerSurface && widget.scene.id == id,
+          description: 'player surface for $_sceneTitle',
+        ),
+      );
+      expect(_location(tester), '/scenes/scene/$id');
 
-        final title = (sceneCard.evaluate().first.widget as Text).data!;
-        await tester.tap(sceneCard.first);
-        await tester.pump(const Duration(seconds: 1));
-        expect(_location(tester), startsWith('/scenes/scene/'));
-        await _pumpUntil(tester, find.text(title));
-        // Let playback start so the native player initializes on this platform.
-        await tester.pump(const Duration(seconds: 3));
-        await _backTo(tester, '/scenes');
+      // The portrait player can occupy the viewport above the lazy title.
+      await tester.scrollUntilVisible(
+        find.descendant(
+          of: find.byKey(const Key('scene_header_identity')),
+          matching: find.text(_sceneTitle),
+        ),
+        150,
+        scrollable: find.ancestor(
+          of: find.byType(PlayerSurface),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await _backTo(tester, '/scenes');
 
-        for (final (icon, names) in _tabs) {
-          final tab = _navTab(icon);
-          await _pumpUntil(tester, tab);
-          await tester.tap(tab.first);
-          await _pumpUntil(tester, _anyText(names));
-        }
-      } finally {
-        FlutterError.onError = onError;
-        debugPrint = print;
-        await _deleteProfileSecrets();
+      for (final (icon, names) in _tabs) {
+        final tab = _navTab(icon);
+        await _pumpUntil(tester, tab);
+        await tester.tap(tab.first);
+        await _pumpUntil(tester, _anyText(names));
       }
     },
   );

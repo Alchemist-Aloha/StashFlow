@@ -445,7 +445,7 @@ bottom-right, galleries the image count bottom-right. Badge padding, corner
 insets, and icons follow the UI scale alongside text. Rating and count badges
 are omitted when empty. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
-scaling.
+scaling. Loading placeholders do not participate in Hero transitions.
 
 Grid, masonry, and horizontal-strip scene cards show a thin, accessible
 playback-position bar directly below the thumbnail when the saved `resumeTime`
@@ -1649,9 +1649,10 @@ interaction where browser security permits it.
 - The GUI e2e test `integration_test/app_e2e_test.dart` drives the real app
   through first-run setup, connection test, scenes, scene details and the
   library tabs. It takes the server via `--dart-define=STASH_URL` and
-  `STASH_API_KEY`, keeps preferences in memory, and runs in the same workflow
-  on Linux, Windows and macOS (x64 and arm64), the iOS simulator and the
-  Android emulator (`http://10.0.2.2:9999`).
+  `STASH_API_KEY`, keeps preferences and credentials in memory, and verifies
+  that the selected scene opens its own detail route and player surface. It
+  runs in the same workflow on Linux, Windows and macOS (x64 and arm64), the
+  iOS simulator and the Android emulator (`http://10.0.2.2:9999`).
 - Shared helpers live under `test/helpers/`; feature-specific fakes stay near
   their tests when reuse is not established.
 

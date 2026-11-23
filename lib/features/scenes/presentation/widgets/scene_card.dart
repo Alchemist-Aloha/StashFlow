@@ -132,7 +132,7 @@ class SceneCard extends ConsumerStatefulWidget {
   /// Whether to render this card using skeleton placeholders.
   final bool skeletonize;
 
-  /// Whether to wrap the thumbnail in a Hero widget.
+  /// Whether to wrap the loaded thumbnail in a Hero widget.
   final bool useHero;
 
   /// Optional focus target used when returning to a scene list.
@@ -421,7 +421,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       ),
     );
 
-    if (widget.useHero) {
+    if (widget.useHero && !widget.skeletonize) {
       return Hero(tag: 'scene_player_${widget.scene.id}', child: thumbnail);
     }
     return thumbnail;
