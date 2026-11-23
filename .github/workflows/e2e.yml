@@ -233,6 +233,15 @@ jobs:
             --dart-define=STASH_URL=http://10.0.2.2:9999 "--dart-define=STASH_API_KEY=$STASH_API_KEY"
             "--dart-define=STASH_USERNAME=$STASH_USERNAME" "--dart-define=STASH_PASSWORD=$STASH_PASSWORD"
 
+      # A native crash only surfaces as "did not complete"; print its report.
+      - name: Print macOS crash reports
+        if: failure() && matrix.target == 'macos'
+        run: |
+          shopt -s nullglob
+          for f in ~/Library/Logs/DiagnosticReports/StashFlow*; do
+            echo "::group::$f"; head -c 200000 "$f"; echo "::endgroup::"
+          done
+
       - name: Upload Stash log
         if: failure()
         uses: actions/upload-artifact@v7
