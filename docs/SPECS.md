@@ -1644,15 +1644,18 @@ interaction where browser security permits it.
   [stash-test-server](https://github.com/Alchemist-Aloha/stash-test-server).
   They skip unless `STASH_URL` is set, read expected values from the server's
   `fixtures/profile.json` (`STASH_FIXTURE`), and run in
-  `.github/workflows/e2e.yml`. The suite checks exact organized results and the
-  two seeded duplicate files in one group. It reads marker writes back before
-  deleting them; mutations must restore fixture state.
+  `.github/workflows/e2e.yml`. The suite checks sorted scene pagination, exact
+  organized results, tagged marker media, and the two seeded duplicate files
+  in one group. It reads marker writes back before deleting them; mutations must
+  restore fixture state.
 - The GUI e2e test `integration_test/app_e2e_test.dart` drives first-run API-key
   setup, then rejects and corrects a password and switches to that profile. It
-  searches and filters the seeded library, decodes authenticated video, seeks,
-  resumes in a new player session, and browses the library tabs. A fresh server
-  read checks the scene rating and playback checkpoint; teardown restores both
-  rating and activity. Run it only against a seeded test server.
+  searches and filters the seeded library, applies a server-saved sort preset,
+  decodes authenticated video, seeks, resumes in a new player session, and
+  checks that reopening from the mini-player retains the active session. It
+  also browses the library tabs. A fresh server read checks the scene rating
+  and playback checkpoint; teardown restores both rating and activity. Run it
+  only against a seeded test server.
 - The GUI test takes `STASH_URL`, `STASH_API_KEY`, `STASH_USERNAME`, and
   `STASH_PASSWORD` via `--dart-define`. It keeps profiles in memory and writes
   session cookies to a disposable support directory. The same workflow runs it

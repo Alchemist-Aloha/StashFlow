@@ -32,12 +32,15 @@ import 'package:stash_app_flutter/core/data/auth/auth_service.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
 import 'package:stash_app_flutter/core/data/preferences/secure_storage_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/features/galleries/data/repositories/graphql_gallery_repository.dart';
 import 'package:stash_app_flutter/features/groups/data/repositories/graphql_group_repository.dart';
 import 'package:stash_app_flutter/features/images/data/repositories/graphql_image_repository.dart';
 import 'package:stash_app_flutter/features/performers/data/repositories/graphql_performer_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_marker_repository.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene_marker.dart';
 import 'package:stash_app_flutter/features/setup/data/graphql/config.graphql.dart';
 import 'package:stash_app_flutter/features/setup/domain/models/server_profile.dart';
 import 'package:stash_app_flutter/features/studios/data/repositories/graphql_studio_repository.dart';
@@ -242,6 +245,52 @@ void main() {
         ]),
       );
     });
+
+    test('pages through organized scenes in descending rating order', () async {
+      final scenes = GraphQLSceneRepository(client);
+      final pages = [
+        for (var page = 1; page <= 3; page++)
+          await scenes.findScenesPage(
+            page: page,
+            perPage: 2,
+            organized: true,
+            sort: 'rating',
+          ),
+      ];
+
+      expect(
+        pages.map((page) => page.totalCount),
+        everyElement(fixture.count('organized_scenes')),
+      );
+      expect(pages.map((page) => page.scenes.map((scene) => scene.title)), [
+        ['Coastal Drift', 'Pocket Garden'],
+        ['Harbor Lights'],
+        <String>[],
+      ]);
+    });
+
+    test(
+      'filters the marker library and serves the matching marker media',
+      () async {
+        final tags = await GraphQLTagRepository(client).findTags(perPage: 100);
+        final outdoor = tags.singleWhere((tag) => tag.name == 'Outdoor');
+        final markers = await GraphQLSceneMarkerRepository(client)
+            .findSceneMarkers(
+              filter: SceneMarkerFilter(
+                tags: HierarchicalMultiCriterion(value: [outdoor.id]),
+              ),
+            );
+
+        expect(markers.map((marker) => marker.title), ['Wave sequence']);
+        final marker = markers.single;
+        expect(marker.sceneId, scenesByTitle['Coastal Drift']!.id);
+        expect(marker.primaryTagName, 'Ocean');
+        expect((marker.seconds, marker.endSeconds), (12.0, 20.0));
+        final headers = {'ApiKey': _requireEnv('STASH_API_KEY')};
+        expect(await _fetch(marker.screenshot!, headers), _served());
+        expect(await _fetch(marker.preview!, headers), _served());
+      },
+    );
 
     test('loads full scene details', () async {
       final want = fixture.scene('Aurora Pictures/Coastal Drift.mp4');

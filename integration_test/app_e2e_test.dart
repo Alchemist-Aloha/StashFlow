@@ -273,6 +273,18 @@ Future<void> _exerciseSceneSearch(
   await _tap(tester, apply);
   await _pumpUntil(tester, _sceneCard(_excludedSceneTitle));
   expect(find.byType(SceneCard), findsOneWidget);
+
+  // The server-seeded preset clears the active search and changes list order.
+  final presets = find.byTooltip(l10n.common_saved_filters);
+  final topRated = find.text('Top rated');
+  await _tap(tester, presets);
+  await _tap(tester, topRated);
+  await _pumpUntil(tester, topRated, gone: true);
+  await _pumpUntilCondition(tester, () {
+    final first = find.byType(SceneCard).evaluate().firstOrNull?.widget;
+    return first is SceneCard && first.scene.title == 'Coastal Drift';
+  }, 'Coastal Drift to become the first scene after applying Top rated');
+
   await _search(tester, l10n, _sceneTitle);
   await _pumpUntil(tester, _sceneCard(_sceneTitle));
 }
@@ -376,20 +388,23 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
   final container = ProviderScope.containerOf(tester.element(card));
   final playerNotifier = container.read(playerStateProvider.notifier);
   final surface = find.byWidgetPredicate(
-    (widget) => widget is PlayerSurface && widget.scene.id == id,
+    (widget) =>
+        widget is PlayerSurface && widget.scene.id == id && widget.showControls,
     description: 'player surface for $_sceneTitle',
   );
   final rating = find.byKey(const Key('scene_rating_controls'));
   final oneStar = find.descendant(of: rating, matching: find.text('1'));
+  final miniPlayer = find.byType(MiniPlayer);
   Future<void> openScene() async {
     await _tap(tester, card);
     await _pumpUntil(tester, surface);
+    await _pumpUntil(tester, miniPlayer, gone: true);
     expect(_location(tester), '/scenes/scene/$id');
   }
 
   Future<void> stopScene() async {
     await _backTo(tester, '/scenes');
-    final miniPlayer = find.byType(MiniPlayer);
+    await _pumpUntil(tester, miniPlayer);
     await _tap(
       tester,
       find.descendant(
@@ -501,6 +516,35 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
     );
     await tester.scrollUntilVisible(rating, 150, scrollable: detailsScroll);
     expect(oneStar, findsOneWidget);
+
+    // Returning through the mini-player must keep the active native session.
+    await _backTo(tester, '/scenes');
+    await _tap(
+      tester,
+      find.descendant(
+        of: miniPlayer,
+        matching: find.byTooltip(l10n.common_pause),
+      ),
+    );
+    await _pumpUntilCondition(
+      tester,
+      () => !resumed.state.playing,
+      'the mini-player to pause the active session',
+    );
+    final miniPosition = resumed.state.position;
+    await _tap(
+      tester,
+      find.descendant(of: miniPlayer, matching: find.text(_sceneTitle)),
+    );
+    await _pumpUntil(tester, miniPlayer, gone: true);
+    await _pumpUntil(tester, surface);
+    expect(_location(tester), '/scenes/scene/$id');
+    expect(
+      tester.widget<PlayerSurface>(surface).controller.player,
+      same(resumed),
+    );
+    expect(resumed.state.position, greaterThanOrEqualTo(miniPosition));
+
     await stopScene();
   } finally {
     if (playerNotifier.currentVideoController != null) {
