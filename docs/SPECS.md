@@ -1644,15 +1644,20 @@ interaction where browser security permits it.
   [stash-test-server](https://github.com/Alchemist-Aloha/stash-test-server).
   They skip unless `STASH_URL` is set, read expected values from the server's
   `fixtures/profile.json` (`STASH_FIXTURE`), and run in
-  `.github/workflows/e2e.yml`. Tests that write (ratings, favourites,
-  markers) must restore the fixture state so the server's own verifier passes.
-- The GUI e2e test `integration_test/app_e2e_test.dart` drives the real app
-  through first-run setup, connection test, scenes, scene details and the
-  library tabs. It takes the server via `--dart-define=STASH_URL` and
-  `STASH_API_KEY`, keeps preferences and credentials in memory, and verifies
-  that the selected scene opens its own detail route and player surface. It
-  runs in the same workflow on Linux, Windows and macOS (x64 and arm64), the
-  iOS simulator and the Android emulator (`http://10.0.2.2:9999`).
+  `.github/workflows/e2e.yml`. The suite checks exact organized results and the
+  two seeded duplicate files in one group. It reads marker writes back before
+  deleting them; mutations must restore fixture state.
+- The GUI e2e test `integration_test/app_e2e_test.dart` drives first-run API-key
+  setup, then rejects and corrects a password and switches to that profile. It
+  searches and filters the seeded library, decodes authenticated video, seeks,
+  resumes in a new player session, and browses the library tabs. A fresh server
+  read checks the scene rating and playback checkpoint; teardown restores both
+  rating and activity. Run it only against a seeded test server.
+- The GUI test takes `STASH_URL`, `STASH_API_KEY`, `STASH_USERNAME`, and
+  `STASH_PASSWORD` via `--dart-define`. It keeps profiles in memory and writes
+  session cookies to a disposable support directory. The same workflow runs it
+  on Linux, Windows and macOS (x64 and arm64), the iOS simulator, and the Android
+  emulator (`http://10.0.2.2:9999`).
 - Shared helpers live under `test/helpers/`; feature-specific fakes stay near
   their tests when reuse is not established.
 

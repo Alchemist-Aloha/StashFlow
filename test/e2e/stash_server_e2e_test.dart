@@ -233,6 +233,14 @@ void main() {
       final page = await GraphQLSceneRepository(client)
           .findScenesPage(perPage: 100, organized: true);
       expect(page.totalCount, fixture.count('organized_scenes'));
+      expect(
+        page.scenes.map((scene) => scene.title),
+        unorderedEquals([
+          for (final scene
+              in fixture.scenes.values.cast<Map<String, Object?>>())
+            if (scene['organized'] == true) scene['title'] as String,
+        ]),
+      );
     });
 
     test('loads full scene details', () async {
@@ -406,12 +414,14 @@ void main() {
       final groups = await GraphQLSceneRepository(client)
           .findDuplicateScenes(distance: 8);
       expect(
-        groups.map((g) => g.scenes.map((s) => s.title).toSet()),
-        contains(containsAll([scenesByTitle['Harbor Lights']!.title])),
-      );
-      expect(
-        groups.expand((g) => g.scenes),
-        hasLength(greaterThanOrEqualTo(2)),
+        groups.map(
+          (group) => group.scenes.map(
+            (scene) => scene.path?.split(RegExp(r'[/\\]')).last,
+          ),
+        ),
+        contains(
+          unorderedEquals(['Harbor Lights.mp4', 'Harbor Lights (480p).mp4']),
+        ),
       );
     });
 
@@ -471,13 +481,21 @@ void main() {
           seconds: 3,
           primaryTagId: intro.id,
         );
-        await scenes.deleteSceneMarker(marker.id);
+        try {
+          final persisted = await scenes.getSceneById(drift.id, refresh: true);
+          final saved = persisted.markers.singleWhere(
+            (entry) => entry.id == marker.id,
+          );
+          expect(saved.title, 'e2e marker');
+          expect(saved.seconds, 3);
+          expect(saved.primaryTagId, intro.id);
+        } finally {
+          await scenes.deleteSceneMarker(marker.id);
+        }
+        final cleaned = await scenes.getSceneById(drift.id, refresh: true);
         expect(
-          (await scenes.getSceneById(
-            drift.id,
-            refresh: true,
-          )).markers.map((m) => m.title),
-          isNot(contains('e2e marker')),
+          cleaned.markers.map((entry) => entry.id),
+          isNot(contains(marker.id)),
         );
 
         final performers = GraphQLPerformerRepository(client);

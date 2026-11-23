@@ -156,10 +156,13 @@ jobs:
         env:
           STASH_URL: ${{ steps.stash.outputs.url }}
           STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
           TARGET: ${{ matrix.target }}
         run: |
           cmd=(flutter test "$TEST_FILE" -d "$TARGET" --reporter expanded
-            "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY")
+            "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY"
+            "--dart-define=STASH_USERNAME=$STASH_USERNAME" "--dart-define=STASH_PASSWORD=$STASH_PASSWORD")
           if [[ "$TARGET" == linux ]]; then
             dbus-run-session -- xvfb-run -a "${cmd[@]}"
           else
@@ -183,9 +186,12 @@ jobs:
         env:
           STASH_URL: ${{ steps.stash.outputs.url }}
           STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
         run: >-
           flutter test "$TEST_FILE" -d "$IOS_DEVICE" --reporter expanded
           "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY"
+          "--dart-define=STASH_USERNAME=$STASH_USERNAME" "--dart-define=STASH_PASSWORD=$STASH_PASSWORD"
 
       - name: Enable KVM
         if: matrix.target == 'android'
@@ -201,13 +207,18 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         env:
           STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
         with:
           api-level: 34
           arch: x86_64
           target: google_apis
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
-          script: flutter test "$TEST_FILE" -d emulator-5554 --reporter expanded --dart-define=STASH_URL=http://10.0.2.2:9999 "--dart-define=STASH_API_KEY=$STASH_API_KEY"
+          script: >-
+            flutter test "$TEST_FILE" -d emulator-5554 --reporter expanded
+            --dart-define=STASH_URL=http://10.0.2.2:9999 "--dart-define=STASH_API_KEY=$STASH_API_KEY"
+            "--dart-define=STASH_USERNAME=$STASH_USERNAME" "--dart-define=STASH_PASSWORD=$STASH_PASSWORD"
 
       - name: Upload Stash log
         if: failure()
