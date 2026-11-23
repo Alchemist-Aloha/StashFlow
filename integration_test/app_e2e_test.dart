@@ -565,9 +565,10 @@ void main() {
         reason: 'native playback needs real app mode',
       );
       final platform = PathProviderPlatform.instance;
-      final support = await (await getTemporaryDirectory()).createTemp(
-        'stashflow-e2e-support-',
-      );
+      final cacheDir = await getTemporaryDirectory();
+      // macOS can return the sandbox cache path before it exists.
+      await cacheDir.create(recursive: true);
+      final support = await cacheDir.createTemp('stashflow-e2e-support-');
       PathProviderPlatform.instance = _IsolatedSupportPath(
         platform,
         support.path,
