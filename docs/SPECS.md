@@ -1177,7 +1177,8 @@ queue and its previous/next navigation.
 
 Native Picture-in-Picture is available wherever supported and its button
 placement follows Player Controls. On Android, `android_auto_pip` (default
-enabled; included in configuration backups) arms the system's automatic PiP
+disabled; explicit saved choices are kept and included in configuration backups)
+arms the system's automatic PiP
 exactly while a scene plays locally (not paused, not casting), from any page or
 view mode: Android 12+ uses auto-enter PiP params, older versions enter from
 `onUserLeaveHint`. Entering PiP shows the video-only surface; returning restores

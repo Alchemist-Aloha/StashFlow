@@ -388,7 +388,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   bool _pipRequestInFlight = false;
   Completer<bool>? _pipFullscreenExit;
   double? _lastAndroidPipRatio;
-  bool _autoPip = true;
+  bool _autoPip = false;
   // NaN = never sent, null = disarmed.
   double? _armedAutoPipRatio = double.nan;
   DateTime? _lastPipRequestAt;
@@ -471,7 +471,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         ref
             .read(sharedPreferencesProvider)
             .getBool(PlayerSettingsStore.autoPipKey) ??
-        true;
+        false;
     listenSelf((_, next) {
       _syncAutoPip(next);
       _syncSystemMediaControls(next);

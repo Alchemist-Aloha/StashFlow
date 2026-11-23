@@ -44,7 +44,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _enableBackgroundPlayback = true;
   bool _respectAudioFocus = true;
   bool _systemMediaControls = true;
-  bool _autoPip = true;
+  bool _autoPip = false;
   bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
   String _defaultStreamSource = 'direct';
@@ -99,7 +99,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _respectAudioFocus = PlayerSettingsStore(prefs).load().respectAudioFocus;
     _systemMediaControls =
         prefs.getBool(PlayerSettingsStore.systemMediaControlsKey) ?? true;
-    _autoPip = prefs.getBool(PlayerSettingsStore.autoPipKey) ?? true;
+    _autoPip = prefs.getBool(PlayerSettingsStore.autoPipKey) ?? false;
     _videoGravityOrientation =
         prefs.getBool(_videoGravityOrientationKey) ?? true;
     _defaultStreamSource = prefs.getString(defaultStreamSourceKey) ?? 'direct';

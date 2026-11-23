@@ -701,7 +701,11 @@ void main() {
               .setMockMethodCallHandler(channel, null);
         });
         final notifier = await prepare();
+        expect(notifier.autoPip, isFalse);
         notifier.play();
+        await tick();
+        expect(armed.last, isFalse);
+        notifier.setAutoPip(true);
         await tick();
         expect(armed.last, isTrue);
         notifier.pause();

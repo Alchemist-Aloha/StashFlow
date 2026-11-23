@@ -111,6 +111,32 @@ void main() {
     expect(PlayerSettingsStore(prefs).load().enableBackgroundPlayback, isTrue);
   }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
 
+  for (final saved in <bool?>[null, false, true]) {
+    testWidgets('Android auto-PiP defaults off and preserves saved $saved', (
+      tester,
+    ) async {
+      if (saved != null) {
+        await prefs.setBool(PlayerSettingsStore.autoPipKey, saved);
+      }
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: const PlaybackSettingsPage(),
+      );
+      await tester.pumpAndSettle();
+      final tile = find.byKey(const Key('settings_auto_pip'));
+      await tester.ensureVisible(tile);
+      expect(tester.widget<SwitchListTile>(tile).value, saved ?? false);
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(PlaybackSettingsPage)),
+      );
+      expect(
+        container.read(playerStateProvider.notifier).autoPip,
+        saved ?? false,
+      );
+    }, variant: TargetPlatformVariant.only(TargetPlatform.android));
+  }
+
   testWidgets('Android background-only options follow background playback', (
     tester,
   ) async {
