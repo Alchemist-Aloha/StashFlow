@@ -1407,8 +1407,7 @@ nightly builds. Pushes to `main` do not create release candidates.
 Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.50.1
 and resolves dependencies with
 `flutter pub get`
-Pub fetches the media-kit fork rather than
-using the ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
+Pub fetches the pinned media-kit fork from GitHub. Linux installs system graphics/audio runtime
 libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
 
 The app requires Flutter 3.50.1 or newer and Dart 3.14 or newer within Dart 3.x.
