@@ -312,7 +312,11 @@ void main() {
 
       final tags = await GraphQLTagRepository(client).findTags(perPage: 100);
       expect(tags.map((t) => t.name), unorderedEquals(fixture.names('tags')));
-      final fractal = tags.singleWhere((t) => t.name == 'Fractal');
+      // Like studios, the tag list fragment omits the hierarchy.
+      final fractal = await GraphQLTagRepository(client).getTagById(
+        tags.singleWhere((t) => t.name == 'Fractal').id,
+        refresh: true,
+      );
       expect(fractal.parents.map((p) => p.name), ['Abstract']);
 
       final groups = await GraphQLGroupRepository(client)
