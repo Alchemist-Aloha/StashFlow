@@ -51,6 +51,7 @@ const _url = String.fromEnvironment('STASH_URL');
 const _apiKey = String.fromEnvironment('STASH_API_KEY');
 const _username = String.fromEnvironment('STASH_USERNAME');
 const _password = String.fromEnvironment('STASH_PASSWORD');
+const _hostSupportDir = String.fromEnvironment('STASH_E2E_SUPPORT_DIR');
 
 // Values from stash-test-server fixtures/profile.json (pinned by tag v1).
 const _sceneTitle = 'Pocket Garden';
@@ -565,18 +566,20 @@ void main() {
         reason: 'native playback needs real app mode',
       );
       final platform = PathProviderPlatform.instance;
-      final cacheDir = await getTemporaryDirectory();
-      // macOS can return the sandbox cache path before it exists.
-      await cacheDir.create(recursive: true);
-      final support = await cacheDir.createTemp('stashflow-e2e-support-');
+      var supportPath = _hostSupportDir;
+      if (supportPath.isEmpty) {
+        final cacheDir = await getTemporaryDirectory();
+        // macOS can return the sandbox cache path before it exists.
+        await cacheDir.create(recursive: true);
+        final support = await cacheDir.createTemp('stashflow-e2e-support-');
+        supportPath = support.path;
+        addTearDown(() => support.delete(recursive: true));
+      }
       PathProviderPlatform.instance = _IsolatedSupportPath(
         platform,
-        support.path,
+        supportPath,
       );
-      addTearDown(() async {
-        PathProviderPlatform.instance = platform;
-        await support.delete(recursive: true);
-      });
+      addTearDown(() => PathProviderPlatform.instance = platform);
       FlutterSecureStorage.setMockInitialValues({});
       SharedPreferences.setMockInitialValues({
         'app_language': 'en',

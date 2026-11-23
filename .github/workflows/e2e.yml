@@ -172,11 +172,16 @@ jobs:
           cmd=(flutter test "$TEST_FILE" -d "$TARGET" --reporter expanded
             "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY"
             "--dart-define=STASH_USERNAME=$STASH_USERNAME" "--dart-define=STASH_PASSWORD=$STASH_PASSWORD")
-          if [[ "$TARGET" == linux ]]; then
-            dbus-run-session -- xvfb-run -a "${cmd[@]}"
-          else
-            "${cmd[@]}"
-          fi
+          case "$TARGET" in
+            linux) dbus-run-session -- xvfb-run -a "${cmd[@]}" ;;
+            windows)
+              # Delete the cookie directory after Flutter has stopped the app.
+              support_dir="$(mktemp -d "$(cygpath -u "$RUNNER_TEMP")/stashflow-e2e-support.XXXXXX")"
+              trap 'rm -rf -- "$support_dir"' EXIT
+              "${cmd[@]}" "--dart-define=STASH_E2E_SUPPORT_DIR=$(cygpath -m "$support_dir")"
+              ;;
+            *) "${cmd[@]}" ;;
+          esac
           if [[ "$GUI_RUNNER" == macos-x64 ]]; then
             binary=build/macos/Build/Products/Debug/StashFlow.app/Contents/MacOS/StashFlow
             actual="$(xcrun lipo -archs "$binary")"
