@@ -1644,7 +1644,14 @@ interaction where browser security permits it.
   [stash-test-server](https://github.com/Alchemist-Aloha/stash-test-server).
   They skip unless `STASH_URL` is set, read expected values from the server's
   `fixtures/profile.json` (`STASH_FIXTURE`), and run in
-  `.github/workflows/e2e.yml`.
+  `.github/workflows/e2e.yml`. Tests that write (ratings, favourites,
+  markers) must restore the fixture state so the server's own verifier passes.
+- The GUI e2e test `integration_test/app_e2e_test.dart` drives the real app
+  through first-run setup, connection test, scenes, scene details and the
+  library tabs. It takes the server via `--dart-define=STASH_URL` and
+  `STASH_API_KEY`, keeps preferences in memory, and runs in the same workflow
+  on Linux, Windows and macOS (x64 and arm64), the iOS simulator and the
+  Android emulator (`http://10.0.2.2:9999`).
 - Shared helpers live under `test/helpers/`; feature-specific fakes stay near
   their tests when reuse is not established.
 

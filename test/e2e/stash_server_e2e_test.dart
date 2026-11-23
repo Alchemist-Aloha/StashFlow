@@ -38,6 +38,7 @@ import 'package:stash_app_flutter/features/images/data/repositories/graphql_imag
 import 'package:stash_app_flutter/features/performers/data/repositories/graphql_performer_repository.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/setup/data/graphql/config.graphql.dart';
 import 'package:stash_app_flutter/features/setup/domain/models/server_profile.dart';
 import 'package:stash_app_flutter/features/studios/data/repositories/graphql_studio_repository.dart';
 import 'package:stash_app_flutter/features/tags/data/repositories/graphql_tag_repository.dart';
@@ -342,6 +343,154 @@ void main() {
         ]),
       );
     });
+
+    test('distinguishes image clips from animated GIFs', () async {
+      final images = await GraphQLImageRepository(client)
+          .findImages(perPage: 100);
+      // Stash stores both as VideoFile; the app plays only real videos as clips.
+      expect(images.where((i) => i.isClip).map((i) => i.title), ['Loop Clip']);
+      final spinner = images.singleWhere((i) => i.title == 'Spinner');
+      expect(spinner.isGif, isTrue);
+      expect(spinner.isClip, isFalse);
+    });
+
+    test(
+      'loads gallery chapters, group hierarchy and performer fields',
+      () async {
+        final galleries = await GraphQLGalleryRepository(client)
+            .findGalleries(perPage: 100);
+        final ocean = await GraphQLGalleryRepository(client).getGalleryById(
+          galleries.singleWhere((g) => g.title == 'Ocean Studies').id,
+          refresh: true,
+        );
+        expect(ocean.chapters.map((c) => (c.title, c.imageIndex)), [
+          ('Calm', 1),
+          ('Storm', 5),
+        ]);
+
+        final groups = await GraphQLGroupRepository(client)
+            .findGroups(perPage: 100);
+        final collection = await GraphQLGroupRepository(client).getGroupById(
+          groups.singleWhere((g) => g.name == 'Patterns Collection').id,
+          refresh: true,
+        );
+        expect(collection.subGroups.map((g) => g.name), ['Patterns Vol. 1']);
+
+        final want = (fixture.json['performers'] as List<dynamic>)
+            .cast<Map<String, dynamic>>()
+            .singleWhere((p) => p['name'] == 'Mara Quill');
+        final performers = await GraphQLPerformerRepository(client)
+            .findPerformers(perPage: 100);
+        final mara = await GraphQLPerformerRepository(client).getPerformerById(
+          performers.singleWhere((p) => p.name == 'Mara Quill').id,
+          refresh: true,
+        );
+        expect(mara.tattoos, want['tattoos']);
+        expect(mara.customFields, want['custom_fields']);
+        expect(mara.stashIds.map((s) => s.stashId), [
+          for (final s in want['stash_ids'] as List<dynamic>)
+            (s as Map<String, dynamic>)['stash_id'],
+        ]);
+      },
+    );
+
+    test('loads scene custom fields and stash IDs', () async {
+      final want = fixture.scene('Aurora Pictures/Coastal Drift.mp4');
+      final scene = await GraphQLSceneRepository(client)
+          .getSceneById(scenesByTitle['Coastal Drift']!.id, refresh: true);
+      expect(scene.customFields, want['custom_fields']);
+      expect(scene.stashIds, hasLength(1));
+    });
+
+    test('finds the phash duplicate pair', () async {
+      final groups = await GraphQLSceneRepository(client)
+          .findDuplicateScenes(distance: 8);
+      expect(
+        groups.map((g) => g.scenes.map((s) => s.title).toSet()),
+        contains(containsAll([scenesByTitle['Harbor Lights']!.title])),
+      );
+      expect(
+        groups.expand((g) => g.scenes),
+        hasLength(greaterThanOrEqualTo(2)),
+      );
+    });
+
+    test('lists and runs the fixture scraper', () async {
+      final scenes = GraphQLSceneRepository(client);
+      final scrapers = await scenes.listScrapers(types: ['SCENE']);
+      expect(scrapers.map((s) => s.id), contains('fixture_scraper'));
+
+      final byUrl = await scenes.scrapeSceneURL(
+        'https://example.com/scenes/coastal-drift',
+      );
+      expect(byUrl?.title, 'Coastal Drift');
+      expect(byUrl?.details, startsWith('Scraped: '));
+
+      final byName = await scenes.scrapeSingleScene(
+        scraperId: 'fixture_scraper',
+        query: 'Harbor',
+      );
+      expect(byName.map((s) => s.title), ['Harbor Lights']);
+
+      final performers = await GraphQLPerformerRepository(client)
+          .scrapePerformer(scraperId: 'fixture_scraper', query: 'Mara');
+      expect(performers.map((p) => p.name), ['Mara Quill']);
+    });
+
+    test('reads configured stash-box endpoints', () async {
+      final result = await client.query$GetStashBoxes();
+      expect(result.hasException, isFalse, reason: '${result.exception}');
+      final boxes = result.parsedData!.configuration.general.stashBoxes;
+      expect(boxes.map((b) => b.name), [
+        for (final b in fixture.json['stash_boxes'] as List<dynamic>)
+          (b as Map<String, dynamic>)['name'],
+      ]);
+    });
+
+    test(
+      'writes ratings, favourites and markers, then restores them',
+      () async {
+        final scenes = GraphQLSceneRepository(client);
+        final drift = scenesByTitle['Coastal Drift']!;
+        final original = await scenes.getSceneById(drift.id, refresh: true);
+        final originalRating = original.rating100!;
+        addTearDown(() => scenes.updateSceneRating(drift.id, originalRating));
+        await scenes.updateSceneRating(drift.id, 20);
+        expect(
+          (await scenes.getSceneById(drift.id, refresh: true)).rating100,
+          20,
+        );
+
+        // An explicit primary tag stops the app creating one named after the marker.
+        final intro = (await GraphQLTagRepository(
+          client,
+        ).findTags(perPage: 100)).singleWhere((t) => t.name == 'Intro');
+        final marker = await scenes.createSceneMarker(
+          sceneId: drift.id,
+          title: 'e2e marker',
+          seconds: 3,
+          primaryTagId: intro.id,
+        );
+        await scenes.deleteSceneMarker(marker.id);
+        expect(
+          (await scenes.getSceneById(
+            drift.id,
+            refresh: true,
+          )).markers.map((m) => m.title),
+          isNot(contains('e2e marker')),
+        );
+
+        final performers = GraphQLPerformerRepository(client);
+        final theo = (await performers.findPerformers(perPage: 100))
+            .singleWhere((p) => p.name == 'Theo Vance');
+        addTearDown(() => performers.setPerformerFavorite(theo.id, false));
+        await performers.setPerformerFavorite(theo.id, true);
+        expect(
+          (await performers.getPerformerById(theo.id, refresh: true)).favorite,
+          isTrue,
+        );
+      },
+    );
 
     test('rejects an invalid API key', () async {
       final built = await _clientFor(

@@ -21,6 +21,7 @@ import 'queue_playback_coordinator.dart';
 import 'scene_details_provider.dart';
 import 'scene_playback_position_provider.dart';
 import 'scene_list_provider.dart';
+import '../../data/repositories/graphql_scene_repository.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/playback_media.dart';
 import '../../data/repositories/stream_prewarmer.dart';
@@ -424,14 +425,23 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       ),
     );
 
+    // The final activity save runs from onDispose, where ref.read is invalid;
+    // a listened copy still follows profile switches. Without a configured
+    // server the provider errors, and there is nowhere to save to.
+    GraphQLSceneRepository? sceneRepository;
+    ref.listen(
+      sceneRepositoryProvider,
+      (_, next) => sceneRepository = next,
+      onError: (_, _) => sceneRepository = null,
+      fireImmediately: true,
+    );
     _activityTracker = PlaybackActivityTracker(
       now: DateTime.now,
       isMounted: () => ref.mounted,
-      incrementPlayCount: (sceneId) =>
-          ref.read(sceneRepositoryProvider).incrementScenePlayCount(sceneId),
-      saveSceneActivity: (sceneId, resumeTime, playDuration) => ref
-          .read(sceneRepositoryProvider)
-          .saveSceneActivity(
+      incrementPlayCount: (sceneId) async =>
+          sceneRepository?.incrementScenePlayCount(sceneId),
+      saveSceneActivity: (sceneId, resumeTime, playDuration) async =>
+          sceneRepository?.saveSceneActivity(
             sceneId,
             resumeTime: resumeTime,
             playDuration: playDuration,
