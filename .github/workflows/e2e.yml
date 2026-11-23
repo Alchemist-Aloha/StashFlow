@@ -1,0 +1,64 @@
+name: E2E (stash-test-server)
+
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+  workflow_dispatch:
+    inputs:
+      stash-version:
+        description: Stash release to test against (blank = server repo's pinned version, or "latest")
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Live Stash server
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Start seeded Stash server
+        id: stash
+        uses: Alchemist-Aloha/stash-test-server@v1
+        with:
+          stash-version: ${{ inputs.stash-version }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.50.1"
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
+
+      - name: Run e2e tests
+        env:
+          STASH_URL: ${{ steps.stash.outputs.url }}
+          STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
+          STASH_FIXTURE: ${{ steps.stash.outputs.fixture }}
+        run: flutter test test/e2e --reporter expanded
+
+      - name: Upload Stash log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stash-log
+          path: ${{ steps.stash.outputs.data-dir }}/stash.log
+          if-no-files-found: ignore

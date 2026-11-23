@@ -1637,6 +1637,13 @@ interaction where browser security permits it.
   controls, fullscreen surfaces, keyboard focus, and localization.
 - Integration/host tests cover navigation and native contracts where a unit or
   widget test cannot provide confidence.
+- Live-server e2e tests under `test/e2e/` (tag `e2e`) run the real GraphQL
+  repositories and auth flows (API key and password session) against a Stash
+  server seeded by
+  [stash-test-server](https://github.com/Alchemist-Aloha/stash-test-server).
+  They skip unless `STASH_URL` is set, read expected values from the server's
+  `fixtures/profile.json` (`STASH_FIXTURE`), and run in
+  `.github/workflows/e2e.yml`.
 - Shared helpers live under `test/helpers/`; feature-specific fakes stay near
   their tests when reuse is not established.
 
