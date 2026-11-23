@@ -1,5 +1,5 @@
 {
-  "version": "1.36.0",
+  "version": "1.43.0",
   "platforms": [
     {
       "id": "android",
@@ -8,17 +8,28 @@
         {
           "architecture": "ARM64",
           "format": "APK",
-          "file": "StashFlow-1.36.0-android-arm64-v8a.apk"
+          "file": "StashFlow-1.43.0+116-android-arm64-v8a.apk"
         },
         {
           "architecture": "ARMv7",
           "format": "APK",
-          "file": "StashFlow-1.36.0-android-armeabi-v7a.apk"
+          "file": "StashFlow-1.43.0+116-android-armeabi-v7a.apk"
         },
         {
           "architecture": "x86_64",
           "format": "APK",
-          "file": "StashFlow-1.36.0-android-x86_64.apk"
+          "file": "StashFlow-1.43.0+116-android-x86_64.apk"
+        }
+      ]
+    },
+    {
+      "id": "ios",
+      "name": "iOS",
+      "packages": [
+        {
+          "architecture": "Unsigned",
+          "format": "IPA",
+          "file": "StashFlow-1.43.0+116-ios-unsigned.ipa"
         }
       ]
     },
@@ -27,14 +38,24 @@
       "name": "Windows",
       "packages": [
         {
+          "architecture": "ARM64",
+          "format": "EXE",
+          "file": "StashFlow-1.43.0+116-windows-arm64.exe"
+        },
+        {
+          "architecture": "ARM64",
+          "format": "ZIP",
+          "file": "StashFlow-1.43.0+116-windows-arm64.zip"
+        },
+        {
           "architecture": "x64",
           "format": "EXE",
-          "file": "StashFlow-1.36.0-windows-x64.exe"
+          "file": "StashFlow-1.43.0+116-windows-x64.exe"
         },
         {
           "architecture": "x64",
           "format": "ZIP",
-          "file": "StashFlow-1.36.0-windows-x64.zip"
+          "file": "StashFlow-1.43.0+116-windows-x64.zip"
         }
       ]
     },
@@ -45,7 +66,12 @@
         {
           "architecture": "ARM64",
           "format": "ZIP",
-          "file": "StashFlow-1.36.0-macos-arm64.zip"
+          "file": "StashFlow-1.43.0+116-macos-arm64.zip"
+        },
+        {
+          "architecture": "x86_64",
+          "format": "ZIP",
+          "file": "StashFlow-1.43.0+116-macos-x86_64.zip"
         }
       ]
     },
@@ -54,24 +80,44 @@
       "name": "Linux",
       "packages": [
         {
+          "architecture": "ARM64",
+          "format": "AppImage",
+          "file": "StashFlow-1.43.0+116-linux-arm64.AppImage"
+        },
+        {
+          "architecture": "ARM64",
+          "format": "Deb",
+          "file": "StashFlow-1.43.0+116-linux-arm64.deb"
+        },
+        {
+          "architecture": "ARM64",
+          "format": "Pacman",
+          "file": "StashFlow-1.43.0+116-linux-arm64.pkg.tar.zst"
+        },
+        {
+          "architecture": "ARM64",
+          "format": "ZIP",
+          "file": "StashFlow-1.43.0+116-linux-arm64.zip"
+        },
+        {
           "architecture": "x64",
           "format": "AppImage",
-          "file": "StashFlow-1.36.0-linux-x64.AppImage"
+          "file": "StashFlow-1.43.0+116-linux-x64.AppImage"
         },
         {
           "architecture": "x64",
           "format": "Deb",
-          "file": "StashFlow-1.36.0-linux-x64.deb"
+          "file": "StashFlow-1.43.0+116-linux-x64.deb"
         },
         {
           "architecture": "x64",
           "format": "Pacman",
-          "file": "StashFlow-1.36.0-linux-x64.pkg.tar.zst"
+          "file": "StashFlow-1.43.0+116-linux-x64.pkg.tar.zst"
         },
         {
           "architecture": "x64",
           "format": "ZIP",
-          "file": "StashFlow-1.36.0-linux-x64.zip"
+          "file": "StashFlow-1.43.0+116-linux-x64.zip"
         }
       ]
     },
@@ -82,7 +128,7 @@
         {
           "architecture": "",
           "format": "ZIP",
-          "file": "StashFlow-1.36.0-web.zip"
+          "file": "StashFlow-1.43.0+116-web.zip"
         }
       ]
     }

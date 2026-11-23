@@ -1,7 +1,7 @@
 {
   "@@locale": "ko",
   "pageTitle": "StashFlow — 라이브러리를, 자연스럽게.",
-  "description": "Stash 서버를 위한 멀티플랫폼 클라이언트. Android, Windows, macOS, Linux에서 미디어를 탐색하고 재생하고 관리하세요.",
+  "description": "Stash 서버를 위한 멀티플랫폼 클라이언트. Android, iOS, Windows, macOS, Linux에서 미디어를 탐색하고 재생하고 관리하세요.",
   "skip": "본문으로 이동",
   "overview": "소개",
   "mobile": "모바일",
@@ -14,7 +14,6 @@
   "explore": "자세히 보기",
   "desktopBrowse": "StashFlow 데스크톱 라이브러리 탐색",
   "desktopPlay": "데스크톱 장면 재생 및 세부 정보",
-  "heroNote": "Android 앱에서 촬영. 보라색 프리셋, 다크 모드.",
   "mobileTitle": "작은 화면.\n온전한 경험.",
   "mobileLead": "스와이프로 다음 장면으로. 앱을 나가지 않고 라이브러리를 탐색하고 재생하고 편집하세요.",
   "browse": "탐색",
@@ -39,7 +38,7 @@
   "webPackage": "자체 호스팅 웹 앱",
   "downloadsUnavailable": "이 릴리스의 다운로드는 아직 제공되지 않습니다. 릴리스 페이지를 확인하세요.",
   "demoNote": "웹 데모는 API 키 인증을 사용하며 재생은 브라우저에 따라 제한됩니다.",
-  "serverNote": "개인 Stash 서버가 필요합니다. 현재 iOS 앱은 없습니다.",
+  "serverNote": "개인 Stash 서버가 필요합니다.",
   "source": "GitHub 소스 코드",
   "language": "언어"
 }

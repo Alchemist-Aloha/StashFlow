@@ -51,7 +51,7 @@ test('latest downloads use uploaded assets, replacing removed builds and rejecti
   const snapshot = JSON.parse(readFileSync(new URL('./downloads.json', import.meta.url)))
   const assets = snapshot.platforms.flatMap(platform => platform.packages.map(pkg => ({
     name: pkg.file, state: 'uploaded',
-    browser_download_url: `https://github.com/Alchemist-Aloha/StashFlow/releases/download/v${snapshot.version}/${pkg.file}`,
+    browser_download_url: `https://github.com/Alchemist-Aloha/StashFlow/releases/download/v${snapshot.version}/${encodeURIComponent(pkg.file)}`,
   })))
   const parsed = parseRelease({ tag_name: `v${snapshot.version}`, assets })
   assert.deepEqual(parsed.platforms, snapshot.platforms.map(platform => ({

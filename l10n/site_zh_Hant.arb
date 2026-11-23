@@ -1,7 +1,7 @@
 {
   "@@locale": "zh_Hant",
   "pageTitle": "StashFlow — 讓媒體庫自在流動。",
-  "description": "連接 Stash 伺服器的多平台用戶端。在 Android、Windows、macOS 和 Linux 上瀏覽、播放並管理媒體。",
+  "description": "連接 Stash 伺服器的多平台用戶端。在 Android、iOS、Windows、macOS 和 Linux 上瀏覽、播放並管理媒體。",
   "skip": "跳至正文",
   "overview": "概覽",
   "mobile": "行動版",
@@ -14,7 +14,6 @@
   "explore": "進一步了解",
   "desktopBrowse": "StashFlow 桌面版媒體庫瀏覽",
   "desktopPlay": "桌面版場景播放與詳細資訊",
-  "heroNote": "擷取自 Android 應用程式。紫色預設，深色模式。",
   "mobileTitle": "小螢幕\n完整體驗",
   "mobileLead": "滑向下一個場景。無需離開應用程式，即可瀏覽、播放和編輯媒體庫。",
   "browse": "瀏覽",
@@ -39,7 +38,7 @@
   "webPackage": "自託管網頁應用",
   "downloadsUnavailable": "此版本暫未提供下載，請查看發布頁面。",
   "demoNote": "網頁版示範使用 API 金鑰驗證，播放能力受瀏覽器限制。",
-  "serverNote": "需要你自己的 Stash 伺服器。目前沒有 iOS 應用程式。",
+  "serverNote": "需要你自己的 Stash 伺服器。",
   "source": "GitHub 原始碼",
   "language": "語言"
 }

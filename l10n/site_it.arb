@@ -1,7 +1,7 @@
 {
   "@@locale": "it",
   "pageTitle": "StashFlow — La tua libreria, in armonia.",
-  "description": "Un client multipiattaforma per il tuo server Stash. Esplora, riproduci e gestisci i tuoi media su Android, Windows, macOS e Linux.",
+  "description": "Un client multipiattaforma per il tuo server Stash. Esplora, riproduci e gestisci i tuoi media su Android, iOS, Windows, macOS e Linux.",
   "skip": "Vai al contenuto",
   "overview": "Panoramica",
   "mobile": "Mobile",
@@ -14,7 +14,6 @@
   "explore": "Scopri di più",
   "desktopBrowse": "Libreria StashFlow su desktop",
   "desktopPlay": "Riproduzione e dettagli delle scene su desktop",
-  "heroNote": "Acquisito nell’app Android. Preimpostazione viola, modalità scura.",
   "mobileTitle": "Piccolo schermo.\nEsperienza completa.",
   "mobileLead": "Scorri alla scena successiva. Esplora, riproduci e modifica la tua libreria senza uscire dall’app.",
   "browse": "Esplora",
@@ -39,7 +38,7 @@
   "webPackage": "App web da ospitare sul proprio server",
   "downloadsUnavailable": "I download per questa versione non sono ancora disponibili. Consulta la pagina della versione.",
   "demoNote": "La demo web usa l'autenticazione con chiave API e ha limiti di riproduzione legati al browser.",
-  "serverNote": "Richiede un server Stash personale. Al momento non esiste un'app iOS.",
+  "serverNote": "Richiede un server Stash personale.",
   "source": "Codice su GitHub",
   "language": "Lingua"
 }

@@ -35,7 +35,7 @@ After hydration, the latest-release API response replaces both version labels an
 the complete download list atomically, using actual uploaded assets and their
 validated GitHub URLs—not guessed filenames or substituted version strings.
 New supported architectures/formats appear automatically; removed assets and
-empty platform groups disappear. Recognized package formats are APK, EXE, ZIP,
+empty platform groups disappear. Recognized package formats are APK, IPA, EXE, ZIP,
 DEB, RPM, DMG, PKG, MSI, MSIX, AppImage, pkg.tar.zst, tar.gz, and tar.xz.
 Asset filenames follow StashFlow-<version>-<platform>-<architecture>.<format>
 (without an architecture for web). Checksums, incomplete uploads, unknown formats,

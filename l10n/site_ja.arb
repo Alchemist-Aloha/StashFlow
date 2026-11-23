@@ -1,7 +1,7 @@
 {
   "@@locale": "ja",
   "pageTitle": "StashFlow — ライブラリを、心地よく。",
-  "description": "Stashサーバー用のマルチプラットフォームクライアント。Android、Windows、macOS、Linuxでメディアの閲覧・再生・管理ができます。",
+  "description": "Stashサーバー用のマルチプラットフォームクライアント。Android、iOS、Windows、macOS、Linuxでメディアの閲覧・再生・管理ができます。",
   "skip": "コンテンツへ移動",
   "overview": "概要",
   "mobile": "モバイル",
@@ -14,7 +14,6 @@
   "explore": "詳しく見る",
   "desktopBrowse": "StashFlowデスクトップ版のライブラリ閲覧",
   "desktopPlay": "デスクトップ版のシーン再生と詳細",
-  "heroNote": "Androidアプリで撮影。パープルのプリセット、ダークモード。",
   "mobileTitle": "小さな画面で。\nすべての体験を。",
   "mobileLead": "スワイプで次のシーンへ。アプリを離れずに、ライブラリの閲覧・再生・編集を。",
   "browse": "閲覧",
@@ -39,7 +38,7 @@
   "webPackage": "セルフホスト用ウェブアプリ",
   "downloadsUnavailable": "このリリースのダウンロードはまだ利用できません。リリースページをご確認ください。",
   "demoNote": "WebデモはAPIキー認証を使用し、再生にはブラウザーによる制限があります。",
-  "serverNote": "自分のStashサーバーが必要です。現在iOSアプリはありません。",
+  "serverNote": "自分のStashサーバーが必要です。",
   "source": "GitHubのソースコード",
   "language": "言語"
 }

@@ -11,7 +11,7 @@ const release = ref({
   tag: `v${bundledRelease.version}`,
   platforms: bundledRelease.platforms.map(platform => ({
     ...platform,
-    packages: platform.packages.map(pkg => ({ ...pkg, url: `${releaseBase}/${pkg.file}` })),
+    packages: platform.packages.map(pkg => ({ ...pkg, url: `${releaseBase}/${encodeURIComponent(pkg.file)}` })),
   })),
 })
 const request = new AbortController()
@@ -56,10 +56,9 @@ defineProps({
         <div class="actions"><a class="button" href="#download">{{ copy.download }}</a><a class="text-link" href="#mobile">{{ copy.explore }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
         <p class="hero-feature">{{ copy.feedCopy }}</p>
       </div>
-      <figure class="hero-devices">
+      <div class="hero-devices">
         <div class="phone hero-phone"><img :src="`${assetPrefix}/assets/scroll_feed.webp`" width="720" height="1600" :alt="copy.feed" fetchpriority="high"></div>
-        <figcaption class="device-note">{{ copy.heroNote }}</figcaption>
-      </figure>
+      </div>
     </section>
 
     <section class="mobile-showcase" id="mobile" aria-labelledby="mobile-title">
@@ -82,7 +81,6 @@ defineProps({
           <figure class="showcase-panel refine-panel"><div class="phone"><img :src="`${assetPrefix}/assets/edit_scene.webp`" width="540" height="1200" :alt="copy.refine" loading="lazy"></div><figcaption><h3>{{ copy.refine }}</h3><p>{{ copy.refineCopy }}</p></figcaption></figure>
         </div>
       </fieldset>
-      <p class="screenshot-note">{{ copy.heroNote }}</p>
     </section>
 
     <section class="desktop-showcase" id="desktop" aria-labelledby="desktop-title">

@@ -34,7 +34,7 @@ with clear download links and honest platform and web-demo limitations.
   and sorting with saved defaults through existing screenshots.
 - Link to the main application repository, latest release, and web demo.
 - Preserve localized ARB copy and usable content/navigation without JavaScript.
-- Explain that a Stash server is required and there is no iOS application target.
+- Explain that a Stash server is required and that the iOS IPA is unsigned.
 - Verify sample media artwork publication rights before public deployment.
 
 ## Brand Commitments

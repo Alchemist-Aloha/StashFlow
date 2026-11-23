@@ -10,28 +10,34 @@ preserving native radios and disclosure interactions.
 metrics or a wall of feature cards. The user-pinned reference is Apple's product
 introduction style.
 
-**OWN-WORLD:** Screenshot-led palette: blush white (#f8f4f8), plum ink
-(#241b27), plum-black showcase (#171117), and soft orchid (#eab5ec) actions
-with dark plum labels. Muted mauve copy and lavender-tinted tool surfaces connect
-the light sections to the app captures. The hero commits to plum-black with
-orchid display type, left-aligned editorial copy, and a single full-height Android
-Feed capture. The vertical video interface, not desktop hardware, leads the page. The light mobile
-showcase provides a deliberate release from that opening. The download finale
-lets the existing orchid accent own a full section, with plum type and an organized
-download directory. Flat platform groups use hairline separators, architecture
-and format labels, and drawn download arrows rather than a wall of cards. The
-published version and releases link stay visible, with the web package separated
-from native builds. Self-hosted variable Manrope
-honors the requested font, with system fallback for unsupported scripts. Fluid
-38–96px hero type at weight 800, 36–68px section type (up to 96px for the
-control showcase and download finale), and 18–23px supporting copy. Pill actions with defined borders and quiet press feedback, plum-tinted device
-frames, hairline separators, and offset soft device shadows. The control showcase
-uses the hero's plum-black and orchid language: large unboxed screenshots lead,
-with quieter captions below rather than pale image cards.
+**OWN-WORLD:** Screenshot-led palette tuned for vibrant contrast: warm blush paper
+(#faf4fd), deep plum ink (#1b0d24), deep obsidian-plum showcases (#110818) with
+directional violet studio lighting, electric orchid (#f59eff) display type and
+actions with deep plum labels (#1d0826), and royal violet (#7a26c1) active
+controls and light-section accents. Plum-tinted secondary copy (#584366 on light,
+#d6c5e3 on dark) and an unboxed lavender studio stage (#efe0fa to #f9effc) connect
+the light sections to the app captures. The hero commits to obsidian-plum with
+directional amethyst lighting behind the Android Feed capture, orchid display type,
+and crisp white-lavender lead copy. The vertical video interface, not desktop
+hardware, leads the page. The light mobile showcase provides a deliberate release
+from that opening, with a royal-violet selected segment and a clean tinted stage.
+The download finale lets the orchid-to-lavender gradient own a full section, with
+deep plum type, subtle format pills, and an organized download directory. Flat
+platform groups use crisp structural rules, architecture and pill format labels,
+and drawn download arrows rather than a wall of cards. The published version and
+releases link stay visible, with the web package separated from native builds.
+Self-hosted variable Manrope honors the requested font, with system fallback for
+unsupported scripts. Fluid 38–96px hero type at weight 800, 36–68px section type
+(up to 92px for the control showcase and download finale), and 18–22px supporting
+copy. Pill actions with crisp borders and quiet press feedback, sculpted
+plum-tinted device frames, clean metallic-plum laptop bases, hairline separators,
+and grounded offset device shadows. The control showcase uses the hero's
+obsidian-plum and orchid language: large unboxed screenshots lead, with vibrant
+violet top rules and high-contrast captions below rather than pale image cards.
 
 **STORY:** Understand that StashFlow connects to an existing Stash server, explore
 mobile Feed/browsing/playback/editing, see desktop support, then download a native
-release. Explain web-demo limitations and the lack of an iOS target.
+release (including the unsigned iOS IPA). Explain web-demo limitations.
 
 **FIRST VIEWPORT:** Orchid headline and concise server-connection copy on the
 left; a large, upright Feed screenshot on the right. Download and exploration
