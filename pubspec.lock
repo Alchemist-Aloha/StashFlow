@@ -214,10 +214,10 @@ packages:
     dependency: transitive
     description:
       name: cnativeapi
-      sha256: "510107ee007a7b4a01aa1eaec3ed097007d65760be6b272f093c4ca34a0d12ff"
+      sha256: "49662734cdf3dd1707b1ee35102ac1754e0ab3d450a2d30b066730f219dacc86"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.1"
+    version: "0.6.2"
   code_assets:
     dependency: transitive
     description:
@@ -1026,8 +1026,8 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit
-      ref: "0a66ca7270b6b68040d0801b8e2f9328ad883f9f"
-      resolved-ref: "0a66ca7270b6b68040d0801b8e2f9328ad883f9f"
+      ref: "768fcd2e918c8e942f1c085701088f74857c9603"
+      resolved-ref: "768fcd2e918c8e942f1c085701088f74857c9603"
       url: "https://github.com/Alchemist-Aloha/media-kit.git"
     source: git
     version: "1.1.11"
@@ -1035,8 +1035,8 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit_video
-      ref: "0a66ca7270b6b68040d0801b8e2f9328ad883f9f"
-      resolved-ref: "0a66ca7270b6b68040d0801b8e2f9328ad883f9f"
+      ref: "768fcd2e918c8e942f1c085701088f74857c9603"
+      resolved-ref: "768fcd2e918c8e942f1c085701088f74857c9603"
       url: "https://github.com/Alchemist-Aloha/media-kit.git"
     source: git
     version: "1.2.5"
@@ -1100,18 +1100,18 @@ packages:
     dependency: transitive
     description:
       name: nativeapi
-      sha256: c0c566cf6788a6b6a32ce2666f02364b7fb50133f07a744bc1e793b5b8bb2c78
+      sha256: "339b7a91a27ce5c33659cab92cf8e76736142985433652f91a63cc5348135bfb"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.1"
+    version: "0.6.2"
   nativeapi_flutter:
     dependency: transitive
     description:
       name: nativeapi_flutter
-      sha256: "3bb647f299932a4a19aa066051aabc6872f6876fa50c38a0ef132da414e9db26"
+      sha256: b0507253748ba9690a295bc162208a91d348809185409e5aee7b09e77ab5d8a3
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.1"
+    version: "0.6.2"
   nm:
     dependency: transitive
     description:
@@ -1516,82 +1516,82 @@ packages:
     dependency: "direct main"
     description:
       name: sherpa_onnx
-      sha256: "428675d1950b67b648d4a6f1680afa52e6cb23dd1137a650ad50d6a04c97d91e"
+      sha256: c3e72726a08d381f97c5249608919e9b5c022d9296a0f8463c6d2c61d53d3a6c
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   sherpa_onnx_android_arm64:
     dependency: transitive
     description:
       name: sherpa_onnx_android_arm64
-      sha256: "155c8fbe1c4d917be13327e91c929ea3aaa0b78abc811cf76dbcbcbac730439d"
+      sha256: "061eb67015ac1dbfc04dff9462d5a086fd10575e7c11bf1d3c14b854525b3c27"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   sherpa_onnx_android_armeabi:
     dependency: transitive
     description:
       name: sherpa_onnx_android_armeabi
-      sha256: d3999189aa222ac2d820b9704f3e3e9e80b8ff1fd2725c0ebb48fd0dcad3631e
+      sha256: f3967b39bd4b2091546d6e150f85aec03dd0a3ec5e3c3a8e7957b77964359d0e
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   sherpa_onnx_android_x86:
     dependency: transitive
     description:
       name: sherpa_onnx_android_x86
-      sha256: ac2352415de8f0459a8b4f7e9c39b6a2f1555296586ae7b02498f93975108b61
+      sha256: ba209b0463c1e350f28e4d9100edbe073673d8c659290064658ab77c49136d89
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   sherpa_onnx_android_x86_64:
     dependency: transitive
     description:
       name: sherpa_onnx_android_x86_64
-      sha256: "1cd10fa17c7ca3afb9b48297111bb9fc5e2cbdb0507f87ab62f5f667b6c34cde"
+      sha256: c662bf6e5f9b90c8ad688d2aa69fa44f954fa064a49e9cba54a6dd1a510607b1
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   sherpa_onnx_ios:
     dependency: transitive
     description:
       name: sherpa_onnx_ios
-      sha256: "696d4c4ee00c5ac55a3b679085549a9de62f7117183d74766f6e140d8e239748"
+      sha256: "436eada1a4ecff5ab8b45f75379177106c4175eb422c96722ac9983a4504b823"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   sherpa_onnx_linux:
     dependency: transitive
     description:
       name: sherpa_onnx_linux
-      sha256: "83338f0f5838c32d6fb5e86ea28991f1345aa9dbf984ba6e51776ddea9916e27"
+      sha256: "20dca4da8089c52a4c527168bc158657817f1d72ce639f0474685cc41869cee8"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   sherpa_onnx_macos:
     dependency: transitive
     description:
       name: sherpa_onnx_macos
-      sha256: "0324afe06f4dcd30ca8250c1dd9518b9d4d8b0b26123e1688e65c8e0120d9ae2"
+      sha256: "6028041e790cffebbf1ecec72d49359cb8b63d234cd9c04d75923c67615e6211"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   sherpa_onnx_web:
     dependency: transitive
     description:
       name: sherpa_onnx_web
-      sha256: "98fff83215f425474bfe04707f2411f31469e5fce6df37ffae2d070ba6f11e54"
+      sha256: "07b395676417b7a35d14fc90ff1b20a1bbca4d9198933493af3f08e7539c9c41"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   sherpa_onnx_windows:
     dependency: transitive
     description:
       name: sherpa_onnx_windows
-      sha256: "89c6d176c474ddedcc255c36ca77a7128d4158634e6557d0fc0882a9161f68be"
+      sha256: "9fafd1e209aaf64458faef10c9d8e514aba6b38626a4c8fe494fff1f3390692c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   skeletonizer:
     dependency: "direct main"
     description:
@@ -1968,10 +1968,10 @@ packages:
     dependency: "direct main"
     description:
       name: window_manager
-      sha256: "43fc05da6cf670b456a758c88b60e2c1371fc32e1030aac308d0087d87c9368d"
+      sha256: "9504ae37e618d31524e337ad3cf9600d252acf11fffa3ddb9b0b5ced634542d9"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.0"
+    version: "0.7.1"
   xdg_directories:
     dependency: transitive
     description:
