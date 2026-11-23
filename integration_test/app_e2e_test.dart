@@ -546,7 +546,10 @@ class _NoopWakelock implements WakelockPlusLinuxPlugin {
 }
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  // The waits below drive frames explicitly. Avoid extra live/pointer frames
+  // contending with native player startup on hosted Apple runners.
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
+      LiveTestWidgetsFlutterBindingFramePolicy.onlyPumps;
 
   testWidgets(
     'connects with both auth modes, filters the library, and plays and edits a scene',

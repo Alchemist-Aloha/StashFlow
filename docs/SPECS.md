@@ -1658,6 +1658,9 @@ interaction where browser security permits it.
   session cookies to a disposable support directory. The same workflow runs it
   on Linux, Windows and macOS (x64 and arm64), the iOS simulator, and the Android
   emulator (`http://10.0.2.2:9999`).
+  The Intel GUI leg runs natively on `macos-26-intel`. The iOS simulator boots
+  during dependency setup, and an active branch run is allowed to finish when a
+  newer push queues another run. Pull request runs still cancel superseded runs.
 - Shared helpers live under `test/helpers/`; feature-specific fakes stay near
   their tests when reuse is not established.
 

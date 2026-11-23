@@ -16,7 +16,8 @@ permissions:
 
 concurrency:
   group: e2e-${{ github.ref }}
-  cancel-in-progress: true
+  # A cold simulator build can take over ten minutes. Finish started branch runs.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   e2e:
@@ -84,7 +85,7 @@ jobs:
           - { name: windows-x64, os: windows-latest, target: windows }
           - { name: windows-arm64, os: windows-11-arm, target: windows, git-flutter: true }
           - { name: macos-arm64, os: macos-26, target: macos }
-          - { name: macos-x64, os: macos-15-intel, target: macos }
+          - { name: macos-x64, os: macos-26-intel, target: macos }
           - { name: ios-simulator, os: macos-26, target: ios }
           - { name: android-x64-emulator, os: ubuntu-26.04, target: android }
     defaults:
@@ -103,6 +104,18 @@ jobs:
         uses: Alchemist-Aloha/stash-test-server@v1
         with:
           stash-version: ${{ inputs.stash-version }}
+
+      - name: Start iOS simulator
+        if: matrix.target == 'ios'
+        timeout-minutes: 5
+        run: |
+          udid="$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          print(next(d["udid"] for runtime, ds in sorted(devices.items(), reverse=True)
+                     if "iOS" in runtime for d in ds if d["name"].startswith("iPhone")))')"
+          xcrun simctl boot "$udid"
+          echo "IOS_DEVICE=$udid" >> "$GITHUB_ENV"
 
       - name: Setup Java
         if: matrix.target == 'android'
@@ -130,11 +143,6 @@ jobs:
           echo "FLUTTER_ROOT=$root" >> "$GITHUB_ENV"
           "$root/bin/flutter" --version
 
-      - name: Select Xcode 26 on Intel macOS
-        if: matrix.name == 'macos-x64'
-        # connectivity_plus uses Network.framework APIs from the macOS 26 SDK.
-        run: sudo xcode-select --switch /Applications/Xcode_26.3.app/Contents/Developer
-
       - name: Install Linux build and runtime dependencies
         if: runner.os == 'Linux'
         run: |
@@ -159,6 +167,7 @@ jobs:
           STASH_USERNAME: ${{ steps.stash.outputs.username }}
           STASH_PASSWORD: ${{ steps.stash.outputs.password }}
           TARGET: ${{ matrix.target }}
+          GUI_RUNNER: ${{ matrix.name }}
         run: |
           cmd=(flutter test "$TEST_FILE" -d "$TARGET" --reporter expanded
             "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY"
@@ -168,28 +177,27 @@ jobs:
           else
             "${cmd[@]}"
           fi
+          if [[ "$GUI_RUNNER" == macos-x64 ]]; then
+            binary=build/macos/Build/Products/Debug/StashFlow.app/Contents/MacOS/StashFlow
+            actual="$(xcrun lipo -archs "$binary")"
+            [[ "$actual" == x86_64 ]] || { echo "::error::Expected x86_64 test binary, got $actual"; exit 1; }
+          fi
 
-      - name: Boot iOS simulator
+      - name: Wait for iOS simulator
         if: matrix.target == 'ios'
-        run: |
-          udid="$(xcrun simctl list devices available -j | python3 -c '
-          import json, sys
-          devices = json.load(sys.stdin)["devices"]
-          print(next(d["udid"] for runtime, ds in sorted(devices.items(), reverse=True)
-                     if "iOS" in runtime for d in ds if d["name"].startswith("iPhone")))')"
-          xcrun simctl boot "$udid"
-          xcrun simctl bootstatus "$udid"
-          echo "IOS_DEVICE=$udid" >> "$GITHUB_ENV"
+        timeout-minutes: 5
+        run: xcrun simctl bootstatus "$IOS_DEVICE"
 
       - name: Run GUI test (iOS simulator)
         if: matrix.target == 'ios'
+        timeout-minutes: 35
         env:
           STASH_URL: ${{ steps.stash.outputs.url }}
           STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
           STASH_USERNAME: ${{ steps.stash.outputs.username }}
           STASH_PASSWORD: ${{ steps.stash.outputs.password }}
         run: >-
-          flutter test "$TEST_FILE" -d "$IOS_DEVICE" --reporter expanded
+          flutter test "$TEST_FILE" -d "$IOS_DEVICE" --reporter expanded --no-uninstall
           "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY"
           "--dart-define=STASH_USERNAME=$STASH_USERNAME" "--dart-define=STASH_PASSWORD=$STASH_PASSWORD"
 
