@@ -303,7 +303,11 @@ void main() {
         studios.map((s) => s.name),
         unorderedEquals(fixture.names('studios')),
       );
-      final aurora = studios.singleWhere((s) => s.name == 'Aurora Pictures');
+      // The list fragment omits parent_studio; only the detail query has it.
+      final aurora = await GraphQLStudioRepository(client).getStudioById(
+        studios.singleWhere((s) => s.name == 'Aurora Pictures').id,
+        refresh: true,
+      );
       expect(aurora.parentStudio?.name, 'Meridian Media Group');
 
       final tags = await GraphQLTagRepository(client).findTags(perPage: 100);
