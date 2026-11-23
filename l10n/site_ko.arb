@@ -34,6 +34,7 @@
   "startCopy": "StashFlow를 다운로드하고 Stash 서버를 연결하여 라이브러리를 즐겨보세요.",
   "releases": "릴리스 보기",
   "demo": "웹 데모 체험",
+  "obtainium": "Obtainium에서 받기",
   "web": "웹",
   "webPackage": "자체 호스팅 웹 앱",
   "downloadsUnavailable": "이 릴리스의 다운로드는 아직 제공되지 않습니다. 릴리스 페이지를 확인하세요.",

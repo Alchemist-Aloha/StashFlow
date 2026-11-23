@@ -4,6 +4,8 @@ import bundledRelease from '../downloads.json'
 import { loadRepositoryInfo } from './repository.js'
 
 const repositoryName = ref('StashFlow')
+// Obtainium's redirect page opens the app's add-source flow for this repository.
+const obtainiumUrl = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Alchemist-Aloha/StashFlow'
 const releaseBase = `https://github.com/Alchemist-Aloha/StashFlow/releases/download/v${bundledRelease.version}`
 const release = ref({
   tag: `v${bundledRelease.version}`,
@@ -115,6 +117,7 @@ defineProps({
               </a>
             </li>
           </ul>
+          <a v-if="platform.id === 'android'" class="obtainium-badge" :href="obtainiumUrl"><img :src="`${assetPrefix}/assets/obtainium-badge.png`" width="646" height="250" :alt="copy.obtainium" loading="lazy"></a>
         </div>
       </div>
       <div class="actions"><a class="text-link" href="https://alchemist-aloha.github.io/StashFlow/">{{ copy.demo }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>

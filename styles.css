@@ -139,6 +139,10 @@ h2 { font-size: clamp(36px, 4.8vw, 68px); line-height: 1.06; letter-spacing: -.0
 .package-label { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .package-format { font-size: 12px; font-weight: 500; }
 .package-arrow { width: 18px; height: 18px; flex-shrink: 0; }
+/* The badge art carries its own padding, so the link drops the row padding and hover fill. */
+.download-platform a.obtainium-badge { display: inline-flex; min-height: 44px; margin-top: 12px; padding: 0; }
+.download-platform a.obtainium-badge:hover { background: none; }
+.obtainium-badge img { display: block; width: auto; height: 56px; }
 .download-platform.web-platform { grid-column: 1 / -1; display: flex; align-items: center; gap: 32px; }
 .download-platform.web-platform h3 { margin-bottom: 0; }
 .download-platform.web-platform ul { flex: 1; max-width: 420px; }

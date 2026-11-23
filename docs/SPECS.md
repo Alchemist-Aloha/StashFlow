@@ -42,7 +42,9 @@ Asset filenames follow StashFlow-<version>-<platform>-<architecture>.<format>
 and unsafe URLs are omitted. A release with no recognized assets shows a localized
 message and the View releases link. Invalid or unavailable API responses preserve
 the bundled version and links together. No rebuild is needed for live updates;
-JavaScript-disabled visitors receive the bundled snapshot.
+JavaScript-disabled visitors receive the bundled snapshot. The Android group ends
+with the self-hosted "Get it on Obtainium" badge, linking to Obtainium's redirect
+for adding this repository; it appears only while Android packages are listed.
 The control section is a full-width plum-black interlude
 with orchid display type and larger, unboxed filter/sort screenshots above their
 captions. Wide layouts stagger those screenshots; narrow layouts retain a stacked

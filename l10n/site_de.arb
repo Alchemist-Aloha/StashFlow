@@ -34,6 +34,7 @@
   "startCopy": "Lade StashFlow herunter, verbinde deinen Stash-Server und entdecke deine Bibliothek.",
   "releases": "Releases ansehen",
   "demo": "Web-Demo testen",
+  "obtainium": "Bei Obtainium holen",
   "web": "Web",
   "webPackage": "Web-App zum Selbsthosten",
   "downloadsUnavailable": "Für diese Version sind noch keine Downloads verfügbar. Sieh auf der Release-Seite nach.",

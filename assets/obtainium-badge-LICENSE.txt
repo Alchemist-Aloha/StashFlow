@@ -1,0 +1,4 @@
+obtainium-badge.png is the "Get it on Obtainium" badge from the Obtainium
+project (https://github.com/ImranR98/Obtainium, assets/graphics/badge_obtainium.png),
+copyright Imran Remtulla and contributors, licensed under the GNU General
+Public License v3.0. The full license text is in ../LICENSE.

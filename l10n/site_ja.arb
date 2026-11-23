@@ -34,6 +34,7 @@
   "startCopy": "StashFlowをダウンロードし、Stashサーバーに接続して、ライブラリを楽しみましょう。",
   "releases": "リリースを見る",
   "demo": "Webデモを試す",
+  "obtainium": "Obtainium で入手",
   "web": "ウェブ",
   "webPackage": "セルフホスト用ウェブアプリ",
   "downloadsUnavailable": "このリリースのダウンロードはまだ利用できません。リリースページをご確認ください。",

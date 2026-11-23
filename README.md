@@ -35,8 +35,8 @@ This branch has no application release or deployment workflows.
 
 The hero features Android's vertical Feed mode. The mobile showcase starts with
 Feed, alongside Browse, Play, and Refine; the desktop section pairs Linux browsing
-with playback and details. All captures use the test library at
-`http://192.168.88.225:29999` and the Purple preset in dark mode.
+with playback and details. All captures use the test library and the Purple
+preset in dark mode.
 Device frames preserve full screenshot proportions.
 Screenshots contain sample media artwork; verify publication rights before
 deploying publicly.
@@ -69,6 +69,9 @@ License in `assets/fonts/OFL.txt`. System fonts cover unsupported scripts.
 The header's GitHub mark comes from
 [Primer Octicons](https://github.com/primer/octicons/blob/main/icons/mark-github-16.svg);
 its MIT license is in `assets/octicons-LICENSE.txt`.
+The Android download's "Get it on Obtainium" badge comes from
+[Obtainium](https://github.com/ImranR98/Obtainium) (GPL-3.0); see
+`assets/obtainium-badge-LICENSE.txt`.
 The website's license is [GPL-3.0](LICENSE).
 
 ## Verification

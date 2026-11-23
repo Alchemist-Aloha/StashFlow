@@ -34,6 +34,7 @@
   "startCopy": "下载 StashFlow，连接你的 Stash 服务器，让媒体库成为主角。",
   "releases": "查看发布版本",
   "demo": "体验网页版",
+  "obtainium": "在 Obtainium 获取",
   "web": "网页",
   "webPackage": "自托管网页应用",
   "downloadsUnavailable": "此版本暂未提供下载，请查看发布页面。",
