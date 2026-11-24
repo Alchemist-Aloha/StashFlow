@@ -494,7 +494,7 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
     final pausedAt = player.state.position;
 
     final identity = find.descendant(
-      of: find.byKey(const Key('scene_header_identity')),
+      of: find.byKey(const Key('scene_header_title')),
       matching: find.text(_sceneTitle),
     );
     // The video stays fixed; the scene panel below it owns scrolling.

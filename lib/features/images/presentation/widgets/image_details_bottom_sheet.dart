@@ -35,41 +35,27 @@ class ImageDetailsBottomSheet extends StatelessWidget {
           borderRadius: const BorderRadius.vertical(
             top: Radius.circular(AppTheme.radiusExtraLarge),
           ),
-          child: ListView(
-            shrinkWrap: true,
-            padding: EdgeInsets.all(dims.spacingLarge),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          context.l10n.details_image,
-                          style: context.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: dims.spacingSmall),
-                        Text(
-                          ImageDetailsContent.displayTitle(image),
-                          style: context.textTheme.bodyMedium,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    tooltip: context.l10n.common_close,
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
+              DetailsSheetHeader(
+                heading: context.l10n.details_image,
+                title: ImageDetailsContent.displayTitle(image),
+                onClose: () => Navigator.of(context).pop(),
               ),
-              SizedBox(height: dims.spacingMedium),
-              ImageDetailsContent(image: image),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.fromLTRB(
+                    dims.spacingLarge,
+                    dims.spacingMedium,
+                    dims.spacingLarge,
+                    dims.spacingLarge,
+                  ),
+                  children: [ImageDetailsContent(image: image)],
+                ),
+              ),
             ],
           ),
         ),

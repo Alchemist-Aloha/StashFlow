@@ -651,10 +651,13 @@ void main() {
       expect(position().maxScrollExtent, greaterThan(30));
       final grip = tester.getTopLeft(panel) + const Offset(390, 60);
 
+      final title = find.byKey(const Key('scene_header_title'));
+      final titleRect = tester.getRect(title);
       await tester.dragFrom(grip, const Offset(0, -25));
       await tester.pump();
       expect(position().pixels, greaterThan(0));
       expect(panelTop(), restingTop);
+      expect(tester.getRect(title), titleRect, reason: 'the title is pinned');
 
       // Back at the top, the panel is already at its lowest position.
       await tester.dragFrom(grip, const Offset(0, 400));
@@ -667,6 +670,11 @@ void main() {
       await tester.pump();
       expect(position().extentAfter, 0);
       expect(panelTop(), closeTo(440 * 0.12, 0.5));
+
+      // A vertical swipe on the pinned title moves the panel like the handle.
+      await tester.drag(title, const Offset(0, 100));
+      await tester.pump();
+      expect(panelTop(), greaterThan(440 * 0.12 + 50));
     },
   );
 
@@ -722,7 +730,7 @@ void main() {
       expect(find.byKey(const Key('scene_info_panel')), findsOneWidget);
       expect(panel, findsNothing);
 
-      // The info panel shares the handle.
+      // The info panel shares the handle, and its pinned header drags too.
       final infoPanel = find.byKey(const Key('scene_info_panel'));
       final infoTop = tester.getTopLeft(infoPanel).dy;
       await tester.drag(
@@ -731,6 +739,13 @@ void main() {
       );
       await tester.pump();
       expect(tester.getTopLeft(infoPanel).dy, lessThan(infoTop - 50));
+      final header = find.descendant(
+        of: infoPanel,
+        matching: find.byType(DetailsSheetHeader),
+      );
+      await tester.drag(header, const Offset(0, 80));
+      await tester.pump();
+      expect(tester.getTopLeft(infoPanel).dy, greaterThan(infoTop - 50));
 
       // Back closes the info panel before leaving the page.
       await tester.binding.handlePopRoute();

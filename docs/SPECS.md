@@ -484,7 +484,9 @@ reliable when scrubbing is unavailable.
 ### Scene details
 
 Scene details combine identity, playback, metadata, related media, and editing
-without duplicating repository state. In the scene information panel opened from
+without duplicating repository state. Scene, gallery, and image details sheets pin
+their heading, item title, and close button (`DetailsSheetHeader`) above the
+scrolling content. In the scene information panel opened from
 card long-press or details, release date, rating, O-count, play count, and
 organized/interactive status belong in Details; file duration and size belong
 in Technical. These values do not appear in a separate summary chip row.
@@ -507,7 +509,9 @@ Layout contract:
   the inline video or the panel handle move the panel. Dragging the content
   scrolls it first; only a drag that continues past either end of the content
   moves the panel, and flings never do. The normal content and the scene
-  information panel share the handle.
+  information panel share the handle. The scene title (at most two lines) and
+  the information panel's header stay pinned above their scrolling content,
+  and vertical swipes on them move the panel like the handle.
 - Details replaces the scene panel's content with the scene information panel in
   place, keeping the panel position. Its close button or system Back restores the
   panel content before Back can leave the page. Card long-press still opens scene

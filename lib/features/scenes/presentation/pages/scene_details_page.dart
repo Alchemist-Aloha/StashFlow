@@ -19,6 +19,7 @@ import '../../../../core/utils/format_duration.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../galleries/domain/entities/gallery.dart';
 import '../../../galleries/presentation/gallery_location.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -804,23 +805,52 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     onVerticalDrag: onVerticalDrag,
                   ),
                   // The layout's handle overlays each panel's top padding.
-                  panel: _showInfoPanel
+                  panel: (onDrag) => _showInfoPanel
                       ? SceneInfoPage(
                           key: const Key('scene_info_panel'),
                           scene: scene,
                           onClose: () => setState(() => _showInfoPanel = false),
+                          onHeaderVerticalDrag: onDrag,
                         )
                       : FrostedPanel(
                           key: const Key('scene_details_panel'),
                           borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(AppTheme.radiusExtraLarge),
                           ),
-                          child: DetailPageScrollView(
-                            padding: EdgeInsets.only(
-                              top: context.dimensions.spacingLarge,
-                              bottom: bottomInset,
-                            ),
-                            children: panelSections,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // The title stays put while the rest scrolls and,
+                              // like the handle in its top padding, moves the panel.
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onVerticalDragUpdate: (details) =>
+                                    onDrag(details.delta.dy),
+                                child: Padding(
+                                  key: const Key('scene_header_title'),
+                                  padding: EdgeInsets.fromLTRB(
+                                    context.dimensions.spacingMedium,
+                                    context.dimensions.spacingLarge,
+                                    context.dimensions.spacingMedium,
+                                    0,
+                                  ),
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) =>
+                                        _buildTitle(
+                                          context,
+                                          scene,
+                                          isWide: constraints.maxWidth >= 768,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: DetailPageScrollView(
+                                  padding: EdgeInsets.only(bottom: bottomInset),
+                                  children: panelSections,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                 );
@@ -911,26 +941,24 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   Widget _buildMainInfo(BuildContext context, Scene scene) {
     final dims = context.dimensions;
     final showMetadata = ref.watch(showSceneMetadataSectionProvider);
-    return LayoutBuilder(
-      builder: (context, constraints) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Column(
-            key: const Key('scene_header_identity'),
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTitle(context, scene, isWide: constraints.maxWidth >= 768),
-              _buildByline(context, scene, showMetadata: showMetadata),
-              if (showMetadata && _showTechnicalMetadata)
-                _buildTechnicalMetadata(context, scene),
-            ],
-          ),
-          SizedBox(height: dims.spacingSmall),
-          _buildActions(context, scene),
-          SizedBox(height: dims.spacingMedium),
-          _buildDetails(context, scene),
-        ],
-      ),
+    // The title is pinned above the panel's scrolling content.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Column(
+          key: const Key('scene_header_identity'),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildByline(context, scene, showMetadata: showMetadata),
+            if (showMetadata && _showTechnicalMetadata)
+              _buildTechnicalMetadata(context, scene),
+          ],
+        ),
+        SizedBox(height: dims.spacingSmall),
+        _buildActions(context, scene),
+        SizedBox(height: dims.spacingMedium),
+        _buildDetails(context, scene),
+      ],
     );
   }
 
@@ -951,6 +979,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       onNext: () => _swipeToScene(scene.id, 1),
       child: Text(
         scene.displayTitle,
+        // Pinned above the panel content, so long titles must not crowd it.
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
         style: style?.copyWith(
           fontWeight: FontWeight.w700,
           letterSpacing: isWide ? -0.5 : -0.3,
@@ -1684,10 +1715,21 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
+  // Related sections watch their own queries in a Consumer so a late result
+  // rebuilds only that section, not the page and its player.
   Widget _buildLinkedGalleriesSection(BuildContext context, Scene scene) {
-    final galleries = ref.watch(sceneGalleriesProvider(scene.id)).value;
-    if (galleries == null || galleries.isEmpty) return const SizedBox.shrink();
+    return Consumer(
+      builder: (context, ref, _) {
+        final galleries = ref.watch(sceneGalleriesProvider(scene.id)).value;
+        if (galleries == null || galleries.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return _buildLinkedGalleries(context, galleries);
+      },
+    );
+  }
 
+  Widget _buildLinkedGalleries(BuildContext context, List<Gallery> galleries) {
     return _buildSectionContainer(
       context,
       Column(
@@ -1713,53 +1755,58 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     final canOpenStudio =
         scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
-    final studioMediaAsync = ref.watch(
-      entityMediaPreviewProvider(EntityMediaFilterKind.studio, scene.studioId!),
-    );
+    return Consumer(
+      builder: (context, ref, _) => ref
+          .watch(
+            entityMediaPreviewProvider(
+              EntityMediaFilterKind.studio,
+              scene.studioId!,
+            ),
+          )
+          .when(
+            data: (scenes) {
+              final List<Scene> sceneList = scenes;
+              final filtered = sceneList
+                  .where((item) => item.id != scene.id)
+                  .toList();
 
-    return studioMediaAsync.when(
-      data: (scenes) {
-        final List<Scene> sceneList = scenes;
-        final filtered = sceneList
-            .where((item) => item.id != scene.id)
-            .toList();
+              if (filtered.isEmpty) {
+                return const SizedBox.shrink();
+              }
 
-        if (filtered.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return _buildSectionContainer(
-          context,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SectionHeader(
-                title: context.l10n.details_more_from_studio,
-                onViewAll: canOpenStudio
-                    ? () => context.push(
-                        '/studios/studio/${scene.studioId}/media',
-                      )
-                    : null,
-                padding: EdgeInsets.zero,
-              ),
-              SizedBox(height: context.dimensions.spacingMedium),
-              SceneStrip(
-                scenes: filtered,
-                queueId: PlaybackQueueIds.sceneMoreFromStudio(
-                  sceneId: scene.id,
-                  studioId: scene.studioId!,
+              return _buildSectionContainer(
+                context,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SectionHeader(
+                      title: context.l10n.details_more_from_studio,
+                      onViewAll: canOpenStudio
+                          ? () => context.push(
+                              '/studios/studio/${scene.studioId}/media',
+                            )
+                          : null,
+                      padding: EdgeInsets.zero,
+                    ),
+                    SizedBox(height: context.dimensions.spacingMedium),
+                    SceneStrip(
+                      scenes: filtered,
+                      queueId: PlaybackQueueIds.sceneMoreFromStudio(
+                        sceneId: scene.id,
+                        studioId: scene.studioId!,
+                      ),
+                      onTap: (selectedScene) => context.push(
+                        '/scenes/scene/${selectedScene.id}',
+                        extra: true,
+                      ),
+                    ),
+                  ],
                 ),
-                onTap: (selectedScene) => context.push(
-                  '/scenes/scene/${selectedScene.id}',
-                  extra: true,
-                ),
-              ),
-            ],
+              );
+            },
+            loading: () => const SizedBox.shrink(),
+            error: (err, stack) => const SizedBox.shrink(),
           ),
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (err, stack) => const SizedBox.shrink(),
     );
   }
 
@@ -1775,51 +1822,57 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       final performerName = scene.performerNames[index].trim();
       if (performerId.isEmpty || performerName.isEmpty) continue;
 
-      final mediaAsync = ref.watch(
-        entityMediaPreviewProvider(
-          EntityMediaFilterKind.performer,
-          performerId,
+      sections.add(
+        Consumer(
+          key: ValueKey('scene_more_from_performer_$performerId'),
+          builder: (context, ref, _) => ref
+              .watch(
+                entityMediaPreviewProvider(
+                  EntityMediaFilterKind.performer,
+                  performerId,
+                ),
+              )
+              .maybeWhen(
+                data: (scenes) {
+                  final relatedScenes = scenes
+                      .where((relatedScene) => relatedScene.id != scene.id)
+                      .toList();
+                  if (relatedScenes.isEmpty) return const SizedBox.shrink();
+
+                  return _buildSectionContainer(
+                    context,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: context.l10n.details_more_from_performer(
+                            performerName,
+                          ),
+                          onViewAll: () => context.push(
+                            '/performers/performer/$performerId/media',
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                        SizedBox(height: context.dimensions.spacingMedium),
+                        SceneStrip(
+                          scenes: relatedScenes,
+                          queueId: PlaybackQueueIds.sceneMoreFromPerformer(
+                            sceneId: scene.id,
+                            performerId: performerId,
+                          ),
+                          onTap: (selectedScene) => context.push(
+                            '/scenes/scene/${selectedScene.id}',
+                            extra: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                orElse: () => const SizedBox.shrink(),
+              ),
         ),
       );
-      final section = mediaAsync.maybeWhen(
-        data: (scenes) {
-          final relatedScenes = scenes
-              .where((relatedScene) => relatedScene.id != scene.id)
-              .toList();
-          if (relatedScenes.isEmpty) return null;
-
-          return _buildSectionContainer(
-            context,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SectionHeader(
-                  title: context.l10n.details_more_from_performer(
-                    performerName,
-                  ),
-                  onViewAll: () =>
-                      context.push('/performers/performer/$performerId/media'),
-                  padding: EdgeInsets.zero,
-                ),
-                SizedBox(height: context.dimensions.spacingMedium),
-                SceneStrip(
-                  scenes: relatedScenes,
-                  queueId: PlaybackQueueIds.sceneMoreFromPerformer(
-                    sceneId: scene.id,
-                    performerId: performerId,
-                  ),
-                  onTap: (selectedScene) => context.push(
-                    '/scenes/scene/${selectedScene.id}',
-                    extra: true,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-        orElse: () => null,
-      );
-      if (section != null) sections.add(section);
     }
 
     return sections;
@@ -1895,8 +1948,9 @@ class _ScenePanelLayout extends StatefulWidget {
   final Widget Function(ValueChanged<double> onVerticalDrag, double maxHeight)
   video;
 
-  /// Vertically scrollable panel content; its top padding hosts the handle.
-  final Widget panel;
+  /// Builds the vertically scrollable panel content around the callback that
+  /// moves the panel, for pinned headers; its top padding hosts the handle.
+  final Widget Function(ValueChanged<double> onDrag) panel;
 
   @override
   State<_ScenePanelLayout> createState() => _ScenePanelLayoutState();
@@ -1911,10 +1965,19 @@ class _ScenePanelLayoutState extends State<_ScenePanelLayout> {
   double _minSize = 0;
 
   /// Panel height fraction once the user moves it; null follows the video.
-  double? _size;
+  ///
+  /// Drags update only this notifier so the video and panel content keep their
+  /// widget instances and skip rebuilding on every frame.
+  final _size = ValueNotifier<double?>(null);
 
   double get _currentSize =>
-      (_size ?? _minSize).clamp(_minSize, _maxPanelFraction);
+      (_size.value ?? _minSize).clamp(_minSize, _maxPanelFraction);
+
+  @override
+  void dispose() {
+    _size.dispose();
+    super.dispose();
+  }
 
   void _measureVideo() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1932,7 +1995,7 @@ class _ScenePanelLayoutState extends State<_ScenePanelLayout> {
     final current = _currentSize;
     final next = (current - dy / _height).clamp(_minSize, _maxPanelFraction);
     if (next == current) return false;
-    setState(() => _size = next);
+    _size.value = next;
     return true;
   }
 
@@ -1989,11 +2052,15 @@ class _ScenePanelLayoutState extends State<_ScenePanelLayout> {
                 ),
               ),
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: _currentSize * _height,
+            ValueListenableBuilder<double?>(
+              valueListenable: _size,
+              builder: (context, _, panel) => Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: _currentSize * _height,
+                child: panel!,
+              ),
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -2001,7 +2068,7 @@ class _ScenePanelLayoutState extends State<_ScenePanelLayout> {
                     onNotification: _onOverscroll,
                     child: ScrollConfiguration(
                       behavior: scrollBehavior,
-                      child: widget.panel,
+                      child: widget.panel(_dragPanel),
                     ),
                   ),
                   Positioned(

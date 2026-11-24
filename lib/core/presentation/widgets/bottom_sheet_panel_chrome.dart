@@ -108,6 +108,75 @@ class BottomSheetPanelHeader extends StatelessWidget {
   }
 }
 
+/// The pinned top of a media details sheet: heading, item title, and close.
+///
+/// Place it above the sheet's scrolling list so it stays visible.
+class DetailsSheetHeader extends StatelessWidget {
+  const DetailsSheetHeader({
+    super.key,
+    required this.heading,
+    required this.title,
+    required this.onClose,
+    this.onVerticalDrag,
+  });
+
+  final String heading;
+  final String title;
+  final VoidCallback onClose;
+
+  /// Receives vertical drag deltas, e.g. to move an embedding panel.
+  final ValueChanged<double>? onVerticalDrag;
+
+  @override
+  Widget build(BuildContext context) {
+    final dims = context.dimensions;
+    final header = Padding(
+      padding: EdgeInsets.fromLTRB(
+        dims.spacingLarge,
+        dims.spacingLarge,
+        dims.spacingLarge,
+        0,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  heading,
+                  style: context.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: dims.spacingSmall),
+                Text(
+                  title,
+                  style: context.textTheme.bodyMedium,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close_rounded),
+            tooltip: context.l10n.common_close,
+            onPressed: onClose,
+          ),
+        ],
+      ),
+    );
+    final onDrag = onVerticalDrag;
+    if (onDrag == null) return header;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onVerticalDragUpdate: (details) => onDrag(details.delta.dy),
+      child: header,
+    );
+  }
+}
+
 class BottomSheetPanelActions extends StatelessWidget {
   const BottomSheetPanelActions({
     super.key,
