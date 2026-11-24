@@ -151,7 +151,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.longPress(find.byType(GalleryCard));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('gallery_details_sheet')), findsOneWidget);
+    final panel = tester.getRect(
+      find.byKey(const Key('gallery_details_sheet')),
+    );
+    expect(panel.width, 640);
+    expect(panel.center.dx, 400);
     expect(find.text('/list/gallery'), findsOneWidget);
     expect(find.byType(RatingButton), findsNothing);
     expect(find.byType(RatingPicker), findsNothing);

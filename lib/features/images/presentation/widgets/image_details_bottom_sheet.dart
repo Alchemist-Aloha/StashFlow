@@ -19,11 +19,8 @@ class ImageDetailsBottomSheet extends StatelessWidget {
 
   /// Opens image metadata without rating controls.
   static Future<void> show(BuildContext context, entity.Image image) {
-    return showFrostedPanelBottomSheet<void>(
+    return showMediaDetailsBottomSheet(
       context: context,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-      ),
       builder: (_) => ImageDetailsBottomSheet(image: image),
     );
   }

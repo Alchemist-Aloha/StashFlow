@@ -606,10 +606,11 @@ star opens a popup editor with five stars, fractional-rating selection, Clear,
 and Apply/Cancel. Ratings use the server's 0–100 scale; cancelling leaves the
 confirmed rating unchanged. Image metadata panels, including card long-press
 details, are read-only and omit rating controls. Scene, image, and gallery
-metadata panels support text selection and copying. Image panels show the
-primary visual file's size in readable byte units, or a placeholder when
-unavailable. Fullscreen image rating retains
-its image/gallery target selector.
+metadata panels support text selection and copying. They use the same width as
+filter and sort sheets: full width on narrow screens and centered at up to
+640 logical pixels on wider screens. Image panels show the primary visual
+file's size in readable byte units, or a placeholder when unavailable.
+Fullscreen image rating retains its image/gallery target selector.
 
 Scene rating and metadata edits go through the scene repository. Successful
 mutations update or invalidate both details and affected lists. Failed mutations

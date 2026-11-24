@@ -21,6 +21,24 @@ Future<T?> showFrostedPanelBottomSheet<T>({
   );
 }
 
+/// Opens media details at the standard sheet width, with a scrollable height cap.
+Future<void> showMediaDetailsBottomSheet({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  bool useRootNavigator = false,
+}) {
+  return showFrostedPanelBottomSheet<void>(
+    context: context,
+    useRootNavigator: useRootNavigator,
+    builder: (context) => LayoutBuilder(
+      builder: (context, constraints) => ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: constraints.maxHeight * 0.88),
+        child: builder(context),
+      ),
+    ),
+  );
+}
+
 class FrostedPanel extends StatelessWidget {
   const FrostedPanel({
     super.key,

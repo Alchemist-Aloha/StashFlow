@@ -320,12 +320,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   void _showSceneDetailsSheet(Scene scene) {
     unawaited(
-      showFrostedPanelBottomSheet<void>(
+      showMediaDetailsBottomSheet(
         context: context,
         useRootNavigator: true,
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-        ),
         builder: (context) => SceneInfoPage(scene: scene),
       ),
     );

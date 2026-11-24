@@ -18,11 +18,8 @@ class GalleryDetailsBottomSheet extends StatelessWidget {
 
   /// Opens the gallery metadata sheet.
   static Future<void> show(BuildContext context, Gallery gallery) {
-    return showFrostedPanelBottomSheet<void>(
+    return showMediaDetailsBottomSheet(
       context: context,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-      ),
       builder: (_) => GalleryDetailsBottomSheet(gallery: gallery),
     );
   }

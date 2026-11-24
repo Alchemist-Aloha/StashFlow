@@ -207,12 +207,9 @@ class _SceneCardState extends ConsumerState<SceneCard> {
   /// Displays a custom scene info sheet for navigation actions.
   void _showMenu(BuildContext context, WidgetRef ref) {
     unawaited(
-      showFrostedPanelBottomSheet<void>(
+      showMediaDetailsBottomSheet(
         context: context,
         useRootNavigator: true,
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-        ),
         builder: (context) => SceneInfoPage(scene: widget.scene),
       ),
     );

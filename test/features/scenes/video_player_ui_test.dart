@@ -15,6 +15,7 @@ import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/detail_page_scroll_view.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
@@ -1371,11 +1372,14 @@ void main() {
 
     final l10n = AppLocalizations.of(tester.element(find.byType(SceneCard)))!;
     expect(find.text(l10n.details_scene), findsOneWidget);
+    final panel = tester.getRect(find.byType(FrostedPanel));
+    expect(panel.width, 640);
+    expect(panel.center.dx, 600);
     final mediaSection = find.byKey(const Key('scene_info_media_section'));
     expect(mediaSection, findsOneWidget);
     expect(
       tester.getTopLeft(mediaSection).dy,
-      lessThan(tester.getTopLeft(find.byIcon(Icons.calendar_today_rounded)).dy),
+      lessThan(tester.getTopLeft(find.text('Release Date')).dy),
     );
   });
 
