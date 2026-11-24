@@ -1679,6 +1679,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Скрывать при прокрутке вниз и снова показывать при прокрутке вверх.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Показывать раздел метаданных сцены';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Скрывать метаданные сцены по умолчанию';
 

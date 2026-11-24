@@ -912,6 +912,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   Widget _buildMainInfo(BuildContext context, Scene scene) {
     final dims = context.dimensions;
+    final showMetadata = ref.watch(showSceneMetadataSectionProvider);
     return LayoutBuilder(
       builder: (context, constraints) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -921,8 +922,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTitle(context, scene, isWide: constraints.maxWidth >= 768),
-              _buildByline(context, scene),
-              if (_showTechnicalMetadata)
+              _buildByline(context, scene, showMetadata: showMetadata),
+              if (showMetadata && _showTechnicalMetadata)
                 _buildTechnicalMetadata(context, scene),
             ],
           ),
@@ -961,7 +962,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildByline(BuildContext context, Scene scene) {
+  Widget _buildByline(
+    BuildContext context,
+    Scene scene, {
+    required bool showMetadata,
+  }) {
     final studio = scene.studioName?.trim() ?? '';
     final year = scene.date?.year;
     final dims = context.dimensions;
@@ -999,24 +1004,25 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               if (year != null) Text('$year', style: style),
             ],
           ),
-        Semantics(
-          expanded: _showTechnicalMetadata,
-          child: TextButton.icon(
-            key: const Key('scene_metadata_toggle'),
-            style: TextButton.styleFrom(
-              foregroundColor: context.colors.onSurfaceVariant,
-              padding: EdgeInsetsDirectional.only(end: dims.spacingSmall),
-            ),
-            iconAlignment: IconAlignment.end,
-            icon: Icon(
-              _showTechnicalMetadata ? Icons.expand_less : Icons.expand_more,
-            ),
-            label: Text(context.l10n.filter_group_metadata),
-            onPressed: () => setState(
-              () => _showTechnicalMetadata = !_showTechnicalMetadata,
+        if (showMetadata)
+          Semantics(
+            expanded: _showTechnicalMetadata,
+            child: TextButton.icon(
+              key: const Key('scene_metadata_toggle'),
+              style: TextButton.styleFrom(
+                foregroundColor: context.colors.onSurfaceVariant,
+                padding: EdgeInsetsDirectional.only(end: dims.spacingSmall),
+              ),
+              iconAlignment: IconAlignment.end,
+              icon: Icon(
+                _showTechnicalMetadata ? Icons.expand_less : Icons.expand_more,
+              ),
+              label: Text(context.l10n.filter_group_metadata),
+              onPressed: () => setState(
+                () => _showTechnicalMetadata = !_showTechnicalMetadata,
+              ),
             ),
           ),
-        ),
       ],
     );
   }

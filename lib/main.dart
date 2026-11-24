@@ -65,6 +65,9 @@ Future<void> main() async {
   });
 
   try {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    await initializeSceneMetadataVisibility(sharedPreferences);
+
     if (!kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.windows ||
             defaultTargetPlatform == TargetPlatform.linux ||
@@ -125,7 +128,6 @@ Future<void> main() async {
       }
     }
 
-    final sharedPreferences = await SharedPreferences.getInstance();
     installServerCertificatePolicy(sharedPreferences);
 
     AppLogStore.instance.isEnabled =

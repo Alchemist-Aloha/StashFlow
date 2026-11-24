@@ -341,6 +341,7 @@
   "settings_interface_show_random_subtitle": "Schwebende Zufallsnavigationsschaltflächen auf Listen- und Detailseiten ein- oder ausblenden",
   "settings_interface_auto_hide_app_bar": "Obere App-Leiste beim Scrollen ausblenden",
   "settings_interface_auto_hide_app_bar_subtitle": "Beim Scrollen nach unten ausblenden und beim Scrollen nach oben wieder anzeigen.",
+  "settings_interface_show_scene_metadata_section": "Abschnitt für Szenenmetadaten anzeigen",
   "settings_interface_hide_scene_metadata": "Szenenmetadaten standardmäßig ausblenden",
   "settings_interface_show_scene_progress": "Wiedergabefortschritt anzeigen",
   "settings_interface_show_scene_progress_subtitle": "Die gespeicherte Wiedergabeposition unter den Szenenvorschaubildern anzeigen.",

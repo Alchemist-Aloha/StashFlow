@@ -1690,6 +1690,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Si nasconde scorrendo verso il basso e riappare scorrendo verso l\'alto.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Mostra la sezione dei metadati della scena';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Nascondi i metadati della scena per impostazione predefinita';
 

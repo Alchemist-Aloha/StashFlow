@@ -49,6 +49,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
   int _maxPerformerAvatars = 3;
   bool _showPerformerAvatars = true;
+  bool _showSceneMetadataSection = false;
   bool _hideSceneTechnicalMetadata = true;
   bool _showScenePlaybackProgress = true;
   double _performerAvatarSize = 16.0;
@@ -98,6 +99,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
     _maxPerformerAvatars = ref.read(maxPerformerAvatarsProvider);
     _showPerformerAvatars = ref.read(showPerformerAvatarsProvider);
+    _showSceneMetadataSection = ref.read(showSceneMetadataSectionProvider);
     _hideSceneTechnicalMetadata = ref.read(hideSceneTechnicalMetadataProvider);
     _showScenePlaybackProgress = ref.read(showScenePlaybackProgressProvider);
     _performerAvatarSize = ref.read(performerAvatarSizeProvider);
@@ -148,6 +150,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
       ref
           .read(showPerformerAvatarsProvider.notifier)
           .set(_showPerformerAvatars),
+      ref
+          .read(showSceneMetadataSectionProvider.notifier)
+          .set(_showSceneMetadataSection),
       ref
           .read(hideSceneTechnicalMetadataProvider.notifier)
           .set(_hideSceneTechnicalMetadata),
@@ -219,19 +224,39 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
-                            context.l10n.settings_interface_hide_scene_metadata,
-                          ),
-                          subtitle: Text(
                             context
                                 .l10n
-                                .settings_interface_hide_scene_metadata_subtitle,
+                                .settings_interface_show_scene_metadata_section,
                           ),
-                          value: _hideSceneTechnicalMetadata,
                           onChanged: (value) async {
-                            setState(() => _hideSceneTechnicalMetadata = value);
+                            setState(() => _showSceneMetadataSection = value);
                             await _saveSettings();
                           },
+                          value: _showSceneMetadataSection,
                         ),
+                        if (_showSceneMetadataSection)
+                          SwitchListTile.adaptive(
+                            contentPadding: EdgeInsetsDirectional.only(
+                              start: context.dimensions.spacingMedium,
+                            ),
+                            title: Text(
+                              context
+                                  .l10n
+                                  .settings_interface_hide_scene_metadata,
+                            ),
+                            subtitle: Text(
+                              context
+                                  .l10n
+                                  .settings_interface_hide_scene_metadata_subtitle,
+                            ),
+                            value: _hideSceneTechnicalMetadata,
+                            onChanged: (value) async {
+                              setState(
+                                () => _hideSceneTechnicalMetadata = value,
+                              );
+                              await _saveSettings();
+                            },
+                          ),
                         Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,

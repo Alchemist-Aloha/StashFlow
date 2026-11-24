@@ -1687,6 +1687,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Beim Scrollen nach unten ausblenden und beim Scrollen nach oben wieder anzeigen.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Abschnitt für Szenenmetadaten anzeigen';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Szenenmetadaten standardmäßig ausblenden';
 

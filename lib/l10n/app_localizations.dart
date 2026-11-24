@@ -2994,6 +2994,12 @@ abstract class AppLocalizations {
   /// **'Hide when scrolling down and show again when scrolling up.'**
   String get settings_interface_auto_hide_app_bar_subtitle;
 
+  /// No description provided for @settings_interface_show_scene_metadata_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Show scene metadata section'**
+  String get settings_interface_show_scene_metadata_section;
+
   /// No description provided for @settings_interface_hide_scene_metadata.
   ///
   /// In en, this message translates to:

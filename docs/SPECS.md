@@ -514,10 +514,13 @@ Layout contract:
   without navigating. Once per app launch, the title gives a brief directional
   hint when an adjacent scene exists; reduced-motion users do not see it.
 - Show only the available studio and year beneath the title, with a separator
-  only when both exist. A labeled Metadata disclosure follows them, starting
-  at the leading edge when neither exists. Its initial state follows the user's
-  visibility setting; toggling it on the page does not change that preference.
-  Expanded facts wrap as labeled values above the action row.
+  only when both exist. When enabled in Interface Settings, a labeled Metadata
+  disclosure follows the byline, starting at the leading edge when neither
+  field exists. The section is off on a clean install and stays on when
+  upgrading an install with saved preferences. Only when enabled is the
+  separate default-collapse setting shown; hiding the section preserves that
+  setting. Expanding or collapsing a scene's facts above the action row does
+  not change either preference.
 - Editing and scraping entry points appear only when their prerequisites are
   available.
 - Loading or failure of a secondary section must not hide the primary scene.

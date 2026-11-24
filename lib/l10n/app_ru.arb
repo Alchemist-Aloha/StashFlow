@@ -387,6 +387,7 @@
   "settings_interface_show_random_subtitle": "Включить или отключить плавающие кнопки казино на страницах списков и деталей",
   "settings_interface_auto_hide_app_bar": "Скрывать верхнюю панель при прокрутке",
   "settings_interface_auto_hide_app_bar_subtitle": "Скрывать при прокрутке вниз и снова показывать при прокрутке вверх.",
+  "settings_interface_show_scene_metadata_section": "Показывать раздел метаданных сцены",
   "settings_interface_hide_scene_metadata": "Скрывать метаданные сцены по умолчанию",
   "settings_interface_show_scene_progress": "Показывать прогресс воспроизведения",
   "settings_interface_show_scene_progress_subtitle": "Показывать сохранённую позицию воспроизведения под миниатюрами сцен.",

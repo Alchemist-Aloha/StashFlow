@@ -1649,6 +1649,9 @@ class AppLocalizationsJa extends AppLocalizations {
       '下にスクロールすると隠れ、上にスクロールすると再表示されます。';
 
   @override
+  String get settings_interface_show_scene_metadata_section => 'シーンのメタデータ欄を表示';
+
+  @override
   String get settings_interface_hide_scene_metadata => 'シーンのメタデータをデフォルトで非表示';
 
   @override

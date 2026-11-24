@@ -1649,6 +1649,9 @@ class AppLocalizationsKo extends AppLocalizations {
       '아래로 스크롤하면 숨기고 위로 스크롤하면 다시 표시합니다.';
 
   @override
+  String get settings_interface_show_scene_metadata_section => '장면 메타데이터 섹션 표시';
+
+  @override
   String get settings_interface_hide_scene_metadata => '장면 메타데이터를 기본으로 숨기기';
 
   @override

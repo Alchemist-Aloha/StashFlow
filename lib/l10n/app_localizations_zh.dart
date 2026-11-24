@@ -1640,6 +1640,9 @@ class AppLocalizationsZh extends AppLocalizations {
       '向下滚动时隐藏，向上滚动时重新显示。';
 
   @override
+  String get settings_interface_show_scene_metadata_section => '显示场景元数据区块';
+
+  @override
   String get settings_interface_hide_scene_metadata => '默认隐藏场景元数据';
 
   @override
@@ -5740,6 +5743,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_interface_auto_hide_app_bar_subtitle =>
       '向下滚动时隐藏，向上滚动时重新显示。';
+
+  @override
+  String get settings_interface_show_scene_metadata_section => '显示场景元数据区块';
 
   @override
   String get settings_interface_hide_scene_metadata => '默认隐藏场景元数据';
@@ -9844,6 +9850,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settings_interface_auto_hide_app_bar_subtitle =>
       '向下捲動時隱藏，向上捲動時重新顯示。';
+
+  @override
+  String get settings_interface_show_scene_metadata_section => '顯示場景中繼資料區塊';
 
   @override
   String get settings_interface_hide_scene_metadata => '預設隱藏場景中繼資料';

@@ -387,6 +387,7 @@
   "settings_interface_show_random_subtitle": "在列表和詳情頁面啟用或停用浮動隨機按鈕",
   "settings_interface_auto_hide_app_bar": "捲動時隱藏頂端應用程式列",
   "settings_interface_auto_hide_app_bar_subtitle": "向下捲動時隱藏，向上捲動時重新顯示。",
+  "settings_interface_show_scene_metadata_section": "顯示場景中繼資料區塊",
   "settings_interface_hide_scene_metadata": "預設隱藏場景中繼資料",
   "settings_interface_show_scene_progress": "顯示場景播放進度",
   "settings_interface_show_scene_progress_subtitle": "在場景縮圖下方顯示已儲存的播放位置。",

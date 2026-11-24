@@ -1671,6 +1671,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Hide when scrolling down and show again when scrolling up.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Show scene metadata section';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Hide scene metadata by default';
 

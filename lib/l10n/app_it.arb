@@ -305,6 +305,7 @@
   "settings_interface_show_random_subtitle": "Abilita o disabilita i pulsanti fluttuanti nelle pagine di elenco e dettaglio",
   "settings_interface_auto_hide_app_bar": "Nascondi la barra superiore durante lo scorrimento",
   "settings_interface_auto_hide_app_bar_subtitle": "Si nasconde scorrendo verso il basso e riappare scorrendo verso l'alto.",
+  "settings_interface_show_scene_metadata_section": "Mostra la sezione dei metadati della scena",
   "settings_interface_hide_scene_metadata": "Nascondi i metadati della scena per impostazione predefinita",
   "settings_interface_show_scene_progress": "Mostra avanzamento di riproduzione",
   "settings_interface_show_scene_progress_subtitle": "Mostra la posizione di riproduzione salvata sotto le miniature delle scene.",

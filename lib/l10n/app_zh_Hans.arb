@@ -394,6 +394,7 @@
   "settings_interface_show_random_subtitle": "在列表和详情页启用或禁用悬浮随机按钮",
   "settings_interface_auto_hide_app_bar": "滚动时隐藏顶部应用栏",
   "settings_interface_auto_hide_app_bar_subtitle": "向下滚动时隐藏，向上滚动时重新显示。",
+  "settings_interface_show_scene_metadata_section": "显示场景元数据区块",
   "settings_interface_hide_scene_metadata": "默认隐藏场景元数据",
   "settings_interface_show_scene_progress": "显示场景播放进度",
   "settings_interface_show_scene_progress_subtitle": "在场景缩略图下方显示已保存的播放位置。",

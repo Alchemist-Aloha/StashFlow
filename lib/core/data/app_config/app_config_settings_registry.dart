@@ -84,6 +84,7 @@ final class AppConfigSettingsRegistry {
     _int('max_video_cache_size_mb', min: 1),
     _int('max_performer_avatars', min: 0, max: 20),
     _bool('show_performer_avatars'),
+    _bool('show_scene_metadata_section'),
     _bool('hide_scene_technical_metadata'),
     _bool('show_scene_playback_progress'),
     _double('performer_avatar_size', min: 8, max: 128),

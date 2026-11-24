@@ -358,6 +358,7 @@
   "settings_interface_show_random_subtitle": "Habilitar o deshabilitar los botones flotantes de casino en las páginas de lista y detalles",
   "settings_interface_auto_hide_app_bar": "Ocultar la barra superior al desplazarse",
   "settings_interface_auto_hide_app_bar_subtitle": "Se oculta al desplazarse hacia abajo y vuelve a aparecer al desplazarse hacia arriba.",
+  "settings_interface_show_scene_metadata_section": "Mostrar la sección de metadatos de la escena",
   "settings_interface_hide_scene_metadata": "Ocultar los metadatos de la escena de forma predeterminada",
   "settings_interface_show_scene_progress": "Mostrar progreso de reproducción",
   "settings_interface_show_scene_progress_subtitle": "Mostrar la posición de reproducción guardada debajo de las miniaturas de las escenas.",

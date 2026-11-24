@@ -1690,6 +1690,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Elle se masque en défilant vers le bas et réapparaît en défilant vers le haut.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Afficher la section des métadonnées de la scène';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Masquer les métadonnées de scène par défaut';
 
