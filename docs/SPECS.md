@@ -497,6 +497,21 @@ Layout contract:
 - At 768 logical pixels and above, the page splits into a playback and identity
   column and a related-content column; identity, actions, and supporting metadata
   use the responsive large-screen composition.
+- The inline video stays fixed at the top of the playback column. Everything
+  after it lives in a scene panel that rests flush under the video, which is
+  also its lowest position, and rises over the video to 88% of the page height;
+  tall videos shrink, placeholders included, so the video and its controls end
+  above the panel's handle strip. The panel spans the full width in one column
+  and only the left column in two columns,
+  where the related-content column keeps its own scrolling. Vertical swipes on
+  the inline video or the panel handle move the panel. Dragging the content
+  scrolls it first; only a drag that continues past either end of the content
+  moves the panel, and flings never do. The normal content and the scene
+  information panel share the handle.
+- Details replaces the scene panel's content with the scene information panel in
+  place, keeping the panel position. Its close button or system Back restores the
+  panel content before Back can leave the page. Card long-press still opens scene
+  information as a modal sheet.
 - Header actions remain reachable without crowding the title or studio.
 - Rating, add-O, details, download (where supported), and More share one action
   row directly on the page background, without a surrounding panel backdrop.
@@ -772,6 +787,9 @@ Responsibilities:
   player's top-left position, including while playback starts.
 - `PlayerSurface` owns shared visual rendering, controls, transforms, subtitles,
   buffering, and casting placeholders.
+- One-finger vertical drags adjust brightness (left half) and volume (right
+  half) only in fullscreen. Inline players never change them; Scene Details
+  uses the drag to move its scene panel.
 - `GlobalFullscreenOverlay` owns overlay visibility and platform fullscreen
   effects while rendering the active global scene.
 - `TransformableVideoSurface` owns pinch zoom and free rotation.

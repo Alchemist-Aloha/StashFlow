@@ -497,10 +497,13 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
       of: find.byKey(const Key('scene_header_identity')),
       matching: find.text(_sceneTitle),
     );
-    final detailsScroll = find.ancestor(
-      of: surface,
-      matching: find.byType(Scrollable),
-    );
+    // The video stays fixed; the scene panel below it owns scrolling.
+    final detailsScroll = find
+        .descendant(
+          of: find.byKey(const Key('scene_details_panel')),
+          matching: find.byType(Scrollable),
+        )
+        .first;
     await tester.scrollUntilVisible(identity, 150, scrollable: detailsScroll);
     await tester.scrollUntilVisible(rating, 150, scrollable: detailsScroll);
     expect(oneStar, findsNothing);

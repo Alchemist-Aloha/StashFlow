@@ -22,9 +22,12 @@ import '../widgets/scene_info_media_section.dart';
 import '../widgets/scene_performer_title.dart';
 
 class SceneInfoPage extends ConsumerStatefulWidget {
-  const SceneInfoPage({required this.scene, super.key});
+  const SceneInfoPage({required this.scene, this.onClose, super.key});
 
   final Scene scene;
+
+  /// Embedded hosts close the panel here; null pops the modal sheet route.
+  final VoidCallback? onClose;
 
   @override
   ConsumerState<SceneInfoPage> createState() => _SceneInfoPageState();
@@ -33,9 +36,14 @@ class SceneInfoPage extends ConsumerStatefulWidget {
 class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
   final ValueNotifier<bool> _showAllTags = ValueNotifier<bool>(false);
 
+  void _close() {
+    final onClose = widget.onClose;
+    onClose == null ? Navigator.of(context).pop() : onClose();
+  }
+
   void _closeAndNavigate(String route) {
     final router = GoRouter.of(context);
-    Navigator.of(context).pop();
+    _close();
     unawaited(router.push(route));
   }
 
@@ -105,7 +113,7 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                   IconButton(
                     icon: const Icon(Icons.close_rounded),
                     tooltip: context.l10n.common_close,
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: _close,
                   ),
                 ],
               ),

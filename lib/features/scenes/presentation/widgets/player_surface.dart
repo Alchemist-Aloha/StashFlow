@@ -37,6 +37,7 @@ class PlayerSurface extends ConsumerStatefulWidget {
     this.fit = BoxFit.contain,
     this.squareFit = BoxFit.contain,
     this.showControls = true,
+    this.onInlineVerticalDrag,
     super.key,
   });
 
@@ -48,6 +49,9 @@ class PlayerSurface extends ConsumerStatefulWidget {
   final BoxFit fit;
   final BoxFit squareFit;
   final bool showControls;
+
+  /// See [NativeVideoControls.onInlineVerticalDrag].
+  final ValueChanged<double>? onInlineVerticalDrag;
 
   @override
   ConsumerState<PlayerSurface> createState() => _PlayerSurfaceState();
@@ -251,6 +255,7 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                     onScaleStart: _onScaleStart,
                     onScaleUpdate: _onScaleUpdate,
                     onTransformationDelta: _onTransformationDelta,
+                    onInlineVerticalDrag: widget.onInlineVerticalDrag,
                   ),
                 ),
               ),

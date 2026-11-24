@@ -4,7 +4,7 @@ import '../widgets/scene_onboarding_dialogs.dart';
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' show min;
+import 'dart:math' show max, min;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -271,6 +271,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   final GlobalKey _playerKey = GlobalKey();
 
+  /// Whether the scene panel shows scene info instead of the page sections.
+  bool _showInfoPanel = false;
+
   bool _isRandomSortActive() {
     return ref.read(sceneSortProvider).sort == 'random';
   }
@@ -319,12 +322,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   void _showSceneDetailsSheet(Scene scene) {
-    unawaited(
-      showMediaDetailsBottomSheet(
-        context: context,
-        builder: (context) => SceneInfoPage(scene: scene),
-      ),
-    );
+    setState(() => _showInfoPanel = true);
   }
 
   Future<void> _showDeleteSceneDialog(Scene scene) async {
@@ -779,13 +777,53 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         bottom: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // Subtract 8px margin from the body height to ensure video is fully visible
-            final safeMaxHeight = constraints.maxHeight - 8;
-
             return sceneAsync.when(
               data: (scene) {
                 // Same 768 breakpoint as the header; portrait tablets stay single-column.
                 final useTwoColumns = constraints.maxWidth >= 768;
+                final relatedSections = [
+                  _buildTagsSection(context, scene),
+                  _buildMarkersSection(context, scene),
+                  _buildPerformersSection(context, scene),
+                  _buildGroupsSection(context, scene),
+                  _buildLinkedGalleriesSection(context, scene),
+                  _buildMoreFromStudioSection(context, scene),
+                  ..._buildMoreFromPerformersSections(context, scene),
+                ];
+                final panelSections = [
+                  _buildMainInfo(context, scene),
+                  if (!useTwoColumns) ...relatedSections,
+                ];
+                final bottomInset = MediaQuery.paddingOf(context).bottom;
+                final panelLayout = _ScenePanelLayout(
+                  video: (onVerticalDrag, maxHeight) => SceneVideoPlayer(
+                    key: _playerKey,
+                    scene: scene,
+                    autoPlayOnMount: widget.autoPlayOnMount,
+                    maxHeight: maxHeight,
+                    onVerticalDrag: onVerticalDrag,
+                  ),
+                  // The layout's handle overlays each panel's top padding.
+                  panel: _showInfoPanel
+                      ? SceneInfoPage(
+                          key: const Key('scene_info_panel'),
+                          scene: scene,
+                          onClose: () => setState(() => _showInfoPanel = false),
+                        )
+                      : FrostedPanel(
+                          key: const Key('scene_details_panel'),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(AppTheme.radiusExtraLarge),
+                          ),
+                          child: DetailPageScrollView(
+                            padding: EdgeInsets.only(
+                              top: context.dimensions.spacingLarge,
+                              bottom: bottomInset,
+                            ),
+                            children: panelSections,
+                          ),
+                        ),
+                );
 
                 if (useTwoColumns) {
                   return RefreshIndicator(
@@ -793,19 +831,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Left Column: Video, Title, Info, Details (61.8%)
-                        Expanded(
-                          flex: 618,
-                          child: DetailPageScrollView(
-                            header: SceneVideoPlayer(
-                              key: _playerKey,
-                              scene: scene,
-                              autoPlayOnMount: widget.autoPlayOnMount,
-                              maxHeight: safeMaxHeight,
-                            ),
-                            children: [_buildMainInfo(context, scene)],
-                          ),
-                        ),
+                        // Left Column: fixed video under the scene panel (61.8%)
+                        Expanded(flex: 618, child: panelLayout),
                         // Divider
                         VerticalDivider(
                           width: 1,
@@ -816,18 +843,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         Expanded(
                           flex: 382,
                           child: DetailPageScrollView(
-                            children: [
-                              _buildTagsSection(context, scene),
-                              _buildMarkersSection(context, scene),
-                              _buildPerformersSection(context, scene),
-                              _buildGroupsSection(context, scene),
-                              _buildLinkedGalleriesSection(context, scene),
-                              _buildMoreFromStudioSection(context, scene),
-                              ..._buildMoreFromPerformersSections(
-                                context,
-                                scene,
-                              ),
-                            ],
+                            children: relatedSections,
                           ),
                         ),
                       ],
@@ -835,27 +851,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   );
                 }
 
-                // Mobile View (Default Column)
                 return RefreshIndicator(
                   onRefresh: _refreshScene,
-                  child: DetailPageScrollView(
-                    header: SceneVideoPlayer(
-                      key: _playerKey,
-                      scene: scene,
-                      autoPlayOnMount: widget.autoPlayOnMount,
-                      maxHeight: safeMaxHeight,
-                    ),
-                    children: [
-                      _buildMainInfo(context, scene),
-                      _buildTagsSection(context, scene),
-                      _buildMarkersSection(context, scene),
-                      _buildPerformersSection(context, scene),
-                      _buildGroupsSection(context, scene),
-                      _buildLinkedGalleriesSection(context, scene),
-                      _buildMoreFromStudioSection(context, scene),
-                      ..._buildMoreFromPerformersSections(context, scene),
-                    ],
-                  ),
+                  child: panelLayout,
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -871,9 +869,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
 
     return PopScope(
-      canPop: !isVideoFullScreen,
+      canPop: !isVideoFullScreen && !_showInfoPanel,
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop || !isVideoFullScreen) return;
+        if (didPop) return;
+        if (!isVideoFullScreen) {
+          if (_showInfoPanel) setState(() => _showInfoPanel = false);
+          return;
+        }
         final notifier = ref.read(playerStateProvider.notifier);
         notifier.requestExitFullscreen();
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1874,6 +1876,177 @@ class _AddMarkerDialogState extends State<_AddMarkerDialog> {
           child: Text(context.l10n.scene_details_create_marker),
         ),
       ],
+    );
+  }
+}
+
+/// Keeps the inline video fixed at the top while the scene panel rises over it.
+///
+/// The panel rests flush under the video, which is also its lowest position,
+/// and expands to [_maxPanelFraction] of the available height. Vertical drags on
+/// the video or the panel handle move the panel. Dragging the content scrolls it
+/// first; only a drag that continues past either end of the content moves the
+/// panel. Flings that reach an end do not.
+class _ScenePanelLayout extends StatefulWidget {
+  const _ScenePanelLayout({required this.video, required this.panel});
+
+  /// Builds the video no taller than `maxHeight`, which keeps tall videos and
+  /// their controls above the panel's lowest position.
+  final Widget Function(ValueChanged<double> onVerticalDrag, double maxHeight)
+  video;
+
+  /// Vertically scrollable panel content; its top padding hosts the handle.
+  final Widget panel;
+
+  @override
+  State<_ScenePanelLayout> createState() => _ScenePanelLayoutState();
+}
+
+class _ScenePanelLayoutState extends State<_ScenePanelLayout> {
+  static const _maxPanelFraction = 0.88;
+
+  final _videoKey = GlobalKey();
+  double? _videoHeight;
+  double _height = 1;
+  double _minSize = 0;
+
+  /// Panel height fraction once the user moves it; null follows the video.
+  double? _size;
+
+  double get _currentSize =>
+      (_size ?? _minSize).clamp(_minSize, _maxPanelFraction);
+
+  void _measureVideo() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final box = _videoKey.currentContext?.findRenderObject() as RenderBox?;
+      final height = box != null && box.hasSize ? box.size.height : null;
+      if (height != null && height != _videoHeight) {
+        setState(() => _videoHeight = height);
+      }
+    });
+  }
+
+  /// Moves the panel by a downward pixel [dy]; returns whether it moved.
+  bool _dragPanel(double dy) {
+    final current = _currentSize;
+    final next = (current - dy / _height).clamp(_minSize, _maxPanelFraction);
+    if (next == current) return false;
+    setState(() => _size = next);
+    return true;
+  }
+
+  bool _onOverscroll(OverscrollNotification notification) {
+    if (notification.depth != 0 ||
+        notification.metrics.axis != Axis.vertical ||
+        notification.dragDetails == null) {
+      return false;
+    }
+    // Past the end raises the panel; past the start lowers it. Unhandled
+    // overscroll at the lowest position still reaches pull-to-refresh.
+    return _dragPanel(-notification.overscroll);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _measureVideo();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        _height = max(constraints.maxHeight, 1);
+        // Before the first measurement, assume the 16:9 inline container.
+        final videoHeight = _videoHeight ?? constraints.maxWidth * 9 / 16;
+        // Tall videos shrink to leave a handle strip below them.
+        final peek = min(
+          context.dimensions.buttonHeight * 1.5 / _height,
+          _maxPanelFraction,
+        );
+        _minSize = (1 - videoHeight / _height).clamp(peek, _maxPanelFraction);
+        // Clamping physics reports edge drags as overscroll on every platform;
+        // always-scrollable lets short content reach its ends too.
+        final scrollBehavior = ScrollConfiguration.of(context).copyWith(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: ClampingScrollPhysics(),
+          ),
+          overscroll: false,
+        );
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: NotificationListener<SizeChangedLayoutNotification>(
+                onNotification: (_) {
+                  _measureVideo();
+                  return true;
+                },
+                child: SizeChangedLayoutNotifier(
+                  child: KeyedSubtree(
+                    key: _videoKey,
+                    child: widget.video(_dragPanel, _height * (1 - peek)),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: _currentSize * _height,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  NotificationListener<OverscrollNotification>(
+                    onNotification: _onOverscroll,
+                    child: ScrollConfiguration(
+                      behavior: scrollBehavior,
+                      child: widget.panel,
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: _PanelDragHandle(onDrag: _dragPanel),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PanelDragHandle extends StatelessWidget {
+  const _PanelDragHandle({required this.onDrag});
+
+  final ValueChanged<double> onDrag;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.resizeUpDown,
+      child: GestureDetector(
+        key: const Key('scene_panel_handle'),
+        behavior: HitTestBehavior.opaque,
+        onVerticalDragUpdate: (details) => onDrag(details.delta.dy),
+        child: SizedBox(
+          height: context.dimensions.spacingLarge,
+          child: Center(
+            child: Container(
+              width: 32,
+              height: 4,
+              decoration: BoxDecoration(
+                color: context.colors.onSurfaceVariant.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

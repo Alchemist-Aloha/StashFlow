@@ -53,6 +53,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     this.onScaleUpdate,
     this.onScaleEnd,
     this.onTransformationDelta,
+    this.onInlineVerticalDrag,
     this.showControls = true,
     super.key,
   });
@@ -67,6 +68,10 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   final GestureScaleUpdateCallback? onScaleUpdate;
   final GestureScaleEndCallback? onScaleEnd;
   final void Function(Matrix4 delta, Offset focalPoint)? onTransformationDelta;
+
+  /// Receives one-finger vertical drag deltas while inline; brightness and
+  /// volume drags apply only in fullscreen.
+  final ValueChanged<double>? onInlineVerticalDrag;
   final bool showControls;
 
   @override
@@ -1184,7 +1189,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                   _dragIsLeft =
                                       details.focalPoint.dx <
                                       constraints.maxWidth / 2;
-                                  if (_dragIsLeft) {
+                                  if (!isFullScreen) {
+                                    // Inline drags move the host instead.
+                                  } else if (_dragIsLeft) {
                                     unawaited(
                                       ScreenBrightness().application.then((
                                         val,
@@ -1210,7 +1217,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                                 }
                               }
 
-                              if (_currentDragMode == _DragMode.vertical) {
+                              if (_currentDragMode == _DragMode.vertical &&
+                                  !isFullScreen) {
+                                widget.onInlineVerticalDrag?.call(
+                                  details.focalPointDelta.dy,
+                                );
+                              } else if (_currentDragMode ==
+                                  _DragMode.vertical) {
                                 final delta =
                                     -details.focalPointDelta.dy /
                                     constraints.maxHeight;

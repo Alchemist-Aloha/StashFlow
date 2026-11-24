@@ -598,6 +598,155 @@ void main() {
     expect(tester.getTopLeft(find.byType(SceneVideoPlayer)).dy, equals(24));
   });
 
+  testWidgets('SceneDetailsPage two-column panel spans only the left column', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final panel = tester.getRect(find.byKey(const Key('scene_details_panel')));
+    final divider = tester.getRect(find.byType(VerticalDivider));
+    expect(panel.left, 0);
+    expect(panel.right, closeTo(divider.left, 0.5));
+    expect(
+      panel.top,
+      closeTo(tester.getRect(find.byType(SceneVideoPlayer)).bottom, 0.5),
+    );
+  });
+
+  testWidgets(
+    'SceneDetailsPage panel content scrolls before moving the panel',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 440);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      final panel = find.byKey(const Key('scene_details_panel'));
+      final content = find
+          .descendant(of: panel, matching: find.byType(Scrollable))
+          .first;
+      ScrollPosition position() =>
+          tester.state<ScrollableState>(content).position;
+      double panelTop() => tester.getTopLeft(panel).dy;
+      final restingTop = panelTop();
+      expect(position().maxScrollExtent, greaterThan(30));
+      final grip = tester.getTopLeft(panel) + const Offset(390, 60);
+
+      await tester.dragFrom(grip, const Offset(0, -25));
+      await tester.pump();
+      expect(position().pixels, greaterThan(0));
+      expect(panelTop(), restingTop);
+
+      // Back at the top, the panel is already at its lowest position.
+      await tester.dragFrom(grip, const Offset(0, 400));
+      await tester.pump();
+      expect(position().pixels, 0);
+      expect(panelTop(), restingTop);
+
+      // Only the drag beyond the content's end raises the panel.
+      await tester.dragFrom(grip, const Offset(0, -3000));
+      await tester.pump();
+      expect(position().extentAfter, 0);
+      expect(panelTop(), closeTo(440 * 0.12, 0.5));
+    },
+  );
+
+  testWidgets(
+    'SceneDetailsPage panel rises over the fixed video and swaps to info',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 1000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      final video = find.byType(SceneVideoPlayer);
+      final panel = find.byKey(const Key('scene_details_panel'));
+      double panelTop() => tester.getTopLeft(panel).dy;
+      final videoRect = tester.getRect(video);
+      expect(panelTop(), closeTo(videoRect.bottom, 0.5));
+
+      // A vertical swipe on the inline video moves the panel, not the video.
+      await tester.dragFrom(
+        videoRect.center + const Offset(120, 0),
+        const Offset(0, -100),
+      );
+      await tester.pump();
+      expect(panelTop(), lessThan(videoRect.bottom - 50));
+      expect(tester.getRect(video), videoRect);
+
+      // The panel stops at 88% of the page and never drops below the video.
+      await tester.dragFrom(
+        videoRect.center + const Offset(120, 0),
+        const Offset(0, -2000),
+      );
+      await tester.pump();
+      expect(panelTop(), closeTo(1000 * 0.12, 0.5));
+      await tester.dragFrom(
+        tester.getTopLeft(panel) + const Offset(200, 8),
+        const Offset(0, 2000),
+      );
+      await tester.pumpAndSettle();
+      expect(panelTop(), closeTo(videoRect.bottom, 0.5));
+
+      final info = find.byKey(const Key('scene_action_info'));
+      await tester.ensureVisible(info);
+      await tester.tap(info);
+      await tester.pump();
+      expect(find.byKey(const Key('scene_info_panel')), findsOneWidget);
+      expect(panel, findsNothing);
+
+      // The info panel shares the handle.
+      final infoPanel = find.byKey(const Key('scene_info_panel'));
+      final infoTop = tester.getTopLeft(infoPanel).dy;
+      await tester.drag(
+        find.byKey(const Key('scene_panel_handle')),
+        const Offset(0, -100),
+      );
+      await tester.pump();
+      expect(tester.getTopLeft(infoPanel).dy, lessThan(infoTop - 50));
+
+      // Back closes the info panel before leaving the page.
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(panel, findsOneWidget);
+      expect(find.byType(SceneDetailsPage), findsOneWidget);
+
+      await tester.ensureVisible(info);
+      await tester.tap(info);
+      await tester.pump();
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pump();
+      expect(panel, findsOneWidget);
+    },
+  );
+
   testWidgets('SceneDetailsPage updates rating', (tester) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;
@@ -1316,29 +1465,43 @@ void main() {
     expect(find.text('Previous Scene'), findsOneWidget);
   });
 
-  testWidgets('SceneDetailsPage constrains video height', (tester) async {
-    // Set a specific screen size
-    const screenWidth = 1000.0;
-    const screenHeight = 2000.0;
-    tester.view.physicalSize = const Size(screenWidth, screenHeight);
+  testWidgets('SceneDetailsPage keeps tall two-column video above the panel', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
-
+    final portrait = testScene.copyWith(
+      files: [
+        SceneFile(
+          format: 'mp4',
+          width: 1080,
+          height: 1920,
+          videoCodec: null,
+          audioCodec: null,
+          bitRate: null,
+          duration: 60,
+          frameRate: null,
+        ),
+      ],
+    );
+    final mockRepo = MockGraphQLSceneRepository()..withData([portrait]);
     await pumpTestWidget(
       tester,
       prefs: prefs,
       overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
-      child: SceneDetailsPage(sceneId: testScene.id),
+      child: SceneDetailsPage(sceneId: portrait.id),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(); // The panel re-measures the video after layout.
 
-    // Without a top AppBar, safeMaxHeight = 2000 - 8 = 1992.
-
-    final playerFinder = find.byType(SceneVideoPlayer);
-    final player = tester.widget<SceneVideoPlayer>(playerFinder);
-    expect(player.maxHeight, equals(1992.0));
+    // The video shrinks so the panel's handle strip stays below it.
+    final video = tester.getRect(find.byType(AspectRatio).first);
+    final panel = tester.getRect(find.byKey(const Key('scene_details_panel')));
+    expect(video.height, lessThan(900));
+    expect(panel.top, closeTo(video.bottom, 0.5));
+    expect(panel.top, lessThan(900));
   });
 
   testWidgets('SceneCard long press opens scene info media section', (
