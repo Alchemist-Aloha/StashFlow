@@ -14,7 +14,6 @@ import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resol
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
-import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/detail_page_scroll_view.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
@@ -41,9 +40,9 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({
       'server_base_url': 'http://localhost:9999',
+      'show_scene_metadata_section': true,
     });
     prefs = await SharedPreferences.getInstance();
-    await initializeSceneMetadataVisibility(prefs);
   });
 
   Future<void> openSceneActions(WidgetTester tester) async {
@@ -306,27 +305,28 @@ void main() {
     expect(find.byKey(const Key('scene_header_metadata')), findsOneWidget);
   });
 
-  testWidgets('SceneDetailsPage hides the section even with auto-display on', (
-    tester,
-  ) async {
-    await prefs.setBool('show_scene_metadata_section', false);
-    await prefs.setBool('hide_scene_technical_metadata', false);
-    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+  testWidgets(
+    'SceneDetailsPage hides unset metadata even with auto-display on',
+    (tester) async {
+      await prefs.remove('show_scene_metadata_section');
+      await prefs.setBool('hide_scene_technical_metadata', false);
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
-    await pumpTestWidget(
-      tester,
-      prefs: prefs,
-      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
-      child: SceneDetailsPage(sceneId: testScene.id),
-    );
-    await tester.pump(const Duration(seconds: 1));
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
 
-    expect(find.text('Test Studio'), findsOneWidget);
-    expect(find.text('2024'), findsOneWidget);
-    expect(find.byKey(const Key('scene_metadata_toggle')), findsNothing);
-    expect(find.byKey(const Key('scene_header_metadata')), findsNothing);
-    expect(find.byKey(const Key('scene_action_info')), findsOneWidget);
-  });
+      expect(find.text('Test Studio'), findsOneWidget);
+      expect(find.text('2024'), findsOneWidget);
+      expect(find.byKey(const Key('scene_metadata_toggle')), findsNothing);
+      expect(find.byKey(const Key('scene_header_metadata')), findsNothing);
+      expect(find.byKey(const Key('scene_action_info')), findsOneWidget);
+    },
+  );
 
   testWidgets(
     'SceneDetailsPage renders action controls without a panel backdrop',

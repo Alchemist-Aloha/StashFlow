@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/preferences/shared_preferences_provider.dart';
 
@@ -146,32 +145,21 @@ class ShowScenePlaybackProgress extends _$ShowScenePlaybackProgress {
   }
 }
 
-const _showSceneMetadataKey = 'show_scene_metadata_section';
-
-/// Captures the install's default before startup can create other preferences.
-/// An explicit choice (including a restored one) always takes precedence.
-Future<void> initializeSceneMetadataVisibility(SharedPreferences prefs) async {
-  if (prefs.containsKey(_showSceneMetadataKey)) return;
-  await prefs.setBool(_showSceneMetadataKey, prefs.getKeys().isNotEmpty);
-}
-
 /// Controls whether scene pages include the technical metadata disclosure.
 @riverpod
 class ShowSceneMetadataSection extends _$ShowSceneMetadataSection {
+  static const _storageKey = 'show_scene_metadata_section';
+
   @override
   bool build() {
-    return ref
-            .watch(sharedPreferencesProvider)
-            .getBool(_showSceneMetadataKey) ??
-        false;
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
   }
 
   Future<void> set(bool value) async {
     if (state == value) return;
     state = value;
-    await ref
-        .read(sharedPreferencesProvider)
-        .setBool(_showSceneMetadataKey, value);
+    await ref.read(sharedPreferencesProvider).setBool(_storageKey, value);
   }
 }
 

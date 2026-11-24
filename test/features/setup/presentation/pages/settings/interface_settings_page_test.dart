@@ -1,7 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/interface_settings_page.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
@@ -292,11 +291,10 @@ void main() {
     expect(tester.widget<Switch>(toggle).value, isFalse);
   });
 
-  testWidgets('upgrades keep the scene metadata section visible', (
+  testWidgets('unset scene metadata is off with an existing server', (
     tester,
   ) async {
     await prefs.setString('server_base_url', 'https://stash.example');
-    await initializeSceneMetadataVisibility(prefs);
     await pumpTestWidget(
       tester,
       prefs: prefs,
@@ -309,22 +307,13 @@ void main() {
       'Show scene metadata section',
     );
     await tester.scrollUntilVisible(section, 150);
-    expect(tester.widget<SwitchListTile>(section).value, isTrue);
-    final collapse = find.widgetWithText(
-      SwitchListTile,
-      'Hide scene metadata by default',
-    );
-    await tester.scrollUntilVisible(collapse, 150);
-    expect(tester.widget<SwitchListTile>(collapse).value, isTrue);
+    expect(tester.widget<SwitchListTile>(section).value, isFalse);
+    expect(find.text('Hide scene metadata by default'), findsNothing);
   });
 
   testWidgets(
     'new installs can enable metadata and keep the default-collapse choice',
     (tester) async {
-      await initializeSceneMetadataVisibility(prefs);
-      await prefs.setString('server_base_url', 'https://stash.example');
-      await initializeSceneMetadataVisibility(prefs);
-
       Future<void> openSettings() async {
         await pumpTestWidget(
           tester,

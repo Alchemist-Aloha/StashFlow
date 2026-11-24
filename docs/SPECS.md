@@ -516,11 +516,10 @@ Layout contract:
 - Show only the available studio and year beneath the title, with a separator
   only when both exist. When enabled in Interface Settings, a labeled Metadata
   disclosure follows the byline, starting at the leading edge when neither
-  field exists. The section is off on a clean install and stays on when
-  upgrading an install with saved preferences. Only when enabled is the
-  separate default-collapse setting shown; hiding the section preserves that
-  setting. Expanding or collapsing a scene's facts above the action row does
-  not change either preference.
+  field exists. The section is off whenever no visibility preference is saved,
+  regardless of install age. The default-collapse setting appears only when the
+  section is enabled; disabling the section preserves that setting. Expanding or
+  collapsing a scene's facts above the action row does not change either preference.
 - Editing and scraping entry points appear only when their prerequisites are
   available.
 - Loading or failure of a secondary section must not hide the primary scene.
