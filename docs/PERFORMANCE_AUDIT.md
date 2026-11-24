@@ -593,3 +593,244 @@ Both platforms ran the identical 13-scenario end-to-end profile suite via `flutt
 - **Scene Details open stall (`~350 ms` total max on Linux and Android):** Driven by synchronous `media_kit` / native player creation on route open (`build_max < 20 ms`, `raster_max < 12 ms` on Linux, rest is vsync overhead).
 - **Filter sheet first-frame build (`19–22 ms` max on Linux):** `SceneFilterPanel` eagerly instantiates all 7 `FilterSection` children before opening; lazily building collapsed sections is a future follow-up if needed.
 - **Unverified in this pass:** Physical ARM Android hardware, hardware video decoding on Android, battery/thermal throttling, and long-session memory growth beyond the fixture library size.
+
+
+---
+
+## 12. Repeatable frame profile of Linux and Android builds (2026-11-24)
+
+**Branch:** `dev` (from `dfdfa551`)
+**App version:** 1.43.0+116 (Flutter 3.50.1)
+**Test server:** `~/stash-test-server` (Stash v0.32.0, deterministic fixture:
+10 scenes at 30 fps, 4 performers, 3 studios, 11 tags, 3 galleries, 20 images),
+API-key profile.
+
+### 12.1 Harness
+
+The §11 numbers could not be reproduced because the harness was never checked
+in. This pass adds it:
+
+- `integration_test/perf_profile_test.dart` drives the real app through 23
+  scenarios with `LiveTestWidgetsFlutterBindingFramePolicy.fullyLive` (real
+  vsync frames). For each scenario it records engine `FrameTiming` (build,
+  raster, total span; p50/p90/p99/max; jank = total span > 16.7 ms), process
+  RSS, image-cache occupancy and, while a video plays, how far playback
+  advanced. Debug runs also count rebuilt widget types per scenario
+  (`debugOnRebuildDirtyWidget`).
+- `test_driver/perf_driver.dart` writes the report to `build/$PERF_OUT.json`.
+- Each scenario waits 1.2 s before and after its action, because
+  profile engines report `FrameTiming` in roughly one-second batches.
+
+```sh
+set -a; source ../stash-test-server/stash-test-server.env; set +a
+PERF_OUT=perf_linux flutter drive --profile -d linux \
+  --driver=test_driver/perf_driver.dart \
+  --target=integration_test/perf_profile_test.dart \
+  --dart-define="STASH_URL=$STASH_URL" --dart-define="STASH_API_KEY=$STASH_API_KEY"
+# Android emulator: -d emulator-5554 and STASH_URL=http://10.0.2.2:9999
+```
+
+Scenarios: profile→Scenes, idle Scenes, Scenes scroll (3 drags down + 3 up),
+filter and sort sheets, Scene Details open to first decoded frame, idle video
+with controls visible, idle video with controls auto-hidden, scene panel
+drag, details-panel scroll, idle Scenes with the mini player, Scenes scroll
+with the mini player, open and scroll for each of Performers, Studios, Tags
+and Galleries, gallery details, rapid tab switching, the Images grid, and
+image-viewer swipes.
+
+### 12.2 Environments
+
+- **Linux profile build:** x86_64 CachyOS desktop on Hyprland, with a
+  144 Hz monitor and hardware GL. The window is 1259×1021 logical px at DPR 1.
+- **Android profile APK:** `Pixel_10_API_37_2` AVD (API 37, x86_64,
+  1080×2424, DPR 2.625). It rendered through the **host GPU** (Android
+  Emulator OpenGL ES Translator on an RTX 3070), not the SwiftShader renderer
+  §11 used, so absolute Android raster numbers are not comparable with §11.
+  The host-GPU emulator went offline twice mid-session (gfxstream context
+  errors in the emulator log, `adb: device offline` before the app launched).
+  Those runs were discarded and repeated after a cold boot.
+- Every variant was measured with **3 fresh launches per platform**; tables
+  show the medians. Disk image caches stayed warm across runs.
+
+### 12.3 Baseline (current `dev`, before fixes)
+
+| Scenario | Frames | Build p50 / p90 | Raster p50 / p90 | Total p50 / p90 / p99 | Jank | RSS MB |
+|---|---:|---:|---:|---:|---:|---:|
+| `00_profile_to_scenes` | 2 | 0.32 / 0.32 | 6.20 / 6.20 | 8.72 / 8.72 / 8.72 | 0.0% | 372 |
+| `01_scenes_idle` | 2 | 0.34 / 0.34 | 7.09 / 7.09 | 9.07 / 9.07 / 9.07 | 0.0% | 371 |
+| `02_scenes_scroll` | 251 | 0.27 / 1.22 | 4.54 / 6.25 | 6.86 / 8.82 / 11.27 | 0.0% | 376 |
+| `03_filter_sort_sheets` | 201 | 0.22 / 1.32 | 4.86 / 7.27 | 7.37 / 10.04 / 15.35 | 1.0% | 372 |
+| `04_scene_details_open` | 97 | 0.24 / 1.29 | 3.49 / 6.19 | 6.26 / 8.74 / 45.28 | 3.1% | 522 |
+| `05_video_idle_controls_visible` | 160 | 0.21 / 0.75 | 2.66 / 3.84 | 4.83 / 6.21 / 8.03 | 0.0% | 528 |
+| `06_video_idle_controls_hidden` | 307 | 0.21 / 0.90 | 3.01 / 4.74 | 4.80 / 6.71 / 9.52 | 0.0% | 531 |
+| `07_scene_panel_drag` | 276 | 0.24 / 1.07 | 2.73 / 3.91 | 4.50 / 6.29 / 7.85 | 0.0% | 534 |
+| `08_scene_details_scroll` | 209 | 0.21 / 0.71 | 2.73 / 3.88 | 4.84 / 6.54 / 8.57 | 0.0% | 535 |
+| `09_scenes_idle_with_mini_player` | 315 | 0.23 / 1.38 | 4.34 / 6.48 | 6.90 / 9.23 / 11.96 | 0.0% | 528 |
+| `10_scenes_scroll_with_mini_player` | 325 | 0.67 / 1.61 | 4.18 / 6.35 | 6.93 / 9.73 / 13.20 | 0.6% | 535 |
+| `11_performers_tab_open` | 69 | 0.25 / 1.72 | 3.03 / 3.93 | 5.36 / 7.45 / 16.19 | 1.4% | 507 |
+| `12_performers_tab_scroll` | 221 | 0.65 / 1.47 | 3.16 / 4.22 | 5.51 / 7.20 / 10.29 | 0.0% | 498 |
+| `13_studios_tab_open` | 69 | 0.22 / 1.80 | 2.78 / 3.72 | 4.94 / 6.85 / 16.46 | 1.4% | 504 |
+| `14_studios_tab_scroll` | 224 | 0.62 / 1.44 | 2.90 / 3.63 | 5.14 / 6.72 / 9.56 | 0.0% | 503 |
+| `15_tags_tab_open` | 69 | 0.21 / 1.88 | 2.92 / 4.32 | 5.28 / 7.28 / 9.77 | 0.0% | 508 |
+| `16_tags_tab_scroll` | 220 | 0.63 / 1.50 | 3.49 / 4.67 | 5.86 / 7.56 / 11.23 | 0.0% | 503 |
+| `17_galleries_tab_open` | 69 | 0.22 / 1.88 | 2.91 / 4.10 | 5.14 / 7.36 / 10.84 | 0.0% | 505 |
+| `18_galleries_tab_scroll` | 195 | 0.26 / 1.18 | 3.12 / 4.19 | 5.36 / 6.82 / 9.80 | 0.0% | 505 |
+| `19_gallery_details_open_scroll` | 218 | 0.24 / 1.26 | 3.04 / 3.96 | 5.15 / 6.63 / 10.19 | 0.5% | 512 |
+| `20_tab_switch_churn` | 249 | 0.63 / 2.00 | 3.02 / 4.21 | 5.67 / 7.78 / 9.91 | 0.0% | 518 |
+| `21_images_scroll` | 196 | 0.27 / 1.26 | 3.94 / 5.29 | 6.25 / 8.03 / 10.40 | 0.0% | 516 |
+| `22_image_viewer_swipe` | 189 | 0.20 / 0.31 | 3.22 / 4.02 | 5.13 / 6.26 / 21.88 | 2.1% | 580 |
+
+| Scenario | Frames | Build p50 / p90 | Raster p50 / p90 | Total p50 / p90 / p99 | Jank | RSS MB |
+|---|---:|---:|---:|---:|---:|---:|
+| `00_profile_to_scenes` | 7 | 0.26 / 2.64 | 16.35 / 17.54 | 21.24 / 21.62 / 22.21 | 85.7% | 321 |
+| `01_scenes_idle` | 2 | 0.33 / 0.33 | 7.78 / 7.78 | 8.91 / 8.91 / 8.91 | 0.0% | 321 |
+| `02_scenes_scroll` | 263 | 0.59 / 1.71 | 6.26 / 17.27 | 7.78 / 20.92 / 32.28 | 32.8% | 306 |
+| `03_filter_sort_sheets` | 201 | 0.49 / 1.32 | 5.98 / 8.16 | 7.32 / 9.84 / 13.59 | 0.0% | 325 |
+| `04_scene_details_open` | 85 | 0.18 / 0.73 | 1.58 / 3.48 | 1.90 / 8.21 / 20.30 | 8.8% | 357 |
+| `05_video_idle_controls_visible` | 168 | 0.07 / 0.29 | 1.19 / 1.58 | 1.45 / 2.02 / 3.06 | 0.0% | 357 |
+| `06_video_idle_controls_hidden` | 314 | 0.07 / 0.30 | 1.41 / 16.57 | 1.71 / 17.94 / 18.44 | 18.5% | 359 |
+| `07_scene_panel_drag` | 273 | 0.08 / 0.38 | 1.32 / 1.93 | 1.69 / 2.42 / 3.57 | 0.0% | 361 |
+| `08_scene_details_scroll` | 238 | 0.07 / 0.28 | 1.23 / 1.84 | 1.53 / 2.24 / 3.46 | 0.0% | 361 |
+| `09_scenes_idle_with_mini_player` | 314 | 0.36 / 0.58 | 1.74 / 2.42 | 2.14 / 3.18 / 4.52 | 0.0% | 362 |
+| `10_scenes_scroll_with_mini_player` | 327 | 0.42 / 0.65 | 1.73 / 2.48 | 2.25 / 3.24 / 5.30 | 0.0% | 363 |
+| `11_performers_tab_open` | 70 | 0.58 / 1.28 | 16.53 / 18.02 | 20.66 / 21.75 / 22.70 | 95.7% | 333 |
+| `12_performers_tab_scroll` | 251 | 0.36 / 1.91 | 4.98 / 6.96 | 6.41 / 9.04 / 14.25 | 0.0% | 333 |
+| `13_studios_tab_open` | 69 | 0.55 / 1.33 | 4.76 / 6.25 | 5.98 / 7.60 / 8.73 | 0.0% | 333 |
+| `14_studios_tab_scroll` | 249 | 0.35 / 1.67 | 4.99 / 6.49 | 6.10 / 8.12 / 11.49 | 0.0% | 330 |
+| `15_tags_tab_open` | 69 | 0.45 / 1.39 | 5.29 / 6.72 | 6.55 / 7.88 / 11.72 | 0.0% | 330 |
+| `16_tags_tab_scroll` | 258 | 0.37 / 1.69 | 5.74 / 7.78 | 6.82 / 9.26 / 17.71 | 1.9% | 332 |
+| `17_galleries_tab_open` | 140 | 0.50 / 1.12 | 5.05 / 6.92 | 6.10 / 7.90 / 11.96 | 0.0% | 333 |
+| `18_galleries_tab_scroll` | 254 | 0.33 / 1.83 | 5.07 / 6.93 | 6.51 / 8.79 / 13.73 | 0.0% | 334 |
+| `19_gallery_details_open_scroll` | 307 | 0.35 / 1.50 | 5.79 / 17.21 | 7.36 / 21.72 / 23.36 | 40.4% | 338 |
+| `20_tab_switch_churn` | 315 | 0.80 / 1.11 | 4.69 / 5.99 | 5.95 / 7.57 / 9.93 | 0.0% | 338 |
+| `21_images_scroll` | 256 | 0.48 / 1.75 | 5.71 / 16.94 | 7.35 / 21.46 / 22.66 | 30.5% | 341 |
+| `22_image_viewer_swipe` | 536 | 0.22 / 0.90 | 3.09 / 6.28 | 3.74 / 7.40 / 19.05 | 2.0% | 349 |
+
+Readings:
+
+- Scrolling, tab switching and sheets are healthy on Linux: jank of 1% or
+  less, and total p99 of 16 ms or less, except the details-route open (45 ms
+  p99, native player creation, as in §11).
+- On the emulator, some scenarios swing between about 5 ms and 17 ms raster
+  p90 from one run to the next (for example `02`, `06`, `19`, `21`, and the
+  first frames of a tab or sheet). This is noise from the emulator's GPU
+  translation layer; the same scenarios are stable on Linux. Android
+  judgements below therefore rely on frame counts and Dart build cost, not
+  raster time.
+- **Over-rendering:** with no interaction and a 30 fps video,
+  `06_video_idle_controls_hidden` produced about 307 frames in 4 s on Linux
+  (about 76 fps) and `09_scenes_idle_with_mini_player` about 315 (about 78 fps).
+  An idle Scenes page without video produces 2 frames.
+
+### 12.4 Root causes of the idle over-rendering
+
+1. **Per-tick card progress state.** `ScenePlaybackPosition.update` wrote the
+   raw player position on every tick (about 24 Hz). Every Riverpod state
+   change marks the root `UncontrolledProviderScope` dirty and schedules a
+   frame. It also rebuilt `_ScenePlaybackProgress` and its
+   `LinearProgressIndicator` on every matching scene card, including cards on
+   hidden shell tabs. The debug run counted 94 rebuilds of each in 4 s of
+   idle mini-player playback.
+2. **Hidden video controls kept consuming position ticks.**
+   `NativeVideoControls` fed the 1 Hz clock and the 200 ms progress-bar
+   stream while its bottom bar was hidden behind `AnimatedOpacity(0)`. The
+   hidden `Slider` subtree kept scheduling frames at close to display rate.
+   Debug rebuild counts show only about 5 `Slider` rebuilds per second, so
+   most of those frames were repaint-only. With the controls hidden, about
+   300 Dart frames per 4 s were spent redrawing nothing visible.
+3. **Not app-owned:** on Linux the mini player still renders about
+   73–78 fps. With `debugPrintScheduleFrameStacks`, only 2 Dart-side
+   `scheduleFrame` calls were made in 1 s of idle mini-player playback, so
+   these frames come from the engine/native texture path (media_kit), not app
+   Dart code. On Android, the video surface drives a full Flutter frame per
+   texture update, so the frame count there (about 314 per 4 s) is set by the
+   plugin and the engine.
+
+### 12.5 Changes and results (both retained)
+
+**Fix 1:** `lib/features/scenes/presentation/providers/scene_playback_position_provider.dart`.
+Forward progress is published in whole-second steps. Backward seeks, restarts
+at zero and the first observed position still apply immediately. A pause can
+leave a card bar up to 1 s behind, which is invisible on a bar a few pixels
+tall.
+
+**Fix 2:** `lib/features/scenes/presentation/widgets/native_video_controls.dart`.
+The time-pill and progress-bar streams ignore position ticks while the
+controls are hidden, unless the user is scrubbing. The next tick after the
+controls reappear refreshes them.
+
+| Scenario | Frames | Build p50 (ms) | Build p90 (ms) | Total p90 (ms) |
+|---|---:|---:|---:|---:|
+| `02_scenes_scroll` | 251 → 254 → 246 | 0.27 → 0.26 → 0.26 | 1.22 → 1.25 → 1.14 | 8.82 → 9.04 → 9.15 |
+| `05_video_idle_controls_visible` | 160 → 150 → 45 | 0.21 → 0.20 → 0.21 | 0.75 → 0.74 → 0.64 | 6.21 → 7.15 → 6.69 |
+| `06_video_idle_controls_hidden` | 307 → 305 → 2 | 0.21 → 0.18 → 0.28 | 0.90 → 0.41 → 0.28 | 6.71 → 5.66 → 6.67 |
+| `07_scene_panel_drag` | 276 → 270 → 231 | 0.24 → 0.23 → 0.25 | 1.07 → 1.07 → 1.10 | 6.29 → 6.29 → 7.25 |
+| `08_scene_details_scroll` | 209 → 212 → 114 | 0.21 → 0.22 → 0.22 | 0.71 → 0.91 → 0.80 | 6.54 → 6.56 → 7.32 |
+| `09_scenes_idle_with_mini_player` | 315 → 204 → 292 | 0.23 → 0.20 → 0.19 | 1.38 → 0.27 → 0.27 | 9.23 → 8.53 → 8.46 |
+| `10_scenes_scroll_with_mini_player` | 325 → 267 → 262 | 0.67 → 0.27 → 0.29 | 1.61 → 1.31 → 1.33 | 9.73 → 9.55 → 9.36 |
+| `12_performers_tab_scroll` | 221 → 221 → 225 | 0.65 → 0.61 → 0.72 | 1.47 → 1.56 → 1.59 | 7.20 → 7.39 → 7.95 |
+| `21_images_scroll` | 196 → 195 → 197 | 0.27 → 0.26 → 0.28 | 1.26 → 1.36 → 1.32 | 8.03 → 7.89 → 8.41 |
+
+| Scenario | Frames | Build p50 (ms) | Build p90 (ms) | Total p90 (ms) |
+|---|---:|---:|---:|---:|
+| `02_scenes_scroll` | 263 → 263 → 256 | 0.59 → 0.52 → 0.45 | 1.71 → 1.87 → 1.83 | 20.92 → 21.56 → 21.25 |
+| `05_video_idle_controls_visible` | 168 → 161 → 166 | 0.07 → 0.07 → 0.07 | 0.29 → 0.32 → 0.13 | 2.02 → 17.80 → 1.95 |
+| `06_video_idle_controls_hidden` | 314 → 314 → 314 | 0.07 → 0.07 → 0.06 | 0.30 → 0.20 → 0.09 | 17.94 → 2.12 → 1.94 |
+| `07_scene_panel_drag` | 273 → 271 → 279 | 0.08 → 0.09 → 0.08 | 0.38 → 0.38 → 0.36 | 2.42 → 2.40 → 2.17 |
+| `08_scene_details_scroll` | 238 → 241 → 235 | 0.07 → 0.07 → 0.08 | 0.28 → 0.37 → 0.12 | 2.24 → 2.57 → 2.14 |
+| `09_scenes_idle_with_mini_player` | 314 → 314 → 313 | 0.36 → 0.07 → 0.07 | 0.58 → 0.10 → 0.11 | 3.18 → 2.81 → 2.86 |
+| `10_scenes_scroll_with_mini_player` | 327 → 322 → 320 | 0.42 → 0.10 → 0.10 | 0.65 → 0.60 → 0.56 | 3.24 → 3.26 → 3.36 |
+| `12_performers_tab_scroll` | 251 → 255 → 252 | 0.36 → 0.47 → 0.36 | 1.91 → 1.75 → 1.78 | 9.04 → 8.56 → 8.50 |
+| `21_images_scroll` | 256 → 247 → 252 | 0.48 → 0.38 → 0.50 | 1.75 → 1.79 → 1.79 | 21.46 → 21.34 → 21.94 |
+
+Evidence summary:
+
+- **Fix 1:** idle mini-player build p90 went 1.38 → 0.27 ms on Linux (−80%)
+  and 0.58 → 0.10 ms on Android (−83%). Mini-player scroll build p50 went
+  0.67 → 0.27 ms on Linux (−60%) and 0.42 → 0.10 ms on Android (−76%).
+  Linux idle mini-player frame counts are bimodal (fix 1 runs: 204, 198, 303)
+  because the native texture path dominates, so the build-cost reduction is
+  the reliable signal.
+- **Fix 2:** idle video with hidden controls went **307 → 2 Dart frames** in
+  4 s on Linux. Details-panel scroll went 209 → 114 frames, and the
+  controls-visible window (which auto-hides partway through) went 160 → 45.
+  Android frame counts are unchanged because the video surface drives frames
+  there, but hidden-controls build p90 fell 0.30 → 0.09 ms and details-scroll
+  build p90 fell 0.28 → 0.12 ms.
+- **Video still presents** with fix 2: playback advanced 4,000 ms during the
+  4 s hidden-controls window on both platforms. Three `grim` screenshots of
+  the Linux window taken 1 s apart in that window differ by 13–20% of pixels,
+  showing a moving video under hidden controls.
+- On Linux, total-span p90 in `07` and `08` rose by about 1 ms with fix 2.
+  Fix 2 removed many cheap idle frames, so the remaining frames are the
+  costlier gesture frames. Per-frame build cost did not regress.
+- Scenarios the fixes don't touch (`02`, `12`, `21` and the rest) stay within
+  run-to-run noise.
+
+### 12.6 Remaining findings (not changed)
+
+- **Native texture frame rate (media_kit):** a 30 fps video keeps the app
+  rendering at about 75 fps on Linux in the mini player and on Android
+  everywhere a video is shown. Lowering it needs plugin or engine work.
+- **Scene Details open stall:** total-span p99 is about 45 ms on Linux and the
+  maximum is about 360 ms, from synchronous native player creation (as in
+  §11).
+- **Emulator first frames of sheets and tabs:** 16–18 ms raster on the first
+  frames of `00`, `11` and `03` in some runs. Noisy on this emulator, and not
+  reproduced on Linux.
+- **Pre-existing e2e failure:** `integration_test/app_e2e_test.dart` fails at
+  `scrollUntilVisible` on `scene_details_panel` (`Bad state: No element`,
+  line 508), both with and without these changes. The test predates the
+  recent Scene Details layout change and needs updating separately.
+
+### 12.7 Verification
+
+- `flutter analyze`: no issues.
+- `flutter test`: all tests pass (1,570 passed, 33 skipped), including a new
+  whole-second-step test for `ScenePlaybackPosition`.
+- Profile harness: every retained-code run passed (Linux 3 + 1 check run;
+  Android 3).
+- **Unverified:** physical Android hardware, macOS, Windows and iOS, the
+  mini player on a 60 Hz display, and casting. Casting goes through the same
+  `ScenePlaybackPosition.update` throttle but was not exercised against a
+  real receiver.

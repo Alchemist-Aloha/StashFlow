@@ -138,8 +138,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
   void _initPlayerStreams() {
     final stream = widget.controller.player.stream;
     _subscriptions.add(stream.playing.listen((_) => _onVideoTick()));
-    _positionSecondsStream = stream.position.map((d) => d.inSeconds).distinct();
-    _throttledPositionStream = _createThrottledPositionStream(stream.position);
+    // Hidden controls skip position ticks; the next tick refreshes them on show.
+    final visiblePosition = stream.position.where(
+      (_) => _controlsVisible || _isScrubbing,
+    );
+    _positionSecondsStream = visiblePosition.map((d) => d.inSeconds).distinct();
+    _throttledPositionStream = _createThrottledPositionStream(visiblePosition);
   }
 
   @override

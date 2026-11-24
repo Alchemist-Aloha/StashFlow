@@ -461,8 +461,11 @@ Cards prefer the last locally observed playback position over stale list data.
 `scenePlaybackPositionProvider` receives global local-player and cast position
 updates, including seeks and pauses, so returning to any scene list while a
 mini-player or PiP session continues updates the matching bar in real time.
-Only the bar rebuilds on position ticks; browsing cards must not initialize a
-player or fetch scene details. Observed positions survive card unmounts and
+Forward progress is published in whole-second steps; backward seeks, restarts
+at zero, and the first observed position apply immediately. Every provider
+change schedules a frame, so sub-second ticks would redraw the app for an
+invisible change. Only the bar rebuilds on position ticks; browsing cards
+must not initialize a player or fetch scene details. Observed positions survive card unmounts and
 playback changes/stops for the current app session, and reset when the active
 server profile changes. Server resume data remains the fallback for scenes not
 played in this session; this display cache does not change activity-save timing.
@@ -796,6 +799,8 @@ Responsibilities:
   player's top-left position, including while playback starts.
 - `PlayerSurface` owns shared visual rendering, controls, transforms, subtitles,
   buffering, and casting placeholders.
+  Hidden native controls ignore position ticks unless scrubbing; their time
+  pills and progress bar refresh on the next tick after they show.
 - One-finger vertical drags adjust brightness (left half) and volume (right
   half) only in fullscreen. Inline players never change them; Scene Details
   uses the drag to move its scene panel.
