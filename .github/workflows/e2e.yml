@@ -75,7 +75,8 @@ jobs:
   gui:
     name: GUI ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    # A cold Intel macOS build alone takes over 20 minutes.
+    timeout-minutes: 75
     strategy:
       fail-fast: false
       matrix:
@@ -159,8 +160,10 @@ jobs:
       - name: Run build_runner
         run: dart run build_runner build
 
+      # Fail before the job limit so the crash-report step still runs.
       - name: Run GUI test (desktop)
         if: matrix.target == 'linux' || matrix.target == 'windows' || matrix.target == 'macos'
+        timeout-minutes: 45
         env:
           STASH_URL: ${{ steps.stash.outputs.url }}
           STASH_API_KEY: ${{ steps.stash.outputs.api-key }}

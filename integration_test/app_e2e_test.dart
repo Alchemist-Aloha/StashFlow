@@ -24,6 +24,7 @@ import 'dart:convert';
 import 'dart:io' show HttpClient, HttpHeaders, Platform;
 import 'dart:ui' show PlatformDispatcher;
 
+import 'package:flutter/gestures.dart' show HitTestResult;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -139,8 +140,23 @@ Future<void> _backTo(WidgetTester tester, String path) async {
 
 Future<void> _tap(WidgetTester tester, Finder finder) async {
   await _pumpUntil(tester, finder);
-  await tester.ensureVisible(finder);
-  await _pumpUntil(tester, finder.hitTestable());
+  try {
+    // Layout can move the target after one scroll, so scroll on every frame.
+    await _pumpUntilCondition(tester, () {
+      if (finder.hitTestable().evaluate().isNotEmpty) return true;
+      unawaited(Scrollable.ensureVisible(tester.element(finder.first)));
+      return false;
+    }, '${finder.hitTestable()}');
+  } on TestFailure catch (e) {
+    final box = tester.renderObject<RenderBox>(finder.first);
+    final center = box.localToGlobal(box.size.center(Offset.zero));
+    final hit = HitTestResult();
+    tester.binding.hitTestInView(hit, center, tester.view.viewId);
+    throw TestFailure(
+      '${e.message}\nAt $center the top hit is: '
+      '${hit.path.take(3).map((entry) => entry.target).join(' <- ')}',
+    );
+  }
   await tester.tap(finder);
 }
 
