@@ -322,7 +322,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     unawaited(
       showMediaDetailsBottomSheet(
         context: context,
-        useRootNavigator: true,
         builder: (context) => SceneInfoPage(scene: scene),
       ),
     );

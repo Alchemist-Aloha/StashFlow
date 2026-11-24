@@ -8,12 +8,10 @@ Future<T?> showFrostedPanelBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   bool isScrollControlled = true,
-  bool useRootNavigator = false,
   BoxConstraints? constraints,
 }) {
   return showModalBottomSheet<T>(
     context: context,
-    useRootNavigator: useRootNavigator,
     isScrollControlled: isScrollControlled,
     constraints: constraints,
     backgroundColor: Colors.transparent,
@@ -21,15 +19,13 @@ Future<T?> showFrostedPanelBottomSheet<T>({
   );
 }
 
-/// Opens media details at the standard sheet width, with a scrollable height cap.
+/// Opens media details in the same navigator as filter and sort sheets.
 Future<void> showMediaDetailsBottomSheet({
   required BuildContext context,
   required WidgetBuilder builder,
-  bool useRootNavigator = false,
 }) {
   return showFrostedPanelBottomSheet<void>(
     context: context,
-    useRootNavigator: useRootNavigator,
     builder: (context) => LayoutBuilder(
       builder: (context, constraints) => ConstrainedBox(
         constraints: BoxConstraints(maxHeight: constraints.maxHeight * 0.88),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +23,7 @@ import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart'
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
+import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_video_player.dart';
@@ -1382,6 +1384,71 @@ void main() {
       lessThan(tester.getTopLeft(find.text('Release Date')).dy),
     );
   });
+
+  testWidgets(
+    'Scene details sheets align with Sort beside the navigation rail',
+    (tester) async {
+      tester.view.physicalSize = const Size(650, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      const secureStorage = MethodChannel(
+        'plugins.it_nomads.com/flutter_secure_storage',
+      );
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        secureStorage,
+        (_) async => null,
+      );
+      final scene = sceneWithoutStudio('s1', 'Rail layout scene');
+      final mockRepo = MockGraphQLSceneRepository()..withData([scene]);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            sceneRepositoryProvider.overrideWithValue(mockRepo),
+          ],
+          child: Consumer(
+            builder: (context, ref, _) => MaterialApp.router(
+              routerConfig: ref.watch(routerProvider),
+              theme: AppTheme.lightTheme,
+              localizationsDelegates: appLocalizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final rail = tester.getRect(find.byType(NavigationRail));
+      final panel = find.byType(FrostedPanel);
+      await tester.tap(find.byIcon(Icons.sort));
+      await tester.pumpAndSettle();
+      final sortBounds = tester.getRect(panel);
+      expect(sortBounds.left, greaterThanOrEqualTo(rail.right));
+      Navigator.of(tester.element(panel)).pop();
+      await tester.pumpAndSettle();
+
+      Future<void> checkAndCloseSceneSheet() async {
+        await tester.pumpAndSettle();
+        final bounds = tester.getRect(panel);
+        expect(bounds.left, sortBounds.left);
+        expect(bounds.right, sortBounds.right);
+        await tester.tap(find.byTooltip('Close'));
+        await tester.pumpAndSettle();
+      }
+
+      final sceneTitle = find.text(scene.title);
+      await tester.longPress(sceneTitle);
+      await checkAndCloseSceneSheet();
+
+      await tester.tap(sceneTitle);
+      await tester.pumpAndSettle();
+      final info = find.byKey(const Key('scene_action_info'));
+      await tester.ensureVisible(info);
+      await tester.tap(info);
+      await checkAndCloseSceneSheet();
+    },
+  );
 
   test(
     'shouldRouteToNextScene supports transient null active scene transitions',

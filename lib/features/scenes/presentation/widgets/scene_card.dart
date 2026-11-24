@@ -209,7 +209,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     unawaited(
       showMediaDetailsBottomSheet(
         context: context,
-        useRootNavigator: true,
         builder: (context) => SceneInfoPage(scene: widget.scene),
       ),
     );
