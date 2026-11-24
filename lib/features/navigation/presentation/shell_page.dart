@@ -423,43 +423,48 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     final floatingBottomInset =
         bottomOffset + (miniPlayerVisible ? MiniPlayer.height : 0.0);
 
-    Widget bodyContent = Stack(
-      children: [
-        Positioned.fill(
-          child: Builder(
-            builder: (bodyContext) {
-              // The scaffold has already consumed the system bottom inset in
-              // its navigation bar. Keep both inset fields in sync: Scaffold's
-              // floating-action-button location uses viewPadding for its safe
-              // bottom margin, while it replaces padding.bottom with viewInsets.
-              final mediaQuery = MediaQuery.of(bodyContext);
-              return MediaQuery(
-                data: floatingBottomInset > 0
-                    ? mediaQuery.copyWith(
-                        padding: mediaQuery.padding.copyWith(
-                          bottom:
-                              mediaQuery.padding.bottom + floatingBottomInset,
-                        ),
-                        viewPadding: mediaQuery.viewPadding.copyWith(
-                          bottom:
-                              mediaQuery.viewPadding.bottom +
-                              floatingBottomInset,
-                        ),
-                      )
-                    : mediaQuery,
-                child: RepaintBoundary(child: navigationShell),
-              );
-            },
+    // Share one BackdropGroup across the active tab's frosted chrome (app bar,
+    // floating action pill) and the mini player; floatingBottomInset keeps them
+    // non-overlapping so all three reuse a single backdrop readback per frame.
+    Widget bodyContent = BackdropGroup(
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Builder(
+              builder: (bodyContext) {
+                // The scaffold has already consumed the system bottom inset in
+                // its navigation bar. Keep both inset fields in sync: Scaffold's
+                // floating-action-button location uses viewPadding for its safe
+                // bottom margin, while it replaces padding.bottom with viewInsets.
+                final mediaQuery = MediaQuery.of(bodyContext);
+                return MediaQuery(
+                  data: floatingBottomInset > 0
+                      ? mediaQuery.copyWith(
+                          padding: mediaQuery.padding.copyWith(
+                            bottom:
+                                mediaQuery.padding.bottom + floatingBottomInset,
+                          ),
+                          viewPadding: mediaQuery.viewPadding.copyWith(
+                            bottom:
+                                mediaQuery.viewPadding.bottom +
+                                floatingBottomInset,
+                          ),
+                        )
+                      : mediaQuery,
+                  child: RepaintBoundary(child: navigationShell),
+                );
+              },
+            ),
           ),
-        ),
-        if (miniPlayerVisible)
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: bottomOffset,
-            child: const MiniPlayer(),
-          ),
-      ],
+          if (miniPlayerVisible)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: bottomOffset,
+              child: const MiniPlayer(),
+            ),
+        ],
+      ),
     );
 
     if (!isMobile && !isFullScreen) {

@@ -468,3 +468,128 @@ No persistent-cache initialization errors were observed in any confirmation
 run. Full verification completed with **609 tests passing**; static analysis
 introduced no new findings (one unrelated pre-existing warning remains in
 `auth_provider.dart`).
+
+
+---
+
+## 11. Full-flow Linux & Android emulator audit against `stash-test-server`
+
+**Date:** 2026-11-23
+**Branch:** `dev`
+**App version:** 1.43.0+116 (Flutter 3.50.1 / Dart 3.14.0)
+**Test server:** `~/stash-test-server` (real Stash server seeded with deterministic fixture library: 10 scenes, 4 performers, 3 studios, 11 tags, 3 galleries, 20 images, API-key authentication).
+
+### 11.1 Method & environments
+
+Both platforms ran the identical 13-scenario end-to-end profile suite via `flutter drive --profile` (`LiveTestWidgetsFlutterBindingFramePolicy.fullyLive`), recording real Flutter engine `FrameTiming` (`buildDuration`, `rasterDuration`, `totalSpan`), `ProcessInfo.currentRss`, and `PaintingBinding.instance.imageCache` occupancy per scenario:
+
+- **Linux desktop profile build:** `x64` CachyOS, `flutter drive --profile -d linux` against `http://127.0.0.1:9999`, hardware GLES3 `media_kit` video rendering (`H/W rendering with isolated GLES3 context in dedicated thread`).
+- **Android emulator profile APK:** `Pixel_10_API_37_2` (`sdk_gphone16k_x86_64`, API 37, `1080×2424`, 420 dpi / DPR 2.625, SwiftShader software renderer), `flutter drive --profile -d emulator-5554` against `http://10.0.2.2:9999`, `media_kit` emulator S/W rendering with `SurfaceProducer` and looping playback (`playEndBehavior: loop`).
+- **Scenarios:**
+  - `00_startup_to_scenes` — authenticated cold start to first `SceneCard` rendered
+  - `01_scenes_scroll` — 3× down + 3× up 60 Hz smooth drag bursts on Scenes masonry grid
+  - `02_filter_sort_sheets` — opening and dismissing Filter and Sort bottom sheets
+  - `03_scene_details_open` — tapping `Pocket Garden` and waiting for first decoded video frame
+  - `04_scene_video_playback_idle` — 3 s of live video playback with zero user interaction
+  - `05_scene_panel_drag` — dragging `scene_panel_handle` up/down during active video playback
+  - `06_scene_details_scroll` — scrolling `scene_details_panel` during active video playback
+  - `07_scenes_scroll_with_mini_player` — returning to `/scenes` with `MiniPlayer` active and scrolling the Scenes grid
+  - `08–11` — switching to and scrolling Performers, Studios, Tags, and Galleries tabs
+  - `12_images_tab_scroll` — navigating to `/images` and scrolling
+
+### 11.2 Baseline results (Linux profile vs Android emulator profile APK)
+
+#### Linux desktop (profile, HW GLES3)
+
+`Startup: first frame rendered in 43 ms`; `00_startup_to_scenes`: **87 ms** (`RSS 335.3 MB`).
+
+| Scenario | Frames | Build p50 / max (ms) | Raster p50 / p90 / max (ms) | Total p50 / p99 (ms) | Jank >16.7ms | RSS (MB) |
+|---|---:|---:|---:|---:|---:|---:|
+| `01_scenes_scroll` | 217 | 0.52 / 12.88 | 4.14 / 5.49 / 9.34 | 6.59 / 12.50 | 0.9% | 401.0 |
+| `02_filter_sort_sheets` | 128 | 0.61 / **22.49** | 4.56 / 6.92 / 8.10 | 7.40 / 15.93 | 0.8% | 409.0 |
+| `03_scene_details_open` | 33 | 0.40 / 9.26 | 1.12 / 5.68 / 12.01 | 4.41 / **365.99** | 6.1% | 531.7 |
+| `04_scene_video_playback_idle` | 133 | **1.06** / 2.61 | **5.21** / 6.93 / 12.87 | **7.74 / 15.20** | 0.0% | 541.1 |
+| `05_scene_panel_drag` | 76 | 0.99 / 6.70 | 4.37 / 6.31 / 7.64 | 7.21 / 10.68 | 0.0% | 538.8 |
+| `06_scene_details_scroll` | 242 | 0.55 / 2.65 | 4.45 / 6.39 / 11.55 | 7.26 / 11.64 | 0.0% | 540.0 |
+| `07_scenes_scroll_with_mini_player` | 243 | 0.68 / 13.46 | 4.41 / 6.18 / 10.33 | 7.19 / 12.68 | 0.4% | 542.1 |
+| `08_performers_tab_scroll` | 225 | 0.83 / 12.10 | 3.55 / 4.28 / 7.08 | 6.09 / 13.45 | 0.0% | 499.4 |
+| `09_studios_tab_scroll` | 215 | 0.82 / 8.07 | 3.27 / 3.84 / 7.02 | 5.68 / 10.75 | 0.0% | 506.1 |
+| `10_tags_tab_scroll` | 213 | 0.82 / 11.12 | 4.00 / 4.58 / 13.99 | 6.54 / 13.92 | 0.5% | 508.9 |
+| `11_galleries_tab_scroll` | 226 | 0.47 / 13.88 | 3.57 / 5.00 / 9.54 | 5.67 / 11.89 | 0.0% | 525.5 |
+| `12_images_tab_scroll` | 261 | 0.24 / 5.24 | 1.32 / 1.66 / 5.21 | 3.32 / 7.00 | 0.0% | 518.0 |
+
+#### Android emulator (profile APK, `Pixel_10_API_37_2`, SwiftShader)
+
+`Startup: first frame rendered in 103 ms`; `00_startup_to_scenes`: **1,002 ms** (`RSS 283.0 MB`).
+
+| Scenario | Frames | Build p50 / max (ms) | Raster p50 / p90 / max (ms) | Total p50 / p99 (ms) | Jank >16.7ms | RSS (MB) |
+|---|---:|---:|---:|---:|---:|---:|
+| `01_scenes_scroll` | 68 | 0.59 / 4.42 | 67.80 / 73.38 / 158.83 | 128.89 / 201.67 | 100.0% | 294.0 |
+| `02_filter_sort_sheets` | 35 | 0.70 / 11.40 | 68.09 / 73.43 / 167.56 | 128.21 / 324.87 | 100.0% | 317.8 |
+| `03_scene_details_open` | 6 | 5.26 / **19.82** | 85.69 / 207.95 / 207.95 | 114.01 / 311.45 | 100.0% | 355.9 |
+| `04_scene_video_playback_idle` | 56 | 0.96 / 4.67 | **59.50** / 65.05 / 69.06 | **110.65 / 123.90** | 100.0% | 358.5 |
+| `05_scene_panel_drag` | 24 | 0.96 / 9.59 | 60.96 / 66.48 / 79.54 | 114.68 / 135.06 | 100.0% | 358.1 |
+| `06_scene_details_scroll` | 89 | 0.83 / 5.37 | 57.39 / 62.65 / 330.08 | 107.34 / 355.83 | 100.0% | 358.9 |
+| `07_scenes_scroll_with_mini_player` | 52 | 0.77 / 5.84 | **101.81** / 109.16 / 111.96 | **194.15 / 218.06** | 100.0% | 361.8 |
+| `08_performers_tab_scroll` | 96 | 0.63 / 8.50 | 61.74 / 69.43 / 192.03 | 117.05 / 240.32 | 100.0% | 330.3 |
+| `09_studios_tab_scroll` | 92 | 0.51 / 7.82 | 59.97 / 65.18 / 70.88 | 113.74 / 127.89 | 100.0% | 330.7 |
+| `10_tags_tab_scroll` | 83 | 0.32 / 6.99 | 63.37 / 68.11 / 75.20 | 117.21 / 138.17 | 100.0% | 330.7 |
+| `11_galleries_tab_scroll` | 88 | 0.66 / 9.32 | 62.33 / 68.54 / 78.06 | 117.34 / 139.34 | 100.0% | 331.6 |
+| `12_images_tab_scroll` | 176 | 0.15 / 9.52 | 18.12 / 49.60 / 65.76 | 35.28 / 109.22 | 83.0% | 347.4 |
+
+### 11.3 Throttled UI render root causes identified
+
+1. **Unshared `BackdropFilter` passes in `NativeVideoControls` & hidden frosted overlays:**
+   - `NativeVideoControls` rendered two `_buildTimePill` `FrostedSurface`s plus `_buildSeekFeedbackOverlay` and `PlayerGestureFeedback` without a shared `BackdropGroup`.
+   - Both `_buildSeekFeedbackOverlay` and `PlayerGestureFeedback` kept `FrostedSurface` (`ImageFilter.blur`) mounted inside `AnimatedOpacity(opacity: 0.0)`, and `_buildTimePill` kept blur active even when `_controlsVisible` was false.
+   - Result: `04_scene_video_playback_idle` had the highest steady-state raster time on Linux (`5.21 ms` p50, `15.20 ms` total p99) and `59.50 ms` raster p50 on Android.
+2. **High-frequency `position` stream rebuilds during idle video playback:**
+   - `NativeVideoControls` subscribed to `player.stream.position` and `player.stream.duration` in `initState` / `didUpdateWidget` to call `_onVideoTick()`, which only checks `playingChanged`.
+   - The time-pill `StreamBuilder<Duration>` rebuilt both frosted time pills on every raw `position` tick (~40–60 Hz) even though `formatClockDuration(position.inSeconds)` only changes at 1 Hz.
+   - `VideoProgressBar` rebuilt `SliderTheme` + `Slider` on every raw `position` tick without a `RepaintBoundary` or throttling.
+   - `PlayerSurface.build()` watched the full `playerStateProvider` and `castServiceProvider` instead of selecting only the fields it reads.
+3. **Duplicate full-viewport `BackdropFilter` readback when `MiniPlayer` is visible:**
+   - `MiniPlayer` sat in `ShellPage` outside `ListPageScaffold`'s `BackdropGroup`, causing two separate full-viewport backdrop readback + blur passes per scroll frame (`07_scenes_scroll_with_mini_player` jumped from `67.80 ms` → `101.81 ms` raster p50 on Android, **+34.0 ms/frame**).
+
+### 11.4 Implemented fixes (retained — proved in benchmark)
+
+- **`lib/features/scenes/presentation/widgets/native_video_controls.dart`:**
+  - Wrapped the controls overlay `Stack` in a `BackdropGroup` so sibling frosted overlays share a single backdrop readback.
+  - Dropped `blurSigma` to `0` on `_buildSeekFeedbackOverlay` when hidden and on `_buildTimePill` when `!_controlsVisible`.
+  - Removed dead `position` and `duration` listeners from `_onVideoTick`.
+  - Deduplicated time-pill updates to `1 Hz` (`stream.position.map((d) => d.inSeconds).distinct()`) and throttled non-scrubbing progress-bar updates to `200 ms` intervals (keeping scrubbing instant).
+- **`lib/features/scenes/presentation/widgets/video_controls/player_gesture_feedback.dart`:**
+  - Dropped `blurSigma` to `0` when `!visible`.
+- **`lib/features/scenes/presentation/widgets/video_controls/video_progress_bar.dart`:**
+  - Isolated the progress slider inside a `RepaintBoundary`.
+- **`lib/features/scenes/presentation/widgets/player_surface.dart`:**
+  - Switched `playerStateProvider` and `castServiceProvider` watches to focused `.select(...)` tuples.
+- **`lib/features/navigation/presentation/shell_page.dart` & `lib/core/presentation/widgets/list_page_scaffold.dart`:**
+  - Wrapped `ShellPage`'s `bodyContent` `Stack` in `BackdropGroup` and made `ListPageScaffold` join an ancestor `BackdropGroup` when present so the non-overlapping top app bar, floating action pill, and `MiniPlayer` share one backdrop readback per frame.
+
+### 11.5 Before vs after benchmark results
+
+#### Linux desktop (profile, HW GLES3)
+
+| Scenario | Build p50 (ms) | Raster p50 (ms) | Total p50 (ms) | Total p99 (ms) |
+|---|---:|---:|---:|---:|
+| `04_scene_video_playback_idle` | 1.06 → **0.22 (−79%)** | 5.21 → **4.12 (−21%)** | 7.74 → **6.61 (−15%)** | 15.20 → **9.89 (−35%)** |
+| `05_scene_panel_drag` | 0.99 → **0.64 (−35%)** | 4.37 → **3.53 (−19%)** | 7.21 → **6.13 (−15%)** | 10.68 → **10.60 (−1%)** |
+| `06_scene_details_scroll` | 0.55 → **0.40 (−27%)** | 4.45 → **3.84 (−14%)** | 7.26 → **6.32 (−13%)** | 11.64 → **10.84 (−7%)** |
+| `07_scenes_scroll_with_mini_player` | 0.68 → 0.80 | 4.41 → **4.34 (−2%)** | 7.19 → **7.17 (0%)** | 12.68 → 16.07 |
+
+#### Android emulator (profile APK, `Pixel_10_API_37_2`, SwiftShader)
+
+| Scenario | Build p50 (ms) | Raster p50 (ms) | Total p50 (ms) | Total p99 (ms) |
+|---|---:|---:|---:|---:|
+| `04_scene_video_playback_idle` | 0.96 → **0.31 (−68%)** | 59.50 → **47.06 (−21%)** | 110.65 → **88.17 (−20%)** | 123.90 → **101.33 (−18%)** |
+| `05_scene_panel_drag` | 0.96 → 1.09 | 60.96 → **48.74 (−20%)** | 114.68 → **90.19 (−21%)** | 135.06 → **109.10 (−19%)** |
+| `06_scene_details_scroll` | 0.83 → **0.55 (−34%)** | 57.39 → **46.95 (−18%)** | 107.34 → **88.06 (−18%)** | 355.83 → **348.54 (−2%)** |
+| `07_scenes_scroll_with_mini_player` | 0.77 → 0.77 | 101.81 → **72.79 (−29%)** | 194.15 → **136.31 (−30%)** | 218.06 → **166.98 (−23%)** |
+
+### 11.6 Remaining bottlenecks & unverified gaps
+
+- **Full-viewport `BackdropGroup` on software/low-end rasterizers:** Even with one shared `BackdropGroup`, blurring the full-screen `ListPageScaffold` backdrop adds ~42–48 ms/frame under Android SwiftShader (~2.3 ms on Linux HW GPU). On real GPU-backed mobile hardware this is much smaller, but adding a user-facing or low-end option to disable frosted blur would be the next lever if physical-device traces show raster pressure.
+- **Scene Details open stall (`~350 ms` total max on Linux and Android):** Driven by synchronous `media_kit` / native player creation on route open (`build_max < 20 ms`, `raster_max < 12 ms` on Linux, rest is vsync overhead).
+- **Filter sheet first-frame build (`19–22 ms` max on Linux):** `SceneFilterPanel` eagerly instantiates all 7 `FilterSection` children before opening; lazily building collapsed sections is a future follow-up if needed.
+- **Unverified in this pass:** Physical ARM Android hardware, hardware video decoding on Android, battery/thermal throttling, and long-session memory growth beyond the fixture library size.

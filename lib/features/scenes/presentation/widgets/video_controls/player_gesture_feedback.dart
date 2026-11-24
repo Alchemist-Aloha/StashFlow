@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../core/presentation/theme/app_theme.dart';
 import '../../../../../core/presentation/widgets/frosted_surface.dart';
 
 /// A centered overlay widget that provides visual feedback for video player gestures.
@@ -31,6 +32,7 @@ class PlayerGestureFeedback extends StatelessWidget {
           curve: Curves.elasticOut,
           child: Center(
             child: FrostedSurface(
+              blurSigma: visible ? AppTheme.frostedBlurSigma : 0,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               borderRadius: BorderRadius.circular(16),
               // The glass capsule carries legibility over the video, which is

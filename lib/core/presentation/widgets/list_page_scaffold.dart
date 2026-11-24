@@ -1044,27 +1044,32 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     // glass; the content reserves the bar's full height as fixed scroll
     // padding. With auto-hide the bar slides away, and the inset stays fixed
     // because animating it re-laid out the whole list on every frame.
-    return Scaffold(
-      // The bar and the action pill never overlap, so they share one backdrop.
-      body: BackdropGroup(
-        child: Stack(
-          children: [
-            buildContent(appBar.topInset(context)),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: ValueListenableBuilder<bool>(
-                valueListenable: _topAppBarVisible,
-                builder: (context, visible, _) => _AutoHideAppBar(
-                  bar: appBar.bar,
-                  visible: visible || !autoHideTopAppBar,
-                ),
-              ),
+    final scaffoldBody = Stack(
+      children: [
+        buildContent(appBar.topInset(context)),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _topAppBarVisible,
+            builder: (context, visible, _) => _AutoHideAppBar(
+              bar: appBar.bar,
+              visible: visible || !autoHideTopAppBar,
             ),
-          ],
+          ),
         ),
-      ),
+      ],
+    );
+    final hasBackdropGroup =
+        context.findAncestorWidgetOfExactType<BackdropGroup>() != null;
+
+    return Scaffold(
+      // Join ShellPage's BackdropGroup when present so the bar, action pill,
+      // and mini player share one backdrop readback; otherwise own a local one.
+      body: hasBackdropGroup
+          ? scaffoldBody
+          : BackdropGroup(child: scaffoldBody),
       floatingActionButton: widget.floatingActionButton,
     );
   }

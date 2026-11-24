@@ -122,17 +122,20 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
     );
   }
 
-  bool _updateAndReadLoadingState(GlobalPlayerState playerState) {
-    final videoWidth = playerState.videoWidth;
-    final videoHeight = playerState.videoHeight;
+  bool _updateAndReadLoadingState({
+    required int? videoWidth,
+    required int? videoHeight,
+    required bool isBuffering,
+    required bool isPlaying,
+  }) {
     final isVideoReady =
         videoWidth != null && videoHeight != null && videoHeight > 0;
 
-    if (playerState.isBuffering && !_showBufferingSpinner) {
+    if (isBuffering && !_showBufferingSpinner) {
       _bufferingDisplayTimer ??= Timer(const Duration(milliseconds: 500), () {
         if (mounted) setState(() => _showBufferingSpinner = true);
       });
-    } else if (!playerState.isBuffering && _showBufferingSpinner) {
+    } else if (!isBuffering && _showBufferingSpinner) {
       _bufferingDisplayTimer?.cancel();
       _bufferingDisplayTimer = null;
       unawaited(
@@ -140,28 +143,59 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
           if (mounted) setState(() => _showBufferingSpinner = false);
         }),
       );
-    } else if (!playerState.isBuffering) {
+    } else if (!isBuffering) {
       _bufferingDisplayTimer?.cancel();
       _bufferingDisplayTimer = null;
     }
 
-    return _showBufferingSpinner || (!isVideoReady && !playerState.isPlaying);
+    return _showBufferingSpinner || (!isVideoReady && !isPlaying);
   }
 
   @override
   Widget build(BuildContext context) {
-    final playerState = ref.watch(playerStateProvider);
-    final castState = ref.watch(castServiceProvider);
+    final (
+      videoWidth,
+      videoHeight,
+      isBuffering,
+      isPlaying,
+      isInPipMode,
+      subtitleFontSize,
+      subtitleTextAlignment,
+      subtitlePositionBottomRatio,
+      useDoubleTapSeek,
+    ) = ref.watch(
+      playerStateProvider.select(
+        (s) => (
+          s.videoWidth,
+          s.videoHeight,
+          s.isBuffering,
+          s.isPlaying,
+          s.isInPipMode,
+          s.subtitleFontSize,
+          s.subtitleTextAlignment,
+          s.subtitlePositionBottomRatio,
+          s.useDoubleTapSeek,
+        ),
+      ),
+    );
+    final (isCasting, castDeviceName) = ref.watch(
+      castServiceProvider.select(
+        (s) => (s.isCasting, s.activeSession?.device.name),
+      ),
+    );
 
-    final videoWidth = playerState.videoWidth;
-    final videoHeight = playerState.videoHeight;
     final isVideoReady =
         videoWidth != null && videoHeight != null && videoHeight > 0;
     final aspectRatio = isVideoReady ? videoWidth / videoHeight : 16 / 9;
     final fit = (aspectRatio - 1.0).abs() < 0.01
         ? widget.squareFit
         : widget.fit;
-    final showLoadingIndicator = _updateAndReadLoadingState(playerState);
+    final showLoadingIndicator = _updateAndReadLoadingState(
+      videoWidth: videoWidth,
+      videoHeight: videoHeight,
+      isBuffering: isBuffering,
+      isPlaying: isPlaying,
+    );
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -170,7 +204,7 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
             Positioned.fill(
               child: Container(
                 color: Colors.black,
-                child: castState.isCasting
+                child: isCasting
                     ? Image.network(
                         excludeFromSemantics: true,
                         appendApiKey(
@@ -187,14 +221,12 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                               ),
                             ),
                       )
-                    : playerState.isInPipMode && PipMode.isWindowed
+                    : isInPipMode && PipMode.isWindowed
                     ? const SizedBox.expand()
                     : TransformableVideoSurface(
-                        fontSize: playerState.subtitleFontSize,
-                        textAlign: _subtitleTextAlign(
-                          playerState.subtitleTextAlignment,
-                        ),
-                        bottomRatio: playerState.subtitlePositionBottomRatio,
+                        fontSize: subtitleFontSize,
+                        textAlign: _subtitleTextAlign(subtitleTextAlignment),
+                        bottomRatio: subtitlePositionBottomRatio,
                         constraints: constraints,
                         controller: widget.controller,
                         aspectRatio: aspectRatio,
@@ -203,7 +235,7 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                       ),
               ),
             ),
-            if (showLoadingIndicator && !castState.isCasting)
+            if (showLoadingIndicator && !isCasting)
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
@@ -212,7 +244,7 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                   child: const Center(child: CircularProgressIndicator()),
                 ),
               ),
-            if (widget.showControls && castState.isCasting)
+            if (widget.showControls && isCasting)
               Positioned.fill(
                 child: Container(
                   color: Colors.black.withValues(alpha: 0.4),
@@ -228,8 +260,7 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                         const SizedBox(height: 8),
                         Text(
                           context.l10n.cast_casting_to(
-                            castState.activeSession?.device.name ??
-                                context.l10n.cast_device,
+                            castDeviceName ?? context.l10n.cast_device,
                           ),
                           style: const TextStyle(
                             color: Colors.white,
@@ -247,7 +278,7 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                   color: Colors.transparent,
                   child: NativeVideoControls(
                     controller: widget.controller,
-                    useDoubleTapSeek: playerState.useDoubleTapSeek,
+                    useDoubleTapSeek: useDoubleTapSeek,
                     onFullScreenToggle: widget.onFullScreenToggle,
                     onInlineBack: widget.onInlineBack,
                     onRandomScene: widget.onRandomScene,

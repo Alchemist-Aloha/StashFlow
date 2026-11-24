@@ -26,40 +26,46 @@ class VideoProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        StreamBuilder<Duration>(
-          stream: positionStream,
-          builder: (context, snapshot) {
-            final positionMs = isScrubbing
-                ? currentScrubValue
-                : (snapshot.data?.inMilliseconds.toDouble() ??
-                      initialPositionMs);
+    return RepaintBoundary(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          StreamBuilder<Duration>(
+            stream: positionStream,
+            builder: (context, snapshot) {
+              final positionMs = isScrubbing
+                  ? currentScrubValue
+                  : (snapshot.data?.inMilliseconds.toDouble() ??
+                        initialPositionMs);
 
-            return SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                trackHeight: 3,
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
-                activeTrackColor: colorScheme.primary,
-                inactiveTrackColor: colorScheme.onSurfaceVariant.withValues(
-                  alpha: 0.25,
+              return SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 3,
+                  thumbShape: const RoundSliderThumbShape(
+                    enabledThumbRadius: 6,
+                  ),
+                  overlayShape: const RoundSliderOverlayShape(
+                    overlayRadius: 12,
+                  ),
+                  activeTrackColor: colorScheme.primary,
+                  inactiveTrackColor: colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.25,
+                  ),
+                  thumbColor: colorScheme.primary,
                 ),
-                thumbColor: colorScheme.primary,
-              ),
-              child: Slider(
-                min: 0,
-                max: durationMs.toDouble(),
-                value: positionMs.clamp(0, durationMs.toDouble()),
-                onChangeStart: onChangeStart,
-                onChanged: onChanged,
-                onChangeEnd: onChangeEnd,
-              ),
-            );
-          },
-        ),
-      ],
+                child: Slider(
+                  min: 0,
+                  max: durationMs.toDouble(),
+                  value: positionMs.clamp(0, durationMs.toDouble()),
+                  onChangeStart: onChangeStart,
+                  onChanged: onChanged,
+                  onChangeEnd: onChangeEnd,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
