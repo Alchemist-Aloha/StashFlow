@@ -408,9 +408,9 @@ void main() {
           ),
         );
         await tester.pump(const Duration(seconds: 1));
-        final rating = find.byKey(const Key('scene_rating_controls'));
         expect(find.byType(RatingButton), findsOneWidget);
-        for (final key in [
+        final actionKeys = [
+          'scene_rating_controls',
           'scene_action_add_o',
           'scene_action_info',
           'scene_action_download',
@@ -421,11 +421,23 @@ void main() {
             'scene_action_refresh',
             'scene_action_delete',
           ],
-        ]) {
+        ];
+        final buttons = [
+          for (final key in actionKeys) tester.getRect(find.byKey(Key(key))),
+        ];
+        final viewport = tester.getRect(
+          find.byKey(const Key('scene_header_controls')),
+        );
+        if (buttons.last.right <= viewport.right) {
           expect(
-            tester.getCenter(find.byKey(Key(key))).dy,
-            closeTo(tester.getCenter(rating).dy, 0.1),
+            buttons.first.left - viewport.left,
+            closeTo(viewport.right - buttons.last.right, 0.1),
           );
+        }
+        final gap = buttons[1].left - buttons[0].right;
+        for (var i = 1; i < buttons.length; i++) {
+          expect(buttons[i].center.dy, closeTo(buttons.first.center.dy, 0.1));
+          expect(buttons[i].left - buttons[i - 1].right, closeTo(gap, 0.1));
         }
         if (width < 600) {
           for (final key in [

@@ -499,6 +499,7 @@ Layout contract:
 - Header actions remain reachable without crowding the title or studio.
 - Rating, add-O, details, download (where supported), and More share one action
   row directly on the page background, without a surrounding panel backdrop.
+  When the controls fit, the row centers them with equal gaps between buttons.
   The O-count button uses an unfilled icon-and-count treatment.
   At narrow widths or large UI scales, the row scrolls horizontally instead
   of wrapping or shrinking touch targets. Desktop-capable layouts at non-mobile
