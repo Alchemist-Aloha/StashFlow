@@ -1691,11 +1691,12 @@ interaction where browser security permits it.
 - The GUI e2e test `integration_test/app_e2e_test.dart` drives first-run API-key
   setup, then rejects and corrects a password and switches to that profile. It
   searches and filters the seeded library, applies a server-saved sort preset,
-  decodes authenticated video, seeks, resumes in a new player session, and
-  checks that reopening from the mini-player retains the active session. It
-  also browses the library tabs. A fresh server read checks the scene rating
-  and playback checkpoint; teardown restores both rating and activity. Run it
-  only against a seeded test server.
+  decodes authenticated video, seeks, and raises the scene panel by its handle
+  to edit the rating. It checks resume in a new player session and verifies
+  that reopening from the mini-player retains the active session, then browses
+  the library tabs. A fresh server read checks the scene rating and playback
+  checkpoint; teardown restores both rating and activity. Run it only against
+  a seeded test server.
 - The GUI test takes `STASH_URL`, `STASH_API_KEY`, `STASH_USERNAME`, and
   `STASH_PASSWORD` via `--dart-define`. It keeps profiles in memory and writes
   session cookies to a disposable support directory. The same workflow runs it

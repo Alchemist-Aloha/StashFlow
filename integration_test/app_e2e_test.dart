@@ -436,6 +436,21 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
     );
   }
 
+  Future<void> revealRating() async {
+    final title = find.descendant(
+      of: find.byKey(const Key('scene_header_title')),
+      matching: find.text(_sceneTitle),
+    );
+    await _pumpUntil(tester, title.hitTestable());
+
+    // The title is pinned outside the list. Raise the panel by its handle so
+    // portrait video leaves enough room for the rating row to be tapped.
+    final handle = find.byKey(const Key('scene_panel_handle')).hitTestable();
+    await _pumpUntil(tester, handle);
+    await tester.drag(handle, Offset(0, -tester.getCenter(handle).dy));
+    await _pumpUntil(tester, rating.hitTestable());
+  }
+
   try {
     await openScene();
     final player = tester.widget<PlayerSurface>(surface).controller.player;
@@ -493,19 +508,7 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
     await setPlaying(false);
     final pausedAt = player.state.position;
 
-    final identity = find.descendant(
-      of: find.byKey(const Key('scene_header_title')),
-      matching: find.text(_sceneTitle),
-    );
-    // The video stays fixed; the scene panel below it owns scrolling.
-    final detailsScroll = find
-        .descendant(
-          of: find.byKey(const Key('scene_details_panel')),
-          matching: find.byType(Scrollable),
-        )
-        .first;
-    await tester.scrollUntilVisible(identity, 150, scrollable: detailsScroll);
-    await tester.scrollUntilVisible(rating, 150, scrollable: detailsScroll);
+    await revealRating();
     expect(oneStar, findsNothing);
     await _tap(tester, rating);
     await _tap(tester, find.byTooltip(l10n.scene_rating_stars(1)));
@@ -533,7 +536,7 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
       closeTo(saved['resume_time'] as num, 2),
       reason: 'the new player should start at the saved position, not zero',
     );
-    await tester.scrollUntilVisible(rating, 150, scrollable: detailsScroll);
+    await revealRating();
     expect(oneStar, findsOneWidget);
 
     // Returning through the mini-player must keep the active native session.
