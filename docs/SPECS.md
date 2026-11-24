@@ -553,7 +553,12 @@ seconds. If the scene is not active, selecting a marker starts it at that time
 instead of its saved resume position. The separate delete action only opens
 confirmation and must not seek playback.
 
-The scene media section exposes cover and preview content only when available.
+The scene media section appears when a scene has a cover or a preview. Its
+cover/preview toggle is always shown and starts on the cover when one exists;
+a segment with nothing to show is disabled. Opening the sheet probes the
+preview in the background. A failed probe or playback failure only disables
+the preview segment, redrawing the media solely when the preview was on screen
+(it then falls back to the cover, or an unavailable placeholder without one).
 Cover images open the dedicated fullscreen cover viewer with zoom/pan and a
 predictable exit gesture/action. Scene-info and tagger previews share
 `PreviewVideoControlsTheme` for mobile and desktop control insets in normal
