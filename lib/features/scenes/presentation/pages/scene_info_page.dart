@@ -67,6 +67,8 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
     final theme = Theme.of(context);
     final mediaHeaders = ref.watch(mediaHeadersProvider);
     final file = scene.files.isNotEmpty ? scene.files.first : null;
+    final date = scene.date;
+    final rating = scene.rating100;
     final hasDetails = (scene.details ?? '').trim().isNotEmpty;
     return SelectionArea(
       child: SafeArea(
@@ -107,50 +109,12 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                   ),
                 ],
               ),
-              SizedBox(height: context.dimensions.spacingSmall * 1.5),
               if (SceneInfoMediaSection.isVisibleFor(scene)) ...[
-                SceneInfoMediaSection(scene: scene),
                 SizedBox(height: context.dimensions.spacingSmall * 1.5),
+                SceneInfoMediaSection(scene: scene),
               ],
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  if (scene.date != null)
-                    _InfoChip(
-                      icon: Icons.calendar_today_rounded,
-                      text: scene.date!.toIso8601String().split('T').first,
-                    ),
-                  _InfoChip(
-                    icon: Icons.timelapse_rounded,
-                    text: _formatDuration(file?.duration),
-                  ),
-                  _InfoChip(
-                    icon: Icons.play_arrow_rounded,
-                    text: '${scene.playCount}',
-                  ),
-                  _InfoChip(
-                    icon: Icons.favorite_rounded,
-                    text: '${scene.oCounter}',
-                  ),
-                  _InfoChip(
-                    icon: Icons.star_rounded,
-                    text: scene.rating100 != null ? '${scene.rating100}' : '--',
-                  ),
-                  if (scene.organized)
-                    _InfoChip(
-                      icon: Icons.check_circle_rounded,
-                      text: context.l10n.organized_title,
-                    ),
-                  if (scene.interactive)
-                    _InfoChip(
-                      icon: Icons.touch_app_rounded,
-                      text: context.l10n.interactive_title,
-                    ),
-                ],
-              ),
-              SizedBox(height: context.dimensions.spacingMedium),
-              if ((scene.studioName ?? '').trim().isNotEmpty)
+              if ((scene.studioName ?? '').trim().isNotEmpty) ...[
+                SizedBox(height: context.dimensions.spacingSmall * 1.5),
                 _SectionCard(
                   title: context.l10n.studios_title,
                   child: ListTile(
@@ -170,6 +134,7 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                         : null,
                   ),
                 ),
+              ],
               if (scene.performerNames.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 RepaintBoundary(
@@ -288,12 +253,29 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     MetaRow(label: context.l10n.scene_info_id, value: scene.id),
+                    if (date != null)
+                      MetaRow(
+                        label: context.l10n.common_release_date,
+                        value: date.toIso8601String().split('T').first,
+                      ),
                     MetaRow(
                       label: context.l10n.scene_info_original_file_path,
                       value: scene.path?.trim().isNotEmpty == true
                           ? scene.path!
                           : '--',
                       selectable: true,
+                    ),
+                    MetaRow(
+                      label: context.l10n.common_rating,
+                      value: rating == null ? '--' : '$rating / 100',
+                    ),
+                    MetaRow(
+                      label: context.l10n.sort_o_count,
+                      value: '${scene.oCounter}',
+                    ),
+                    MetaRow(
+                      label: context.l10n.sort_play_count,
+                      value: '${scene.playCount}',
                     ),
                     MetaRow(
                       label: context.l10n.scene_info_resume_time,
@@ -303,6 +285,16 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                       label: context.l10n.scene_info_play_duration,
                       value: _formatDuration(scene.playDuration),
                     ),
+                    if (scene.organized)
+                      MetaRow(
+                        label: context.l10n.organized_title,
+                        value: context.l10n.common_yes,
+                      ),
+                    if (scene.interactive)
+                      MetaRow(
+                        label: context.l10n.interactive_title,
+                        value: context.l10n.common_yes,
+                      ),
                     MetaRow(
                       label: context.l10n.scene_info_urls,
                       value: scene.urls.isNotEmpty
@@ -358,6 +350,10 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    MetaRow(
+                      label: context.l10n.duration_title,
+                      value: _formatDuration(file?.duration),
+                    ),
                     MetaRow(
                       label: context.l10n.scene_info_resolution,
                       value: file?.width != null && file?.height != null
@@ -446,20 +442,4 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       SectionPanel(title: title, titleTrailing: trailing, child: child);
-}
-
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Chip(
-      avatar: Icon(icon, size: 16),
-      label: Text(text, style: context.textTheme.bodySmall),
-      visualDensity: VisualDensity.compact,
-    );
-  }
 }

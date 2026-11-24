@@ -484,9 +484,10 @@ reliable when scrubbing is unavailable.
 ### Scene details
 
 Scene details combine identity, playback, metadata, related media, and editing
-without duplicating repository state. The scene information panel opened from
-card long-press or details shows the primary file's size in its technical
-metadata, using readable byte units or a placeholder when unavailable.
+without duplicating repository state. In the scene information panel opened from
+card long-press or details, release date, rating, O-count, play count, and
+organized/interactive status belong in Details; file duration and size belong
+in Technical. These values do not appear in a separate summary chip row.
 
 Layout contract:
 

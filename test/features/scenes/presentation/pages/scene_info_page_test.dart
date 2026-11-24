@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/meta_row.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_info_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_details_provider.dart';
@@ -82,7 +84,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(
-          find.byIcon(Icons.calendar_today_rounded),
+          find.text('Release Date'),
           size == null ? findsNothing : findsOneWidget,
         );
         final label = find.text('File Size');
@@ -122,12 +124,12 @@ void main() {
       id: 'scene-1',
       title: 'Scene',
       date: DateTime(2026),
-      rating100: null,
-      oCounter: 0,
-      organized: false,
-      interactive: false,
+      rating100: 82,
+      oCounter: 7,
+      organized: true,
+      interactive: true,
       resumeTime: null,
-      playCount: 0,
+      playCount: 13,
       playDuration: null,
       files: const [
         SceneFile(
@@ -137,7 +139,7 @@ void main() {
           videoCodec: null,
           audioCodec: null,
           bitRate: null,
-          duration: null,
+          duration: 596,
           frameRate: null,
           fingerprints: [Fingerprint(type: 'phash', value: 'abc123')],
         ),
@@ -150,8 +152,8 @@ void main() {
       performerIds: const [],
       performerNames: const [],
       performerImagePaths: const [],
-      tagIds: const [],
-      tagNames: const [],
+      tagIds: const ['tag-1'],
+      tagNames: const ['Archive'],
       code: 'LS-SC-0582',
       director: 'Celyn Vale',
       customFields: const {'source': 'archive'},
@@ -176,6 +178,41 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byType(Chip), findsNothing);
+    expect(find.widgetWithText(ActionChip, 'Archive'), findsOneWidget);
+
+    Finder section(String title) => find.ancestor(
+      of: find.text(title),
+      matching: find.byType(SectionPanel),
+    );
+
+    void expectFact(String title, String label, String value) {
+      final row = find.descendant(
+        of: section(title),
+        matching: find.widgetWithText(MetaRow, label),
+      );
+      expect(
+        find.descendant(of: row, matching: find.text(value)),
+        findsOneWidget,
+      );
+    }
+
+    await tester.scrollUntilVisible(
+      find.text('Rating'),
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    for (final (label, value) in [
+      ('Release Date', '2026-01-01'),
+      ('Rating', '82 / 100'),
+      ('O-Count', '7'),
+      ('Play Count', '13'),
+      ('Organized', 'Yes'),
+      ('Interactive', 'Yes'),
+    ]) {
+      expectFact('Details', label, value);
+    }
+
     for (final text in [
       'LS-SC-0582',
       'Celyn Vale',
@@ -192,5 +229,6 @@ void main() {
       );
       expect(finder, findsOneWidget, reason: text);
     }
+    expectFact('Technical', 'Duration', '09:56');
   });
 }
