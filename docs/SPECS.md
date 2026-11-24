@@ -511,7 +511,11 @@ Layout contract:
   adjacent scene in the active queue. At queue ends, the title resists the drag
   without navigating. Once per app launch, the title gives a brief directional
   hint when an adjacent scene exists; reduced-motion users do not see it.
-- Metadata visibility follows the user's setting.
+- Show only the available studio and year beneath the title, with a separator
+  only when both exist. A labeled Metadata disclosure follows them, starting
+  at the leading edge when neither exists. Its initial state follows the user's
+  visibility setting; toggling it on the page does not change that preference.
+  Expanded facts wrap as labeled values above the action row.
 - Editing and scraping entry points appear only when their prerequisites are
   available.
 - Loading or failure of a secondary section must not hide the primary scene.

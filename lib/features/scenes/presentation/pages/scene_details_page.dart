@@ -911,51 +911,27 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildMainInfo(BuildContext context, Scene scene) {
+    final dims = context.dimensions;
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 768;
-
-        final identity = Column(
-          key: const Key('scene_header_identity'),
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTitle(context, scene, isWide: isWide),
-            const SizedBox(height: 6),
-            _buildStudioAndDate(context, scene),
-            if (_showTechnicalMetadata) const SizedBox(height: 8),
-            if (_showTechnicalMetadata)
-              SizedBox(
-                key: const Key('scene_header_metadata'),
-                child: _buildTechnicalMetadata(context, scene),
-              ),
-          ],
-        );
-        final controls = SizedBox(
-          key: const Key('scene_header_controls'),
-          child: _buildActions(context, scene),
-        );
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(width: double.infinity, child: identity),
-            SizedBox(
-              height: _showTechnicalMetadata ? AppTheme.spacingMedium : 6,
-            ),
-            Container(
-              key: const Key('scene_header_section'),
-              margin: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
-              child: Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [SizedBox(width: double.infinity, child: controls)],
-                ),
-              ),
-            ),
-            _buildDetails(context, scene),
-          ],
-        );
-      },
+      builder: (context, constraints) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Column(
+            key: const Key('scene_header_identity'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildTitle(context, scene, isWide: constraints.maxWidth >= 768),
+              _buildByline(context, scene),
+              if (_showTechnicalMetadata)
+                _buildTechnicalMetadata(context, scene),
+            ],
+          ),
+          SizedBox(height: dims.spacingSmall),
+          _buildActions(context, scene),
+          SizedBox(height: dims.spacingMedium),
+          _buildDetails(context, scene),
+        ],
+      ),
     );
   }
 
@@ -985,127 +961,111 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildStudioAndDate(BuildContext context, Scene scene) {
-    final canOpenStudio =
-        scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
-
-    return Row(
+  Widget _buildByline(BuildContext context, Scene scene) {
+    final studio = scene.studioName?.trim() ?? '';
+    final year = scene.date?.year;
+    final dims = context.dimensions;
+    final style = context.textTheme.bodyMedium?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    );
+    return Wrap(
+      spacing: dims.spacingMedium,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        const SizedBox(height: 48),
-        Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
+        if (studio.isNotEmpty || year != null)
+          Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              if (scene.studioName != null)
+              if (studio.isNotEmpty)
                 Flexible(
-                  child: Semantics(
-                    button: canOpenStudio,
-                    label: canOpenStudio
-                        ? 'Open ${scene.studioName} details'
-                        : null,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: canOpenStudio
-                            ? () => context.push(
-                                '/studios/studio/${scene.studioId}',
-                              )
-                            : null,
-                        borderRadius: BorderRadius.circular(4),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2,
-                            vertical: 1,
+                  child: scene.studioId == null
+                      ? Text(studio, style: style)
+                      : TextButton(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size(48, dims.buttonHeight),
+                            alignment: AlignmentDirectional.centerStart,
                           ),
+                          onPressed: () =>
+                              context.push('/studios/studio/${scene.studioId}'),
                           child: Text(
-                            scene.studioName!,
+                            studio,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.titleMedium?.copyWith(
-                              color: canOpenStudio
-                                  ? context.colors.primary
-                                  : context.colors.onSurface,
-                              fontWeight: FontWeight.w500,
-                              decoration: TextDecoration.none,
-                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
                 ),
-              if (scene.studioName != null && scene.date != null)
-                Text(
-                  ' • ',
-                  style: context.textTheme.titleMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
-                  ),
-                ),
-              if (scene.date != null)
-                Text(
-                  scene.date!.year.toString(),
-                  style: context.textTheme.titleMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
-                  ),
-                ),
+              if (studio.isNotEmpty && year != null) Text(' · ', style: style),
+              if (year != null) Text('$year', style: style),
             ],
           ),
-        ),
-        if (!_showTechnicalMetadata)
-          IconButton(
-            key: const Key('scene_show_metadata'),
-            tooltip: context.l10n.details_show_metadata,
-            onPressed: () => setState(() => _showTechnicalMetadata = true),
-            color: context.colors.onSurfaceVariant,
-            icon: const Icon(Icons.keyboard_arrow_down),
+        Semantics(
+          expanded: _showTechnicalMetadata,
+          child: TextButton.icon(
+            key: const Key('scene_metadata_toggle'),
+            style: TextButton.styleFrom(
+              foregroundColor: context.colors.onSurfaceVariant,
+              padding: EdgeInsetsDirectional.only(end: dims.spacingSmall),
+            ),
+            iconAlignment: IconAlignment.end,
+            icon: Icon(
+              _showTechnicalMetadata ? Icons.expand_less : Icons.expand_more,
+            ),
+            label: Text(context.l10n.filter_group_metadata),
+            onPressed: () => setState(
+              () => _showTechnicalMetadata = !_showTechnicalMetadata,
+            ),
           ),
+        ),
       ],
     );
   }
 
   Widget _buildTechnicalMetadata(BuildContext context, Scene scene) {
-    final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
-
-    return Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      children: [
-        if (primaryFile?.duration != null)
-          _buildChip(
-            context,
-            _formatDuration(primaryFile!.duration),
-            icon: Icons.timer,
+    final file = scene.files.firstOrNull;
+    final dims = context.dimensions;
+    final l10n = context.l10n;
+    Widget fact(String label, String value) => MergeSemantics(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: context.textTheme.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
-        if (primaryFile?.width != null && primaryFile?.height != null)
-          _buildChip(
-            context,
-            '${primaryFile!.width}x${primaryFile.height}',
-            icon: Icons.fullscreen,
-          ),
-        if (primaryFile?.frameRate != null)
-          _buildChip(
-            context,
-            '${primaryFile!.frameRate!.toStringAsFixed(2)} fps',
-            icon: Icons.slow_motion_video,
-          ),
-        if (primaryFile?.bitRate != null)
-          _buildChip(
-            context,
-            '${(primaryFile!.bitRate! / 1000000).toStringAsFixed(2)} Mbps',
-            icon: Icons.speed,
-          ),
-        _buildChip(
-          context,
-          context.l10n.nPlays(scene.playCount),
-          icon: Icons.play_arrow,
-        ),
-        if (scene.playDuration != null && scene.playDuration! > 0)
-          _buildChip(
-            context,
-            _formatDuration(scene.playDuration),
-            icon: Icons.timer_outlined,
-          ),
-      ],
+          Text(value, style: context.textTheme.bodyMedium),
+        ],
+      ),
+    );
+    return Padding(
+      key: const Key('scene_header_metadata'),
+      padding: EdgeInsets.symmetric(vertical: dims.spacingSmall),
+      child: Wrap(
+        spacing: dims.spacingLarge,
+        runSpacing: dims.spacingSmall,
+        children: [
+          if (file?.duration case final duration?)
+            fact(l10n.duration_title, _formatDuration(duration)),
+          if (file?.width != null && file?.height != null)
+            fact(l10n.common_resolution, '${file!.width} × ${file.height}'),
+          if (file?.frameRate case final rate?)
+            fact(l10n.scene_info_frame_rate, '${rate.toStringAsFixed(2)} fps'),
+          if (file?.bitRate case final rate?)
+            fact(
+              l10n.scene_info_bitrate,
+              '${(rate / 1000000).toStringAsFixed(2)} Mbps',
+            ),
+          fact(l10n.sort_play_count, '${scene.playCount}'),
+          if (scene.playDuration != null && scene.playDuration! > 0)
+            fact(
+              l10n.scene_info_play_duration,
+              _formatDuration(scene.playDuration),
+            ),
+        ],
+      ),
     );
   }
 
@@ -1208,169 +1168,152 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final dims = context.dimensions;
     final showAllActions =
         ref.watch(desktopCapabilitiesProvider) && !Responsive.isMobile(context);
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: constraints.maxWidth),
-          child: Row(
-            key: const Key('scene_action_buttons'),
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              RatingButton(
-                key: const Key('scene_rating_controls'),
-                rating100: scene.rating100,
-                onRatingSelected: (rating) => _updateRating(scene, rating),
-              ),
-              SizedBox(width: dims.spacingSmall),
-              Tooltip(
-                message: context.l10n.sort_o_count,
-                child: TextButton.icon(
-                  key: const Key('scene_action_add_o'),
-                  onPressed: () async {
-                    try {
-                      await ref
-                          .read(sceneRepositoryProvider)
-                          .incrementSceneOCounter(scene.id);
-                      await ref
-                          .read(sceneRepositoryProvider)
-                          .getSceneById(scene.id, refresh: true);
-                      if (!mounted) return;
-                      ref.invalidate(sceneDetailsProvider(scene.id));
-                      _invalidateSceneListUnlessRandom();
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              context.l10n.details_o_count_incremented,
-                            ),
-                          ),
-                        );
-                      }
-                    } on Exception catch (e, stackTrace) {
-                      AppLogStore.instance.addError(
-                        'buildActions',
-                        e,
-                        stackTrace,
-                        source: 'scene_details_page',
-                      );
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              context.l10n.details_failed_increment_o_count(
-                                e.toString(),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: context.colors.onSurface,
-                    minimumSize: Size(dims.buttonHeight, dims.buttonHeight),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: dims.spacingSmall,
-                    ),
-                  ),
-                  icon: Icon(
-                    Icons.water_drop_outlined,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  label: Text('${scene.oCounter}'),
-                ),
-              ),
-              SizedBox(width: dims.spacingSmall),
-              IconButton(
-                key: const Key('scene_action_info'),
-                tooltip: context.l10n.common_details,
-                icon: Icon(
-                  Icons.info_outline_rounded,
-                  size: 24 * dims.fontSizeFactor,
-                ),
-                onPressed: () => _showSceneDetailsSheet(scene),
-              ),
-              if (!kIsWeb) ...[
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_download'),
-                  tooltip: context.l10n.common_download,
-                  icon: Icon(
-                    Icons.download_outlined,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => _saveVideoToGallery(scene),
-                ),
-              ],
-              if (showAllActions) ...[
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_add_marker'),
-                  tooltip: context.l10n.scene_details_add_marker,
-                  icon: Icon(
-                    Icons.add_location_alt_rounded,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => _showAddMarkerDialog(
-                    scene,
-                    markerSeconds: _currentMarkerSeconds(scene),
-                  ),
-                ),
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_edit'),
-                  tooltip: context.l10n.common_edit,
-                  icon: Icon(
-                    Icons.edit_outlined,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => context.push(
-                    '/scenes/scene/${scene.id}/edit',
-                    extra: scene,
-                  ),
-                ),
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_refresh'),
-                  tooltip: context.l10n.common_refresh,
-                  icon: Icon(
-                    Icons.refresh_rounded,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () async {
-                    await ref
-                        .read(sceneDetailsProvider(scene.id).notifier)
-                        .refresh();
-                    if (mounted) _invalidateSceneListUnlessRandom();
-                  },
-                ),
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_delete'),
-                  tooltip: context.l10n.delete_scene,
-                  icon: Icon(
-                    Icons.delete_outline,
-                    color: context.colors.error,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => _showDeleteSceneDialog(scene),
-                ),
-              ] else ...[
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_more'),
-                  tooltip: context.l10n.common_more,
-                  icon: Icon(
-                    Icons.more_horiz_rounded,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => _showActionMenu(scene),
-                ),
-              ],
-            ],
+    return SingleChildScrollView(
+      key: const Key('scene_header_controls'),
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        key: const Key('scene_action_buttons'),
+        children: [
+          RatingButton(
+            key: const Key('scene_rating_controls'),
+            rating100: scene.rating100,
+            onRatingSelected: (rating) => _updateRating(scene, rating),
           ),
-        ),
+          SizedBox(width: dims.spacingSmall),
+          Tooltip(
+            message: context.l10n.sort_o_count,
+            child: TextButton.icon(
+              key: const Key('scene_action_add_o'),
+              onPressed: () async {
+                try {
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .incrementSceneOCounter(scene.id);
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .getSceneById(scene.id, refresh: true);
+                  if (!mounted) return;
+                  ref.invalidate(sceneDetailsProvider(scene.id));
+                  _invalidateSceneListUnlessRandom();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(context.l10n.details_o_count_incremented),
+                      ),
+                    );
+                  }
+                } on Exception catch (e, stackTrace) {
+                  AppLogStore.instance.addError(
+                    'buildActions',
+                    e,
+                    stackTrace,
+                    source: 'scene_details_page',
+                  );
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          context.l10n.details_failed_increment_o_count(
+                            e.toString(),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                }
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: context.colors.onSurface,
+                minimumSize: Size(dims.buttonHeight, dims.buttonHeight),
+                padding: EdgeInsets.symmetric(horizontal: dims.spacingSmall),
+              ),
+              icon: Icon(
+                Icons.water_drop_outlined,
+                size: 24 * dims.fontSizeFactor,
+              ),
+              label: Text('${scene.oCounter}'),
+            ),
+          ),
+          SizedBox(width: dims.spacingSmall),
+          IconButton(
+            key: const Key('scene_action_info'),
+            tooltip: context.l10n.common_details,
+            icon: Icon(
+              Icons.info_outline_rounded,
+              size: 24 * dims.fontSizeFactor,
+            ),
+            onPressed: () => _showSceneDetailsSheet(scene),
+          ),
+          if (!kIsWeb) ...[
+            SizedBox(width: dims.spacingSmall),
+            IconButton(
+              key: const Key('scene_action_download'),
+              tooltip: context.l10n.common_download,
+              icon: Icon(
+                Icons.download_outlined,
+                size: 24 * dims.fontSizeFactor,
+              ),
+              onPressed: () => _saveVideoToGallery(scene),
+            ),
+          ],
+          if (showAllActions) ...[
+            SizedBox(width: dims.spacingSmall),
+            IconButton(
+              key: const Key('scene_action_add_marker'),
+              tooltip: context.l10n.scene_details_add_marker,
+              icon: Icon(
+                Icons.add_location_alt_rounded,
+                size: 24 * dims.fontSizeFactor,
+              ),
+              onPressed: () => _showAddMarkerDialog(
+                scene,
+                markerSeconds: _currentMarkerSeconds(scene),
+              ),
+            ),
+            SizedBox(width: dims.spacingSmall),
+            IconButton(
+              key: const Key('scene_action_edit'),
+              tooltip: context.l10n.common_edit,
+              icon: Icon(Icons.edit_outlined, size: 24 * dims.fontSizeFactor),
+              onPressed: () =>
+                  context.push('/scenes/scene/${scene.id}/edit', extra: scene),
+            ),
+            SizedBox(width: dims.spacingSmall),
+            IconButton(
+              key: const Key('scene_action_refresh'),
+              tooltip: context.l10n.common_refresh,
+              icon: Icon(Icons.refresh_rounded, size: 24 * dims.fontSizeFactor),
+              onPressed: () async {
+                await ref
+                    .read(sceneDetailsProvider(scene.id).notifier)
+                    .refresh();
+                if (mounted) _invalidateSceneListUnlessRandom();
+              },
+            ),
+            SizedBox(width: dims.spacingSmall),
+            IconButton(
+              key: const Key('scene_action_delete'),
+              tooltip: context.l10n.delete_scene,
+              icon: Icon(
+                Icons.delete_outline,
+                color: context.colors.error,
+                size: 24 * dims.fontSizeFactor,
+              ),
+              onPressed: () => _showDeleteSceneDialog(scene),
+            ),
+          ] else ...[
+            SizedBox(width: dims.spacingSmall),
+            IconButton(
+              key: const Key('scene_action_more'),
+              tooltip: context.l10n.common_more,
+              icon: Icon(
+                Icons.more_horiz_rounded,
+                size: 24 * dims.fontSizeFactor,
+              ),
+              onPressed: () => _showActionMenu(scene),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -1881,25 +1824,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     }
 
     return sections;
-  }
-
-  Widget _buildChip(
-    BuildContext context,
-    String label, {
-    IconData? icon,
-    Color? iconColor,
-  }) {
-    return Chip(
-      avatar: icon != null
-          ? Icon(
-              icon,
-              size: 16,
-              color: iconColor ?? context.colors.onSurfaceVariant,
-            )
-          : null,
-      label: Text(label, style: context.textTheme.bodySmall),
-      visualDensity: VisualDensity.compact,
-    );
   }
 }
 
