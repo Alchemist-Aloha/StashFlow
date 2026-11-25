@@ -842,7 +842,7 @@ The transport group has no shared backdrop or drop shadow.
 Playback settings offer a horizontal slider from 1 to 10 seconds in one-second
 steps for the player controls' auto-hide delay. Two seconds is the default when
 no valid preference is saved; existing saved delays are preserved. The selected
-delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
+delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. Opening scene details starts the inline player with its controls hidden until the viewer taps the video or playback pauses; fullscreen controls start visible. The preference is
 included in configuration backups.
 
 Playback Settings links to a Player controls page that customizes inline and

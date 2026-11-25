@@ -536,6 +536,20 @@ void main() {
     expect(find.text('Unknown (srt)'), findsOneWidget);
   });
 
+  testWidgets('inline controls start hidden', (tester) async {
+    await _pumpControls(
+      tester,
+      scene: _buildScene(),
+      onInlineBack: () {},
+      revealControls: false,
+    );
+
+    expect(
+      find.byKey(const Key('video_play_pause_button')).hitTestable(),
+      findsNothing,
+    );
+  });
+
   testWidgets('inline back control follows video controls visibility', (
     tester,
   ) async {
@@ -810,6 +824,7 @@ Future<void> _pumpControls(
   VoidCallback? onInlineBack,
   VoidCallback? onFullScreenToggle,
   VoidCallback? onRandomScene,
+  bool revealControls = true,
 }) async {
   final mockController = FakeVideoController(isPlaying: isPlaying);
 
@@ -853,4 +868,10 @@ Future<void> _pumpControls(
 
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 50));
+
+  // Inline controls open hidden; tap the surface like a user to reveal them.
+  if (revealControls && showControls) {
+    await tester.tapAt(tester.getCenter(find.byType(NativeVideoControls)));
+    await tester.pump(const Duration(milliseconds: 350));
+  }
 }

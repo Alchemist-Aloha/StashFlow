@@ -90,7 +90,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
 
   bool _isScrubbing = false;
   double _scrubMs = 0;
-  bool _controlsVisible = true;
+  bool _controlsVisible = false;
   bool _wasPlaying = false;
   bool _wasPlayingBeforeScrub = false;
   bool _showVolumeSlider = false;
@@ -154,6 +154,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
       source: 'NativeVideoControls',
     );
     _initPlayerStreams();
+    // The scene details inline player opens with its UI hidden; fullscreen
+    // controls start visible.
+    _controlsVisible = ref.read(playerStateProvider).isFullScreen;
 
     _wasPlaying = widget.controller.player.state.playing;
     if (_wasPlaying) {
