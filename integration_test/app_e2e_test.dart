@@ -19,7 +19,6 @@
 /// disposable support directory instead of the developer's app data.
 library;
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show HttpClient, HttpHeaders, Platform;
 import 'dart:ui' show PlatformDispatcher;
@@ -27,7 +26,6 @@ import 'dart:ui' show PlatformDispatcher;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,7 +39,6 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/video_p
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/player_surface.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_progress_bar.dart';
-import 'package:stash_app_flutter/features/setup/presentation/widgets/server_profile_card.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/main.dart' as app;
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -64,43 +61,6 @@ const _tabs = <(IconData, Set<String>)>[
     {'Ocean Studies', 'Geometry Pack', 'Favourites Selection'},
   ),
 ];
-
-Future<void> _switchToPasswordProfile(
-  WidgetTester tester,
-  AppLocalizations l10n,
-) async {
-  const name = 'stash-test-server-password';
-  final scaffold = find.byType(Scaffold).first;
-  unawaited(GoRouter.of(tester.element(scaffold)).push('/settings/server'));
-  await fillProfile(tester, l10n, name);
-  await tapWhenReady(tester, find.text(l10n.settings_server_auth_password));
-  final username = field(l10n.settings_server_username);
-  final password = field(l10n.settings_server_password);
-  await pumpUntil(tester, username);
-  await tester.enterText(username, stashUsername);
-  await tester.enterText(password, 'definitely-wrong');
-  await tapWhenReady(tester, find.text(l10n.settings_server_test));
-  await pumpUntil(tester, find.text('Error: Login failed. Check credentials.'));
-  expect(password, findsOneWidget);
-  await tapWhenReady(tester, password);
-  await tester.enterText(password, stashPassword);
-  expect(
-    tester.widget<TextField>(password).controller?.text == stashPassword,
-    isTrue,
-    reason: 'the correction must replace the failed password',
-  );
-  await testAndSaveProfile(tester, l10n, name);
-  await tapWhenReady(tester, find.text(name));
-  final card = find.ancestor(
-    of: find.text(name),
-    matching: find.byType(ServerProfileCard),
-  );
-  await pumpUntil(
-    tester,
-    find.descendant(of: card, matching: find.byIcon(Icons.check)),
-  );
-  await backTo(tester, '/scenes');
-}
 
 Future<void> _search(
   WidgetTester tester,
@@ -566,7 +526,7 @@ void main() {
 
       await backTo(tester, '/scenes');
       await pumpUntil(tester, sceneCard(sceneTitle));
-      await _switchToPasswordProfile(tester, l10n);
+      await switchToPasswordProfile(tester, l10n);
       await _exerciseSceneSearch(tester, l10n);
       await _exerciseScene(tester, l10n);
 

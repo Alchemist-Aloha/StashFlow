@@ -1379,6 +1379,11 @@ Password profiles reauthenticate with stored credentials on activation, includin
 app startup. A saved raw Cookie header is not proof of a valid session; renewal
 clears it before login and publishes the new cookie to GraphQL and media only
 after success. Failed renewal leaves no stale runtime or stored cookie header.
+On web the browser keeps the HttpOnly session cookie and the cookie jar stores
+nothing, so a successful login records an in-memory session marker in its
+place; requests use browser credentials and never send it. Web password login
+therefore needs the app on the server's origin, as when Stash serves the web
+build.
 Login and credential edits wait for credential hydration. Concurrent login calls
 share one attempt for the current credential revision; profile changes, credential
 edits, and logout prevent older login results from restoring runtime auth.
@@ -1714,8 +1719,11 @@ interaction where browser security permits it.
   `flutter drive` and chromedriver in headless Chrome. It connects with an API
   key, checks that browser playback advances and pauses, and decodes the AVIF
   and JPEG XL images that `scripts/e2e_seed_extra_images.sh` adds to the
-  seeded server. CI allows autoplay because synthetic taps are not user
-  gestures. GUI e2e tests share `integration_test/e2e_helpers.dart`.
+  seeded server, then logs in with a password and queries through the session
+  cookie. The dev server proxies Stash (`test_driver/web_dev_config.yaml`) so
+  the app and server share an origin. CI allows autoplay because synthetic
+  taps are not user gestures. GUI e2e tests share
+  `integration_test/e2e_helpers.dart`.
 - Shared helpers live under `test/helpers/`; feature-specific fakes stay near
   their tests when reuse is not established.
 

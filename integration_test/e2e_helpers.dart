@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
+import 'package:stash_app_flutter/features/setup/presentation/widgets/server_profile_card.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/server_profile_drawer.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
@@ -147,4 +148,43 @@ Future<void> testAndSaveProfile(
   await tapWhenReady(tester, find.text(l10n.common_save));
   await pumpUntil(tester, field(l10n.common_url), gone: true);
   await pumpUntil(tester, find.text(name));
+}
+
+/// Adds a password profile, checks a wrong password is rejected, then logs in
+/// with the right one and switches to that profile.
+Future<void> switchToPasswordProfile(
+  WidgetTester tester,
+  AppLocalizations l10n,
+) async {
+  const name = 'stash-test-server-password';
+  final scaffold = find.byType(Scaffold).first;
+  unawaited(GoRouter.of(tester.element(scaffold)).push('/settings/server'));
+  await fillProfile(tester, l10n, name);
+  await tapWhenReady(tester, find.text(l10n.settings_server_auth_password));
+  final username = field(l10n.settings_server_username);
+  final password = field(l10n.settings_server_password);
+  await pumpUntil(tester, username);
+  await tester.enterText(username, stashUsername);
+  await tester.enterText(password, 'definitely-wrong');
+  await tapWhenReady(tester, find.text(l10n.settings_server_test));
+  await pumpUntil(tester, find.text('Error: Login failed. Check credentials.'));
+  expect(password, findsOneWidget);
+  await tapWhenReady(tester, password);
+  await tester.enterText(password, stashPassword);
+  expect(
+    tester.widget<TextField>(password).controller?.text == stashPassword,
+    isTrue,
+    reason: 'the correction must replace the failed password',
+  );
+  await testAndSaveProfile(tester, l10n, name);
+  await tapWhenReady(tester, find.text(name));
+  final card = find.ancestor(
+    of: find.text(name),
+    matching: find.byType(ServerProfileCard),
+  );
+  await pumpUntil(
+    tester,
+    find.descendant(of: card, matching: find.byIcon(Icons.check)),
+  );
+  await backTo(tester, '/scenes');
 }

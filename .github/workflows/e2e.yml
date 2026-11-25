@@ -118,19 +118,25 @@ jobs:
 
       # Runner images ship Chrome with a matching chromedriver. Synthetic test
       # taps are not user gestures, so allow the autoplay a real click permits.
+      # The dev server proxies Stash so password login shares the app's origin.
       - name: Run GUI test (Chrome)
         timeout-minutes: 30
         env:
-          STASH_URL: ${{ steps.stash.outputs.url }}
           STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
         run: |
+          cp test_driver/web_dev_config.yaml web_dev_config.yaml
           "$CHROMEWEBDRIVER/chromedriver" --port=4444 &
           trap 'kill $!' EXIT
-          flutter drive -d web-server --browser-name=chrome --headless \
+          flutter drive -d web-server --browser-name=chrome --headless --web-port=8099 \
             --web-browser-flag=--autoplay-policy=no-user-gesture-required \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/web_e2e_test.dart \
-            "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY"
+            --dart-define=STASH_URL=http://localhost:8099 \
+            "--dart-define=STASH_API_KEY=$STASH_API_KEY" \
+            "--dart-define=STASH_USERNAME=$STASH_USERNAME" \
+            "--dart-define=STASH_PASSWORD=$STASH_PASSWORD"
 
       - name: Upload Stash log
         if: failure()

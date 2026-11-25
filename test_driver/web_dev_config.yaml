@@ -1,0 +1,7 @@
+# Proxies a stash-test-server on 127.0.0.1:9999 through the Flutter web dev
+# server so integration_test/web_e2e_test.dart shares one origin with Stash.
+# Copy to the project root as web_dev_config.yaml before `flutter drive`.
+server:
+  proxy:
+    - target: http://127.0.0.1:9999/
+      regex: '^/(graphql|login|logout|scene|image|performer|studio|tag|group|gallery|marker)(/.*)?$'

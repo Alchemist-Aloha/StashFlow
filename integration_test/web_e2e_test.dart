@@ -2,17 +2,23 @@
 /// seeded by https://github.com/Alchemist-Aloha/stash-test-server plus
 /// `scripts/e2e_seed_extra_images.sh` (AVIF and JPEG XL images).
 ///
-/// Browsers run integration tests through `flutter drive` and chromedriver:
+/// Browsers run integration tests through `flutter drive` and chromedriver.
+/// The app's dev server proxies Stash (`test_driver/web_dev_config.yaml`) so
+/// password login shares one origin, as when Stash serves the web build:
 ///
 /// ```bash
 /// chromedriver --port=4444 &
+/// cp test_driver/web_dev_config.yaml web_dev_config.yaml
 /// set -a; source ../stash-test-server/stash-test-server.env; set +a
 /// flutter drive -d web-server --browser-name=chrome --headless \
+///   --web-port=8099 \
 ///   --web-browser-flag=--autoplay-policy=no-user-gesture-required \
 ///   --driver=test_driver/integration_test.dart \
 ///   --target=integration_test/web_e2e_test.dart \
-///   --dart-define="STASH_URL=$STASH_URL" \
-///   --dart-define="STASH_API_KEY=$STASH_API_KEY"
+///   --dart-define=STASH_URL=http://localhost:8099 \
+///   --dart-define="STASH_API_KEY=$STASH_API_KEY" \
+///   --dart-define="STASH_USERNAME=$STASH_USERNAME" \
+///   --dart-define="STASH_PASSWORD=$STASH_PASSWORD"
 /// ```
 library;
 
@@ -216,6 +222,16 @@ void main() {
 
       await _exercisePlayback(tester, l10n);
       await _exerciseExtraImages(tester);
+
+      // The browser keeps the HttpOnly session cookie, so password login only
+      // works when the app shares the server's origin (as when Stash serves
+      // it); the test proxies Stash through the app's dev server.
+      if (stashUsername.isNotEmpty) {
+        await switchToPasswordProfile(tester, l10n);
+        await pumpUntil(tester, sceneCard(sceneTitle));
+        // The active client now authenticates only with the session cookie.
+        expect(await _extraImageIds(tester), hasLength(_extraImages.length));
+      }
     },
   );
 }
