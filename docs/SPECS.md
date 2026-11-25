@@ -409,12 +409,15 @@ serialization differences.
 - `StashImage` is the common authenticated/cached image boundary. Native images
   and VTT sprite sheets share its `cached_network_image_ce` manager (7-day
   freshness, 100 entries) and Dio transport with persistent session cookies.
-  Web display retains its existing `Image.network` authentication fallback.
+  On web, `StashImage` fetches bytes with the same authentication fallback and
+  relies on the browser cache; prefetch is native-only.
 - On native platforms, AVIF and JPEG XL bytes that the engine codec rejects
   are sniffed from the same cache entry and transcoded off the UI isolate
   (`avif_native` libavif/dav1d, `jxl_native` libjxl) into an engine-decodable
   BMP, so resizing and the image cache behave as for any other format.
-  Animated files show their first frame. Browsers decode AVIF natively.
+  Animated files show their first frame. Flutter's web engine rejects AVIF and
+  JPEG XL before the browser sees them, so web routes the same sniffed bytes
+  through the browser's `createImageBitmap` into that BMP path.
   `avif_native` comes from the `Alchemist-Aloha/avif_native` fork, which adds
   Windows ARM64; `jxl_native` (`Alchemist-Aloha/jxl_native`) bundles prebuilt
   libjxl the same way. Targets without a prebuilt library build without that
@@ -842,7 +845,7 @@ The transport group has no shared backdrop or drop shadow.
 Playback settings offer a horizontal slider from 1 to 10 seconds in one-second
 steps for the player controls' auto-hide delay. Two seconds is the default when
 no valid preference is saved; existing saved delays are preserved. The selected
-delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. Opening scene details starts the inline player with its controls hidden until the viewer taps the video or playback pauses; fullscreen controls start visible. The preference is
+delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. Opening scene details starts the inline player with its controls hidden until the viewer taps the video, playback pauses, or a player error leaves it paused (such as a browser blocking autoplay); fullscreen controls start visible. The preference is
 included in configuration backups.
 
 Playback Settings links to a Player controls page that customizes inline and
@@ -1707,6 +1710,12 @@ interaction where browser security permits it.
   The iOS simulator boots during dependency setup. An active branch run is
   allowed to finish when a newer push queues another run. Pull request runs
   still cancel superseded runs.
+- The web e2e test `integration_test/web_e2e_test.dart` runs under
+  `flutter drive` and chromedriver in headless Chrome. It connects with an API
+  key, checks that browser playback advances and pauses, and decodes the AVIF
+  and JPEG XL images that `scripts/e2e_seed_extra_images.sh` adds to the
+  seeded server. CI allows autoplay because synthetic taps are not user
+  gestures. GUI e2e tests share `integration_test/e2e_helpers.dart`.
 - Shared helpers live under `test/helpers/`; feature-specific fakes stay near
   their tests when reuse is not established.
 

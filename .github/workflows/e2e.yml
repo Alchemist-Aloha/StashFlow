@@ -72,6 +72,74 @@ jobs:
           path: ${{ steps.stash.outputs.data-dir }}/stash.log
           if-no-files-found: ignore
 
+  web:
+    name: GUI web-chrome
+    runs-on: ubuntu-26.04
+    timeout-minutes: 45
+    env:
+      no_proxy: 127.0.0.1,localhost
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Start seeded Stash server
+        id: stash
+        uses: Alchemist-Aloha/stash-test-server@v1
+        with:
+          stash-version: ${{ inputs.stash-version }}
+
+      # The fixture has no AVIF or JPEG XL images; the browser must decode both.
+      - name: Seed AVIF and JPEG XL images
+        env:
+          STASH_URL: ${{ steps.stash.outputs.url }}
+          STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+        run: scripts/e2e_seed_extra_images.sh "$RUNNER_TEMP/stash-extra-images"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.50.1"
+          cache: true
+
+      # flutter drive runs native-asset build hooks (e.g. cnativeapi) for the host.
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config \
+            libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev \
+            libsecret-1-dev
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
+
+      # Runner images ship Chrome with a matching chromedriver. Synthetic test
+      # taps are not user gestures, so allow the autoplay a real click permits.
+      - name: Run GUI test (Chrome)
+        timeout-minutes: 30
+        env:
+          STASH_URL: ${{ steps.stash.outputs.url }}
+          STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+        run: |
+          "$CHROMEWEBDRIVER/chromedriver" --port=4444 &
+          trap 'kill $!' EXIT
+          flutter drive -d web-server --browser-name=chrome --headless \
+            --web-browser-flag=--autoplay-policy=no-user-gesture-required \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/web_e2e_test.dart \
+            "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY"
+
+      - name: Upload Stash log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: stash-log-gui-web-chrome
+          path: ${{ steps.stash.outputs.data-dir }}/stash.log
+          if-no-files-found: ignore
+
   gui:
     name: GUI ${{ matrix.name }}
     runs-on: ${{ matrix.os }}

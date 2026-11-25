@@ -24,7 +24,6 @@ import 'dart:convert';
 import 'dart:io' show HttpClient, HttpHeaders, Platform;
 import 'dart:ui' show PlatformDispatcher;
 
-import 'package:flutter/gestures.dart' show HitTestResult;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,19 +42,15 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/player_su
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_progress_bar.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/server_profile_card.dart';
-import 'package:stash_app_flutter/features/setup/presentation/widgets/server_profile_drawer.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/main.dart' as app;
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-const _url = String.fromEnvironment('STASH_URL');
-const _apiKey = String.fromEnvironment('STASH_API_KEY');
-const _username = String.fromEnvironment('STASH_USERNAME');
-const _password = String.fromEnvironment('STASH_PASSWORD');
+import 'e2e_helpers.dart';
+
 const _hostSupportDir = String.fromEnvironment('STASH_E2E_SUPPORT_DIR');
 
 // Values from stash-test-server fixtures/profile.json (pinned by tag v1).
-const _sceneTitle = 'Pocket Garden';
 const _excludedSceneTitle = 'Ember Field';
 const _tabs = <(IconData, Set<String>)>[
   (Icons.people, {'Mara Quill', 'Theo Vance', 'Iris Kade', 'June Ash'}),
@@ -70,132 +65,6 @@ const _tabs = <(IconData, Set<String>)>[
   ),
 ];
 
-Finder _anyText(Set<String> values) => find.byWidgetPredicate(
-  (w) => w is Text && values.contains(w.data),
-  description: 'Text in $values',
-);
-
-Finder _field(String label) =>
-    find.ancestor(of: find.text(label), matching: find.byType(TextField));
-
-Finder _navTab(IconData icon) => find.descendant(
-  of: find.byWidgetPredicate((w) => w is NavigationBar || w is NavigationRail),
-  matching: find.byIcon(icon),
-);
-
-/// Pumps frames until [finder] matches; avoids pumpAndSettle, which never
-/// settles while loading indicators or video run.
-Future<void> _pumpUntil(
-  WidgetTester tester,
-  Finder finder, {
-  Duration timeout = const Duration(seconds: 60),
-  bool gone = false,
-}) async {
-  await _pumpUntilCondition(
-    tester,
-    () => finder.evaluate().isEmpty == gone,
-    '$finder${gone ? ' to disappear' : ''}',
-    timeout: timeout,
-  );
-}
-
-Future<void> _pumpUntilCondition(
-  WidgetTester tester,
-  bool Function() condition,
-  String description, {
-  Duration timeout = const Duration(seconds: 60),
-}) async {
-  final deadline = DateTime.now().add(timeout);
-  do {
-    await tester.pump(const Duration(milliseconds: 100));
-    if (condition()) return;
-  } while (DateTime.now().isBefore(deadline));
-  final onScreen = find
-      .byType(RichText)
-      .evaluate()
-      .map((e) => (e.widget as RichText).text.toPlainText())
-      .where((t) => t.trim().isNotEmpty)
-      .take(60)
-      .toList();
-  throw TestFailure(
-    'Timed out after $timeout waiting for $description\nOn screen: $onScreen',
-  );
-}
-
-// `uri` keeps the base location under pushed routes; the last match is the top page.
-String _location(WidgetTester tester) =>
-    GoRouter.of(tester.element(find.byType(Scaffold).first))
-        .routerDelegate
-        .currentConfiguration
-        .last
-        .matchedLocation;
-
-Future<void> _backTo(WidgetTester tester, String path) async {
-  for (var i = 0; i < 4 && _location(tester) != path; i++) {
-    await tester.binding.handlePopRoute();
-    await tester.pump(const Duration(milliseconds: 500));
-  }
-  expect(_location(tester), path);
-}
-
-Future<void> _tap(WidgetTester tester, Finder finder) async {
-  await _pumpUntil(tester, finder);
-  try {
-    // Layout can move the target after one scroll, so scroll on every frame.
-    await _pumpUntilCondition(tester, () {
-      if (finder.hitTestable().evaluate().isNotEmpty) return true;
-      unawaited(Scrollable.ensureVisible(tester.element(finder.first)));
-      return false;
-    }, '${finder.hitTestable()}');
-  } on TestFailure catch (e) {
-    final box = tester.renderObject<RenderBox>(finder.first);
-    final center = box.localToGlobal(box.size.center(Offset.zero));
-    final hit = HitTestResult();
-    tester.binding.hitTestInView(hit, center, tester.view.viewId);
-    throw TestFailure(
-      '${e.message}\nAt $center the top hit is: '
-      '${hit.path.take(3).map((entry) => entry.target).join(' <- ')}',
-    );
-  }
-  await tester.tap(finder);
-}
-
-Finder _sceneCard(String title) => find.byWidgetPredicate(
-  (widget) => widget is SceneCard && widget.scene.title == title,
-  description: 'SceneCard for $title',
-);
-
-Future<void> _fillProfile(
-  WidgetTester tester,
-  AppLocalizations l10n,
-  String name,
-) async {
-  final add = find.byTooltip(l10n.settings_server_profile_add);
-  await _tap(tester, add);
-  await _pumpUntil(tester, _field(l10n.common_url));
-  await tester.enterText(_field(l10n.settings_server_profile_name), name);
-  await tester.enterText(_field(l10n.common_url), _url);
-}
-
-Future<void> _testAndSaveProfile(
-  WidgetTester tester,
-  AppLocalizations l10n,
-  String name,
-) async {
-  final drawer = find.byType(ServerProfileDrawer);
-  Finder result(RegExp pattern) =>
-      find.descendant(of: drawer, matching: find.textContaining(pattern));
-  final error = result(RegExp(r'^Error'));
-  final retrying = error.evaluate().isNotEmpty;
-  await _tap(tester, find.text(l10n.settings_server_test));
-  if (retrying) await _pumpUntil(tester, error, gone: true);
-  await _pumpUntil(tester, result(RegExp(r'^(v?\d+\.\d+|Error)')));
-  expect(error, findsNothing);
-  await _tap(tester, find.text(l10n.common_save));
-  await _pumpUntil(tester, _field(l10n.common_url), gone: true);
-  await _pumpUntil(tester, find.text(name));
-}
-
 Future<void> _switchToPasswordProfile(
   WidgetTester tester,
   AppLocalizations l10n,
@@ -203,37 +72,34 @@ Future<void> _switchToPasswordProfile(
   const name = 'stash-test-server-password';
   final scaffold = find.byType(Scaffold).first;
   unawaited(GoRouter.of(tester.element(scaffold)).push('/settings/server'));
-  await _fillProfile(tester, l10n, name);
-  await _tap(tester, find.text(l10n.settings_server_auth_password));
-  final username = _field(l10n.settings_server_username);
-  final password = _field(l10n.settings_server_password);
-  await _pumpUntil(tester, username);
-  await tester.enterText(username, _username);
+  await fillProfile(tester, l10n, name);
+  await tapWhenReady(tester, find.text(l10n.settings_server_auth_password));
+  final username = field(l10n.settings_server_username);
+  final password = field(l10n.settings_server_password);
+  await pumpUntil(tester, username);
+  await tester.enterText(username, stashUsername);
   await tester.enterText(password, 'definitely-wrong');
-  await _tap(tester, find.text(l10n.settings_server_test));
-  await _pumpUntil(
-    tester,
-    find.text('Error: Login failed. Check credentials.'),
-  );
+  await tapWhenReady(tester, find.text(l10n.settings_server_test));
+  await pumpUntil(tester, find.text('Error: Login failed. Check credentials.'));
   expect(password, findsOneWidget);
-  await _tap(tester, password);
-  await tester.enterText(password, _password);
+  await tapWhenReady(tester, password);
+  await tester.enterText(password, stashPassword);
   expect(
-    tester.widget<TextField>(password).controller?.text == _password,
+    tester.widget<TextField>(password).controller?.text == stashPassword,
     isTrue,
     reason: 'the correction must replace the failed password',
   );
-  await _testAndSaveProfile(tester, l10n, name);
-  await _tap(tester, find.text(name));
+  await testAndSaveProfile(tester, l10n, name);
+  await tapWhenReady(tester, find.text(name));
   final card = find.ancestor(
     of: find.text(name),
     matching: find.byType(ServerProfileCard),
   );
-  await _pumpUntil(
+  await pumpUntil(
     tester,
     find.descendant(of: card, matching: find.byIcon(Icons.check)),
   );
-  await _backTo(tester, '/scenes');
+  await backTo(tester, '/scenes');
 }
 
 Future<void> _search(
@@ -241,17 +107,17 @@ Future<void> _search(
   AppLocalizations l10n,
   String query,
 ) async {
-  await _tap(tester, find.byTooltip(l10n.common_search));
+  await tapWhenReady(tester, find.byTooltip(l10n.common_search));
   final field = find.byWidgetPredicate(
     (widget) =>
         widget is TextField &&
         widget.decoration?.hintText == l10n.scenes_search_hint,
     description: 'scene search field',
   );
-  await _pumpUntil(tester, field);
+  await pumpUntil(tester, field);
   await tester.enterText(field, query);
   await tester.testTextInput.receiveAction(TextInputAction.search);
-  await _pumpUntil(tester, field, gone: true);
+  await pumpUntil(tester, field, gone: true);
 }
 
 Future<void> _exerciseSceneSearch(
@@ -266,43 +132,43 @@ Future<void> _exerciseSceneSearch(
         widget.label == l10n.common_organized,
   );
   await _search(tester, l10n, _excludedSceneTitle);
-  await _pumpUntil(tester, _sceneCard(_excludedSceneTitle));
+  await pumpUntil(tester, sceneCard(_excludedSceneTitle));
   expect(find.byType(SceneCard), findsOneWidget);
 
-  await _tap(tester, filter);
-  await _tap(
+  await tapWhenReady(tester, filter);
+  await tapWhenReady(
     tester,
     find.descendant(of: organized, matching: find.text(l10n.common_yes)),
   );
-  await _tap(tester, apply);
-  await _pumpUntil(tester, find.text(l10n.common_no_items));
+  await tapWhenReady(tester, apply);
+  await pumpUntil(tester, find.text(l10n.common_no_items));
   expect(find.byType(SceneCard), findsNothing);
 
-  await _search(tester, l10n, _sceneTitle);
-  await _pumpUntil(tester, _sceneCard(_sceneTitle));
+  await _search(tester, l10n, sceneTitle);
+  await pumpUntil(tester, sceneCard(sceneTitle));
   expect(find.byType(SceneCard), findsOneWidget);
 
   await _search(tester, l10n, _excludedSceneTitle);
-  await _pumpUntil(tester, find.text(l10n.common_no_items));
-  await _tap(tester, filter);
-  await _tap(tester, find.text(l10n.common_reset));
-  await _tap(tester, apply);
-  await _pumpUntil(tester, _sceneCard(_excludedSceneTitle));
+  await pumpUntil(tester, find.text(l10n.common_no_items));
+  await tapWhenReady(tester, filter);
+  await tapWhenReady(tester, find.text(l10n.common_reset));
+  await tapWhenReady(tester, apply);
+  await pumpUntil(tester, sceneCard(_excludedSceneTitle));
   expect(find.byType(SceneCard), findsOneWidget);
 
   // The server-seeded preset clears the active search and changes list order.
   final presets = find.byTooltip(l10n.common_saved_filters);
   final topRated = find.text('Top rated');
-  await _tap(tester, presets);
-  await _tap(tester, topRated);
-  await _pumpUntil(tester, topRated, gone: true);
-  await _pumpUntilCondition(tester, () {
+  await tapWhenReady(tester, presets);
+  await tapWhenReady(tester, topRated);
+  await pumpUntil(tester, topRated, gone: true);
+  await pumpUntilCondition(tester, () {
     final first = find.byType(SceneCard).evaluate().firstOrNull?.widget;
     return first is SceneCard && first.scene.title == 'Coastal Drift';
   }, 'Coastal Drift to become the first scene after applying Top rated');
 
-  await _search(tester, l10n, _sceneTitle);
-  await _pumpUntil(tester, _sceneCard(_sceneTitle));
+  await _search(tester, l10n, sceneTitle);
+  await pumpUntil(tester, sceneCard(sceneTitle));
 }
 
 // Independent, uncached server reads distinguish real writes from UI state.
@@ -311,8 +177,8 @@ Future<Map<String, dynamic>> _stash(
   String query,
   Map<String, Object?> variables,
 ) async {
-  final request = await client.postUrl(Uri.parse(_url).resolve('/graphql'));
-  request.headers.set('ApiKey', _apiKey);
+  final request = await client.postUrl(Uri.parse(stashUrl).resolve('/graphql'));
+  request.headers.set('ApiKey', stashApiKey);
   request.headers.set(HttpHeaders.contentTypeHeader, 'application/json');
   request.write(jsonEncode({'query': query, 'variables': variables}));
   final response = await request.close();
@@ -395,7 +261,7 @@ Future<void> _restoreScene(
 }
 
 Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
-  final card = _sceneCard(_sceneTitle);
+  final card = sceneCard(sceneTitle);
   final id = tester.widget<SceneCard>(card).scene.id;
   final server = HttpClient();
   addTearDown(() => server.close(force: true));
@@ -406,30 +272,30 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
   final surface = find.byWidgetPredicate(
     (widget) =>
         widget is PlayerSurface && widget.scene.id == id && widget.showControls,
-    description: 'player surface for $_sceneTitle',
+    description: 'player surface for $sceneTitle',
   );
   final rating = find.byKey(const Key('scene_rating_controls'));
   final oneStar = find.descendant(of: rating, matching: find.text('1'));
   final miniPlayer = find.byType(MiniPlayer);
   Future<void> openScene() async {
-    await _tap(tester, card);
-    await _pumpUntil(tester, surface);
-    await _pumpUntil(tester, miniPlayer, gone: true);
-    expect(_location(tester), '/scenes/scene/$id');
+    await tapWhenReady(tester, card);
+    await pumpUntil(tester, surface);
+    await pumpUntil(tester, miniPlayer, gone: true);
+    expect(location(tester), '/scenes/scene/$id');
   }
 
   Future<void> stopScene() async {
-    await _backTo(tester, '/scenes');
-    await _pumpUntil(tester, miniPlayer);
-    await _tap(
+    await backTo(tester, '/scenes');
+    await pumpUntil(tester, miniPlayer);
+    await tapWhenReady(
       tester,
       find.descendant(
         of: miniPlayer,
         matching: find.byTooltip(l10n.common_close),
       ),
     );
-    await _pumpUntil(tester, miniPlayer, gone: true);
-    await _pumpUntilCondition(
+    await pumpUntil(tester, miniPlayer, gone: true);
+    await pumpUntilCondition(
       tester,
       () => playerNotifier.currentVideoController == null,
       'the native playback session to release',
@@ -439,23 +305,23 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
   Future<void> revealRating() async {
     final title = find.descendant(
       of: find.byKey(const Key('scene_header_title')),
-      matching: find.text(_sceneTitle),
+      matching: find.text(sceneTitle),
     );
-    await _pumpUntil(tester, title.hitTestable());
+    await pumpUntil(tester, title.hitTestable());
 
     // The title is pinned outside the list. Raise the panel by its handle so
     // portrait video leaves enough room for the rating row to be tapped.
     final handle = find.byKey(const Key('scene_panel_handle')).hitTestable();
-    await _pumpUntil(tester, handle);
+    await pumpUntil(tester, handle);
     await tester.drag(handle, Offset(0, -tester.getCenter(handle).dy));
-    await _pumpUntil(tester, rating.hitTestable());
+    await pumpUntil(tester, rating.hitTestable());
   }
 
   try {
     await openScene();
     final player = tester.widget<PlayerSurface>(surface).controller.player;
     final initialPosition = player.state.position;
-    await _pumpUntilCondition(
+    await pumpUntilCondition(
       tester,
       () =>
           player.state.playing &&
@@ -475,12 +341,12 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
       // by tapping the video like a viewer would. Tap through the finder, not
       // tapAt: macOS renders into a non-implicit view that tapAt never reaches.
       if (button.hitTestable().evaluate().isEmpty) {
-        await _pumpUntil(tester, button);
+        await pumpUntil(tester, button);
         await tester.tap(button.first, warnIfMissed: false);
-        await _pumpUntil(tester, button.hitTestable());
+        await pumpUntil(tester, button.hitTestable());
       }
-      await _tap(tester, button);
-      await _pumpUntilCondition(
+      await tapWhenReady(tester, button);
+      await pumpUntilCondition(
         tester,
         () => player.state.playing == playing,
         playing ? 'playback to start' : 'playback to pause',
@@ -499,8 +365,8 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
       player.state.position,
       lessThan(midpoint - const Duration(seconds: 2)),
     );
-    await _tap(tester, slider);
-    await _pumpUntilCondition(
+    await tapWhenReady(tester, slider);
+    await pumpUntilCondition(
       tester,
       () =>
           (player.state.position - midpoint).abs() < const Duration(seconds: 1),
@@ -508,7 +374,7 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
     );
     final seekedAt = player.state.position;
     await setPlaying(true);
-    await _pumpUntilCondition(
+    await pumpUntilCondition(
       tester,
       () =>
           player.state.position > seekedAt + const Duration(milliseconds: 250),
@@ -519,10 +385,10 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
 
     await revealRating();
     expect(oneStar, findsNothing);
-    await _tap(tester, rating);
-    await _tap(tester, find.byTooltip(l10n.scene_rating_stars(1)));
-    await _tap(tester, find.text(l10n.common_apply));
-    await _pumpUntil(tester, oneStar);
+    await tapWhenReady(tester, rating);
+    await tapWhenReady(tester, find.byTooltip(l10n.scene_rating_stars(1)));
+    await tapWhenReady(tester, find.text(l10n.common_apply));
+    await pumpUntil(tester, oneStar);
     await stopScene();
 
     final saved = await _readScene(server, id);
@@ -532,7 +398,7 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
     await openScene();
     final resumed = tester.widget<PlayerSurface>(surface).controller.player;
     expect(resumed, isNot(same(player)));
-    await _pumpUntilCondition(
+    await pumpUntilCondition(
       tester,
       () =>
           resumed.state.playing &&
@@ -549,27 +415,27 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
     expect(oneStar, findsOneWidget);
 
     // Returning through the mini-player must keep the active native session.
-    await _backTo(tester, '/scenes');
-    await _tap(
+    await backTo(tester, '/scenes');
+    await tapWhenReady(
       tester,
       find.descendant(
         of: miniPlayer,
         matching: find.byTooltip(l10n.common_pause),
       ),
     );
-    await _pumpUntilCondition(
+    await pumpUntilCondition(
       tester,
       () => !resumed.state.playing,
       'the mini-player to pause the active session',
     );
     final miniPosition = resumed.state.position;
-    await _tap(
+    await tapWhenReady(
       tester,
-      find.descendant(of: miniPlayer, matching: find.text(_sceneTitle)),
+      find.descendant(of: miniPlayer, matching: find.text(sceneTitle)),
     );
-    await _pumpUntil(tester, miniPlayer, gone: true);
-    await _pumpUntil(tester, surface);
-    expect(_location(tester), '/scenes/scene/$id');
+    await pumpUntil(tester, miniPlayer, gone: true);
+    await pumpUntil(tester, surface);
+    expect(location(tester), '/scenes/scene/$id');
     expect(
       tester.widget<PlayerSurface>(surface).controller.player,
       same(resumed),
@@ -580,7 +446,7 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
   } finally {
     if (playerNotifier.currentVideoController != null) {
       playerNotifier.stop();
-      await _pumpUntilCondition(
+      await pumpUntilCondition(
         tester,
         () => playerNotifier.currentVideoController == null,
         'playback cleanup before restoring the fixture',
@@ -629,12 +495,12 @@ void main() {
 
   testWidgets(
     'connects with both auth modes, filters the library, and plays and edits a scene',
-    skip: _url.isEmpty,
+    skip: stashUrl.isEmpty,
     timeout: const Timeout(Duration(minutes: 10)),
     (tester) async {
-      expect(_apiKey, isNotEmpty, reason: 'pass STASH_API_KEY');
-      expect(_username, isNotEmpty, reason: 'pass STASH_USERNAME');
-      expect(_password, isNotEmpty, reason: 'pass STASH_PASSWORD');
+      expect(stashApiKey, isNotEmpty, reason: 'pass STASH_API_KEY');
+      expect(stashUsername, isNotEmpty, reason: 'pass STASH_USERNAME');
+      expect(stashPassword, isNotEmpty, reason: 'pass STASH_PASSWORD');
       expect(
         app.isTestMode,
         isFalse,
@@ -689,23 +555,26 @@ void main() {
         of: find.byType(AlertDialog),
         matching: find.text(l10n.common_configure_now),
       );
-      await _tap(tester, configure);
+      await tapWhenReady(tester, configure);
       const apiProfile = 'stash-test-server-api-key';
-      await _fillProfile(tester, l10n, apiProfile);
-      await tester.enterText(_field(l10n.settings_server_auth_apikey), _apiKey);
-      await _testAndSaveProfile(tester, l10n, apiProfile);
+      await fillProfile(tester, l10n, apiProfile);
+      await tester.enterText(
+        field(l10n.settings_server_auth_apikey),
+        stashApiKey,
+      );
+      await testAndSaveProfile(tester, l10n, apiProfile);
 
-      await _backTo(tester, '/scenes');
-      await _pumpUntil(tester, _sceneCard(_sceneTitle));
+      await backTo(tester, '/scenes');
+      await pumpUntil(tester, sceneCard(sceneTitle));
       await _switchToPasswordProfile(tester, l10n);
       await _exerciseSceneSearch(tester, l10n);
       await _exerciseScene(tester, l10n);
 
       for (final (icon, names) in _tabs) {
-        final tab = _navTab(icon);
-        await _pumpUntil(tester, tab);
+        final tab = navTab(icon);
+        await pumpUntil(tester, tab);
         await tester.tap(tab.first);
-        await _pumpUntil(tester, _anyText(names));
+        await pumpUntil(tester, anyText(names));
       }
     },
   );
