@@ -89,9 +89,15 @@ class ActivePlayerState extends PlayerState {
   );
 }
 
+/// Errors emitted by every [MockPlayerStream].
+final _playerErrors = StreamController<String>.broadcast();
+
 class MockPlayerStream extends Fake implements mk.PlayerStream {
   @override
   Stream<bool> get playing => const Stream.empty();
+
+  @override
+  Stream<String> get error => _playerErrors.stream;
 
   @override
   Stream<bool> get completed => const Stream.empty();
@@ -548,6 +554,25 @@ void main() {
       find.byKey(const Key('video_play_pause_button')).hitTestable(),
       findsNothing,
     );
+  });
+
+  testWidgets('a failed start reveals hidden inline controls', (tester) async {
+    await _pumpControls(
+      tester,
+      scene: _buildScene(),
+      onInlineBack: () {},
+      revealControls: false,
+    );
+    final playPause = find
+        .byKey(const Key('video_play_pause_button'))
+        .hitTestable();
+    expect(playPause, findsNothing);
+
+    // Browsers report blocked autoplay as a player error while paused.
+    _playerErrors.add('play() failed because the user did not interact');
+    await tester.pump(const Duration(milliseconds: 350));
+
+    expect(playPause, findsOneWidget);
   });
 
   testWidgets('inline back control follows video controls visibility', (

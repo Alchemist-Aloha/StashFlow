@@ -138,6 +138,15 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
   void _initPlayerStreams() {
     final stream = widget.controller.player.stream;
     _subscriptions.add(stream.playing.listen((_) => _onVideoTick()));
+    // A failed start, such as a browser blocking autoplay, never plays, so
+    // show the controls to offer Play.
+    _subscriptions.add(
+      stream.error.listen((_) {
+        if (!mounted || widget.controller.player.state.playing) return;
+        _cancelAutoHide();
+        setState(() => _controlsVisible = true);
+      }),
+    );
     // Hidden controls skip position ticks; the next tick refreshes them on show.
     final visiblePosition = stream.position.where(
       (_) => _controlsVisible || _isScrubbing,

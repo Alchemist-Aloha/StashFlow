@@ -21,3 +21,9 @@ import 'package:jxl_native/jxl_native.dart';
   final image = decodeJxl(bytes);
   return (image.width, image.height, image.rgba);
 }
+
+/// Web-only; see `extra_rgba_web.dart`.
+Future<(int, int, Uint8List)> decodeRgbaInBrowser(
+  Uint8List bytes,
+  String mimeType,
+) => throw UnsupportedError('Browser image decoding is web-only');

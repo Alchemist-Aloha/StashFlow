@@ -3,7 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'extra_rgba_web.dart' if (dart.library.ffi) 'extra_rgba_native.dart';
 
 /// Formats Flutter's engine codec cannot decode but StashFlow renders itself.
-enum ExtraImageFormat { avif, jxl }
+enum ExtraImageFormat {
+  avif('image/avif'),
+  jxl('image/jxl');
+
+  const ExtraImageFormat(this.mimeType);
+
+  final String mimeType;
+}
 
 /// Detects AVIF (ISOBMFF `ftyp` with an `avif`/`avis` brand) or JPEG XL
 /// (bare codestream or container) from the leading bytes.
@@ -34,11 +41,18 @@ String _ascii(Uint8List bytes, int start, int end) =>
 /// engine codec decodes, so the result flows through the normal
 /// `ImageDecoderCallback` (resizing, image cache) like any other image.
 ///
-/// Returns null when [bytes] are neither format. Work runs off the calling
-/// isolate on native platforms.
+/// Returns null when [bytes] are neither format. Native platforms decode off
+/// the calling isolate; web uses the browser's decoder.
 Future<Uint8List?> transcodeExtraImageFormat(Uint8List bytes) async {
   final format = sniffExtraImageFormat(bytes);
   if (format == null) return null;
+  if (kIsWeb) {
+    final (width, height, rgba) = await decodeRgbaInBrowser(
+      bytes,
+      format.mimeType,
+    );
+    return _bmp(width, height, rgba);
+  }
   return compute(_transcode, (format, bytes));
 }
 
