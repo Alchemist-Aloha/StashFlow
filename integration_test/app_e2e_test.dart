@@ -472,11 +472,20 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
         matching: find.byTooltip(tooltip),
       );
       // Inline controls open hidden and auto-hide while playing; reveal them
-      // by tapping the video like a viewer would. Tap where the hidden button
-      // sits: the surface center can be under the details panel on macOS.
+      // by tapping the video like a viewer would. Scroll the hidden button's
+      // spot into view first: the small macOS window can leave it offscreen.
       if (button.hitTestable().evaluate().isEmpty) {
         await _pumpUntil(tester, button);
-        await tester.tapAt(tester.getCenter(button.first));
+        await Scrollable.ensureVisible(tester.element(button.first));
+        await tester.pump(const Duration(milliseconds: 100));
+        final center = tester.getCenter(button.first);
+        final hit = HitTestResult();
+        tester.binding.hitTestInView(hit, center, tester.view.viewId);
+        debugPrint(
+          'Reveal tap at $center in ${tester.view.physicalSize / tester.view.devicePixelRatio} hits '
+          '${hit.path.take(3).map((entry) => entry.target).join(' <- ')}',
+        );
+        await tester.tapAt(center);
         await _pumpUntil(tester, button.hitTestable());
       }
       await _tap(tester, button);
