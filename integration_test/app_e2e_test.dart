@@ -467,10 +467,17 @@ Future<void> _exerciseScene(WidgetTester tester, AppLocalizations l10n) async {
 
     Future<void> setPlaying(bool playing) async {
       final tooltip = playing ? l10n.common_play : l10n.common_pause;
-      await _tap(
-        tester,
-        find.descendant(of: surface, matching: find.byTooltip(tooltip)),
+      final button = find.descendant(
+        of: surface,
+        matching: find.byTooltip(tooltip),
       );
+      // Inline controls open hidden and auto-hide while playing; reveal them
+      // by tapping the video like a viewer would.
+      if (button.hitTestable().evaluate().isEmpty) {
+        await tester.tapAt(tester.getCenter(surface));
+        await _pumpUntil(tester, button.hitTestable());
+      }
+      await _tap(tester, button);
       await _pumpUntilCondition(
         tester,
         () => player.state.playing == playing,
