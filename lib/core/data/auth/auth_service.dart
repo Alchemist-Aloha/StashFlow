@@ -17,6 +17,13 @@ class AuthService {
   final Dio _dio;
   final CookieJar cookieJar;
 
+  /// Stands in for the session cookie on web, where the browser keeps the
+  /// real HttpOnly cookie and `cookie_jar` stores nothing. It only marks the
+  /// session as logged in; web requests never send it.
+  static const webSessionMarker = 'web_session=active';
+
+  bool _webSessionActive = false;
+
   static Future<AuthService> create({ServerProfile? profile}) async {
     final cookieJar = await createPersistCookieJar();
 
@@ -101,15 +108,7 @@ class AuthService {
     }
 
     if (response.statusCode == 200) {
-      if (kIsWeb) {
-        // On the web, the browser securely handles the session cookie.
-        // We inject a dummy cookie so `cookieJar` isn't empty,
-        // which preserves the app's logged-in state logic.
-        final dummyCookie = Cookie('web_session', 'active')
-          ..domain = loginUri.host
-          ..path = '/';
-        await cookieJar.saveFromResponse(loginUri, [dummyCookie]);
-      }
+      if (kIsWeb) _webSessionActive = true;
       return true;
     }
     return false;
@@ -132,9 +131,13 @@ class AuthService {
     await clearCookies();
   }
 
-  Future<void> clearCookies() => cookieJar.deleteAll();
+  Future<void> clearCookies() {
+    _webSessionActive = false;
+    return cookieJar.deleteAll();
+  }
 
   Future<String> cookieHeaderFor({required Uri requestUri}) async {
+    if (kIsWeb) return _webSessionActive ? webSessionMarker : '';
     final cookies = await cookieJar.loadForRequest(requestUri);
     if (cookies.isEmpty) {
       return '';
