@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,11 +16,14 @@ import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/desktop_capabilities_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/bottom_sheet_panel_chrome.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/detail_page_scroll_view.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/section_panel.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/rating_control.dart';
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
+import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_video_player.dart';
@@ -39,6 +43,7 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({
       'server_base_url': 'http://localhost:9999',
+      'show_scene_metadata_section': true,
     });
     prefs = await SharedPreferences.getInstance();
   });
@@ -205,6 +210,31 @@ void main() {
     expect(OneTimeTip.sceneDetails.isPending(prefs), isFalse);
   });
 
+  for (final (width, twoColumns) in [(692.0, false), (1000.0, true)]) {
+    testWidgets('SceneDetailsPage at $width uses two columns: $twoColumns', (
+      tester,
+    ) async {
+      tester.view.physicalSize = Size(width, 1100);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(
+        find.byType(DetailPageScrollView),
+        twoColumns ? findsNWidgets(2) : findsOneWidget,
+      );
+    });
+  }
+
   testWidgets('SceneDetailsPage renders scene info', (tester) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;
@@ -223,71 +253,18 @@ void main() {
     expect(find.text('Test Scene'), findsOneWidget);
     expect(find.text('Test Studio'), findsOneWidget);
     expect(find.byKey(const Key('scene_header_metadata')), findsNothing);
-    expect(find.byKey(const Key('scene_show_metadata')), findsOneWidget);
-    expect(
-      tester
-          .widget<IconButton>(find.byKey(const Key('scene_show_metadata')))
-          .color,
-      Theme.of(tester.element(find.byKey(const Key('scene_show_metadata'))))
-          .colorScheme
-          .onSurfaceVariant,
-    );
-    expect(
-      find.descendant(
-        of: find.byKey(const Key('scene_show_metadata')),
-        matching: find.byIcon(Icons.keyboard_arrow_down),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      tester.getSize(find.byKey(const Key('scene_show_metadata'))).width,
-      closeTo(48, 0.1),
-    );
-    expect(
-      tester.getTopRight(find.byKey(const Key('scene_show_metadata'))).dx,
-      closeTo(
-        tester.getTopRight(find.byKey(const Key('scene_header_identity'))).dx,
-        0.1,
-      ),
-    );
-    expect(
-      tester.widget<Text>(find.text('Test Studio')).style?.decoration,
-      TextDecoration.none,
-    );
-    expect(
-      tester.getCenter(find.byKey(const Key('scene_show_metadata'))).dx,
-      greaterThan(tester.getCenter(find.text('Test Studio')).dx),
-    );
+    expect(find.text('Metadata'), findsOneWidget);
     expect(
       tester.getCenter(find.text('2024')).dx,
       greaterThan(tester.getCenter(find.text('Test Studio')).dx),
     );
-    expect(
-      tester.getTopLeft(find.byKey(const Key('scene_header_section'))).dy -
-          tester
-              .getBottomLeft(find.byKey(const Key('scene_header_identity')))
-              .dy,
-      closeTo(6, 0.1),
-    );
-    final section = find.byKey(const Key('scene_header_section'));
-    final sectionPadding = tester
-        .widget<Padding>(
-          find.descendant(
-            of: section,
-            matching: find.byWidgetPredicate(
-              (widget) => widget is Padding && widget.child is Column,
-            ),
-          ),
-        )
-        .padding
-        .resolve(TextDirection.ltr);
-    expect(sectionPadding.top, sectionPadding.bottom);
   });
 
-  testWidgets('SceneDetailsPage reveals hidden technical metadata', (
+  testWidgets('SceneDetailsPage can toggle metadata without a studio or year', (
     tester,
   ) async {
-    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+    final scene = testScene.copyWith(studioName: '  ', date: null);
+    final mockRepo = MockGraphQLSceneRepository()..withData([scene]);
 
     await pumpTestWidget(
       tester,
@@ -297,16 +274,21 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 1));
 
-    final studioTop = tester.getTopLeft(find.text('Test Studio')).dy;
-    await tester.tap(find.byKey(const Key('scene_show_metadata')));
+    final toggle = find.byKey(const Key('scene_metadata_toggle'));
+    expect(
+      tester.getTopLeft(toggle).dx,
+      tester.getTopLeft(find.text('Test Scene')).dx,
+    );
+    expect(find.text(' · '), findsNothing);
+    await tester.tap(toggle);
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('scene_show_metadata')), findsNothing);
+    expect(find.text('Play Count'), findsOneWidget);
     expect(find.byKey(const Key('scene_header_metadata')), findsOneWidget);
-    expect(
-      tester.getTopLeft(find.text('Test Studio')).dy,
-      closeTo(studioTop, 0.1),
-    );
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('scene_header_metadata')), findsNothing);
+    expect(find.byKey(const Key('scene_rating_controls')), findsOneWidget);
   });
 
   testWidgets('SceneDetailsPage shows metadata when default hiding is off', (
@@ -324,8 +306,30 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
 
     expect(find.byKey(const Key('scene_header_metadata')), findsOneWidget);
-    expect(find.byKey(const Key('scene_show_metadata')), findsNothing);
   });
+
+  testWidgets(
+    'SceneDetailsPage hides unset metadata even with auto-display on',
+    (tester) async {
+      await prefs.remove('show_scene_metadata_section');
+      await prefs.setBool('hide_scene_technical_metadata', false);
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(find.text('Test Studio'), findsOneWidget);
+      expect(find.text('2024'), findsOneWidget);
+      expect(find.byKey(const Key('scene_metadata_toggle')), findsNothing);
+      expect(find.byKey(const Key('scene_header_metadata')), findsNothing);
+      expect(find.byKey(const Key('scene_action_info')), findsOneWidget);
+    },
+  );
 
   testWidgets(
     'SceneDetailsPage renders action controls without a panel backdrop',
@@ -345,7 +349,7 @@ void main() {
       );
       await tester.pump(const Duration(seconds: 1));
 
-      final header = find.byKey(const Key('scene_header_section'));
+      final header = find.byKey(const Key('scene_header_controls'));
       final details = find.byKey(const Key('scene_details_section'));
       expect(
         find.descendant(of: header, matching: find.text('Test Scene')),
@@ -362,9 +366,8 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(tester.widget<Container>(header).decoration, isNull);
       expect(
-        find.descendant(of: header, matching: find.byType(SectionPanel)),
+        find.ancestor(of: header, matching: find.byType(SectionPanel)),
         findsNothing,
       );
       expect(tester.widget<SectionPanel>(details), isA<SectionPanel>());
@@ -432,9 +435,9 @@ void main() {
           ),
         );
         await tester.pump(const Duration(seconds: 1));
-        final rating = find.byKey(const Key('scene_rating_controls'));
         expect(find.byType(RatingButton), findsOneWidget);
-        for (final key in [
+        final actionKeys = [
+          'scene_rating_controls',
           'scene_action_add_o',
           'scene_action_info',
           'scene_action_download',
@@ -445,11 +448,23 @@ void main() {
             'scene_action_refresh',
             'scene_action_delete',
           ],
-        ]) {
+        ];
+        final buttons = [
+          for (final key in actionKeys) tester.getRect(find.byKey(Key(key))),
+        ];
+        final viewport = tester.getRect(
+          find.byKey(const Key('scene_header_controls')),
+        );
+        if (buttons.last.right <= viewport.right) {
           expect(
-            tester.getCenter(find.byKey(Key(key))).dy,
-            closeTo(tester.getCenter(rating).dy, 0.1),
+            buttons.first.left - viewport.left,
+            closeTo(viewport.right - buttons.last.right, 0.1),
           );
+        }
+        final gap = buttons[1].left - buttons[0].right;
+        for (var i = 1; i < buttons.length; i++) {
+          expect(buttons[i].center.dy, closeTo(buttons.first.center.dy, 0.1));
+          expect(buttons[i].left - buttons[i - 1].right, closeTo(gap, 0.1));
         }
         if (width < 600) {
           for (final key in [
@@ -486,7 +501,7 @@ void main() {
     }
   }
 
-  testWidgets('SceneDetailsPage places metadata below identity and controls', (
+  testWidgets('SceneDetailsPage places metadata between byline and actions', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1600, 1600);
@@ -504,7 +519,7 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
 
     final controls = find.byKey(const Key('scene_header_controls'));
-    await tester.tap(find.byKey(const Key('scene_show_metadata')));
+    await tester.tap(find.byKey(const Key('scene_metadata_toggle')));
     await tester.pumpAndSettle();
     final metadata = find.byKey(const Key('scene_header_metadata'));
     final studio = find.text('Test Studio');
@@ -541,7 +556,7 @@ void main() {
 
       final identity = find.byKey(const Key('scene_header_identity'));
       final controls = find.byKey(const Key('scene_header_controls'));
-      await tester.tap(find.byKey(const Key('scene_show_metadata')));
+      await tester.tap(find.byKey(const Key('scene_metadata_toggle')));
       await tester.pumpAndSettle();
       final metadata = find.byKey(const Key('scene_header_metadata'));
       final rating = find.byKey(const Key('scene_rating_controls'));
@@ -552,10 +567,6 @@ void main() {
         lessThan(tester.getTopLeft(controls).dy),
       );
       expect(tester.getTopLeft(metadata).dy, greaterThan(0));
-      expect(
-        tester.getSize(controls).width,
-        lessThan(tester.getSize(identity).width),
-      );
       expect(
         tester.getCenter(actions).dy,
         closeTo(tester.getCenter(rating).dy, 0.1),
@@ -586,6 +597,170 @@ void main() {
 
     expect(tester.getTopLeft(find.byType(SceneVideoPlayer)).dy, equals(24));
   });
+
+  testWidgets('SceneDetailsPage two-column panel spans only the left column', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final panel = tester.getRect(find.byKey(const Key('scene_details_panel')));
+    final divider = tester.getRect(find.byType(VerticalDivider));
+    expect(panel.left, 0);
+    expect(panel.right, closeTo(divider.left, 0.5));
+    expect(
+      panel.top,
+      closeTo(tester.getRect(find.byType(SceneVideoPlayer)).bottom, 0.5),
+    );
+  });
+
+  testWidgets(
+    'SceneDetailsPage panel content scrolls before moving the panel',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 440);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      final panel = find.byKey(const Key('scene_details_panel'));
+      final content = find
+          .descendant(of: panel, matching: find.byType(Scrollable))
+          .first;
+      ScrollPosition position() =>
+          tester.state<ScrollableState>(content).position;
+      double panelTop() => tester.getTopLeft(panel).dy;
+      final restingTop = panelTop();
+      expect(position().maxScrollExtent, greaterThan(30));
+      final grip = tester.getTopLeft(panel) + const Offset(390, 60);
+
+      final title = find.byKey(const Key('scene_header_title'));
+      final titleRect = tester.getRect(title);
+      await tester.dragFrom(grip, const Offset(0, -25));
+      await tester.pump();
+      expect(position().pixels, greaterThan(0));
+      expect(panelTop(), restingTop);
+      expect(tester.getRect(title), titleRect, reason: 'the title is pinned');
+
+      // Back at the top, the panel is already at its lowest position.
+      await tester.dragFrom(grip, const Offset(0, 400));
+      await tester.pump();
+      expect(position().pixels, 0);
+      expect(panelTop(), restingTop);
+
+      // Only the drag beyond the content's end raises the panel.
+      await tester.dragFrom(grip, const Offset(0, -3000));
+      await tester.pump();
+      expect(position().extentAfter, 0);
+      expect(panelTop(), closeTo(440 * 0.12, 0.5));
+
+      // A vertical swipe on the pinned title moves the panel like the handle.
+      await tester.drag(title, const Offset(0, 100));
+      await tester.pump();
+      expect(panelTop(), greaterThan(440 * 0.12 + 50));
+    },
+  );
+
+  testWidgets(
+    'SceneDetailsPage panel rises over the fixed video and swaps to info',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 1000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      final video = find.byType(SceneVideoPlayer);
+      final panel = find.byKey(const Key('scene_details_panel'));
+      double panelTop() => tester.getTopLeft(panel).dy;
+      final videoRect = tester.getRect(video);
+      expect(panelTop(), closeTo(videoRect.bottom, 0.5));
+
+      // A vertical swipe on the inline video moves the panel, not the video.
+      await tester.dragFrom(
+        videoRect.center + const Offset(120, 0),
+        const Offset(0, -100),
+      );
+      await tester.pump();
+      expect(panelTop(), lessThan(videoRect.bottom - 50));
+      expect(tester.getRect(video), videoRect);
+
+      // The panel stops at 88% of the page and never drops below the video.
+      await tester.dragFrom(
+        videoRect.center + const Offset(120, 0),
+        const Offset(0, -2000),
+      );
+      await tester.pump();
+      expect(panelTop(), closeTo(1000 * 0.12, 0.5));
+      await tester.dragFrom(
+        tester.getTopLeft(panel) + const Offset(200, 8),
+        const Offset(0, 2000),
+      );
+      await tester.pumpAndSettle();
+      expect(panelTop(), closeTo(videoRect.bottom, 0.5));
+
+      final info = find.byKey(const Key('scene_action_info'));
+      await tester.ensureVisible(info);
+      await tester.tap(info);
+      await tester.pump();
+      expect(find.byKey(const Key('scene_info_panel')), findsOneWidget);
+      expect(panel, findsNothing);
+
+      // The info panel shares the handle, and its pinned header drags too.
+      final infoPanel = find.byKey(const Key('scene_info_panel'));
+      final infoTop = tester.getTopLeft(infoPanel).dy;
+      await tester.drag(
+        find.byKey(const Key('scene_panel_handle')),
+        const Offset(0, -100),
+      );
+      await tester.pump();
+      expect(tester.getTopLeft(infoPanel).dy, lessThan(infoTop - 50));
+      final header = find.descendant(
+        of: infoPanel,
+        matching: find.byType(DetailsSheetHeader),
+      );
+      await tester.drag(header, const Offset(0, 80));
+      await tester.pump();
+      expect(tester.getTopLeft(infoPanel).dy, greaterThan(infoTop - 50));
+
+      // Back closes the info panel before leaving the page.
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(panel, findsOneWidget);
+      expect(find.byType(SceneDetailsPage), findsOneWidget);
+
+      await tester.ensureVisible(info);
+      await tester.tap(info);
+      await tester.pump();
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pump();
+      expect(panel, findsOneWidget);
+    },
+  );
 
   testWidgets('SceneDetailsPage updates rating', (tester) async {
     tester.view.physicalSize = const Size(1200, 1600);
@@ -1305,29 +1480,43 @@ void main() {
     expect(find.text('Previous Scene'), findsOneWidget);
   });
 
-  testWidgets('SceneDetailsPage constrains video height', (tester) async {
-    // Set a specific screen size
-    const screenWidth = 1000.0;
-    const screenHeight = 2000.0;
-    tester.view.physicalSize = const Size(screenWidth, screenHeight);
+  testWidgets('SceneDetailsPage keeps tall two-column video above the panel', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
-
+    final portrait = testScene.copyWith(
+      files: [
+        SceneFile(
+          format: 'mp4',
+          width: 1080,
+          height: 1920,
+          videoCodec: null,
+          audioCodec: null,
+          bitRate: null,
+          duration: 60,
+          frameRate: null,
+        ),
+      ],
+    );
+    final mockRepo = MockGraphQLSceneRepository()..withData([portrait]);
     await pumpTestWidget(
       tester,
       prefs: prefs,
       overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
-      child: SceneDetailsPage(sceneId: testScene.id),
+      child: SceneDetailsPage(sceneId: portrait.id),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(); // The panel re-measures the video after layout.
 
-    // Without a top AppBar, safeMaxHeight = 2000 - 8 = 1992.
-
-    final playerFinder = find.byType(SceneVideoPlayer);
-    final player = tester.widget<SceneVideoPlayer>(playerFinder);
-    expect(player.maxHeight, equals(1992.0));
+    // The video shrinks so the panel's handle strip stays below it.
+    final video = tester.getRect(find.byType(AspectRatio).first);
+    final panel = tester.getRect(find.byKey(const Key('scene_details_panel')));
+    expect(video.height, lessThan(900));
+    expect(panel.top, closeTo(video.bottom, 0.5));
+    expect(panel.top, lessThan(900));
   });
 
   testWidgets('SceneCard long press opens scene info media section', (
@@ -1363,13 +1552,81 @@ void main() {
 
     final l10n = AppLocalizations.of(tester.element(find.byType(SceneCard)))!;
     expect(find.text(l10n.details_scene), findsOneWidget);
+    final panel = tester.getRect(find.byType(FrostedPanel));
+    expect(panel.width, 640);
+    expect(panel.center.dx, 600);
     final mediaSection = find.byKey(const Key('scene_info_media_section'));
     expect(mediaSection, findsOneWidget);
     expect(
       tester.getTopLeft(mediaSection).dy,
-      lessThan(tester.getTopLeft(find.byIcon(Icons.calendar_today_rounded)).dy),
+      lessThan(tester.getTopLeft(find.text('Release Date')).dy),
     );
   });
+
+  testWidgets(
+    'Scene details sheets align with Sort beside the navigation rail',
+    (tester) async {
+      tester.view.physicalSize = const Size(650, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      const secureStorage = MethodChannel(
+        'plugins.it_nomads.com/flutter_secure_storage',
+      );
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        secureStorage,
+        (_) async => null,
+      );
+      final scene = sceneWithoutStudio('s1', 'Rail layout scene');
+      final mockRepo = MockGraphQLSceneRepository()..withData([scene]);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            sceneRepositoryProvider.overrideWithValue(mockRepo),
+          ],
+          child: Consumer(
+            builder: (context, ref, _) => MaterialApp.router(
+              routerConfig: ref.watch(routerProvider),
+              theme: AppTheme.lightTheme,
+              localizationsDelegates: appLocalizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final rail = tester.getRect(find.byType(NavigationRail));
+      final panel = find.byType(FrostedPanel);
+      await tester.tap(find.byIcon(Icons.sort));
+      await tester.pumpAndSettle();
+      final sortBounds = tester.getRect(panel);
+      expect(sortBounds.left, greaterThanOrEqualTo(rail.right));
+      Navigator.of(tester.element(panel)).pop();
+      await tester.pumpAndSettle();
+
+      Future<void> checkAndCloseSceneSheet() async {
+        await tester.pumpAndSettle();
+        final bounds = tester.getRect(panel);
+        expect(bounds.left, sortBounds.left);
+        expect(bounds.right, sortBounds.right);
+        await tester.tap(find.byTooltip('Close'));
+        await tester.pumpAndSettle();
+      }
+
+      final sceneTitle = find.text(scene.title);
+      await tester.longPress(sceneTitle);
+      await checkAndCloseSceneSheet();
+
+      await tester.tap(sceneTitle);
+      await tester.pumpAndSettle();
+      final info = find.byKey(const Key('scene_action_info'));
+      await tester.ensureVisible(info);
+      await tester.tap(info);
+      await checkAndCloseSceneSheet();
+    },
+  );
 
   test(
     'shouldRouteToNextScene supports transient null active scene transitions',

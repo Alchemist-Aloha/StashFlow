@@ -33,8 +33,6 @@ typedef SceneInfoPreviewBuilder = Widget Function(
 
 enum _SceneInfoMediaMode { cover, preview }
 
-enum _PreviewAvailability { checking, available, unavailable }
-
 class SceneInfoMediaSection extends ConsumerStatefulWidget {
   const SceneInfoMediaSection({
     required this.scene,
@@ -65,7 +63,10 @@ class SceneInfoMediaSection extends ConsumerStatefulWidget {
 class _SceneInfoMediaSectionState extends ConsumerState<SceneInfoMediaSection> {
   late _SceneInfoMediaMode _mode = _initialMode(widget.scene);
   late bool _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
-  _PreviewAvailability _previewAvailability = _PreviewAvailability.checking;
+
+  /// False once the preview is known to be missing or unplayable. Only the
+  /// toggle listens, so a failed probe never redraws a shown cover.
+  late final _previewAvailable = ValueNotifier<bool>(_previewUrl != null);
   int _availabilityGeneration = 0;
 
   String? get _coverUrl =>
@@ -108,6 +109,12 @@ class _SceneInfoMediaSectionState extends ConsumerState<SceneInfoMediaSection> {
   }
 
   @override
+  void dispose() {
+    _previewAvailable.dispose();
+    super.dispose();
+  }
+
+  @override
   void didUpdateWidget(covariant SceneInfoMediaSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.scene.id != widget.scene.id ||
@@ -115,64 +122,52 @@ class _SceneInfoMediaSectionState extends ConsumerState<SceneInfoMediaSection> {
         oldWidget.scene.paths.preview != widget.scene.paths.preview) {
       _mode = _initialMode(widget.scene);
       _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
-      _previewAvailability = _PreviewAvailability.checking;
+      _previewAvailable.value = _previewUrl != null;
       _checkPreviewAvailability();
     }
   }
 
-  /// Probes the preview URL once so a missing preview never appears as a
-  /// selectable option in the pill toggle.
+  /// Probes the preview URL in the background when the sheet opens; the
+  /// preview segment stays selectable until the probe says otherwise.
   void _checkPreviewAvailability() {
     final previewUrl = _previewUrl;
-    if (previewUrl == null) {
-      _previewAvailability = _PreviewAvailability.unavailable;
-      return;
-    }
+    if (previewUrl == null) return;
 
     final generation = ++_availabilityGeneration;
     unawaited(
       ref
           .read(previewAvailabilityCheckProvider)(previewUrl)
           .then((available) {
-            if (!mounted || generation != _availabilityGeneration) return;
-            setState(() {
-              _previewAvailability = available
-                  ? _PreviewAvailability.available
-                  : _PreviewAvailability.unavailable;
-              if (!available) _fallBackFromUnavailablePreview();
-            });
+            if (!available &&
+                mounted &&
+                generation == _availabilityGeneration) {
+              _markPreviewUnavailable();
+            }
           })
           .catchError((Object error, StackTrace stackTrace) {
+            // An unverifiable preview stays selectable; playback reports
+            // failures itself.
             AppLogStore.instance.addError(
               'Verify preview availability',
               error,
               stackTrace,
               source: 'scene_info_media_section',
             );
-            if (!mounted || generation != _availabilityGeneration) return;
-            setState(
-              () => _previewAvailability = _PreviewAvailability.available,
-            );
           }),
     );
   }
 
-  /// Moves off a preview that is known to be dead while keeping a cover shown.
-  void _fallBackFromUnavailablePreview() {
-    if (_mode == _SceneInfoMediaMode.preview && _coverUrl != null) {
-      _mode = _SceneInfoMediaMode.cover;
-      _previewAutoplay = false;
-    }
-  }
-
-  /// Handles a preview that failed during playback after passing the probe.
-  void _handlePreviewUnavailable() {
-    if (!mounted || _previewAvailability == _PreviewAvailability.unavailable) {
-      return;
-    }
+  /// Disables the preview segment; redraws the media only if it shows the
+  /// preview, falling back to the cover when there is one.
+  void _markPreviewUnavailable() {
+    if (!mounted || !_previewAvailable.value) return;
+    _previewAvailable.value = false;
+    if (_mode != _SceneInfoMediaMode.preview) return;
     setState(() {
-      _previewAvailability = _PreviewAvailability.unavailable;
-      _fallBackFromUnavailablePreview();
+      if (_coverUrl != null) {
+        _mode = _SceneInfoMediaMode.cover;
+        _previewAutoplay = false;
+      }
     });
   }
 
@@ -184,16 +179,16 @@ class _SceneInfoMediaSectionState extends ConsumerState<SceneInfoMediaSection> {
       return const SizedBox.shrink();
     }
 
-    final hasBoth = coverUrl != null && previewUrl != null;
-    final previewUnavailable =
-        _previewAvailability == _PreviewAvailability.unavailable;
     final showCover = coverUrl != null && _mode == _SceneInfoMediaMode.cover;
+    final previewUnavailable = !showCover && !_previewAvailable.value;
 
     return SectionPanel(
       key: const Key('scene_info_media_section'),
       title: context.l10n.preview,
-      titleTrailing: hasBoth && !previewUnavailable
-          ? SegmentedButton<_SceneInfoMediaMode>(
+      titleTrailing: ValueListenableBuilder<bool>(
+        valueListenable: _previewAvailable,
+        builder: (context, previewAvailable, _) =>
+            SegmentedButton<_SceneInfoMediaMode>(
               key: const Key('scene_info_media_toggle'),
               showSelectedIcon: false,
               segments: [
@@ -201,11 +196,16 @@ class _SceneInfoMediaSectionState extends ConsumerState<SceneInfoMediaSection> {
                   value: _SceneInfoMediaMode.cover,
                   label: Text(context.l10n.scene_info_cover),
                   icon: const Icon(Icons.image_outlined),
+                  enabled: coverUrl != null,
                 ),
                 ButtonSegment(
                   value: _SceneInfoMediaMode.preview,
                   label: Text(context.l10n.preview),
                   icon: const Icon(Icons.play_circle_outline),
+                  enabled: previewAvailable,
+                  tooltip: previewAvailable
+                      ? null
+                      : context.l10n.scene_info_preview_unavailable,
                 ),
               ],
               selected: {_mode},
@@ -215,91 +215,64 @@ class _SceneInfoMediaSectionState extends ConsumerState<SceneInfoMediaSection> {
                   _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
                 });
               },
-            )
-          : null,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: ColoredBox(
-              color: Colors.black,
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: showCover
-                    ? Semantics(
-                        button: true,
-                        label: context.l10n.scene_info_cover,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            key: const Key('scene_info_media_cover_tap_target'),
-                            onTap: () => _showFullscreenCover(coverUrl),
-                            child: KeyedSubtree(
-                              key: const Key('scene_info_media_cover'),
-                              child:
-                                  widget.coverBuilder?.call(
-                                    context,
-                                    widget.scene,
-                                  ) ??
-                                  StashImage(
-                                    imageUrl: coverUrl,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    fit: BoxFit.contain,
-                                  ),
-                            ),
-                          ),
-                        ),
-                      )
-                    : previewUnavailable
-                    ? const _SceneInfoPreviewUnavailable(
-                        key: Key('scene_info_media_preview_unavailable'),
-                      )
-                    : KeyedSubtree(
-                        key: const Key('scene_info_media_preview'),
-                        child:
-                            widget.previewBuilder?.call(
-                              context,
-                              widget.scene,
-                              _previewAutoplay,
-                              _handlePreviewUnavailable,
-                            ) ??
-                            _SceneInfoPreviewPlayer(
-                              key: ValueKey(
-                                'scene_info_preview_${widget.scene.id}_$previewUrl',
+            ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: ColoredBox(
+          color: Colors.black,
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: showCover
+                ? Semantics(
+                    button: true,
+                    label: context.l10n.scene_info_cover,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        key: const Key('scene_info_media_cover_tap_target'),
+                        onTap: () => _showFullscreenCover(coverUrl),
+                        child: KeyedSubtree(
+                          key: const Key('scene_info_media_cover'),
+                          child:
+                              widget.coverBuilder?.call(
+                                context,
+                                widget.scene,
+                              ) ??
+                              StashImage(
+                                imageUrl: coverUrl,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.contain,
                               ),
-                              previewUrl: previewUrl!,
-                              autoplay: _previewAutoplay,
-                              onUnavailable: _handlePreviewUnavailable,
-                            ),
+                        ),
                       ),
-              ),
-            ),
-          ),
-          if (previewUnavailable && coverUrl != null) ...[
-            const SizedBox(height: 8),
-            Row(
-              key: const Key('scene_info_media_preview_unavailable_notice'),
-              children: [
-                Icon(
-                  Icons.info_outline_rounded,
-                  size: 14,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    context.l10n.scene_info_preview_unavailable,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
+                  )
+                : previewUnavailable
+                ? const _SceneInfoPreviewUnavailable(
+                    key: Key('scene_info_media_preview_unavailable'),
+                  )
+                : KeyedSubtree(
+                    key: const Key('scene_info_media_preview'),
+                    child:
+                        widget.previewBuilder?.call(
+                          context,
+                          widget.scene,
+                          _previewAutoplay,
+                          _markPreviewUnavailable,
+                        ) ??
+                        _SceneInfoPreviewPlayer(
+                          key: ValueKey(
+                            'scene_info_preview_${widget.scene.id}_$previewUrl',
+                          ),
+                          previewUrl: previewUrl!,
+                          autoplay: _previewAutoplay,
+                          onUnavailable: _markPreviewUnavailable,
+                        ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ],
+          ),
+        ),
       ),
     );
   }

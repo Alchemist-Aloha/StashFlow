@@ -2994,6 +2994,12 @@ abstract class AppLocalizations {
   /// **'Hide when scrolling down and show again when scrolling up.'**
   String get settings_interface_auto_hide_app_bar_subtitle;
 
+  /// No description provided for @settings_interface_show_scene_metadata_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Show scene metadata section'**
+  String get settings_interface_show_scene_metadata_section;
+
   /// No description provided for @settings_interface_hide_scene_metadata.
   ///
   /// In en, this message translates to:
@@ -3726,17 +3732,29 @@ abstract class AppLocalizations {
   /// **'Pause StashFlow when another app takes audio focus. Turn off to allow simultaneous playback.'**
   String get settings_playback_audio_focus_subtitle;
 
-  /// No description provided for @settings_playback_pip.
+  /// No description provided for @settings_playback_system_controls.
   ///
   /// In en, this message translates to:
-  /// **'Native Picture-in-Picture'**
-  String get settings_playback_pip;
+  /// **'System media controls'**
+  String get settings_playback_system_controls;
 
-  /// No description provided for @settings_playback_pip_subtitle.
+  /// No description provided for @settings_playback_system_controls_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enable the Picture-in-Picture button and auto-enter on background'**
-  String get settings_playback_pip_subtitle;
+  /// **'Show playback in the notification shade and lock screen, and accept headset buttons. Turning this off may let Android stop background playback.'**
+  String get settings_playback_system_controls_subtitle;
+
+  /// No description provided for @settings_playback_auto_pip.
+  ///
+  /// In en, this message translates to:
+  /// **'Picture-in-picture on leave'**
+  String get settings_playback_auto_pip;
+
+  /// No description provided for @settings_playback_auto_pip_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When you leave StashFlow while a scene is playing, keep watching it in a picture-in-picture window. Returning restores the page you were on.'**
+  String get settings_playback_auto_pip_subtitle;
 
   /// No description provided for @settings_playback_subtitles.
   ///
@@ -3791,6 +3809,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Used when playback starts; falls back to Direct'**
   String get settings_playback_stream_source_subtitle;
+
+  /// No description provided for @settings_playback_stream_resolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Resolution'**
+  String get settings_playback_stream_resolution;
+
+  /// No description provided for @settings_playback_stream_resolution_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'For transcoded sources; uses the next lower resolution when unavailable'**
+  String get settings_playback_stream_resolution_subtitle;
 
   /// No description provided for @settings_playback_subtitle_lang_subtitle.
   ///

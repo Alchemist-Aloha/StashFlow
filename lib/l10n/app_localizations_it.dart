@@ -1690,6 +1690,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Si nasconde scorrendo verso il basso e riappare scorrendo verso l\'alto.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Mostra la sezione dei metadati della scena';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Nascondi i metadati della scena per impostazione predefinita';
 
@@ -2134,11 +2138,19 @@ class AppLocalizationsIt extends AppLocalizations {
       'Mette in pausa StashFlow quando un’altra app acquisisce il focus audio. Disattiva per consentire la riproduzione simultanea.';
 
   @override
-  String get settings_playback_pip => 'Picture-in-Picture Nativo';
+  String get settings_playback_system_controls =>
+      'Controlli multimediali di sistema';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'Abilita il pulsante PiP e l\'ingresso automatico in background';
+  String get settings_playback_system_controls_subtitle =>
+      'Mostra la riproduzione nell’area notifiche e nella schermata di blocco e accetta i tasti delle cuffie. Se disattivato, Android può interrompere la riproduzione in background.';
+
+  @override
+  String get settings_playback_auto_pip => 'Picture-in-picture all’uscita';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'Se esci da StashFlow mentre è in riproduzione una scena, continua a guardarla in una finestra picture-in-picture. Al ritorno viene ripristinata la pagina in cui eri.';
 
   @override
   String get settings_playback_subtitles => 'Impostazioni sottotitoli';
@@ -2169,6 +2181,13 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get settings_playback_stream_source_subtitle =>
       'Usata all\'avvio della riproduzione; altrimenti Diretta';
+
+  @override
+  String get settings_playback_stream_resolution => 'Risoluzione predefinita';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'Per le sorgenti transcodificate; se non disponibile, si usa quella inferiore successiva';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>

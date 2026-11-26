@@ -4,7 +4,7 @@ import '../widgets/scene_onboarding_dialogs.dart';
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' show min;
+import 'dart:math' show max, min;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -19,6 +19,7 @@ import '../../../../core/utils/format_duration.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../galleries/domain/entities/gallery.dart';
 import '../../../galleries/presentation/gallery_location.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -271,6 +272,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   final GlobalKey _playerKey = GlobalKey();
 
+  /// Whether the scene panel shows scene info instead of the page sections.
+  bool _showInfoPanel = false;
+
   bool _isRandomSortActive() {
     return ref.read(sceneSortProvider).sort == 'random';
   }
@@ -319,16 +323,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   void _showSceneDetailsSheet(Scene scene) {
-    unawaited(
-      showFrostedPanelBottomSheet<void>(
-        context: context,
-        useRootNavigator: true,
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-        ),
-        builder: (context) => SceneInfoPage(scene: scene),
-      ),
-    );
+    setState(() => _showInfoPanel = true);
   }
 
   Future<void> _showDeleteSceneDialog(Scene scene) async {
@@ -783,37 +778,91 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         bottom: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // Subtract 8px margin from the body height to ensure video is fully visible
-            final safeMaxHeight = constraints.maxHeight - 8;
-
             return sceneAsync.when(
               data: (scene) {
-                final useTwoColumns = !Responsive.isMobile(context);
+                // Same 768 breakpoint as the header; portrait tablets stay single-column.
+                final useTwoColumns = constraints.maxWidth >= 768;
+                final relatedSections = [
+                  _buildTagsSection(context, scene),
+                  _buildMarkersSection(context, scene),
+                  _buildPerformersSection(context, scene),
+                  _buildGroupsSection(context, scene),
+                  _buildLinkedGalleriesSection(context, scene),
+                  _buildMoreFromStudioSection(context, scene),
+                  ..._buildMoreFromPerformersSections(context, scene),
+                ];
+                final panelSections = [
+                  _buildMainInfo(context, scene),
+                  if (!useTwoColumns) ...relatedSections,
+                ];
+                final bottomInset = MediaQuery.paddingOf(context).bottom;
+                final panelLayout = _ScenePanelLayout(
+                  video: (onVerticalDrag, maxHeight) => SceneVideoPlayer(
+                    key: _playerKey,
+                    scene: scene,
+                    autoPlayOnMount: widget.autoPlayOnMount,
+                    maxHeight: maxHeight,
+                    onVerticalDrag: onVerticalDrag,
+                  ),
+                  // The layout's handle overlays each panel's top padding.
+                  panel: (onDrag) => _showInfoPanel
+                      ? SceneInfoPage(
+                          key: const Key('scene_info_panel'),
+                          scene: scene,
+                          onClose: () => setState(() => _showInfoPanel = false),
+                          onHeaderVerticalDrag: onDrag,
+                        )
+                      : FrostedPanel(
+                          key: const Key('scene_details_panel'),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(AppTheme.radiusExtraLarge),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // The title stays put while the rest scrolls and,
+                              // like the handle in its top padding, moves the panel.
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onVerticalDragUpdate: (details) =>
+                                    onDrag(details.delta.dy),
+                                child: Padding(
+                                  key: const Key('scene_header_title'),
+                                  padding: EdgeInsets.fromLTRB(
+                                    context.dimensions.spacingMedium,
+                                    context.dimensions.spacingLarge,
+                                    context.dimensions.spacingMedium,
+                                    0,
+                                  ),
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) =>
+                                        _buildTitle(
+                                          context,
+                                          scene,
+                                          isWide: constraints.maxWidth >= 768,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: DetailPageScrollView(
+                                  padding: EdgeInsets.only(bottom: bottomInset),
+                                  children: panelSections,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                );
 
                 if (useTwoColumns) {
                   return RefreshIndicator(
-                    onRefresh: () async {
-                      ref.invalidate(sceneDetailsProvider(widget.sceneId));
-                      return ref.read(
-                        sceneDetailsProvider(widget.sceneId).future,
-                      );
-                    },
+                    onRefresh: _refreshScene,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Left Column: Video, Title, Info, Details (61.8%)
-                        Expanded(
-                          flex: 618,
-                          child: DetailPageScrollView(
-                            header: SceneVideoPlayer(
-                              key: _playerKey,
-                              scene: scene,
-                              autoPlayOnMount: widget.autoPlayOnMount,
-                              maxHeight: safeMaxHeight,
-                            ),
-                            children: [_buildMainInfo(context, scene)],
-                          ),
-                        ),
+                        // Left Column: fixed video under the scene panel (61.8%)
+                        Expanded(flex: 618, child: panelLayout),
                         // Divider
                         VerticalDivider(
                           width: 1,
@@ -824,18 +873,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         Expanded(
                           flex: 382,
                           child: DetailPageScrollView(
-                            children: [
-                              _buildTagsSection(context, scene),
-                              _buildMarkersSection(context, scene),
-                              _buildPerformersSection(context, scene),
-                              _buildGroupsSection(context, scene),
-                              _buildLinkedGalleriesSection(context, scene),
-                              _buildMoreFromStudioSection(context, scene),
-                              ..._buildMoreFromPerformersSections(
-                                context,
-                                scene,
-                              ),
-                            ],
+                            children: relatedSections,
                           ),
                         ),
                       ],
@@ -843,36 +881,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   );
                 }
 
-                // Mobile View (Default Column)
                 return RefreshIndicator(
-                  onRefresh: () async {
-                    await ref
-                        .read(sceneRepositoryProvider)
-                        .getSceneById(widget.sceneId, refresh: true);
-                    ref.invalidate(sceneDetailsProvider(widget.sceneId));
-                    ref.invalidate(sceneGalleriesProvider(widget.sceneId));
-                    return ref.read(
-                      sceneDetailsProvider(widget.sceneId).future,
-                    );
-                  },
-                  child: DetailPageScrollView(
-                    header: SceneVideoPlayer(
-                      key: _playerKey,
-                      scene: scene,
-                      autoPlayOnMount: widget.autoPlayOnMount,
-                      maxHeight: safeMaxHeight,
-                    ),
-                    children: [
-                      _buildMainInfo(context, scene),
-                      _buildTagsSection(context, scene),
-                      _buildMarkersSection(context, scene),
-                      _buildPerformersSection(context, scene),
-                      _buildGroupsSection(context, scene),
-                      _buildLinkedGalleriesSection(context, scene),
-                      _buildMoreFromStudioSection(context, scene),
-                      ..._buildMoreFromPerformersSections(context, scene),
-                    ],
-                  ),
+                  onRefresh: _refreshScene,
+                  child: panelLayout,
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -888,9 +899,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
 
     return PopScope(
-      canPop: !isVideoFullScreen,
+      canPop: !isVideoFullScreen && !_showInfoPanel,
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop || !isVideoFullScreen) return;
+        if (didPop) return;
+        if (!isVideoFullScreen) {
+          if (_showInfoPanel) setState(() => _showInfoPanel = false);
+          return;
+        }
         final notifier = ref.read(playerStateProvider.notifier);
         notifier.requestExitFullscreen();
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -900,6 +915,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       },
       child: page,
     );
+  }
+
+  Future<void> _refreshScene() async {
+    await ref
+        .read(sceneRepositoryProvider)
+        .getSceneById(widget.sceneId, refresh: true);
+    ref.invalidate(sceneDetailsProvider(widget.sceneId));
+    ref.invalidate(sceneGalleriesProvider(widget.sceneId));
+    await ref.read(sceneDetailsProvider(widget.sceneId).future);
   }
 
   Widget _buildSectionContainer(
@@ -915,51 +939,26 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildMainInfo(BuildContext context, Scene scene) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 768;
-
-        final identity = Column(
+    final dims = context.dimensions;
+    final showMetadata = ref.watch(showSceneMetadataSectionProvider);
+    // The title is pinned above the panel's scrolling content.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Column(
           key: const Key('scene_header_identity'),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTitle(context, scene, isWide: isWide),
-            const SizedBox(height: 6),
-            _buildStudioAndDate(context, scene),
-            if (_showTechnicalMetadata) const SizedBox(height: 8),
-            if (_showTechnicalMetadata)
-              SizedBox(
-                key: const Key('scene_header_metadata'),
-                child: _buildTechnicalMetadata(context, scene),
-              ),
+            _buildByline(context, scene, showMetadata: showMetadata),
+            if (showMetadata && _showTechnicalMetadata)
+              _buildTechnicalMetadata(context, scene),
           ],
-        );
-        final controls = SizedBox(
-          key: const Key('scene_header_controls'),
-          child: _buildActions(context, scene),
-        );
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(width: double.infinity, child: identity),
-            SizedBox(
-              height: _showTechnicalMetadata ? AppTheme.spacingMedium : 6,
-            ),
-            Container(
-              key: const Key('scene_header_section'),
-              margin: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
-              child: Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [SizedBox(width: double.infinity, child: controls)],
-                ),
-              ),
-            ),
-            _buildDetails(context, scene),
-          ],
-        );
-      },
+        ),
+        SizedBox(height: dims.spacingSmall),
+        _buildActions(context, scene),
+        SizedBox(height: dims.spacingMedium),
+        _buildDetails(context, scene),
+      ],
     );
   }
 
@@ -980,6 +979,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       onNext: () => _swipeToScene(scene.id, 1),
       child: Text(
         scene.displayTitle,
+        // Pinned above the panel content, so long titles must not crowd it.
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
         style: style?.copyWith(
           fontWeight: FontWeight.w700,
           letterSpacing: isWide ? -0.5 : -0.3,
@@ -989,127 +991,116 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildStudioAndDate(BuildContext context, Scene scene) {
-    final canOpenStudio =
-        scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
-
-    return Row(
+  Widget _buildByline(
+    BuildContext context,
+    Scene scene, {
+    required bool showMetadata,
+  }) {
+    final studio = scene.studioName?.trim() ?? '';
+    final year = scene.date?.year;
+    final dims = context.dimensions;
+    final style = context.textTheme.bodyMedium?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    );
+    return Wrap(
+      spacing: dims.spacingMedium,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        const SizedBox(height: 48),
-        Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
+        if (studio.isNotEmpty || year != null)
+          Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              if (scene.studioName != null)
+              if (studio.isNotEmpty)
                 Flexible(
-                  child: Semantics(
-                    button: canOpenStudio,
-                    label: canOpenStudio
-                        ? 'Open ${scene.studioName} details'
-                        : null,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: canOpenStudio
-                            ? () => context.push(
-                                '/studios/studio/${scene.studioId}',
-                              )
-                            : null,
-                        borderRadius: BorderRadius.circular(4),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2,
-                            vertical: 1,
+                  child: scene.studioId == null
+                      ? Text(studio, style: style)
+                      : TextButton(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size(48, dims.buttonHeight),
+                            alignment: AlignmentDirectional.centerStart,
                           ),
+                          onPressed: () =>
+                              context.push('/studios/studio/${scene.studioId}'),
                           child: Text(
-                            scene.studioName!,
+                            studio,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.titleMedium?.copyWith(
-                              color: canOpenStudio
-                                  ? context.colors.primary
-                                  : context.colors.onSurface,
-                              fontWeight: FontWeight.w500,
-                              decoration: TextDecoration.none,
-                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
                 ),
-              if (scene.studioName != null && scene.date != null)
-                Text(
-                  ' • ',
-                  style: context.textTheme.titleMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
-                  ),
-                ),
-              if (scene.date != null)
-                Text(
-                  scene.date!.year.toString(),
-                  style: context.textTheme.titleMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
-                  ),
-                ),
+              if (studio.isNotEmpty && year != null) Text(' · ', style: style),
+              if (year != null) Text('$year', style: style),
             ],
           ),
-        ),
-        if (!_showTechnicalMetadata)
-          IconButton(
-            key: const Key('scene_show_metadata'),
-            tooltip: context.l10n.details_show_metadata,
-            onPressed: () => setState(() => _showTechnicalMetadata = true),
-            color: context.colors.onSurfaceVariant,
-            icon: const Icon(Icons.keyboard_arrow_down),
+        if (showMetadata)
+          Semantics(
+            expanded: _showTechnicalMetadata,
+            child: TextButton.icon(
+              key: const Key('scene_metadata_toggle'),
+              style: TextButton.styleFrom(
+                foregroundColor: context.colors.onSurfaceVariant,
+                padding: EdgeInsetsDirectional.only(end: dims.spacingSmall),
+              ),
+              iconAlignment: IconAlignment.end,
+              icon: Icon(
+                _showTechnicalMetadata ? Icons.expand_less : Icons.expand_more,
+              ),
+              label: Text(context.l10n.filter_group_metadata),
+              onPressed: () => setState(
+                () => _showTechnicalMetadata = !_showTechnicalMetadata,
+              ),
+            ),
           ),
       ],
     );
   }
 
   Widget _buildTechnicalMetadata(BuildContext context, Scene scene) {
-    final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
-
-    return Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      children: [
-        if (primaryFile?.duration != null)
-          _buildChip(
-            context,
-            _formatDuration(primaryFile!.duration),
-            icon: Icons.timer,
+    final file = scene.files.firstOrNull;
+    final dims = context.dimensions;
+    final l10n = context.l10n;
+    Widget fact(String label, String value) => MergeSemantics(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: context.textTheme.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
-        if (primaryFile?.width != null && primaryFile?.height != null)
-          _buildChip(
-            context,
-            '${primaryFile!.width}x${primaryFile.height}',
-            icon: Icons.fullscreen,
-          ),
-        if (primaryFile?.frameRate != null)
-          _buildChip(
-            context,
-            '${primaryFile!.frameRate!.toStringAsFixed(2)} fps',
-            icon: Icons.slow_motion_video,
-          ),
-        if (primaryFile?.bitRate != null)
-          _buildChip(
-            context,
-            '${(primaryFile!.bitRate! / 1000000).toStringAsFixed(2)} Mbps',
-            icon: Icons.speed,
-          ),
-        _buildChip(
-          context,
-          context.l10n.nPlays(scene.playCount),
-          icon: Icons.play_arrow,
-        ),
-        if (scene.playDuration != null && scene.playDuration! > 0)
-          _buildChip(
-            context,
-            _formatDuration(scene.playDuration),
-            icon: Icons.timer_outlined,
-          ),
-      ],
+          Text(value, style: context.textTheme.bodyMedium),
+        ],
+      ),
+    );
+    return Padding(
+      key: const Key('scene_header_metadata'),
+      padding: EdgeInsets.symmetric(vertical: dims.spacingSmall),
+      child: Wrap(
+        spacing: dims.spacingLarge,
+        runSpacing: dims.spacingSmall,
+        children: [
+          if (file?.duration case final duration?)
+            fact(l10n.duration_title, _formatDuration(duration)),
+          if (file?.width != null && file?.height != null)
+            fact(l10n.common_resolution, '${file!.width} × ${file.height}'),
+          if (file?.frameRate case final rate?)
+            fact(l10n.scene_info_frame_rate, '${rate.toStringAsFixed(2)} fps'),
+          if (file?.bitRate case final rate?)
+            fact(
+              l10n.scene_info_bitrate,
+              '${(rate / 1000000).toStringAsFixed(2)} Mbps',
+            ),
+          fact(l10n.sort_play_count, '${scene.playCount}'),
+          if (scene.playDuration != null && scene.playDuration! > 0)
+            fact(
+              l10n.scene_info_play_duration,
+              _formatDuration(scene.playDuration),
+            ),
+        ],
+      ),
     );
   }
 
@@ -1212,168 +1203,146 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final dims = context.dimensions;
     final showAllActions =
         ref.watch(desktopCapabilitiesProvider) && !Responsive.isMobile(context);
+    final actions = Row(
+      key: const Key('scene_action_buttons'),
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      spacing: dims.spacingSmall,
+      children: [
+        RatingButton(
+          key: const Key('scene_rating_controls'),
+          rating100: scene.rating100,
+          onRatingSelected: (rating) => _updateRating(scene, rating),
+        ),
+        Tooltip(
+          message: context.l10n.sort_o_count,
+          child: TextButton.icon(
+            key: const Key('scene_action_add_o'),
+            onPressed: () async {
+              try {
+                await ref
+                    .read(sceneRepositoryProvider)
+                    .incrementSceneOCounter(scene.id);
+                await ref
+                    .read(sceneRepositoryProvider)
+                    .getSceneById(scene.id, refresh: true);
+                if (!mounted) return;
+                ref.invalidate(sceneDetailsProvider(scene.id));
+                _invalidateSceneListUnlessRandom();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(context.l10n.details_o_count_incremented),
+                    ),
+                  );
+                }
+              } on Exception catch (e, stackTrace) {
+                AppLogStore.instance.addError(
+                  'buildActions',
+                  e,
+                  stackTrace,
+                  source: 'scene_details_page',
+                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        context.l10n.details_failed_increment_o_count(
+                          e.toString(),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              }
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: context.colors.onSurface,
+              minimumSize: Size(dims.buttonHeight, dims.buttonHeight),
+              padding: EdgeInsets.symmetric(horizontal: dims.spacingSmall),
+            ),
+            icon: Icon(
+              Icons.water_drop_outlined,
+              size: 24 * dims.fontSizeFactor,
+            ),
+            label: Text('${scene.oCounter}'),
+          ),
+        ),
+        IconButton(
+          key: const Key('scene_action_info'),
+          tooltip: context.l10n.common_details,
+          icon: Icon(
+            Icons.info_outline_rounded,
+            size: 24 * dims.fontSizeFactor,
+          ),
+          onPressed: () => _showSceneDetailsSheet(scene),
+        ),
+        if (!kIsWeb) ...[
+          IconButton(
+            key: const Key('scene_action_download'),
+            tooltip: context.l10n.common_download,
+            icon: Icon(Icons.download_outlined, size: 24 * dims.fontSizeFactor),
+            onPressed: () => _saveVideoToGallery(scene),
+          ),
+        ],
+        if (showAllActions) ...[
+          IconButton(
+            key: const Key('scene_action_add_marker'),
+            tooltip: context.l10n.scene_details_add_marker,
+            icon: Icon(
+              Icons.add_location_alt_rounded,
+              size: 24 * dims.fontSizeFactor,
+            ),
+            onPressed: () => _showAddMarkerDialog(
+              scene,
+              markerSeconds: _currentMarkerSeconds(scene),
+            ),
+          ),
+          IconButton(
+            key: const Key('scene_action_edit'),
+            tooltip: context.l10n.common_edit,
+            icon: Icon(Icons.edit_outlined, size: 24 * dims.fontSizeFactor),
+            onPressed: () =>
+                context.push('/scenes/scene/${scene.id}/edit', extra: scene),
+          ),
+          IconButton(
+            key: const Key('scene_action_refresh'),
+            tooltip: context.l10n.common_refresh,
+            icon: Icon(Icons.refresh_rounded, size: 24 * dims.fontSizeFactor),
+            onPressed: () async {
+              await ref.read(sceneDetailsProvider(scene.id).notifier).refresh();
+              if (mounted) _invalidateSceneListUnlessRandom();
+            },
+          ),
+          IconButton(
+            key: const Key('scene_action_delete'),
+            tooltip: context.l10n.delete_scene,
+            icon: Icon(
+              Icons.delete_outline,
+              color: context.colors.error,
+              size: 24 * dims.fontSizeFactor,
+            ),
+            onPressed: () => _showDeleteSceneDialog(scene),
+          ),
+        ] else ...[
+          IconButton(
+            key: const Key('scene_action_more'),
+            tooltip: context.l10n.common_more,
+            icon: Icon(
+              Icons.more_horiz_rounded,
+              size: 24 * dims.fontSizeFactor,
+            ),
+            onPressed: () => _showActionMenu(scene),
+          ),
+        ],
+      ],
+    );
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
+        key: const Key('scene_header_controls'),
         scrollDirection: Axis.horizontal,
         child: ConstrainedBox(
           constraints: BoxConstraints(minWidth: constraints.maxWidth),
-          child: Row(
-            key: const Key('scene_action_buttons'),
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              RatingButton(
-                key: const Key('scene_rating_controls'),
-                rating100: scene.rating100,
-                onRatingSelected: (rating) => _updateRating(scene, rating),
-              ),
-              SizedBox(width: dims.spacingSmall),
-              Tooltip(
-                message: context.l10n.sort_o_count,
-                child: TextButton.icon(
-                  key: const Key('scene_action_add_o'),
-                  onPressed: () async {
-                    try {
-                      await ref
-                          .read(sceneRepositoryProvider)
-                          .incrementSceneOCounter(scene.id);
-                      await ref
-                          .read(sceneRepositoryProvider)
-                          .getSceneById(scene.id, refresh: true);
-                      if (!mounted) return;
-                      ref.invalidate(sceneDetailsProvider(scene.id));
-                      _invalidateSceneListUnlessRandom();
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              context.l10n.details_o_count_incremented,
-                            ),
-                          ),
-                        );
-                      }
-                    } on Exception catch (e, stackTrace) {
-                      AppLogStore.instance.addError(
-                        'buildActions',
-                        e,
-                        stackTrace,
-                        source: 'scene_details_page',
-                      );
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              context.l10n.details_failed_increment_o_count(
-                                e.toString(),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: context.colors.onSurface,
-                    minimumSize: Size(dims.buttonHeight, dims.buttonHeight),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: dims.spacingSmall,
-                    ),
-                  ),
-                  icon: Icon(
-                    Icons.water_drop_outlined,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  label: Text('${scene.oCounter}'),
-                ),
-              ),
-              SizedBox(width: dims.spacingSmall),
-              IconButton(
-                key: const Key('scene_action_info'),
-                tooltip: context.l10n.common_details,
-                icon: Icon(
-                  Icons.info_outline_rounded,
-                  size: 24 * dims.fontSizeFactor,
-                ),
-                onPressed: () => _showSceneDetailsSheet(scene),
-              ),
-              if (!kIsWeb) ...[
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_download'),
-                  tooltip: context.l10n.common_download,
-                  icon: Icon(
-                    Icons.download_outlined,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => _saveVideoToGallery(scene),
-                ),
-              ],
-              if (showAllActions) ...[
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_add_marker'),
-                  tooltip: context.l10n.scene_details_add_marker,
-                  icon: Icon(
-                    Icons.add_location_alt_rounded,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => _showAddMarkerDialog(
-                    scene,
-                    markerSeconds: _currentMarkerSeconds(scene),
-                  ),
-                ),
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_edit'),
-                  tooltip: context.l10n.common_edit,
-                  icon: Icon(
-                    Icons.edit_outlined,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => context.push(
-                    '/scenes/scene/${scene.id}/edit',
-                    extra: scene,
-                  ),
-                ),
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_refresh'),
-                  tooltip: context.l10n.common_refresh,
-                  icon: Icon(
-                    Icons.refresh_rounded,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () async {
-                    await ref
-                        .read(sceneDetailsProvider(scene.id).notifier)
-                        .refresh();
-                    if (mounted) _invalidateSceneListUnlessRandom();
-                  },
-                ),
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_delete'),
-                  tooltip: context.l10n.delete_scene,
-                  icon: Icon(
-                    Icons.delete_outline,
-                    color: context.colors.error,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => _showDeleteSceneDialog(scene),
-                ),
-              ] else ...[
-                SizedBox(width: dims.spacingSmall),
-                IconButton(
-                  key: const Key('scene_action_more'),
-                  tooltip: context.l10n.common_more,
-                  icon: Icon(
-                    Icons.more_horiz_rounded,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  onPressed: () => _showActionMenu(scene),
-                ),
-              ],
-            ],
-          ),
+          child: actions,
         ),
       ),
     );
@@ -1746,10 +1715,21 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
+  // Related sections watch their own queries in a Consumer so a late result
+  // rebuilds only that section, not the page and its player.
   Widget _buildLinkedGalleriesSection(BuildContext context, Scene scene) {
-    final galleries = ref.watch(sceneGalleriesProvider(scene.id)).value;
-    if (galleries == null || galleries.isEmpty) return const SizedBox.shrink();
+    return Consumer(
+      builder: (context, ref, _) {
+        final galleries = ref.watch(sceneGalleriesProvider(scene.id)).value;
+        if (galleries == null || galleries.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return _buildLinkedGalleries(context, galleries);
+      },
+    );
+  }
 
+  Widget _buildLinkedGalleries(BuildContext context, List<Gallery> galleries) {
     return _buildSectionContainer(
       context,
       Column(
@@ -1775,53 +1755,58 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     final canOpenStudio =
         scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
-    final studioMediaAsync = ref.watch(
-      entityMediaPreviewProvider(EntityMediaFilterKind.studio, scene.studioId!),
-    );
+    return Consumer(
+      builder: (context, ref, _) => ref
+          .watch(
+            entityMediaPreviewProvider(
+              EntityMediaFilterKind.studio,
+              scene.studioId!,
+            ),
+          )
+          .when(
+            data: (scenes) {
+              final List<Scene> sceneList = scenes;
+              final filtered = sceneList
+                  .where((item) => item.id != scene.id)
+                  .toList();
 
-    return studioMediaAsync.when(
-      data: (scenes) {
-        final List<Scene> sceneList = scenes;
-        final filtered = sceneList
-            .where((item) => item.id != scene.id)
-            .toList();
+              if (filtered.isEmpty) {
+                return const SizedBox.shrink();
+              }
 
-        if (filtered.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return _buildSectionContainer(
-          context,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SectionHeader(
-                title: context.l10n.details_more_from_studio,
-                onViewAll: canOpenStudio
-                    ? () => context.push(
-                        '/studios/studio/${scene.studioId}/media',
-                      )
-                    : null,
-                padding: EdgeInsets.zero,
-              ),
-              SizedBox(height: context.dimensions.spacingMedium),
-              SceneStrip(
-                scenes: filtered,
-                queueId: PlaybackQueueIds.sceneMoreFromStudio(
-                  sceneId: scene.id,
-                  studioId: scene.studioId!,
+              return _buildSectionContainer(
+                context,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SectionHeader(
+                      title: context.l10n.details_more_from_studio,
+                      onViewAll: canOpenStudio
+                          ? () => context.push(
+                              '/studios/studio/${scene.studioId}/media',
+                            )
+                          : null,
+                      padding: EdgeInsets.zero,
+                    ),
+                    SizedBox(height: context.dimensions.spacingMedium),
+                    SceneStrip(
+                      scenes: filtered,
+                      queueId: PlaybackQueueIds.sceneMoreFromStudio(
+                        sceneId: scene.id,
+                        studioId: scene.studioId!,
+                      ),
+                      onTap: (selectedScene) => context.push(
+                        '/scenes/scene/${selectedScene.id}',
+                        extra: true,
+                      ),
+                    ),
+                  ],
                 ),
-                onTap: (selectedScene) => context.push(
-                  '/scenes/scene/${selectedScene.id}',
-                  extra: true,
-                ),
-              ),
-            ],
+              );
+            },
+            loading: () => const SizedBox.shrink(),
+            error: (err, stack) => const SizedBox.shrink(),
           ),
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (err, stack) => const SizedBox.shrink(),
     );
   }
 
@@ -1837,73 +1822,60 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       final performerName = scene.performerNames[index].trim();
       if (performerId.isEmpty || performerName.isEmpty) continue;
 
-      final mediaAsync = ref.watch(
-        entityMediaPreviewProvider(
-          EntityMediaFilterKind.performer,
-          performerId,
+      sections.add(
+        Consumer(
+          key: ValueKey('scene_more_from_performer_$performerId'),
+          builder: (context, ref, _) => ref
+              .watch(
+                entityMediaPreviewProvider(
+                  EntityMediaFilterKind.performer,
+                  performerId,
+                ),
+              )
+              .maybeWhen(
+                data: (scenes) {
+                  final relatedScenes = scenes
+                      .where((relatedScene) => relatedScene.id != scene.id)
+                      .toList();
+                  if (relatedScenes.isEmpty) return const SizedBox.shrink();
+
+                  return _buildSectionContainer(
+                    context,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SectionHeader(
+                          title: context.l10n.details_more_from_performer(
+                            performerName,
+                          ),
+                          onViewAll: () => context.push(
+                            '/performers/performer/$performerId/media',
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
+                        SizedBox(height: context.dimensions.spacingMedium),
+                        SceneStrip(
+                          scenes: relatedScenes,
+                          queueId: PlaybackQueueIds.sceneMoreFromPerformer(
+                            sceneId: scene.id,
+                            performerId: performerId,
+                          ),
+                          onTap: (selectedScene) => context.push(
+                            '/scenes/scene/${selectedScene.id}',
+                            extra: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                orElse: () => const SizedBox.shrink(),
+              ),
         ),
       );
-      final section = mediaAsync.maybeWhen(
-        data: (scenes) {
-          final relatedScenes = scenes
-              .where((relatedScene) => relatedScene.id != scene.id)
-              .toList();
-          if (relatedScenes.isEmpty) return null;
-
-          return _buildSectionContainer(
-            context,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SectionHeader(
-                  title: context.l10n.details_more_from_performer(
-                    performerName,
-                  ),
-                  onViewAll: () =>
-                      context.push('/performers/performer/$performerId/media'),
-                  padding: EdgeInsets.zero,
-                ),
-                SizedBox(height: context.dimensions.spacingMedium),
-                SceneStrip(
-                  scenes: relatedScenes,
-                  queueId: PlaybackQueueIds.sceneMoreFromPerformer(
-                    sceneId: scene.id,
-                    performerId: performerId,
-                  ),
-                  onTap: (selectedScene) => context.push(
-                    '/scenes/scene/${selectedScene.id}',
-                    extra: true,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-        orElse: () => null,
-      );
-      if (section != null) sections.add(section);
     }
 
     return sections;
-  }
-
-  Widget _buildChip(
-    BuildContext context,
-    String label, {
-    IconData? icon,
-    Color? iconColor,
-  }) {
-    return Chip(
-      avatar: icon != null
-          ? Icon(
-              icon,
-              size: 16,
-              color: iconColor ?? context.colors.onSurfaceVariant,
-            )
-          : null,
-      label: Text(label, style: context.textTheme.bodySmall),
-      visualDensity: VisualDensity.compact,
-    );
   }
 }
 
@@ -1957,6 +1929,191 @@ class _AddMarkerDialogState extends State<_AddMarkerDialog> {
           child: Text(context.l10n.scene_details_create_marker),
         ),
       ],
+    );
+  }
+}
+
+/// Keeps the inline video fixed at the top while the scene panel rises over it.
+///
+/// The panel rests flush under the video, which is also its lowest position,
+/// and expands to [_maxPanelFraction] of the available height. Vertical drags on
+/// the video or the panel handle move the panel. Dragging the content scrolls it
+/// first; only a drag that continues past either end of the content moves the
+/// panel. Flings that reach an end do not.
+class _ScenePanelLayout extends StatefulWidget {
+  const _ScenePanelLayout({required this.video, required this.panel});
+
+  /// Builds the video no taller than `maxHeight`, which keeps tall videos and
+  /// their controls above the panel's lowest position.
+  final Widget Function(ValueChanged<double> onVerticalDrag, double maxHeight)
+  video;
+
+  /// Builds the vertically scrollable panel content around the callback that
+  /// moves the panel, for pinned headers; its top padding hosts the handle.
+  final Widget Function(ValueChanged<double> onDrag) panel;
+
+  @override
+  State<_ScenePanelLayout> createState() => _ScenePanelLayoutState();
+}
+
+class _ScenePanelLayoutState extends State<_ScenePanelLayout> {
+  static const _maxPanelFraction = 0.88;
+
+  final _videoKey = GlobalKey();
+  double? _videoHeight;
+  double _height = 1;
+  double _minSize = 0;
+
+  /// Panel height fraction once the user moves it; null follows the video.
+  ///
+  /// Drags update only this notifier so the video and panel content keep their
+  /// widget instances and skip rebuilding on every frame.
+  final _size = ValueNotifier<double?>(null);
+
+  double get _currentSize =>
+      (_size.value ?? _minSize).clamp(_minSize, _maxPanelFraction);
+
+  @override
+  void dispose() {
+    _size.dispose();
+    super.dispose();
+  }
+
+  void _measureVideo() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final box = _videoKey.currentContext?.findRenderObject() as RenderBox?;
+      final height = box != null && box.hasSize ? box.size.height : null;
+      if (height != null && height != _videoHeight) {
+        setState(() => _videoHeight = height);
+      }
+    });
+  }
+
+  /// Moves the panel by a downward pixel [dy]; returns whether it moved.
+  bool _dragPanel(double dy) {
+    final current = _currentSize;
+    final next = (current - dy / _height).clamp(_minSize, _maxPanelFraction);
+    if (next == current) return false;
+    _size.value = next;
+    return true;
+  }
+
+  bool _onOverscroll(OverscrollNotification notification) {
+    if (notification.depth != 0 ||
+        notification.metrics.axis != Axis.vertical ||
+        notification.dragDetails == null) {
+      return false;
+    }
+    // Past the end raises the panel; past the start lowers it. Unhandled
+    // overscroll at the lowest position still reaches pull-to-refresh.
+    return _dragPanel(-notification.overscroll);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _measureVideo();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        _height = max(constraints.maxHeight, 1);
+        // Before the first measurement, assume the 16:9 inline container.
+        final videoHeight = _videoHeight ?? constraints.maxWidth * 9 / 16;
+        // Tall videos shrink to leave a handle strip below them.
+        final peek = min(
+          context.dimensions.buttonHeight * 1.5 / _height,
+          _maxPanelFraction,
+        );
+        _minSize = (1 - videoHeight / _height).clamp(peek, _maxPanelFraction);
+        // Clamping physics reports edge drags as overscroll on every platform;
+        // always-scrollable lets short content reach its ends too.
+        final scrollBehavior = ScrollConfiguration.of(context).copyWith(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: ClampingScrollPhysics(),
+          ),
+          overscroll: false,
+        );
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: NotificationListener<SizeChangedLayoutNotification>(
+                onNotification: (_) {
+                  _measureVideo();
+                  return true;
+                },
+                child: SizeChangedLayoutNotifier(
+                  child: KeyedSubtree(
+                    key: _videoKey,
+                    child: widget.video(_dragPanel, _height * (1 - peek)),
+                  ),
+                ),
+              ),
+            ),
+            ValueListenableBuilder<double?>(
+              valueListenable: _size,
+              builder: (context, _, panel) => Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: _currentSize * _height,
+                child: panel!,
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  NotificationListener<OverscrollNotification>(
+                    onNotification: _onOverscroll,
+                    child: ScrollConfiguration(
+                      behavior: scrollBehavior,
+                      child: widget.panel(_dragPanel),
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: _PanelDragHandle(onDrag: _dragPanel),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PanelDragHandle extends StatelessWidget {
+  const _PanelDragHandle({required this.onDrag});
+
+  final ValueChanged<double> onDrag;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.resizeUpDown,
+      child: GestureDetector(
+        key: const Key('scene_panel_handle'),
+        behavior: HitTestBehavior.opaque,
+        onVerticalDragUpdate: (details) => onDrag(details.delta.dy),
+        child: SizedBox(
+          height: context.dimensions.spacingLarge,
+          child: Center(
+            child: Container(
+              width: 32,
+              height: 4,
+              decoration: BoxDecoration(
+                color: context.colors.onSurfaceVariant.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

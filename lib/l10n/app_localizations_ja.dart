@@ -1649,6 +1649,9 @@ class AppLocalizationsJa extends AppLocalizations {
       '下にスクロールすると隠れ、上にスクロールすると再表示されます。';
 
   @override
+  String get settings_interface_show_scene_metadata_section => 'シーンのメタデータ欄を表示';
+
+  @override
   String get settings_interface_hide_scene_metadata => 'シーンのメタデータをデフォルトで非表示';
 
   @override
@@ -2049,11 +2052,18 @@ class AppLocalizationsJa extends AppLocalizations {
       '他のアプリがオーディオフォーカスを取得したらStashFlowを一時停止します。オフにすると同時再生を許可します。';
 
   @override
-  String get settings_playback_pip => 'ネイティブ ピクチャー・イン・ピクチャー';
+  String get settings_playback_system_controls => 'システムのメディアコントロール';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'ピクチャーインピクチャーボタンを有効にし、バックグラウンド時に自動移行します';
+  String get settings_playback_system_controls_subtitle =>
+      '通知シェードとロック画面に再生コントロールを表示し、ヘッドセットのボタンに応答します。オフにすると、Android がバックグラウンド再生を停止することがあります。';
+
+  @override
+  String get settings_playback_auto_pip => '離れるときにピクチャー・イン・ピクチャー';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'シーンの再生中に StashFlow を離れると、ピクチャー・イン・ピクチャーのウィンドウで視聴を続けます。戻ると元のページに戻ります。';
 
   @override
   String get settings_playback_subtitles => '字幕設定';
@@ -2082,6 +2092,13 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get settings_playback_stream_source_subtitle =>
       '再生開始時に使用。利用できない場合はダイレクト';
+
+  @override
+  String get settings_playback_stream_resolution => 'デフォルトの解像度';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'トランスコードされたソースに使用。利用できない場合は次に低い解像度を使用';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '利用可能な場合に自動読み込み';

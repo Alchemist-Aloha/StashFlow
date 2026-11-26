@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
@@ -237,9 +238,17 @@ void main() {
                 )!.common_exit_fullscreen;
                 await tester.tap(find.byTooltip(tooltip).last);
               } else {
-                await tester.tap(
-                  find.byKey(const Key('inline_video_back_button')),
+                final backButton = find.byKey(
+                  const Key('inline_video_back_button'),
                 );
+                // Inline controls open hidden; reveal them like a user would.
+                if (backButton.hitTestable().evaluate().isEmpty) {
+                  await tester.tapAt(
+                    tester.getCenter(find.byType(NativeVideoControls)),
+                  );
+                  await tester.pump(const Duration(milliseconds: 350));
+                }
+                await tester.tap(backButton);
               }
               await _settle(tester);
             }

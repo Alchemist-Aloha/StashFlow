@@ -140,13 +140,18 @@ void main() {
       expect(handler.mediaItem.value?.artUri, isNull);
     });
 
-    test('dismiss publishes idle state and clears metadata', () {
+    test('dismiss pauses, then publishes idle and clears metadata', () async {
       handler.updateMetadata(id: '1', title: 'Scene');
       handler.updatePlaybackState(isPlaying: true);
 
       handler.dismiss();
 
       expect(handler.playbackState.value.playing, isFalse);
+      expect(
+        handler.playbackState.value.processingState,
+        AudioProcessingState.ready,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 600));
       expect(
         handler.playbackState.value.processingState,
         AudioProcessingState.idle,
@@ -188,6 +193,7 @@ void main() {
 
       await handler.stop();
       expect(called, isTrue);
+      await Future<void>.delayed(const Duration(milliseconds: 600));
 
       final state = await handler.playbackState.first;
       expect(state.playing, isFalse);
@@ -236,5 +242,40 @@ void main() {
 
       expect(stopCalled, isTrue);
     });
+  });
+
+  test('a new playback state cancels the pending idle', () async {
+    handler.updatePlaybackState(isPlaying: true);
+    handler.dismiss();
+    handler.updatePlaybackState(isPlaying: true);
+    await Future<void>.delayed(const Duration(milliseconds: 600));
+    expect(handler.playbackState.value.playing, isTrue);
+    expect(
+      handler.playbackState.value.processingState,
+      AudioProcessingState.ready,
+    );
+  });
+
+  test('disabled handler holds updates and republishes when enabled', () {
+    handler.updateMetadata(id: '1', title: 'A');
+    handler.updatePlaybackState(isPlaying: true);
+
+    handler.enabled = false;
+    expect(handler.mediaItem.value, isNull);
+    expect(handler.playbackState.value.playing, isFalse);
+
+    handler.updateMetadata(id: '2', title: 'B');
+    handler.updatePlaybackState(isPlaying: true);
+    expect(handler.mediaItem.value, isNull);
+    expect(handler.playbackState.value.playing, isFalse);
+
+    handler.enabled = true;
+    expect(handler.mediaItem.value?.id, '2');
+    expect(handler.playbackState.value.playing, isTrue);
+
+    handler.enabled = false;
+    handler.dismiss();
+    handler.enabled = true;
+    expect(handler.mediaItem.value, isNull);
   });
 }

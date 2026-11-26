@@ -96,6 +96,10 @@ void main() {
   testWidgets('long press opens image details without rating controls', (
     tester,
   ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
     final repository = MockGraphQLImageRepository();
     const image = entity.Image(
       id: 'image-1',
@@ -142,11 +146,17 @@ void main() {
       );
     }
     final detailsSheet = find.byType(ImageDetailsBottomSheet);
+    final panel = tester.getRect(detailsSheet);
+    expect(panel.width, 640);
+    expect(panel.center.dx, 400);
     expect(
       find.descendant(of: detailsSheet, matching: find.byType(RatingButton)),
       findsNothing,
     );
     expect(find.byType(RatingPicker), findsNothing);
+    tester.view.physicalSize = const Size(390, 600);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(detailsSheet).width, 390);
     await tester.tap(find.byTooltip('Close'));
     await tester.pumpAndSettle();
     expect(find.byType(ImageDetailsBottomSheet), findsNothing);

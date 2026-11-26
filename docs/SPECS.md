@@ -409,7 +409,19 @@ serialization differences.
 - `StashImage` is the common authenticated/cached image boundary. Native images
   and VTT sprite sheets share its `cached_network_image_ce` manager (7-day
   freshness, 100 entries) and Dio transport with persistent session cookies.
-  Web display retains its existing `Image.network` authentication fallback.
+  On web, `StashImage` fetches bytes with the same authentication fallback and
+  relies on the browser cache; prefetch is native-only.
+- On native platforms, AVIF and JPEG XL bytes that the engine codec rejects
+  are sniffed from the same cache entry and transcoded off the UI isolate
+  (`avif_native` libavif/dav1d, `jxl_native` libjxl) into an engine-decodable
+  BMP, so resizing and the image cache behave as for any other format.
+  Animated files show their first frame. Flutter's web engine rejects AVIF and
+  JPEG XL before the browser sees them, so web routes the same sniffed bytes
+  through the browser's `createImageBitmap` into that BMP path.
+  `avif_native` comes from the `Alchemist-Aloha/avif_native` fork, which adds
+  Windows ARM64; `jxl_native` (`Alchemist-Aloha/jxl_native`) bundles prebuilt
+  libjxl the same way. Targets without a prebuilt library build without that
+  format and show the error state.
 - List and strip callers provide appropriate `memCacheWidth`/height hints.
 - Performer cards and details pass a bundled placeholder (`performerPlaceholderAsset`):
   Stash's own default silhouettes under `asset/performer_placeholders/`, rendered
@@ -436,7 +448,7 @@ bottom-right, galleries the image count bottom-right. Badge padding, corner
 insets, and icons follow the UI scale alongside text. Rating and count badges
 are omitted when empty. The avatar count is
 controlled by `maxPerformerAvatarsProvider`; avatar size follows dynamic UI
-scaling.
+scaling. Loading placeholders do not participate in Hero transitions.
 
 Grid, masonry, and horizontal-strip scene cards show a thin, accessible
 playback-position bar directly below the thumbnail when the saved `resumeTime`
@@ -452,8 +464,11 @@ Cards prefer the last locally observed playback position over stale list data.
 `scenePlaybackPositionProvider` receives global local-player and cast position
 updates, including seeks and pauses, so returning to any scene list while a
 mini-player or PiP session continues updates the matching bar in real time.
-Only the bar rebuilds on position ticks; browsing cards must not initialize a
-player or fetch scene details. Observed positions survive card unmounts and
+Forward progress is published in whole-second steps; backward seeks, restarts
+at zero, and the first observed position apply immediately. Every provider
+change schedules a frame, so sub-second ticks would redraw the app for an
+invisible change. Only the bar rebuilds on position ticks; browsing cards
+must not initialize a player or fetch scene details. Observed positions survive card unmounts and
 playback changes/stops for the current app session, and reset when the active
 server profile changes. Server resume data remains the fallback for scenes not
 played in this session; this display cache does not change activity-save timing.
@@ -475,18 +490,42 @@ reliable when scrubbing is unavailable.
 ### Scene details
 
 Scene details combine identity, playback, metadata, related media, and editing
-without duplicating repository state. The scene information panel opened from
-card long-press or details shows the primary file's size in its technical
-metadata, using readable byte units or a placeholder when unavailable.
+without duplicating repository state. Scene, gallery, and image details sheets pin
+their heading, item title, and close button (`DetailsSheetHeader`) above the
+scrolling content. In the scene information panel opened from
+card long-press or details, release date, rating, O-count, play count, and
+organized/interactive status belong in Details; file duration and size belong
+in Technical. These values do not appear in a separate summary chip row.
 
 Layout contract:
 
+- Breakpoints use the page body width beside any navigation rail, so portrait
+  tablets get the single column.
 - Below 768 logical pixels, content uses a mobile vertical composition.
-- At 768 logical pixels and above, identity, actions, and supporting metadata
+- At 768 logical pixels and above, the page splits into a playback and identity
+  column and a related-content column; identity, actions, and supporting metadata
   use the responsive large-screen composition.
+- The inline video stays fixed at the top of the playback column. Everything
+  after it lives in a scene panel that rests flush under the video, which is
+  also its lowest position, and rises over the video to 88% of the page height;
+  tall videos shrink, placeholders included, so the video and its controls end
+  above the panel's handle strip. The panel spans the full width in one column
+  and only the left column in two columns,
+  where the related-content column keeps its own scrolling. Vertical swipes on
+  the inline video or the panel handle move the panel. Dragging the content
+  scrolls it first; only a drag that continues past either end of the content
+  moves the panel, and flings never do. The normal content and the scene
+  information panel share the handle. The scene title (at most two lines) and
+  the information panel's header stay pinned above their scrolling content,
+  and vertical swipes on them move the panel like the handle.
+- Details replaces the scene panel's content with the scene information panel in
+  place, keeping the panel position. Its close button or system Back restores the
+  panel content before Back can leave the page. Card long-press still opens scene
+  information as a modal sheet.
 - Header actions remain reachable without crowding the title or studio.
 - Rating, add-O, details, download (where supported), and More share one action
   row directly on the page background, without a surrounding panel backdrop.
+  When the controls fit, the row centers them with equal gaps between buttons.
   The O-count button uses an unfilled icon-and-count treatment.
   At narrow widths or large UI scales, the row scrolls horizontally instead
   of wrapping or shrinking touch targets. Desktop-capable layouts at non-mobile
@@ -499,7 +538,13 @@ Layout contract:
   adjacent scene in the active queue. At queue ends, the title resists the drag
   without navigating. Once per app launch, the title gives a brief directional
   hint when an adjacent scene exists; reduced-motion users do not see it.
-- Metadata visibility follows the user's setting.
+- Show only the available studio and year beneath the title, with a separator
+  only when both exist. When enabled in Interface Settings, a labeled Metadata
+  disclosure follows the byline, starting at the leading edge when neither
+  field exists. The section is off whenever no visibility preference is saved,
+  regardless of install age. The default-collapse setting appears only when the
+  section is enabled; disabling the section preserves that setting. Expanding or
+  collapsing a scene's facts above the action row does not change either preference.
 - Editing and scraping entry points appear only when their prerequisites are
   available.
 - Loading or failure of a secondary section must not hide the primary scene.
@@ -514,7 +559,12 @@ seconds. If the scene is not active, selecting a marker starts it at that time
 instead of its saved resume position. The separate delete action only opens
 confirmation and must not seek playback.
 
-The scene media section exposes cover and preview content only when available.
+The scene media section appears when a scene has a cover or a preview. Its
+cover/preview toggle is always shown and starts on the cover when one exists;
+a segment with nothing to show is disabled. Opening the sheet probes the
+preview in the background. A failed probe or playback failure only disables
+the preview segment, redrawing the media solely when the preview was on screen
+(it then falls back to the cover, or an unavailable placeholder without one).
 Cover images open the dedicated fullscreen cover viewer with zoom/pan and a
 predictable exit gesture/action. Scene-info and tagger previews share
 `PreviewVideoControlsTheme` for mobile and desktop control insets in normal
@@ -586,10 +636,11 @@ star opens a popup editor with five stars, fractional-rating selection, Clear,
 and Apply/Cancel. Ratings use the server's 0–100 scale; cancelling leaves the
 confirmed rating unchanged. Image metadata panels, including card long-press
 details, are read-only and omit rating controls. Scene, image, and gallery
-metadata panels support text selection and copying. Image panels show the
+metadata panels support text selection and copying. They use the same width as
+filter and sort sheets in the current navigation area: full width when narrow
+and centered at up to 640 logical pixels when wider. Image panels show the
 primary visual file's size in readable byte units, or a placeholder when
-unavailable. Fullscreen image rating retains
-its image/gallery target selector.
+unavailable. Fullscreen image rating retains its image/gallery target selector.
 
 Scene rating and metadata edits go through the scene repository. Successful
 mutations update or invalidate both details and affected lists. Failed mutations
@@ -751,6 +802,11 @@ Responsibilities:
   player's top-left position, including while playback starts.
 - `PlayerSurface` owns shared visual rendering, controls, transforms, subtitles,
   buffering, and casting placeholders.
+  Hidden native controls ignore position ticks unless scrubbing; their time
+  pills and progress bar refresh on the next tick after they show.
+- One-finger vertical drags adjust brightness (left half) and volume (right
+  half) only in fullscreen. Inline players never change them; Scene Details
+  uses the drag to move its scene panel.
 - `GlobalFullscreenOverlay` owns overlay visibility and platform fullscreen
   effects while rendering the active global scene.
 - `TransformableVideoSurface` owns pinch zoom and free rotation.
@@ -789,7 +845,7 @@ The transport group has no shared backdrop or drop shadow.
 Playback settings offer a horizontal slider from 1 to 10 seconds in one-second
 steps for the player controls' auto-hide delay. Two seconds is the default when
 no valid preference is saved; existing saved delays are preserved. The selected
-delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. The preference is
+delay applies to inline and fullscreen controls while video is playing; paused controls remain visible. Opening scene details starts the inline player with its controls hidden until the viewer taps the video, playback pauses, or a player error leaves it paused (such as a browser blocking autoplay); fullscreen controls start visible. The preference is
 included in configuration backups.
 
 Playback Settings links to a Player controls page that customizes inline and
@@ -819,10 +875,13 @@ them with `start=<seconds>`, reopens on every seek, and reports position,
 buffer, and the scene file's duration on the absolute scene timeline, offsetting
 subtitles to match. HLS, DASH, and direct streams pass through unchanged. Playback settings choose
 the default source kind used when playback starts (direct by default, which
-skips the `sceneStreams` query); its original-resolution endpoint is used, and
-an unavailable kind or failed query falls back to the direct stream. Downloads
-always use the direct file. The preference is included in configuration
-backups.
+skips the `sceneStreams` query). For transcoded kinds, a default resolution
+(`video_default_stream_resolution`: Original by default, then 4K, 1080p, 720p,
+480p, 240p; shown only when the source is not direct) picks the highest offered
+endpoint not above it, preferring the original on equal height and using the
+lowest offered when all are higher. An unavailable kind or failed query falls
+back to the direct stream. Downloads always use the direct file. Both
+preferences are included in configuration backups.
 
 The optional video debug overlay groups stream, active decoder/output, and
 performance diagnostics in a bounded, scrollable panel. It follows controls
@@ -947,6 +1006,9 @@ mobile PiP and non-host platforms require device/platform acceptance.
 - `media_kit` and `media_kit_video` come from the same revision of the
   `Alchemist-Aloha/media-kit` fork. Its core build hook downloads, verifies, and
   packages native playback libraries; do not add `media_kit_libs_*` packages.
+  Windows hardware rendering uses upstream mpv's Direct3D 11 render API, not
+  the former fork-specific DXGI extension. Custom/system Windows libmpv builds
+  must provide the D3D11 render backend (client API 2.6 or newer).
 
 - Playback settings persist `video_mpv_vo` and `video_mpv_hwdec`; `default`
   leaves media-kit's platform defaults unchanged. `hwdec=no` selects software
@@ -1157,7 +1219,23 @@ queue and its previous/next navigation.
 
 ### Background playback and Android media session
 
-Background playback follows the persisted preference:
+Native Picture-in-Picture is available wherever supported and its button
+placement follows Player Controls. On Android, `android_auto_pip` (default
+disabled; explicit saved choices are kept and included in configuration backups)
+arms the system's automatic PiP
+exactly while a scene plays locally (not paused, not casting), from any page or
+view mode: Android 12+ uses auto-enter PiP params, older versions enter from
+`onUserLeaveHint`. Entering PiP shows the video-only surface; returning restores
+the prior inline/fullscreen/feed presentation and the page underneath. The
+retired `video_native_pip` key is still accepted by backups and ignored.
+
+Background playback follows the persisted preference (default enabled; an
+explicit saved choice is kept). Only Android, iOS, and web show the preference;
+desktop builds always keep playing when minimized and ignore the stored key.
+On Android, audio focus opt-out, `android_auto_pip`, and system media controls
+are shown and take effect only while background playback is on; otherwise
+StashFlow pauses on focus loss, never auto-enters PiP, and publishes no media
+session:
 
 - when enabled, playback may continue while the app is backgrounded and the
   media notification remains synchronized;
@@ -1185,10 +1263,19 @@ Casting and preloaded/auxiliary players do not acquire global session focus.
 Android can still enforce interruptions regardless of this opt-out; background
 focus requests are subject to OS foreground-service restrictions.
 
+Android Playback Settings owns the `android_system_media_controls` boolean
+(default enabled; included in configuration backups). Turning it off dismisses
+the notification and stops publishing to the media session immediately, so the
+playback foreground service and headset controls stop; Android may then stop
+background playback. The latest metadata and state are held and republished
+when it is turned back on.
+
 The Android media session publishes current title, artwork, duration, position,
 playing state, and supported actions. Notification seeking performs true player
 seeks and keeps position/duration synchronized. Playback completion follows the
 configured end behavior. The notification intentionally has no Stop action.
+The playback service leaves the foreground on pause, so a paused notification can
+be swiped away and ending the session removes it.
 Notification titles use the same scene display title as the app: trimmed title,
 then the cleaned file-path stem, then the stream-path stem, then the default
 scene label. Artwork publication and duration refreshes preserve this fallback.
@@ -1292,6 +1379,11 @@ Password profiles reauthenticate with stored credentials on activation, includin
 app startup. A saved raw Cookie header is not proof of a valid session; renewal
 clears it before login and publishes the new cookie to GraphQL and media only
 after success. Failed renewal leaves no stale runtime or stored cookie header.
+On web the browser keeps the HttpOnly session cookie and the cookie jar stores
+nothing, so a successful login records an in-memory session marker in its
+place; requests use browser credentials and never send it. Web password login
+therefore needs the app on the server's origin, as when Stash serves the web
+build.
 Login and credential edits wait for credential hydration. Concurrent login calls
 share one attempt for the current credential revision; profile changes, credential
 edits, and logout prevent older login results from restoring runtime auth.
@@ -1361,18 +1453,17 @@ Encryption and cloud synchronization are outside the current backup scope.
 Stable and nightly builds share `.github/workflows/reusable-release.yml`.
 Version-tag pushes (`v*`) publish stable releases; pushes to `dev` publish
 nightly builds. Pushes to `main` do not create release candidates.
-Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.47.9
+Android, Linux, web, and release jobs use Ubuntu 26.04. CI uses Flutter 3.50.1
 and resolves dependencies with
 `flutter pub get`
-Pub fetches the media-kit fork rather than
-using the ignored local `media-kit/` checkout. Linux installs system graphics/audio runtime
+Pub fetches the pinned media-kit fork from GitHub. Linux installs system graphics/audio runtime
 libraries, but mpv and FFmpeg are bundled by the fork's native-assets hook.
 
-The app requires Flutter 3.47.9 or newer and Dart 3.13 or newer within Dart 3.x.
+The app requires Flutter 3.50.1 or newer and Dart 3.14 or newer within Dart 3.x.
 `msix` is a development dependency used only for packaging. `fastforge` runs as a
 globally activated tool so its `archive` 3 pin stays out of app resolution.
 
-Desktop window control uses the `window_manager` 0.6 native API, not its legacy
+Desktop window control uses the `window_manager` 0.7 native API, not its legacy
 MethodChannel bridge.
 Startup captures the main native window before PiP can open; later fullscreen
 requests must use that same window rather than the
@@ -1595,6 +1686,44 @@ interaction where browser security permits it.
   controls, fullscreen surfaces, keyboard focus, and localization.
 - Integration/host tests cover navigation and native contracts where a unit or
   widget test cannot provide confidence.
+- Live-server e2e tests under `test/e2e/` (tag `e2e`) run the real GraphQL
+  repositories and auth flows (API key and password session) against a Stash
+  server seeded by
+  [stash-test-server](https://github.com/Alchemist-Aloha/stash-test-server).
+  They skip unless `STASH_URL` is set, read expected values from the server's
+  `fixtures/profile.json` (`STASH_FIXTURE`), and run in
+  `.github/workflows/e2e.yml`. The suite checks sorted scene pagination, exact
+  organized results, tagged marker media, and the two seeded duplicate files
+  in one group. It reads marker writes back before deleting them; mutations must
+  restore fixture state.
+- The GUI e2e test `integration_test/app_e2e_test.dart` drives first-run API-key
+  setup, then rejects and corrects a password and switches to that profile. It
+  searches and filters the seeded library, applies a server-saved sort preset,
+  decodes authenticated video, seeks, and raises the scene panel by its handle
+  to edit the rating. It checks resume in a new player session and verifies
+  that reopening from the mini-player retains the active session, then browses
+  the library tabs. A fresh server read checks the scene rating and playback
+  checkpoint; teardown restores both rating and activity. Run it only against
+  a seeded test server.
+- The GUI test takes `STASH_URL`, `STASH_API_KEY`, `STASH_USERNAME`, and
+  `STASH_PASSWORD` via `--dart-define`. It keeps profiles in memory and writes
+  session cookies to a disposable support directory. The same workflow runs it
+  on Linux and Windows (x64 and arm64), macOS (arm64), the iOS simulator, and
+  the Android emulator (`http://10.0.2.2:9999`).
+  On Windows CI, the workflow supplies `STASH_E2E_SUPPORT_DIR` and removes it
+  after the app exits so open file handles cannot block in-app teardown.
+  The iOS simulator boots during dependency setup. An active branch run is
+  allowed to finish when a newer push queues another run. Pull request runs
+  still cancel superseded runs.
+- The web e2e test `integration_test/web_e2e_test.dart` runs under
+  `flutter drive` and chromedriver in headless Chrome. It connects with an API
+  key, checks that browser playback advances and pauses, and decodes the AVIF
+  and JPEG XL images that `scripts/e2e_seed_extra_images.sh` adds to the
+  seeded server, then logs in with a password and queries through the session
+  cookie. The dev server proxies Stash (`test_driver/web_dev_config.yaml`) so
+  the app and server share an origin. CI allows autoplay because synthetic
+  taps are not user gestures. GUI e2e tests share
+  `integration_test/e2e_helpers.dart`.
 - Shared helpers live under `test/helpers/`; feature-specific fakes stay near
   their tests when reuse is not established.
 

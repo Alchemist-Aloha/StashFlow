@@ -11,8 +11,8 @@ msix_config:
   logo_path: asset/stashfluttericon.png
 
 environment:
-  sdk: ^3.13.0
-  flutter: ">=3.47.9"
+  sdk: ^3.14.0
+  flutter: ">=3.50.1"
 
 dependencies:
   flutter:
@@ -26,12 +26,12 @@ dependencies:
   media_kit:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: c45c5b75eead1eb00f3cea5182302da612006269
+      ref: 768fcd2e918c8e942f1c085701088f74857c9603
       path: ./media_kit
   media_kit_video:
     git:
       url: https://github.com/Alchemist-Aloha/media-kit.git
-      ref: c45c5b75eead1eb00f3cea5182302da612006269
+      ref: 768fcd2e918c8e942f1c085701088f74857c9603
       path: ./media_kit_video
   audio_session: ^0.2.4
   audio_service: ^0.18.19
@@ -52,7 +52,7 @@ dependencies:
   flutter_secure_storage: ^11.0.0
   package_info_plus: ^10.1.0
   pub_semver: ^2.2.0
-  window_manager: ^0.6.0
+  window_manager: ^0.7.0
   multiview_desktop: ^2.0.2
   dio: ^5.10.0
   dio_cookie_manager: ^3.4.0
@@ -71,11 +71,23 @@ dependencies:
   local_auth: ^3.0.2
   material_ui: ^1.11.0
   flutter_svg: ^2.4.0
+  cupertino_icons: ^2.0.0
+  avif_native:
+    git:
+      url: https://github.com/Alchemist-Aloha/avif_native.git
+      ref: 3b4fece030f6fae6894cc79a268b87ab9c86a277
+  jxl_native:
+    git:
+      url: https://github.com/Alchemist-Aloha/jxl_native.git
+      ref: e34012728ea72c4497b1183136aac008eac8abf8
 
 dev_dependencies:
   msix: ^3.18.0
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
+  path_provider_platform_interface: ^2.1.3
   flutter_lints: ^6.0.0
   build_runner: ^2.16.2
   freezed: ^4.0.1
@@ -104,10 +116,7 @@ flutter_launcher_icons:
   image_path: "asset/stashfluttericon.png"
   min_sdk_android: 24
 
-dependency_overrides:
-  # media_kit (git) needs xml ^7.1.0; flutter_svg's vector_graphics_compiler
-  # caps xml at 7.0.1. Drop once vector_graphics_compiler allows 7.1.
-  xml: ^7.1.0
+
 
 flutter:
   generate: true
@@ -142,3 +151,9 @@ flutter:
     - asset/fonts/inter/OFL.txt
     - asset/fonts/lora/OFL.txt
     - asset/fonts/jetbrains_mono/OFL.txt
+
+# Decode-only libavif build (dav1d); StashFlow never encodes AVIF.
+hooks:
+  user_defines:
+    avif_native:
+      features: decode

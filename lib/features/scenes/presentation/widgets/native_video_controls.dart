@@ -45,7 +45,6 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   const NativeVideoControls({
     required this.controller,
     required this.useDoubleTapSeek,
-    required this.enableNativePip,
     this.onFullScreenToggle,
     this.onInlineBack,
     this.onRandomScene,
@@ -54,13 +53,13 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     this.onScaleUpdate,
     this.onScaleEnd,
     this.onTransformationDelta,
+    this.onInlineVerticalDrag,
     this.showControls = true,
     super.key,
   });
 
   final VideoController controller;
   final bool useDoubleTapSeek;
-  final bool enableNativePip;
   final VoidCallback? onFullScreenToggle;
   final VoidCallback? onInlineBack;
   final VoidCallback? onRandomScene;
@@ -69,6 +68,10 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   final GestureScaleUpdateCallback? onScaleUpdate;
   final GestureScaleEndCallback? onScaleEnd;
   final void Function(Matrix4 delta, Offset focalPoint)? onTransformationDelta;
+
+  /// Receives one-finger vertical drag deltas while inline; brightness and
+  /// volume drags apply only in fullscreen.
+  final ValueChanged<double>? onInlineVerticalDrag;
   final bool showControls;
 
   @override
@@ -87,7 +90,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
 
   bool _isScrubbing = false;
   double _scrubMs = 0;
-  bool _controlsVisible = true;
+  bool _controlsVisible = false;
   bool _wasPlaying = false;
   bool _wasPlayingBeforeScrub = false;
   bool _showVolumeSlider = false;
@@ -115,6 +118,42 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
 
   Map<ShortcutActivator, VoidCallback>? _cachedBindings;
   Keybinds? _lastKeybinds;
+  late Stream<int> _positionSecondsStream;
+  late Stream<Duration> _throttledPositionStream;
+
+  static Stream<Duration> _createThrottledPositionStream(
+    Stream<Duration> source,
+  ) {
+    Duration? lastEmitted;
+    return source.where((pos) {
+      if (lastEmitted == null ||
+          (pos - lastEmitted!).abs() >= const Duration(milliseconds: 200)) {
+        lastEmitted = pos;
+        return true;
+      }
+      return false;
+    });
+  }
+
+  void _initPlayerStreams() {
+    final stream = widget.controller.player.stream;
+    _subscriptions.add(stream.playing.listen((_) => _onVideoTick()));
+    // A failed start, such as a browser blocking autoplay, never plays, so
+    // show the controls to offer Play.
+    _subscriptions.add(
+      stream.error.listen((_) {
+        if (!mounted || widget.controller.player.state.playing) return;
+        _cancelAutoHide();
+        setState(() => _controlsVisible = true);
+      }),
+    );
+    // Hidden controls skip position ticks; the next tick refreshes them on show.
+    final visiblePosition = stream.position.where(
+      (_) => _controlsVisible || _isScrubbing,
+    );
+    _positionSecondsStream = visiblePosition.map((d) => d.inSeconds).distinct();
+    _throttledPositionStream = _createThrottledPositionStream(visiblePosition);
+  }
 
   @override
   void initState() {
@@ -123,15 +162,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
       'NativeVideoControls init scene=${widget.scene.id}',
       source: 'NativeVideoControls',
     );
-    _subscriptions.add(
-      widget.controller.player.stream.playing.listen((_) => _onVideoTick()),
-    );
-    _subscriptions.add(
-      widget.controller.player.stream.position.listen((_) => _onVideoTick()),
-    );
-    _subscriptions.add(
-      widget.controller.player.stream.duration.listen((_) => _onVideoTick()),
-    );
+    _initPlayerStreams();
+    // The scene details inline player opens with its UI hidden; fullscreen
+    // controls start visible.
+    _controlsVisible = ref.read(playerStateProvider).isFullScreen;
 
     _wasPlaying = widget.controller.player.state.playing;
     if (_wasPlaying) {
@@ -163,15 +197,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
         unawaited(sub.cancel());
       }
       _subscriptions.clear();
-      _subscriptions.add(
-        widget.controller.player.stream.playing.listen((_) => _onVideoTick()),
-      );
-      _subscriptions.add(
-        widget.controller.player.stream.position.listen((_) => _onVideoTick()),
-      );
-      _subscriptions.add(
-        widget.controller.player.stream.duration.listen((_) => _onVideoTick()),
-      );
+      _initPlayerStreams();
     }
   }
 
@@ -541,6 +567,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
           curve: Curves.easeOutCubic,
           child: FrostedSurface(
             key: const Key('video_seek_feedback'),
+            blurSigma: isVisible ? AppTheme.frostedBlurSigma : 0,
             constraints: BoxConstraints(minHeight: dimensions.buttonHeight),
             padding: EdgeInsets.symmetric(
               horizontal: dimensions.spacingMedium,
@@ -742,8 +769,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
     BuildContext context,
     String label, {
     bool compact = false,
+    bool blur = true,
   }) {
     return FrostedSurface(
+      blurSigma: blur ? AppTheme.frostedBlurSigma : 0,
       constraints: BoxConstraints(minWidth: compact ? 48 : 54),
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 7 : 8,
@@ -821,7 +850,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
           break;
         case KeybindAction.togglePip:
           callback = () {
-            if (!widget.enableNativePip || !PipMode.isSupported) return;
+            if (!PipMode.isSupported) return;
             final w = widget.controller.player.state.width;
             final h = widget.controller.player.state.height;
             final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
@@ -991,7 +1020,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
             await widget.controller.player.setRate(speed);
           },
           onFullScreenToggle: widget.onFullScreenToggle,
-          enableNativePip: widget.enableNativePip,
           onInteract: _showControlsTemporarily,
           desktopVolumeControl: ref.watch(desktopCapabilitiesProvider)
               ? _buildDesktopVolumeControl(context, colorScheme)
@@ -1014,642 +1042,659 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
           autofocus: true,
           child: LayoutBuilder(
             builder: (context, constraints) {
-              return Stack(
-                children: [
-                  // Layer 0: Background Gesture Area (Handles toggle and seek)
-                  Positioned.fill(
-                    child: MouseRegion(
-                      onHover: (_) => _showControlsTemporarily(),
-                      onEnter: (_) => _showControlsTemporarily(),
-                      child: Listener(
-                        onPointerSignal: (pointerSignal) {
-                          if (pointerSignal is PointerScrollEvent) {
-                            final isCtrlPressed =
-                                HardwareKeyboard.instance.isControlPressed;
-                            final isAltPressed =
-                                HardwareKeyboard.instance.isAltPressed;
+              return BackdropGroup(
+                child: Stack(
+                  children: [
+                    // Layer 0: Background Gesture Area (Handles toggle and seek)
+                    Positioned.fill(
+                      child: MouseRegion(
+                        onHover: (_) => _showControlsTemporarily(),
+                        onEnter: (_) => _showControlsTemporarily(),
+                        child: Listener(
+                          onPointerSignal: (pointerSignal) {
+                            if (pointerSignal is PointerScrollEvent) {
+                              final isCtrlPressed =
+                                  HardwareKeyboard.instance.isControlPressed;
+                              final isAltPressed =
+                                  HardwareKeyboard.instance.isAltPressed;
 
-                            if (isCtrlPressed) {
-                              // Zoom logic: Scroll up (dy < 0) zooms in
-                              final double scaleDelta =
-                                  pointerSignal.scrollDelta.dy < 0 ? 1.1 : 0.9;
-                              final matrix = Matrix4.identity()
-                                ..translateByVector3(
-                                  Vector3(
-                                    pointerSignal.localPosition.dx,
-                                    pointerSignal.localPosition.dy,
-                                    0,
-                                  ),
-                                )
-                                ..scaleByVector3(
-                                  Vector3(scaleDelta, scaleDelta, 1.0),
-                                )
-                                ..translateByVector3(
-                                  Vector3(
-                                    -pointerSignal.localPosition.dx,
-                                    -pointerSignal.localPosition.dy,
-                                    0,
-                                  ),
-                                );
-                              widget.onTransformationDelta?.call(
-                                matrix,
-                                pointerSignal.localPosition,
-                              );
-                              return;
-                            }
-
-                            if (isAltPressed) {
-                              // Rotate logic: Scroll dy determines direction
-                              final double rotationDelta =
-                                  pointerSignal.scrollDelta.dy < 0 ? 0.1 : -0.1;
-                              final matrix = Matrix4.identity()
-                                ..translateByVector3(
-                                  Vector3(
-                                    pointerSignal.localPosition.dx,
-                                    pointerSignal.localPosition.dy,
-                                    0,
-                                  ),
-                                )
-                                ..rotateZ(rotationDelta)
-                                ..translateByVector3(
-                                  Vector3(
-                                    -pointerSignal.localPosition.dx,
-                                    -pointerSignal.localPosition.dy,
-                                    0,
-                                  ),
-                                );
-                              widget.onTransformationDelta?.call(
-                                matrix,
-                                pointerSignal.localPosition,
-                              );
-                              return;
-                            }
-
-                            if (pointerSignal.scrollDelta.dy != 0) {
-                              // Vertical scroll -> Volume
-                              final currentVol = ref
-                                  .read(desktopSettingsProvider)
-                                  .volume;
-                              if (pointerSignal.scrollDelta.dy < 0) {
-                                unawaited(
-                                  ref
-                                      .read(playerStateProvider.notifier)
-                                      .setVolume(currentVol + 0.05),
-                                );
-                              } else {
-                                unawaited(
-                                  ref
-                                      .read(playerStateProvider.notifier)
-                                      .setVolume(currentVol - 0.05),
-                                );
-                              }
-                            } else if (pointerSignal.scrollDelta.dx != 0) {
-                              // Horizontal scroll -> Seek
-                              if (pointerSignal.scrollDelta.dx > 0) {
-                                _seekRelativeSeconds(5);
-                              } else {
-                                _seekRelativeSeconds(-5);
-                              }
-                            }
-                          }
-                        },
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: _toggleControls,
-                          onDoubleTapDown: widget.useDoubleTapSeek
-                              ? (details) {
-                                  if (details.localPosition.dx <
-                                      constraints.maxWidth / 2) {
-                                    _seekRelativeSeconds(-_gestureSeekSeconds);
-                                  } else {
-                                    _seekRelativeSeconds(_gestureSeekSeconds);
-                                  }
-                                }
-                              : null,
-                          onDoubleTap: isDesktop
-                              ? () {
-                                  widget.onFullScreenToggle?.call();
-                                }
-                              : null,
-                          onLongPressStart: (_) {
-                            _originalSpeed =
-                                widget.controller.player.state.rate;
-                            _currentSpeed = 2.0;
-                            unawaited(
-                              widget.controller.player.setRate(_currentSpeed),
-                            );
-                            _showFeedback(Icons.fast_forward, '2.0x');
-                          },
-                          onLongPressMoveUpdate: (details) {
-                            final dy = details.localOffsetFromOrigin.dy;
-                            if (dy < 0) {
-                              // Increase speed from 2.0x up to 10.0x
-                              final extraSpeed = (-dy / 20).clamp(0, 8);
-                              final newSpeed = 2.0 + extraSpeed;
-                              if (newSpeed != _currentSpeed) {
-                                setState(() => _currentSpeed = newSpeed);
-                                unawaited(
-                                  widget.controller.player.setRate(
-                                    _currentSpeed,
-                                  ),
-                                );
-                                _showFeedback(
-                                  Icons.fast_forward,
-                                  '${_currentSpeed.toStringAsFixed(1)}x',
-                                );
-                              }
-                            }
-                          },
-                          onLongPressEnd: (_) {
-                            unawaited(
-                              widget.controller.player.setRate(_originalSpeed),
-                            );
-                            setState(() {
-                              _feedbackVisible = false;
-                            });
-                          },
-                          onScaleStart: (details) {
-                            if (details.pointerCount == 1) {
-                              _currentDragMode = _DragMode.determining;
-                              _dragStartValue = 0.0;
-                              _dragIsLeft = false;
-                            } else if (details.pointerCount >= 2) {
-                              widget.onScaleStart?.call(details);
-                            }
-                          },
-                          onScaleUpdate: (details) {
-                            if (details.pointerCount == 1) {
-                              if (_currentDragMode == _DragMode.determining) {
-                                // Determine primary drag axis
-                                if (details.focalPointDelta.dy.abs() >
-                                    details.focalPointDelta.dx.abs() * 1.5) {
-                                  _currentDragMode = _DragMode.vertical;
-                                  _dragIsLeft =
-                                      details.focalPoint.dx <
-                                      constraints.maxWidth / 2;
-                                  if (_dragIsLeft) {
-                                    unawaited(
-                                      ScreenBrightness().application.then((
-                                        val,
-                                      ) {
-                                        if (mounted &&
-                                            _currentDragMode ==
-                                                _DragMode.vertical) {
-                                          _dragStartValue = val;
-                                        }
-                                      }),
-                                    );
-                                  } else if (kIsWeb || !Platform.isAndroid) {
-                                    _dragStartValue = ref
-                                        .read(desktopSettingsProvider)
-                                        .volume;
-                                  }
-                                } else if (details.focalPointDelta.dx.abs() >
-                                    details.focalPointDelta.dy.abs() * 1.5) {
-                                  _currentDragMode = _DragMode.horizontal;
-                                  if (!widget.useDoubleTapSeek) {
-                                    _beginDragSeek();
-                                  }
-                                }
-                              }
-
-                              if (_currentDragMode == _DragMode.vertical) {
-                                final delta =
-                                    -details.focalPointDelta.dy /
-                                    constraints.maxHeight;
-                                _dragStartValue = (_dragStartValue + delta)
-                                    .clamp(0.0, 1.0);
-
-                                if (_dragIsLeft) {
-                                  // Brightness
-                                  unawaited(
-                                    ScreenBrightness()
-                                        .setApplicationScreenBrightness(
-                                          _dragStartValue,
-                                        ),
+                              if (isCtrlPressed) {
+                                // Zoom logic: Scroll up (dy < 0) zooms in
+                                final double scaleDelta =
+                                    pointerSignal.scrollDelta.dy < 0
+                                    ? 1.1
+                                    : 0.9;
+                                final matrix = Matrix4.identity()
+                                  ..translateByVector3(
+                                    Vector3(
+                                      pointerSignal.localPosition.dx,
+                                      pointerSignal.localPosition.dy,
+                                      0,
+                                    ),
+                                  )
+                                  ..scaleByVector3(
+                                    Vector3(scaleDelta, scaleDelta, 1.0),
+                                  )
+                                  ..translateByVector3(
+                                    Vector3(
+                                      -pointerSignal.localPosition.dx,
+                                      -pointerSignal.localPosition.dy,
+                                      0,
+                                    ),
                                   );
-                                  _showFeedback(
-                                    Icons.brightness_6,
-                                    '${(_dragStartValue * 100).round()}%',
+                                widget.onTransformationDelta?.call(
+                                  matrix,
+                                  pointerSignal.localPosition,
+                                );
+                                return;
+                              }
+
+                              if (isAltPressed) {
+                                // Rotate logic: Scroll dy determines direction
+                                final double rotationDelta =
+                                    pointerSignal.scrollDelta.dy < 0
+                                    ? 0.1
+                                    : -0.1;
+                                final matrix = Matrix4.identity()
+                                  ..translateByVector3(
+                                    Vector3(
+                                      pointerSignal.localPosition.dx,
+                                      pointerSignal.localPosition.dy,
+                                      0,
+                                    ),
+                                  )
+                                  ..rotateZ(rotationDelta)
+                                  ..translateByVector3(
+                                    Vector3(
+                                      -pointerSignal.localPosition.dx,
+                                      -pointerSignal.localPosition.dy,
+                                      0,
+                                    ),
                                   );
-                                } else if (!kIsWeb && Platform.isAndroid) {
-                                  unawaited(
-                                    SystemMediaVolume.adjustMediaVolume(delta)
-                                        .then((volume) {
-                                          if (!mounted || volume == null) {
-                                            return;
-                                          }
-                                          _showFeedback(
-                                            Icons.volume_up,
-                                            '${(volume * 100).round()}%',
-                                          );
-                                        }),
-                                  );
-                                } else {
-                                  // Volume
+                                widget.onTransformationDelta?.call(
+                                  matrix,
+                                  pointerSignal.localPosition,
+                                );
+                                return;
+                              }
+
+                              if (pointerSignal.scrollDelta.dy != 0) {
+                                // Vertical scroll -> Volume
+                                final currentVol = ref
+                                    .read(desktopSettingsProvider)
+                                    .volume;
+                                if (pointerSignal.scrollDelta.dy < 0) {
                                   unawaited(
                                     ref
                                         .read(playerStateProvider.notifier)
-                                        .setVolume(_dragStartValue),
+                                        .setVolume(currentVol + 0.05),
                                   );
-                                  _showFeedback(
-                                    Icons.volume_up,
-                                    '${(_dragStartValue * 100).round()}%',
+                                } else {
+                                  unawaited(
+                                    ref
+                                        .read(playerStateProvider.notifier)
+                                        .setVolume(currentVol - 0.05),
                                   );
                                 }
-                              } else if (_currentDragMode ==
-                                  _DragMode.horizontal) {
-                                if (!widget.useDoubleTapSeek) {
-                                  _updateDragSeek(
-                                    details,
-                                    constraints.maxWidth,
+                              } else if (pointerSignal.scrollDelta.dx != 0) {
+                                // Horizontal scroll -> Seek
+                                if (pointerSignal.scrollDelta.dx > 0) {
+                                  _seekRelativeSeconds(5);
+                                } else {
+                                  _seekRelativeSeconds(-5);
+                                }
+                              }
+                            }
+                          },
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: _toggleControls,
+                            onDoubleTapDown: widget.useDoubleTapSeek
+                                ? (details) {
+                                    if (details.localPosition.dx <
+                                        constraints.maxWidth / 2) {
+                                      _seekRelativeSeconds(
+                                        -_gestureSeekSeconds,
+                                      );
+                                    } else {
+                                      _seekRelativeSeconds(_gestureSeekSeconds);
+                                    }
+                                  }
+                                : null,
+                            onDoubleTap: isDesktop
+                                ? () {
+                                    widget.onFullScreenToggle?.call();
+                                  }
+                                : null,
+                            onLongPressStart: (_) {
+                              _originalSpeed =
+                                  widget.controller.player.state.rate;
+                              _currentSpeed = 2.0;
+                              unawaited(
+                                widget.controller.player.setRate(_currentSpeed),
+                              );
+                              _showFeedback(Icons.fast_forward, '2.0x');
+                            },
+                            onLongPressMoveUpdate: (details) {
+                              final dy = details.localOffsetFromOrigin.dy;
+                              if (dy < 0) {
+                                // Increase speed from 2.0x up to 10.0x
+                                final extraSpeed = (-dy / 20).clamp(0, 8);
+                                final newSpeed = 2.0 + extraSpeed;
+                                if (newSpeed != _currentSpeed) {
+                                  setState(() => _currentSpeed = newSpeed);
+                                  unawaited(
+                                    widget.controller.player.setRate(
+                                      _currentSpeed,
+                                    ),
+                                  );
+                                  _showFeedback(
+                                    Icons.fast_forward,
+                                    '${_currentSpeed.toStringAsFixed(1)}x',
                                   );
                                 }
                               }
-                            } else if (details.pointerCount >= 2) {
-                              widget.onScaleUpdate?.call(details);
-                            }
-                          },
-                          onScaleEnd: (details) {
-                            if (_currentDragMode == _DragMode.horizontal &&
-                                _dragSeekStartPosition != null) {
-                              _endDragSeek();
-                            }
-                            _currentDragMode = _DragMode.none;
-                            widget.onScaleEnd?.call(details);
-                          },
-                          child: const ColoredBox(color: Colors.transparent),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Positioned.fill(
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        if (_dragSeekTarget != null &&
-                            (widget.scene.paths.vtt?.isNotEmpty ?? false))
-                          Transform.translate(
-                            offset: Offset(
-                              0,
-                              -(45 * context.dimensions.fontSizeFactor +
-                                  context.dimensions.buttonHeight / 2 +
-                                  context.dimensions.spacingMedium),
-                            ),
-                            child: ScrubbingPreview(
-                              vttUrl: widget.scene.paths.vtt!,
-                              timeInSeconds:
-                                  _dragSeekTarget!.inMilliseconds / 1000,
-                              headers: ref.read(mediaPlaybackHeadersProvider),
-                              width: 160 * context.dimensions.fontSizeFactor,
-                              height: 90 * context.dimensions.fontSizeFactor,
-                            ),
-                          ),
-                        _buildSeekFeedbackOverlay(colorScheme),
-                      ],
-                    ),
-                  ),
-
-                  Positioned.fill(
-                    child: PlayerGestureFeedback(
-                      icon: _feedbackIcon ?? Icons.info,
-                      label: _feedbackLabel,
-                      visible: _feedbackVisible,
-                    ),
-                  ),
-
-                  // Layer: Scrubbing Preview (Floating above the slider)
-                  if (_isScrubbing &&
-                      (widget.scene.paths.vtt?.isNotEmpty ?? false))
-                    Positioned(
-                      bottom: 84, // Positioned above the slider
-                      left: 0,
-                      right: 0,
-                      height: 100, // Enough height for 160x90 preview
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final double ratio = _scrubMs / durationMs;
-                          const double previewWidth = 160;
-
-                          // Track is inset slightly from edges
-                          final double trackWidth = constraints.maxWidth - 32;
-                          final double thumbX = 16 + (ratio * trackWidth);
-
-                          double leftOffset = thumbX - (previewWidth / 2);
-
-                          // Edge protection
-                          if (leftOffset < 8) {
-                            leftOffset = 8;
-                          } else if (leftOffset + previewWidth >
-                              constraints.maxWidth - 8) {
-                            leftOffset =
-                                constraints.maxWidth - previewWidth - 8;
-                          }
-
-                          return Stack(
-                            children: [
-                              Positioned(
-                                left: leftOffset,
-                                top: 0,
-                                child: ScrubbingPreview(
-                                  vttUrl: widget.scene.paths.vtt!,
-                                  timeInSeconds: _scrubMs / 1000,
-                                  headers: ref.read(
-                                    mediaPlaybackHeadersProvider,
-                                  ),
-                                  width: 160,
-                                  height: 90,
+                            },
+                            onLongPressEnd: (_) {
+                              unawaited(
+                                widget.controller.player.setRate(
+                                  _originalSpeed,
                                 ),
+                              );
+                              setState(() {
+                                _feedbackVisible = false;
+                              });
+                            },
+                            onScaleStart: (details) {
+                              if (details.pointerCount == 1) {
+                                _currentDragMode = _DragMode.determining;
+                                _dragStartValue = 0.0;
+                                _dragIsLeft = false;
+                              } else if (details.pointerCount >= 2) {
+                                widget.onScaleStart?.call(details);
+                              }
+                            },
+                            onScaleUpdate: (details) {
+                              if (details.pointerCount == 1) {
+                                if (_currentDragMode == _DragMode.determining) {
+                                  // Determine primary drag axis
+                                  if (details.focalPointDelta.dy.abs() >
+                                      details.focalPointDelta.dx.abs() * 1.5) {
+                                    _currentDragMode = _DragMode.vertical;
+                                    _dragIsLeft =
+                                        details.focalPoint.dx <
+                                        constraints.maxWidth / 2;
+                                    if (!isFullScreen) {
+                                      // Inline drags move the host instead.
+                                    } else if (_dragIsLeft) {
+                                      unawaited(
+                                        ScreenBrightness().application.then((
+                                          val,
+                                        ) {
+                                          if (mounted &&
+                                              _currentDragMode ==
+                                                  _DragMode.vertical) {
+                                            _dragStartValue = val;
+                                          }
+                                        }),
+                                      );
+                                    } else if (kIsWeb || !Platform.isAndroid) {
+                                      _dragStartValue = ref
+                                          .read(desktopSettingsProvider)
+                                          .volume;
+                                    }
+                                  } else if (details.focalPointDelta.dx.abs() >
+                                      details.focalPointDelta.dy.abs() * 1.5) {
+                                    _currentDragMode = _DragMode.horizontal;
+                                    if (!widget.useDoubleTapSeek) {
+                                      _beginDragSeek();
+                                    }
+                                  }
+                                }
+
+                                if (_currentDragMode == _DragMode.vertical &&
+                                    !isFullScreen) {
+                                  widget.onInlineVerticalDrag?.call(
+                                    details.focalPointDelta.dy,
+                                  );
+                                } else if (_currentDragMode ==
+                                    _DragMode.vertical) {
+                                  final delta =
+                                      -details.focalPointDelta.dy /
+                                      constraints.maxHeight;
+                                  _dragStartValue = (_dragStartValue + delta)
+                                      .clamp(0.0, 1.0);
+
+                                  if (_dragIsLeft) {
+                                    // Brightness
+                                    unawaited(
+                                      ScreenBrightness()
+                                          .setApplicationScreenBrightness(
+                                            _dragStartValue,
+                                          ),
+                                    );
+                                    _showFeedback(
+                                      Icons.brightness_6,
+                                      '${(_dragStartValue * 100).round()}%',
+                                    );
+                                  } else if (!kIsWeb && Platform.isAndroid) {
+                                    unawaited(
+                                      SystemMediaVolume.adjustMediaVolume(delta)
+                                          .then((volume) {
+                                            if (!mounted || volume == null) {
+                                              return;
+                                            }
+                                            _showFeedback(
+                                              Icons.volume_up,
+                                              '${(volume * 100).round()}%',
+                                            );
+                                          }),
+                                    );
+                                  } else {
+                                    // Volume
+                                    unawaited(
+                                      ref
+                                          .read(playerStateProvider.notifier)
+                                          .setVolume(_dragStartValue),
+                                    );
+                                    _showFeedback(
+                                      Icons.volume_up,
+                                      '${(_dragStartValue * 100).round()}%',
+                                    );
+                                  }
+                                } else if (_currentDragMode ==
+                                    _DragMode.horizontal) {
+                                  if (!widget.useDoubleTapSeek) {
+                                    _updateDragSeek(
+                                      details,
+                                      constraints.maxWidth,
+                                    );
+                                  }
+                                }
+                              } else if (details.pointerCount >= 2) {
+                                widget.onScaleUpdate?.call(details);
+                              }
+                            },
+                            onScaleEnd: (details) {
+                              if (_currentDragMode == _DragMode.horizontal &&
+                                  _dragSeekStartPosition != null) {
+                                _endDragSeek();
+                              }
+                              _currentDragMode = _DragMode.none;
+                              widget.onScaleEnd?.call(details);
+                            },
+                            child: const ColoredBox(color: Colors.transparent),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Positioned.fill(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          if (_dragSeekTarget != null &&
+                              (widget.scene.paths.vtt?.isNotEmpty ?? false))
+                            Transform.translate(
+                              offset: Offset(
+                                0,
+                                -(45 * context.dimensions.fontSizeFactor +
+                                    context.dimensions.buttonHeight / 2 +
+                                    context.dimensions.spacingMedium),
                               ),
-                            ],
-                          );
-                        },
+                              child: ScrubbingPreview(
+                                vttUrl: widget.scene.paths.vtt!,
+                                timeInSeconds:
+                                    _dragSeekTarget!.inMilliseconds / 1000,
+                                headers: ref.read(mediaPlaybackHeadersProvider),
+                                width: 160 * context.dimensions.fontSizeFactor,
+                                height: 90 * context.dimensions.fontSizeFactor,
+                              ),
+                            ),
+                          _buildSeekFeedbackOverlay(colorScheme),
+                        ],
                       ),
                     ),
 
-                  // Layer 1: UI Overlays
-                  if (playerState.showVideoDebugInfo && _controlsVisible)
-                    Positioned(
-                      top:
-                          56 * context.dimensions.fontSizeFactor +
-                          MediaQuery.paddingOf(context).top,
-                      left: context.dimensions.spacingSmall,
-                      right: context.dimensions.spacingSmall,
-                      child: Align(
-                        alignment: AlignmentDirectional.topStart,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: 400 * context.dimensions.fontSizeFactor,
-                            maxHeight: math.max(
-                              0,
-                              constraints.maxHeight * 0.5 -
-                                  MediaQuery.paddingOf(context).top,
+                    Positioned.fill(
+                      child: PlayerGestureFeedback(
+                        icon: _feedbackIcon ?? Icons.info,
+                        label: _feedbackLabel,
+                        visible: _feedbackVisible,
+                      ),
+                    ),
+
+                    // Layer: Scrubbing Preview (Floating above the slider)
+                    if (_isScrubbing &&
+                        (widget.scene.paths.vtt?.isNotEmpty ?? false))
+                      Positioned(
+                        bottom: 84, // Positioned above the slider
+                        left: 0,
+                        right: 0,
+                        height: 100, // Enough height for 160x90 preview
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final double ratio = _scrubMs / durationMs;
+                            const double previewWidth = 160;
+
+                            // Track is inset slightly from edges
+                            final double trackWidth = constraints.maxWidth - 32;
+                            final double thumbX = 16 + (ratio * trackWidth);
+
+                            double leftOffset = thumbX - (previewWidth / 2);
+
+                            // Edge protection
+                            if (leftOffset < 8) {
+                              leftOffset = 8;
+                            } else if (leftOffset + previewWidth >
+                                constraints.maxWidth - 8) {
+                              leftOffset =
+                                  constraints.maxWidth - previewWidth - 8;
+                            }
+
+                            return Stack(
+                              children: [
+                                Positioned(
+                                  left: leftOffset,
+                                  top: 0,
+                                  child: ScrubbingPreview(
+                                    vttUrl: widget.scene.paths.vtt!,
+                                    timeInSeconds: _scrubMs / 1000,
+                                    headers: ref.read(
+                                      mediaPlaybackHeadersProvider,
+                                    ),
+                                    width: 160,
+                                    height: 90,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+
+                    // Layer 1: UI Overlays
+                    if (playerState.showVideoDebugInfo && _controlsVisible)
+                      Positioned(
+                        top:
+                            56 * context.dimensions.fontSizeFactor +
+                            MediaQuery.paddingOf(context).top,
+                        left: context.dimensions.spacingSmall,
+                        right: context.dimensions.spacingSmall,
+                        child: Align(
+                          alignment: AlignmentDirectional.topStart,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: 400 * context.dimensions.fontSizeFactor,
+                              maxHeight: math.max(
+                                0,
+                                constraints.maxHeight * 0.5 -
+                                    MediaQuery.paddingOf(context).top,
+                              ),
                             ),
-                          ),
-                          child: VideoDebugOverlay(
-                            player: widget.controller.player,
-                            session: playerState,
+                            child: VideoDebugOverlay(
+                              player: widget.controller.player,
+                              session: playerState,
+                            ),
                           ),
                         ),
                       ),
-                    ),
 
-                  if (!isFullScreen ||
-                      (isFullScreen && widget.onFullScreenToggle != null))
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: _buildEdgeGradientOverlay(
-                        isFullScreen: isFullScreen,
-                        atBottom: false,
-                      ),
-                    ),
-
-                  if (!isFullScreen && widget.onInlineBack != null)
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      child: SafeArea(
-                        child: IgnorePointer(
-                          ignoring: !_controlsVisible,
-                          child: AnimatedOpacity(
-                            opacity: _controlsVisible ? 1 : 0,
-                            duration: const Duration(milliseconds: 180),
-                            child: IconButton(
-                              key: const Key('inline_video_back_button'),
-                              tooltip: context.l10n.common_back,
-                              style: playerOverlayButtonStyle(context),
-                              icon: const Icon(Icons.arrow_back_rounded),
-                              onPressed: widget.onInlineBack,
-                            ),
-                          ),
+                    if (!isFullScreen ||
+                        (isFullScreen && widget.onFullScreenToggle != null))
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: _buildEdgeGradientOverlay(
+                          isFullScreen: isFullScreen,
+                          atBottom: false,
                         ),
                       ),
-                    ),
 
-                  if (!isFullScreen)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: SafeArea(
-                        child: IgnorePointer(
-                          ignoring: !_controlsVisible,
-                          child: AnimatedOpacity(
-                            opacity: _controlsVisible ? 1 : 0,
-                            duration: const Duration(milliseconds: 180),
-                            child: utilityControls(
-                              PlayerControlPlacement.topRight,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  if (isFullScreen && widget.onFullScreenToggle != null)
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      right: 8,
-                      child: SafeArea(
-                        child: AnimatedOpacity(
-                          opacity: _controlsVisible ? 1 : 0,
-                          duration: const Duration(milliseconds: 180),
-                          child: Row(
-                            children: [
-                              IconButton(
-                                tooltip: context.l10n.common_exit_fullscreen,
+                    if (!isFullScreen && widget.onInlineBack != null)
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: SafeArea(
+                          child: IgnorePointer(
+                            ignoring: !_controlsVisible,
+                            child: AnimatedOpacity(
+                              opacity: _controlsVisible ? 1 : 0,
+                              duration: const Duration(milliseconds: 180),
+                              child: IconButton(
+                                key: const Key('inline_video_back_button'),
+                                tooltip: context.l10n.common_back,
                                 style: playerOverlayButtonStyle(context),
                                 icon: const Icon(Icons.arrow_back_rounded),
-                                onPressed: () {
-                                  widget.onFullScreenToggle?.call();
-                                  _showControlsTemporarily();
-                                },
+                                onPressed: widget.onInlineBack,
                               ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  widget.scene.displayTitle,
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: context.fontSizes.body,
-                                    fontWeight: FontWeight.bold,
-                                    shadows: [
-                                      const Shadow(
-                                        blurRadius: 4,
-                                        color: Colors.black54,
-                                        offset: Offset(0, 2),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    if (!isFullScreen)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: SafeArea(
+                          child: IgnorePointer(
+                            ignoring: !_controlsVisible,
+                            child: AnimatedOpacity(
+                              opacity: _controlsVisible ? 1 : 0,
+                              duration: const Duration(milliseconds: 180),
+                              child: utilityControls(
+                                PlayerControlPlacement.topRight,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    if (isFullScreen && widget.onFullScreenToggle != null)
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        right: 8,
+                        child: SafeArea(
+                          child: AnimatedOpacity(
+                            opacity: _controlsVisible ? 1 : 0,
+                            duration: const Duration(milliseconds: 180),
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  tooltip: context.l10n.common_exit_fullscreen,
+                                  style: playerOverlayButtonStyle(context),
+                                  icon: const Icon(Icons.arrow_back_rounded),
+                                  onPressed: () {
+                                    widget.onFullScreenToggle?.call();
+                                    _showControlsTemporarily();
+                                  },
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    widget.scene.displayTitle,
+                                    style: context.textTheme.bodyMedium
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontSize: context.fontSizes.body,
+                                          fontWeight: FontWeight.bold,
+                                          shadows: [
+                                            const Shadow(
+                                              blurRadius: 4,
+                                              color: Colors.black54,
+                                              offset: Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                utilityControls(
+                                  PlayerControlPlacement.topRight,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: _buildEdgeGradientOverlay(
+                        isFullScreen: isFullScreen,
+                        atBottom: true,
+                      ),
+                    ),
+
+                    if (!isDesktop)
+                      Positioned.fill(child: Center(child: transportControls)),
+
+                    // Bottom Control Bar
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: IgnorePointer(
+                        ignoring: !_controlsVisible,
+                        child: AnimatedSlide(
+                          offset: _controlsVisible
+                              ? Offset.zero
+                              : const Offset(0, 0.08),
+                          duration: const Duration(milliseconds: 220),
+                          curve: Curves.easeOutCubic,
+                          child: AnimatedOpacity(
+                            opacity: _controlsVisible ? 1 : 0,
+                            duration: const Duration(milliseconds: 180),
+                            child: RepaintBoundary(
+                              child: GestureDetector(
+                                onTap: () {},
+                                behavior: HitTestBehavior.opaque,
+                                child: Container(
+                                  margin: EdgeInsets.fromLTRB(
+                                    compact ? 3 : 6,
+                                    0,
+                                    compact ? 3 : 6,
+                                    compact ? 3 : 6,
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: compact ? 4 : 6,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      _buildSpeedSliderPanel(
+                                        colorScheme,
+                                        playbackSpeed,
+                                      ),
+                                      StreamBuilder<int>(
+                                        stream: _positionSecondsStream,
+                                        builder: (context, snapshot) {
+                                          final streamedSeconds =
+                                              castState.isCasting
+                                              ? castState
+                                                    .remotePosition
+                                                    .inSeconds
+                                              : (snapshot.data ??
+                                                    widget
+                                                        .controller
+                                                        .player
+                                                        .state
+                                                        .position
+                                                        .inSeconds);
+                                          final positionSeconds = _isScrubbing
+                                              ? (_scrubMs / 1000).round()
+                                              : streamedSeconds;
+                                          final durationSeconds = widget
+                                              .controller
+                                              .player
+                                              .state
+                                              .duration
+                                              .inSeconds;
+
+                                          return Row(
+                                            children: [
+                                              _buildTimePill(
+                                                context,
+                                                formatClockDuration(
+                                                  positionSeconds,
+                                                ),
+                                                compact: compact,
+                                                blur: _controlsVisible,
+                                              ),
+                                              const Spacer(),
+                                              _buildTimePill(
+                                                context,
+                                                formatClockDuration(
+                                                  durationSeconds,
+                                                ),
+                                                compact: compact,
+                                                blur: _controlsVisible,
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                      SizedBox(height: compact ? 2 : 4),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: compact ? 1 : 2,
+                                        ),
+                                        child: VideoProgressBar(
+                                          durationMs: durationMs,
+                                          positionStream: castState.isCasting
+                                              ? Stream<Duration>.value(
+                                                  castState.remotePosition,
+                                                )
+                                              : _throttledPositionStream,
+                                          initialPositionMs: effectivePosition
+                                              .inMilliseconds
+                                              .toDouble(),
+                                          isScrubbing: _isScrubbing,
+                                          currentScrubValue: _scrubMs,
+                                          onChangeStart: (v) {
+                                            _wasPlayingBeforeScrub =
+                                                effectivePlaying;
+                                            _cancelAutoHide();
+                                            setState(() {
+                                              _isScrubbing = true;
+                                              _scrubMs = v;
+                                              _controlsVisible = true;
+                                            });
+                                          },
+                                          onChanged: (v) {
+                                            setState(() => _scrubMs = v);
+                                          },
+                                          onChangeEnd: (v) {
+                                            final target = Duration(
+                                              milliseconds: v.round(),
+                                            );
+                                            unawaited(() async {
+                                              await _seekToKeepingPlayback(
+                                                target,
+                                                keepPlayingAfterSeek:
+                                                    _wasPlayingBeforeScrub,
+                                              );
+                                            }());
+                                            setState(() {
+                                              _isScrubbing = false;
+                                              _scrubMs = 0;
+                                            });
+                                            _wasPlayingBeforeScrub = false;
+                                            _scheduleAutoHide();
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(height: compact ? 1 : 2),
+                                      utilityControls(
+                                        PlayerControlPlacement.bottom,
                                       ),
                                     ],
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              utilityControls(PlayerControlPlacement.topRight),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: _buildEdgeGradientOverlay(
-                      isFullScreen: isFullScreen,
-                      atBottom: true,
-                    ),
-                  ),
-
-                  if (!isDesktop)
-                    Positioned.fill(child: Center(child: transportControls)),
-
-                  // Bottom Control Bar
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: IgnorePointer(
-                      ignoring: !_controlsVisible,
-                      child: AnimatedSlide(
-                        offset: _controlsVisible
-                            ? Offset.zero
-                            : const Offset(0, 0.08),
-                        duration: const Duration(milliseconds: 220),
-                        curve: Curves.easeOutCubic,
-                        child: AnimatedOpacity(
-                          opacity: _controlsVisible ? 1 : 0,
-                          duration: const Duration(milliseconds: 180),
-                          child: RepaintBoundary(
-                            child: GestureDetector(
-                              onTap: () {},
-                              behavior: HitTestBehavior.opaque,
-                              child: Container(
-                                margin: EdgeInsets.fromLTRB(
-                                  compact ? 3 : 6,
-                                  0,
-                                  compact ? 3 : 6,
-                                  compact ? 3 : 6,
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: compact ? 4 : 6,
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _buildSpeedSliderPanel(
-                                      colorScheme,
-                                      playbackSpeed,
-                                    ),
-                                    StreamBuilder<Duration>(
-                                      stream: widget
-                                          .controller
-                                          .player
-                                          .stream
-                                          .position,
-                                      builder: (context, snapshot) {
-                                        final streamedPosition =
-                                            castState.isCasting
-                                            ? castState.remotePosition
-                                            : (snapshot.data ??
-                                                  widget
-                                                      .controller
-                                                      .player
-                                                      .state
-                                                      .position);
-                                        final position = _isScrubbing
-                                            ? Duration(
-                                                milliseconds: _scrubMs.round(),
-                                              )
-                                            : streamedPosition;
-                                        final duration = widget
-                                            .controller
-                                            .player
-                                            .state
-                                            .duration;
-
-                                        return Row(
-                                          children: [
-                                            _buildTimePill(
-                                              context,
-                                              formatClockDuration(
-                                                position.inSeconds,
-                                              ),
-                                              compact: compact,
-                                            ),
-                                            const Spacer(),
-                                            _buildTimePill(
-                                              context,
-                                              formatClockDuration(
-                                                duration.inSeconds,
-                                              ),
-                                              compact: compact,
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                    SizedBox(height: compact ? 2 : 4),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: compact ? 1 : 2,
-                                      ),
-                                      child: VideoProgressBar(
-                                        durationMs: durationMs,
-                                        positionStream: castState.isCasting
-                                            ? Stream<Duration>.value(
-                                                castState.remotePosition,
-                                              )
-                                            : widget
-                                                  .controller
-                                                  .player
-                                                  .stream
-                                                  .position,
-                                        initialPositionMs: effectivePosition
-                                            .inMilliseconds
-                                            .toDouble(),
-                                        isScrubbing: _isScrubbing,
-                                        currentScrubValue: _scrubMs,
-                                        onChangeStart: (v) {
-                                          _wasPlayingBeforeScrub =
-                                              effectivePlaying;
-                                          _cancelAutoHide();
-                                          setState(() {
-                                            _isScrubbing = true;
-                                            _scrubMs = v;
-                                            _controlsVisible = true;
-                                          });
-                                        },
-                                        onChanged: (v) {
-                                          setState(() => _scrubMs = v);
-                                        },
-                                        onChangeEnd: (v) {
-                                          final target = Duration(
-                                            milliseconds: v.round(),
-                                          );
-                                          unawaited(() async {
-                                            await _seekToKeepingPlayback(
-                                              target,
-                                              keepPlayingAfterSeek:
-                                                  _wasPlayingBeforeScrub,
-                                            );
-                                          }());
-                                          setState(() {
-                                            _isScrubbing = false;
-                                            _scrubMs = 0;
-                                          });
-                                          _wasPlayingBeforeScrub = false;
-                                          _scheduleAutoHide();
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(height: compact ? 1 : 2),
-                                    utilityControls(
-                                      PlayerControlPlacement.bottom,
-                                    ),
-                                  ],
                                 ),
                               ),
                             ),
@@ -1657,8 +1702,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls> {
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           ),

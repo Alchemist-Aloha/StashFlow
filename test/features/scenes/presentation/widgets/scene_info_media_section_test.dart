@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,6 +43,7 @@ void main() {
   Widget buildSubject(
     Scene scene, {
     void Function(bool autoplay)? onPreviewBuilt,
+    VoidCallback? onCoverBuilt,
     SceneInfoPreviewBuilder? previewBuilder,
     PreviewAvailabilityCheck? previewAvailability,
   }) {
@@ -57,8 +60,10 @@ void main() {
         home: Scaffold(
           body: SceneInfoMediaSection(
             scene: scene,
-            coverBuilder: (context, scene) =>
-                const ColoredBox(color: Colors.blue),
+            coverBuilder: (context, scene) {
+              onCoverBuilt?.call();
+              return const ColoredBox(color: Colors.blue);
+            },
             previewBuilder:
                 previewBuilder ??
                 (context, scene, autoplay, onUnavailable) {
@@ -69,6 +74,14 @@ void main() {
         ),
       ),
     );
+  }
+
+  /// Whether the toggle's cover and preview segments are enabled.
+  (bool, bool) segmentsEnabled(WidgetTester tester) {
+    final toggle = tester.widget<SegmentedButton<Object>>(
+      find.byKey(const Key('scene_info_media_toggle')),
+    );
+    return (toggle.segments.first.enabled, toggle.segments.last.enabled);
   }
 
   testWidgets('both assets show toggle and default to cover', (tester) async {
@@ -147,7 +160,7 @@ void main() {
     );
   });
 
-  testWidgets('cover-only scene shows cover without toggle', (tester) async {
+  testWidgets('cover-only scene disables the preview segment', (tester) async {
     final scene = baseScene.copyWith(
       paths: baseScene.paths.copyWith(preview: null),
     );
@@ -155,12 +168,12 @@ void main() {
     await tester.pumpWidget(buildSubject(scene));
 
     expect(find.byKey(const Key('scene_info_media_section')), findsOneWidget);
-    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
+    expect(segmentsEnabled(tester), (true, false));
     expect(find.byKey(const Key('scene_info_media_cover')), findsOneWidget);
     expect(find.byKey(const Key('scene_info_media_preview')), findsNothing);
   });
 
-  testWidgets('preview-only scene autoplays preview without toggle', (
+  testWidgets('preview-only scene autoplays preview with cover disabled', (
     tester,
   ) async {
     bool? previewAutoplay;
@@ -176,7 +189,7 @@ void main() {
     );
 
     expect(find.byKey(const Key('scene_info_media_section')), findsOneWidget);
-    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
+    expect(segmentsEnabled(tester), (false, true));
     expect(find.byKey(const Key('scene_info_media_cover')), findsNothing);
     expect(find.byKey(const Key('scene_info_media_preview')), findsOneWidget);
     expect(previewAutoplay, isTrue);
@@ -197,7 +210,7 @@ void main() {
     expect(find.byKey(const Key('scene_info_media_preview')), findsNothing);
   });
 
-  testWidgets('unavailable preview falls back to cover with notice', (
+  testWidgets('failed preview falls back to cover and disables preview', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -220,11 +233,7 @@ void main() {
 
     expect(find.byKey(const Key('scene_info_media_preview')), findsNothing);
     expect(find.byKey(const Key('scene_info_media_cover')), findsOneWidget);
-    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
-    expect(
-      find.byKey(const Key('scene_info_media_preview_unavailable_notice')),
-      findsOneWidget,
-    );
+    expect(segmentsEnabled(tester), (true, false));
     expect(
       find.byKey(const Key('scene_info_media_preview_unavailable')),
       findsNothing,
@@ -253,26 +262,31 @@ void main() {
       find.byKey(const Key('scene_info_media_preview_unavailable')),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
+    expect(segmentsEnabled(tester), (false, false));
   });
 
-  testWidgets('probe marks preview unavailable and hides the pill', (
-    tester,
-  ) async {
+  testWidgets('failed probe only disables the preview segment', (tester) async {
+    final probe = Completer<bool>();
+    var coverBuilds = 0;
     await tester.pumpWidget(
-      buildSubject(baseScene, previewAvailability: (_) async => false),
+      buildSubject(
+        baseScene,
+        previewAvailability: (_) => probe.future,
+        onCoverBuilt: () => coverBuilds++,
+      ),
     );
 
-    await tester.pump();
-    await tester.pump();
-
-    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
+    // The cover shows and the preview stays selectable while the probe runs.
     expect(find.byKey(const Key('scene_info_media_cover')), findsOneWidget);
-    expect(find.byKey(const Key('scene_info_media_preview')), findsNothing);
-    expect(
-      find.byKey(const Key('scene_info_media_preview_unavailable_notice')),
-      findsOneWidget,
-    );
+    expect(segmentsEnabled(tester), (true, true));
+    final buildsBeforeProbe = coverBuilds;
+
+    probe.complete(false);
+    await tester.pump();
+
+    expect(segmentsEnabled(tester), (true, false));
+    expect(find.byKey(const Key('scene_info_media_cover')), findsOneWidget);
+    expect(coverBuilds, buildsBeforeProbe, reason: 'the cover is not redrawn');
   });
 
   testWidgets('probe unavailable keeps preview-only placeholder', (
@@ -293,7 +307,7 @@ void main() {
       find.byKey(const Key('scene_info_media_preview_unavailable')),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
+    expect(segmentsEnabled(tester), (false, false));
   });
 }
 

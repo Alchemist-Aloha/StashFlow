@@ -21,6 +21,7 @@ import 'queue_playback_coordinator.dart';
 import 'scene_details_provider.dart';
 import 'scene_playback_position_provider.dart';
 import 'scene_list_provider.dart';
+import '../../data/repositories/graphql_scene_repository.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/playback_media.dart';
 import '../../data/repositories/stream_prewarmer.dart';
@@ -143,9 +144,6 @@ class GlobalPlayerState {
   /// Android preference: pause local playback when another app takes focus.
   final bool respectAudioFocus;
 
-  /// User preference: whether to trigger native Android PiP on minimize.
-  final bool enableNativePip;
-
   /// Currently selected subtitle language code. null if disabled.
   final String? selectedSubtitleLanguage;
 
@@ -204,9 +202,8 @@ class GlobalPlayerState {
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = false,
     this.controlsAutoHideSeconds = 2,
-    this.enableBackgroundPlayback = false,
+    this.enableBackgroundPlayback = true,
     this.respectAudioFocus = true,
-    this.enableNativePip = false,
     this.videoGravityOrientation = true,
     this.useActualSceneVideoInMiniPlayer = true,
     this.feedStartRandom = false,
@@ -254,7 +251,6 @@ class GlobalPlayerState {
     int? controlsAutoHideSeconds,
     bool? enableBackgroundPlayback,
     bool? respectAudioFocus,
-    bool? enableNativePip,
     bool? videoGravityOrientation,
     bool? useActualSceneVideoInMiniPlayer,
     bool? feedStartRandom,
@@ -309,7 +305,6 @@ class GlobalPlayerState {
       enableBackgroundPlayback:
           enableBackgroundPlayback ?? this.enableBackgroundPlayback,
       respectAudioFocus: respectAudioFocus ?? this.respectAudioFocus,
-      enableNativePip: enableNativePip ?? this.enableNativePip,
       videoGravityOrientation:
           videoGravityOrientation ?? this.videoGravityOrientation,
       useActualSceneVideoInMiniPlayer:
@@ -394,6 +389,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   bool _pipRequestInFlight = false;
   Completer<bool>? _pipFullscreenExit;
   double? _lastAndroidPipRatio;
+  bool _autoPip = false;
+  // NaN = never sent, null = disarmed.
+  double? _armedAutoPipRatio = double.nan;
   DateTime? _lastPipRequestAt;
   static const Duration _pipRequestCooldown = Duration(milliseconds: 700);
   AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
@@ -427,14 +425,23 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       ),
     );
 
+    // The final activity save runs from onDispose, where ref.read is invalid;
+    // a listened copy still follows profile switches. Without a configured
+    // server the provider errors, and there is nowhere to save to.
+    GraphQLSceneRepository? sceneRepository;
+    ref.listen(
+      sceneRepositoryProvider,
+      (_, next) => sceneRepository = next,
+      onError: (_, _) => sceneRepository = null,
+      fireImmediately: true,
+    );
     _activityTracker = PlaybackActivityTracker(
       now: DateTime.now,
       isMounted: () => ref.mounted,
-      incrementPlayCount: (sceneId) =>
-          ref.read(sceneRepositoryProvider).incrementScenePlayCount(sceneId),
-      saveSceneActivity: (sceneId, resumeTime, playDuration) => ref
-          .read(sceneRepositoryProvider)
-          .saveSceneActivity(
+      incrementPlayCount: (sceneId) async =>
+          sceneRepository?.incrementScenePlayCount(sceneId),
+      saveSceneActivity: (sceneId, resumeTime, playDuration) async =>
+          sceneRepository?.saveSceneActivity(
             sceneId,
             resumeTime: resumeTime,
             playDuration: playDuration,
@@ -470,6 +477,18 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     });
 
     PipMode.isInPipMode.addListener(_onPipModeChanged);
+    _autoPip =
+        ref
+            .read(sharedPreferencesProvider)
+            .getBool(PlayerSettingsStore.autoPipKey) ??
+        false;
+    listenSelf((_, next) {
+      _syncAutoPip(next);
+      _syncSystemMediaControls(next);
+    });
+    ref.listen(castServiceProvider, (previous, next) {
+      if (previous?.isCasting != next.isCasting) _syncAutoPip(state);
+    });
     if (PipMode.isWindowed) {
       PipMode.configureWindowedHandlers(
         enter: _openDesktopPipWindow,
@@ -566,7 +585,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       controlsAutoHideSeconds: loadedSettings.controlsAutoHideSeconds,
       enableBackgroundPlayback: loadedSettings.enableBackgroundPlayback,
       respectAudioFocus: loadedSettings.respectAudioFocus,
-      enableNativePip: loadedSettings.enableNativePip,
       videoGravityOrientation: loadedSettings.videoGravityOrientation,
       useActualSceneVideoInMiniPlayer:
           loadedSettings.useActualSceneVideoInMiniPlayer,
@@ -580,9 +598,77 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     );
   }
 
+  /// Whether leaving the app moves a playing scene to Android PiP.
+  bool get autoPip => _autoPip;
+
+  void setAutoPip(bool value) {
+    _autoPip = value;
+    unawaited(
+      ref
+          .read(sharedPreferencesProvider)
+          .setBool(PlayerSettingsStore.autoPipKey, value),
+    );
+    _syncAutoPip(state);
+  }
+
+  /// Re-reads the Android system media controls preference.
+  void syncSystemMediaControls() => _syncSystemMediaControls(state);
+
+  // Android media controls only apply while background playback is on.
+  void _syncSystemMediaControls(GlobalPlayerState next) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+    mediaHandler?.enabled =
+        next.enableBackgroundPlayback &&
+        (ref
+                .read(sharedPreferencesProvider)
+                .getBool(PlayerSettingsStore.systemMediaControlsKey) ??
+            true);
+  }
+
+  // Without background playback, focus opt-out is ignored: pause like default.
+  bool get _respectsAudioFocus =>
+      state.respectAudioFocus || !state.enableBackgroundPlayback;
+
+  /// Keeps Android's auto-PiP armed exactly while a scene plays locally.
+  void _syncAutoPip(GlobalPlayerState next) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+    final player = next.player;
+    final armed =
+        _autoPip &&
+        next.enableBackgroundPlayback &&
+        player != null &&
+        next.activeScene != null &&
+        next.isPlaying &&
+        !ref.read(castServiceProvider).isCasting;
+    final ratio = armed
+        ? pipDisplayAspectRatio(player.state.videoParams) ?? 16 / 9
+        : null;
+    if (ratio == _armedAutoPipRatio) return;
+    _armedAutoPipRatio = ratio;
+    unawaited(PipMode.setAutoPip(ratio));
+  }
+
   void _onPipModeChanged() {
     final nextInPip = PipMode.isInPipMode.value;
     final wasInPip = state.isInPipMode;
+    if (nextInPip &&
+        !wasInPip &&
+        !PipMode.isWindowed &&
+        !_pipRequestInFlight &&
+        _fullscreenBeforePip == null) {
+      // Android entered PiP by itself; show the video-only surface and
+      // restore this presentation when the user returns.
+      _fullscreenBeforePip = state.isFullScreen;
+      _viewModeBeforePip = state.viewMode;
+      state = !state.isFullScreen || state.viewMode == PlayerViewMode.tiktok
+          ? state.copyWith(
+              isInPipMode: true,
+              isFullScreen: true,
+              viewMode: PlayerViewMode.fullscreen,
+              fullscreenPhase: FullscreenPhase.entering,
+            )
+          : state.copyWith(isInPipMode: true);
+    }
     if (!nextInPip) {
       _lastAndroidPipRatio = null;
     } else {
@@ -803,7 +889,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     if (state.respectAudioFocus == value) return;
     state = state.copyWith(respectAudioFocus: value);
     unawaited(_settingsStore.saveRespectAudioFocus(value));
-    if (!value) {
+    if (!_respectsAudioFocus) {
       _releaseAudioFocus();
     } else {
       final player = state.player;
@@ -812,13 +898,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   void setEnableBackgroundPlayback(bool value) {
+    if (!PlayerSettingsStore.backgroundPlaybackConfigurable) return;
+    final respected = _respectsAudioFocus;
     state = state.copyWith(enableBackgroundPlayback: value);
     unawaited(_settingsStore.saveEnableBackgroundPlayback(value));
-  }
-
-  void setEnableNativePip(bool value) {
-    state = state.copyWith(enableNativePip: value);
-    unawaited(_settingsStore.saveEnableNativePip(value));
+    if (respected && !_respectsAudioFocus) _releaseAudioFocus();
   }
 
   void setVideoGravityOrientation(bool value) {
@@ -1441,7 +1525,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         controlsAutoHideSeconds: state.controlsAutoHideSeconds,
         enableBackgroundPlayback: state.enableBackgroundPlayback,
         respectAudioFocus: state.respectAudioFocus,
-        enableNativePip: state.enableNativePip,
         videoGravityOrientation: state.videoGravityOrientation,
         useActualSceneVideoInMiniPlayer: state.useActualSceneVideoInMiniPlayer,
         selectedSubtitleLanguage: effectiveSubtitleLanguage,
@@ -1773,7 +1856,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       return;
     }
     final token = ++_localPlayToken;
-    if (_audioFocus.supported && state.respectAudioFocus && !_hasAudioFocus) {
+    if (_audioFocus.supported && _respectsAudioFocus && !_hasAudioFocus) {
       bool granted;
       try {
         granted = await _audioFocus.setActive(true);
@@ -1800,7 +1883,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
   void _onAudioInterruption(AudioInterruptionEvent event) {
     if (!ref.mounted ||
-        !state.respectAudioFocus ||
+        !_respectsAudioFocus ||
         ref.read(castServiceProvider).isCasting) {
       return;
     }
@@ -1890,14 +1973,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     final player = this.state.player;
     if (player == null || !player.state.playing) return;
 
-    final canEnterPip = _canEnterBackgroundPip(player);
-    if (canEnterPip &&
-        (state == AppLifecycleState.hidden ||
-            state == AppLifecycleState.paused)) {
-      _requestBackgroundPipOrApplyPolicy(player);
-      return;
-    }
-
     _applyBackgroundPlaybackPolicy(player);
   }
 
@@ -1937,16 +2012,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
   }
 
-  bool _canEnterBackgroundPip(Player player) {
-    return !kIsWeb &&
-        Platform.isAndroid &&
-        state.enableNativePip &&
-        state.isFullScreen &&
-        !state.isInPipMode &&
-        !PipMode.isInPipMode.value &&
-        player.state.playing;
-  }
-
   void _applyBackgroundPlaybackPolicy(Player player) {
     if (!ref.mounted || state.player != player || !player.state.playing) return;
     if (state.isInPipMode || PipMode.isInPipMode.value) return;
@@ -1956,34 +2021,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     } else {
       pause(suppressBackgroundRecovery: true);
     }
-  }
-
-  void _requestBackgroundPipOrApplyPolicy(Player player) {
-    if (_pipRequestInFlight || state.isInPipMode || PipMode.isInPipMode.value) {
-      return;
-    }
-
-    final elapsedSinceLast = _lastPipRequestAt == null
-        ? null
-        : DateTime.now().difference(_lastPipRequestAt!);
-    if (elapsedSinceLast != null && elapsedSinceLast < _pipRequestCooldown) {
-      return;
-    }
-
-    final width = player.state.width;
-    final height = player.state.height;
-    final aspect = (width != null && height != null && height > 0)
-        ? width / height
-        : 16 / 9;
-
-    unawaited(() async {
-      final enteredPip = await requestEnterPip(aspectRatio: aspect);
-      if (!ref.mounted || state.player != player || !player.state.playing) {
-        return;
-      }
-      if (enteredPip || state.isInPipMode || PipMode.isInPipMode.value) return;
-      _applyBackgroundPlaybackPolicy(player);
-    }());
   }
 
   Future<void> _handleMediaPauseCommand() async {
@@ -2082,7 +2119,6 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       controlsAutoHideSeconds: state.controlsAutoHideSeconds,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
       respectAudioFocus: state.respectAudioFocus,
-      enableNativePip: state.enableNativePip,
       videoGravityOrientation: state.videoGravityOrientation,
       useActualSceneVideoInMiniPlayer: state.useActualSceneVideoInMiniPlayer,
       defaultSubtitleLanguage: state.defaultSubtitleLanguage,

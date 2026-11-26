@@ -162,7 +162,6 @@ class VideoPlaybackControls extends ConsumerWidget {
     required this.onSubtitleSelected,
     required this.onSpeedSelected,
     required this.onFullScreenToggle,
-    required this.enableNativePip,
     required this.onInteract,
     required this.desktopVolumeControl,
     required this.onSpeedTap,
@@ -181,7 +180,6 @@ class VideoPlaybackControls extends ConsumerWidget {
   final ValueChanged<String?> onSubtitleSelected;
   final ValueChanged<double> onSpeedSelected;
   final VoidCallback? onFullScreenToggle;
-  final bool enableNativePip;
   final VoidCallback onInteract;
   final Widget? desktopVolumeControl;
   final VoidCallback onSpeedTap;
@@ -411,7 +409,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                 },
               );
       case PlayerControlButton.pip:
-        if (!enableNativePip || !PipMode.isSupported) return null;
+        if (!PipMode.isSupported) return null;
         return IconButton(
           tooltip: context.l10n.common_pip,
           style: playerOverlayButtonStyle(context),

@@ -1640,6 +1640,9 @@ class AppLocalizationsZh extends AppLocalizations {
       '向下滚动时隐藏，向上滚动时重新显示。';
 
   @override
+  String get settings_interface_show_scene_metadata_section => '显示场景元数据区块';
+
+  @override
   String get settings_interface_hide_scene_metadata => '默认隐藏场景元数据';
 
   @override
@@ -2024,10 +2027,18 @@ class AppLocalizationsZh extends AppLocalizations {
       '当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。';
 
   @override
-  String get settings_playback_pip => '原生画中画';
+  String get settings_playback_system_controls => '系统媒体控件';
 
   @override
-  String get settings_playback_pip_subtitle => '启用画中画按钮，并在进入后台时自动进入画中画';
+  String get settings_playback_system_controls_subtitle =>
+      '在通知栏和锁屏显示播放控件，并响应耳机按键。关闭后 Android 可能会停止后台播放。';
+
+  @override
+  String get settings_playback_auto_pip => '离开时画中画';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      '播放场景时离开 StashFlow，会在画中画窗口中继续观看。返回后恢复到之前所在的页面。';
 
   @override
   String get settings_playback_subtitles => '字幕设置';
@@ -2055,6 +2066,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_playback_stream_source_subtitle => '开始播放时使用；不可用时回退到直连';
+
+  @override
+  String get settings_playback_stream_resolution => '默认分辨率';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      '用于转码来源；不可用时使用较低的分辨率';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用则自动加载';
@@ -5727,6 +5745,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '向下滚动时隐藏，向上滚动时重新显示。';
 
   @override
+  String get settings_interface_show_scene_metadata_section => '显示场景元数据区块';
+
+  @override
   String get settings_interface_hide_scene_metadata => '默认隐藏场景元数据';
 
   @override
@@ -6111,10 +6132,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '当其他应用获取音频焦点时暂停 StashFlow。关闭后允许同时播放。';
 
   @override
-  String get settings_playback_pip => '原生画中画';
+  String get settings_playback_system_controls => '系统媒体控件';
 
   @override
-  String get settings_playback_pip_subtitle => '启用画中画按钮，并在进入后台时自动进入画中画';
+  String get settings_playback_system_controls_subtitle =>
+      '在通知栏和锁屏显示播放控件，并响应耳机按键。关闭后 Android 可能会停止后台播放。';
+
+  @override
+  String get settings_playback_auto_pip => '离开时画中画';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      '播放场景时离开 StashFlow，会在画中画窗口中继续观看。返回后恢复到之前所在的页面。';
 
   @override
   String get settings_playback_subtitles => '字幕设置';
@@ -6142,6 +6171,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_playback_stream_source_subtitle => '开始播放时使用；不可用时回退到直连';
+
+  @override
+  String get settings_playback_stream_resolution => '默认分辨率';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      '用于转码来源；不可用时使用较低的分辨率';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用则自动加载';
@@ -9816,6 +9852,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '向下捲動時隱藏，向上捲動時重新顯示。';
 
   @override
+  String get settings_interface_show_scene_metadata_section => '顯示場景中繼資料區塊';
+
+  @override
   String get settings_interface_hide_scene_metadata => '預設隱藏場景中繼資料';
 
   @override
@@ -10202,10 +10241,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '當其他應用程式取得音訊焦點時暫停 StashFlow。關閉後允許同時播放。';
 
   @override
-  String get settings_playback_pip => '原生子母畫面';
+  String get settings_playback_system_controls => '系統媒體控制項';
 
   @override
-  String get settings_playback_pip_subtitle => '啟用子母畫面按鈕，並在背景執行時自動進入子母畫面';
+  String get settings_playback_system_controls_subtitle =>
+      '在通知欄和鎖定畫面顯示播放控制項，並回應耳機按鍵。關閉後 Android 可能會停止背景播放。';
+
+  @override
+  String get settings_playback_auto_pip => '離開時子母畫面';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      '播放場景時離開 StashFlow，會在子母畫面視窗中繼續觀看。返回後恢復到先前所在的頁面。';
 
   @override
   String get settings_playback_subtitles => '字幕設定';
@@ -10233,6 +10280,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_playback_stream_source_subtitle => '開始播放時使用；無法使用時改用直連';
+
+  @override
+  String get settings_playback_stream_resolution => '預設解析度';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      '用於轉碼來源；不可用時使用較低的解析度';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '如果可用則自動載入';

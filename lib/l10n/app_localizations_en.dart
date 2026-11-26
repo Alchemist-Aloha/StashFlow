@@ -1671,6 +1671,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Hide when scrolling down and show again when scrolling up.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Show scene metadata section';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Hide scene metadata by default';
 
@@ -2104,11 +2108,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pause StashFlow when another app takes audio focus. Turn off to allow simultaneous playback.';
 
   @override
-  String get settings_playback_pip => 'Native Picture-in-Picture';
+  String get settings_playback_system_controls => 'System media controls';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'Enable the Picture-in-Picture button and auto-enter on background';
+  String get settings_playback_system_controls_subtitle =>
+      'Show playback in the notification shade and lock screen, and accept headset buttons. Turning this off may let Android stop background playback.';
+
+  @override
+  String get settings_playback_auto_pip => 'Picture-in-picture on leave';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'When you leave StashFlow while a scene is playing, keep watching it in a picture-in-picture window. Returning restores the page you were on.';
 
   @override
   String get settings_playback_subtitles => 'Subtitle settings';
@@ -2138,6 +2149,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settings_playback_stream_source_subtitle =>
       'Used when playback starts; falls back to Direct';
+
+  @override
+  String get settings_playback_stream_resolution => 'Default Resolution';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'For transcoded sources; uses the next lower resolution when unavailable';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>

@@ -132,7 +132,7 @@ class SceneCard extends ConsumerStatefulWidget {
   /// Whether to render this card using skeleton placeholders.
   final bool skeletonize;
 
-  /// Whether to wrap the thumbnail in a Hero widget.
+  /// Whether to wrap the loaded thumbnail in a Hero widget.
   final bool useHero;
 
   /// Optional focus target used when returning to a scene list.
@@ -207,12 +207,8 @@ class _SceneCardState extends ConsumerState<SceneCard> {
   /// Displays a custom scene info sheet for navigation actions.
   void _showMenu(BuildContext context, WidgetRef ref) {
     unawaited(
-      showFrostedPanelBottomSheet<void>(
+      showMediaDetailsBottomSheet(
         context: context,
-        useRootNavigator: true,
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.88,
-        ),
         builder: (context) => SceneInfoPage(scene: widget.scene),
       ),
     );
@@ -421,7 +417,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       ),
     );
 
-    if (widget.useHero) {
+    if (widget.useHero && !widget.skeletonize) {
       return Hero(tag: 'scene_player_${widget.scene.id}', child: thumbnail);
     }
     return thumbnail;

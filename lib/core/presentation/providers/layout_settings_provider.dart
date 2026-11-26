@@ -145,6 +145,24 @@ class ShowScenePlaybackProgress extends _$ShowScenePlaybackProgress {
   }
 }
 
+/// Controls whether scene pages include the technical metadata disclosure.
+@riverpod
+class ShowSceneMetadataSection extends _$ShowSceneMetadataSection {
+  static const _storageKey = 'show_scene_metadata_section';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    await ref.read(sharedPreferencesProvider).setBool(_storageKey, value);
+  }
+}
+
 @riverpod
 class HideSceneTechnicalMetadata extends _$HideSceneTechnicalMetadata {
   static const _storageKey = 'hide_scene_technical_metadata';

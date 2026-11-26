@@ -78,6 +78,7 @@ class SceneVideoPlayer extends ConsumerStatefulWidget {
     required this.scene,
     this.autoPlayOnMount = false,
     this.maxHeight,
+    this.onVerticalDrag,
     super.key,
   });
 
@@ -89,6 +90,10 @@ class SceneVideoPlayer extends ConsumerStatefulWidget {
 
   /// Optional maximum height for the video player container.
   final double? maxHeight;
+
+  /// Receives one-finger vertical drag deltas on the inline player, including
+  /// its placeholder, so the host can move a panel instead.
+  final ValueChanged<double>? onVerticalDrag;
 
   @override
   ConsumerState<SceneVideoPlayer> createState() => _SceneVideoPlayerState();
@@ -394,6 +399,18 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     if (router != null && router.canPop()) router.pop();
   }
 
+  /// Caps placeholders at [SceneVideoPlayer.maxHeight], like the live surface.
+  Widget _constrainHeight(Widget child) {
+    final maxHeight = widget.maxHeight;
+    if (maxHeight == null) return child;
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: child,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<String?>(
@@ -414,59 +431,71 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       final keybinds = ref.watch(keybindsProvider);
       final playPauseBind = keybinds.binds[KeybindAction.playPause];
 
-      return AspectRatio(
-        aspectRatio: aspectRatio,
-        child: CallbackShortcuts(
-          bindings: {
-            if (playPauseBind != null)
-              playPauseBind.toActivator(): () =>
-                  _startPlaybackIfNeeded(force: true),
-          },
-          child: Focus(
-            autofocus: false,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                const ColoredBox(color: Colors.black),
-                StashImage(
-                  imageUrl: widget.scene.paths.screenshot,
-                  fit: BoxFit.contain,
-                ),
-                const ColoredBox(color: Color(0x99000000)),
-                Center(
-                  child: _isStarting
-                      ? const CircularProgressIndicator()
-                      : IconButton.filledTonal(
-                          tooltip: context.l10n.common_play,
-                          style: IconButton.styleFrom(
-                            backgroundColor: colorScheme.surfaceContainerHigh
-                                .withValues(alpha: 0.92),
-                            foregroundColor: colorScheme.onSurface,
-                            padding: const EdgeInsets.all(16),
-                          ),
-                          icon: const Icon(Icons.play_arrow_rounded, size: 32),
-                          onPressed: () => _startPlaybackIfNeeded(force: true),
-                        ),
-                ),
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: SafeArea(
-                    child: IconButton(
-                      key: const Key('inline_video_back_button'),
-                      tooltip: context.l10n.common_back,
-                      style: IconButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.transparent,
-                        padding: const EdgeInsets.all(4),
-                        minimumSize: const Size(26, 26),
-                      ),
-                      icon: const Icon(Icons.arrow_back_rounded),
-                      onPressed: _goBack,
+      return _constrainHeight(
+        GestureDetector(
+          onVerticalDragUpdate: widget.onVerticalDrag == null
+              ? null
+              : (details) => widget.onVerticalDrag!(details.delta.dy),
+          child: AspectRatio(
+            aspectRatio: aspectRatio,
+            child: CallbackShortcuts(
+              bindings: {
+                if (playPauseBind != null)
+                  playPauseBind.toActivator(): () =>
+                      _startPlaybackIfNeeded(force: true),
+              },
+              child: Focus(
+                autofocus: false,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    const ColoredBox(color: Colors.black),
+                    StashImage(
+                      imageUrl: widget.scene.paths.screenshot,
+                      fit: BoxFit.contain,
                     ),
-                  ),
+                    const ColoredBox(color: Color(0x99000000)),
+                    Center(
+                      child: _isStarting
+                          ? const CircularProgressIndicator()
+                          : IconButton.filledTonal(
+                              tooltip: context.l10n.common_play,
+                              style: IconButton.styleFrom(
+                                backgroundColor: colorScheme
+                                    .surfaceContainerHigh
+                                    .withValues(alpha: 0.92),
+                                foregroundColor: colorScheme.onSurface,
+                                padding: const EdgeInsets.all(16),
+                              ),
+                              icon: const Icon(
+                                Icons.play_arrow_rounded,
+                                size: 32,
+                              ),
+                              onPressed: () =>
+                                  _startPlaybackIfNeeded(force: true),
+                            ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: SafeArea(
+                        child: IconButton(
+                          key: const Key('inline_video_back_button'),
+                          tooltip: context.l10n.common_back,
+                          style: IconButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.transparent,
+                            padding: const EdgeInsets.all(4),
+                            minimumSize: const Size(26, 26),
+                          ),
+                          icon: const Icon(Icons.arrow_back_rounded),
+                          onPressed: _goBack,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -475,9 +504,16 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
     // Show loading indicator while the global controller initializes.
     if (controller == null) {
-      return AspectRatio(
-        aspectRatio: aspectRatio,
-        child: const Center(child: CircularProgressIndicator()),
+      return _constrainHeight(
+        GestureDetector(
+          onVerticalDragUpdate: widget.onVerticalDrag == null
+              ? null
+              : (details) => widget.onVerticalDrag!(details.delta.dy),
+          child: AspectRatio(
+            aspectRatio: aspectRatio,
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+        ),
       );
     }
 
@@ -497,6 +533,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
               onFullScreenToggle: _toggleFullScreen,
               onRandomScene: _openRandomScene,
               onInlineBack: _goBack,
+              onInlineVerticalDrag: widget.onVerticalDrag,
               fit: BoxFit.contain,
               squareFit: BoxFit.contain,
             ),

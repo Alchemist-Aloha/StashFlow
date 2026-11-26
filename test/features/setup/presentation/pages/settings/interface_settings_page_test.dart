@@ -291,13 +291,10 @@ void main() {
     expect(tester.widget<Switch>(toggle).value, isFalse);
   });
 
-  testWidgets('InterfaceSettingsPage saves scene metadata visibility', (
+  testWidgets('unset scene metadata is off with an existing server', (
     tester,
   ) async {
-    tester.view.physicalSize = const Size(1200, 1800);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-
+    await prefs.setString('server_base_url', 'https://stash.example');
     await pumpTestWidget(
       tester,
       prefs: prefs,
@@ -305,15 +302,62 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final toggle = find.descendant(
-      of: find.widgetWithText(SwitchListTile, 'Hide scene metadata by default'),
-      matching: find.byType(Switch),
+    final section = find.widgetWithText(
+      SwitchListTile,
+      'Show scene metadata section',
     );
-
-    expect(tester.widget<Switch>(toggle).value, isTrue);
-    await tester.tap(toggle);
-    await tester.pumpAndSettle();
-
-    expect(prefs.getBool('hide_scene_technical_metadata'), isFalse);
+    await tester.scrollUntilVisible(section, 150);
+    expect(tester.widget<SwitchListTile>(section).value, isFalse);
+    expect(find.text('Hide scene metadata by default'), findsNothing);
   });
+
+  testWidgets(
+    'new installs can enable metadata and keep the default-collapse choice',
+    (tester) async {
+      Future<void> openSettings() async {
+        await pumpTestWidget(
+          tester,
+          prefs: prefs,
+          child: const InterfaceSettingsPage(),
+        );
+        await tester.pumpAndSettle();
+      }
+
+      final section = find.widgetWithText(
+        SwitchListTile,
+        'Show scene metadata section',
+      );
+      final collapse = find.widgetWithText(
+        SwitchListTile,
+        'Hide scene metadata by default',
+      );
+
+      Future<void> tapSwitch(Finder tile) async {
+        await Scrollable.ensureVisible(tester.element(tile), alignment: 0.3);
+        await tester.tap(
+          find.descendant(of: tile, matching: find.byType(Switch)),
+        );
+        await tester.pumpAndSettle();
+      }
+
+      await openSettings();
+      await tester.scrollUntilVisible(section, 150);
+      expect(tester.widget<SwitchListTile>(section).value, isFalse);
+      expect(collapse, findsNothing);
+
+      await tapSwitch(section);
+      expect(tester.widget<SwitchListTile>(collapse).value, isTrue);
+      await tapSwitch(collapse);
+      await tapSwitch(section);
+      expect(collapse, findsNothing);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await openSettings();
+      await tester.scrollUntilVisible(section, 150);
+      expect(tester.widget<SwitchListTile>(section).value, isFalse);
+      expect(collapse, findsNothing);
+      await tapSwitch(section);
+      expect(tester.widget<SwitchListTile>(collapse).value, isFalse);
+    },
+  );
 }

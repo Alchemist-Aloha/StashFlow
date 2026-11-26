@@ -29,7 +29,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _playEndBehaviorKey = 'video_play_end_behavior';
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
-  static const _enableNativePipKey = 'video_native_pip';
   static const _videoGravityOrientationKey = 'video_gravity_orientation';
   static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
   static const _subtitleFontSizeKey = 'subtitle_font_size';
@@ -42,12 +41,14 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
   bool _useDoubleTapSeek = false;
   int _controlsAutoHideSeconds = 2;
-  bool _enableBackgroundPlayback = false;
+  bool _enableBackgroundPlayback = true;
   bool _respectAudioFocus = true;
-  bool _enableNativePip = false;
+  bool _systemMediaControls = true;
+  bool _autoPip = false;
   bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
   String _defaultStreamSource = 'direct';
+  String _defaultStreamResolution = 'ORIGINAL';
   double _subtitleFontSize = 18.0;
   double _subtitlePositionBottomRatio = 0.15;
   String _subtitleTextAlignment = 'center';
@@ -94,12 +95,16 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         .load()
         .controlsAutoHideSeconds;
     _enableBackgroundPlayback =
-        prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
+        prefs.getBool(_enableBackgroundPlaybackKey) ?? true;
     _respectAudioFocus = PlayerSettingsStore(prefs).load().respectAudioFocus;
-    _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
+    _systemMediaControls =
+        prefs.getBool(PlayerSettingsStore.systemMediaControlsKey) ?? true;
+    _autoPip = prefs.getBool(PlayerSettingsStore.autoPipKey) ?? false;
     _videoGravityOrientation =
         prefs.getBool(_videoGravityOrientationKey) ?? true;
     _defaultStreamSource = prefs.getString(defaultStreamSourceKey) ?? 'direct';
+    _defaultStreamResolution =
+        prefs.getString(defaultStreamResolutionKey) ?? 'ORIGINAL';
     _defaultSubtitleLanguage =
         prefs.getString(_defaultSubtitleLanguageKey) ?? 'none';
     _subtitleFontSize = prefs.getDouble(_subtitleFontSizeKey) ?? 18.0;
@@ -137,7 +142,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       _enableBackgroundPlaybackKey,
       _enableBackgroundPlayback,
     );
-    await prefs.setBool(_enableNativePipKey, _enableNativePip);
     await prefs.setBool(_videoGravityOrientationKey, _videoGravityOrientation);
     await prefs.setString(
       _defaultSubtitleLanguageKey,
@@ -162,7 +166,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     playerStateNotifier.setControlsAutoHideSeconds(_controlsAutoHideSeconds);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
     playerStateNotifier.setRespectAudioFocus(_respectAudioFocus);
-    playerStateNotifier.setEnableNativePip(_enableNativePip);
     playerStateNotifier.setVideoGravityOrientation(_videoGravityOrientation);
     playerStateNotifier.setDefaultSubtitleLanguage(_defaultSubtitleLanguage);
     playerStateNotifier.setSubtitleFontSize(_subtitleFontSize);
@@ -228,6 +231,37 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                                 .setString(defaultStreamSourceKey, value);
                           },
                         ),
+                        // Direct plays the file as-is, so resolution only applies to transcodes.
+                        if (_defaultStreamSource != 'direct') ...[
+                          Divider(height: context.dimensions.spacingLarge),
+                          _buildChoiceSelector(
+                            title: context
+                                .l10n
+                                .settings_playback_stream_resolution,
+                            description: context
+                                .l10n
+                                .settings_playback_stream_resolution_subtitle,
+                            value: _defaultStreamResolution,
+                            choices: [
+                              for (final MapEntry(key: res, value: height)
+                                  in streamResolutionHeights.entries)
+                                (
+                                  res,
+                                  height == null
+                                      ? context.l10n.player_stream_original
+                                      : height == 2160
+                                      ? '4K'
+                                      : '${height}p',
+                                ),
+                            ],
+                            onChanged: (value) async {
+                              setState(() => _defaultStreamResolution = value);
+                              await ref
+                                  .read(sharedPreferencesProvider)
+                                  .setString(defaultStreamResolutionKey, value);
+                            },
+                          ),
+                        ],
                         Divider(height: context.dimensions.spacingLarge),
                         _buildControlsAutoHideSlider(),
                         Divider(height: context.dimensions.spacingLarge),
@@ -250,24 +284,30 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             context.push('/settings/playback/controls'),
                           ),
                         ),
-                        Divider(height: context.dimensions.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            context.l10n.settings_playback_background,
+                        if (PlayerSettingsStore
+                            .backgroundPlaybackConfigurable) ...[
+                          Divider(height: context.dimensions.spacingLarge),
+                          SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              context.l10n.settings_playback_background,
+                            ),
+                            subtitle: Text(
+                              context
+                                  .l10n
+                                  .settings_playback_background_subtitle,
+                            ),
+                            value: _enableBackgroundPlayback,
+                            onChanged: (value) async {
+                              setState(() => _enableBackgroundPlayback = value);
+                              await _saveToggleSettings();
+                            },
                           ),
-                          subtitle: Text(
-                            context.l10n.settings_playback_background_subtitle,
-                          ),
-                          value: _enableBackgroundPlayback,
-                          onChanged: (value) async {
-                            setState(() => _enableBackgroundPlayback = value);
-                            await _saveToggleSettings();
-                          },
-                        ),
+                        ],
+                        // These Android options only apply with background playback.
                         if (!kIsWeb &&
-                            defaultTargetPlatform ==
-                                TargetPlatform.android) ...[
+                            defaultTargetPlatform == TargetPlatform.android &&
+                            _enableBackgroundPlayback) ...[
                           Divider(height: context.dimensions.spacingLarge),
                           SwitchListTile.adaptive(
                             contentPadding: EdgeInsets.zero,
@@ -285,20 +325,51 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                               await _saveToggleSettings();
                             },
                           ),
-                        ],
-                        Divider(height: context.dimensions.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_playback_pip),
-                          subtitle: Text(
-                            context.l10n.settings_playback_pip_subtitle,
+                          Divider(height: context.dimensions.spacingLarge),
+                          SwitchListTile.adaptive(
+                            key: const Key('settings_auto_pip'),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              context.l10n.settings_playback_auto_pip,
+                            ),
+                            subtitle: Text(
+                              context.l10n.settings_playback_auto_pip_subtitle,
+                            ),
+                            value: _autoPip,
+                            onChanged: (value) {
+                              setState(() => _autoPip = value);
+                              ref
+                                  .read(playerStateProvider.notifier)
+                                  .setAutoPip(value);
+                            },
                           ),
-                          value: _enableNativePip,
-                          onChanged: (value) async {
-                            setState(() => _enableNativePip = value);
-                            await _saveToggleSettings();
-                          },
-                        ),
+                          Divider(height: context.dimensions.spacingLarge),
+                          SwitchListTile.adaptive(
+                            key: const Key('settings_system_media_controls'),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              context.l10n.settings_playback_system_controls,
+                            ),
+                            subtitle: Text(
+                              context
+                                  .l10n
+                                  .settings_playback_system_controls_subtitle,
+                            ),
+                            value: _systemMediaControls,
+                            onChanged: (value) async {
+                              setState(() => _systemMediaControls = value);
+                              await ref
+                                  .read(sharedPreferencesProvider)
+                                  .setBool(
+                                    PlayerSettingsStore.systemMediaControlsKey,
+                                    value,
+                                  );
+                              ref
+                                  .read(playerStateProvider.notifier)
+                                  .syncSystemMediaControls();
+                            },
+                          ),
+                        ],
                         Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,

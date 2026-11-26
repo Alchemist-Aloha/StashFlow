@@ -8,16 +8,30 @@ Future<T?> showFrostedPanelBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   bool isScrollControlled = true,
-  bool useRootNavigator = false,
   BoxConstraints? constraints,
 }) {
   return showModalBottomSheet<T>(
     context: context,
-    useRootNavigator: useRootNavigator,
     isScrollControlled: isScrollControlled,
     constraints: constraints,
     backgroundColor: Colors.transparent,
     builder: builder,
+  );
+}
+
+/// Opens media details in the same navigator as filter and sort sheets.
+Future<void> showMediaDetailsBottomSheet({
+  required BuildContext context,
+  required WidgetBuilder builder,
+}) {
+  return showFrostedPanelBottomSheet<void>(
+    context: context,
+    builder: (context) => LayoutBuilder(
+      builder: (context, constraints) => ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: constraints.maxHeight * 0.88),
+        child: builder(context),
+      ),
+    ),
   );
 }
 
@@ -90,6 +104,75 @@ class BottomSheetPanelHeader extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// The pinned top of a media details sheet: heading, item title, and close.
+///
+/// Place it above the sheet's scrolling list so it stays visible.
+class DetailsSheetHeader extends StatelessWidget {
+  const DetailsSheetHeader({
+    super.key,
+    required this.heading,
+    required this.title,
+    required this.onClose,
+    this.onVerticalDrag,
+  });
+
+  final String heading;
+  final String title;
+  final VoidCallback onClose;
+
+  /// Receives vertical drag deltas, e.g. to move an embedding panel.
+  final ValueChanged<double>? onVerticalDrag;
+
+  @override
+  Widget build(BuildContext context) {
+    final dims = context.dimensions;
+    final header = Padding(
+      padding: EdgeInsets.fromLTRB(
+        dims.spacingLarge,
+        dims.spacingLarge,
+        dims.spacingLarge,
+        0,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  heading,
+                  style: context.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: dims.spacingSmall),
+                Text(
+                  title,
+                  style: context.textTheme.bodyMedium,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close_rounded),
+            tooltip: context.l10n.common_close,
+            onPressed: onClose,
+          ),
+        ],
+      ),
+    );
+    final onDrag = onVerticalDrag;
+    if (onDrag == null) return header;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onVerticalDragUpdate: (details) => onDrag(details.delta.dy),
+      child: header,
     );
   }
 }

@@ -1649,6 +1649,9 @@ class AppLocalizationsKo extends AppLocalizations {
       '아래로 스크롤하면 숨기고 위로 스크롤하면 다시 표시합니다.';
 
   @override
+  String get settings_interface_show_scene_metadata_section => '장면 메타데이터 섹션 표시';
+
+  @override
   String get settings_interface_hide_scene_metadata => '장면 메타데이터를 기본으로 숨기기';
 
   @override
@@ -2051,11 +2054,18 @@ class AppLocalizationsKo extends AppLocalizations {
       '다른 앱이 오디오 포커스를 가져오면 StashFlow를 일시 정지합니다. 동시 재생을 허용하려면 끄세요.';
 
   @override
-  String get settings_playback_pip => '네이티브 화면 속 화면 (PiP)';
+  String get settings_playback_system_controls => '시스템 미디어 컨트롤';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'PIP 버튼을 활성화하고 백그라운드 전환 시 자동 진입합니다';
+  String get settings_playback_system_controls_subtitle =>
+      '알림 창과 잠금 화면에 재생 컨트롤을 표시하고 헤드셋 버튼에 응답합니다. 끄면 Android가 백그라운드 재생을 중지할 수 있습니다.';
+
+  @override
+  String get settings_playback_auto_pip => '나갈 때 화면 속 화면';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      '장면 재생 중에 StashFlow에서 나가면 화면 속 화면 창에서 계속 시청합니다. 돌아오면 이전 페이지로 복원됩니다.';
 
   @override
   String get settings_playback_subtitles => '자막 설정';
@@ -2083,6 +2093,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_playback_stream_source_subtitle => '재생 시작 시 사용, 없으면 다이렉트';
+
+  @override
+  String get settings_playback_stream_resolution => '기본 해상도';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      '트랜스코딩된 소스에 사용, 없으면 다음 낮은 해상도 사용';
 
   @override
   String get settings_playback_subtitle_lang_subtitle => '가능한 경우 자동 로드';

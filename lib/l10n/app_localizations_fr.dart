@@ -1690,6 +1690,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Elle se masque en défilant vers le bas et réapparaît en défilant vers le haut.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Afficher la section des métadonnées de la scène';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Masquer les métadonnées de scène par défaut';
 
@@ -2132,11 +2136,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Met StashFlow en pause lorsqu’une autre app prend le focus audio. Désactivez cette option pour autoriser la lecture simultanée.';
 
   @override
-  String get settings_playback_pip => 'Image dans l\'image native';
+  String get settings_playback_system_controls =>
+      'Commandes multimédias du système';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'Activer le bouton image dans l\'image et l\'entrée automatique en arrière-plan';
+  String get settings_playback_system_controls_subtitle =>
+      'Affiche la lecture dans le volet des notifications et sur l’écran de verrouillage, et accepte les boutons du casque. Si vous la désactivez, Android peut arrêter la lecture en arrière-plan.';
+
+  @override
+  String get settings_playback_auto_pip => 'Image dans l’image en quittant';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'Si vous quittez StashFlow pendant la lecture d’une scène, elle continue dans une fenêtre image dans l’image. Au retour, la page où vous étiez est restaurée.';
 
   @override
   String get settings_playback_subtitles => 'Paramètres des sous-titres';
@@ -2167,6 +2179,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settings_playback_stream_source_subtitle =>
       'Utilisée au démarrage de la lecture ; sinon Direct';
+
+  @override
+  String get settings_playback_stream_resolution => 'Résolution par défaut';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'Pour les sources transcodées ; à défaut, la résolution inférieure suivante est utilisée';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>

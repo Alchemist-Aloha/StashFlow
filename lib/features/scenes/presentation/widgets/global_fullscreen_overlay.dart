@@ -195,9 +195,10 @@ class _GlobalFullscreenOverlayState
         'GlobalFullscreenOverlay: showing overlay',
         source: 'GlobalFullscreenOverlay',
       );
-      _pipOnlyPresentation = ref
-          .read(playerStateProvider.notifier)
-          .isPreparingPip;
+      // Android may also enter PiP by itself (auto-PiP) before this frame.
+      _pipOnlyPresentation =
+          ref.read(playerStateProvider.notifier).isPreparingPip ||
+          ref.read(playerStateProvider).isInPipMode;
       setState(() {
         _isVisible = true;
         _isAnimating = !_pipOnlyPresentation;

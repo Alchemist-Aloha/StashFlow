@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/playback_settings_page.dart';
@@ -74,7 +75,7 @@ void main() {
         expect(tester.widget<SwitchListTile>(tile).value, isTrue);
         expect(
           PlayerSettingsStore(prefs).load().enableBackgroundPlayback,
-          isFalse,
+          isTrue,
         );
         await tester.tap(tile);
         await tester.pumpAndSettle();
@@ -95,7 +96,10 @@ void main() {
     );
   }
 
-  testWidgets('audio focus switch is Android-only', (tester) async {
+  testWidgets('desktop hides background playback and always enables it', (
+    tester,
+  ) async {
+    await prefs.setBool(PlayerSettingsStore.enableBackgroundPlaybackKey, false);
     await pumpTestWidget(
       tester,
       prefs: prefs,
@@ -103,7 +107,94 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Pause when other apps play media'), findsNothing);
+    expect(find.text('Background Playback'), findsNothing);
+    expect(PlayerSettingsStore(prefs).load().enableBackgroundPlayback, isTrue);
   }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+
+  for (final saved in <bool?>[null, false, true]) {
+    testWidgets('Android auto-PiP defaults off and preserves saved $saved', (
+      tester,
+    ) async {
+      if (saved != null) {
+        await prefs.setBool(PlayerSettingsStore.autoPipKey, saved);
+      }
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: const PlaybackSettingsPage(),
+      );
+      await tester.pumpAndSettle();
+      final tile = find.byKey(const Key('settings_auto_pip'));
+      await tester.ensureVisible(tile);
+      expect(tester.widget<SwitchListTile>(tile).value, saved ?? false);
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(PlaybackSettingsPage)),
+      );
+      expect(
+        container.read(playerStateProvider.notifier).autoPip,
+        saved ?? false,
+      );
+    }, variant: TargetPlatformVariant.only(TargetPlatform.android));
+  }
+
+  testWidgets('Android background-only options follow background playback', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const PlaybackSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+    const dependent = [
+      'Pause when other apps play media',
+      'Picture-in-picture on leave',
+      'System media controls',
+    ];
+    for (final title in dependent) {
+      expect(find.text(title), findsOneWidget);
+    }
+    await tester.tap(
+      find.widgetWithText(SwitchListTile, 'Background Playback'),
+    );
+    await tester.pumpAndSettle();
+    for (final title in dependent) {
+      expect(find.text(title), findsNothing);
+    }
+  }, variant: TargetPlatformVariant.only(TargetPlatform.android));
+
+  testWidgets('default resolution shows only for transcoded sources', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const PlaybackSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Default Resolution'), findsNothing);
+
+    await tester.tap(find.text('Default Stream Source'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('HLS').last);
+    await tester.pumpAndSettle();
+    expect(prefs.getString(defaultStreamSourceKey), 'hls');
+    expect(find.text('Default Resolution'), findsOneWidget);
+
+    await tester.tap(find.text('Default Resolution'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('720p').last);
+    await tester.pumpAndSettle();
+    expect(prefs.getString(defaultStreamResolutionKey), 'STANDARD_HD');
+  });
 
   testWidgets(
     'mpv selectors persist, pair direct output, and restore defaults',

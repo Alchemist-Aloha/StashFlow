@@ -89,9 +89,15 @@ class ActivePlayerState extends PlayerState {
   );
 }
 
+/// Errors emitted by every [MockPlayerStream].
+final _playerErrors = StreamController<String>.broadcast();
+
 class MockPlayerStream extends Fake implements mk.PlayerStream {
   @override
   Stream<bool> get playing => const Stream.empty();
+
+  @override
+  Stream<String> get error => _playerErrors.stream;
 
   @override
   Stream<bool> get completed => const Stream.empty();
@@ -536,6 +542,39 @@ void main() {
     expect(find.text('Unknown (srt)'), findsOneWidget);
   });
 
+  testWidgets('inline controls start hidden', (tester) async {
+    await _pumpControls(
+      tester,
+      scene: _buildScene(),
+      onInlineBack: () {},
+      revealControls: false,
+    );
+
+    expect(
+      find.byKey(const Key('video_play_pause_button')).hitTestable(),
+      findsNothing,
+    );
+  });
+
+  testWidgets('a failed start reveals hidden inline controls', (tester) async {
+    await _pumpControls(
+      tester,
+      scene: _buildScene(),
+      onInlineBack: () {},
+      revealControls: false,
+    );
+    final playPause = find
+        .byKey(const Key('video_play_pause_button'))
+        .hitTestable();
+    expect(playPause, findsNothing);
+
+    // Browsers report blocked autoplay as a player error while paused.
+    _playerErrors.add('play() failed because the user did not interact');
+    await tester.pump(const Duration(milliseconds: 350));
+
+    expect(playPause, findsOneWidget);
+  });
+
   testWidgets('inline back control follows video controls visibility', (
     tester,
   ) async {
@@ -810,6 +849,7 @@ Future<void> _pumpControls(
   VoidCallback? onInlineBack,
   VoidCallback? onFullScreenToggle,
   VoidCallback? onRandomScene,
+  bool revealControls = true,
 }) async {
   final mockController = FakeVideoController(isPlaying: isPlaying);
 
@@ -840,7 +880,6 @@ Future<void> _pumpControls(
           body: NativeVideoControls(
             controller: mockController,
             useDoubleTapSeek: useDoubleTapSeek,
-            enableNativePip: false,
             onInlineBack: onInlineBack,
             onFullScreenToggle: onFullScreenToggle,
             onRandomScene: onRandomScene,
@@ -854,4 +893,10 @@ Future<void> _pumpControls(
 
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 50));
+
+  // Inline controls open hidden; tap the surface like a user to reveal them.
+  if (revealControls && showControls) {
+    await tester.tapAt(tester.getCenter(find.byType(NativeVideoControls)));
+    await tester.pump(const Duration(milliseconds: 350));
+  }
 }

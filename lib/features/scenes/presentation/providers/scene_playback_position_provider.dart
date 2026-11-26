@@ -17,9 +17,19 @@ class ScenePlaybackPosition extends _$ScenePlaybackPosition {
   }
 
   /// Publishes local or cast ticks, including backward seeks and restart at zero.
+  ///
+  /// Forward progress is published in whole-second steps: every state change
+  /// schedules a frame and rebuilds each matching card bar, while sub-second
+  /// moves are invisible on a few-pixel bar.
   void update(Duration position) {
     if (position < Duration.zero) return;
-    if (state == null) ref.keepAlive();
-    state = position.inMilliseconds / 1000.0;
+    final seconds = position.inMilliseconds / 1000.0;
+    final previous = state;
+    if (previous == null) {
+      ref.keepAlive();
+    } else if (seconds >= previous && seconds - previous < 1) {
+      return;
+    }
+    state = seconds;
   }
 }

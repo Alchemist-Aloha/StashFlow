@@ -30,6 +30,53 @@ const defaultStreamSourceKey = 'video_default_stream_source';
 /// Stream source kinds Stash exposes via `sceneStreams`, in menu order.
 const streamSourceKinds = ['direct', 'mp4', 'webm', 'hls', 'dash'];
 
+/// SharedPreferences key for the default transcode resolution.
+const defaultStreamResolutionKey = 'video_default_stream_resolution';
+
+/// Stash `StreamingResolutionEnum` values with their heights; `ORIGINAL`
+/// is the source file's height. Settings list them in this order.
+const streamResolutionHeights = {
+  'ORIGINAL': null,
+  'FOUR_K': 2160,
+  'FULL_HD': 1080,
+  'STANDARD_HD': 720,
+  'STANDARD': 480,
+  'LOW': 240,
+};
+
+/// Stash's `resolution` query value; streams without one are original.
+String streamResolution(String url) =>
+    Uri.tryParse(url)?.queryParameters['resolution'] ?? 'ORIGINAL';
+
+/// Picks the highest of [options] not above [preferred], preferring the
+/// untranscoded original on ties; when all are higher, the lowest one.
+StreamChoice? pickStreamResolution(
+  List<StreamChoice> options,
+  String preferred, {
+  int? sourceHeight,
+}) {
+  int height(String resolution) =>
+      streamResolutionHeights[resolution] ??
+      (resolution == 'ORIGINAL' ? sourceHeight : null) ??
+      1 << 30;
+  final target = height(preferred);
+  StreamChoice? best;
+  StreamChoice? lowest;
+  for (final option in options) {
+    final h = height(streamResolution(option.url));
+    if (lowest == null || h < height(streamResolution(lowest.url))) {
+      lowest = option;
+    }
+    if (h > target) continue;
+    final bestHeight = best == null ? -1 : height(streamResolution(best.url));
+    if (h > bestHeight ||
+        (h == bestHeight && streamResolution(option.url) == 'ORIGINAL')) {
+      best = option;
+    }
+  }
+  return best ?? lowest;
+}
+
 /// Classifies a Stash stream URL (`/stream`, `/stream.m3u8`, ...) by kind.
 String streamSourceKind(String url) {
   final segment = Uri.tryParse(url)?.pathSegments.lastOrNull ?? '';
@@ -83,9 +130,16 @@ final streamResolverProvider = Provider<StreamResolver>(
     if (kind == 'direct') return direct;
     try {
       final streams = await fetchSceneStreams(ref, scene.id);
-      return streams
-              .where((s) => streamSourceKind(s.url) == kind)
-              .firstOrNull ??
+      final resolution =
+          ref
+              .read(sharedPreferencesProvider)
+              .getString(defaultStreamResolutionKey) ??
+          'ORIGINAL';
+      return pickStreamResolution(
+            streams.where((s) => streamSourceKind(s.url) == kind).toList(),
+            resolution,
+            sourceHeight: scene.files.firstOrNull?.height,
+          ) ??
           direct;
     } on Object catch (e) {
       AppLogStore.instance.add(

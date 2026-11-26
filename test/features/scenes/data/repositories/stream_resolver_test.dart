@@ -49,6 +49,56 @@ void main() {
     expect(streamSourceKind('$base/stream.m3u8?apikey=x'), 'hls');
     expect(streamSourceKind('$base/stream.mpd'), 'dash');
   });
+
+  group('pickStreamResolution', () {
+    const base = 'http://h:9999/scene/7/stream.mp4';
+    StreamChoice mp4(String? res) => StreamChoice(
+      url: res == null ? base : '$base?resolution=$res',
+      mimeType: 'video/mp4',
+    );
+    // A 720p file: Stash offers the original plus lower transcodes.
+    final options = [
+      mp4(null),
+      mp4('STANDARD_HD'),
+      mp4('STANDARD'),
+      mp4('LOW'),
+    ];
+    String? pick(String preferred, {int? sourceHeight = 720}) =>
+        streamResolution(
+          pickStreamResolution(
+            options,
+            preferred,
+            sourceHeight: sourceHeight,
+          )!.url,
+        );
+
+    test('uses an exact match', () {
+      expect(pick('STANDARD'), 'STANDARD');
+      expect(pick('ORIGINAL'), 'ORIGINAL');
+    });
+
+    test('prefers the original over an equal-height transcode', () {
+      expect(pick('STANDARD_HD'), 'ORIGINAL');
+      expect(pick('FULL_HD'), 'ORIGINAL');
+    });
+
+    test('falls back to the next lower resolution', () {
+      expect(pick('FULL_HD', sourceHeight: 2160), 'STANDARD_HD');
+    });
+
+    test('uses the lowest when every option is higher', () {
+      expect(
+        streamResolution(
+          pickStreamResolution([
+            mp4('STANDARD_HD'),
+            mp4('STANDARD'),
+          ], 'LOW')!.url,
+        ),
+        'STANDARD',
+      );
+      expect(pickStreamResolution(const [], 'LOW'), isNull);
+    });
+  });
 }
 
 Scene _scene(String stream) => Scene(

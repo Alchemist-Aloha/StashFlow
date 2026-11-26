@@ -84,6 +84,7 @@ final class AppConfigSettingsRegistry {
     _int('max_video_cache_size_mb', min: 1),
     _int('max_performer_avatars', min: 0, max: 20),
     _bool('show_performer_avatars'),
+    _bool('show_scene_metadata_section'),
     _bool('hide_scene_technical_metadata'),
     _bool('show_scene_playback_progress'),
     _double('performer_avatar_size', min: 8, max: 128),
@@ -152,6 +153,10 @@ final class AppConfigSettingsRegistry {
     _jsonString(PlayerControlsLayoutNotifier.inlineKey, expectList: true),
     _jsonString(PlayerControlsLayoutNotifier.fullscreenKey, expectList: true),
     _string(defaultStreamSourceKey, allowed: streamSourceKinds.toSet()),
+    _string(
+      defaultStreamResolutionKey,
+      allowed: streamResolutionHeights.keys.toSet(),
+    ),
     _int(
       PlayerSettingsStore.controlsAutoHideSecondsKey,
       min: PlayerSettingsStore.minControlsAutoHideSeconds,
@@ -159,6 +164,9 @@ final class AppConfigSettingsRegistry {
     ),
     _bool('video_background_playback'),
     _bool('video_respect_audio_focus'),
+    _bool(PlayerSettingsStore.systemMediaControlsKey),
+    _bool(PlayerSettingsStore.autoPipKey),
+    // Retired setting; kept so older backups still validate and import.
     _bool('video_native_pip'),
     _bool('video_gravity_orientation'),
     _bool('use_actual_scene_video_in_miniplayer'),

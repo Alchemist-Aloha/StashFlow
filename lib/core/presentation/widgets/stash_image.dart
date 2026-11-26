@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:ui' as ui;
 
 import 'package:cached_network_image_ce/cached_network_image.dart';
 // shortcut: CE 4.13's public stub omits httpClientFactory; use its export once fixed.
@@ -7,10 +8,16 @@ import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:cached_network_image_ce/src/cache/default_cache_manager.dart'
     if (dart.library.js_interop) 'package:cached_network_image_ce/src/cache/default_cache_manager_web.dart'
     as image_cache;
+
+// ignore: implementation_imports
+import 'stash_image_loader_web.dart'
+    if (dart.library.io) 'package:cached_network_image_ce/src/image_provider/_image_loader.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 
 import '../theme/app_theme.dart';
 import '../../data/auth/dio_image_client.dart';
@@ -19,6 +26,139 @@ import '../../data/graphql/media_headers_provider.dart';
 import '../../data/graphql/url_resolver.dart';
 import '../../data/graphql/graphql_client.dart';
 import '../../utils/app_log_store.dart';
+import '../../utils/extra_image_codecs.dart';
+
+/// [CachedNetworkImageProvider] that also renders AVIF and JPEG XL from the
+/// same cached bytes once Flutter's engine codec rejects them.
+class _StashCachedImageProvider extends CachedNetworkImageProvider {
+  const _StashCachedImageProvider(
+    super.url, {
+    super.headers,
+    super.cacheManager,
+  });
+
+  @override
+  ImageStreamCompleter loadImage(
+    CachedNetworkImageProvider key,
+    ImageDecoderCallback decode,
+  ) {
+    final chunkEvents = StreamController<ImageChunkEvent>();
+    final codecs = ImageLoader().loadImageAsync(
+      url,
+      cacheKey,
+      chunkEvents,
+      decode,
+      cacheManager!,
+      maxHeight,
+      maxWidth,
+      headers,
+      imageRenderMethodForWeb,
+      () {},
+    );
+    return MultiImageStreamCompleter(
+      codec: _withExtraFormats(codecs, decode, key),
+      chunkEvents: chunkEvents.stream,
+      scale: key.scale,
+      minimumGifFrameDuration: key.minimumGifFrameDuration,
+      animate: key.animate,
+    );
+  }
+
+  static Stream<ui.Codec> _withExtraFormats(
+    Stream<ui.Codec> codecs,
+    ImageDecoderCallback decode,
+    Object key,
+  ) async* {
+    try {
+      try {
+        await for (final codec in codecs) {
+          yield codec;
+        }
+      } on UnsupportedImageFormatException catch (error) {
+        final bmp = await transcodeExtraImageFormat(error.bytes);
+        if (bmp == null) rethrow;
+        // The engine decode keeps ResizeImage and memCache sizing intact.
+        yield await decode(await ui.ImmutableBuffer.fromUint8List(bmp));
+      }
+    } on Object {
+      // Replaces the loader's own eviction, which this wrapper owns.
+      scheduleMicrotask(() => PaintingBinding.instance.imageCache.evict(key));
+      rethrow;
+    }
+  }
+
+  // The base equality accepts any CachedNetworkImageProvider; keep the plain
+  // widget provider and this one from sharing an ImageCache entry.
+  @override
+  bool operator ==(Object other) =>
+      other is _StashCachedImageProvider && super == other;
+
+  @override
+  int get hashCode => Object.hash(super.hashCode, _StashCachedImageProvider);
+}
+
+/// Web network image that also renders AVIF and JPEG XL, which Flutter's web
+/// engine rejects before the browser decoder sees them.
+///
+/// Other formats keep the engine decode. The browser's HTTP cache stands in
+/// for the native disk cache.
+@immutable
+class _StashWebImageProvider extends ImageProvider<_StashWebImageProvider> {
+  const _StashWebImageProvider(this.url, {this.headers});
+
+  final String url;
+  final Map<String, String>? headers;
+
+  @override
+  Future<_StashWebImageProvider> obtainKey(ImageConfiguration configuration) =>
+      SynchronousFuture(this);
+
+  @override
+  ImageStreamCompleter loadImage(
+    _StashWebImageProvider key,
+    ImageDecoderCallback decode,
+  ) {
+    final chunkEvents = StreamController<ImageChunkEvent>();
+    // An initial event keeps loading builders on their placeholder.
+    chunkEvents.add(
+      const ImageChunkEvent(cumulativeBytesLoaded: 0, expectedTotalBytes: null),
+    );
+    return MultiFrameImageStreamCompleter(
+      codec: _load(decode).whenComplete(chunkEvents.close),
+      chunkEvents: chunkEvents.stream,
+      scale: 1,
+      debugLabel: url,
+    );
+  }
+
+  Future<ui.Codec> _load(ImageDecoderCallback decode) async {
+    final uri = Uri.parse(url);
+    final response = await http.get(uri, headers: headers);
+    if (response.statusCode != 200) {
+      throw NetworkImageLoadException(
+        statusCode: response.statusCode,
+        uri: uri,
+      );
+    }
+    final bytes = response.bodyBytes;
+    final bmp = await transcodeExtraImageFormat(bytes);
+    return decode(await ui.ImmutableBuffer.fromUint8List(bmp ?? bytes));
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is _StashWebImageProvider &&
+      other.url == url &&
+      mapEquals(other.headers, headers);
+
+  @override
+  int get hashCode => Object.hash(
+    url,
+    Object.hashAllUnordered(
+      headers?.entries.map((e) => (e.key, e.value)) ?? [],
+    ),
+  );
+}
 
 // Small stateful wrapper which retries a failed cached image load by
 // removing the local cache entry and forcing a re-download. This helps
@@ -169,12 +309,34 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
           ),
         ),
       ),
-      errorBuilder: (context, error, stackTrace) {
-        // Kick off async cleanup + retry; show the standard error UI immediately.
-        unawaited(_handleError());
-        return _buildError(context);
+      unsupportedImageBuilder: (context, url, bytes) {
+        if (sniffExtraImageFormat(bytes) == null) return _retryOrError(context);
+        return Image(
+          image: ResizeImage.resizeIfNeeded(
+            widget.memCacheWidth,
+            widget.memCacheHeight,
+            _StashCachedImageProvider(
+              widget.imageUrl,
+              headers: widget.headers,
+              cacheManager: widget.cacheManager,
+            ),
+          ),
+          excludeFromSemantics: true,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+          frameBuilder: widget.frameBuilder,
+          errorBuilder: (context, error, stackTrace) => _buildError(context),
+        );
       },
+      errorBuilder: (context, error, stackTrace) => _retryOrError(context),
     );
+  }
+
+  Widget _retryOrError(BuildContext context) {
+    // Kick off async cleanup + retry; show the standard error UI immediately.
+    unawaited(_handleError());
+    return _buildError(context);
   }
 
   Widget _buildError(BuildContext context) => _errorBox(
@@ -294,10 +456,10 @@ class StashImage extends ConsumerWidget {
         graphqlEndpoint: Uri.tryParse(serverUrl),
       );
 
-      return NetworkImage(effectiveUrl, headers: headers);
+      return _StashWebImageProvider(effectiveUrl, headers: headers);
     }
 
-    return CachedNetworkImageProvider(
+    return _StashCachedImageProvider(
       imageUrl,
       headers: headers,
       cacheManager: cacheManager,
@@ -337,7 +499,9 @@ class StashImage extends ConsumerWidget {
     int? memCacheWidth,
     int? memCacheHeight,
   }) async {
-    if (imageUrl == null ||
+    // Prefetch fills the native disk cache; web relies on the browser cache.
+    if (kIsWeb ||
+        imageUrl == null ||
         imageUrl.isEmpty ||
         imageUrl.contains('default=true')) {
       return;
@@ -352,7 +516,7 @@ class StashImage extends ConsumerWidget {
       acquiredSlot = true;
       if (!context.mounted) return;
 
-      final baseProvider = CachedNetworkImageProvider(
+      final baseProvider = _StashCachedImageProvider(
         imageUrl,
         headers: headers,
         cacheManager: cacheManager,
@@ -406,10 +570,9 @@ class StashImage extends ConsumerWidget {
         graphqlEndpoint: Uri.tryParse(serverUrl),
       );
 
-      return Image.network(
+      return Image(
+        image: _StashWebImageProvider(effectiveUrl, headers: headers),
         excludeFromSemantics: true,
-        effectiveUrl,
-        headers: headers,
         width: width,
         height: height,
         fit: fit,

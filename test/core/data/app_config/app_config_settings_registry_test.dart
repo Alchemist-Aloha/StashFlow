@@ -175,6 +175,20 @@ void main() {
   });
 
   test(
+    'scene metadata visibility and default collapse round-trip together',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      const settings = {
+        'show_scene_metadata_section': false,
+        'hide_scene_technical_metadata': false,
+      };
+      await registry.replace(prefs, settings);
+      expect(await registry.read(prefs), settings);
+    },
+  );
+
+  test(
     'audio focus preference round-trips and rejects invalid backup values',
     () async {
       SharedPreferences.setMockInitialValues({});

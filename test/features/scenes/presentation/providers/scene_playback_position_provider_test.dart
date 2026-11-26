@@ -53,6 +53,18 @@ void main() {
     expect(container.read(position), 0);
   });
 
+  test('publishes forward progress in whole-second steps', () {
+    final position = scenePlaybackPositionProvider('played');
+    final notifier = container.read(position.notifier);
+    notifier.update(const Duration(milliseconds: 10200));
+    notifier.update(const Duration(milliseconds: 10900));
+    expect(container.read(position), 10.2);
+    notifier.update(const Duration(milliseconds: 11200));
+    expect(container.read(position), 11.2);
+    notifier.update(const Duration(milliseconds: 11100));
+    expect(container.read(position), 11.1);
+  });
+
   test(
     'clears retained positions on server switch, including matching IDs',
     () async {

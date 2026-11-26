@@ -13,7 +13,6 @@ class PlayerSettings {
   final int controlsAutoHideSeconds;
   final bool enableBackgroundPlayback;
   final bool respectAudioFocus;
-  final bool enableNativePip;
   final bool videoGravityOrientation;
   final bool useActualSceneVideoInMiniPlayer;
   final String defaultSubtitleLanguage;
@@ -35,9 +34,8 @@ class PlayerSettings {
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = false,
     this.controlsAutoHideSeconds = 2,
-    this.enableBackgroundPlayback = false,
+    this.enableBackgroundPlayback = true,
     this.respectAudioFocus = true,
-    this.enableNativePip = false,
     this.videoGravityOrientation = true,
     this.useActualSceneVideoInMiniPlayer = true,
     this.defaultSubtitleLanguage = 'none',
@@ -64,9 +62,21 @@ class PlayerSettingsStore {
       value >= minControlsAutoHideSeconds &&
       value <= maxControlsAutoHideSeconds;
   static const enableBackgroundPlaybackKey = 'video_background_playback';
+
+  /// Desktop always keeps playing when minimized, so only mobile and web
+  /// expose the background playback preference.
+  static bool get backgroundPlaybackConfigurable =>
+      kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
   static const respectAudioFocusKey = 'video_respect_audio_focus';
-  static const enableNativePipKey = 'video_native_pip';
+
+  /// Android only: publishes playback to the system media notification.
+  static const systemMediaControlsKey = 'android_system_media_controls';
   static const videoGravityOrientationKey = 'video_gravity_orientation';
+
+  /// Android only: playing scenes move to PiP when the user leaves the app.
+  static const autoPipKey = 'android_auto_pip';
 
   /// Opens explicit scene playback navigation in the fullscreen player.
   static const enterFullscreenOnNavigationKey =
@@ -343,11 +353,11 @@ class PlayerSettingsStore {
           ? controlsAutoHideValue
           : 2,
       enableBackgroundPlayback:
-          prefs.getBool(enableBackgroundPlaybackKey) ?? false,
+          !backgroundPlaybackConfigurable ||
+          (prefs.getBool(enableBackgroundPlaybackKey) ?? true),
       respectAudioFocus: prefs.get(respectAudioFocusKey) is bool
           ? prefs.getBool(respectAudioFocusKey)!
           : true,
-      enableNativePip: prefs.getBool(enableNativePipKey) ?? false,
       videoGravityOrientation:
           prefs.getBool(videoGravityOrientationKey) ?? true,
       useActualSceneVideoInMiniPlayer:
@@ -432,9 +442,6 @@ class PlayerSettingsStore {
 
   Future<void> saveRespectAudioFocus(bool value) =>
       prefs.setBool(respectAudioFocusKey, value);
-
-  Future<void> saveEnableNativePip(bool value) =>
-      prefs.setBool(enableNativePipKey, value);
 
   Future<void> saveVideoGravityOrientation(bool value) =>
       prefs.setBool(videoGravityOrientationKey, value);

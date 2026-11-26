@@ -113,7 +113,8 @@ Future<void> main() async {
                 'com.github.alchemistaloha.stash_app_flutter.channel.audio',
             androidNotificationChannelName: 'StashFlow Playback',
             androidNotificationOngoing: false,
-            androidStopForegroundOnPause: false,
+            // Leaving foreground lets dismiss() remove the notification.
+            androidStopForegroundOnPause: true,
           ),
         );
       } on Object catch (e, stackTrace) {

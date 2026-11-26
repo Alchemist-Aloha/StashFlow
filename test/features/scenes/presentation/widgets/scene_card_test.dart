@@ -219,7 +219,7 @@ void main() {
   }
 
   testWidgets(
-    'SceneCard hides playback progress with no files or while loading',
+    'SceneCard hides progress with no files and skips heroes while loading',
     (tester) async {
       await tester.pumpWidget(
         buildTestWidget(
@@ -229,6 +229,7 @@ void main() {
         ),
       );
       expect(find.byType(LinearProgressIndicator), findsNothing);
+      expect(find.byType(Hero), findsOneWidget);
 
       await tester.pumpWidget(
         buildTestWidget(
@@ -239,6 +240,7 @@ void main() {
         ),
       );
       expect(find.byType(LinearProgressIndicator), findsNothing);
+      expect(find.byType(Hero), findsNothing);
     },
   );
 

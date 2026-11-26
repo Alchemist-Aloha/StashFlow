@@ -4,10 +4,12 @@
 
 A modern, multi-platform client for your [**Stash server**](https://github.com/stashapp/stash). Built for fast browsing, playback, and library management across **Android**, **Desktop** (Windows, macOS, Linux), **iOS**, and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
 
-The app is primarily tested on Android, Linux and Windows. The MacOS and iOS builds are offered as is. The web build is best treated as a demo because browser restrictions limit authentication and playback behavior. For the full experience, use a native build.
+The app is primarily tested on Android, Linux and Windows. The MacOS and iOS builds are offered as is. The hosted web page is a demo with API-key login only; for a fully functional web version, run the Stash Docker image with StashFlow built in (see [Web](#-web)). For the full feature set, use a native build.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.43.0-green.svg)](pubspec.yaml)
+
+[<img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="54">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Alchemist-Aloha/StashFlow)
 
 ## 📸 Screenshots
 
@@ -67,11 +69,28 @@ Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/Stash
 
 ### 🌐 Web
 
-1. **Access:** Visit the [Live Web App Demo](https://alchemist-aloha.github.io/StashFlow/) or host your own build.
-2. **Note on Limitations:** The web version serves primarily as a **demo**.
-   - **Authentication:** Only **API Key** login is supported due to browser CORS restrictions.
-   - **Playback:** Video playback is limited by browser codec support.
-   - **Recommendation:** Use the **Android** or **Desktop** versions for the complete feature set and optimal performance.
+#### Stash Docker image with StashFlow (fully functional)
+
+[`ghcr.io/alchemist-aloha/stash`](https://github.com/Alchemist-Aloha/stash/tree/stashflow) is Stash with the StashFlow web app built in. Stash serves StashFlow from its own address, so **password login** works alongside API keys, and media loads with your Stash session.
+
+To install, replace the official image in your existing Stash setup, keeping everything else the same:
+
+```diff
+- image: stashapp/stash:latest
++ image: ghcr.io/alchemist-aloha/stash:stashflow
+```
+
+Then open `http://<your-server>:9999/stashflow/`. The official Stash UI stays at `http://<your-server>:9999/`.
+
+For access beyond your local network, put Stash behind an **HTTPS reverse proxy** (such as Caddy, Nginx, or Traefik) so your password and session cookie are encrypted in transit. Have the proxy forward the original `Host` header and `X-Forwarded-Proto`, so Stash generates media links on the same HTTPS address.
+
+#### Hosted demo
+
+The [Live Web App Demo](https://alchemist-aloha.github.io/StashFlow/) is for trying StashFlow out:
+
+- **Authentication:** **API key** only. The browser will not send a Stash session cookie to a page served from another site, so password login needs the Docker image above.
+- **Playback:** Limited to the video codecs your browser supports, as with any web version.
+- **Recommendation:** Use the Docker image for web, or the **Android** or **Desktop** versions for the complete feature set.
 
 ---
 

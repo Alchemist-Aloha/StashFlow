@@ -1,0 +1,4 @@
+tags:
+  e2e:
+    # Live-server tests: skipped unless STASH_URL is set (see test/e2e/).
+    timeout: 2x

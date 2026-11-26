@@ -1679,6 +1679,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Скрывать при прокрутке вниз и снова показывать при прокрутке вверх.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Показывать раздел метаданных сцены';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Скрывать метаданные сцены по умолчанию';
 
@@ -2119,11 +2123,19 @@ class AppLocalizationsRu extends AppLocalizations {
       'Приостанавливать StashFlow, когда другое приложение получает аудиофокус. Отключите для одновременного воспроизведения.';
 
   @override
-  String get settings_playback_pip => 'Нативная «Картинка в картинке»';
+  String get settings_playback_system_controls =>
+      'Системные элементы управления';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'Включить кнопку «картинка в картинке» и автоматический переход при сворачивании';
+  String get settings_playback_system_controls_subtitle =>
+      'Показывать воспроизведение в шторке уведомлений и на экране блокировки и принимать кнопки гарнитуры. Если отключить, Android может остановить фоновое воспроизведение.';
+
+  @override
+  String get settings_playback_auto_pip => '«Картинка в картинке» при выходе';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'Если выйти из StashFlow во время воспроизведения сцены, просмотр продолжится в окне «картинка в картинке». При возврате откроется прежняя страница.';
 
   @override
   String get settings_playback_subtitles => 'Настройки субтитров';
@@ -2153,6 +2165,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settings_playback_stream_source_subtitle =>
       'Используется при запуске; иначе Прямой';
+
+  @override
+  String get settings_playback_stream_resolution => 'Разрешение по умолчанию';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'Для перекодированных источников; если недоступно, используется ближайшее меньшее';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>

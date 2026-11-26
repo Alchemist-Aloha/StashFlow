@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 
 /// A bridge between the application's video players and the system media session.
@@ -8,6 +10,43 @@ import 'package:audio_service/audio_service.dart';
 ///    Bluetooth devices, and the system UI.
 /// 3. Provide metadata (title, studio, duration) to the OS.
 class StashMediaHandler extends BaseAudioHandler {
+  bool _enabled = true;
+  Timer? _idleTimer;
+  MediaItem? _heldItem;
+  PlaybackState? _heldState;
+
+  /// Whether updates reach the system session; Android's playback notification
+  /// and foreground service exist only while this is true.
+  ///
+  /// While disabled, the latest metadata and state are held and republished
+  /// when re-enabled.
+  bool get enabled => _enabled;
+  set enabled(bool value) {
+    if (_enabled == value) return;
+    if (!value) {
+      _heldItem = mediaItem.value;
+      _heldState = playbackState.value;
+      _dismissSession();
+    }
+    _enabled = value;
+    if (value) {
+      if (_heldItem != null) mediaItem.add(_heldItem);
+      if (_heldState != null) _addState(_heldState!);
+      _heldItem = null;
+      _heldState = null;
+    }
+  }
+
+  MediaItem? get _currentItem => _enabled ? mediaItem.value : _heldItem;
+
+  void _addState(PlaybackState state) {
+    _idleTimer?.cancel();
+    playbackState.add(state);
+  }
+
+  void _addItem(MediaItem item) =>
+      _enabled ? mediaItem.add(item) : _heldItem = item;
+
   /// Updates the metadata shown in the system media notification.
   void updateMetadata({
     required String id,
@@ -16,13 +55,13 @@ class StashMediaHandler extends BaseAudioHandler {
     String? thumbnailUri,
     Duration? duration,
   }) {
-    final current = mediaItem.value;
+    final current = _currentItem;
     final artUri = thumbnailUri != null
         ? Uri.parse(thumbnailUri)
         : current?.id == id
         ? current?.artUri
         : null;
-    mediaItem.add(
+    _addItem(
       MediaItem(
         id: id,
         album: studio ?? 'Stash',
@@ -42,47 +81,61 @@ class StashMediaHandler extends BaseAudioHandler {
     double speed = 1.0,
     AudioProcessingState processingState = AudioProcessingState.ready,
   }) {
-    playbackState.add(
-      PlaybackState(
-        controls: [
-          MediaControl.skipToPrevious,
-          if (isPlaying) MediaControl.pause else MediaControl.play,
-          MediaControl.skipToNext,
-        ],
-        systemActions: const {
-          MediaAction.seek,
-          MediaAction.seekForward,
-          MediaAction.seekBackward,
-        },
-        androidCompactActionIndices: const [0, 1, 2],
-        processingState: processingState,
-        playing: isPlaying,
-        updatePosition: position ?? Duration.zero,
-        bufferedPosition: bufferedPosition ?? Duration.zero,
-        speed: speed,
-      ),
+    final next = PlaybackState(
+      controls: [
+        MediaControl.skipToPrevious,
+        if (isPlaying) MediaControl.pause else MediaControl.play,
+        MediaControl.skipToNext,
+      ],
+      systemActions: const {
+        MediaAction.seek,
+        MediaAction.seekForward,
+        MediaAction.seekBackward,
+      },
+      androidCompactActionIndices: const [0, 1, 2],
+      processingState: processingState,
+      playing: isPlaying,
+      updatePosition: position ?? Duration.zero,
+      bufferedPosition: bufferedPosition ?? Duration.zero,
+      speed: speed,
     );
+    _enabled ? _addState(next) : _heldState = next;
   }
 
   /// Updates artwork only when [id] is still the active media item.
   void updateArtwork({required String id, required String thumbnailUri}) {
-    final current = mediaItem.value;
+    final current = _currentItem;
     if (current?.id != id) return;
-    mediaItem.add(current!.copyWith(artUri: Uri.parse(thumbnailUri)));
+    _addItem(current!.copyWith(artUri: Uri.parse(thumbnailUri)));
   }
 
   /// Ends the media session so Android removes its playback notification.
   void dismiss() {
-    playbackState.add(
-      playbackState.value.copyWith(
-        controls: const [],
-        systemActions: const {},
-        androidCompactActionIndices: const [],
-        playing: false,
-        processingState: AudioProcessingState.idle,
-      ),
+    _heldItem = null;
+    _heldState = null;
+    _dismissSession();
+  }
+
+  void _dismissSession() {
+    final wasPlaying = playbackState.value.playing;
+    final paused = playbackState.value.copyWith(
+      controls: const [],
+      systemActions: const {},
+      androidCompactActionIndices: const [],
+      playing: false,
     );
+    final idle = paused.copyWith(processingState: AudioProcessingState.idle);
     mediaItem.add(null);
+    if (!wasPlaying) return _addState(idle);
+    // Pausing first detaches the foreground notification; cancelling in the
+    // same instant races Android's detach, which reposts the notification.
+    // shortcut: fixed 500 ms settle time verified on one device; raise it if
+    // a stopped notification lingers elsewhere.
+    _addState(paused);
+    _idleTimer = Timer(
+      const Duration(milliseconds: 500),
+      () => playbackState.add(idle),
+    );
   }
 
   /// Callback for toggling play state. Linked to the active player provider.

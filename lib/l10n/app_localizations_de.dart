@@ -1687,6 +1687,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Beim Scrollen nach unten ausblenden und beim Scrollen nach oben wieder anzeigen.';
 
   @override
+  String get settings_interface_show_scene_metadata_section =>
+      'Abschnitt für Szenenmetadaten anzeigen';
+
+  @override
   String get settings_interface_hide_scene_metadata =>
       'Szenenmetadaten standardmäßig ausblenden';
 
@@ -2126,11 +2130,18 @@ class AppLocalizationsDe extends AppLocalizations {
       'StashFlow pausieren, wenn eine andere App den Audiofokus übernimmt. Deaktivieren, um gleichzeitige Wiedergabe zu erlauben.';
 
   @override
-  String get settings_playback_pip => 'Natives Bild-im-Bild';
+  String get settings_playback_system_controls => 'System-Mediensteuerung';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'Bild-im-Bild-Schaltfläche aktivieren und automatisch bei Hintergrundwechsel starten';
+  String get settings_playback_system_controls_subtitle =>
+      'Wiedergabe in der Benachrichtigungsleiste und auf dem Sperrbildschirm anzeigen und Headset-Tasten annehmen. Wenn deaktiviert, kann Android die Hintergrundwiedergabe beenden.';
+
+  @override
+  String get settings_playback_auto_pip => 'Bild-im-Bild beim Verlassen';
+
+  @override
+  String get settings_playback_auto_pip_subtitle =>
+      'Wenn du StashFlow während der Wiedergabe einer Szene verlässt, läuft sie in einem Bild-im-Bild-Fenster weiter. Bei der Rückkehr wird die vorherige Seite wiederhergestellt.';
 
   @override
   String get settings_playback_subtitles => 'Untertitel-Einstellungen';
@@ -2160,6 +2171,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settings_playback_stream_source_subtitle =>
       'Beim Wiedergabestart verwendet; sonst Direkt';
+
+  @override
+  String get settings_playback_stream_resolution => 'Standardauflösung';
+
+  @override
+  String get settings_playback_stream_resolution_subtitle =>
+      'Für transkodierte Quellen; nicht verfügbar wird die nächstniedrigere genutzt';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>

@@ -1,0 +1,320 @@
+name: E2E (stash-test-server)
+
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+  workflow_dispatch:
+    inputs:
+      stash-version:
+        description: Stash release to test against (blank = server repo's pinned version, or "latest")
+        required: false
+        default: "latest"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  # A cold simulator build can take over ten minutes. Finish started branch runs.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  e2e:
+    name: Live Stash server
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Start seeded Stash server
+        id: stash
+        uses: Alchemist-Aloha/stash-test-server@v1
+        with:
+          stash-version: ${{ inputs.stash-version }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.50.1"
+          cache: true
+
+      # flutter test runs native-asset build hooks (e.g. cnativeapi) for the host.
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config \
+            libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev \
+            libsecret-1-dev
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
+
+      - name: Run e2e tests
+        env:
+          STASH_URL: ${{ steps.stash.outputs.url }}
+          STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
+          STASH_FIXTURE: ${{ steps.stash.outputs.fixture }}
+        run: flutter test test/e2e --reporter expanded
+
+      - name: Upload Stash log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: stash-log
+          path: ${{ steps.stash.outputs.data-dir }}/stash.log
+          if-no-files-found: ignore
+
+  web:
+    name: GUI web-chrome
+    runs-on: ubuntu-26.04
+    timeout-minutes: 45
+    env:
+      no_proxy: 127.0.0.1,localhost
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Start seeded Stash server
+        id: stash
+        uses: Alchemist-Aloha/stash-test-server@v1
+        with:
+          stash-version: ${{ inputs.stash-version }}
+
+      # The fixture has no AVIF or JPEG XL images; the browser must decode both.
+      - name: Seed AVIF and JPEG XL images
+        env:
+          STASH_URL: ${{ steps.stash.outputs.url }}
+          STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+        run: scripts/e2e_seed_extra_images.sh "$RUNNER_TEMP/stash-extra-images"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.50.1"
+          cache: true
+
+      # flutter drive runs native-asset build hooks (e.g. cnativeapi) for the host.
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config \
+            libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev \
+            libsecret-1-dev
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
+
+      # Runner images ship Chrome with a matching chromedriver. Synthetic test
+      # taps are not user gestures, so allow the autoplay a real click permits.
+      # The dev server proxies Stash so password login shares the app's origin.
+      - name: Run GUI test (Chrome)
+        timeout-minutes: 30
+        env:
+          STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
+        run: |
+          cp test_driver/web_dev_config.yaml web_dev_config.yaml
+          "$CHROMEWEBDRIVER/chromedriver" --port=4444 &
+          trap 'kill $!' EXIT
+          flutter drive -d web-server --browser-name=chrome --headless --web-port=8099 \
+            --web-browser-flag=--autoplay-policy=no-user-gesture-required \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/web_e2e_test.dart \
+            --dart-define=STASH_URL=http://localhost:8099 \
+            "--dart-define=STASH_API_KEY=$STASH_API_KEY" \
+            "--dart-define=STASH_USERNAME=$STASH_USERNAME" \
+            "--dart-define=STASH_PASSWORD=$STASH_PASSWORD"
+
+      - name: Upload Stash log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: stash-log-gui-web-chrome
+          path: ${{ steps.stash.outputs.data-dir }}/stash.log
+          if-no-files-found: ignore
+
+  gui:
+    name: GUI ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: linux-x64, os: ubuntu-26.04, target: linux }
+          - { name: linux-arm64, os: ubuntu-26.04-arm, target: linux, git-flutter: true }
+          - { name: windows-x64, os: windows-latest, target: windows }
+          - { name: windows-arm64, os: windows-11-arm, target: windows, git-flutter: true }
+          - { name: macos-arm64, os: macos-26, target: macos }
+          - { name: ios-simulator, os: macos-26, target: ios }
+          - { name: android-x64-emulator, os: ubuntu-26.04, target: android }
+    defaults:
+      run:
+        shell: bash
+    env:
+      TEST_FILE: integration_test/app_e2e_test.dart
+      # Stash is runner-local; don't send authenticated requests to a proxy.
+      no_proxy: 127.0.0.1,localhost,10.0.2.2
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Start seeded Stash server
+        id: stash
+        uses: Alchemist-Aloha/stash-test-server@v1
+        with:
+          stash-version: ${{ inputs.stash-version }}
+
+      - name: Start iOS simulator
+        if: matrix.target == 'ios'
+        timeout-minutes: 5
+        run: |
+          udid="$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          print(next(d["udid"] for runtime, ds in sorted(devices.items(), reverse=True)
+                     if "iOS" in runtime for d in ds if d["name"].startswith("iPhone")))')"
+          xcrun simctl boot "$udid"
+          echo "IOS_DEVICE=$udid" >> "$GITHUB_ENV"
+
+      - name: Setup Java
+        if: matrix.target == 'android'
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Setup Flutter
+        if: ${{ !matrix.git-flutter }}
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.50.1"
+          cache: true
+
+      # Release archives bundle x64 Dart; a git checkout bootstraps native ARM64 Dart.
+      - name: Setup Flutter from git
+        if: ${{ matrix.git-flutter }}
+        run: |
+          root="$RUNNER_TEMP/flutter"
+          git clone --depth 1 --branch 3.50.1 https://github.com/flutter/flutter.git "$root"
+          echo "$root/bin" >> "$GITHUB_PATH"
+          echo "FLUTTER_ROOT=$root" >> "$GITHUB_ENV"
+          "$root/bin/flutter" --version
+
+      - name: Install Linux build and runtime dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config \
+            libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev \
+            libsecret-1-dev libva-drm2 libva-x11-2 libva-wayland2 libvdpau1 \
+            libpulse0 libxss1 libxv1 libegl1 libgbm1 libwayland-egl1 \
+            xvfb dbus-x11
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
+
+      # Fail before the job limit so the crash-report step still runs.
+      - name: Run GUI test (desktop)
+        if: matrix.target == 'linux' || matrix.target == 'windows' || matrix.target == 'macos'
+        timeout-minutes: 45
+        env:
+          STASH_URL: ${{ steps.stash.outputs.url }}
+          STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          cmd=(flutter test "$TEST_FILE" -d "$TARGET" --reporter expanded
+            "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY"
+            "--dart-define=STASH_USERNAME=$STASH_USERNAME" "--dart-define=STASH_PASSWORD=$STASH_PASSWORD")
+          case "$TARGET" in
+            linux) dbus-run-session -- xvfb-run -a "${cmd[@]}" ;;
+            windows)
+              # Delete the cookie directory after Flutter has stopped the app.
+              support_dir="$(mktemp -d "$(cygpath -u "$RUNNER_TEMP")/stashflow-e2e-support.XXXXXX")"
+              trap 'rm -rf -- "$support_dir"' EXIT
+              "${cmd[@]}" "--dart-define=STASH_E2E_SUPPORT_DIR=$(cygpath -m "$support_dir")"
+              ;;
+            *) "${cmd[@]}" ;;
+          esac
+
+      - name: Wait for iOS simulator
+        if: matrix.target == 'ios'
+        timeout-minutes: 5
+        run: xcrun simctl bootstatus "$IOS_DEVICE"
+
+      - name: Run GUI test (iOS simulator)
+        if: matrix.target == 'ios'
+        timeout-minutes: 35
+        env:
+          STASH_URL: ${{ steps.stash.outputs.url }}
+          STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
+        run: >-
+          flutter test "$TEST_FILE" -d "$IOS_DEVICE" --reporter expanded --no-uninstall
+          "--dart-define=STASH_URL=$STASH_URL" "--dart-define=STASH_API_KEY=$STASH_API_KEY"
+          "--dart-define=STASH_USERNAME=$STASH_USERNAME" "--dart-define=STASH_PASSWORD=$STASH_PASSWORD"
+
+      - name: Enable KVM
+        if: matrix.target == 'android'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # The emulator reaches the host's 127.0.0.1 through 10.0.2.2.
+      - name: Run GUI test (Android emulator)
+        if: matrix.target == 'android'
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          STASH_API_KEY: ${{ steps.stash.outputs.api-key }}
+          STASH_USERNAME: ${{ steps.stash.outputs.username }}
+          STASH_PASSWORD: ${{ steps.stash.outputs.password }}
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: >-
+            flutter test "$TEST_FILE" -d emulator-5554 --reporter expanded
+            --dart-define=STASH_URL=http://10.0.2.2:9999 "--dart-define=STASH_API_KEY=$STASH_API_KEY"
+            "--dart-define=STASH_USERNAME=$STASH_USERNAME" "--dart-define=STASH_PASSWORD=$STASH_PASSWORD"
+
+      # A native crash only surfaces as "did not complete"; print its report.
+      - name: Print macOS crash reports
+        if: failure() && matrix.target == 'macos'
+        run: |
+          shopt -s nullglob
+          for f in ~/Library/Logs/DiagnosticReports/StashFlow*; do
+            echo "::group::$f"; head -c 200000 "$f"; echo "::endgroup::"
+          done
+
+      - name: Upload Stash log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: stash-log-gui-${{ matrix.name }}
+          path: ${{ steps.stash.outputs.data-dir }}/stash.log
+          if-no-files-found: ignore
