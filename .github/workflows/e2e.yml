@@ -119,6 +119,8 @@ jobs:
       # Runner images ship Chrome with a matching chromedriver. Synthetic test
       # taps are not user gestures, so allow the autoplay a real click permits.
       # The dev server proxies Stash so password login shares the app's origin.
+      # Built as WebAssembly like the release web build; the test fails on a
+      # JavaScript fallback.
       - name: Run GUI test (Chrome)
         timeout-minutes: 30
         env:
@@ -129,8 +131,9 @@ jobs:
           cp test_driver/web_dev_config.yaml web_dev_config.yaml
           "$CHROMEWEBDRIVER/chromedriver" --port=4444 &
           trap 'kill $!' EXIT
-          flutter drive -d web-server --browser-name=chrome --headless --web-port=8099 \
+          flutter drive -d web-server --browser-name=chrome --headless --web-port=8099 --wasm \
             --web-browser-flag=--autoplay-policy=no-user-gesture-required \
+            --dart-define=E2E_EXPECT_WASM=true \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/web_e2e_test.dart \
             --dart-define=STASH_URL=http://localhost:8099 \

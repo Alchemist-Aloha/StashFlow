@@ -198,7 +198,7 @@ jobs:
           elif [ "${{ matrix.target }}" = "linux" ]; then
             flutter build linux --release --dart-define=STASHFLOW_COMMIT="$GITHUB_SHA"
           elif [ "${{ matrix.target }}" = "web" ]; then
-            flutter build web --release --base-href /StashFlow/ --dart-define=STASHFLOW_COMMIT="$GITHUB_SHA"
+            flutter build web --release --wasm --base-href /StashFlow/ --dart-define=STASHFLOW_COMMIT="$GITHUB_SHA"
           elif [ "${{ matrix.target }}" = "macos" ]; then
             case "$TARGET_ARCH" in
               x64) macos_arch=x86_64 ;;

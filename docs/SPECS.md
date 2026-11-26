@@ -1672,7 +1672,11 @@ launcher resolves libraries relative to itself rather than CI build paths.
 
 ### Web and GitHub Pages
 
-Web builds use the correct `/StashFlow/` base href for GitHub Pages. Stable and
+Web builds use the correct `/StashFlow/` base href for GitHub Pages and compile
+to WebAssembly (`--wasm`), with the JavaScript build as the browser fallback.
+Web-only code is selected with `dart.library.js_interop` and written against
+`package:web`/`dart:js_interop`, never `dart:html`, which WebAssembly lacks;
+the media-kit fork's web backend follows the same rule. Stable and
 nightly workflows publish the built web artifact with the permissions and branch
 behavior defined in `.github/workflows/`.
 
@@ -1725,7 +1729,8 @@ interaction where browser security permits it.
   and JPEG XL images that `scripts/e2e_seed_extra_images.sh` adds to the
   seeded server, then logs in with a password and queries through the session
   cookie. The dev server proxies Stash (`test_driver/web_dev_config.yaml`) so
-  the app and server share an origin. CI allows autoplay because synthetic
+  the app and server share an origin. CI builds it as WebAssembly and passes
+  `E2E_EXPECT_WASM`, so a JavaScript fallback fails. CI allows autoplay because synthetic
   taps are not user gestures. GUI e2e tests share
   `integration_test/e2e_helpers.dart`.
 - Shared helpers live under `test/helpers/`; feature-specific fakes stay near

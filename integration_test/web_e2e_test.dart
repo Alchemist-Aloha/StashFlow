@@ -25,6 +25,7 @@ library;
 import 'dart:async';
 import 'dart:ui' show PlatformDispatcher;
 
+import 'package:flutter/foundation.dart' show kIsWasm;
 import 'package:flutter/rendering.dart' show RenderImage;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -45,6 +46,10 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/main.dart' as app;
 
 import 'e2e_helpers.dart';
+
+/// Set when the test is built with `--wasm`, so a silent JavaScript fallback
+/// cannot pass for a WebAssembly run.
+const _expectWasm = bool.fromEnvironment('E2E_EXPECT_WASM');
 
 /// Image file names written by `scripts/e2e_seed_extra_images.sh`.
 const _extraImages = ['e2e-avif.avif', 'e2e-jxl.jxl'];
@@ -179,6 +184,7 @@ void main() {
     timeout: const Timeout(Duration(minutes: 10)),
     (tester) async {
       expect(stashApiKey, isNotEmpty, reason: 'pass STASH_API_KEY');
+      expect(kIsWasm, _expectWasm, reason: 'compiled as WebAssembly');
       FlutterSecureStorage.setMockInitialValues({});
       SharedPreferences.setMockInitialValues({
         'app_language': 'en',
