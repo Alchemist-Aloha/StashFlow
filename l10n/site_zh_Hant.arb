@@ -36,6 +36,8 @@
   "obtainium": "在 Obtainium 取得",
   "web": "網頁",
   "webPackage": "自託管網頁應用",
+  "dockerPackage": "內建 StashFlow 的修改版 Stash",
+  "dockerNote": "內建 StashFlow 網頁前端，可透過 /stashflow/ 存取並支援密碼登入。",
   "downloadsUnavailable": "此版本暫未提供下載，請查看發布頁面。",
   "demoNote": "網頁版示範使用 API 金鑰驗證，播放能力受瀏覽器限制。",
   "serverNote": "需要你自己的 Stash 伺服器。",

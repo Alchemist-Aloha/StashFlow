@@ -1,11 +1,13 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import bundledRelease from '../downloads.json'
 import { loadRepositoryInfo } from './repository.js'
 
 const repositoryName = ref('StashFlow')
 // Obtainium's redirect page opens the app's add-source flow for this repository.
 const obtainiumUrl = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Alchemist-Aloha/StashFlow'
+const stashDockerImage = 'ghcr.io/alchemist-aloha/stash:stashflow'
+const stashDockerUrl = 'https://github.com/Alchemist-Aloha/stash/tree/stashflow'
 const releaseBase = `https://github.com/Alchemist-Aloha/StashFlow/releases/download/v${bundledRelease.version}`
 const release = ref({
   tag: `v${bundledRelease.version}`,
@@ -14,6 +16,8 @@ const release = ref({
     packages: platform.packages.map(pkg => ({ ...pkg, url: `${releaseBase}/${encodeURIComponent(pkg.file)}` })),
   })),
 })
+const nativePlatforms = computed(() => release.value.platforms.filter(platform => platform.id !== 'web'))
+const webPackages = computed(() => release.value.platforms.find(platform => platform.id === 'web')?.packages ?? [])
 const request = new AbortController()
 let requestTimeout
 let active = true
@@ -104,18 +108,36 @@ defineProps({
       <h2 id="download-title">{{ copy.startTitle }}</h2><p>{{ copy.startCopy }}</p>
       <p class="download-version">{{ release.tag }} · <a href="https://github.com/Alchemist-Aloha/StashFlow/releases/latest">{{ copy.releases }}</a></p>
       <p v-if="!release.platforms.length" class="download-note">{{ copy.downloadsUnavailable }}</p>
-      <div v-else class="download-grid">
-        <div v-for="platform in release.platforms" :key="platform.id" class="download-platform" :class="{ 'web-platform': platform.id === 'web' }">
-          <h3 :id="`download-${platform.id}`">{{ platform.id === 'web' ? copy.web : platform.name }}</h3>
+      <div class="download-grid">
+        <div v-for="platform in nativePlatforms" :key="platform.id" class="download-platform">
+          <h3 :id="`download-${platform.id}`">{{ platform.name }}</h3>
           <ul :aria-labelledby="`download-${platform.id}`">
             <li v-for="pkg in platform.packages" :key="pkg.file">
-              <a :href="pkg.url" :aria-label="`${copy.download}: ${platform.id === 'web' ? copy.web : platform.name}, ${pkg.architecture || copy.webPackage}, ${pkg.format}`">
-                <span class="package-label"><span>{{ pkg.architecture || copy.webPackage }}</span><span class="package-format">{{ pkg.format }}</span></span>
+              <a :href="pkg.url" :aria-label="`${copy.download}: ${platform.name}, ${pkg.architecture}, ${pkg.format}`">
+                <span class="package-label"><span>{{ pkg.architecture }}</span><span class="package-format">{{ pkg.format }}</span></span>
                 <svg class="package-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></svg>
               </a>
             </li>
           </ul>
           <a v-if="platform.id === 'android'" class="obtainium-badge" :href="obtainiumUrl"><img :src="`${assetPrefix}/assets/obtainium-badge.png`" width="646" height="250" :alt="copy.obtainium" loading="lazy"></a>
+        </div>
+        <div class="download-platform web-platform">
+          <h3 id="download-web">{{ copy.web }}</h3>
+          <ul aria-labelledby="download-web">
+            <li class="docker-package">
+              <a :href="stashDockerUrl" :aria-label="`${copy.web}: ${copy.dockerPackage}, Docker`">
+                <span class="package-label"><span>{{ copy.dockerPackage }}</span><span class="package-format">Docker</span></span>
+                <svg class="package-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg>
+              </a>
+              <p class="package-detail"><code class="package-image">{{ stashDockerImage }}</code><span>{{ copy.dockerNote }}</span></p>
+            </li>
+            <li v-for="pkg in webPackages" :key="pkg.file">
+              <a :href="pkg.url" :aria-label="`${copy.download}: ${copy.web}, ${pkg.architecture || copy.webPackage}, ${pkg.format}`">
+                <span class="package-label"><span>{{ pkg.architecture || copy.webPackage }}</span><span class="package-format">{{ pkg.format }}</span></span>
+                <svg class="package-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></svg>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
       <div class="actions"><a class="text-link" href="https://alchemist-aloha.github.io/StashFlow/">{{ copy.demo }} <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>

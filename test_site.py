@@ -88,6 +88,10 @@ class SiteTest(unittest.TestCase):
                         filename = package["file"]
                         self.assertTrue(filename.startswith(f'StashFlow-{release["version"]}'))
                         self.assertIn(f'https://github.com/Alchemist-Aloha/StashFlow/releases/download/v{release["version"]}/{quote(filename, safe="")}', page.urls)
+                self.assertIn("https://github.com/Alchemist-Aloha/stash/tree/stashflow", page.urls)
+                self.assertIn("ghcr.io/alchemist-aloha/stash:stashflow", source)
+                self.assertIn(catalog["dockerPackage"], source)
+                self.assertIn(catalog["dockerNote"], source)
                 header = source.split("</header>", 1)[0]
                 self.assertIn('class="repo-link"', header)
                 self.assertNotIn('class="nav-links"', header)

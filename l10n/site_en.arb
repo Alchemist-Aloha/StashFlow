@@ -36,6 +36,8 @@
   "obtainium": "Get it on Obtainium",
   "web": "Web",
   "webPackage": "Self-hosted web app",
+  "dockerPackage": "Modified Stash with StashFlow",
+  "dockerNote": "Includes the built-in StashFlow web frontend at /stashflow/ with password login.",
   "downloadsUnavailable": "Downloads are not available for this release yet. Check the release page.",
   "demoNote": "The web demo has API-key authentication and browser-dependent playback limitations.",
   "serverNote": "Requires your own Stash server.",

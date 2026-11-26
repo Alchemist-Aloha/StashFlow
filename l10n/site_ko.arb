@@ -36,6 +36,8 @@
   "obtainium": "Obtainium에서 받기",
   "web": "웹",
   "webPackage": "자체 호스팅 웹 앱",
+  "dockerPackage": "StashFlow 내장 수정판 Stash",
+  "dockerNote": "/stashflow/에 StashFlow 웹 프론트엔드가 내장되어 있으며 비밀번호 로그인을 지원합니다.",
   "downloadsUnavailable": "이 릴리스의 다운로드는 아직 제공되지 않습니다. 릴리스 페이지를 확인하세요.",
   "demoNote": "웹 데모는 API 키 인증을 사용하며 재생은 브라우저에 따라 제한됩니다.",
   "serverNote": "개인 Stash 서버가 필요합니다.",

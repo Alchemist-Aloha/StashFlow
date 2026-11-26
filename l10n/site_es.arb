@@ -36,6 +36,8 @@
   "obtainium": "Consíguelo en Obtainium",
   "web": "Web",
   "webPackage": "Aplicación web autoalojada",
+  "dockerPackage": "Stash modificado con StashFlow",
+  "dockerNote": "Incluye la interfaz web de StashFlow integrada en /stashflow/ con inicio de sesión por contraseña.",
   "downloadsUnavailable": "Aún no hay descargas disponibles para esta versión. Consulta la página de la versión.",
   "demoNote": "La demo web usa autenticación por clave API y tiene límites de reproducción según el navegador.",
   "serverNote": "Requiere tu propio servidor Stash.",

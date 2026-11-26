@@ -36,6 +36,8 @@
   "obtainium": "Obtainium で入手",
   "web": "ウェブ",
   "webPackage": "セルフホスト用ウェブアプリ",
+  "dockerPackage": "StashFlow内蔵の改変版Stash",
+  "dockerNote": "/stashflow/ に組み込まれたStashFlowウェブフロントエンドを含み、パスワードログインに対応します。",
   "downloadsUnavailable": "このリリースのダウンロードはまだ利用できません。リリースページをご確認ください。",
   "demoNote": "WebデモはAPIキー認証を使用し、再生にはブラウザーによる制限があります。",
   "serverNote": "自分のStashサーバーが必要です。",

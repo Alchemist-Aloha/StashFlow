@@ -25,7 +25,9 @@ The download finale lets the orchid-to-lavender gradient own a full section, wit
 deep plum type, subtle format pills, and an organized download directory. Flat
 platform groups use crisp structural rules, architecture and pill format labels,
 and drawn download arrows rather than a wall of cards. The published version and
-releases link stay visible, with the web package separated from native builds.
+releases link stay visible, with the web options (the modified Stash Docker
+image with built-in StashFlow web frontend and the self-hosted web package)
+separated from native builds.
 Self-hosted variable Manrope honors the requested font, with system fallback for
 unsupported scripts. Fluid 38–96px hero type at weight 800, 36–68px section type
 (up to 92px for the control showcase and download finale), and 18–22px supporting

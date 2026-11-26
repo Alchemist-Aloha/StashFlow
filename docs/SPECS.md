@@ -45,6 +45,13 @@ the bundled version and links together. No rebuild is needed for live updates;
 JavaScript-disabled visitors receive the bundled snapshot. The Android group ends
 with the self-hosted "Get it on Obtainium" badge, linking to Obtainium's redirect
 for adding this repository; it appears only while Android packages are listed.
+The Web group sits in a full-width row below native builds and includes the
+modified Stash Docker image (`ghcr.io/alchemist-aloha/stash:stashflow`, linking
+to `https://github.com/Alchemist-Aloha/stash/tree/stashflow`) with the built-in
+StashFlow web frontend at `/stashflow/` and password login, alongside any
+published self-hosted web ZIP package. Because the Docker image is published
+independently of GitHub release assets, it remains visible even when a release
+omits the web ZIP or has no uploaded assets yet.
 The control section is a full-width plum-black interlude
 with orchid display type and larger, unboxed filter/sort screenshots above their
 captions. Wide layouts stagger those screenshots; narrow layouts retain a stacked
