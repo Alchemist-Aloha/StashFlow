@@ -857,6 +857,56 @@ void main() {
       });
     }
 
+    Future<void> queueNextScene() async {
+      container.read(playbackQueueProvider.notifier).setSequence([
+        createTestScene('focus'),
+        createTestScene('next'),
+      ], 0);
+      resolvedChoice = const StreamChoice(
+        url: 'https://example.test/stream.mp4',
+        mimeType: 'video/mp4',
+      );
+    }
+
+    test('a new scene plays after a permanent focus loss', () async {
+      final notifier = await prepare();
+      notifier.setEnableBackgroundPlayback(true);
+      notifier.play();
+      await tick();
+      notifier.didChangeAppLifecycleState(AppLifecycleState.paused);
+      interrupt(AudioInterruptionType.unknown);
+      await tick();
+      expect(container.read(playerStateProvider).isPlaying, isFalse);
+
+      await queueNextScene();
+      expect(await notifier.playNext(), isTrue);
+      await tick();
+
+      final state = container.read(playerStateProvider);
+      expect(state.activeScene?.id, 'next');
+      expect(state.isPlaying, isTrue);
+      expect(audioFocus.operations.last, isTrue);
+    });
+
+    test('auto-advance keeps audio focus for the next scene', () async {
+      final notifier = await prepare();
+      notifier.setEnableBackgroundPlayback(true);
+      notifier.play();
+      await tick();
+      notifier.didChangeAppLifecycleState(AppLifecycleState.paused);
+      // A locked screen can refuse a fresh request; the handoff needs none.
+      audioFocus.granted = false;
+
+      await queueNextScene();
+      expect(await notifier.playNext(), isTrue);
+      await tick();
+
+      final state = container.read(playerStateProvider);
+      expect(state.activeScene?.id, 'next');
+      expect(state.isPlaying, isTrue);
+      expect(audioFocus.operations, [true]);
+    });
+
     test('focus gain respects background-disabled policy', () async {
       final notifier = await prepare();
       notifier.setEnableBackgroundPlayback(false);

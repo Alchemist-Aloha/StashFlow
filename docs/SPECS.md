@@ -1257,7 +1257,11 @@ seek restoration, and view handoffs must not undo that pause, even after foregro
 resume. A temporary interruption may resume only the same previously playing
 session, with no intervening manual pause/stop or session change, and only when
 lifecycle/PiP policy permits. Permanent loss or a denied/failed request requires
-explicit Play. Focus is released on pause, stop, casting, or disabling the setting.
+explicit Play or starting a scene (tapped or queue auto-advance), which clears the
+interruption. Focus is held across a `playScene` handoff from one scene to the
+next, so locked-screen auto-advance never re-requests it; it is released on pause,
+stop, casting, or disabling the setting. Denied requests and interruption events
+are written to the app log.
 Disabling it permits simultaneous playback but does not restart a paused video.
 Casting and preloaded/auxiliary players do not acquire global session focus.
 Android can still enforce interruptions regardless of this opt-out; background

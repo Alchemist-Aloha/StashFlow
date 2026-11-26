@@ -1386,6 +1386,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'} initialPos=${initialPosition?.inMilliseconds}ms force=$force',
       source: 'player_provider',
     );
+    // Starting a scene is a request to play, like Play: an earlier focus loss
+    // or notification pause must not leave every new scene paused at its start.
+    _focusInterrupted = false;
+    _resumeAfterFocus = null;
+    _backgroundRecoverySuppressed = false;
 
     // Automatic caption loading logic
     String? autoLang;
@@ -1479,13 +1484,16 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         throw StateError('stale playback startup');
       }
 
+      // The new session plays right away, so keep audio focus: re-requesting
+      // it from a locked screen can be refused and strand the next scene.
       if (attempt == 0 && state.player != null) {
-        await _disposeControllers();
+        await _disposeControllers(keepAudioFocus: true);
       } else if (attempt > 0) {
         await _disposeControllers(
           scene: scene,
           player: player,
           controller: videoController,
+          keepAudioFocus: true,
         );
       }
 
@@ -1869,6 +1877,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       }
       _hasAudioFocus = granted;
       if (!granted) {
+        AppLogStore.instance.add(
+          'PlayerState: audio focus request denied; playback stays paused',
+          source: 'player_provider',
+        );
         _focusInterrupted = true;
         _backgroundRecoveryToken++;
         unawaited(player.pause());
@@ -1888,6 +1900,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       return;
     }
     final player = state.player;
+    AppLogStore.instance.add(
+      'PlayerState: audio interruption ${event.begin ? 'begin' : 'end'} type=${event.type.name} lifecycle=${_appLifecycleState.name}',
+      source: 'player_provider',
+    );
     if (event.begin) {
       final wasPlaying =
           player != null && (player.state.playing || state.isPlaying);
@@ -2131,12 +2147,20 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     if (dismissNotification) mediaHandler?.dismiss();
   }
 
+  /// Disposes the active session. [keepAudioFocus] is for handing off to a new
+  /// session that plays at once; it still cancels pending plays of the old one.
   Future<void> _disposeControllers({
     Scene? scene,
     Player? player,
     VideoController? controller,
+    bool keepAudioFocus = false,
   }) async {
-    _releaseAudioFocus();
+    if (keepAudioFocus) {
+      _localPlayToken++;
+      _resumeAfterFocus = null;
+    } else {
+      _releaseAudioFocus();
+    }
     final effectiveSceneId =
         scene?.id ??
         _activeSceneRef?.id ??
