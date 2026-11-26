@@ -7,7 +7,7 @@ A modern, multi-platform client for your [**Stash server**](https://github.com/s
 The app is primarily tested on Android, Linux and Windows. The MacOS and iOS builds are offered as is. The hosted web page is a demo with API-key login only; for a fully functional web version, run the Stash Docker image with StashFlow built in (see [Web](#-web)). For the full feature set, use a native build.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.43.0-green.svg)](pubspec.yaml)
+[![Version](https://img.shields.io/badge/version-1.44.0-green.svg)](pubspec.yaml)
 
 [<img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="54">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Alchemist-Aloha/StashFlow)
 
