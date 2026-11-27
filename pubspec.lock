@@ -1026,8 +1026,8 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit
-      ref: "51f9b5cb9df9e967810b49b169fdf3f874b3426a"
-      resolved-ref: "51f9b5cb9df9e967810b49b169fdf3f874b3426a"
+      ref: d4911b99e33c6311c79f18703e57e0de6e572ee3
+      resolved-ref: d4911b99e33c6311c79f18703e57e0de6e572ee3
       url: "https://github.com/Alchemist-Aloha/media-kit.git"
     source: git
     version: "1.1.11"
@@ -1035,8 +1035,8 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit_video
-      ref: "51f9b5cb9df9e967810b49b169fdf3f874b3426a"
-      resolved-ref: "51f9b5cb9df9e967810b49b169fdf3f874b3426a"
+      ref: d4911b99e33c6311c79f18703e57e0de6e572ee3
+      resolved-ref: d4911b99e33c6311c79f18703e57e0de6e572ee3
       url: "https://github.com/Alchemist-Aloha/media-kit.git"
     source: git
     version: "1.2.5"

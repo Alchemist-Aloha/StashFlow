@@ -59,7 +59,8 @@ Future<void> _exercisePlayback(
   AppLocalizations l10n,
 ) async {
   final card = sceneCard(sceneTitle);
-  final id = tester.widget<SceneCard>(card).scene.id;
+  final scene = tester.widget<SceneCard>(card).scene;
+  final id = scene.id;
   final container = ProviderScope.containerOf(tester.element(card));
   final playerNotifier = container.read(playerStateProvider.notifier);
   final surface = find.byWidgetPredicate(
@@ -97,6 +98,26 @@ Future<void> _exercisePlayback(
       tester,
       () => !player.state.playing,
       'browser playback to pause',
+    );
+
+    // A resumed scene opens with Media.start; seeking before it must report
+    // the new position, not snap the progress bar back to the resume point.
+    await playerNotifier.playScene(
+      scene,
+      scene.paths.stream!,
+      initialPosition: const Duration(seconds: 10),
+    );
+    final resumed = container.read(playerStateProvider).player!;
+    await pumpUntilCondition(
+      tester,
+      () => resumed.state.position >= const Duration(seconds: 10),
+      'resumed playback to reach its start position',
+    );
+    await playerNotifier.seek(const Duration(seconds: 2));
+    await pumpUntilCondition(
+      tester,
+      () => resumed.state.position < const Duration(seconds: 6),
+      'a seek before the resume point to report that position',
     );
   } finally {
     playerNotifier.stop();
