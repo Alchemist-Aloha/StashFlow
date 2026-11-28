@@ -150,10 +150,10 @@ packages:
     dependency: transitive
     description:
       name: built_value
-      sha256: f87ea98192116f7093cb214551ce1929caae0681fdba282b3d8b4462adee7bb7
+      sha256: c909bcf7b192256e8dc710efb11df369fdf069aa4f0615f49371d00eb0d7679f
       url: "https://pub.dev"
     source: hosted
-    version: "8.13.0"
+    version: "8.13.1"
   cached_network_image_ce:
     dependency: "direct main"
     description:
@@ -597,10 +597,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_svg
-      sha256: "4565a66f0a968f2e1ab4197854686990258aadab9572eb80a7655053a01dc302"
+      sha256: "5b0dd02de78d110e4acaca042e3be80c9b2ec04c1f41a83ca39a717497c7e2d2"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.0"
+    version: "2.5.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -849,10 +849,10 @@ packages:
     dependency: transitive
     description:
       name: isolate_channel
-      sha256: bd56e1bb2787bed914158c2696943dc7254732bfea2c207aafca6bc930580fd4
+      sha256: c79d7ac344e6f7cd2e42b006b920be990136a59aa763f15c3c490350907710a4
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.2"
+    version: "0.6.3"
   jni:
     dependency: transitive
     description:
@@ -1026,8 +1026,8 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit
-      ref: d4911b99e33c6311c79f18703e57e0de6e572ee3
-      resolved-ref: d4911b99e33c6311c79f18703e57e0de6e572ee3
+      ref: fd06e49ffdf8c15a53892b822e8d97c638a798c4
+      resolved-ref: fd06e49ffdf8c15a53892b822e8d97c638a798c4
       url: "https://github.com/Alchemist-Aloha/media-kit.git"
     source: git
     version: "1.1.11"
@@ -1035,8 +1035,8 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit_video
-      ref: d4911b99e33c6311c79f18703e57e0de6e572ee3
-      resolved-ref: d4911b99e33c6311c79f18703e57e0de6e572ee3
+      ref: fd06e49ffdf8c15a53892b822e8d97c638a798c4
+      resolved-ref: fd06e49ffdf8c15a53892b822e8d97c638a798c4
       url: "https://github.com/Alchemist-Aloha/media-kit.git"
     source: git
     version: "1.2.5"
@@ -1372,26 +1372,26 @@ packages:
     dependency: "direct main"
     description:
       name: screen_brightness
-      sha256: e0edf92c08889e8f493cde291e7c687db2b4a1471f2371c074070b75d7c7d79b
+      sha256: "33deaf332653a70378a8b4cd4cb49589b7052e6bd612be0bd4d0865fe71eceb7"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.11"
+    version: "2.1.12"
   screen_brightness_android:
     dependency: transitive
     description:
       name: screen_brightness_android
-      sha256: "2008ad8e9527cc968f7a4de1ec58b476d495b3c612a149dbd6550c4f046da147"
+      sha256: "84438a78e3c794159b2ec350a1a7dec51c2115fc55884350f323f3caf40ed2f4"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.6"
+    version: "2.1.7"
   screen_brightness_ios:
     dependency: transitive
     description:
       name: screen_brightness_ios
-      sha256: "352d355e8523a186ba1e494b74218e5ca96e51975a0630b8ed89fbb7ff609762"
+      sha256: f06ee86d0a7cbd79a67a39ec4f234542a8894e2387f2bbb7105d02fc0b75d780
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.4"
+    version: "2.1.5"
   screen_brightness_macos:
     dependency: transitive
     description:
